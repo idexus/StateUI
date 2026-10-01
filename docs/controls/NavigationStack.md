@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # NavigationStack
 
@@ -46,7 +46,7 @@ See [the dictionary](README.md) for how a mark is given.
 | GTK 4 | ✅ | 5 ✅ · 4 – | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
 | Web |  |  | History API | no host yet |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
 
 ## NavigationStack's own members
 

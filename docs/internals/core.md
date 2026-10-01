@@ -1,6 +1,6 @@
 # StateUI core
 
-The core is the `StateUI` library, in `lib/StateUI/Sources`: one dynamic
+The core is the `StateUI` library, in `lib/StateUI/Core/Sources`: one dynamic
 library, the same on every platform, which every application and every host
 links, so a process holds one copy of StateUI's types. It imports no
 Foundation and no platform framework, depends on no package and exports no C
@@ -48,7 +48,7 @@ decides again; one concept has one owner, one spelling and one source:
   ([One process, one host](host-contract.md#one-process-one-host))
 
 ```text
-lib/StateUI/Sources/
+lib/StateUI/Core/Sources/
   Views/         what an application writes
     Structure/ Navigation/ Menus/   the application, its pages, their furniture
     Tiers/ Mixins/ Bindings/        tier protocols, modifiers, carried twins
@@ -534,7 +534,7 @@ force ([values a host is handed](host-contract.md#values-a-host-is-handed)).
 
 ## Testing
 
-The core's suite, `lib/StateUI/Tests`, is `swift test` at the repository
+The core's suite, `lib/StateUI/Core/Tests`, is `swift test` at the repository
 root. It needs no toolkit, runs on every platform the core builds on, and
 asserts on the typed patch a host is handed, by the rule each case keeps,
 never against a stored copy
@@ -561,10 +561,10 @@ never against a stored copy
   ([what a host never does](host-layer.md#what-a-host-never-does));
   `ToolchainTests`, `ReleaseTests`, `AppsTests` and `VsCodeTests` keep one
   Swift release, one version, the applications and the editor.
-- **The host layer's suite**, `swift test --package-path lib/StateUI.Host`,
+- **The host layer's suite**, `swift test --package-path lib/StateUI/StateUI.Host`,
   proves its rules with no toolkit, the core's `HostMotionLaw` among them
   (`MotionLawTests`). ([Testing](host-layer.md#testing))
-- **The conformance suite**, `lib/StateUI.Conformance`, proves the contract's
+- **The conformance suite**, `lib/StateUI/StateUI.Conformance`, proves the contract's
   effects through every host's driver; its own tests prove the runner and that
   every member has its case (`ContractCompletenessTests`).
   ([Conformance](../design/host/conformance.md))

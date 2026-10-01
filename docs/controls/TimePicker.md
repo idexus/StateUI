@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # TimePicker
 
@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | GTK 4 | ✅ | 49 ✅ · 1 – | an hour's and a minute's `GtkSpinButton` in a `GtkPopover` |  |
 | Web |  |  | `<input type=time>` | no host yet |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
 
 ## TimePicker's own members
 

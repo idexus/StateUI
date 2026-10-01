@@ -3,17 +3,19 @@
 ## Repository layout
 
 ```text
-Package.swift                      StateUI core package and core tests
-lib/StateUI/Sources/               platform-neutral StateUI
-lib/StateUI/Tests/                 core tests and shared test support
-lib/StateUI.Host/                  the host layer every host stands on, and its tests
+Package.swift                      StateUI's core package, its sources in lib/StateUI/Core
+lib/StateUI/Core/Sources/          platform-neutral StateUI
+lib/StateUI/Core/Tests/            core tests and shared test support
+lib/StateUI/StateUI.Host/          the host layer every host stands on, and its tests
+lib/StateUI/StateUI.Conformance/   the conformance suite every host's tests run
+lib/StateUI/exports/               what each host's runs declare and prove, the marks
+lib/StateUI/StateUI.AppKit/        independent AppKit host package and tests
+lib/StateUI/StateUI.UIKit/         UIKit host package, its tests an application of their own
+lib/StateUI/StateUI.Android/       Android Views host package, its Java layer and tests
+lib/StateUI/StateUI.WinUI/         WinUI host package, its C++/WinRT relay and tests
+lib/StateUI/StateUI.GTK/           GTK host package, Swift over GTK's C API
+lib/StateUI/StateUI.GTK/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the host every application's head is built with
-lib/StateUI.Conformance/           the conformance suite every host's tests run
-lib/StateUI.AppKit/                independent AppKit host package and tests
-lib/StateUI.Android/               Android Views host package, its Java layer and tests
-lib/StateUI.WinUI/                 WinUI host package, its C++/WinRT relay and tests
-lib/StateUI.GTK/                   GTK host package, Swift over GTK's C API
-lib/StateUI.GTK/Testing/           its tests, and the driver its conformance runs go through
 lib/Controls/                      components an application imports apart - WebView
 lib/StateUI.VSCode/                the editor extension
 .scripts/AppKit/                   AppKit Gallery bundling
@@ -115,8 +117,8 @@ Treat one control, property, event, or host action as one vertical change:
 6. Add or update the smallest Gallery demonstration and handbook section.
 7. Let the host say what it realizes, only after its tests pass. A member a
    registration takes or raises records itself: with `STATEUI_UPDATE_EXPORTS=1`,
-   `swift test --package-path lib/StateUI.AppKit` and
-   `.scripts/Android/test-android.sh <serial>` write `lib/exports/appkit.txt` and
+   `swift test --package-path lib/StateUI/StateUI.AppKit` and
+   `.scripts/Android/test-android.sh <serial>` write `lib/StateUI/exports/appkit.txt` and
    `android.txt`, and the contracts name each member's owner when the
    documents are rendered. What a registry cannot know stays written by hand,
    in `AppKitRealization` and `AndroidRealization` - every judgement: a partial
@@ -188,9 +190,9 @@ Each suite lives beside the package whose behavior it verifies:
 
 ```bash
 swift test
-swift test --package-path lib/StateUI.Host
-swift test --package-path lib/StateUI.Conformance
-swift test --package-path lib/StateUI.AppKit
+swift test --package-path lib/StateUI/StateUI.Host
+swift test --package-path lib/StateUI/StateUI.Conformance
+swift test --package-path lib/StateUI/StateUI.AppKit
 swift test --package-path apps/Gallery
 swift test --package-path apps/HelloWorld
 ```
@@ -228,7 +230,7 @@ The GTK host's suite runs on Linux, in a desktop session whose display shows
 its windows:
 
 ```bash
-swift test --package-path lib/StateUI.GTK/Testing
+swift test --package-path lib/StateUI/StateUI.GTK/Testing
 ```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a

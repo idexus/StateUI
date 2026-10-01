@@ -19,14 +19,14 @@ let package = Package(
         .package(name: "StateUIRoot", path: "../../../.."),
         .package(name: "StateUIWebView", path: ".."),
         .package(name: "StateUIWebViewHost", path: "../WebView.Host"),
-        .package(name: "StateUIWinUI", path: "../../../StateUI.WinUI"),
+        .package(name: "StateUIWinUI", path: "../../../StateUI/StateUI.WinUI"),
     ],
     targets: [
         // WinUI's WebView2, C++/WinRT behind C functions.
         .target(
             name: "CWebViewWinUI",
             path: "Relay",
-            cxxSettings: [.unsafeFlags(["-I", Context.packageDirectory + "/../../../StateUI.WinUI/.projection"])],
+            cxxSettings: [.unsafeFlags(["-I", Context.packageDirectory + "/../../../StateUI/StateUI.WinUI/.projection"])],
             linkerSettings: [.linkedLibrary("shcore"), .linkedLibrary("shlwapi")]
         ),
         .target(

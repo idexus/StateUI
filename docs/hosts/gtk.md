@@ -19,7 +19,7 @@ rather than silent. It looks as the desktop's own applications do:
 libadwaita's widgets, and the light or dark style the desktop is set to.
 
 ```text
-lib/StateUI.GTK/
+lib/StateUI/StateUI.GTK/
   Sources/StateUIGTK/        the host: its runtime, elements, registrations, layout and window
   Sources/CStateUIGTK/       GTK's and libadwaita's headers, found by pkg-config
   Testing/                   a package of its own: the host's suite, run by swift test, in Tests/,
@@ -182,7 +182,7 @@ breakpoint in the application's Swift holds from the first line.
 ## Testing
 
 ```bash
-swift test --package-path lib/StateUI.GTK/Testing
+swift test --package-path lib/StateUI/StateUI.GTK/Testing
 ```
 
 The suite is XCTest. GTK's widgets stand on the test thread with no main loop

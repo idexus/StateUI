@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Canvas
 
@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | GTK 4 | ✅ | 43 ✅ · 4 – | `GtkDrawingArea` |  |
 | Web |  |  | `<canvas>` | no host yet |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/CanvasContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/CanvasContract.swift`.
 
 ## Canvas's own members
 

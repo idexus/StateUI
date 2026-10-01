@@ -21,7 +21,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../../../.."),
-        .package(name: "StateUIConformance", path: "../../../StateUI.Conformance"),
+        .package(name: "StateUIConformance", path: "../../../StateUI/StateUI.Conformance"),
         .package(name: "StateUIWebView", path: ".."),
     ],
     targets: [

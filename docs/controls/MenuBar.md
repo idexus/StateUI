@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # MenuBar
 
@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 | GTK 4 | ✅ | 1 ✅ | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuBarContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuBarContract.swift`.
 
 ## MenuBar's own members
 

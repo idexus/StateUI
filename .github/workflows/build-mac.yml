@@ -32,11 +32,11 @@ jobs:
       - name: Test StateUI
         run: swift test
       - name: Test StateUI.Host
-        run: swift test --package-path lib/StateUI.Host
+        run: swift test --package-path lib/StateUI/StateUI.Host
       # The conformance runner's own rules and every contract's family complete,
       # pure Swift: no host runs here, so no verdict is read or written.
       - name: Test StateUI.Conformance
-        run: swift test --package-path lib/StateUI.Conformance
+        run: swift test --package-path lib/StateUI/StateUI.Conformance
 
   gallery:
     name: Gallery

@@ -11,7 +11,7 @@ which, member by member - and shows any other control's name in red where the co
 belongs, so a gap is visible rather than silent.
 
 ```text
-lib/StateUI.Android/
+lib/StateUI/StateUI.Android/
   Sources/StateUIAndroid/    the host: its runtime, elements, registrations, layout and JNI
   Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the log
   Java/stateui/android/      the Java layer: the activity, the layout view group, the frame callback, the listener

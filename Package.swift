@@ -42,7 +42,7 @@ let package = Package(
     // like the one a view uses and needs no compiler plugin, so a cold build
     // compiles this package and nothing else.
     targets: [
-        // path: "lib/StateUI/Sources" rather than the default
+        // path: "lib/StateUI/Core/Sources" rather than the default
         // Sources/StateUI/.
         //
         // SwiftPM looks for Sources/<TargetName>/ unless told otherwise. The
@@ -59,13 +59,13 @@ let package = Package(
         // annotation of ours can reach. It becomes the default in Swift 7.
         .target(
             name: "StateUI",
-            path: "lib/StateUI/Sources",
+            path: "lib/StateUI/Core/Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
         .testTarget(
             name: "StateUITests",
             dependencies: ["StateUI"],
-            path: "lib/StateUI/Tests",
+            path: "lib/StateUI/Core/Tests",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

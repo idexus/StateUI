@@ -49,7 +49,7 @@ that changes them is rebranded:
 
 - the `Package.swift` manifests - the Swift module names, which is what
   `import StateUI` reads.
-- `lib/StateUI/Sources/Bridge/Exports.swift` - the `@_cdecl("stateui_…")` names.
+- `lib/StateUI/Core/Sources/Bridge/Exports.swift` - the `@_cdecl("stateui_…")` names.
   They are the C ABI between the Swift library and a host written in another
   language, so a fork that does not also fork such a host can leave them alone.
 

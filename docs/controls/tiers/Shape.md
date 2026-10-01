@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Shape
 
@@ -17,7 +17,7 @@ Wears: [View](View.md)
 
 Worn by: [Ellipse](../Ellipse.md) · [Line](../Line.md) · [Path](../Path.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [Rectangle](../Rectangle.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Tiers/ShapeContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Tiers/ShapeContract.swift`.
 
 How each of them realizes these members is on its own page.
 

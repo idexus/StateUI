@@ -22,7 +22,7 @@ let package = Package(
     products: [
         .library(name: "StateUIHead", targets: ["StateUIHead"]),
     ],
-    dependencies: host.map { [.package(name: "StateUI\($0)", path: "../StateUI.\($0)")] } ?? [],
+    dependencies: host.map { [.package(name: "StateUI\($0)", path: "../StateUI/StateUI.\($0)")] } ?? [],
     targets: [
         .target(
             name: "StateUIHead",

@@ -67,7 +67,7 @@ case "WinUI"?:
             name: "CGalleryWinUI",
             path: "Platforms/WinUI/Relay",
             cxxSettings: [
-                .unsafeFlags(["-I", Context.packageDirectory + "/../../lib/StateUI.WinUI/.projection"]),
+                .unsafeFlags(["-I", Context.packageDirectory + "/../../lib/StateUI/StateUI.WinUI/.projection"]),
             ],
             linkerSettings: [
                 .linkedLibrary("d3d11"), .linkedLibrary("dxgi"), .linkedLibrary("d3dcompiler"),

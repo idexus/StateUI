@@ -34,13 +34,15 @@ export interface Suite {
  *
  * - A Swift package with a test target runs with `swift test`. For AppKit an
  *   APPLICATION runs as the host - `STATEUI_HOST=appkit` on `.build/appkit`.
- * - A host's own package - `lib/StateUI.AppKit` - runs only for that host.
+ * - A host's own package - `lib/StateUI/StateUI.AppKit`, or its tests' own,
+ *   `lib/StateUI/StateUI.GTK/Testing` - and a component's backend for a host -
+ *   `lib/Controls/WebView/WebView.GTK` - run only for that host.
  * - For the Android host an application runs as plain Swift, its Android build
  *   running only on a device, and the host's own tests -
- *   `lib/StateUI.Android/Tests` - run on the device chosen, by
+ *   `lib/StateUI/StateUI.Android/Tests` - run on the device chosen, by
  *   `.scripts/Android/test-android.sh`.
  * - For the UIKit host an application runs as plain Swift, and the host's own
- *   tests - an application, `lib/StateUI.UIKit/Tests` - run on the simulator
+ *   tests - an application, `lib/StateUI/StateUI.UIKit/Tests` - run on the simulator
  *   chosen, by `.scripts/UIKit/test-uikit.sh`.
  * - For the WinUI host an application runs as plain Swift, and the host's own
  *   package runs by `.scripts/WinUI/test-winui.ps1`, which lays the Windows
@@ -56,7 +58,11 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
     const appKitEnvironment = Object.fromEntries(
         Object.entries(environment("appkit")).filter((entry): entry is [string, string] => entry[1] !== undefined));
 
-    const packages = [root, ...children(path.join(root, "lib")), ...children(path.join(root, "apps"))];
+    // The library's packages stand in lib/StateUI, a component's in lib/Controls/<Component>, and a package's own
+    // tests may stand in a package of their own, Testing, inside it.
+    const library = [path.join(root, "lib"), path.join(root, "lib", "StateUI"), path.join(root, "lib", "Controls")];
+    const grouped = [...library.flatMap(children), ...children(path.join(root, "lib", "Controls")).flatMap(children)];
+    const packages = [root, ...grouped.flatMap((each) => [each, path.join(each, "Testing")]), ...children(path.join(root, "apps"))];
     for (const directory of packages) {
         const manifest = path.join(directory, "Package.swift");
         if (!fs.existsSync(manifest) || !fs.readFileSync(manifest, "utf8").includes(".testTarget(")) {
@@ -65,7 +71,8 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
 
         // A label reads the same on every platform: a path written with forward slashes.
         const name = directory === root ? path.basename(root) : path.relative(root, directory).split(path.sep).join("/");
-        const hostPackage = path.basename(directory).match(/\.(AppKit|UIKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
+        const owner = path.basename(directory) === "Testing" ? path.dirname(directory) : directory;
+        const hostPackage = path.basename(owner).match(/\.(AppKit|UIKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
         if (hostPackage && hostPackage !== host) {
             continue;
         }
@@ -92,7 +99,7 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
     const testScript = androidScript(root, "test-android.sh");
     if (host === "android" && fs.existsSync(testScript)) {
         suites.push({
-            label: "lib/StateUI.Android/Tests", detail: "test-android.sh - the Android host's own tests, on the device chosen",
+            label: "lib/StateUI/StateUI.Android/Tests", detail: "test-android.sh - the Android host's own tests, on the device chosen",
             command: "bash", args: [testScript], env: {}, onDevice: true,
         });
     }
@@ -100,7 +107,7 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
     const uiKitTests = uiKitScript(root, "test-uikit.sh");
     if (host === "uikit" && fs.existsSync(uiKitTests)) {
         suites.push({
-            label: "lib/StateUI.UIKit/Tests", detail: "test-uikit.sh - the UIKit host's own tests, on the simulator chosen",
+            label: "lib/StateUI/StateUI.UIKit/Tests", detail: "test-uikit.sh - the UIKit host's own tests, on the simulator chosen",
             command: "bash", args: [uiKitTests], env: {}, onDevice: true,
         });
     }

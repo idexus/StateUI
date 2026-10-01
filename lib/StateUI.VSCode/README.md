@@ -137,20 +137,20 @@ configuration naming `"application": "Gallery"` runs that one instead.
 **StateUI: Run Tests** offers the workspace's suites, every one ticked, and runs
 them AS THE HOST, one after another, each in a terminal of its own:
 
-- **AppKit**: the library, `lib/StateUI.AppKit`, and each application as an
+- **AppKit**: the library, `lib/StateUI/StateUI.AppKit`, and each application as an
   AppKit build (`STATEUI_HOST=appkit`, on `.build/appkit`).
 - **UIKit**: the library and each application as plain Swift, and the UIKit
-  host's own tests, `lib/StateUI.UIKit/Tests` - an application of tests - run
+  host's own tests, `lib/StateUI/StateUI.UIKit/Tests` - an application of tests - run
   on the simulator chosen by `.scripts/UIKit/test-uikit.sh`.
 - **Android**: the library and each application as plain Swift - an Android
   build runs only on a device - and the Android host's own tests,
-  `lib/StateUI.Android/Tests`, built into a test APK and run on the device
+  `lib/StateUI/StateUI.Android/Tests`, built into a test APK and run on the device
   chosen by `.scripts/Android/test-android.sh`.
 - **WinUI**: the library and each application as plain Swift, and the WinUI
-  host's own package, `lib/StateUI.WinUI`, by `.scripts/WinUI/test-winui.ps1`,
+  host's own package, `lib/StateUI/StateUI.WinUI`, by `.scripts/WinUI/test-winui.ps1`,
   which lays the Windows App SDK beside its test runner first.
 - **GTK**: the library and each application as plain Swift, and the GTK host's
-  own package, `lib/StateUI.GTK`, by `swift test`, its windows on the
+  own package, `lib/StateUI/StateUI.GTK`, by `swift test`, its windows on the
   desktop's display.
 - **No host**: the library and each application as plain Swift.
 
@@ -161,10 +161,10 @@ failed.
 
 In a StateUI checkout, **StateUI: Conformance - Rebuild all** runs every
 conformance family as the host chosen, writing its verdicts into
-`lib/exports/marks/<host>`, then renders the control dictionary and
+`lib/StateUI/exports/marks/<host>`, then renders the control dictionary and
 `docs/platform-contract.md` from them again. **StateUI: Conformance - Rebuild
 changed** does the same for the families whose verdicts stand at another
-revision than `lib/StateUI.Conformance/revisions.txt` says, or have none;
+revision than `lib/StateUI/StateUI.Conformance/revisions.txt` says, or have none;
 every other family's run ends at once. UIKit runs on the simulator chosen and Android on
 the device chosen, where Android rebuilds all only, its device reading no
 repository. Neither command shows outside a checkout: an application's

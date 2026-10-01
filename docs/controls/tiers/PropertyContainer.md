@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # PropertyContainer
 
@@ -11,7 +11,7 @@ Button("Save")
 
 Worn by: [ActivityIndicator](../ActivityIndicator.md) · [Button](../Button.md) · [Canvas](../Canvas.md) · [CheckBox](../CheckBox.md) · [ColorBox](../ColorBox.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Label](../Label.md) · [Line](../Line.md) · [Map](../Map.md) · [MenuItem](../MenuItem.md) · [ModalStack](../ModalStack.md) · [NavigationStack](../NavigationStack.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [RadioButton](../RadioButton.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Span](../Span.md) · [SplitView](../SplitView.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [TabbedView](../TabbedView.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [ToolbarItem](../ToolbarItem.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Tiers/PropertyContainerContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Tiers/PropertyContainerContract.swift`.
 
 How each of them realizes these members is on its own page.
 

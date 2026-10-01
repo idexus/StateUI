@@ -19,7 +19,7 @@ let package = Package(
         .package(name: "StateUIRoot", path: "../../../.."),
         .package(name: "StateUIWebView", path: ".."),
         .package(name: "StateUIWebViewHost", path: "../WebView.Host"),
-        .package(name: "StateUIUIKit", path: "../../../StateUI.UIKit"),
+        .package(name: "StateUIUIKit", path: "../../../StateUI/StateUI.UIKit"),
     ],
     targets: [
         .target(

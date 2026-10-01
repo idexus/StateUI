@@ -3,7 +3,7 @@
 A runtime is the part of a host that turns the core's patches and cycles into
 native views, and turns what the user does back into state. Every runtime has
 the same elements, one job each, named alike in every language. The
-toolkit-neutral elements are the host layer, `lib/StateUI.Host` - the module
+toolkit-neutral elements are the host layer, `lib/StateUI/StateUI.Host` - the module
 `StateUIHost`, which reaches the core through `@_spi(Host)` - and every host,
 Swift in the application's process, uses them as they are. Its folders are
 its parts; [the host layer](../../internals/host-layer.md) maps them.
@@ -14,12 +14,12 @@ its parts; [the host layer](../../internals/host-layer.md) maps them.
   application              views, @State, handlers, engines
        |
        v
-  StateUI core             state, keys, diffing, timing laws        lib/StateUI/Sources
+  StateUI core             state, keys, diffing, timing laws        lib/StateUI/Core/Sources
        |                   HostRender / HostPatch (typed)
        v
   host layer               CoreLink        PatchIntake
   StateUIHost             MountedTree     MountedElement
-  lib/StateUI.Host         Animator        StateChannels
+  lib/StateUI/StateUI.Host         Animator        StateChannels
                            DescribedMotion LayoutMotion
                            DisplayCycle    ProgramWrite
                            Pump            HandlerDispatch
@@ -27,10 +27,10 @@ its parts; [the host layer](../../internals/host-layer.md) maps them.
        v
   toolkit half             frame signal, each element's native half,
   one package per host     realizations, layout views, scrolling, gestures,
-  (lib/StateUI.AppKit,     focus, accessibility, windows and menus
-  lib/StateUI.Android,
-  lib/StateUI.WinUI,
-  lib/StateUI.GTK)
+  (lib/StateUI/StateUI.AppKit,     focus, accessibility, windows and menus
+  lib/StateUI/StateUI.Android,
+  lib/StateUI/StateUI.WinUI,
+  lib/StateUI/StateUI.GTK)
        |
        v
   native views

@@ -1,6 +1,6 @@
 # Values an application passes
 
-`lib/StateUI/Sources/Types` holds the values an application hands to StateUI:
+`lib/StateUI/Core/Sources/Types` holds the values an application hands to StateUI:
 colours, insets, rectangles, brushes, motion, transforms, placements, dates
 and times, gestures, the closed vocabularies, and the objects that carry what
 the host knows. Each value says how it crosses to a host and how it comes

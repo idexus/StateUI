@@ -10,7 +10,7 @@ which, member by member - and shows any other control's name in red where the
 control belongs, so a gap is visible rather than silent.
 
 ```text
-lib/StateUI.AppKit/
+lib/StateUI/StateUI.AppKit/
   Sources/    StateUIAppKit: the renderer, windows, sessions and the registry
   Tests/      the host's suite
 .scripts/AppKit/

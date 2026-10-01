@@ -31,10 +31,10 @@ requirement.
 
 ## Keep the core platform-neutral
 
-Code under `lib/StateUI/Sources` and `lib/StateUI.Host/Sources` does not
+Code under `lib/StateUI/Core/Sources` and `lib/StateUI/StateUI.Host/Sources` does not
 import Foundation or a platform UI framework. Each host is a sibling package of
-its own - `lib/StateUI.AppKit`, `lib/StateUI.Android`, `lib/StateUI.WinUI`,
-`lib/StateUI.GTK` - standing on the host layer, with its build in
+its own - `lib/StateUI/StateUI.AppKit`, `lib/StateUI/StateUI.Android`, `lib/StateUI/StateUI.WinUI`,
+`lib/StateUI/StateUI.GTK` - standing on the host layer, with its build in
 `.scripts/<Platform>`. Swift written for one host alone stands under that
 host's condition - `#if APPKIT`, `#if ANDROID`, `#if WINUI`, `#if GTK` - which
 its builds define.

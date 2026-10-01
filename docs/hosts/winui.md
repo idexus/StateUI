@@ -25,7 +25,7 @@ everything arrive at once. Any other control shows
 its name in red where it belongs, so a gap is visible rather than silent.
 
 ```text
-lib/StateUI.WinUI/
+lib/StateUI/StateUI.WinUI/
   Sources/StateUIWinUI/      the host: its runtime, elements, registrations, layout and window
   Sources/CStateUIWinUI/     the relay: C++/WinRT behind the C functions its header declares
   Tests/                     the host's suite, run by swift test
@@ -187,7 +187,7 @@ Windows fails with "the filename or extension is too long" under a deep path.
 .scripts\WinUI\test-winui.ps1
 ```
 
-The suite is XCTest, run by `swift test` in `lib\StateUI.WinUI`. WinUI's
+The suite is XCTest, run by `swift test` in `lib\StateUI\StateUI.WinUI`. WinUI's
 controls stand on the test thread with no loop of WinUI's running, and a test
 lets the thread's messages run where WinUI lays out. The test runner is given
 the Windows App SDK as an application is, before the run.

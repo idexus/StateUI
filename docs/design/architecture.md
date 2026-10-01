@@ -23,19 +23,19 @@ the packages, what crosses between them, and where each part of the work runs.
         |
         |  @_spi(Host)
         v
-  StateUIHost  (lib/StateUI.Host, a dynamic library)
+  StateUIHost  (lib/StateUI/StateUI.Host, a dynamic library)
     Sources                               the host layer every host stands on
         |
         |  typed HostRender / HostPatch
         v
-  StateUI.AppKit (lib/StateUI.AppKit)          StateUI.Android (lib/StateUI.Android)
+  StateUI.AppKit (lib/StateUI/StateUI.AppKit)          StateUI.Android (lib/StateUI/StateUI.Android)
     Swift, in the application's process          Swift, in the application's process,
     over AppKit                                  Java beneath it through JNI
         |                                             |
         v                                             v
     AppKit views                                  Android views
 
-  StateUI.WinUI (lib/StateUI.WinUI)            StateUI.GTK (lib/StateUI.GTK)
+  StateUI.WinUI (lib/StateUI/StateUI.WinUI)            StateUI.GTK (lib/StateUI/StateUI.GTK)
     Swift, in the application's process,         Swift, in the application's process,
     C++/WinRT beneath it behind a C ABI          over GTK 4's and libadwaita's C API
         |                                             |

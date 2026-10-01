@@ -24,11 +24,11 @@ let package = Package(
     dependencies: [
         .package(name: "StateUIRoot", path: "../../../.."),
         .package(name: "StateUIWebView", path: ".."),
-        .package(name: "StateUIGTK", path: "../../../StateUI.GTK"),
-        .package(name: "StateUIGTKTesting", path: "../../../StateUI.GTK/Testing"),
+        .package(name: "StateUIGTK", path: "../../../StateUI/StateUI.GTK"),
+        .package(name: "StateUIGTKTesting", path: "../../../StateUI/StateUI.GTK/Testing"),
         .package(name: "StateUIWebViewHost", path: "../WebView.Host"),
         .package(name: "StateUIWebViewConformance", path: "../WebView.Conformance"),
-        .package(name: "StateUIConformance", path: "../../../StateUI.Conformance"),
+        .package(name: "StateUIConformance", path: "../../../StateUI/StateUI.Conformance"),
     ],
     targets: [
         // WebKitGTK 6.0's calls, declared by themselves; pkg-config links the engine.

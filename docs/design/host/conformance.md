@@ -24,7 +24,7 @@ beside the native API they prove.
 
 ## A case
 
-A case is written once, in `lib/StateUI.Conformance`, as a page,
+A case is written once, in `lib/StateUI/StateUI.Conformance`, as a page,
 what the user and the program do to it, and what must follow. It says which
 members of the contract it covers; it runs on a host only where the host
 realizes all of them, by the host's register (`HostRegister`), so a case can
@@ -155,7 +155,7 @@ once, each writing its own file of verdicts; the dictionary reads them all.
 ## What a run proves
 
 A run gives a verdict on every member its cases cover, one line each under
-`lib/exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
+`lib/StateUI/exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
 and held to the file otherwise: ✅ where a passing case proved it, ☑️ with
 what the host's register says is missing, – with why where the host's family
 never has it or a case proved it absent, and - empty in the dictionary - "not realized" or what the

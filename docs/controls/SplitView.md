@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # SplitView
 
@@ -46,7 +46,7 @@ See [the dictionary](README.md) for how a mark is given.
 | GTK 4 | ✅ | 6 ✅ · 4 – | `GtkPaned`; libadwaita `AdwOverlaySplitView` |  |
 | Web |  |  | `<aside>` | no host yet |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
 
 ## SplitView's own members
 

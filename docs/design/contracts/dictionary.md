@@ -75,7 +75,7 @@ of a small application where its contract is one (`Application`, `Scene`,
 
 A mark is a test's verdict. A host's column shows only what its own suite's
 run of the conformance families said of each member on each element: the
-run writes one verdict a line under `lib/exports/marks/<host>/<Family>.txt`,
+run writes one verdict a line under `lib/StateUI/exports/marks/<host>/<Family>.txt`,
 and the dictionary reads those files and nothing else. A host none of whose
 runs wrote a verdict has an empty column, whatever it implements.
 
@@ -137,7 +137,7 @@ reason, an unrealized one on a tier.
 A verdict stands until a change changes what its family's cases prove, and
 the one who makes such a change says so. The conformance package, where the
 families are, holds the revision each stands at in
-`lib/StateUI.Conformance/revisions.txt` - a line naming the family alone on
+`lib/StateUI/StateUI.Conformance/revisions.txt` - a line naming the family alone on
 every host, a line naming a host and the family on that host alone, 1 where
 no line names it (`HostVerdict.revision`). A change to the cases, or to what every host
 decides alike, raises the family's own; a change one host alone makes raises

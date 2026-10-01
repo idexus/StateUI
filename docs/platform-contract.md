@@ -8,7 +8,7 @@ surface and the implementation evidence for each host.
 
 Every mark is the verdict of a test: each host's suite runs the conformance
 families - one a contract, a case for every cell - and writes what each said
-under `lib/exports/marks/<host>/`, which the tables are rendered from. A case says
+under `lib/StateUI/exports/marks/<host>/`, which the tables are rendered from. A case says
 what it proves apart from what it only needs - a button whose click makes the
 change - and its outcome is the verdict of what it proves alone. Nothing a
 host merely implements or declares by hand earns a mark.
@@ -23,7 +23,7 @@ host merely implements or declares by hand earns a mark.
 | 🔌 | Its tests passed only through the host's own entry or record - an act the driver hands past the toolkit's input, a read of what the host keeps rather than what the toolkit holds - which the driver names; it is not counted as met. |
 | · | The host realizes it, but its driver cannot yet do or read what the test needs. |
 | ⏸ | Its test waits on another member the host does not realize. |
-| ⌛ | The verdict was written at another revision of its family than it stands at: each run writes its family's revision over its verdicts, and a change that changes what a family's cases prove raises the family's in `lib/StateUI.Conformance/revisions.txt`, so a verdict of another is stale until the host's suite runs the family again. It carries no note: what that run said is no verdict of the family as it stands. |
+| ⌛ | The verdict was written at another revision of its family than it stands at: each run writes its family's revision over its verdicts, and a change that changes what a family's cases prove raises the family's in `lib/StateUI/StateUI.Conformance/revisions.txt`, so a verdict of another is stale until the host's suite runs the family again. It carries no note: what that run said is no verdict of the family as it stands. |
 | empty | Not realized on that host, or no run of it; the note says which. It is deliberately not an estimate of how difficult the work will be. |
 
 A host's totals count its ✅ and – as met. An element's ✅ under

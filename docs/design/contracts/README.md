@@ -1,7 +1,7 @@
 # Element contracts
 
 Every node type exists through one element contract: an enum in
-`lib/StateUI/Sources/Contracts/Elements` naming the node type, the layer that
+`lib/StateUI/Core/Sources/Contracts/Elements` naming the node type, the layer that
 realizes it, the tiers it wears, and each member with the type of its value.
 A tier, in `Contracts/Tiers` or - one group of members - `Contracts/Mixins`,
 is a contract with no node type of its own: members several elements share,

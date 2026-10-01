@@ -1,6 +1,6 @@
 # The core
 
-The core is `lib/StateUI/Sources/Core`: state, invalidation, keys and
+The core is `lib/StateUI/Core/Sources/Core`: state, invalidation, keys and
 diffing, the display cycle, acts, the UI thread's executor and the typed
 boundary a host reads. It holds the reasons behind the code; the code's
 comments say what a thing is and point here. Every note describes the
@@ -159,7 +159,7 @@ UI thread under a debugger. The host asks instead (concurrency.md).
 
 ## Where things live
 
-Each folder of `lib/StateUI/Sources/Core` is one topic, and the note beside it
+Each folder of `lib/StateUI/Core/Sources/Core` is one topic, and the note beside it
 holds its reasons. A type's extensions stand in its folder, named
 `Type+Responsibility.swift`.
 

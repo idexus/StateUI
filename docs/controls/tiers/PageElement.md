@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # PageElement
 
@@ -18,7 +18,7 @@ NavigationStack($path) {
 
 Worn by: [NavigationStack](../NavigationStack.md) · [Page](../Page.md) · [SplitView](../SplitView.md) · [TabbedView](../TabbedView.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Mixins/PageElementContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/PageElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 

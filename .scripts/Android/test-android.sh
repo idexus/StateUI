@@ -14,18 +14,18 @@
 # drawn, and runs it on a Linux emulator.
 #
 # STATEUI_FILTER=<names> runs only the tests whose "Case.test" name holds one of the names, split at commas
-# ("testPicker,AndroidColorBoxViewTests"), and then holds nothing to lib/exports/: a part of the suite proves only part
+# ("testPicker,AndroidColorBoxViewTests"), and then holds nothing to lib/StateUI/exports/: a part of the suite proves only part
 # of what the host declares.
 #
 # Each item, and each conformance case, says as it ends where the run stands and how long it took
 # ("[12/310] ... passed in 812 ms"), followed from the device's log as it comes. The screen is woken and kept on
 # for the run - a phone whose screen goes off freezes the test app - and the setting put back after.
 #
-# The suite also writes what the host declares - its registry, as lib/exports/
-# holds it for the control dictionary. The run is held to lib/exports/android.txt;
+# The suite also writes what the host declares - its registry, as lib/StateUI/exports/
+# holds it for the control dictionary. The run is held to lib/StateUI/exports/android.txt;
 # STATEUI_UPDATE_EXPORTS=1 writes it instead.
 #
-# STATEUI_STALE_ONLY=1 runs only the conformance families whose verdicts in lib/exports/marks/android stand at another
+# STATEUI_STALE_ONLY=1 runs only the conformance families whose verdicts in lib/StateUI/exports/marks/android stand at another
 # revision, or at none - chosen here, since the device reads no repository - and takes only theirs off the device.
 set -euo pipefail
 
@@ -34,7 +34,7 @@ repository_dir="$(cd "$script_dir/../.." && pwd)"
 # shellcheck source=tools.sh
 source "$script_dir/tools.sh"
 
-tests_dir="$repository_dir/lib/StateUI.Android/Tests"
+tests_dir="$repository_dir/lib/StateUI/StateUI.Android/Tests"
 runner="$tests_dir/Sources/Support/AndroidTestRunner.swift"
 
 # EVERY TEST IS LISTED: without discovery a `func test` that no `allTests`
@@ -55,7 +55,7 @@ if [[ "${1:-}" == --build ]]; then
   exit
 fi
 
-marks="$repository_dir/lib/exports/marks/android"
+marks="$repository_dir/lib/StateUI/exports/marks/android"
 stale_only="${STATEUI_STALE_ONLY:-}"
 if [[ "$stale_only" == 1 ]]; then
   stale=""
@@ -121,9 +121,9 @@ declared="$(mktemp -d)"
 for name in ${declarations[@]+"${declarations[@]}"}; do
   "$ADB" -s "$serial" exec-out run-as "$package" cat "files/$name" > "$declared/$name"
   if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then
-    cp "$declared/$name" "$repository_dir/lib/exports/$name"
-  elif ! cmp -s "$declared/$name" "$repository_dir/lib/exports/$name"; then
-    echo "ERROR: lib/exports/$name is not what the host declares - a registration changed, or something"
+    cp "$declared/$name" "$repository_dir/lib/StateUI/exports/$name"
+  elif ! cmp -s "$declared/$name" "$repository_dir/lib/StateUI/exports/$name"; then
+    echo "ERROR: lib/StateUI/exports/$name is not what the host declares - a registration changed, or something"
     echo "stopped being realized. Run again with STATEUI_UPDATE_EXPORTS=1 and read the diff."
     exit 1
   fi
@@ -160,7 +160,7 @@ if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then
   cp "$held"/*.txt "$marks/"
 elif ! diff -r "$declared/run" "$declared/kept" >/dev/null 2>&1; then
   diff -r "$declared/run" "$declared/kept" | head -n 40
-  echo "ERROR: lib/exports/marks/android is not what this run proved - a verdict changed, or something stopped"
+  echo "ERROR: lib/StateUI/exports/marks/android is not what this run proved - a verdict changed, or something stopped"
   echo "working. Run again with STATEUI_UPDATE_EXPORTS=1 and read the diff."
   exit 1
 fi

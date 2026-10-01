@@ -12,7 +12,7 @@ member - and shows any other control's name in red where the control belongs,
 so a gap is visible rather than silent.
 
 ```text
-lib/StateUI.UIKit/
+lib/StateUI/StateUI.UIKit/
   Sources/    StateUIUIKit: the renderer, scenes and windows, pages, controls and the registry
   Tests/      the host's suite - an application of tests, run on a simulator
 .scripts/UIKit/
@@ -271,6 +271,6 @@ STATEUI_FILTER=testSlider .scripts/UIKit/test-uikit.sh
 Each test and each conformance case says as it ends where the run stands, and
 the run ends with *Executed N tests, with M failures*. `STATEUI_FILTER` runs
 the tests whose name holds one of its comma-separated names;
-`STATEUI_UPDATE_EXPORTS=1` writes what the run says into `lib/exports/` instead of
+`STATEUI_UPDATE_EXPORTS=1` writes what the run says into `lib/StateUI/exports/` instead of
 holding it to them. The suite runs with the simulator's accessibility off, as
 a simulator starts.

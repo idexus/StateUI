@@ -84,7 +84,7 @@ build_head () {
     --project-cache-dir "$build/gradle-project" \
     --console=plain --quiet \
     -Pstateui.build="$build/gradle" \
-    -Pstateui.java="$repository_dir/lib/StateUI.Android/Java" \
+    -Pstateui.java="$repository_dir/lib/StateUI/StateUI.Android/Java" \
     -Pstateui.libraries="$build/jniLibs" \
     -Pstateui.assets="$build/assets" \
     -Pstateui.res="$build/res" \

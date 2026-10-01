@@ -1,5 +1,5 @@
 # The AppKit host's suite: its own tests, then every conformance family on
-# AppKit, each verdict held to the marks under lib/exports/marks/appkit. CI never
+# AppKit, each verdict held to the marks under lib/StateUI/exports/marks/appkit. CI never
 # writes the marks, so a family whose verdicts changed fails here and its marks
 # are written again on a Mac, on purpose.
 

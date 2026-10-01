@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ---------------------------------------------------------------------------
-# Runs the WinUI host's tests: `swift test` in lib\StateUI.WinUI, whose test
+# Runs the WinUI host's tests: `swift test` in lib\StateUI\StateUI.WinUI, whose test
 # runner is given the Windows App SDK first, as an application is - WinUI's
 # classes are found through the runner's manifest.
 #
@@ -28,7 +28,7 @@
 # The tests are built, the Windows App SDK laid beside the runner, and the run
 # skips the build. A run with STATEUI_UPDATE_EXPORTS=1 writes each verdict file
 # under the revision its family stands at
-# (lib/StateUI.Conformance/revisions.txt); -Stale runs only the conformance
+# (lib/StateUI/StateUI.Conformance/revisions.txt); -Stale runs only the conformance
 # families whose verdicts stand at another revision, or at none - each other
 # one's process ends at once.
 # ---------------------------------------------------------------------------

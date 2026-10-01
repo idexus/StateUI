@@ -4,7 +4,7 @@
 #
 # Runs the AppKit host's suite. A run with STATEUI_UPDATE_EXPORTS=1 writes each
 # verdict file under the revision its family stands at
-# (lib/StateUI.Conformance/revisions.txt); STATEUI_STALE_ONLY=1 runs only the
+# (lib/StateUI/StateUI.Conformance/revisions.txt); STATEUI_STALE_ONLY=1 runs only the
 # conformance families whose verdicts stand at another revision, or at none.
 #
 # USAGE:
@@ -12,4 +12,4 @@
 set -euo pipefail
 
 repository_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-exec swift test --package-path "$repository_dir/lib/StateUI.AppKit" "$@"
+exec swift test --package-path "$repository_dir/lib/StateUI/StateUI.AppKit" "$@"

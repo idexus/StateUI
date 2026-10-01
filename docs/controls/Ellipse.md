@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Ellipse
 
@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | GTK 4 | ✅ | 44 ✅ · 4 – | `GskPath` in a snapshot |  |
 | Web |  |  | inline SVG | no host yet |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/EllipseContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/EllipseContract.swift`.
 
 ## Ellipse's own members
 

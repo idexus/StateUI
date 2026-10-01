@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Spans
 
@@ -41,7 +41,7 @@ See [the dictionary](README.md) for how a mark is given.
 | GTK 4 | ✅ |  | `GtkLabel`; `PangoAttrList` runs |  |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpansContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SpansContract.swift`.
 
 ## Spans's own members
 

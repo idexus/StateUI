@@ -17,7 +17,7 @@
       "label": "Test StateUI.AppKit",
       "type": "shell",
       "command": "swift",
-      "args": ["test", "--package-path", "${workspaceFolder}/lib/StateUI.AppKit"],
+      "args": ["test", "--package-path", "${workspaceFolder}/lib/StateUI/StateUI.AppKit"],
       "problemMatcher": [],
       "group": "test",
       "presentation": { "reveal": "always", "panel": "dedicated" }

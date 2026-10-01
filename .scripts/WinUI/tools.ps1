@@ -24,7 +24,7 @@
 $ErrorActionPreference = 'Continue'
 
 $StateUIRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$StateUIWinUIHost = Join-Path $StateUIRepository 'lib\StateUI.WinUI'
+$StateUIWinUIHost = Join-Path $StateUIRepository 'lib\StateUI\StateUI.WinUI'
 
 # The packages, pinned: the WebView2 is the one WinUI's nuspec names.
 $StateUIPackages = [ordered]@{
