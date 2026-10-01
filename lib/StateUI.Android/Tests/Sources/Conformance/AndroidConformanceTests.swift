@@ -9,7 +9,7 @@ import Android
 import XCTest
 
 /// The conformance suite on Android Views: a family a contract, each one test, its verdicts Android's column of the
-/// control dictionary - written into the test APK's files, where `test-android.sh` holds `exports/` to them.
+/// control dictionary - written into the test APK's files, where `test-android.sh` holds `lib/exports/` to them.
 final class AndroidConformanceTests: XCTestCase {
     static var allTests: [(String, (AndroidConformanceTests) -> () throws -> Void)] {
         [

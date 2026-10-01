@@ -161,7 +161,7 @@ failed.
 
 In a StateUI checkout, **StateUI: Conformance - Rebuild all** runs every
 conformance family as the host chosen, writing its verdicts into
-`exports/marks/<host>`, then renders the control dictionary and
+`lib/exports/marks/<host>`, then renders the control dictionary and
 `docs/platform-contract.md` from them again. **StateUI: Conformance - Rebuild
 changed** does the same for the families whose verdicts stand at another
 revision than `lib/StateUI.Conformance/revisions.txt` says, or have none;

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // What a host declares about itself, read off its runtime and written to
-// exports/, and what that declaration MEANS against the contracts.
+// lib/exports/, and what that declaration MEANS against the contracts.
 //
 // The division is the point: a runtime knows which members it realizes and a
 // contract knows who declares them, so neither states the other's half. The
@@ -122,8 +122,8 @@ final class HostDeclarationTests: XCTestCase {
 
     /// Where each host's suite writes what its runtime realizes, by the host's name.
     private static let exports = [
-        "AppKit": "exports/appkit.txt", "UIKit": "exports/uikit.txt", "Android Views": "exports/android.txt",
-        "WinUI 3": "exports/winui.txt", "GTK 4": "exports/gtk.txt",
+        "AppKit": "lib/exports/appkit.txt", "UIKit": "lib/exports/uikit.txt", "Android Views": "lib/exports/android.txt",
+        "WinUI 3": "lib/exports/winui.txt", "GTK 4": "lib/exports/gtk.txt",
     ]
 
     /// A registry's realization says each member on every element; its declaration says an element's

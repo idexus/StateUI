@@ -1,6 +1,6 @@
 # The Android Views host's suite, in the test APK's own process on an emulator:
 # its own tests, then every conformance family on Android, each verdict held to
-# the marks under exports/marks/android. CI never writes the marks, so a family
+# the marks under lib/exports/marks/android. CI never writes the marks, so a family
 # whose verdicts changed fails here and its marks are written again on a Mac,
 # on purpose.
 #

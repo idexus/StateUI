@@ -6,8 +6,8 @@ import XCTest
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIConformance
 
-/// What this host's runs write into an `exports` folder - the library's beside `lib`, or a component's in its own
-/// package: what its runtime realizes, and what its passing tests proved - held to the file, or written into it on a
+/// What this host's runs write into an `exports` folder - the library's in `lib`, or a component's in its own
+/// folder: what its runtime realizes, and what its passing tests proved - held to the file, or written into it on a
 /// run with STATEUI_UPDATE_EXPORTS=1, then read in the diff.
 struct GTKExports {
     /// The folder the files stand in.
@@ -25,9 +25,9 @@ struct GTKExports {
         .deletingLastPathComponent()    // lib
         .deletingLastPathComponent()    // the repository
 
-    /// The library's: `exports` beside `lib`, at the revisions of `lib/StateUI.Conformance/revisions.txt`.
+    /// The library's: `lib/exports`, at the revisions of `lib/StateUI.Conformance/revisions.txt`.
     static let library = GTKExports(
-        folder: repository.appendingPathComponent("exports"),
+        folder: repository.appendingPathComponent("lib/exports"),
         revisionFiles: [repository.appendingPathComponent("lib/StateUI.Conformance/revisions.txt")])
 
     /// A component's, in its folder laid out as StateUI is: `exports` there, at the revisions of its conformance

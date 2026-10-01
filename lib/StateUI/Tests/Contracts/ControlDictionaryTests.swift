@@ -170,7 +170,7 @@ final class ControlDictionaryTests: XCTestCase {
                     } ?? true
                 } ?? false
                 if !declared {
-                    XCTFail("exports/marks/\(folder) says \(verdict), which no contract of that element declares (\(host))")
+                    XCTFail("lib/exports/marks/\(folder) says \(verdict), which no contract of that element declares (\(host))")
                 }
             }
         }

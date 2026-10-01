@@ -8,7 +8,7 @@ surface and the implementation evidence for each host.
 
 Every mark is the verdict of a test: each host's suite runs the conformance
 families - one a contract, a case for every cell - and writes what each said
-under `exports/marks/<host>/`, which the tables are rendered from. A case says
+under `lib/exports/marks/<host>/`, which the tables are rendered from. A case says
 what it proves apart from what it only needs - a button whose click makes the
 change - and its outcome is the verdict of what it proves alone. Nothing a
 host merely implements or declares by hand earns a mark.

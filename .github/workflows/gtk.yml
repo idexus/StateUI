@@ -1,5 +1,5 @@
 # The GTK host's suite: its own tests and every conformance family, each
-# verdict held to the marks under exports/marks/gtk, on a screen with no
+# verdict held to the marks under lib/exports/marks/gtk, on a screen with no
 # monitor. CI never writes the marks, so a family whose verdicts changed fails
 # here and its marks are written again on a Linux machine, on purpose.
 #

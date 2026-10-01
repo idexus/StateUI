@@ -9,14 +9,14 @@ import XCTest
 /// tests proved - held to the file, or written into it on a run with STATEUI_UPDATE_EXPORTS=1, then read in the
 /// diff.
 enum WinUIExports {
-    /// `exports`, beside `lib`.
+    /// `lib/exports`.
     static let folder = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent()    // Support
         .deletingLastPathComponent()    // Tests
         .deletingLastPathComponent()    // StateUI.WinUI
         .deletingLastPathComponent()    // lib
         .deletingLastPathComponent()    // the repository
-        .appendingPathComponent("exports")
+        .appendingPathComponent("lib/exports")
 
     /// The revision `family`'s verdicts on this host stand at, as `lib/StateUI.Conformance/revisions.txt` says.
     /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
@@ -52,7 +52,7 @@ enum WinUIExports {
         let held = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
         XCTAssertEqual(
             HostVerdict.withoutRevision(text), HostVerdict.withoutRevision(held),
-            "exports/\(path) says otherwise: what this run says changed - run the suite again with "
+            "lib/exports/\(path) says otherwise: what this run says changed - run the suite again with "
                 + "STATEUI_UPDATE_EXPORTS=1 and read the diff - or something stopped working.",
             file: file, line: line)
     }

@@ -11,7 +11,7 @@
 //
 // A host's column is its runs' verdicts alone: each host's suite runs the
 // conformance families and writes what each said to
-// `exports/marks/<host>/<Family>.txt` - ✅, ☑️ and what is missing, – and why,
+// `lib/exports/marks/<host>/<Family>.txt` - ✅, ☑️ and what is missing, – and why,
 // or why a cell stays empty - read here. Nothing a host declares by hand marks
 // a cell.
 //
@@ -70,7 +70,7 @@ struct ControlDictionary {
 
     /// The line over every page: that it is rendered, and how it is rendered again.
     static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's "
-        + "runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter "
+        + "runs of its tests wrote under lib/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter "
         + "ControlDictionaryTests writes it again. -->"
 
     /// The sources outside Views/ that declare an element's `on…` modifiers.
@@ -645,7 +645,7 @@ struct ControlDictionary {
 
     // MARK: - What the pages are rendered from
 
-    /// The folder each host's runs write their verdicts in under `exports/marks`, by the host's column.
+    /// The folder each host's runs write their verdicts in under `lib/exports/marks`, by the host's column.
     static let folders = [
         "AppKit": "appkit", "UIKit": "uikit", "Android Views": "android", "WinUI 3": "winui", "GTK 4": "gtk",
     ]
@@ -684,13 +684,13 @@ struct ControlDictionary {
     /// The verdicts the runs of the host whose folder is `folder` wrote, file by file: the family's name - a part's
     /// file, `ItemsView-2.txt`, is its family's - what the file holds, and its verdicts.
     static func verdicts(_ folder: String) throws -> [(family: String, text: String, verdicts: [HostVerdict])] {
-        let url = SourceTree.repository.appendingPathComponent("exports/marks/\(folder)")
+        let url = SourceTree.repository.appendingPathComponent("lib/exports/marks/\(folder)")
         guard FileManager.default.fileExists(atPath: url.path) else { return [] }
         var files: [(family: String, text: String, verdicts: [HostVerdict])] = []
         for file in try SourceTree.files(under: url, entering: { _ in false }).sorted() where file.hasSuffix(".txt") {
             let text = try String(contentsOf: url.appendingPathComponent(file), encoding: .utf8)
             guard let read = HostVerdict.read(text) else {
-                throw Unreadable(description: "exports/marks/\(folder)/\(file) holds a line that is no verdict. "
+                throw Unreadable(description: "lib/exports/marks/\(folder)/\(file) holds a line that is no verdict. "
                     + "Write it again with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it.")
             }
             files.append((family(ofFile: file), text, read))

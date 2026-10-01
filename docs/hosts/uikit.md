@@ -271,6 +271,6 @@ STATEUI_FILTER=testSlider .scripts/UIKit/test-uikit.sh
 Each test and each conformance case says as it ends where the run stands, and
 the run ends with *Executed N tests, with M failures*. `STATEUI_FILTER` runs
 the tests whose name holds one of its comma-separated names;
-`STATEUI_UPDATE_EXPORTS=1` writes what the run says into `exports/` instead of
+`STATEUI_UPDATE_EXPORTS=1` writes what the run says into `lib/exports/` instead of
 holding it to them. The suite runs with the simulator's accessibility off, as
 a simulator starts.

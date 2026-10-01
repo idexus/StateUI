@@ -75,7 +75,7 @@ of a small application where its contract is one (`Application`, `Scene`,
 
 A mark is a test's verdict. A host's column shows only what its own suite's
 run of the conformance families said of each member on each element: the
-run writes one verdict a line under `exports/marks/<host>/<Family>.txt`,
+run writes one verdict a line under `lib/exports/marks/<host>/<Family>.txt`,
 and the dictionary reads those files and nothing else. A host none of whose
 runs wrote a verdict has an empty column, whatever it implements.
 

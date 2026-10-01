@@ -13,7 +13,7 @@
 # UDID; the one booted, else an iPhone, where none is named.
 # STATEUI_FILTER=<names> runs only the tests whose "Case.test" name holds one
 # of the names, split at commas. STATEUI_UPDATE_EXPORTS=1 writes what the run
-# says into exports/ instead of holding it to them, each verdict file under the
+# says into lib/exports/ instead of holding it to them, each verdict file under the
 # revision its family stands at (lib/StateUI.Conformance/revisions.txt);
 # STATEUI_STALE_ONLY=1 runs only the conformance families whose verdicts stand
 # at another revision, or at none.

@@ -116,7 +116,7 @@ Treat one control, property, event, or host action as one vertical change:
 7. Let the host say what it realizes, only after its tests pass. A member a
    registration takes or raises records itself: with `STATEUI_UPDATE_EXPORTS=1`,
    `swift test --package-path lib/StateUI.AppKit` and
-   `.scripts/Android/test-android.sh <serial>` write `exports/appkit.txt` and
+   `.scripts/Android/test-android.sh <serial>` write `lib/exports/appkit.txt` and
    `android.txt`, and the contracts name each member's owner when the
    documents are rendered. What a registry cannot know stays written by hand,
    in `AppKitRealization` and `AndroidRealization` - every judgement: a partial

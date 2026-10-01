@@ -2,7 +2,7 @@
 
 How the conformance suite drives UIKit: `UIKitDriver` in the host's test
 application, one test for each family of cases in `UIKitConformanceTests`,
-their verdicts held to `exports/marks/uikit`.
+their verdicts held to `lib/exports/marks/uikit`.
 
 ## An application of tests
 

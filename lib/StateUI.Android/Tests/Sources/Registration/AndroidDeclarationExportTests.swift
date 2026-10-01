@@ -7,7 +7,7 @@ import Android
 @testable import StateUIAndroid
 import XCTest
 
-/// What this host declares, written where `test-android.sh` reads it from and holds `exports/` to it.
+/// What this host declares, written where `test-android.sh` reads it from and holds `lib/exports/` to it.
 final class AndroidDeclarationExportTests: XCTestCase {
     static var allTests: [(String, (AndroidDeclarationExportTests) -> () throws -> Void)] {
         [

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What this runtime says about itself, written to exports/ and held to it (`WinUIExports`): the registrations are
+// What this runtime says about itself, written to lib/exports/ and held to it (`WinUIExports`): the registrations are
 // the declaration, so nothing here can disagree with the code.
 
 import Foundation

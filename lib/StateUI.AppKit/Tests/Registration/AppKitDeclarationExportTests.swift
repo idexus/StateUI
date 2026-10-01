@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What this runtime says about itself, written to exports/ and held to it.
+// What this runtime says about itself, written to lib/exports/ and held to it.
 //
 // The registrations ARE the declaration: nothing here is written by hand, so
 // nothing here can disagree with the code. What it says is PRESENCE - which

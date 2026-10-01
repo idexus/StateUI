@@ -1,7 +1,7 @@
 # The UIKit host's suite, an application of tests on an iOS simulator - an
 # iPhone and an iPad, whose windows are scene sessions: its own tests, then
 # every conformance family on UIKit, each verdict held to the marks under
-# exports/marks/uikit. CI never writes the marks, so a family whose verdicts
+# lib/exports/marks/uikit. CI never writes the marks, so a family whose verdicts
 # changed fails here and its marks are written again on a Mac, on purpose.
 
 name: UIKit
