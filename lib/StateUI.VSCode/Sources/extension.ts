@@ -13,7 +13,7 @@ import { Application, findApplications, hasHead, keepsApps } from "./application
 import { isCheckout } from "./checkouts";
 import { configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
-import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
+import { applyEditorMode, cleanIndex, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
 import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn } from "./uiKitDevices";
 import { readyWhen, runTask, startTask } from "./tasks";
@@ -68,6 +68,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }
         return (available.find((each) => runnable(each.id).length > 0) ?? available[0])?.id;
     };
+    setHostEnvironment(host());
 
     /** What the suites and the editor run as: the host chosen, or plain Swift. */
     const runningAs = (): string => {

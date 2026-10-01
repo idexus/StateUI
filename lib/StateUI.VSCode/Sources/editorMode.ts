@@ -6,9 +6,11 @@
 // Every extension runs in one extension-host process, and the Swift extension
 // starts SourceKit-LSP with that process's environment beneath the
 // `swift.swiftEnvironmentVariables` setting. So the host's variable is set
-// here, on this process, and the language server is restarted: nothing is
-// written to a settings file, and the manifest - whose cache keys on the
-// environment - declares the host's head and defines its condition.
+// here, on this process, and the language server is restarted: the variable is
+// written to no settings file, and the manifest - whose cache keys on the
+// environment - declares the host's head and defines its condition. StateUI
+// does not wait for the Swift extension to activate: it sets the variable as it
+// activates itself, before that extension starts the server.
 //
 // EACH HOST INDEXES IN A DIRECTORY OF ITS OWN. The server prepares modules for
 // its index with a build, and one directory shared by two hosts is two
@@ -47,7 +49,7 @@ import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { describe, environment, Host, hostVariable, hosts, plainIndexPath } from "./hosts";
+import { describe, environment, Host, HostDescription, hostVariable, hosts, plainIndexPath } from "./hosts";
 
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -68,34 +70,79 @@ export function applyEditorMode(host: Host | undefined, roots: readonly string[]
 }
 
 async function apply(host: Host | undefined, roots: readonly string[]): Promise<boolean> {
-    let changed = false;
+    let changed = setHostEnvironment(host);
     const settings = serverSettings(host, roots.length > 0 ? await installedSwiftSDK(host) : undefined,
         roots.length > 0 ? await xcodeSDKPath(host) : undefined);
 
     for (const root of roots) {
         changed = writeServerConfig(root, settings) || changed;
     }
+    await excludeOtherHosts(host);
 
+    if (changed) {
+        // A Swift extension still activating starts its server after this; the restart then waits for it, unawaited.
+        const restart = settle(roots.map((root) => path.join(root, settings.scratchPath)))
+            .then(() => vscode.commands.executeCommand("swift.restartLSPServer"));
+        if (vscode.extensions.getExtension(swiftExtension)?.isActive) {
+            await restart;
+        } else {
+            restart.then(undefined, () => undefined);
+        }
+    }
+
+    return changed;
+}
+
+/** The Swift extension, which starts the language server with this process's environment. */
+const swiftExtension = "swiftlang.swift-vscode";
+
+/**
+ * Sets this process's environment for `host` at once: called before the Swift extension starts its server, it starts
+ * the server as that host with no restart.
+ *
+ * @returns whether anything changed.
+ */
+export function setHostEnvironment(host: Host | undefined): boolean {
+    let changed = false;
     for (const [variable, value] of Object.entries(environment(host))) {
         if (process.env[variable] === value) {
             continue;
         }
-
         if (value === undefined) {
             delete process.env[variable];
         } else {
             process.env[variable] = value;
         }
-
         changed = true;
     }
-
-    if (changed) {
-        await settle(roots.map((root) => path.join(root, settings.scratchPath)));
-        await vscode.commands.executeCommand("swift.restartLSPServer");
-    }
-
     return changed;
+}
+
+/**
+ * `exclusions` - `swift.excludePathsFromActivation` - excluding the packages of every host but `host`, and of every
+ * host with none: each host's own `lib/StateUI/StateUI.<Host>` (with the packages inside it) and its backends
+ * `lib/Backends/<Element>.<Host>`. Anything else it says is kept.
+ */
+export function otherHostsExcluded(host: Host | undefined, exclusions: Readonly<Record<string, boolean>>): Record<string, boolean> {
+    const patterns = (each: HostDescription): string[] =>
+        [`**/lib/StateUI/StateUI.${each.label}`, `**/lib/Backends/*.${each.label}`];
+    const owned = new Set(hosts.flatMap(patterns));
+    const kept = Object.entries(exclusions).filter(([pattern]) => !owned.has(pattern));
+    const excluded = hosts.filter((each) => each.id !== host).flatMap(patterns).map((pattern) => [pattern, true] as const);
+    return Object.fromEntries([...kept, ...excluded].sort(([a], [b]) => a.localeCompare(b)));
+}
+
+/**
+ * Keeps the Swift extension from loading the packages of the hosts the editor does not work as - each costs its
+ * activation seconds - in the user's settings, which it reads as it starts: the next start of the editor.
+ */
+async function excludeOtherHosts(host: Host | undefined): Promise<void> {
+    const swift = vscode.workspace.getConfiguration("swift");
+    const current = swift.inspect<Record<string, boolean>>("excludePathsFromActivation")?.globalValue ?? {};
+    const next = otherHostsExcluded(host, current);
+    if (JSON.stringify(next) !== JSON.stringify(current)) {
+        await swift.update("excludePathsFromActivation", next, vscode.ConfigurationTarget.Global);
+    }
 }
 
 /** Waits until no process is building in any of `directories`. */

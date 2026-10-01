@@ -18,7 +18,7 @@ import { checkoutNamedBy } from "../Sources/checkouts";
 import { configurations, StateUIDebugConfigurationProvider, uiKitAttach } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
 import { parseDevices as parseUIKitDevices, parseSimulators } from "../Sources/uiKitDevices";
-import { serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
+import { otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, environment, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
@@ -168,6 +168,16 @@ export async function run(): Promise<void> {
             hosts.every((host) => JSON.stringify(environment(host.id)) === JSON.stringify({ STATEUI_HOST: host.id }))
             && environment("android").STATEUI_HOST === "android"
             && JSON.stringify(Object.entries(environment(undefined))) === JSON.stringify([["STATEUI_HOST", undefined]]));
+        {
+            const asWinUI = otherHostsExcluded("winui", { "**/mine": true, "**/lib/StateUI/StateUI.WinUI": true });
+            const excluded = Object.keys(asWinUI).filter((pattern) => asWinUI[pattern]);
+            check("as WinUI the Swift extension loads no other host's package nor backend, and the user's own exclusions stay",
+                excluded.includes("**/lib/StateUI/StateUI.Android") && excluded.includes("**/lib/Backends/*.GTK")
+                && !excluded.some((pattern) => pattern.endsWith(".WinUI")) && asWinUI["**/mine"] === true
+                && Object.keys(otherHostsExcluded(undefined, {})).length === hosts.length * 2);
+            check("every host's own package stands where its exclusion names it",
+                hosts.every((host) => fs.existsSync(path.join(root.uri.fsPath, "lib", "StateUI", `StateUI.${host.label}`, "Package.swift"))));
+        }
         {
             const sdk = "swift-6.4.0-RELEASE_android";
             const android = serverConfig(

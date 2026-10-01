@@ -17,7 +17,7 @@
     "Debuggers",
     "Other"
   ],
-  "extensionDependencies": [
+  "extensionPack": [
     "swiftlang.swift-vscode"
   ],
   "main": "./out/Sources/extension.js",

@@ -75,7 +75,10 @@ says **no host**, a launch says why it runs nothing, and the editor and
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
   completed while AppKit is chosen, and an application's `Platforms/AppKit`
   head belongs to its package only then. Switching restarts the Swift language
-  server; the window does not reload and no settings file is written. As
+  server; the window does not reload. From the editor's next start the Swift
+  extension loads no other host's packages - `lib/StateUI/StateUI.<Host>` and
+  `lib/Backends/*.<Host>`, set in the user's `swift.excludePathsFromActivation`
+  - so it starts sooner. As
   Android the server compiles for Android - the Swift SDK for Android of the
   toolchain's release, `aarch64-unknown-linux-android28` - so code under
   `#if ANDROID` and `Platforms/Android/Swift` resolve. With no such SDK
@@ -212,7 +215,8 @@ launch file at all:
 
 ## Requirements
 
-- The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode).
+- The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode),
+  installed with StateUI.
 - For AppKit: macOS 26 or newer and the `lldb-dap` extension.
 - For UIKit: macOS with Xcode, a StateUI checkout, whose `.scripts/UIKit`
   builds and runs the head, the `lldb-dap` extension, and an iOS 26 or newer
