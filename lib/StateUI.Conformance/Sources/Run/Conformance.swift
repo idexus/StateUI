@@ -34,17 +34,20 @@
         }
     }
 
-    /// Runs `family` - or `part` of it - on `driver`'s host, handing every failure to `report` and a line for each
+    /// Runs `family` - or `part` of it, or the cases of `element` alone, as a component runs a tier's for its own
+    /// element - on `driver`'s host, handing every failure to `report` and a line for each
     /// case to `log`, or, where none is given, saying each as it ends - its place in the run and how long it took
     /// (`HostLog.note`); the verdict on each member its cases prove - ✅ or ☑️ where a passing case proved it, –
     /// where the host's family never has it, ❌ with the first failure where a case failed, and why it stays empty
     /// otherwise - the worst its cases gave.
     @discardableResult
     public static func run(
-        _ family: any ConformanceFamily.Type, part: Part = .whole, on driver: any HostDriver,
+        _ family: any ConformanceFamily.Type, part: Part = .whole, element: String? = nil, on driver: any HostDriver,
         report: @escaping (Failure) -> Void, log: ((String) -> Void)? = nil
     ) -> [HostVerdict] {
-        let held = family.cases.indices.filter(part.holds)
+        let held = family.cases.indices.filter(part.holds).filter { index in
+            element.map { family.cases[index].name.hasPrefix($0 + ".") } ?? true
+        }
         let progress = HostLog(host: driver.host)
         // The register is the host's whole registry read: once a run, not once a case.
         let register = driver.register

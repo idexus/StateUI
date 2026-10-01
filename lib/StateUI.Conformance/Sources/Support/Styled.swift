@@ -46,11 +46,12 @@ enum Styled {
             dimmed(VStack.self)
             dimmed(WebView.self)
             dimmed(ZStack.self)
+            Specimens.componentStyles
         }
     }
 
     /// The style for `Target`, dimming it to half its opacity.
-    private static func dimmed<Target: StyleTarget>(_ target: Target.Type) -> [AnyStyle] {
+    static func dimmed<Target: StyleTarget>(_ target: Target.Type) -> [AnyStyle] {
         StyleBuilder.buildExpression(
             Style<Target>(key(Target().node.type.name)).setValue(VisualElementContract.opacity, 0.5))
     }

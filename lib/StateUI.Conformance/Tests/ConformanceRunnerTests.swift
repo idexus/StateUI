@@ -41,6 +41,18 @@ private final class RegisterOnly: HostDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? { nil }
 }
 
+/// An element of a component's, of a library beside StateUI's: a view, and nothing of its own.
+private enum GaugeContract: ElementContract {
+    static let nodeType: NodeType = "Gauge"
+    static let layer: ElementLayer = .native
+    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let members: [any ContractMember] = []
+}
+
+private struct Gauge: View, StyleTarget {
+    var node = Node(contract: GaugeContract.self)
+}
+
 /// A family of the cases a test hands it.
 private enum Handed: ConformanceFamily {
     static let name = "Handed"
@@ -188,6 +200,30 @@ final class ConformanceRunnerTests: XCTestCase {
 
         XCTAssertEqual(lines.map { $0.split(separator: "/").last.map(String.init) ?? "" }.sorted(),
                        names.map { "\($0): passed" })
+    }
+
+    /// A run for one element takes that element's cases alone - a tier's, run by a component for its own element.
+    func testARunForOneElementTakesItsCasesAlone() {
+        let driver = RegisterOnly(realizing: [.complete("Switch", "isOn"), .complete("CheckBox", "isOn")])
+        Handed.cases = ["Switch.isOn.holds", "CheckBox.isOn.holds"].map { name in
+            ConformanceCase(name, proves: [Covered(SwitchContract.isOn)]) { _ in }
+        }
+
+        Conformance.run(Handed.self, element: "CheckBox", on: driver, report: { _ in }, log: { self.lines.append($0) })
+
+        XCTAssertEqual(lines.map { $0.split(separator: "/").last.map(String.init) ?? "" }, ["CheckBox.isOn.holds: passed"])
+    }
+
+    /// A component's element stands among the specimens beside the library's: made, wearing its tiers, styled.
+    func testAComponentsElementStandsBesideTheLibrarys() {
+        XCTAssertNil(Specimens.make("Gauge", Dressing()))
+        XCTAssertFalse(Specimens.wearing(VisualElementContract.self).contains("Gauge"))
+
+        Specimens.add(GaugeContract.self, view: Gauge.self) { $0.dress(Gauge()) }
+
+        XCTAssertNotNil(Specimens.make("Gauge", Dressing()))
+        XCTAssertEqual(Specimens.wearing(VisualElementContract.self).last, "Gauge")
+        XCTAssertEqual(Specimens.componentStyles.count, 1, "a style written for it")
     }
 
     /// A case that covers nothing fails: no verdict could ever say whether it runs.

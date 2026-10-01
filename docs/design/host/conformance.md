@@ -74,6 +74,16 @@ members it writes, through the element's own `setValue`, and finds by its id
 or as the one element of its kind. The case runs on a host for each element
 the host realizes, and proves the member there.
 
+## A component's element
+
+A component - a library of its own beside StateUI's - adds its element to
+the specimens (`Specimens.add`): its contract, its specimen and the view a
+style is written for. From then on the families find it as they find the
+library's, and a tier's cases are made for it too. The component's tests run
+its own family, and each family of a tier its element wears for that element
+alone (`Conformance.run(_:element:on:)`), through the host's driver; the
+verdicts stand in the component's own exports, never in the library's.
+
 ## The driver
 
 Each host supplies a driver: how its toolkit starts a page,
