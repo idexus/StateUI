@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 26 ✅ · 3 – | `UIProgressView` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | horizontal `ProgressBar` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `ProgressBar` |  |
-| GTK 4 | ✅ | 40 ✅ · 3 – | `GtkProgressBar` |  |
+| GTK 4 | ✅ | 40 ✅ · 4 – | `GtkProgressBar` |  |
 | Web |  |  | `<progress>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ProgressBarContract.swift`.
@@ -53,7 +53,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [VisualElement](tiers/VisualElement.md)
 

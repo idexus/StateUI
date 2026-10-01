@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 31 ✅ · 3 – | custom `UIView` |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | custom `ViewGroup` |  |
 | WinUI 3 | ✅ | 56 ✅ · 3 – | `StackPanel` |  |
-| GTK 4 | ✅ | 44 ✅ · 3 – | `GtkBox` |  |
+| GTK 4 | ✅ | 44 ✅ · 4 – | `GtkBox` |  |
 | Web |  |  | flexbox | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/HStackContract.swift`.
@@ -52,7 +52,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [VisualElement](tiers/VisualElement.md)
 

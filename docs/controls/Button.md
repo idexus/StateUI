@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 41 ✅ · 3 – | `UIButton` |  |
 | Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `Button` |  |
 | WinUI 3 | ✅ | 71 ✅ | `Button` |  |
-| GTK 4 | ✅ | 54 ✅ | `GtkButton` |  |
+| GTK 4 | ✅ | 54 ✅ · 1 – | `GtkButton` |  |
 | Web |  |  | `<button>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -59,7 +59,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [VisualElement](tiers/VisualElement.md)
 

@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 26 ✅ · 3 – | `UIImageView` |  |
 | Android Views | ✅ | 50 ✅ · 1 ☑️ · 3 – | `ImageView` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `Image` |  |
-| GTK 4 | ✅ | 41 ✅ · 3 – | `GtkPicture` |  |
+| GTK 4 | ✅ | 41 ✅ · 4 – | `GtkPicture` |  |
 | Web |  |  | `<img>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ImageContract.swift`.
@@ -54,7 +54,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [VisualElement](tiers/VisualElement.md)
 

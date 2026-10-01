@@ -1,40 +1,40 @@
 # revision 1.1
-ActivityIndicator.accessibilityIdentifier: not realized
-Button.accessibilityIdentifier: not realized
-Canvas.accessibilityIdentifier: not realized
-CheckBox.accessibilityIdentifier: not realized
-ColorBox.accessibilityIdentifier: not realized
-DatePicker.accessibilityIdentifier: not realized
-Ellipse.accessibilityIdentifier: not realized
-Grid.accessibilityIdentifier: not realized
-HStack.accessibilityIdentifier: not realized
-Image.accessibilityIdentifier: not realized
-ItemsView.accessibilityIdentifier: not realized
-Label.accessibilityIdentifier: not realized
-Line.accessibilityIdentifier: not realized
+ActivityIndicator.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Button.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Canvas.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+CheckBox.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+ColorBox.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+DatePicker.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Ellipse.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Grid.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+HStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Image.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+ItemsView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Label.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Line.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Map.accessibilityIdentifier: not realized
-MenuItem.accessibilityIdentifier: not realized
-ModalStack.accessibilityIdentifier: not realized
-NavigationStack.accessibilityIdentifier: not realized
-Path.accessibilityIdentifier: not realized
-Picker.accessibilityIdentifier: not realized
-Polygon.accessibilityIdentifier: not realized
-Polyline.accessibilityIdentifier: not realized
-ProgressBar.accessibilityIdentifier: not realized
-RadioButton.accessibilityIdentifier: not realized
-Rectangle.accessibilityIdentifier: not realized
-ScrollView.accessibilityIdentifier: not realized
-SearchField.accessibilityIdentifier: not realized
-Slider.accessibilityIdentifier: not realized
+MenuItem.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+ModalStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+NavigationStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Path.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Picker.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Polygon.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Polyline.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+ProgressBar.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+RadioButton.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Rectangle.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+ScrollView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+SearchField.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Slider.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Span.accessibilityIdentifier: not realized
-SplitView.accessibilityIdentifier: not realized
-Stepper.accessibilityIdentifier: not realized
-Switch.accessibilityIdentifier: not realized
-TabbedView.accessibilityIdentifier: not realized
-TextEditor.accessibilityIdentifier: not realized
-TextField.accessibilityIdentifier: not realized
-TimePicker.accessibilityIdentifier: not realized
-ToolbarItem.accessibilityIdentifier: not realized
-VStack.accessibilityIdentifier: not realized
+SplitView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Stepper.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Switch.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+TabbedView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+TextEditor.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+TextField.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+TimePicker.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+ToolbarItem.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+VStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 WebView.accessibilityIdentifier: not realized
-ZStack.accessibilityIdentifier: not realized
+ZStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.

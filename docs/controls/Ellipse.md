@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 26 ✅ · 3 – | `UIView` drawing `UIBezierPath` |  |
 | Android Views | ✅ | 49 ✅ · 1 ☑️ · 3 – | `View` drawing `Path` |  |
 | WinUI 3 | ✅ | 58 ✅ · 3 – | `Microsoft.UI.Xaml.Shapes` |  |
-| GTK 4 | ✅ | 44 ✅ · 3 – | `GskPath` in a snapshot |  |
+| GTK 4 | ✅ | 44 ✅ · 4 – | `GskPath` in a snapshot |  |
 | Web |  |  | inline SVG | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/EllipseContract.swift`.
@@ -51,7 +51,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [VisualElement](tiers/VisualElement.md)
 

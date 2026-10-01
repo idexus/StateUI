@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 34 ✅ · 3 – | composed by StateUI |  |
 | Android Views | ✅ | 55 ✅ · 1 ☑️ · 3 – | composed by StateUI |  |
 | WinUI 3 | ✅ | 59 ✅ · 3 – | composed by StateUI |  |
-| GTK 4 | ✅ | 47 ✅ · 3 – | composed by StateUI |  |
+| GTK 4 | ✅ | 47 ✅ · 4 – | composed by StateUI |  |
 | Web |  |  | composed by StateUI | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/GridContract.swift`.
@@ -65,7 +65,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [VisualElement](tiers/VisualElement.md)
 

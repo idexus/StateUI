@@ -40,6 +40,8 @@ enum GTKRealization {
         .notPlanned("PageElement", "icon",
                     reason: "GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions."),
         .complete("PageElement", "title"),
+        .notPlanned("PropertyContainer", "accessibilityIdentifier", reason: "GTK 4 gives an accessible the identifier "
+            + "a GtkBuilder file names alone: none is set on a widget made in code."),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own

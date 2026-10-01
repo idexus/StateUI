@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 25 ✅ · 3 – | `UIView` `draw(_:)` |  |
 | Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `View` `onDraw(Canvas)` |  |
 | WinUI 3 | ✅ | 52 ✅ · 3 – | Direct2D in a `SurfaceImageSource` |  |
-| GTK 4 | ✅ | 43 ✅ · 3 – | `GtkDrawingArea` |  |
+| GTK 4 | ✅ | 43 ✅ · 4 – | `GtkDrawingArea` |  |
 | Web |  |  | `<canvas>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/CanvasContract.swift`.
@@ -60,7 +60,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [VisualElement](tiers/VisualElement.md)
 

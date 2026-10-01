@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 4 ✅ · 2 – | `present(_:animated:)` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | full-screen `Dialog` (?) |  |
 | WinUI 3 | ✅ | 6 ✅ | `ContentDialog` (?) |  |
-| GTK 4 | ✅ | 4 ✅ · 2 – | modal `GtkWindow`; libadwaita `AdwDialog` |  |
+| GTK 4 | ✅ | 4 ✅ · 3 – | modal `GtkWindow`; libadwaita `AdwDialog` |  |
 | Web |  |  | `<dialog>` with `showModal()` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/ModalStackContract.swift`.
@@ -60,7 +60,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | · | · | · |  |  |  | cannot read accessibilityIdentifier of ModalStack - AppKit's driver has no path for it yet; UIKit: cannot read accessibilityIdentifier of ModalStack - UIKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of ModalStack - Android's driver has no path for it yet; GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | · | · | · |  | – |  | cannot read accessibilityIdentifier of ModalStack - AppKit's driver has no path for it yet; UIKit: cannot read accessibilityIdentifier of ModalStack - UIKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of ModalStack - Android's driver has no path for it yet; GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [BarElement](tiers/BarElement.md)
 

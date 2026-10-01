@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 6 ✅ | `UIBarButtonItem` |  |
 | Android Views | ✅ | 4 ✅ · 1 – | `Toolbar` `MenuItem` |  |
 | WinUI 3 | ✅ | 8 ✅ | `CommandBar` `AppBarButton` |  |
-| GTK 4 | ✅ | 7 ✅ | `GtkButton` in `GtkHeaderBar` |  |
+| GTK 4 | ✅ | 7 ✅ · 1 – | `GtkButton` in `GtkHeaderBar` |  |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.swift`.
@@ -63,7 +63,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  | ✅ | – | ✅ |  |  | not realized; Android Views: An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.; GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native |  | ✅ | – | ✅ | – |  | not realized; Android Views: An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.; GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 

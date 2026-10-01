@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 8 ✅ · 2 – | `UITabBarController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `LinearLayout` tab row |  |
 | WinUI 3 | ✅ | 10 ✅ | `NavigationView` with a top pane |  |
-| GTK 4 | ✅ | 6 ✅ · 3 – | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` |  |
+| GTK 4 | ✅ | 6 ✅ · 4 – | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` |  |
 | Web |  |  | ARIA `tablist` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContract.swift`.
@@ -63,7 +63,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [BarElement](tiers/BarElement.md)
 

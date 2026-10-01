@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 6 ✅ | `UIMenu` / `UIAction` |  |
 | Android Views | ✅ | 4 ✅ · 2 – | `PopupMenu` / `MenuItem`; no menu bar |  |
 | WinUI 3 | ✅ | 6 ✅ | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 | ✅ | 3 ✅ · 2 – | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
+| GTK 4 | ✅ | 3 ✅ · 3 – | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuItemContract.swift`.
@@ -55,7 +55,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ☑️ | ✅ | – | ✅ |  |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.; Android Views: An Android menu entry holds no identifier: automation finds it by its title.; GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ☑️ | ✅ | – | ✅ | – |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.; Android Views: An Android menu entry holds no identifier: automation finds it by its title.; GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
