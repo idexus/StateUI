@@ -41,6 +41,7 @@ enum GTKRegistrations {
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()
+        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
     }
 
     /// The acts this host performs: every host's (`HostActs.performed`), a scene's value kept, and a list scrolled to

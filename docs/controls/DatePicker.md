@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 29 ✅ · 3 – | `UIDatePicker` |  |
 | Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `DatePickerDialog` |  |
 | WinUI 3 | ✅ | 63 ✅ · 1 ☑️ | `CalendarDatePicker` |  |
-| GTK 4 | ✅ | 48 ✅ · 1 ☑️ | `GtkCalendar` in a `GtkPopover` |  |
+| GTK 4 | ✅ | 51 ✅ · 1 ☑️ | `GtkCalendar` in a `GtkPopover` |  |
 | Web |  |  | `<input type=date>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/DatePickerContract.swift`.
@@ -74,13 +74,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on DatePicker.isFocusedChanged, not realized yet |
+| `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ |  |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -99,7 +99,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationX of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of DatePicker: the host's own transform: GTK reads back no part of one |
 | `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationY of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of DatePicker: the host's own transform: GTK reads back no part of one |
-| `unfocus` | act | `() -> Void` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on DatePicker.isFocusedChanged, not realized yet |
+| `unfocus` | act | `() -> Void` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 

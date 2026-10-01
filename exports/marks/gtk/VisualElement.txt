@@ -4,14 +4,14 @@ ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: not realized
-ActivityIndicator.focus: waits on ActivityIndicator.isFocusedChanged
+ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: ✅
-ActivityIndicator.isFocusedChanged: not realized
+ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.layoutDirection: not realized
 ActivityIndicator.maximumHeight: ✅
@@ -30,7 +30,7 @@ ActivityIndicator.scaleY: 🔌 read scaleY of ActivityIndicator: the host's own 
 ActivityIndicator.style: ✅
 ActivityIndicator.translationX: 🔌 read translationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.translationY: 🔌 read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.unfocus: waits on ActivityIndicator.isFocusedChanged
+ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: not realized
 Button.accessibilityHeadingLevel: ✅
@@ -38,14 +38,14 @@ Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
 Button.background: 🔌 read background of Button: the class of the host's style sheet the widget wears: GTK reads back no background
-Button.focus: waits on Button.isFocusedChanged
+Button.focus: ✅
 Button.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
-Button.isFocusedChanged: not realized
+Button.isFocusedChanged: ✅
 Button.isVisible: ✅
 Button.layoutDirection: not realized
 Button.maximumHeight: ✅
@@ -64,7 +64,7 @@ Button.scaleY: 🔌 read scaleY of Button: the host's own transform: GTK reads b
 Button.style: ✅
 Button.translationX: 🔌 read translationX of Button: the host's own transform: GTK reads back no part of one
 Button.translationY: 🔌 read translationY of Button: the host's own transform: GTK reads back no part of one
-Button.unfocus: waits on Button.isFocusedChanged
+Button.unfocus: ✅
 Button.width: ✅
 Button.zIndex: not realized
 Canvas.accessibilityHeadingLevel: ✅
@@ -72,14 +72,14 @@ Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
 Canvas.background: not realized
-Canvas.focus: waits on Canvas.isFocusedChanged
+Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
-Canvas.isFocusedChanged: not realized
+Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.isVisible: ✅
 Canvas.layoutDirection: not realized
 Canvas.maximumHeight: ✅
@@ -98,7 +98,7 @@ Canvas.scaleY: 🔌 read scaleY of Canvas: the host's own transform: GTK reads b
 Canvas.style: ✅
 Canvas.translationX: 🔌 read translationX of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.translationY: 🔌 read translationY of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.unfocus: waits on Canvas.isFocusedChanged
+Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
 Canvas.zIndex: not realized
 CheckBox.accessibilityHeadingLevel: ✅
@@ -106,14 +106,14 @@ CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: not realized
-CheckBox.focus: waits on CheckBox.isFocusedChanged
+CheckBox.focus: ✅
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
-CheckBox.isFocusedChanged: not realized
+CheckBox.isFocusedChanged: ✅
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: not realized
 CheckBox.maximumHeight: ✅
@@ -132,7 +132,7 @@ CheckBox.scaleY: 🔌 read scaleY of CheckBox: the host's own transform: GTK rea
 CheckBox.style: ✅
 CheckBox.translationX: 🔌 read translationX of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.translationY: 🔌 read translationY of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.unfocus: waits on CheckBox.isFocusedChanged
+CheckBox.unfocus: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: not realized
 ColorBox.accessibilityHeadingLevel: ✅
@@ -140,14 +140,14 @@ ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
 ColorBox.background: not realized
-ColorBox.focus: waits on ColorBox.isFocusedChanged
+ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
 ColorBox.ignoresInput: not realized
 ColorBox.isAccessibilityHidden: ✅
 ColorBox.isEnabled: ✅
-ColorBox.isFocusedChanged: not realized
+ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.isVisible: ✅
 ColorBox.layoutDirection: not realized
 ColorBox.maximumHeight: ✅
@@ -166,7 +166,7 @@ ColorBox.scaleY: 🔌 read scaleY of ColorBox: the host's own transform: GTK rea
 ColorBox.style: ✅
 ColorBox.translationX: 🔌 read translationX of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.translationY: 🔌 read translationY of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.unfocus: waits on ColorBox.isFocusedChanged
+ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
 ColorBox.zIndex: not realized
 DatePicker.accessibilityHeadingLevel: ✅
@@ -174,14 +174,14 @@ DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: not realized
-DatePicker.focus: waits on DatePicker.isFocusedChanged
+DatePicker.focus: ✅
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
-DatePicker.isFocusedChanged: not realized
+DatePicker.isFocusedChanged: ✅
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: not realized
 DatePicker.maximumHeight: ✅
@@ -200,7 +200,7 @@ DatePicker.scaleY: 🔌 read scaleY of DatePicker: the host's own transform: GTK
 DatePicker.style: ✅
 DatePicker.translationX: 🔌 read translationX of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.translationY: 🔌 read translationY of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.unfocus: waits on DatePicker.isFocusedChanged
+DatePicker.unfocus: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: not realized
 Ellipse.accessibilityHeadingLevel: ✅
@@ -208,14 +208,14 @@ Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: not realized
-Ellipse.focus: waits on Ellipse.isFocusedChanged
+Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
-Ellipse.isFocusedChanged: not realized
+Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: not realized
 Ellipse.maximumHeight: ✅
@@ -234,7 +234,7 @@ Ellipse.scaleY: 🔌 read scaleY of Ellipse: the host's own transform: GTK reads
 Ellipse.style: ✅
 Ellipse.translationX: 🔌 read translationX of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.translationY: 🔌 read translationY of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.unfocus: waits on Ellipse.isFocusedChanged
+Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
 Ellipse.zIndex: not realized
 Grid.accessibilityHeadingLevel: ✅
@@ -242,14 +242,14 @@ Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
 Grid.background: cannot read background of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
-Grid.focus: waits on Grid.isFocusedChanged
+Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frame: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
-Grid.isFocusedChanged: not realized
+Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.isVisible: ✅
 Grid.layoutDirection: not realized
 Grid.maximumHeight: ✅
@@ -268,7 +268,7 @@ Grid.scaleY: 🔌 read scaleY of Grid: the host's own transform: GTK reads back 
 Grid.style: ✅
 Grid.translationX: 🔌 read translationX of Grid: the host's own transform: GTK reads back no part of one
 Grid.translationY: 🔌 read translationY of Grid: the host's own transform: GTK reads back no part of one
-Grid.unfocus: waits on Grid.isFocusedChanged
+Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
 Grid.zIndex: not realized
 HStack.accessibilityHeadingLevel: ✅
@@ -276,14 +276,14 @@ HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
 HStack.background: cannot read background of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
-HStack.focus: waits on HStack.isFocusedChanged
+HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frame: ✅
 HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
-HStack.isFocusedChanged: not realized
+HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.isVisible: ✅
 HStack.layoutDirection: not realized
 HStack.maximumHeight: ✅
@@ -302,7 +302,7 @@ HStack.scaleY: 🔌 read scaleY of HStack: the host's own transform: GTK reads b
 HStack.style: ✅
 HStack.translationX: 🔌 read translationX of HStack: the host's own transform: GTK reads back no part of one
 HStack.translationY: 🔌 read translationY of HStack: the host's own transform: GTK reads back no part of one
-HStack.unfocus: waits on HStack.isFocusedChanged
+HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
 HStack.zIndex: not realized
 Image.accessibilityHeadingLevel: ✅
@@ -310,14 +310,14 @@ Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
 Image.background: not realized
-Image.focus: waits on Image.isFocusedChanged
+Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
-Image.isFocusedChanged: not realized
+Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.isVisible: ✅
 Image.layoutDirection: not realized
 Image.maximumHeight: ✅
@@ -336,7 +336,7 @@ Image.scaleY: 🔌 read scaleY of Image: the host's own transform: GTK reads bac
 Image.style: ✅
 Image.translationX: 🔌 read translationX of Image: the host's own transform: GTK reads back no part of one
 Image.translationY: 🔌 read translationY of Image: the host's own transform: GTK reads back no part of one
-Image.unfocus: waits on Image.isFocusedChanged
+Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
 Image.zIndex: not realized
 ItemsView.accessibilityHeadingLevel: ✅
@@ -344,14 +344,14 @@ ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
 ItemsView.background: not realized
-ItemsView.focus: waits on ItemsView.isFocusedChanged
+ItemsView.focus: ✅
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
-ItemsView.isFocusedChanged: not realized
+ItemsView.isFocusedChanged: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: not realized
 ItemsView.maximumHeight: ✅
@@ -370,7 +370,7 @@ ItemsView.scaleY: 🔌 read scaleY of ItemsView: the host's own transform: GTK r
 ItemsView.style: not realized
 ItemsView.translationX: 🔌 read translationX of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.translationY: 🔌 read translationY of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.unfocus: waits on ItemsView.isFocusedChanged
+ItemsView.unfocus: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: not realized
 Label.accessibilityHeadingLevel: ✅
@@ -378,14 +378,14 @@ Label.accessibilityHint: ✅
 Label.accessibilityLabel: ✅
 Label.automationExcludedWithChildren: ✅
 Label.background: 🔌 read background of Label: the class of the host's style sheet the widget wears: GTK reads back no background
-Label.focus: waits on Label.isFocusedChanged
+Label.focus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.frame: ✅
 Label.frameChanged: ✅
 Label.height: ✅
 Label.ignoresInput: not realized
 Label.isAccessibilityHidden: ✅
 Label.isEnabled: ✅
-Label.isFocusedChanged: not realized
+Label.isFocusedChanged: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.isVisible: ✅
 Label.layoutDirection: not realized
 Label.maximumHeight: ✅
@@ -404,7 +404,7 @@ Label.scaleY: 🔌 read scaleY of Label: the host's own transform: GTK reads bac
 Label.style: ✅
 Label.translationX: 🔌 read translationX of Label: the host's own transform: GTK reads back no part of one
 Label.translationY: 🔌 read translationY of Label: the host's own transform: GTK reads back no part of one
-Label.unfocus: waits on Label.isFocusedChanged
+Label.unfocus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.width: ✅
 Label.zIndex: not realized
 Line.accessibilityHeadingLevel: ✅
@@ -412,14 +412,14 @@ Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
 Line.background: not realized
-Line.focus: waits on Line.isFocusedChanged
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
-Line.isFocusedChanged: not realized
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.isVisible: ✅
 Line.layoutDirection: not realized
 Line.maximumHeight: ✅
@@ -438,7 +438,7 @@ Line.scaleY: 🔌 read scaleY of Line: the host's own transform: GTK reads back 
 Line.style: ✅
 Line.translationX: 🔌 read translationX of Line: the host's own transform: GTK reads back no part of one
 Line.translationY: 🔌 read translationY of Line: the host's own transform: GTK reads back no part of one
-Line.unfocus: waits on Line.isFocusedChanged
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.width: ✅
 Line.zIndex: not realized
 Map.accessibilityHeadingLevel: not realized
@@ -480,14 +480,14 @@ Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
 Path.background: not realized
-Path.focus: waits on Path.isFocusedChanged
+Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
-Path.isFocusedChanged: not realized
+Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.isVisible: ✅
 Path.layoutDirection: not realized
 Path.maximumHeight: ✅
@@ -506,7 +506,7 @@ Path.scaleY: 🔌 read scaleY of Path: the host's own transform: GTK reads back 
 Path.style: ✅
 Path.translationX: 🔌 read translationX of Path: the host's own transform: GTK reads back no part of one
 Path.translationY: 🔌 read translationY of Path: the host's own transform: GTK reads back no part of one
-Path.unfocus: waits on Path.isFocusedChanged
+Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
 Path.zIndex: not realized
 Picker.accessibilityHeadingLevel: ✅
@@ -514,14 +514,14 @@ Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
 Picker.background: not realized
-Picker.focus: waits on Picker.isFocusedChanged
+Picker.focus: ✅
 Picker.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
-Picker.isFocusedChanged: not realized
+Picker.isFocusedChanged: ✅
 Picker.isVisible: ✅
 Picker.layoutDirection: not realized
 Picker.maximumHeight: ✅
@@ -540,7 +540,7 @@ Picker.scaleY: 🔌 read scaleY of Picker: the host's own transform: GTK reads b
 Picker.style: ✅
 Picker.translationX: 🔌 read translationX of Picker: the host's own transform: GTK reads back no part of one
 Picker.translationY: 🔌 read translationY of Picker: the host's own transform: GTK reads back no part of one
-Picker.unfocus: waits on Picker.isFocusedChanged
+Picker.unfocus: ✅
 Picker.width: ✅
 Picker.zIndex: not realized
 Polygon.accessibilityHeadingLevel: ✅
@@ -548,14 +548,14 @@ Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
 Polygon.background: not realized
-Polygon.focus: waits on Polygon.isFocusedChanged
+Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
-Polygon.isFocusedChanged: not realized
+Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.isVisible: ✅
 Polygon.layoutDirection: not realized
 Polygon.maximumHeight: ✅
@@ -574,7 +574,7 @@ Polygon.scaleY: 🔌 read scaleY of Polygon: the host's own transform: GTK reads
 Polygon.style: ✅
 Polygon.translationX: 🔌 read translationX of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.translationY: 🔌 read translationY of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.unfocus: waits on Polygon.isFocusedChanged
+Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
 Polygon.zIndex: not realized
 Polyline.accessibilityHeadingLevel: ✅
@@ -582,14 +582,14 @@ Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
 Polyline.background: not realized
-Polyline.focus: waits on Polyline.isFocusedChanged
+Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
-Polyline.isFocusedChanged: not realized
+Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.isVisible: ✅
 Polyline.layoutDirection: not realized
 Polyline.maximumHeight: ✅
@@ -608,7 +608,7 @@ Polyline.scaleY: 🔌 read scaleY of Polyline: the host's own transform: GTK rea
 Polyline.style: ✅
 Polyline.translationX: 🔌 read translationX of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.translationY: 🔌 read translationY of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.unfocus: waits on Polyline.isFocusedChanged
+Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
 Polyline.zIndex: not realized
 ProgressBar.accessibilityHeadingLevel: ✅
@@ -616,14 +616,14 @@ ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: not realized
-ProgressBar.focus: waits on ProgressBar.isFocusedChanged
+ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
-ProgressBar.isFocusedChanged: not realized
+ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: not realized
 ProgressBar.maximumHeight: ✅
@@ -642,7 +642,7 @@ ProgressBar.scaleY: 🔌 read scaleY of ProgressBar: the host's own transform: G
 ProgressBar.style: ✅
 ProgressBar.translationX: 🔌 read translationX of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.translationY: 🔌 read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.unfocus: waits on ProgressBar.isFocusedChanged
+ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
 ProgressBar.zIndex: not realized
 RadioButton.accessibilityHeadingLevel: ✅
@@ -650,14 +650,14 @@ RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
 RadioButton.background: not realized
-RadioButton.focus: waits on RadioButton.isFocusedChanged
+RadioButton.focus: ✅
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.ignoresInput: not realized
 RadioButton.isAccessibilityHidden: ✅
 RadioButton.isEnabled: ✅
-RadioButton.isFocusedChanged: not realized
+RadioButton.isFocusedChanged: ✅
 RadioButton.isVisible: ✅
 RadioButton.layoutDirection: not realized
 RadioButton.maximumHeight: ✅
@@ -676,7 +676,7 @@ RadioButton.scaleY: 🔌 read scaleY of RadioButton: the host's own transform: G
 RadioButton.style: ✅
 RadioButton.translationX: 🔌 read translationX of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.translationY: 🔌 read translationY of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.unfocus: waits on RadioButton.isFocusedChanged
+RadioButton.unfocus: ✅
 RadioButton.width: ✅
 RadioButton.zIndex: not realized
 Rectangle.accessibilityHeadingLevel: ✅
@@ -684,14 +684,14 @@ Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: not realized
-Rectangle.focus: waits on Rectangle.isFocusedChanged
+Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
-Rectangle.isFocusedChanged: not realized
+Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: not realized
 Rectangle.maximumHeight: ✅
@@ -710,7 +710,7 @@ Rectangle.scaleY: 🔌 read scaleY of Rectangle: the host's own transform: GTK r
 Rectangle.style: ✅
 Rectangle.translationX: 🔌 read translationX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.translationY: 🔌 read translationY of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.unfocus: waits on Rectangle.isFocusedChanged
+Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
 Rectangle.zIndex: not realized
 ScrollView.accessibilityHeadingLevel: ✅
@@ -718,14 +718,14 @@ ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
 ScrollView.background: cannot read background of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
-ScrollView.focus: waits on ScrollView.isFocusedChanged
+ScrollView.focus: ✅
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
-ScrollView.isFocusedChanged: not realized
+ScrollView.isFocusedChanged: ✅
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: not realized
 ScrollView.maximumHeight: ✅
@@ -744,7 +744,7 @@ ScrollView.scaleY: 🔌 read scaleY of ScrollView: the host's own transform: GTK
 ScrollView.style: ✅
 ScrollView.translationX: 🔌 read translationX of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.translationY: 🔌 read translationY of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.unfocus: waits on ScrollView.isFocusedChanged
+ScrollView.unfocus: ✅
 ScrollView.width: ✅
 ScrollView.zIndex: not realized
 SearchField.accessibilityHeadingLevel: ✅
@@ -752,14 +752,14 @@ SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
 SearchField.background: not realized
-SearchField.focus: waits on SearchField.isFocusedChanged
+SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: not realized
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
-SearchField.isFocusedChanged: not realized
+SearchField.isFocusedChanged: ✅
 SearchField.isVisible: ✅
 SearchField.layoutDirection: not realized
 SearchField.maximumHeight: ✅
@@ -778,7 +778,7 @@ SearchField.scaleY: 🔌 read scaleY of SearchField: the host's own transform: G
 SearchField.style: ✅
 SearchField.translationX: 🔌 read translationX of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.translationY: 🔌 read translationY of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.unfocus: waits on SearchField.isFocusedChanged
+SearchField.unfocus: ✅
 SearchField.width: ✅
 SearchField.zIndex: not realized
 Slider.accessibilityHeadingLevel: ✅
@@ -786,14 +786,14 @@ Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
 Slider.background: not realized
-Slider.focus: waits on Slider.isFocusedChanged
+Slider.focus: ✅
 Slider.frame: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
-Slider.isFocusedChanged: not realized
+Slider.isFocusedChanged: ✅
 Slider.isVisible: ✅
 Slider.layoutDirection: not realized
 Slider.maximumHeight: ✅
@@ -812,7 +812,7 @@ Slider.scaleY: 🔌 read scaleY of Slider: the host's own transform: GTK reads b
 Slider.style: ✅
 Slider.translationX: 🔌 read translationX of Slider: the host's own transform: GTK reads back no part of one
 Slider.translationY: 🔌 read translationY of Slider: the host's own transform: GTK reads back no part of one
-Slider.unfocus: waits on Slider.isFocusedChanged
+Slider.unfocus: ✅
 Slider.width: ✅
 Slider.zIndex: not realized
 Stepper.accessibilityHeadingLevel: ✅
@@ -820,14 +820,14 @@ Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
 Stepper.background: not realized
-Stepper.focus: waits on Stepper.isFocusedChanged
+Stepper.focus: ✅
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
-Stepper.isFocusedChanged: not realized
+Stepper.isFocusedChanged: ✅
 Stepper.isVisible: ✅
 Stepper.layoutDirection: not realized
 Stepper.maximumHeight: ✅
@@ -846,7 +846,7 @@ Stepper.scaleY: 🔌 read scaleY of Stepper: the host's own transform: GTK reads
 Stepper.style: ✅
 Stepper.translationX: 🔌 read translationX of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.translationY: 🔌 read translationY of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.unfocus: waits on Stepper.isFocusedChanged
+Stepper.unfocus: ✅
 Stepper.width: ✅
 Stepper.zIndex: not realized
 Switch.accessibilityHeadingLevel: ✅
@@ -854,14 +854,14 @@ Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
 Switch.background: not realized
-Switch.focus: waits on Switch.isFocusedChanged
+Switch.focus: ✅
 Switch.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
-Switch.isFocusedChanged: not realized
+Switch.isFocusedChanged: ✅
 Switch.isVisible: ✅
 Switch.layoutDirection: not realized
 Switch.maximumHeight: ✅
@@ -880,7 +880,7 @@ Switch.scaleY: 🔌 read scaleY of Switch: the host's own transform: GTK reads b
 Switch.style: ✅
 Switch.translationX: 🔌 read translationX of Switch: the host's own transform: GTK reads back no part of one
 Switch.translationY: 🔌 read translationY of Switch: the host's own transform: GTK reads back no part of one
-Switch.unfocus: waits on Switch.isFocusedChanged
+Switch.unfocus: ✅
 Switch.width: ✅
 Switch.zIndex: not realized
 TextEditor.accessibilityHeadingLevel: ✅
@@ -888,14 +888,14 @@ TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
 TextEditor.background: not realized
-TextEditor.focus: waits on TextEditor.isFocusedChanged
+TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: not realized
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
-TextEditor.isFocusedChanged: not realized
+TextEditor.isFocusedChanged: ✅
 TextEditor.isVisible: ✅
 TextEditor.layoutDirection: not realized
 TextEditor.maximumHeight: ✅
@@ -914,7 +914,7 @@ TextEditor.scaleY: 🔌 read scaleY of TextEditor: the host's own transform: GTK
 TextEditor.style: ✅
 TextEditor.translationX: 🔌 read translationX of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.translationY: 🔌 read translationY of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.unfocus: waits on TextEditor.isFocusedChanged
+TextEditor.unfocus: ✅
 TextEditor.width: ✅
 TextEditor.zIndex: not realized
 TextField.accessibilityHeadingLevel: ✅
@@ -922,14 +922,14 @@ TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
 TextField.background: not realized
-TextField.focus: waits on TextField.isFocusedChanged
+TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅
 TextField.ignoresInput: not realized
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
-TextField.isFocusedChanged: not realized
+TextField.isFocusedChanged: ✅
 TextField.isVisible: ✅
 TextField.layoutDirection: not realized
 TextField.maximumHeight: ✅
@@ -948,7 +948,7 @@ TextField.scaleY: 🔌 read scaleY of TextField: the host's own transform: GTK r
 TextField.style: ✅
 TextField.translationX: 🔌 read translationX of TextField: the host's own transform: GTK reads back no part of one
 TextField.translationY: 🔌 read translationY of TextField: the host's own transform: GTK reads back no part of one
-TextField.unfocus: waits on TextField.isFocusedChanged
+TextField.unfocus: ✅
 TextField.width: ✅
 TextField.zIndex: not realized
 TimePicker.accessibilityHeadingLevel: ✅
@@ -956,14 +956,14 @@ TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: not realized
-TimePicker.focus: waits on TimePicker.isFocusedChanged
+TimePicker.focus: ✅
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
-TimePicker.isFocusedChanged: not realized
+TimePicker.isFocusedChanged: ✅
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: not realized
 TimePicker.maximumHeight: ✅
@@ -982,7 +982,7 @@ TimePicker.scaleY: 🔌 read scaleY of TimePicker: the host's own transform: GTK
 TimePicker.style: ✅
 TimePicker.translationX: 🔌 read translationX of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.translationY: 🔌 read translationY of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.unfocus: waits on TimePicker.isFocusedChanged
+TimePicker.unfocus: ✅
 TimePicker.width: ✅
 TimePicker.zIndex: not realized
 VStack.accessibilityHeadingLevel: ✅
@@ -990,14 +990,14 @@ VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
 VStack.background: cannot read background of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
-VStack.focus: waits on VStack.isFocusedChanged
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
-VStack.isFocusedChanged: not realized
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.isVisible: ✅
 VStack.layoutDirection: not realized
 VStack.maximumHeight: ✅
@@ -1016,7 +1016,7 @@ VStack.scaleY: 🔌 read scaleY of VStack: the host's own transform: GTK reads b
 VStack.style: ✅
 VStack.translationX: 🔌 read translationX of VStack: the host's own transform: GTK reads back no part of one
 VStack.translationY: 🔌 read translationY of VStack: the host's own transform: GTK reads back no part of one
-VStack.unfocus: waits on VStack.isFocusedChanged
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 VStack.zIndex: not realized
 WebView.accessibilityHeadingLevel: not realized
@@ -1058,14 +1058,14 @@ ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
 ZStack.background: cannot read background of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
-ZStack.focus: waits on ZStack.isFocusedChanged
+ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅
-ZStack.isFocusedChanged: not realized
+ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isVisible: ✅
 ZStack.layoutDirection: not realized
 ZStack.maximumHeight: ✅
@@ -1084,6 +1084,6 @@ ZStack.scaleY: 🔌 read scaleY of ZStack: the host's own transform: GTK reads b
 ZStack.style: ✅
 ZStack.translationX: 🔌 read translationX of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.translationY: 🔌 read translationY of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.unfocus: waits on ZStack.isFocusedChanged
+ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.width: ✅
 ZStack.zIndex: not realized

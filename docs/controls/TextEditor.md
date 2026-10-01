@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 46 ✅ | `UITextView` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | multi-line `EditText` |  |
 | WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
-| GTK 4 | ✅ | 56 ✅ | `GtkTextView` |  |
+| GTK 4 | ✅ | 59 ✅ | `GtkTextView` |  |
 | Web |  |  | `<textarea>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextEditorContract.swift`.
@@ -67,13 +67,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ | ⏸ |  | GTK 4: waits on TextEditor.isFocusedChanged, not realized yet |
+| `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextEditor.isReadOnly |
-| `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -92,7 +92,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of TextEditor: the host's own transform: GTK reads back no part of one |
 | `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of TextEditor: the host's own transform: GTK reads back no part of one |
-| `unfocus` | act | `() -> Void` |  | ✅ | ✅ | ✅ | ✅ | ⏸ |  | GTK 4: waits on TextEditor.isFocusedChanged, not realized yet |
+| `unfocus` | act | `() -> Void` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 

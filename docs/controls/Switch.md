@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 27 ✅ · 3 – | `UISwitch` |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `Switch` |  |
 | WinUI 3 | ✅ | 56 ✅ | `ToggleSwitch` |  |
-| GTK 4 | ✅ | 41 ✅ | `GtkSwitch` |  |
+| GTK 4 | ✅ | 44 ✅ | `GtkSwitch` |  |
 | Web |  |  | checkbox `<input>` with `role=switch` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/SwitchContract.swift`.
@@ -67,13 +67,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  | ✅ | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: Switch takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Switch takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Switch.isFocusedChanged, not realized yet |
+| `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: Switch takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Switch takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ |  |  | UIKit: Switch takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Switch takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: Switch takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Switch takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -92,7 +92,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationX of Switch: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Switch: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of Switch: the host's own transform: GTK reads back no part of one |
 | `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationY of Switch: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Switch: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of Switch: the host's own transform: GTK reads back no part of one |
-| `unfocus` | act | `() -> Void` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: Switch takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Switch takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Switch.isFocusedChanged, not realized yet |
+| `unfocus` | act | `() -> Void` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: Switch takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Switch takes no keyboard focus here: it refuses it, and nothing is heard |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 

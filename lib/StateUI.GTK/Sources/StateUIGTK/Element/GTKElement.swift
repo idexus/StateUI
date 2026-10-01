@@ -54,6 +54,9 @@ final class GTKElement: NativeElement {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
         configureGestures()
+        view?.setFocusChanged(element.handler(.isFocusedChanged) == nil ? nil : { [weak self] focused in
+            self?.send(.isFocusedChanged, [.bool(focused)])
+        })
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)

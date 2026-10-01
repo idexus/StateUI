@@ -42,6 +42,10 @@ class GTKView {
     private(set) var listening: GTKListening?
     private var onHeard: ((HeardInput) -> Void)?
 
+    /// What hears the keyboard come into the view and leave it, and the controller telling it; nil while none does.
+    private var onFocusChanged: ((Bool) -> Void)?
+    private var focusController: OpaquePointer?
+
     /// The style sheet's class giving the view its padding.
     private var paddingClass: String?
 
@@ -240,6 +244,26 @@ class GTKView {
         onHeard?(heard)
     }
 
+    /// Tells `action` when the keyboard comes into the view or a part of it, and when it leaves; nil tells no one.
+    /// Design: docs/design/platforms/gtk/input.md#the-keyboards-focus
+    func setFocusChanged(_ action: ((Bool) -> Void)?) {
+        onFocusChanged = action
+        if action == nil, let focusController {
+            gtk_widget_remove_controller(widget, focusController)
+            self.focusController = nil
+        } else if action != nil, focusController == nil {
+            let focus = gtk_event_controller_focus_new()!
+            connectSignal(UnsafeMutableRawPointer(focus), "enter", number: number) { (_: UnsafeMutableRawPointer?, data) in
+                MainActor.assumeIsolated { GTKView.find(viewNumber(data))?.onFocusChanged?(true) }
+            }
+            connectSignal(UnsafeMutableRawPointer(focus), "leave", number: number) { (_: UnsafeMutableRawPointer?, data) in
+                MainActor.assumeIsolated { GTKView.find(viewNumber(data))?.onFocusChanged?(false) }
+            }
+            gtk_widget_add_controller(widget, focus)
+            focusController = focus
+        }
+    }
+
     /// The user clicked the view.
     func clicked() {}
 
@@ -247,6 +271,7 @@ class GTKView {
     /// calls this first.
     func detach() {
         hear([]) { _ in }
+        setFocusChanged(nil)
         contextMenu = nil
     }
 }

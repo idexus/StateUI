@@ -76,19 +76,25 @@ final class GTKActToolkit: ActToolkit {
         return true
     }
 
+    /// GTK hands a container's keyboard to a part of it - a list to its row - and may answer that it took none: where
+    /// the focus stands answers.
     func focus(_ element: MountedElement) -> Bool? {
         guard let view = (element.native as? GTKElement)?.view else { return nil }
-        return gtk_widget_grab_focus(view.widget) != 0
+        gtk_widget_grab_focus(view.widget)
+        return Self.holdsTheKeyboard(view.widget)
     }
 
     /// GTK leaves the focus nowhere.
     func unfocus(_ element: MountedElement) -> Bool {
         guard let view = (element.native as? GTKElement)?.view else { return false }
-        if let root = gtk_widget_get_root(view.widget), let focus = gtk_root_get_focus(root),
-           focus == view.widget || gtk_widget_is_ancestor(focus, view.widget) != 0 {
-            gtk_root_set_focus(root, nil)
-        }
+        if Self.holdsTheKeyboard(view.widget), let root = gtk_widget_get_root(view.widget) { gtk_root_set_focus(root, nil) }
         return true
+    }
+
+    /// Whether the keyboard's focus stands on `widget` or a part of it.
+    private static func holdsTheKeyboard(_ widget: GTKWidget) -> Bool {
+        guard let root = gtk_widget_get_root(widget), let focus = gtk_root_get_focus(root) else { return false }
+        return focus == widget || gtk_widget_is_ancestor(focus, widget) != 0
     }
 
     func keep(_ call: HostActCall) -> Bool {

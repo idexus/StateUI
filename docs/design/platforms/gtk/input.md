@@ -79,3 +79,14 @@ A view that listens for a pinch takes `GtkGestureZoom` - two fingers on a
 touch screen, or a touchpad's pinch - and says each step's scale since the
 last, and where, as shares of its size. The pinch claims its fingers as it
 begins, which keeps a scroller around the view from panning with them.
+
+## The keyboard's focus
+
+A view whose element hears its focus change takes `GtkEventControllerFocus`,
+and reports its `enter` as the keyboard coming and its `leave` as the
+keyboard going. Both name the focus within the widget or any part of it: a
+field's inner text widget taking the keyboard is the field taking it, and
+the keyboard moving between a control's own parts tells nothing. A widget
+GTK gives no keyboard focus - a label, a box, a picture - never takes it,
+whoever asks, so its element hears nothing; the act that puts the keyboard
+on it answers that it did not.

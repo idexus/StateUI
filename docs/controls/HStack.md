@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 31 ✅ · 3 – | custom `UIView` |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | custom `ViewGroup` |  |
 | WinUI 3 | ✅ | 56 ✅ · 3 – | `StackPanel` |  |
-| GTK 4 | ✅ | 44 ✅ | `GtkBox` |  |
+| GTK 4 | ✅ | 44 ✅ · 3 – | `GtkBox` |  |
 | Web |  |  | flexbox | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/HStackContract.swift`.
@@ -65,13 +65,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read background of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it |
-| `focus` | act | `() -> Bool` |  | – | – | – | – | ⏸ |  | HStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: HStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: HStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on HStack.isFocusedChanged, not realized yet |
+| `focus` | act | `() -> Bool` |  | – | – | – | – | – |  | HStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: HStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: HStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: HStack takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read what reaches HStack - Android's driver has no path for it yet |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
-| `isFocusedChanged` | event | `Bool` | native | – | – | – | – |  |  | HStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: HStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: HStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | HStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: HStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: HStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: HStack takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -90,7 +90,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationX of HStack: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of HStack: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of HStack: the host's own transform: GTK reads back no part of one |
 | `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationY of HStack: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of HStack: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of HStack: the host's own transform: GTK reads back no part of one |
-| `unfocus` | act | `() -> Void` |  | – | – | – | – | ⏸ |  | HStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: HStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: HStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on HStack.isFocusedChanged, not realized yet |
+| `unfocus` | act | `() -> Void` |  | – | – | – | – | – |  | HStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: HStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: HStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: HStack takes no keyboard focus here: it refuses it, and nothing is heard |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 
