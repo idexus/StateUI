@@ -18,8 +18,12 @@ extension TextLook {
     func insert(into list: OpaquePointer, from start: UInt32 = 0, to end: UInt32 = UInt32.max) {
         var made: [UnsafeMutablePointer<PangoAttribute>] = []
         if let size, size > 0 { made.append(pango_attr_size_new_absolute(Int32((size * Double(PANGO_SCALE)).rounded()))) }
-        if attributes.contains(.bold) { made.append(pango_attr_weight_new(PANGO_WEIGHT_BOLD)) }
-        if attributes.contains(.italic) { made.append(pango_attr_style_new(PANGO_STYLE_ITALIC)) }
+        if attributes.contains(.bold) || attributesGiven {
+            made.append(pango_attr_weight_new(attributes.contains(.bold) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL))
+        }
+        if attributes.contains(.italic) || attributesGiven {
+            made.append(pango_attr_style_new(attributes.contains(.italic) ? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL))
+        }
         if let family, !family.isEmpty { made.append(pango_attr_family_new(family)) }
         if let color = rgbaColor {
             let (red, green, blue, alpha) = Self.channels(color)

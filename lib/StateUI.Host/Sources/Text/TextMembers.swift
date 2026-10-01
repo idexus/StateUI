@@ -37,6 +37,7 @@
         var look = TextLook()
         look.size = values[FontElementContract.fontSize]
         look.attributes = values[FontElementContract.fontAttributes] ?? .none
+        look.attributesGiven = values[FontElementContract.fontAttributes] != nil
         look.family = values[FontElementContract.fontFamily]?.text
         look.color = values[TextStyleElementContract.textColor]?.propValue
         return look

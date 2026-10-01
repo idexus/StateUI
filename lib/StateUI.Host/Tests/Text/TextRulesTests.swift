@@ -27,6 +27,23 @@ final class TextRulesTests: XCTestCase {
         XCTAssertEqual(TextMembers.look(of: still), look, "the whole look, changed or not")
     }
 
+    /// A weight and a slant the tree gives - none of them included - are the tree's: a toolkit whose theme draws
+    /// words bold draws them regular then; given nothing, the theme's own stand.
+    func testAWeightTheTreeGivesIsTheTrees() {
+        let none = ElementValues<ButtonContract>(changed: [.fontAttributes]) {
+            $0 == .fontAttributes ? FontAttributes.none.propValue : nil
+        }
+        XCTAssertTrue(TextMembers.look(of: none).attributesGiven, "none given")
+        XCTAssertFalse(TextMembers.look(of: ElementValues<ButtonContract>(changed: []) { _ in nil }).attributesGiven)
+
+        var run = TextLook()
+        run.attributesGiven = true
+        var label = TextLook()
+        label.attributes = .bold
+        XCTAssertEqual(run.over(label).attributes, .none, "a run given none stands regular over a bold label")
+        XCTAssertEqual(TextLook().over(label).attributes, .bold, "a run given nothing takes its label's")
+    }
+
     /// A break that does not wrap keeps one line; wrapped words stand on the lines allowed, none where none are.
     func testABreakAllowsItsLines() {
         XCTAssertEqual(LineBreak.tailTruncation.lines(maximum: 3), 1)

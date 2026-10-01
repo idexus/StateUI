@@ -122,13 +122,13 @@ enum GTKStyleSheet {
             name += "-s" + css(size).replacing(".", with: "_")
             body += "font-size: \(css(size))px; "
         }
-        if look.attributes.contains(.bold) {
-            name += "-b"
-            body += "font-weight: bold; "
+        if look.attributes.contains(.bold) || look.attributesGiven {
+            name += look.attributes.contains(.bold) ? "-b" : "-r"
+            body += look.attributes.contains(.bold) ? "font-weight: bold; " : "font-weight: normal; "
         }
-        if look.attributes.contains(.italic) {
-            name += "-i"
-            body += "font-style: italic; "
+        if look.attributes.contains(.italic) || look.attributesGiven {
+            name += look.attributes.contains(.italic) ? "-i" : "-u"
+            body += look.attributes.contains(.italic) ? "font-style: italic; " : "font-style: normal; "
         }
         if let family = look.family, !family.isEmpty {
             name += "-f" + family.utf8.map { String($0, radix: 16) }.joined()

@@ -13,6 +13,10 @@
     /// The font's weight and slant.
     public var attributes = FontAttributes.none
 
+    /// Whether the tree gave the weight and the slant - none of them included: a toolkit whose theme draws words bold
+    /// draws them regular then; given nothing, the theme's own stand.
+    public var attributesGiven = false
+
     /// The font's family.
     public var family: String?
 
@@ -44,7 +48,8 @@
     public func over(_ other: TextLook) -> TextLook {
         var look = self
         look.size = size ?? other.size
-        look.attributes = attributes.isEmpty ? other.attributes : attributes
+        look.attributes = attributes.isEmpty && !attributesGiven ? other.attributes : attributes
+        look.attributesGiven = attributesGiven || other.attributesGiven
         look.family = family ?? other.family
         look.color = color ?? other.color
         look.background = background ?? other.background
@@ -77,6 +82,7 @@ extension MountedElement {
         var look = TextLook()
         look.size = number(.fontSize)
         look.attributes = value(.fontAttributes)?.enumeration.map { FontAttributes(rawValue: $0) } ?? .none
+        look.attributesGiven = value(.fontAttributes) != nil
         look.family = value(.fontFamily)?.name
         look.color = value(.textColor)
         look.letterSpacing = number(.characterSpacing) ?? 0

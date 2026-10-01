@@ -44,6 +44,7 @@ extension GTKRegistrations {
             view.setLook { shown in
                 shown.size = look.size
                 shown.attributes = look.attributes
+                shown.attributesGiven = look.attributesGiven
                 shown.family = look.family
                 shown.color = look.color
             }
