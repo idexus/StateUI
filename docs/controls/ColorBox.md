@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 26 ✅ · 3 – | `UIView` + `CALayer` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | `View` + `GradientDrawable` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `Border` |  |
-| GTK 4 | ✅ | 20 ✅ | custom `GtkWidget` snapshot |  |
+| GTK 4 | ✅ | 22 ✅ | custom `GtkWidget` snapshot |  |
 | Web |  |  | `<div>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ColorBoxContract.swift`.
@@ -44,8 +44,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ColorBoxContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `color` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read the colour of ColorBox - GTK's driver has no path for it yet |
-| `cornerRadius` | property | `CornerRadius` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read the colour of ColorBox - GTK's driver has no path for it yet |
+| `color` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `cornerRadius` | property | `CornerRadius` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

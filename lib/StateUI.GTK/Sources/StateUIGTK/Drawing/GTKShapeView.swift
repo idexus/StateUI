@@ -14,12 +14,12 @@ final class GTKShapeView: GTKPanelView {
     /// own, as flat commands - 0 move, 1 line, 2 cubic, 3 quadratic, 4 close - placed by its aspect and moved by
     /// its transform.
     enum Geometry: Equatable {
-        case rectangle([Double])
-        case ellipse
+        case rectangle([Double], transform: [Double]?)
+        case ellipse(transform: [Double]?)
         case authored([Double], evenOdd: Bool, aspect: Aspect, transform: [Double]?)
     }
 
-    private var geometry = Geometry.rectangle([0, 0, 0, 0])
+    private var geometry = Geometry.rectangle([0, 0, 0, 0], transform: nil)
     private var fill = GTKBrush.none
     private var stroke = GTKBrush.none
     private var strokeWidth = 1.0
@@ -56,6 +56,19 @@ final class GTKShapeView: GTKPanelView {
         guard width > 0 || height > 0, let (path, evenOdd) = path(width: width, height: height, outlined: outlined)
         else { return }
         defer { gsk_path_unref(path) }
+        // A rectangle and an ellipse are moved by their transform where they are drawn; a geometry of the shape's
+        // own is placed already.
+        let moved: [Double]? = switch geometry {
+        case .rectangle(_, let transform), .ellipse(let transform): transform
+        case .authored: nil
+        }
+        let flat = moved.flatMap(Self.flat)
+        if let flat {
+            gtk_snapshot_save(snapshot)
+            gtk_snapshot_transform(snapshot, flat)
+            gsk_transform_unref(flat)
+        }
+        defer { if flat != nil { gtk_snapshot_restore(snapshot) } }
 
         if fill != .none {
             gtk_snapshot_push_fill(snapshot, path, evenOdd ? GSK_FILL_RULE_EVEN_ODD : GSK_FILL_RULE_WINDING)
@@ -86,7 +99,7 @@ final class GTKShapeView: GTKPanelView {
         let inset = outlined ? strokeWidth / 2 : 0
         let room = Self.rect(inset, inset, max(0, width - inset * 2), max(0, height - inset * 2))
         switch geometry {
-        case .rectangle(let radii):
+        case .rectangle(let radii, _):
             let corners = [radii[0], radii[1], radii[2], radii[3]].map { radius in
                 let kept = BoxArithmetic.fitted(
                     radius.isFinite ? max(0, radius) : 0, width: Double(room.size.width), height: Double(room.size.height))

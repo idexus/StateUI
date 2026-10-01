@@ -141,7 +141,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  | · |  |  |  |  | not realized; UIKit: cannot read avoidsSafeArea of VStack - UIKit's view places its children where StateUI's layout says; their frames prove it; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `clipsContent` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read clipsContent of VStack - GTK's driver has no path for it yet |
+| `clipsContent` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: cannot read clipsContent of VStack - GTK's driver has no path for it yet |
 | `letsInputThrough` | property | `Bool` | native | ◐ | ◐ |  |  | ◐ |  | cannot read letsInputThrough of VStack - AppKit's driver has no path for it yet; UIKit: cannot read letsInputThrough of VStack - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: not realized; GTK 4: cannot read letsInputThrough of VStack - GTK's driver has no path for it yet |
 
 ## From [StackBase](tiers/StackBase.md)

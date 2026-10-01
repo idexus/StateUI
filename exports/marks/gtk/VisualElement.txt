@@ -67,39 +67,39 @@ Button.translationY: cannot read translationY of Button - GTK's driver has no pa
 Button.unfocus: waits on Button.isFocusedChanged
 Button.width: ✅
 Button.zIndex: not realized
-Canvas.accessibilityHeadingLevel: not realized
-Canvas.accessibilityHint: not realized
-Canvas.accessibilityLabel: not realized
-Canvas.automationExcludedWithChildren: not realized
+Canvas.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Canvas - GTK's driver has no path for it yet
+Canvas.accessibilityHint: cannot read accessibilityHint of Canvas - GTK's driver has no path for it yet
+Canvas.accessibilityLabel: cannot read accessibilityLabel of Canvas - GTK's driver has no path for it yet
+Canvas.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Canvas - GTK's driver has no path for it yet
 Canvas.background: not realized
-Canvas.focus: not realized
-Canvas.frame: not realized
-Canvas.frameChanged: not realized
-Canvas.height: not realized
+Canvas.focus: waits on Canvas.isFocusedChanged
+Canvas.frame: ✅
+Canvas.frameChanged: ✅
+Canvas.height: ✅
 Canvas.ignoresInput: not realized
-Canvas.isAccessibilityHidden: not realized
-Canvas.isEnabled: not realized
+Canvas.isAccessibilityHidden: cannot read isAccessibilityHidden of Canvas - GTK's driver has no path for it yet
+Canvas.isEnabled: ✅
 Canvas.isFocusedChanged: not realized
-Canvas.isVisible: not realized
+Canvas.isVisible: ✅
 Canvas.layoutDirection: not realized
-Canvas.maximumHeight: not realized
-Canvas.maximumWidth: not realized
-Canvas.minimumHeight: not realized
-Canvas.minimumWidth: not realized
-Canvas.opacity: not realized
-Canvas.pivotX: not realized
-Canvas.pivotY: not realized
-Canvas.rotation: not realized
-Canvas.rotationX: not realized
-Canvas.rotationY: not realized
-Canvas.scale: not realized
-Canvas.scaleX: not realized
-Canvas.scaleY: not realized
-Canvas.style: not realized
-Canvas.translationX: not realized
-Canvas.translationY: not realized
-Canvas.unfocus: not realized
-Canvas.width: not realized
+Canvas.maximumHeight: ✅
+Canvas.maximumWidth: ✅
+Canvas.minimumHeight: ✅
+Canvas.minimumWidth: ✅
+Canvas.opacity: ✅
+Canvas.pivotX: cannot read pivotX of Canvas - GTK's driver has no path for it yet
+Canvas.pivotY: cannot read pivotY of Canvas - GTK's driver has no path for it yet
+Canvas.rotation: cannot read rotation of Canvas - GTK's driver has no path for it yet
+Canvas.rotationX: cannot read rotationX of Canvas - GTK's driver has no path for it yet
+Canvas.rotationY: cannot read rotationY of Canvas - GTK's driver has no path for it yet
+Canvas.scale: cannot read scale of Canvas - GTK's driver has no path for it yet
+Canvas.scaleX: cannot read scaleX of Canvas - GTK's driver has no path for it yet
+Canvas.scaleY: cannot read scaleY of Canvas - GTK's driver has no path for it yet
+Canvas.style: ✅
+Canvas.translationX: cannot read translationX of Canvas - GTK's driver has no path for it yet
+Canvas.translationY: cannot read translationY of Canvas - GTK's driver has no path for it yet
+Canvas.unfocus: waits on Canvas.isFocusedChanged
+Canvas.width: ✅
 Canvas.zIndex: not realized
 CheckBox.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of CheckBox - GTK's driver has no path for it yet
 CheckBox.accessibilityHint: cannot read accessibilityHint of CheckBox - GTK's driver has no path for it yet

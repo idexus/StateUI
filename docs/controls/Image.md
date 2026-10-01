@@ -141,4 +141,4 @@ How a picture fills the room it was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read aspect of Image - GTK's driver has no path for it yet |
+| `aspect` | property | `Aspect` | native | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: cannot read aspect of Image - GTK's driver has no path for it yet |

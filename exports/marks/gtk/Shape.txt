@@ -1,61 +1,61 @@
 # revision 1.1
-Ellipse.aspect: cannot read the colour of Ellipse - GTK's driver has no path for it yet
-Ellipse.fill: cannot read the colour of Ellipse - GTK's driver has no path for it yet
-Ellipse.renderTransform: cannot read the colour of Ellipse - GTK's driver has no path for it yet
-Ellipse.stroke: cannot read the colour of Ellipse - GTK's driver has no path for it yet
+Ellipse.aspect: ✅
+Ellipse.fill: ✅
+Ellipse.renderTransform: ✅
+Ellipse.stroke: ✅
 Ellipse.strokeDashOffset: cannot read strokeDashOffset of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashOffset; its drawing proves it
 Ellipse.strokeDashPattern: cannot read strokeDashPattern of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashPattern; its drawing proves it
 Ellipse.strokeLineCap: cannot read strokeLineCap of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineCap; its drawing proves it
 Ellipse.strokeLineJoin: cannot read strokeLineJoin of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineJoin; its drawing proves it
 Ellipse.strokeMiterLimit: cannot read strokeMiterLimit of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its strokeMiterLimit; its drawing proves it
-Ellipse.strokeWidth: cannot read the colour of Ellipse - GTK's driver has no path for it yet
-Line.aspect: cannot read the colour of Line - GTK's driver has no path for it yet
-Line.fill: cannot read the colour of Line - GTK's driver has no path for it yet
-Line.renderTransform: cannot read the colour of Line - GTK's driver has no path for it yet
-Line.stroke: cannot read the colour of Line - GTK's driver has no path for it yet
+Ellipse.strokeWidth: ✅
+Line.aspect: ✅
+Line.fill: ✅
+Line.renderTransform: ✅
+Line.stroke: ✅
 Line.strokeDashOffset: cannot read strokeDashOffset of Line - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashOffset; its drawing proves it
 Line.strokeDashPattern: cannot read strokeDashPattern of Line - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashPattern; its drawing proves it
 Line.strokeLineCap: cannot read strokeLineCap of Line - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineCap; its drawing proves it
 Line.strokeLineJoin: cannot read strokeLineJoin of Line - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineJoin; its drawing proves it
 Line.strokeMiterLimit: cannot read strokeMiterLimit of Line - StateUI draws a shape on GTK's snapshot, which holds none of its strokeMiterLimit; its drawing proves it
-Line.strokeWidth: cannot read the colour of Line - GTK's driver has no path for it yet
-Path.aspect: cannot read the colour of Path - GTK's driver has no path for it yet
-Path.fill: cannot read the colour of Path - GTK's driver has no path for it yet
-Path.renderTransform: cannot read the colour of Path - GTK's driver has no path for it yet
-Path.stroke: cannot read the colour of Path - GTK's driver has no path for it yet
+Line.strokeWidth: ✅
+Path.aspect: ✅
+Path.fill: ✅
+Path.renderTransform: ✅
+Path.stroke: ✅
 Path.strokeDashOffset: cannot read strokeDashOffset of Path - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashOffset; its drawing proves it
 Path.strokeDashPattern: cannot read strokeDashPattern of Path - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashPattern; its drawing proves it
 Path.strokeLineCap: cannot read strokeLineCap of Path - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineCap; its drawing proves it
 Path.strokeLineJoin: cannot read strokeLineJoin of Path - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineJoin; its drawing proves it
 Path.strokeMiterLimit: cannot read strokeMiterLimit of Path - StateUI draws a shape on GTK's snapshot, which holds none of its strokeMiterLimit; its drawing proves it
-Path.strokeWidth: cannot read the colour of Path - GTK's driver has no path for it yet
-Polygon.aspect: cannot read the colour of Polygon - GTK's driver has no path for it yet
-Polygon.fill: cannot read the colour of Polygon - GTK's driver has no path for it yet
-Polygon.renderTransform: cannot read the colour of Polygon - GTK's driver has no path for it yet
-Polygon.stroke: cannot read the colour of Polygon - GTK's driver has no path for it yet
+Path.strokeWidth: ✅
+Polygon.aspect: ✅
+Polygon.fill: ✅
+Polygon.renderTransform: ✅
+Polygon.stroke: ✅
 Polygon.strokeDashOffset: cannot read strokeDashOffset of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashOffset; its drawing proves it
 Polygon.strokeDashPattern: cannot read strokeDashPattern of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashPattern; its drawing proves it
 Polygon.strokeLineCap: cannot read strokeLineCap of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineCap; its drawing proves it
 Polygon.strokeLineJoin: cannot read strokeLineJoin of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineJoin; its drawing proves it
 Polygon.strokeMiterLimit: cannot read strokeMiterLimit of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its strokeMiterLimit; its drawing proves it
-Polygon.strokeWidth: cannot read the colour of Polygon - GTK's driver has no path for it yet
-Polyline.aspect: cannot read the colour of Polyline - GTK's driver has no path for it yet
-Polyline.fill: cannot read the colour of Polyline - GTK's driver has no path for it yet
-Polyline.renderTransform: cannot read the colour of Polyline - GTK's driver has no path for it yet
-Polyline.stroke: cannot read the colour of Polyline - GTK's driver has no path for it yet
+Polygon.strokeWidth: ✅
+Polyline.aspect: ✅
+Polyline.fill: ✅
+Polyline.renderTransform: ✅
+Polyline.stroke: ✅
 Polyline.strokeDashOffset: cannot read strokeDashOffset of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashOffset; its drawing proves it
 Polyline.strokeDashPattern: cannot read strokeDashPattern of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashPattern; its drawing proves it
 Polyline.strokeLineCap: cannot read strokeLineCap of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineCap; its drawing proves it
 Polyline.strokeLineJoin: cannot read strokeLineJoin of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineJoin; its drawing proves it
 Polyline.strokeMiterLimit: cannot read strokeMiterLimit of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its strokeMiterLimit; its drawing proves it
-Polyline.strokeWidth: cannot read the colour of Polyline - GTK's driver has no path for it yet
-Rectangle.aspect: cannot read the colour of Rectangle - GTK's driver has no path for it yet
-Rectangle.fill: cannot read the colour of Rectangle - GTK's driver has no path for it yet
-Rectangle.renderTransform: cannot read the colour of Rectangle - GTK's driver has no path for it yet
-Rectangle.stroke: cannot read the colour of Rectangle - GTK's driver has no path for it yet
+Polyline.strokeWidth: ✅
+Rectangle.aspect: ✅
+Rectangle.fill: ✅
+Rectangle.renderTransform: ✅
+Rectangle.stroke: ✅
 Rectangle.strokeDashOffset: cannot read strokeDashOffset of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashOffset; its drawing proves it
 Rectangle.strokeDashPattern: cannot read strokeDashPattern of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashPattern; its drawing proves it
 Rectangle.strokeLineCap: cannot read strokeLineCap of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineCap; its drawing proves it
 Rectangle.strokeLineJoin: cannot read strokeLineJoin of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineJoin; its drawing proves it
 Rectangle.strokeMiterLimit: cannot read strokeMiterLimit of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeMiterLimit; its drawing proves it
-Rectangle.strokeWidth: cannot read the colour of Rectangle - GTK's driver has no path for it yet
+Rectangle.strokeWidth: ✅

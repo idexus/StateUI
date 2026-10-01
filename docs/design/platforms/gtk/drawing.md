@@ -63,6 +63,20 @@ dashes, gaps and their offset are outline widths in StateUI and lengths in
 GSK, so they are multiplied by the width. A shape has no size of its own: it
 takes the room its layout gives it.
 
+## A canvas
+
+A canvas is a panel that replays its drawing on GTK's snapshot, in order,
+within its own room - an instruction reaching past it paints nothing: the
+host layer reads the instructions and keeps the pen
+([drawing](../../types/drawing.md)), a state saved and put back is the
+snapshot's own, and an arc is the host layer's curves. Outlines and fills are
+GSK's paths - a rectangle, a rounded one and an ellipse as GSK's rounded
+rectangles - and words are a Pango layout of the pen's size, placed across and
+down their room and cut to it. A press, its drag and its release reach the
+application through GTK's drag gesture, each where it is in the canvas.
+
+The shapes take their transform the same way, drawn under it on the snapshot.
+
 ## A placed child
 
 A ZStack whose places a state drives stands each child where the run says, and

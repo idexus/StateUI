@@ -14,6 +14,11 @@ Button
   textCase
   textColor
   clicked()
+Canvas
+  drawable
+  dragged()
+  pressed()
+  released()
 CheckBox
   isOn
   toggled()

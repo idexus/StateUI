@@ -109,6 +109,9 @@ final class GTKDriver: HostDriver {
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
+        case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
+             (.lift, let canvas as GTKCanvasView):
+            try press(act, on: canvas, element)
         case (.choose(let place), let items as GTKItemsView): try choose(place, in: items, on: element)
         default: throw DriverCannot(act, on: element)
         }

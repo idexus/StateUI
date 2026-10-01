@@ -1,4 +1,4 @@
 # revision 1.1
 Path: ✅
-Path.data: cannot read the colour of Path - GTK's driver has no path for it yet
+Path.data: ✅
 Path.frameChanged: ✅

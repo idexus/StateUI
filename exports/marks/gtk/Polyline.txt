@@ -1,5 +1,5 @@
 # revision 1.1
 Polyline: ✅
-Polyline.fillRule: cannot read the colour of Polyline - GTK's driver has no path for it yet
+Polyline.fillRule: ✅
 Polyline.frameChanged: ✅
-Polyline.points: cannot read the colour of Polyline - GTK's driver has no path for it yet
+Polyline.points: ✅

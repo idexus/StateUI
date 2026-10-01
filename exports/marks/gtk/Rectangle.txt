@@ -1,5 +1,5 @@
 # revision 1.1
 Rectangle: ✅
-Rectangle.cornerRadius: cannot read the colour of Rectangle - GTK's driver has no path for it yet
-Rectangle.fill: cannot read the colour of Rectangle - GTK's driver has no path for it yet
+Rectangle.cornerRadius: ✅
+Rectangle.fill: ✅
 Rectangle.frameChanged: ✅

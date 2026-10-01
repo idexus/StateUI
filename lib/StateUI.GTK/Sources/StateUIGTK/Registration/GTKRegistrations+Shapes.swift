@@ -11,13 +11,13 @@ extension GTKRegistrations {
         registry.add(RectangleContract.self, create: { _ in GTKShapeView() }) { shape in
             shape.applies(shapeMembers + [RectangleContract.cornerRadius]) { view, values in
                 paint(view, values)
-                view.draw(.rectangle(BoxArithmetic.clockwise(values[RectangleContract.cornerRadius])))
+                view.draw(.rectangle(BoxArithmetic.clockwise(values[RectangleContract.cornerRadius]), transform: moved(values)))
             }
         }
         registry.add(EllipseContract.self, create: { _ in GTKShapeView() }) { shape in
             shape.applies(shapeMembers) { view, values in
                 paint(view, values)
-                view.draw(.ellipse)
+                view.draw(.ellipse(transform: moved(values)))
             }
         }
         registry.add(LineContract.self, create: { _ in GTKShapeView() }) { shape in
@@ -78,10 +78,13 @@ extension GTKRegistrations {
     private static func authored<Realized: ElementContract>(
         _ commands: [Double], evenOdd: Bool, _ values: ElementValues<Realized>
     ) -> GTKShapeView.Geometry {
+        .authored(commands, evenOdd: evenOdd, aspect: values[ShapeContract.aspect] ?? .fit, transform: moved(values))
+    }
+
+    /// The shape's transform, as the six numbers of its matrix; nil for none, or numbers that are not six and finite.
+    private static func moved<Realized: ElementContract>(_ values: ElementValues<Realized>) -> [Double]? {
         let transform = values[ShapeContract.renderTransform]?.propValue.values?.compactMap(\.number)
-        return .authored(
-            commands, evenOdd: evenOdd, aspect: values[ShapeContract.aspect] ?? .fit,
-            transform: transform.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil })
+        return transform.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil }
     }
 
 }
