@@ -114,20 +114,13 @@ final class GTKQuestion {
         let entry = gtk_entry_new()!
         if let placeholder = question.placeholder { gtk_entry_set_placeholder_text(entry.of(GtkEntry.self), placeholder) }
         if let most = question.maximumLength { gtk_entry_set_max_length(entry.of(GtkEntry.self), Int32(clamping: most)) }
-        gtk_entry_set_input_purpose(entry.of(GtkEntry.self), Self.purpose(question.purpose))
+        let (hints, purpose) = GTKTextFieldView.input(
+            InputTraits(spellChecked: true, predicted: true, purpose: question.purpose))
+        gtk_entry_set_input_hints(entry.of(GtkEntry.self), hints)
+        gtk_entry_set_input_purpose(entry.of(GtkEntry.self), purpose)
         gtk_editable_set_text(entry.opaque, question.words)
         gtk_entry_set_activates_default(entry.of(GtkEntry.self), 1)
         field = entry
         return entry
-    }
-
-    private static func purpose(_ purpose: InputPurpose) -> GtkInputPurpose {
-        switch purpose {
-        case .email: GTK_INPUT_PURPOSE_EMAIL
-        case .numeric: GTK_INPUT_PURPOSE_NUMBER
-        case .telephone: GTK_INPUT_PURPOSE_PHONE
-        case .url: GTK_INPUT_PURPOSE_URL
-        default: GTK_INPUT_PURPOSE_FREE_FORM
-        }
     }
 }

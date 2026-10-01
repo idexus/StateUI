@@ -65,12 +65,8 @@ extension GTKRegistrations {
         if values.changed(VisualElementContract.isEnabled) {
             view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
         }
-        if values.changed(InputViewContract.isReadOnly) || values.changed(InputViewContract.isSpellCheckEnabled)
-            || values.changed(InputViewContract.isTextPredictionEnabled) || values.changed(InputViewContract.inputPurpose) {
-            let (hints, purpose) = GTKTextFieldView.input(
-                spellChecked: values[InputViewContract.isSpellCheckEnabled] ?? true,
-                predicted: values[InputViewContract.isTextPredictionEnabled] ?? true,
-                purpose: values[InputViewContract.inputPurpose])
+        if values.changed(InputViewContract.isReadOnly) || InputTraits.changed(values) != nil {
+            let (hints, purpose) = GTKTextFieldView.input(InputTraits(values))
             view.setBehaviour(readOnly: values[InputViewContract.isReadOnly] ?? false, hints: hints, purpose: purpose)
         }
         if TextMembers.look(values) != nil || values.changed(InputViewContract.placeholderColor) {

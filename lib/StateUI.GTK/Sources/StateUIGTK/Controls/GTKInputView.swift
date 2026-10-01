@@ -38,25 +38,21 @@ protocol GTKInputView: GTKView {
 }
 
 extension GTKInputView {
-    /// What GTK tells the input method of words the tree says are spell checked and predicted, and for `purpose`.
-    static func input(spellChecked: Bool, predicted: Bool, purpose: InputPurpose?) -> (GtkInputHints, GtkInputPurpose) {
-        var hints = (spellChecked ? GTK_INPUT_HINT_SPELLCHECK : GTK_INPUT_HINT_NO_SPELLCHECK).rawValue
-        if predicted { hints |= GTK_INPUT_HINT_WORD_COMPLETION.rawValue }
-        let kind: GtkInputPurpose
-        switch purpose ?? .default {
-        case .default, .text: kind = GTK_INPUT_PURPOSE_FREE_FORM
-        case .plain:
-            kind = GTK_INPUT_PURPOSE_FREE_FORM
-            hints = GTK_INPUT_HINT_NO_SPELLCHECK.rawValue
-        case .chat:
-            kind = GTK_INPUT_PURPOSE_FREE_FORM
-            hints |= GTK_INPUT_HINT_EMOJI.rawValue
-        case .email: kind = GTK_INPUT_PURPOSE_EMAIL
-        case .numeric: kind = GTK_INPUT_PURPOSE_NUMBER
-        case .telephone: kind = GTK_INPUT_PURPOSE_PHONE
-        case .url: kind = GTK_INPUT_PURPOSE_URL
+    /// What GTK tells the input method of words typed with `traits`: the keys by the purpose, and the hints for
+    /// checking, completing, emoji and capitals. GTK holds no hint for correction.
+    /// Design: docs/design/platforms/gtk/controls.md#a-field-and-its-words
+    static func input(_ traits: InputTraits) -> (GtkInputHints, GtkInputPurpose) {
+        var hints = (traits.checksSpelling ? GTK_INPUT_HINT_SPELLCHECK : GTK_INPUT_HINT_NO_SPELLCHECK).rawValue
+        if traits.predicts { hints |= GTK_INPUT_HINT_WORD_COMPLETION.rawValue }
+        if traits.offersEmoji { hints |= GTK_INPUT_HINT_EMOJI.rawValue }
+        if traits.capitals == .sentences { hints |= GTK_INPUT_HINT_UPPERCASE_SENTENCES.rawValue }
+        let purpose = switch traits.keys {
+        case .words: GTK_INPUT_PURPOSE_FREE_FORM
+        case .email: GTK_INPUT_PURPOSE_EMAIL
+        case .number: GTK_INPUT_PURPOSE_NUMBER
+        case .telephone: GTK_INPUT_PURPOSE_PHONE
+        case .url: GTK_INPUT_PURPOSE_URL
         }
-        if purpose == .text { hints |= GTK_INPUT_HINT_UPPERCASE_SENTENCES.rawValue }
-        return (GtkInputHints(rawValue: hints), kind)
+        return (GtkInputHints(rawValue: hints), purpose)
     }
 }

@@ -118,8 +118,10 @@ GTK reports as it reports the user's.
 A field's words stand in its `GtkText`, the text widget a `GtkEntry` and a
 `GtkSearchEntry` both hold, so the two are one view. How the words are taken
 is the tree's where it says so and GTK's where it does not: read only, and
-what the input method is told - spell checked or not, the next word
-suggested, and what the words are for, as GTK's input hints and purpose.
+what the input method is told - the traits the host layer reads once ([what
+typing is given](../../host/runtime.md#what-typing-is-given)) as GTK's input
+hints and purpose: checking, the next word suggested, emoji, capitals at a
+sentence's start, and the keys. GTK holds no hint for correction.
 GTK's text widgets mark no spelling themselves; the input method is what
 checks. A password field hides each character behind a dot. The words stand
 across the field as their alignment says, and the caret and the selection are
