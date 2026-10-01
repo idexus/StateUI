@@ -8,6 +8,7 @@
 extension GTKElement {
     func makeView() -> GTKView? {
         if type == .itemsView, let host { return GTKItemsView(cells: ItemsCells(element, in: host.runtime)) }
+        if element.isDrawnByParent(in: GTKRegistrations.registry) { return nil }
         if let registered = GTKRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },

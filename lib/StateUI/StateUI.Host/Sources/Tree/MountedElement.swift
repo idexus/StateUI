@@ -60,6 +60,12 @@
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 
+    /// Whether the last patch changed the element's children - one added, moved, taken away or changed.
+    public private(set) var childrenChanged = false
+
+    /// The one the host keeps for this element as a child another's view draws, once one was asked for.
+    var keptChild: HostChild?
+
     private(set) weak var tree: MountedTree?
     private var wornStates: [Int32] = []
     private var drivenValues: [Prop: HostStateValue] = [:]
@@ -127,6 +133,8 @@
             // The application says its motion once; every layout that says none animates under it.
             if type == .application { tree.layoutMotion.applicationMotion = motion.motion }
         }
+
+        if case .unchanged = patch.children { childrenChanged = false } else { childrenChanged = true }
 
         switch patch.children {
         case .unchanged:

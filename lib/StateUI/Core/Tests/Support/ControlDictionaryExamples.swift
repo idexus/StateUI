@@ -706,6 +706,24 @@ extension ControlDictionary {
             """#),
     ]
 
+    /// What an application registers with a host that does not realize a provider's element, shown under the
+    /// element's example: the words saying when, and the host's registration, quoted - it is written against a
+    /// host's facade, which no handbook block compiles with.
+    /// Design: docs/design/contracts/dictionary.md#examples
+    static let registrations: [(contract: any ElementContract.Type, words: String, code: String)] = [
+        (MapContract.self,
+         "A host with no map of its own shows the one the application registers with it - its control, the provider "
+            + "and the key it needs - and draws the pins as the map's children:",
+         #"""
+            StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+                map.property(MapContract.region) { control, region in … }
+                map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { control, pins in
+                    // each pin: its typed values, and its own reports to raise pinClicked on it
+                }
+            }
+            """#),
+    ]
+
     /// The example opening `contract`'s page.
     static func example(of contract: any Contract.Type) -> String? {
         examples.first { ObjectIdentifier($0.contract) == ObjectIdentifier(contract) }?.code

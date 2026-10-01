@@ -22,6 +22,7 @@ extension WinUIElement {
                 host?.runtime.reducesMotion() ?? false
             })
         }
+        if element.isDrawnByParent(in: WinUIRegistrations.registry) { return nil }
         if let registered = WinUIRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },

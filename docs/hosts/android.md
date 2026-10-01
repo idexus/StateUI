@@ -127,13 +127,39 @@ StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLight
 
 The host places, sizes and shows the view as it does its own - margins,
 alignment, opacity, gestures, frame reports - measuring it by the view's own
-`onMeasure`. A registered control is a leaf. The view tells its Swift half
+`onMeasure`. A registered control is a leaf: it draws the children of a
+contract it names itself, as the next section says. The view tells its Swift half
 what the user did through a native method of the application's own, found by
 its JNI name (`@_cdecl("Java_..._lampTapped")`), handed the number the
 control made it with. A control that draws with the GPU is a view like any
 other: the Gallery's `Cube3D` is a `TextureView` whose surface Swift draws
 into with OpenGL ES 3.0 over EGL, following the display's frames only while
 it spins and stands in a window - the same declaration Metal draws on AppKit.
+
+### Children a control draws
+
+A control may draw the children of one contract itself - a map draws its pins.
+`children` names their contract and what of each the control realizes, and hands
+it every such child, in the tree's order, whenever the element's children
+change: one added, moved, taken away, or given another value. A child is a
+`AndroidChild` - its values read as the types its contract declares, and its own
+`reports` to raise its events on it - and stays the same child for as long as
+it lives, so the control keeps what it drew for one by it. Such a child has no
+view of its own.
+
+```swift quote
+StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+    map.property(MapContract.region) { control, region in … }
+    map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { control, pins in
+        control.show(pins.map { pin in (pin, pin.value(PinContract.location)) })
+        // the user taps one: pin.reports.raise(PinContract.pinClicked)
+    }
+}
+```
+
+A library element a host does not realize - a `Map` where the platform has no
+map of its own - is registered the same way, with the provider and the key it
+needs.
 
 ### An act
 

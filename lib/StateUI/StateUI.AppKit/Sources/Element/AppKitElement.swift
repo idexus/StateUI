@@ -108,6 +108,7 @@ final class AppKitElement: NSObject, NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        if let view, let host { element.applyDrawnChildren(to: view, through: AppKitRegistrations.registry, in: host.runtime) }
         configureContextMenu()
         configureGestures()
         configureLayoutMotion()

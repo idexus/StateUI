@@ -177,9 +177,9 @@ struct MapSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("`Map` is an optional provider, drawn by the platform's own map where a "
-                + "host provides one - `MKMapView` on Apple. Elsewhere a host depends on a "
-                + "map library and a map service, and the Web has no map element.")
+            Label("`Map` is drawn by the platform's own map where there is one - "
+                + "`MKMapView` on Apple. Elsewhere the application registers its own map "
+                + "with the host, the pins as its children; the Web has no map element.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -30,7 +30,8 @@ public protocol AndroidControl: AnyObject {
 @MainActor
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a control of its own: how the control is made, and
-    /// which of the element's members it takes and raises.
+    /// which of the element's members it takes and raises. A library element this host does not realize - a `Map`,
+    /// its pins drawn through `children` - is added the same way.
     ///
     ///     StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
     ///         let light = TrafficLightView()
@@ -200,5 +201,52 @@ public final class AndroidRegistration<Realized: ElementContract, Made: AndroidC
     /// - Parameter event: the member, written with its contract.
     public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         registration.raises(event)
+    }
+
+    /// The children of one contract the control draws itself - a map's pins - handed over whole, in the tree's
+    /// order, whenever the element's children change: one added, moved, taken away, or given another value. Such a
+    /// child has no view of its own. `members` are what the control realizes of each child - a property or an
+    /// event of the child's contract or of a tier it wears; anything else is left out, and said once.
+    ///
+    ///     map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { control, pins in
+    ///         control.show(pins)
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - contract: the children's contract.
+    ///   - members: what the control realizes of each child, written with their contracts.
+    ///   - apply: hands the control every child of the contract.
+    public func children<Child: ElementContract>(
+        _ contract: Child.Type,
+        members: [any ContractMember],
+        _ apply: @escaping (Made, [AndroidChild<Child>]) -> Void
+    ) {
+        registration.children(contract, members: members) { hosted, children in
+            apply(hosted.control, children.map(AndroidChild.init))
+        }
+    }
+}
+
+/// A child element the control draws itself - a map's pin: its values as the types its contract declares, and the
+/// reports its events leave through. Two are equal when they are the same child, for as long as it lives, so a
+/// control keeps what it drew for one by it.
+public struct AndroidChild<Child: ElementContract>: Hashable {
+    private let child: ChildElement<Child>
+
+    init(_ child: ChildElement<Child>) {
+        self.child = child
+    }
+
+    /// One of the child's values, as the type its contract declares - nil where it is not described.
+    ///
+    /// - Parameter property: the member, written with its contract.
+    /// - Returns: the value, or nil.
+    public func value<Owner: Contract, Value: HostRepresentable>(_ property: ElementProperty<Owner, Value>) -> Value? {
+        child.value(property)
+    }
+
+    /// What the child's events and the user's values on it leave through.
+    public var reports: AndroidReports<Child> {
+        AndroidReports(child.reports)
     }
 }

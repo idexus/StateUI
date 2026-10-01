@@ -117,13 +117,39 @@ StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLight
 
 The host places, sizes and shows the control's widget as it does its own -
 margins, alignment, opacity, gestures, frame reports - and measures it by the
-widget's own measure. A registered control is a leaf. A control that runs a
+widget's own measure. A registered control is a leaf: it draws the children
+of a contract it names itself, as the next section says. A control that runs a
 loop of its own - the Gallery's `Cube3D`, a `GtkGLArea` drawing with OpenGL 3.3
 core through libepoxy - turns on its widget's tick callback, which GTK calls
 only while the widget is on screen, so nothing turns behind a page the user has
 left; a value changed while it is stopped still asks for the one frame it
 needs. The same `Cube3D` is drawn with Metal on AppKit: one declaration, each
 host drawing it in its own way.
+
+### Children a control draws
+
+A control may draw the children of one contract itself - a map draws its pins.
+`children` names their contract and what of each the control realizes, and hands
+it every such child, in the tree's order, whenever the element's children
+change: one added, moved, taken away, or given another value. A child is a
+`GTKChild` - its values read as the types its contract declares, and its own
+`reports` to raise its events on it - and stays the same child for as long as
+it lives, so the control keeps what it drew for one by it. Such a child has no
+widget of its own.
+
+```swift quote
+StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+    map.property(MapContract.region) { control, region in … }
+    map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { control, pins in
+        control.show(pins.map { pin in (pin, pin.value(PinContract.location)) })
+        // the user taps one: pin.reports.raise(PinContract.pinClicked)
+    }
+}
+```
+
+A library element a host does not realize - a `Map` where the platform has no
+map of its own - is registered the same way, with the provider and the key it
+needs.
 
 ### An act
 

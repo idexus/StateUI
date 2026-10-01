@@ -15,6 +15,7 @@ extension UIKitElement {
                 host?.runtime.reducesMotion() ?? false
             })
         }
+        if element.isDrawnByParent(in: UIKitRegistrations.registry) { return nil }
         if let registered = UIKitRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },

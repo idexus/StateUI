@@ -12,6 +12,17 @@ Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
     .onMapClicked { place in tapped = "\(place.latitude), \(place.longitude)" }
 ```
 
+A host with no map of its own shows the one the application registers with it - its control, the provider and the key it needs - and draws the pins as the map's children:
+
+```swift quote
+StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+    map.property(MapContract.region) { control, region in … }
+    map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { control, pins in
+        // each pin: its typed values, and its own reports to raise pinClicked on it
+    }
+}
+```
+
 Layer: `provider`. An optional provider supplies it: a package, or the application that registers it with its hosts.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)
@@ -35,9 +46,9 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
 | UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
-| Android Views |  |  | Google Play services `MapView` / `Marker` (?) | not realized |
-| WinUI 3 |  |  | `MapControl` (?) | not realized |
-| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | not realized |
+| Android Views |  |  | the application's own, registered | not realized |
+| WinUI 3 |  |  | the application's own, registered | not realized |
+| GTK 4 |  |  | the application's own, registered | not realized |
 | Web |  |  | no honest native counterpart | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/MapContract.swift`.

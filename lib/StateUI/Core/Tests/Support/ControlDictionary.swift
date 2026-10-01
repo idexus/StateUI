@@ -260,7 +260,7 @@ struct ControlDictionary {
             Self.rendered, "",
             "# \(name)", "",
             doc(of: element), "",
-        ] + Self.exampleBlock(of: element) + [
+        ] + Self.exampleBlock(of: element) + Self.registrationBlock(of: element) + [
             "Layer: `\(element.layer)`. " + meaning(of: element.layer), "",
             worn.isEmpty
                 ? "Inherits nothing: every member below is its own."
@@ -359,6 +359,13 @@ struct ControlDictionary {
     /// A contract's example as a Swift block and the empty line after it; nothing where it has none.
     static func exampleBlock(of contract: any Contract.Type) -> [String] {
         example(of: contract).map { ["```swift", $0, "```", ""] } ?? []
+    }
+
+    /// What an application registers where a host does not realize the element, under its example: the words, and
+    /// the registration quoted, never compiled.
+    static func registrationBlock(of contract: any Contract.Type) -> [String] {
+        registrations.first { ObjectIdentifier($0.contract) == ObjectIdentifier(contract) }
+            .map { [$0.words, "", "```swift quote", $0.code, "```", ""] } ?? []
     }
 
     /// A contract's doc.

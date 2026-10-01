@@ -57,6 +57,20 @@ a page. Every walk of the tree - a search, a frame, an element leaving - takes
 the slots with the children. A page and a view keep their slots among their
 children: a page lays out only its content, and a slot has no view to lay out.
 
+## Children a view draws
+
+A registered view may draw the children of one contract itself - a map's
+pins. Its registration names their contract and what of each it realizes
+(`Registration.children`), so the realization holds that element and those
+members. Such a child is mounted like any other, with its patches and its
+handlers, and has no view of its own (`isDrawnByParent`). Whenever a patch
+changes the parent's children - the first, one added, moved, taken away, or
+one's values - the host hands the view every such child in the tree's order
+(`applyDrawnChildren`). Each is the same `HostChild` for as long as the child
+lives, so the view keeps what it drew for one and lets go of what it is no
+longer handed. A child's values reach the view at rest: a display frame moving
+one does not.
+
 ## Standing values
 
 An animation starts where the value stands, never where the tree last said it

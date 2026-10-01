@@ -55,6 +55,7 @@ final class WinUIElement: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        if let view, let host { element.applyDrawnChildren(to: view, through: WinUIRegistrations.registry, in: host.runtime) }
         configureGestures()
         view?.setFocusChanged(element.handler(.isFocusedChanged) == nil ? nil : { [weak self] focused in
             self?.send(.isFocusedChanged, [.bool(focused)])

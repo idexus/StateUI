@@ -175,7 +175,33 @@ view properties around it: margins, alignment, opacity, sizing, gestures,
 focus, and frame reports. A registered view draws however it likes, the GPU
 included: the Gallery's `Cube3D` is an `MTKView` drawing with Metal, and its
 loop pauses in `didMoveToWindow` once no window shows it. A registered element
-is a leaf here: its children reach nothing.
+is a leaf here: it draws the children of a contract it names itself, as the
+next section says, and no other child is shown.
+
+### Children a control draws
+
+A view may draw the children of one contract itself - a map draws its pins.
+`children` names their contract and what of each the view realizes, and hands
+it every such child, in the tree's order, whenever the element's children
+change: one added, moved, taken away, or given another value. A child is a
+`UIKitChild` - its values read as the types its contract declares, and its own
+`reports` to raise its events on it - and stays the same child for as long as
+it lives, so the view keeps what it drew for one by it. Such a child has no
+view of its own.
+
+```swift quote
+StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+    map.property(MapContract.region) { view, region in … }
+    map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { view, pins in
+        view.show(pins.map { pin in (pin, pin.value(PinContract.location)) })
+        // the user taps one: pin.reports.raise(PinContract.pinClicked)
+    }
+}
+```
+
+A library element a host does not realize - a `Map` where the platform has no
+map of its own - is registered the same way, with the provider and the key it
+needs.
 
 ### An act
 

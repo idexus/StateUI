@@ -280,7 +280,10 @@ host. Their presence in the Swift module is not a support claim:
 | `Map` | provider-owned native map; initial region in the declaration; pins and tap reports; later region changes through an aim |
 
 `Map` is provider-owned because credentials, map engines, permissions, and
-feature sets are not one base-platform primitive. The other candidates enter
+feature sets are not one base-platform primitive. A host with no map of its
+own shows the one the application registers with it, the pins drawn as the
+map's children ([Children a control
+draws](../hosts/gtk.md#children-a-control-draws), on each host's page). The other candidates enter
 the base contract only if the target native toolkits can preserve the stated
 ownership, input, accessibility, and lifecycle semantics without growing a
 second UI system in the host. A surface that cannot meet that bar is removed

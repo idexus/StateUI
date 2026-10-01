@@ -71,6 +71,12 @@ function body - `@State var count = 0` beside the control - or as the types
 of a small application where its contract is one (`Application`, `Scene`,
 `Window`, an arrangement).
 
+A provider's element a host may not realize - a `Map` - shows under its
+example what an application registers with such a host
+(`ControlDictionaryExamples.registrations`): a sentence, and the
+registration quoted - `swift quote`, never compiled, since it is written
+against a host's facade and the handbook compiles against `StateUI` alone.
+
 ## Marks
 
 A mark is a test's verdict. A host's column shows only what its own suite's

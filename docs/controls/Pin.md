@@ -39,9 +39,9 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
 | UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
-| Android Views |  |  | Google Play services `MapView` / `Marker` (?) | not realized |
-| WinUI 3 |  |  | `MapControl` (?) | not realized |
-| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | not realized |
+| Android Views |  |  | the application's own, registered | not realized |
+| WinUI 3 |  |  | the application's own, registered | not realized |
+| GTK 4 |  |  | the application's own, registered | not realized |
 | Web |  |  | no honest native counterpart | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PinContract.swift`.

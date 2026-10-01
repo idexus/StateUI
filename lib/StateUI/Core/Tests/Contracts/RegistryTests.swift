@@ -27,6 +27,8 @@ final class RegistryTests: XCTestCase {
         var dialled: ((Int) -> Void)?
         var tuned: ((Double) -> Void)?
         var strayed: ((Double) -> Void)?
+        var bulbs: [ChildElement<BulbContract>] = []
+        var handed = 0
     }
 
     /// Something that is no platform view - what a registration must not make.
@@ -271,7 +273,65 @@ final class RegistryTests: XCTestCase {
         XCTAssertEqual(applied, [signal])
     }
 
+    /// Children a view draws itself are realized: their element, and of their members what the registration names
+    /// - a member of a contract the child does not wear is left out - and the registry says whose they are.
+    func testChildrenAViewDrawsAreRealizedWithTheMembersNamed() {
+        let registry = Self.lampsWithBulbs()
+        let realization = registry.realization
+
+        XCTAssertEqual(registry.childTypes(of: LampContract.nodeType), [BulbContract.nodeType])
+        XCTAssertEqual(registry.childTypes(of: PlainContract.nodeType), [])
+        XCTAssertTrue(realization.elements.contains(BulbContract.name))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: BulbContract.name, owner: BulbContract.name, member: "colour")))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: BulbContract.name, owner: BulbContract.name, member: "bulbTapped")))
+        XCTAssertFalse(realization.members.contains { $0.element == BulbContract.name && $0.member == "signal" })
+    }
+
+    /// The view is handed its children in order, each value typed by member, each event raised on the child it
+    /// came from; the same child is the same element every time.
+    func testTheViewIsHandedItsChildrenTypedAndRaisingOnThemselves() throws {
+        let registry = Self.lampsWithBulbs()
+        let view = try Self.lamp(registry)
+        let told = Told()
+        let red = HostChild(
+            reading: { $0 == BulbContract.colour.token ? .string("red") : nil },
+            sending: { event, _ in told.events.append("red \(event.name)") },
+            reporting: { _, _, _ in })
+        let blue = HostChild(
+            reading: { $0 == BulbContract.colour.token ? .string("blue") : nil },
+            sending: { event, _ in told.events.append("blue \(event.name)") },
+            reporting: { _, _, _ in })
+
+        registry.applyChildren(to: view, of: LampContract.nodeType) { $0 == BulbContract.nodeType ? [red, blue] : [] }
+        let first = view.bulbs
+        view.bulbs[1].reports.raise(BulbContract.bulbTapped)
+        registry.applyChildren(to: view, of: LampContract.nodeType) { $0 == BulbContract.nodeType ? [blue] : [] }
+
+        XCTAssertEqual(first.map { $0.value(BulbContract.colour) }, ["red", "blue"])
+        XCTAssertEqual(told.events, ["blue bulbTapped"])
+        XCTAssertEqual(view.bulbs, [first[1]], "the same child is the same element")
+        XCTAssertEqual(view.handed, 2)
+    }
+
     // MARK: - Support
+
+    /// The lamps' registry, its view drawing the bulbs among its children - and a member of a contract a bulb does
+    /// not wear, which is left out.
+    private static func lampsWithBulbs() -> Registry<PlatformView> {
+        let registry = Registry<PlatformView>()
+
+        registry.add(LampContract.self, create: { _ in LampView() }) { lamp in
+            lamp.children(BulbContract.self, members: [BulbContract.colour, BulbContract.bulbTapped, LampContract.signal]) {
+                view, bulbs in
+                view.bulbs = bulbs
+                view.handed += 1
+            }
+        }
+
+        return registry
+    }
 
     /// A registry realizing the lamp: its signal and the opacity it wears one
     /// at a time, its caption and emphasis whole, the lamp tap it raises, the
@@ -370,6 +430,16 @@ private enum LampContract: ElementContract {
     static let signalChanged = ElementEvent<Self, Int>("signalChanged")
 
     static let members: [any ContractMember] = [signal, caption, emphasis, unrealized, lampTapped, signalChanged]
+}
+
+/// A child the lamp's view draws itself, wearing no tier - as a map's pin.
+private enum BulbContract: ElementContract {
+    static let nodeType: NodeType = "Test.Bulb"
+
+    static let colour = ElementProperty<Self, String>("colour")
+    static let bulbTapped = ElementEvent<Self, Void>("bulbTapped")
+
+    static let members: [any ContractMember] = [colour, bulbTapped]
 }
 
 /// An element wearing no tier.

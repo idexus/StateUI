@@ -9,6 +9,7 @@ import AppKit
 /// The native view: made, and given the element's properties.
 extension AppKitElement {
     func makeView() -> NSView? {
+        if element.isDrawnByParent(in: AppKitRegistrations.registry) { return nil }
         if let registered = AppKitRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
