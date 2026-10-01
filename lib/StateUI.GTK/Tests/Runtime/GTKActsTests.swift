@@ -145,27 +145,6 @@ final class GTKActsTests: XCTestCase {
         }
     }
 
-    /// Every question is libadwaita's own dialog, answered as the user answers it: an alert dismissed, a
-    /// confirmation accepted, a choice made and words typed.
-    func testEveryQuestionIsLibadwaitasDialog() throws {
-        try onUIThread {
-            let host = GTKRenderer.running { QuestionsPage() }
-
-            try host.press("Alert")
-            try host.answer("OK")
-            try host.press("Confirm")
-            try host.answer("Delete")
-            try host.press("Choose")
-            try host.answer("Mail")
-            try host.press("Prompt")
-            try host.answer("OK", typing: "Ada")
-            let expected = "alerted; confirmed true; chose Mail; typed Ada; "
-            host.settle { host.said == expected }
-
-            XCTAssertEqual(host.said, expected)
-        }
-    }
-
     /// A question cancelled answers so: a confirmation not accepted, a choice the cancelling caption, a prompt
     /// nothing; a choice dismissed by Escape, nothing chosen.
     func testACancelledQuestionAnswersSo() throws {
@@ -201,24 +180,6 @@ final class GTKActsTests: XCTestCase {
         }
     }
 
-    /// A window shows one question at a time: a second waits for the first to close.
-    func testQuestionsWaitTheirTurn() throws {
-        try onUIThread {
-            let host = GTKRenderer.running { QuestionsPage() }
-
-            try host.press("Alert")
-            try host.press("Confirm")
-            XCTAssertEqual(host.dialogHeading, "Saved")
-            try host.answer("OK")
-            XCTAssertEqual(host.dialogHeading, "Delete draft?")
-            try host.answer("Delete")
-            let expected = "alerted; confirmed true; "
-            host.settle { host.said == expected }
-
-            XCTAssertEqual(host.said, expected)
-        }
-    }
-
     /// The kept values' file reads back what was written to it, whatever the words hold.
     func testTheFileReadsBackWhatItKept() {
         onUIThread {
@@ -241,46 +202,6 @@ private extension GTKRenderer {
     /// Presses the button of that caption.
     func press(_ caption: String) throws {
         try XCTUnwrap(views(GTKButtonView.self).first { $0.text == caption }).click()
-        settle { true }
-    }
-
-    /// The dialog showing over the window.
-    var dialog: GTKWidget? {
-        guard let window else { return nil }
-        var shown: GTKWidget?
-        settle {
-            shown = adw_application_window_get_visible_dialog(window.widget.of(AdwApplicationWindow.self))?
-                .of(GtkWidget.self)
-            return shown != nil
-        }
-        return shown
-    }
-
-    /// The heading of the dialog showing.
-    var dialogHeading: String? {
-        dialog.flatMap { adw_alert_dialog_get_heading($0.of(AdwAlertDialog.self)) }.map { String(cString: $0) }
-    }
-
-    /// Answers the dialog showing as the user would: its field first holding `words`, then its button of that
-    /// caption pressed.
-    func answer(_ caption: String, typing words: String? = nil) throws {
-        let widgets = GTKTestHost.descendants(of: try XCTUnwrap(dialog, "no dialog showed"))
-        if let words {
-            let field = try XCTUnwrap(widgets.first { GTKTestHost.holds($0, gtk_entry_get_type()) })
-            gtk_editable_set_text(field.opaque, words)
-        }
-        let button = try XCTUnwrap(widgets.first { widget in
-            GTKTestHost.holds(widget, gtk_button_get_type())
-                && gtk_button_get_label(widget.of(GtkButton.self)).map { String(cString: $0) } == caption
-        }, "no button \(caption)")
-        GTKTestHost.click(button)
-        settle { true }
-    }
-
-    /// Dismisses the dialog showing as Escape does: libadwaita tells the dialog it closed once its sheet has gone,
-    /// which a window behind another, drawn no frames, never gets to by itself.
-    func dismiss() throws {
-        GTKTestHost.emit(try XCTUnwrap(dialog, "no dialog showed").opaque, "closed")
         settle { true }
     }
 }

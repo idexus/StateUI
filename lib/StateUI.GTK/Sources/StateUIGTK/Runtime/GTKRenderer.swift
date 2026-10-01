@@ -167,6 +167,7 @@ final class GTKRenderer {
         guard let controller = windows.first(where: { $0.window.number == number }), !controller.window.isClosed,
               let element = controller.element
         else { return }
+        guard controller.window.statesChanged() else { return }
         runtime.windowStateChanged(element, minimized: controller.window.isMinimized, activated: controller.window.isActive)
     }
 

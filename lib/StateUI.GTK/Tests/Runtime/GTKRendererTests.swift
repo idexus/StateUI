@@ -155,6 +155,27 @@ extension GTKRendererTests {
 }
 
 extension GTKRendererTests {
+    /// A window's surface tells every change of its state, its tiling and its focus among them: the window says it
+    /// is active or minimized again only where that changed, so a notice of something else unsays nothing.
+    func testAWindowTellsItsStateOnlyWhereItChanged() throws {
+        try onUIThread {
+            let phases = Received<ScenePhase>()
+            let host = GTKRenderer.running { ScenePhaseLabel(phases: phases) }
+            let controller = try XCTUnwrap(host.windows.first)
+            let element = try XCTUnwrap(controller.element)
+            // The window's own activation comes as the desktop gives it: waited for, then told as it stands.
+            host.settle { false }
+            host.windowStateChanged(number: controller.window.number)
+
+            host.runtime.windowStateChanged(element, minimized: false, activated: false)
+            host.settle { phases.values.last == .inactive }
+            host.windowStateChanged(number: controller.window.number)
+            host.settle { false }
+
+            XCTAssertEqual(phases.values.last, .inactive)
+        }
+    }
+
     /// The page reads the machine the desktop describes: the locale GLib and the C library have, the power UPower
     /// has - none on a machine with no battery - and the network GIO has; none is left unknown.
     func testThePageReadsTheMachinesLocalePowerAndNetwork() throws {
@@ -255,4 +276,15 @@ private struct ToolOpeningPage: ContentView {
 
 private struct ToolWindow: Window {
     var page: any Page { Label("A tool") }
+}
+
+/// A label reading its scene's phase, each phase it reads written down.
+private struct ScenePhaseLabel: ContentView {
+    @Environment private var scene: SceneSession
+    let phases: Received<ScenePhase>
+
+    var content: some View {
+        phases.values.append(scene.phase)
+        return Label("\(scene.phase)")
+    }
 }

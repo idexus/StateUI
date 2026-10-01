@@ -89,7 +89,8 @@ What GTK tells of a window goes to the host layer, which settles what it means
 for the application, its scenes and its windows ([the application's
 phase](../../host/runtime.md#the-applications-phase)): whether the window is
 active, and whether it stands minimized - a Wayland desktop says nothing of
-that. A window the user closes - its close button, Alt+F4, GTK's close request
+that - told again only where one of the two changed: a surface tells every
+change of its state, its tiling and its focus among them. A window the user closes - its close button, Alt+F4, GTK's close request
 - is heard by it and its scene as it goes ([a window the user
 closes](../../host/runtime.md#a-window-the-user-closes)); one the tree or the
 host closes tells nothing. A window let go of tells nobody it went: its
@@ -125,8 +126,9 @@ taken at the day's noon, so the day decides summer time, and a zone GLib
 does not know fails the act. The screen reader is told through the window,
 GTK's own announcement. The focus is put on the view the act names, or the
 first control in it that takes it, and taken off by leaving it nowhere,
-which GTK allows. A desktop's keyboard is its own, so taking the on-screen
-keyboard down answers that no field had brought one up.
+which GTK allows. The keyboard GNOME shows on a touch screen stands for the
+field holding the focus, so taking it down lets that field's focus go, and
+answers whether a field held it.
 
 ## Questions for the user
 

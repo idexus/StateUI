@@ -54,8 +54,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure | 🔌 | ✅ | · | ✅ | · |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; GTK 4: cannot choose on TabbedView - GTK's driver has no path for it yet |
-| `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; GTK 4: cannot choose on TabbedView - GTK's driver has no path for it yet |
+| `currentPage` | property | `Int` | structure | 🔌 | ✅ | · | ✅ | · |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; GTK 4: cannot read currentPage of TabbedView - GTK's driver has no path for it yet |
+| `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; GTK 4: cannot read currentPage of TabbedView - GTK's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

@@ -122,15 +122,17 @@ extension GTKRenderer {
     }
 
     /// A host running `application`, its windows laid out, on `clock` where one is given: a first launch, which finds
-    /// nothing an earlier host kept.
+    /// nothing an earlier host kept - or, `keeping`, a launch after the last, which finds what it kept.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false,
+        clock: TestClock? = nil, reducesMotion: Bool = false, keeping: Bool = false,
         application: @escaping @Sendable () -> any Application
     ) -> GTKRenderer {
         stateUIUseApp(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
-        unlink(GTKKeptValues.file(for: renderer.applicationID))
-        unlink(GTKKeptValues.scenesFile(for: renderer.applicationID))
+        if !keeping {
+            unlink(GTKKeptValues.file(for: renderer.applicationID))
+            unlink(GTKKeptValues.scenesFile(for: renderer.applicationID))
+        }
         renderer.show()
         GTKTestHost.pump(0.02)
         renderer.layOut()
@@ -148,7 +150,7 @@ extension GTKRenderer {
     /// A host in place of the one before it, which leaves; its window closes.
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> GTKRenderer {
         GTKPictures.folder = GTKTestHost.pictures
-        GTKKeptValues.folder = String(cString: g_get_tmp_dir()) + "/stateui-gtk-tests"
+        GTKKeptValues.folder = GTKTestHost.keptFolder
         // The host before this one presents nothing more: what it was told late - a window's state - settles into
         // no window of the next test's.
         if let previous = shared {
@@ -346,6 +348,9 @@ extension GTKButtonView {
 }
 
 extension GTKTestHost {
+    /// The folder the tests keep their values in, aside from the user's.
+    static let keptFolder = String(cString: g_get_tmp_dir()) + "/stateui-gtk-tests"
+
     /// Clicks a `GtkButton` as the pointer's release does, then lets GTK lay out what that changed.
     static func click(_ button: GTKWidget) {
         var instance = GValue()

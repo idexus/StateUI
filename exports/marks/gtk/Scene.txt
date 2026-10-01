@@ -1,8 +1,8 @@
 # revision 1.1
 Scene: ✅
-Scene.activated: cannot switchAway on Window - GTK's driver has no path for it yet
-Scene.deactivated: cannot switchAway on Window - GTK's driver has no path for it yet
+Scene.activated: ✅
+Scene.deactivated: ✅
 Scene.destroying: ✅
-Scene.stopped: cannot switchAway on Window - GTK's driver has no path for it yet
-Scene.windowClosed: cannot start an application - GTK's driver has no path for it yet
-Scene.windowRestored: cannot start an application - GTK's driver has no path for it yet
+Scene.stopped: ✅
+Scene.windowClosed: ✅
+Scene.windowRestored: cannot read windowValue of Window - GTK's driver has no path for it yet

@@ -99,12 +99,14 @@ enum GTKStyleSheet {
     }
 
     /// The class of a list or a grid: what stands under it shows behind its rows, and an item chosen is shaded in
-    /// the colour of its words, as GNOME's sidebars shade theirs - no hue of the theme's own over the page.
+    /// the colour of its words, as GNOME's sidebars shade theirs - no hue of the theme's own over the page. A row and
+    /// a grid's child keep no padding of the theme's: an item stands where StateUI's spacing puts it.
     static var collection: String {
         let name = "stateui-collection"
         let chosen = [".\(name) > row:selected", ".\(name) > child:selected"]
         write(name, "background: none;",
-              states: chosen.joined(separator: ", ") + " { background-color: alpha(currentColor, 0.1); }\n"
+              states: ".\(name) > row, .\(name) > child { padding: 0; margin: 0; min-height: 0; min-width: 0; }\n"
+                + chosen.joined(separator: ", ") + " { background-color: alpha(currentColor, 0.1); }\n"
                 + chosen.map { $0 + ":hover" }.joined(separator: ", ")
                 + " { background-color: alpha(currentColor, 0.13); }\n")
         return name

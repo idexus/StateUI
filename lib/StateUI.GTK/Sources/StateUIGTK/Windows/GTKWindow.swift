@@ -86,6 +86,17 @@ final class GTKWindow {
     }
 
     /// Whether the user is in the window now.
+    /// Whether the window is active and whether it stands minimized, as it last told them.
+    private var told: (active: Bool, minimized: Bool)?
+
+    /// Whether the window's activity or its minimizing changed since it last told them - a surface tells every
+    /// change of its state, its tiling and its focus among them; noted as told.
+    func statesChanged() -> Bool {
+        let now = (active: isActive, minimized: isMinimized)
+        defer { told = now }
+        return told.map { $0 != now } ?? true
+    }
+
     var isActive: Bool {
         gtk_window_is_active(widget.of(GtkWindow.self)) != 0
     }

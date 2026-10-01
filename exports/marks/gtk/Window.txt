@@ -1,12 +1,12 @@
 # revision 2.1
 Window: ✅
-Window.activated: ◐ cannot switchAway on Window - GTK's driver has no path for it yet
+Window.activated: ✅
 Window.created: ✅
-Window.deactivated: cannot switchAway on Window - GTK's driver has no path for it yet
+Window.deactivated: 🔌 switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.destroying: ✅
 Window.floatsOnTop: – GTK 4 keeps no window above the others: the desktop stacks them.
 Window.height: ✅
-Window.hidesWhenInactive: cannot start an application - GTK's driver has no path for it yet
+Window.hidesWhenInactive: cannot read isVisible of Window - GTK's driver has no path for it yet
 Window.isMaximizable: not realized
 Window.isMinimizable: not realized
 Window.isTranslucent: not realized
@@ -14,11 +14,11 @@ Window.maximumHeight: – GTK 4 bounds no window from above.
 Window.maximumWidth: – GTK 4 bounds no window from above.
 Window.minimumHeight: ✅
 Window.minimumWidth: ✅
-Window.resumed: cannot minimize on Window - GTK's driver has no path for it yet
-Window.stopped: cannot minimize on Window - GTK's driver has no path for it yet
+Window.resumed: 🔌 minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
+Window.stopped: 🔌 minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.title: ✅
 Window.width: ✅
-Window.windowType: cannot start an application - GTK's driver has no path for it yet
-Window.windowValue: cannot start an application - GTK's driver has no path for it yet
+Window.windowType: cannot read windowValue of Window - GTK's driver has no path for it yet
+Window.windowValue: cannot read windowValue of Window - GTK's driver has no path for it yet
 Window.x: – GNOME places its windows itself: GTK 4 asks no place of the desktop.
 Window.y: – GNOME places its windows itself: GTK 4 asks no place of the desktop.

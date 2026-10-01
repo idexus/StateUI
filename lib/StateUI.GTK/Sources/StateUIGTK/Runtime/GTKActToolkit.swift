@@ -14,6 +14,7 @@ final class GTKActToolkit: ActToolkit {
     private unowned let renderer: GTKRenderer
 
     init(renderer: GTKRenderer) {
+        Self.announced = []
         self.renderer = renderer
     }
 
@@ -57,13 +58,22 @@ final class GTKActToolkit: ActToolkit {
     }
 
     func announce(_ words: String) {
+        Self.announced.append(words)
         guard let window = renderer.userWindow, Self.reachesAScreenReader(window.widget) else { return }
         gtk_accessible_announce(window.widget.opaque, words, GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM)
     }
 
-    /// A desktop's keyboard is its own; no field brings one up to take down.
+    /// The keyboard GNOME shows on a touch screen stands for the field holding the focus: the field lets the focus
+    /// go, and the keyboard goes down. Whether a field held it.
     func hideOnScreenKeyboard() -> Bool {
-        false
+        guard let window = renderer.userWindow, let root = gtk_widget_get_root(window.widget),
+              let held = gtk_root_get_focus(root),
+              [gtk_text_get_type(), gtk_text_view_get_type()].contains(where: {
+                  g_type_check_instance_is_a(held.of(GTypeInstance.self), $0) != 0
+              })
+        else { return false }
+        gtk_root_set_focus(root, nil)
+        return true
     }
 
     func focus(_ element: MountedElement) -> Bool? {
@@ -133,6 +143,9 @@ extension GTKActToolkit {
     /// accessibility bus GTK stands a context of no assistive technology, which GTK 4.14 announces through a call it
     /// lacks - a crash.
     /// Design: docs/design/platforms/gtk/controls.md#what-assistive-technology-meets
+    /// What the host asked GTK to announce, in order, since it started.
+    private(set) static var announced: [String] = []
+
     static func reachesAScreenReader(_ widget: GTKWidget) -> Bool {
         let atSpi = g_type_from_name("GtkAtSpiContext")
         guard atSpi != 0, let context = gtk_accessible_get_at_context(widget.opaque) else { return false }

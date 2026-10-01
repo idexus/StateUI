@@ -361,25 +361,50 @@ final class GTKItemsView: GTKLayoutView {
         } else {
             gtk_list_view_scroll_to(list.opaque, guint(place), GTK_LIST_SCROLL_NONE, nil)
         }
-        GTKDoorbell.afterLayout { [weak self] in self?.settle(identity, anchor: anchor) }
+        let waiting = settling != nil
+        settling = (identity, anchor, Self.settlingFrames)
+        guard !waiting else { return }
+        g_timeout_add_full(G_PRIORITY_DEFAULT, 16, { data in
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.settleAFrame() ?? false } ? 1 : 0
+        }, UnsafeMutableRawPointer(bitPattern: Int(number)), nil)
     }
 
-    /// Stands the scrolled window for the item of `identity`, laid out, where `anchor` says.
-    private func settle(_ identity: String, anchor: ScrollAnchor) {
-        guard let list, let cell = cells.holding(of: identity) as? GTKItemCell else { return }
+    /// The item a scroll brings into the list, where it is to stand, and how many frames more it is waited for.
+    private var settling: (identity: String, anchor: ScrollAnchor, frames: Int)?
+
+    /// A scroll brings its item over the next layouts: a second's frames.
+    private static let settlingFrames = 60
+
+    /// Stands the scrolled window for the item a scroll brings, once GTK has laid it out; whether to wait a frame
+    /// more.
+    private func settleAFrame() -> Bool {
+        guard let goal = settling, !released else { return false }
+        if stand(goal.identity, anchor: goal.anchor) || goal.frames <= 1 {
+            settling = nil
+            return false
+        }
+        settling?.frames -= 1
+        return true
+    }
+
+    /// Stands the scrolled window for the laid-out item of `identity` where `anchor` says; whether it was laid out.
+    private func stand(_ identity: String, anchor: ScrollAnchor) -> Bool {
+        guard let list, let cell = cells.holding(of: identity) as? GTKItemCell else { return false }
         var bounds = graphene_rect_t()
-        guard gtk_widget_compute_bounds(cell.widget, list, &bounds) != 0 else { return }
+        guard gtk_widget_compute_bounds(cell.widget, list, &bounds) != 0, bounds.size.width > 0, bounds.size.height > 0
+        else { return false }
         let across = shape.isAcross
         let scrolled = scroller.widget.opaque
         guard let adjustment = across
             ? gtk_scrolled_window_get_hadjustment(scrolled) : gtk_scrolled_window_get_vadjustment(scrolled)
-        else { return }
+        else { return true }
         let now = gtk_adjustment_get_value(adjustment)
         let start = now + Double(across ? bounds.origin.x : bounds.origin.y)
         let length = Double(across ? bounds.size.width : bounds.size.height)
-        guard let target = anchor.place(of: start, length: length, in: gtk_adjustment_get_page_size(adjustment), at: now)
-        else { return }
-        gtk_adjustment_set_value(adjustment, target)
+        if let target = anchor.place(of: start, length: length, in: gtk_adjustment_get_page_size(adjustment), at: now) {
+            gtk_adjustment_set_value(adjustment, target)
+        }
+        return true
     }
 
     /// The list left: its rows let their cells go, and they leave with it.

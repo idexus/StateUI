@@ -5,9 +5,9 @@ ItemsView.endReachedWithin: ✅
 ItemsView.frameChanged: ✅
 ItemsView.itemActivated: cannot activate on Label - GTK's driver has no path for it yet
 ItemsView.items: ✅
-ItemsView.itemsLayout: cannot read where Label stands - GTK's driver has no path for it yet
+ItemsView.itemsLayout: ✅
 ItemsView.realizedChanged: ✅
-ItemsView.scrollTo: cannot read where ItemsView stands - GTK's driver has no path for it yet
+ItemsView.scrollTo: ✅
 ItemsView.selectedItems: ✅
 ItemsView.selectionChanged: ✅
 ItemsView.selectionMode: ✅

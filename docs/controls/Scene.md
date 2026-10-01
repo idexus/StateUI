@@ -50,7 +50,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 4 ✅ | `UIApplication` / `UIWindowScene` |  |
 | Android Views | ✅ | 4 ✅ | `Application` / structure |  |
 | WinUI 3 | ✅ | 6 ✅ | `Application` / structure |  |
-| GTK 4 | ✅ | 1 ✅ | `GtkApplication` / structure |  |
+| GTK 4 | ✅ | 5 ✅ | `GtkApplication` / structure |  |
 | Web |  |  | `document` / structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swift`.
@@ -59,9 +59,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot switchAway on Window - GTK's driver has no path for it yet |
-| `deactivated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot switchAway on Window - GTK's driver has no path for it yet |
+| `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `deactivated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `destroying` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `stopped` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot switchAway on Window - GTK's driver has no path for it yet |
-| `windowClosed` | event | `String` | adaptive | ✅ | ⏸ |  | ✅ | · |  | UIKit: waits on Window.windowType, not realized yet; Android Views: not realized; GTK 4: cannot start an application - GTK's driver has no path for it yet |
-| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ✅ | · |  | UIKit: not realized; Android Views: not realized; GTK 4: cannot start an application - GTK's driver has no path for it yet |
+| `stopped` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `windowClosed` | event | `String` | adaptive | ✅ | ⏸ |  | ✅ | ✅ |  | UIKit: waits on Window.windowType, not realized yet; Android Views: not realized |
+| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ✅ | · |  | UIKit: not realized; Android Views: not realized; GTK 4: cannot read windowValue of Window - GTK's driver has no path for it yet |

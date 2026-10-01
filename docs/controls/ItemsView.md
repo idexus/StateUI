@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 29 ✅ · 3 – | `UICollectionView` |  |
 | Android Views | ✅ | 60 ✅ · 1 ☑️ | AndroidX `RecyclerView` |  |
 | WinUI 3 | ✅ | 60 ✅ | `ItemsView` |  |
-| GTK 4 | ✅ | 40 ✅ | `GtkListView` / `GtkGridView` |  |
+| GTK 4 | ✅ | 42 ✅ | `GtkListView` / `GtkGridView` |  |
 | Web |  |  | semantic list or grid | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/ItemsViewContract.swift`.
@@ -49,7 +49,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/ItemsViewContrac
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `items` | property | `ItemsEntries` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `itemsLayout` | property | `ItemsLayout` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read where Label stands - GTK's driver has no path for it yet |
+| `itemsLayout` | property | `ItemsLayout` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `selectionMode` | property | `SelectionMode` | native | 🔌 | 🔌 | 🔌 | ✅ | ✅ |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: only through the host's own: read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack |
 | `selectedItems` | property | `[String]` | native | 🔌 | 🔌 | ✅ | ✅ | ✅ |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch |
 | `selectionChanged` | event | `[String]` | native | 🔌 | 🔌 | ✅ | ✅ | ✅ |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch |
@@ -57,7 +57,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/ItemsViewContrac
 | `endReachedWithin` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `endReached` | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `realizedChanged` | event | `[String]` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `scrollTo` | act | `(String, ScrollAnchor) -> Void` |  | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read where ItemsView stands - GTK's driver has no path for it yet |
+| `scrollTo` | act | `(String, ScrollAnchor) -> Void` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

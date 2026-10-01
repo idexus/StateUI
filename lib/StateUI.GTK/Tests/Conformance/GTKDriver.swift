@@ -75,20 +75,30 @@ final class GTKDriver: HostDriver {
         "read tint of Switch": "the tint the host gave the track's node: GTK's style sheet tells no one",
         "read tint of CheckBox": "the tint the host gave the box's node: GTK's style sheet tells no one",
         "read tint of Slider": "the tint the host gave the track's node: GTK's style sheet tells no one",
+        "read what the screen reader said": "the host's own list of what it asked GTK to announce",
+        "switchAway": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
+        "switchBack": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
+        "bringToFront": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
+        "minimize": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
+        "restore": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "pinch": "the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down",
         "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
         "read minimumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
         "read maximumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
     ]
 
-    private(set) var renderer: GTKRenderer?
+    var renderer: GTKRenderer?
 
     /// The pointer's press the driver holds down.
     let pressed = GTKPress()
 
+    /// The host's log, as the driver listens to it.
+    let written = GTKLogLines()
+
     var register: HostRegister { GTKRealization.register }
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
+        written.listen()
         let renderer = GTKRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         return renderer.runtime.tree
@@ -110,6 +120,8 @@ final class GTKDriver: HostDriver {
         if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
         if act == .activate, element.type == .menuItem { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
+        if case .answer = act, try windowAct(act, on: element) { return }
+        if element.type == .window, try windowAct(act, on: element) { return }
         if act == .goBack {
             guard renderer?.goBack() == true else { throw DriverCannot(act, on: element) }
             return
@@ -133,6 +145,9 @@ final class GTKDriver: HostDriver {
         case (.type(let words), let editor as GTKTextEditorView):
             type(words, into: editor, keys: OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)))
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
+        case (.focus, let view?): gtk_widget_grab_focus(view.widget)
+        case (.choose(let place), let tabs as GTKTabbedView): try tabs.choose(place, on: element)
+        case (.toggle, let split as GTKSplitView): split.toggleAsUser()
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
         case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
@@ -178,6 +193,7 @@ final class GTKDriver: HostDriver {
         case (.source, let image as GTKImageView): return image.found ? ImageSource(image.file).propValue : nil
         case (.aspect, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
+        case (.isSidebarVisible, let split as GTKSplitView): return split.showsSidebar.propValue
         case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as GTKPickerView):
             guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }
