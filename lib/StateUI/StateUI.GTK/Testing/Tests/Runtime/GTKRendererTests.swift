@@ -160,8 +160,8 @@ extension GTKRendererTests {
     /// is active or minimized again only where that changed, so a notice of something else unsays nothing.
     func testAWindowTellsItsStateOnlyWhereItChanged() throws {
         try onUIThread {
-            let phases = Received<ScenePhase>()
-            let host = GTKRenderer.running { ScenePhaseLabel(phases: phases) }
+            let host = GTKRenderer.running { ScenePhaseLabel() }
+            let phase = { host.views(GTKLabelView.self).last?.text }
             let controller = try XCTUnwrap(host.windows.first)
             let element = try XCTUnwrap(controller.element)
             // The window's own activation comes as the desktop gives it: waited for, then told as it stands.
@@ -169,11 +169,11 @@ extension GTKRendererTests {
             host.windowStateChanged(number: controller.window.number)
 
             host.runtime.windowStateChanged(element, minimized: false, activated: false)
-            host.settle { phases.values.last == .inactive }
+            host.settle { phase() == "\(ScenePhase.inactive)" }
             host.windowStateChanged(number: controller.window.number)
             host.settle { false }
 
-            XCTAssertEqual(phases.values.last, .inactive)
+            XCTAssertEqual(phase(), "\(ScenePhase.inactive)")
         }
     }
 
@@ -282,10 +282,8 @@ private struct ToolWindow: Window {
 /// A label reading its scene's phase, each phase it reads written down.
 private struct ScenePhaseLabel: ContentView {
     @Environment private var scene: SceneSession
-    let phases: Received<ScenePhase>
 
     var content: some View {
-        phases.values.append(scene.phase)
-        return Label("\(scene.phase)")
+        Label("\(scene.phase)")
     }
 }
