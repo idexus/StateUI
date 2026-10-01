@@ -83,9 +83,10 @@ size in pixels, its scale and its refresh rate.
 
 ## Acts
 
-The acts the application calls are performed after each turn's render and
-answered, a reply or a failure with its reason, so no caller waits on an act
-nobody performs. The time of day is GLib's local time; the zone is GLib's
+The acts the application calls are performed after each turn's render by
+the host layer's performer ([acts](../../host/runtime.md#acts)) - a reply or
+a failure with its reason, one question at a time - over GTK's part of them,
+its act toolkit. The time of day is GLib's local time; the zone is GLib's
 local zone, an IANA name; a zone's distance from UTC on a day is GLib's,
 taken at the day's noon, so the day decides summer time, and a zone GLib
 does not know fails the act. The screen reader is told through the window,
@@ -97,11 +98,12 @@ keyboard down answers that no field had brought one up.
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
-libadwaita's `AdwAlertDialog` over the window, and its call waits under a
-ticket the dialog's answer comes back with; a ticket is one number across
-the process, so an answer that arrives after its renderer has gone answers
-nothing of another's. A window shows one question at a time, as a desktop's
-sheets are, so a question asked while one shows waits for it to close. A
+libadwaita's `AdwAlertDialog` over the window, kept under a number its
+dialog's answer comes back with until the user answers; a number is one
+across the process, so an answer that arrives after its renderer has gone
+answers nothing of another's. The host layer shows one question at a time,
+as a desktop's sheets are, so a question asked while one shows waits for it
+to close. A
 choice of actions is a button a choice, the dangerous one first, and the
 pressed caption is the answer - the cancelling one too; a dialog dismissed
 any other way, Escape among them, answers that nothing was chosen. A

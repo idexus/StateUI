@@ -41,13 +41,7 @@ enum GTKRegistrations {
         registry.everyElementHearsTheUser()
     }
 
-    /// The acts `GTKActPerformer` performs.
-    static let acts: [any ContractMember] = [
-        VisualElementContract.focus, VisualElementContract.unfocus,
-        ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
-        ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
-        ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard, ApplicationContract.persistValue,
-        ApplicationContract.prompt, ApplicationContract.utcOffset, ItemsViewContract.scrollTo,
-    ]
+    /// The acts this host performs: every host's (`HostActs.performed`), and a list scrolled to an item.
+    static let acts: [any ContractMember] = HostActs.performed + [ItemsViewContract.scrollTo]
 
 }

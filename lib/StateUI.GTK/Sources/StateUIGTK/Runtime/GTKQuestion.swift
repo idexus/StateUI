@@ -6,19 +6,19 @@
 import CStateUIGTK
 
 /// One question for the user - an alert, a confirmation, a choice of actions, a prompt - as libadwaita's
-/// `AdwAlertDialog` over the window, its answer coming back under its ticket.
+/// `AdwAlertDialog` over the window, kept until the user answers it.
 /// Design: docs/design/platforms/gtk/runtime.md#questions-for-the-user
 @MainActor
 final class GTKQuestion {
-    let call: HostActCall
-
     /// What the act asks, read by the host layer's rule.
     let question: HostQuestion
 
-    /// The question's ticket, which its queue gives it.
-    var ticket: Int64 = 0
+    /// What hears the answer: whether it was accepted, and the words chosen or typed.
+    private let answered: (Bool, String?) -> Void
 
-    private weak var window: GTKWindow?
+    /// The questions showing, by the number their dialog's answer comes back under.
+    private static var showing: [Int64: GTKQuestion] = [:]
+    private static var nextNumber: Int64 = 1
 
     /// A prompt's field, while its dialog shows.
     private var field: GTKWidget?
@@ -26,15 +26,16 @@ final class GTKQuestion {
     /// Each response's caption, by its id.
     private var captions: [String: String] = [:]
 
-    init(_ call: HostActCall, _ question: HostQuestion, window: GTKWindow) {
-        self.call = call
+    init(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) {
         self.question = question
-        self.window = window
+        self.answered = answered
     }
 
-    /// Shows the dialog over the window.
-    func show() {
-        guard let window else { return }
+    /// Shows the dialog over `window`.
+    func show(over window: GTKWindow) {
+        let number = Self.nextNumber
+        Self.nextNumber += 1
+        Self.showing[number] = self
 
         let dialog: UnsafeMutablePointer<AdwDialog>
         switch question.kind {
@@ -61,16 +62,22 @@ final class GTKQuestion {
             // The words are typed at once: the dialog gives the keyboard to its field as it shows.
             adw_dialog_set_focus(dialog, field)
         }
-        connectSignal(UnsafeMutableRawPointer(dialog), "response", number: ticket) { _, response, data in
-            let ticket = viewNumber(data)
+        connectSignal(UnsafeMutableRawPointer(dialog), "response", number: number) { _, response, data in
+            let number = viewNumber(data)
             let id = response.map { String(cString: $0.assumingMemoryBound(to: CChar.self)) } ?? ""
-            MainActor.assumeIsolated { GTKRenderer.shared?.acts.respond(ticket, id) }
+            MainActor.assumeIsolated { GTKQuestion.showing.removeValue(forKey: number)?.respond(id) }
         }
         adw_dialog_present(dialog, window.widget)
     }
 
+    /// The user answered by the response `id`.
+    private func respond(_ id: String) {
+        let (accepted, words) = answer(id)
+        answered(accepted, words)
+    }
+
     /// What the user answered by the response `id`: whether it was accepted, and the words chosen or typed.
-    func answer(_ id: String) -> (accepted: Bool, words: String?) {
+    private func answer(_ id: String) -> (accepted: Bool, words: String?) {
         switch question.kind {
         case .chooseAction:
             return (captions[id] != nil, captions[id])

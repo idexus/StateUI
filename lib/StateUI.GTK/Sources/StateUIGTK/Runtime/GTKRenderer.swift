@@ -29,8 +29,13 @@ final class GTKRenderer {
         clock: frameClock, reducesMotion: reducesMotion,
         makeNative: { [unowned self] element in GTKElement(element, host: self) }, log: { GTKRenderer.log.error($0) })
 
-    /// What performs the acts the application calls, and answers them.
-    private(set) lazy var acts = GTKActPerformer(core: runtime.core)
+    /// GTK's part of the acts: the clock, the dialogs, the screen reader, the focus, the kept values.
+    private(set) lazy var actToolkit = GTKActToolkit(renderer: self)
+
+    /// What performs the acts the application calls, and answers them, by the host layer's rules.
+    private(set) lazy var acts = HostActPerformer(
+        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        answered: { [unowned self] in runtime.pump.turn() })
 
     /// The application's ID, which the desktop knows it by.
     var applicationID: String {
@@ -173,7 +178,7 @@ extension GTKRenderer: TurnPresenter {
     }
 
     func perform(_ call: HostActCall) {
-        acts.perform(call, in: runtime.tree, window: window, applicationID: applicationID)
+        acts.perform(call)
     }
 }
 
