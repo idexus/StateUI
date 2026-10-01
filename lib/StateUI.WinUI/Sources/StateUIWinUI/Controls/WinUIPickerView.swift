@@ -18,7 +18,7 @@ final class WinUIPickerView: WinUIView {
     private var written = PickerChoices()
 
     /// Whose the list's opening and closing are.
-    private var showing = WinUIShowing()
+    private var showing = PickerOpening()
 
     init() {
         super.init { number in stateui_winui_picker_make(number) }

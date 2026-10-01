@@ -15,7 +15,7 @@ final class WinUIDatePickerView: WinUIView {
     var onOpened: (() -> Void)?
     var onClosed: (() -> Void)?
 
-    private var showing = WinUIShowing()
+    private var showing = PickerOpening()
 
     init() {
         super.init { number in stateui_winui_date_make(number) }

@@ -465,6 +465,21 @@ again: the control stood clamped at the old range's end - a state's value
 outside it, or one travelling to the value written with the range - and a
 range widened over that value shows it rather than the end it stood at.
 
+## A day and a time
+
+A picker holds a day and a time by one arithmetic on every host
+(`CalendarArithmetic`): a day not in the Gregorian calendar - February 31st,
+a thirteenth month - is refused, and the picker goes on showing the day it
+had; a day past the range stands at its end, the range's ends in order
+whichever the tree gave first; and a time is its hours, minutes and seconds
+added up from midnight around the day, so 25:99 shows as 02:39.
+
+What a picker shows - its list, its calendar, its clock - is opened and
+closed by the program and by the user, and only the user's are heard
+(`PickerOpening`): the program asks, and the toolkit's next opening or
+closing is the echo of that request; the user's closing of what the program
+opened is the user's, and heard.
+
 ## The log
 
 What a host says for whoever reads its log rather than its screen is one
