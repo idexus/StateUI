@@ -12,7 +12,7 @@ import XCTest
 private struct MenuStacksPage: ContentView {
     @State private var entries = ["Open"]
 
-    var content: any View {
+    var content: some View {
         let entries = $entries
         return VStack {
             HStack { Label("menu") }

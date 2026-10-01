@@ -31,7 +31,7 @@ import XCTest
 private struct EveryPropertyPage: ContentView {
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         Label("content")
             // What it declares for its bar, each saying everything ITS type can
             // say - a page is the only place a toolbar item is covered, there
@@ -110,7 +110,7 @@ private struct EveryPropertyWindow: Window {
 private struct KnobPage: ContentView {
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         Button("dress")
             .onCreated { dress(false) }
             .onClicked { dress(true) }
@@ -131,7 +131,7 @@ private struct KnobPage: ContentView {
 
 /// A view that says nothing about the page it is shown on.
 private struct Plain: ContentView {
-    var content: any View { Label("plain") }
+    var content: some View { Label("plain") }
 }
 
 /// A view that names the page it is shown on, as it arrives.
@@ -139,7 +139,7 @@ private struct Named: ContentView {
     @Environment private var page: PageSession
     let name: String
 
-    var content: any View {
+    var content: some View {
         Label(name).onCreated { page.title = name }
     }
 }
@@ -154,7 +154,7 @@ private struct Renaming: ContentView {
     @Environment private var page: PageSession
     let builds: Builds
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return Button("rename").onClicked { page.title = "Renamed" }
     }
@@ -569,7 +569,7 @@ final class PageTests: XCTestCase {
             @Environment private var page: PageSession
             let arrivals: Binding<Int>
 
-            var content: any View {
+            var content: some View {
                 Label("\(page.phase)")
                     .onChanged(page.phase) {
                         if page.phase == .appearing { arrivals.wrappedValue += 1 }

@@ -10,7 +10,7 @@ import XCTest
 struct TurningRow: ContentView {
     @State private var rightToLeft = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             HStack {
                 Label("A").width(30).height(10)

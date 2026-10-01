@@ -72,7 +72,7 @@ struct WindowSample: SampleContent, ExampleContent {
 
     var notes: (any View)? { nil }
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

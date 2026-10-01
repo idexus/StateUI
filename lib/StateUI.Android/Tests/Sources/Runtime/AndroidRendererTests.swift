@@ -11,7 +11,7 @@ import XCTest
 struct CounterPage: ContentView {
     @State private var count = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("count \(count)")
             Button("Add")
@@ -26,7 +26,7 @@ struct EnvironmentPage: ContentView {
     @Environment var battery: Battery
     @Environment var connectivity: Connectivity
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("locale \(locale.name) \(locale.timeZone)")
             Label("battery \(battery.state)")
@@ -39,7 +39,7 @@ struct EnvironmentPage: ContentView {
 struct DevicePage: ContentView {
     @Environment var device: DeviceInfo
 
-    var content: any View {
+    var content: some View {
         Label("device \(device.name)")
     }
 }
@@ -192,7 +192,7 @@ private struct TitledWindowPage: ContentView {
     @Environment private var window: WindowSession
     let title: String
 
-    var content: any View {
+    var content: some View {
         let window = self.window
         let title = self.title
         return Label(title).onCreated { window.title = title }

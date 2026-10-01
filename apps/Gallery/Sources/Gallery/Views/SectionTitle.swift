@@ -13,7 +13,7 @@ struct SectionTitle: ContentView {
         self.text = text
     }
 
-    var content: any View {
+    var content: some View {
         Label(text)
             // A HEADING IS WHAT THIS SAYS IT IS, not what it is drawn like:
             // a user moving through a long sample page by its headings
@@ -37,7 +37,7 @@ struct ExampleTitle: ContentView {
         self.text = text
     }
 
-    var content: any View {
+    var content: some View {
         Label(text)
             .accessibilityHeadingLevel(.level2)
             .fontSize(17)
@@ -67,7 +67,7 @@ struct WarningMark: ContentView {
         return copy
     }
 
-    var content: any View {
+    var content: some View {
         Image("warning.png")
             .width(side)
             .height(side)

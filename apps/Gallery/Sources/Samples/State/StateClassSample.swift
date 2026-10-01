@@ -28,7 +28,7 @@ private final class Basket {
 private struct NoteRow: ContentView {
     @Binding var basket: Basket
 
-    var content: any View {
+    var content: some View {
         VStack {
             // The field is handed the note's own state and reads nothing; the
             // label below READS `note`, which is what builds this again.
@@ -72,7 +72,7 @@ struct StateClassSample: SampleContent, ExampleContent {
         struct NoteRow: ContentView {
             @Binding var basket: Basket
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     // The field is handed the note's own state and reads
                     // nothing; the label READS `note`, so typing rebuilds this.
@@ -113,7 +113,7 @@ struct StateClassSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

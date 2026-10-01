@@ -11,7 +11,7 @@ import XCTest
 private struct ChangingRunPage: ContentView {
     @State private var red = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label().spans { TextSpan("word").textColor(red ? Color("#FF0000") : Color("#0000FF")) }
             Button("Blue").onClicked { red = false }
@@ -23,7 +23,7 @@ private struct ChangingRunPage: ContentView {
 private struct SpannedPage: ContentView {
     @State private var spanned = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             if spanned {
                 Label("own").spans { TextSpan("runs") }.id("words")

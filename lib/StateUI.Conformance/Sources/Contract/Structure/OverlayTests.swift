@@ -78,7 +78,7 @@
 struct OverlaidPage: ContentView {
     let notice: State<Bool>
 
-    var content: any View {
+    var content: some View {
         let notice = notice
         return VStack {
             Button("Show").onClicked { notice.wrappedValue = true }.id("show")

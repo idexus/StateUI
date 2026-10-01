@@ -46,7 +46,7 @@ final class Profile {
 struct ProfileForm: ContentView {
     @State private var profile = Profile()
 
-    var content: any View {
+    var content: some View {
         VStack {
             TextField(profile.$name)
             Switch(profile.$notifications)
@@ -73,7 +73,7 @@ tree.
 struct Greeting: ContentView {
     @State private var name = "StateUI"
 
-    var content: any View {
+    var content: some View {
         VStack {
             TextField($name).placeholder("Name")
             Label("Hello, \(name)")
@@ -107,7 +107,7 @@ body.
 struct Level: ContentView {
     @State private var level = 0.25
 
-    var content: any View {
+    var content: some View {
         VStack {
             Slider($level)
             ColorBox(.cornflowerBlue).scaleX($level)
@@ -179,7 +179,7 @@ between destinations.
 struct Fader: ContentView {
     @State private var fade = 1.0
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("Native motion").opacity($fade)
             Button("Fade").onClicked {
@@ -218,7 +218,7 @@ destination.
 struct ResizingPanel: ContentView {
     @State private var expanded = false
 
-    var content: any View {
+    var content: some View {
         VStack {
             ColorBox(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
@@ -262,7 +262,7 @@ another frame or `.wait` until a followed state is written.
 struct FallingDot: ContentView {
     @State(motion: .custom) private var y = 0.0
 
-    var content: any View {
+    var content: some View {
         ColorBox(.cornflowerBlue)
             .translationY($y)
             .engine(following: $y) { cycle in
@@ -308,7 +308,7 @@ struct HandbookWindow: Window {
 struct HandbookPage: ContentView {
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         Label("Hello from StateUI")
             .onCreated { page.title = "StateUI" }
     }

@@ -24,7 +24,7 @@ private struct TabPage: ContentView {
     @Environment private var page: PageSession
     let tab: Tab
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label("\(tab)")).onCreated {
             page.title = "\(tab)"
             page.icon = ImageSource("\(tab).png")

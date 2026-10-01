@@ -38,7 +38,7 @@ private struct PhasePage: ContentView {
     @Environment private var page: PageSession
     let stack: PhaseStack
 
-    var content: any View {
+    var content: some View {
         Label("pushed").onChanged(page.phase) { stack.seen.append(page.phase) }
     }
 }

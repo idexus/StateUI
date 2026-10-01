@@ -23,7 +23,7 @@ final class Account {
 struct AccountBadge: ContentView {
     @Environment private var account: Account
 
-    var content: any View {
+    var content: some View {
         Label("\(account.name) · \(account.visits) visit(s)")
     }
 }
@@ -31,7 +31,7 @@ struct AccountBadge: ContentView {
 struct AccountEditor: ContentView {
     @Environment private var account: Account
 
-    var content: any View {
+    var content: some View {
         TextField(account.$name)
     }
 }
@@ -39,7 +39,7 @@ struct AccountEditor: ContentView {
 struct AccountBranch: ContentView {
     @State private var account = Account()
 
-    var content: any View {
+    var content: some View {
         VStack {
             AccountBadge()
             AccountEditor()
@@ -90,7 +90,7 @@ subtree can provide a nearer instance:
 struct SavePanel: ContentView {
     @Environment private var connectivity: Connectivity
 
-    var content: any View {
+    var content: some View {
         Button("Save")
             .isEnabled(connectivity.networkAccess == .internet)
     }
@@ -162,7 +162,7 @@ struct RuntimeSummary: ContentView {
     @Environment private var locale: LocaleInfo
     @Environment private var app: AppInfo
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("\(app.name) \(app.versionString)")
             Label("\(device.platform) · \(device.formFactor)")
@@ -203,7 +203,7 @@ struct WindowHeading: ContentView {
     @Environment private var window: WindowSession
     @Environment private var application: ApplicationSession
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(window.title ?? "Untitled")
             Label("\(application.scenes.count) scene(s)")

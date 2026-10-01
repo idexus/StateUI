@@ -13,7 +13,7 @@ private struct TapsPage: ContentView {
     @State private var taps = 0
     @State private var shown = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("taps \(taps)")
             if shown {

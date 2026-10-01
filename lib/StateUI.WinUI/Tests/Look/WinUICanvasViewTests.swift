@@ -13,7 +13,7 @@ private struct PressPage: ContentView {
     @State private var wide = false
     @State private var shown = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(said)
             if shown {
@@ -41,7 +41,7 @@ private struct PressPage: ContentView {
 private struct ShowingPage: ContentView {
     @State private var shown = false
 
-    var content: any View {
+    var content: some View {
         VStack {
             if shown {
                 Canvas {

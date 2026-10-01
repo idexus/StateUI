@@ -56,9 +56,10 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
     /// The platform's collection - or, while there are no items, the empty
     /// view in its place.
-    public var content: any View {
+    public var content: some View {
         source.finish(header: headerView, footer: footerView)
-        if source.entries.isEmpty, let empty { return empty }
+        // The empty view is held as `any View`, so both answers go as nodes.
+        if source.entries.isEmpty, let empty { return ModifiedContent(node: empty.body) }
 
         let source = self.source
         let realized = self.realized
@@ -110,7 +111,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
             element.node.addHandler(ItemsViewContract.endReached.token, endReached.handler)
         }
 
-        return element
+        return ModifiedContent(node: element.body)
     }
 }
 

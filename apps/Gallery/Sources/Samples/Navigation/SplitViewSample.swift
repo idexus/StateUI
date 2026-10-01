@@ -34,7 +34,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
             @Environment private var device: DeviceInfo
             @Environment private var page: PageSession
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     // Choose, then close: `open` writes the section and the
                     // path, then the menu.
@@ -77,7 +77,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
             .onClicked { nav.open(.hidden) }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("Open the menu: every row in it is a view.")
                 .fontSize(14)

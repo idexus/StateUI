@@ -72,7 +72,7 @@ struct PinchSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

@@ -20,7 +20,7 @@ struct ItemPage: ContentView {
     /// The stack this page is on, so "Back" takes it off.
     @Binding var path: [Route]
 
-    var content: any View {
+    var content: some View {
         ZStack {
             VStack {
                 SectionTitle("Pushed page")

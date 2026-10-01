@@ -33,7 +33,7 @@ private struct Held: ContentView {
         self.read = read
     }
 
-    var content: any View { read(); return Label("held") }
+    var content: some View { read(); return Label("held") }
 }
 
 /// An object a test provides to a subtree, or hands to a handler to capture.

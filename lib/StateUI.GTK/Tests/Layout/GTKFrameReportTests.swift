@@ -13,7 +13,7 @@ private struct FramesPage: ContentView {
     @State private var room = Rect(x: 0, y: 0, width: 0, height: 0)
     @State private var wide = false
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("said \(said)")
             Label("room \(Int(room.width))x\(Int(room.height))")
@@ -37,7 +37,7 @@ private struct PlacedOnAPage: ContentView {
     let heard: Received<String>
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let page = self.page
         let heard = self.heard
         return VStack {

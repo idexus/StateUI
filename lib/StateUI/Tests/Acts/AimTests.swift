@@ -179,7 +179,7 @@ final class AimTests: XCTestCase {
         struct Framed: ContentView {
             let panel: Aim<ZStack>
             let tag: Int
-            var content: any View { ZStack().aim(panel) }
+            var content: some View { ZStack().aim(panel) }
         }
 
         let renders = Renders()
@@ -339,7 +339,7 @@ extension Aim where Target == Wheel {
 private struct Panelled: ContentView {
     @Aim(ZStack.self) var panel
 
-    var content: any View {
+    var content: some View {
         ZStack().aim(panel)
     }
 }
@@ -349,7 +349,7 @@ private struct Panelled: ContentView {
 private struct Carded: ContentView {
     @Aim(ZStack.self) var inner
 
-    var content: any View {
+    var content: some View {
         ZStack().aim(inner)
     }
 }
@@ -365,7 +365,7 @@ private struct Handed: ContentView {
     let panel: Aim<ZStack>
     let builds: Builds
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ZStack().aim(panel)
     }
@@ -378,7 +378,7 @@ private struct Handing: ContentView {
     @Binding var tag: Int
     let builds: Builds
 
-    var content: any View {
+    var content: some View {
         let shown = "\(tag)"
 
         return VStack {
@@ -396,7 +396,7 @@ private struct Choosing: ContentView {
     @Binding var picksRight: Bool
     let builds: Builds
 
-    var content: any View {
+    var content: some View {
         let handsRight = picksRight
 
         return VStack {
@@ -419,7 +419,7 @@ private final class Form {
 private struct FormPage: ContentView {
     @State var form = Form()
 
-    var content: any View {
+    var content: some View {
         TextField(form.$note).aim(form.field)
     }
 }

@@ -131,7 +131,7 @@ struct FocusForm: ContentView {
     @Aim(TextField.self) private var field
     @State private var text = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             TextField($text).aim(field)
             Button("Edit").onClicked { try await field.focus() }

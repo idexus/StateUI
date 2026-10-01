@@ -13,7 +13,7 @@ struct LayeredBoxes: ContentView {
     @State private var blueInFront = false
     @State private var green = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             ZStack {
                 ColorBox(.red).width(10).zIndex(blueInFront ? 0 : 1)

@@ -12,7 +12,7 @@ struct ModalPage: ContentView {
     /// The page itself.
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         VStack {
             SectionTitle("Over everything")
 

@@ -419,7 +419,7 @@ final class DiffTests: XCTestCase {
 private struct Tally: ContentView {
     @State var count = 0
 
-    var content: any View {
+    var content: some View {
         Button("Count: \(count)").onClicked { count += 1 }
     }
 }

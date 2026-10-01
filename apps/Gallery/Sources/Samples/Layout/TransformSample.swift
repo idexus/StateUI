@@ -114,7 +114,7 @@ struct TransformSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             SwitchRow("Transforms", $transformed)
 

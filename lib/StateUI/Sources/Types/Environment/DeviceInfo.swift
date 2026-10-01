@@ -7,7 +7,7 @@
 ///
 ///     @Environment var device: DeviceInfo
 ///
-///     var content: any View {
+///     var content: some View {
 ///         device.formFactor == .desktop ? wideLayout : phoneLayout
 ///     }
 ///

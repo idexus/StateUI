@@ -13,7 +13,7 @@ private struct RewrittenPage: ContentView {
     @State private var words = "one"
     let heard: Received<String>
 
-    var content: any View {
+    var content: some View {
         let heard = self.heard
         return VStack {
             TextField($words).onTextChanged { heard.values.append("field \($0)") }

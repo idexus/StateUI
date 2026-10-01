@@ -10,7 +10,7 @@
 ///     struct ResetRow: ContentView {
 ///         @Binding var counter: Int
 ///
-///         var content: any View {
+///         var content: some View {
 ///             Button("Reset").onClicked { counter = 0 }
 ///         }
 ///     }

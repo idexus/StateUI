@@ -80,7 +80,7 @@ struct BrushSample: SampleContent, ExampleContent {
         (Point(1, 1), "Point(1, 1)"),
     ]
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

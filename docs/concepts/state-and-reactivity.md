@@ -21,7 +21,7 @@ A state belongs where its lifetime belongs:
 struct Counter: ContentView {
     @State private var count = 0
 
-    var content: any View {
+    var content: some View {
         HStack {
             Label("Count: \(count)")
             Button("Add").onClicked { count += 1 }
@@ -62,7 +62,7 @@ box so the transform runs under one hold:
 struct DownloadCount: ContentView {
     @State private var completed = 0
 
-    var content: any View {
+    var content: some View {
         Label("Completed: \(completed)")
             .onCreated {
                 await withTaskGroup(of: Void.self) { group in
@@ -108,7 +108,7 @@ final class Profile {
 struct ProfileCard: ContentView {
     @State private var profile = Profile()
 
-    var content: any View {
+    var content: some View {
         VStack {
             TextField(profile.$name)
             Label("\(profile.name) · \(profile.visits) visit(s)")
@@ -173,7 +173,7 @@ another source of truth:
 struct NameEditor: ContentView {
     @Binding var name: String
 
-    var content: any View {
+    var content: some View {
         TextField($name)
     }
 }
@@ -181,7 +181,7 @@ struct NameEditor: ContentView {
 struct AccountForm: ContentView {
     @State private var name = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             NameEditor(name: $name)
             Label(name.isEmpty ? "Choose a name" : "Hello, \(name)")
@@ -209,7 +209,7 @@ struct Contact {
 struct ContactForm: ContentView {
     @State private var contact = Contact()
 
-    var content: any View {
+    var content: some View {
         VStack {
             TextField($contact.name)
             Switch($contact.subscribed)
@@ -315,7 +315,7 @@ struct NotesWindow: Window {
 struct SettingsPage: ContentView {
     @State(persistentKey: .appearance) private var appearance = Appearance.system
 
-    var content: any View {
+    var content: some View {
         Button("Appearance: \(appearance.rawValue)").onClicked {
             appearance = appearance == .system ? .dark : .system
         }
@@ -363,7 +363,7 @@ extension SceneKey {
 struct SceneSidebar: ContentView {
     @State(sceneKey: .selectedSection) private var selectedSection = 0
 
-    var content: any View {
+    var content: some View {
         HStack {
             Button("Previous").onClicked {
                 selectedSection = max(0, selectedSection - 1)
@@ -480,7 +480,7 @@ struct SampledProgress: ContentView {
     @State private var progress = 0.0
     @State private var shown = 0.0
 
-    var content: any View {
+    var content: some View {
         VStack {
             ProgressBar().progress($progress)
             Label("Shown: \(Int(shown * 100))%")
@@ -509,7 +509,7 @@ and runs inside the host's display cycle.
 struct SpringDot: ContentView {
     @State(motion: .custom) private var y = 0.0
 
-    var content: any View {
+    var content: some View {
         VStack {
             ColorBox(.cornflowerBlue)
                 .width(28)

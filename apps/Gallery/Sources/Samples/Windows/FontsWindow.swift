@@ -22,7 +22,7 @@ struct FontsPage: ContentView {
     /// platform's own.
     static let families = ["", "Georgia", "Courier New", "Trebuchet MS"]
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("The font this gallery's preview is set in.")
                 .fontSize(13)

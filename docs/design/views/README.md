@@ -64,7 +64,7 @@ Everything a builder collects is an `Element`: something that answers `body`, a
                            Node(VStack) whose content closure runs only when
                            the differ reaches the stack
 
-  a composed view        struct Header: ContentView { var content: any View }
+  a composed view        struct Header: ContentView { var content: some View }
     Header("Settings")     body is a placeholder, Node(Composed): the differ builds
                            `content` into it, keeping the view's @State - or
                            carries the view whole

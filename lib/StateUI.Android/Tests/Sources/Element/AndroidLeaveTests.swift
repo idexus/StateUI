@@ -10,7 +10,7 @@ import XCTest
 struct LeavingPage: ContentView {
     @State private var shown = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             Button("Hide")
                 .onClicked { shown = false }

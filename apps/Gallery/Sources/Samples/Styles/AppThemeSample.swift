@@ -14,7 +14,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
         struct ThemeBadge: ContentView {
             @Environment var app: AppInfo
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     // The theme is read here, so a change to it builds this
                     // closure.
@@ -33,7 +33,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

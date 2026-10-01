@@ -27,7 +27,7 @@ private struct Calling: ContentView {
     @State private var answer = "-"
     @State private var heard: [HostEventSubscription] = []
 
-    var content: any View {
+    var content: some View {
         VStack {
             Button("Ask").onClicked {
                 do {
@@ -118,7 +118,7 @@ private struct Pulling: ContentView {
     @State private var said = "-"
     @Aim(Lamp.self) private var lamp
 
-    var content: any View {
+    var content: some View {
         VStack {
             Lamp().lit(true).onPulled { pulls in said = "pulled \(pulls)" }.aim(lamp)
             Button("Flash").onClicked {

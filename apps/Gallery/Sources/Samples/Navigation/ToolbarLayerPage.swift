@@ -17,7 +17,7 @@ struct ToolbarLayerPage: ContentView {
     /// How many times this page's Share was pressed.
     @State private var shared = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("Layer \(depth)")
                 .fontSize(28)

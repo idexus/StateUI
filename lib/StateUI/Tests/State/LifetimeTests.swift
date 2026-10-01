@@ -13,7 +13,7 @@ private struct Coming: ContentView {
     @Binding var log: [String]
     let name: String
 
-    var content: any View {
+    var content: some View {
         Label(name)
             .onCreated { log.append("created \(name)") }
             .onDestroying { log.append("destroying \(name)") }
@@ -25,7 +25,7 @@ private struct Arriving: ContentView {
     @Binding var log: [String]
     let name: String
 
-    var content: any View {
+    var content: some View {
         Label(name)
             .onCreated { log.append("created \(name)") }
             .onDestroying { log.append("destroying \(name)") }
@@ -41,7 +41,7 @@ private func chosen(_ arriving: Bool, log: Binding<[String]>) -> any View {
 private struct Holding: ContentView {
     @Binding var log: [String]
 
-    var content: any View {
+    var content: some View {
         VStack {
             Coming(log: $log, name: "inner")
         }
@@ -55,7 +55,7 @@ private struct Drafting: ContentView {
     @Binding var log: [String]
     @State private var draft = "typed"
 
-    var content: any View {
+    var content: some View {
         Button(draft)
             .onClicked { draft = "edited" }
             .onDestroying { log.append("saved \(draft)") }
@@ -295,7 +295,7 @@ private struct TitlingWindow: Window {
 private struct TitlingPage: ContentView {
     @Environment private var window: WindowSession
 
-    var content: any View {
+    var content: some View {
         Label("hello").onCreated { window.title = "Titled" }
     }
 }
@@ -314,7 +314,7 @@ private struct ChainingWindow: Window {
 private struct ChainingPage: ContentView {
     @State private var count = 0
 
-    var content: any View {
+    var content: some View {
         Label("\(count)")
             .onCreated { count += 1 }
             .onChanged(count) { count += 1 }
@@ -323,5 +323,5 @@ private struct ChainingPage: ContentView {
 
 /// A page with nothing on it, for a stack to hold.
 private struct LifetimePage: ContentView {
-    var content: any View { Label("page") }
+    var content: some View { Label("page") }
 }

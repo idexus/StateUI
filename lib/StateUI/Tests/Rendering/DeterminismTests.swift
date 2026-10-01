@@ -39,7 +39,7 @@ private enum Route: Hashable { case detail(String) }
 private struct Counter: ContentView {
     @Binding var count: Int
 
-    var content: any View { Label("Count: \(count)").fontSize(20) }
+    var content: some View { Label("Count: \(count)").fontSize(20) }
 }
 
 /// The stack's root. Every page of the session names itself as it comes into
@@ -52,7 +52,7 @@ private struct HomePage: ContentView {
     /// which is what makes the clean walk's answer interesting.
     let count: Binding<Int>
 
-    var content: any View {
+    var content: some View {
         VStack {
             Counter(count: count)
             Button("Open").onClicked {}
@@ -70,13 +70,13 @@ private struct DetailPage: ContentView {
     @Environment private var page: PageSession
     let name: String
 
-    var content: any View { Label(name).onCreated { page.title = name } }
+    var content: some View { Label(name).onCreated { page.title = name } }
 }
 
 private struct SettingsPage: ContentView {
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("Settings").fontAttributes(.bold)
             Switch(true).onToggled { _ in }

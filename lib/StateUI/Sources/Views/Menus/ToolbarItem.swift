@@ -6,7 +6,7 @@
 ///     struct NotesPage: ContentView {
 ///         @Environment private var page: PageSession
 ///
-///         var content: any View {
+///         var content: some View {
 ///             VStack { … }
 ///                 .toolbar {
 ///                     ToolbarItem("Save")

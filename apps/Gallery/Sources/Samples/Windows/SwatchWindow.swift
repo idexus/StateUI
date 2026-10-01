@@ -23,7 +23,7 @@ struct SwatchPage: ContentView {
     /// The page itself - its padding.
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         VStack {
             ColorBox()
                 .color(SwatchPage.colour(of: number))

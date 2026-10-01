@@ -11,7 +11,7 @@
 ///             self.title = title
 ///         }
 ///
-///         var content: any View {
+///         var content: some View {
 ///             Label(title).fontSize(28).fontAttributes(.bold)
 ///         }
 ///     }
@@ -29,9 +29,12 @@
 ///         .margin(0, 8)
 ///         .gridRow(1)
 public protocol ContentView: View where Modified == ModifiedContent {
+    /// The view it is made of.
+    associatedtype Content: View
+
     /// What this view is made of, read each time the view is built: one view -
     /// an `if`/`else` of views is one, its branches two elements.
-    @ViewBuilder var content: any View { get }
+    @ViewBuilder var content: Content { get }
 }
 
 extension ContentView {

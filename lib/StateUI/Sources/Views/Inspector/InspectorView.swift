@@ -13,7 +13,7 @@ struct InspectorView: ContentView {
     /// Whether there is room for the renders and the chosen one side by side.
     let wide: Bool
 
-    var content: any View {
+    var content: some View {
         let model = InspectorModel.shared
 
         // Reading the revision rebuilds this view when a pass lands.
@@ -268,7 +268,7 @@ struct InspectorView: ContentView {
 private struct Branch: ContentView {
     let entry: InspectedEntry
 
-    var content: any View {
+    var content: some View {
         let (mark, said, colour): (String, String, Color) = {
             switch entry.outcome {
             case let .built(reason):

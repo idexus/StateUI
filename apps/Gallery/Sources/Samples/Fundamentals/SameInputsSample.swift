@@ -46,7 +46,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
             let caption: String
             let value: String
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     Label("built with \\(caption): \\(value)")
                     DebugInfoLabel()
@@ -57,7 +57,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
         private struct Reads: ContentView {
             @Binding var count: Int
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     Label("reads the count: \\(count)")
                     DebugInfoLabel()
@@ -68,7 +68,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
         private struct Row: ContentView {
             let item: String
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     Label(item)
                     DebugInfoLabel()
@@ -77,7 +77,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             // This closure reads the count, so a press builds it again - and
             // constructs every view below afresh. Which of them is BUILT is
@@ -159,7 +159,7 @@ private struct Block: ContentView {
     let value: String
     let tint: Color
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("Built with \(caption)")
                 .fontSize(12)
@@ -182,7 +182,7 @@ private struct Reads: ContentView {
     @Binding var count: Int
     let tint: Color
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("Reads the count")
                 .fontSize(12)
@@ -204,7 +204,7 @@ private struct Reads: ContentView {
 private struct Row: ContentView {
     let item: String
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(item)
                 .fontSize(15)

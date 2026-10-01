@@ -65,7 +65,7 @@ struct SampleTabPage: ContentView {
 
     let nav: Navigation
 
-    var content: any View {
+    var content: some View {
         FrameReader { frame in
             held
                 .height(frame.height)

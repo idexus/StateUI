@@ -20,14 +20,14 @@ private struct PlainWindow: Window {
 }
 
 private struct Home: ContentView {
-    var content: any View { ModifiedContent(node: label("home")) }
+    var content: some View { ModifiedContent(node: label("home")) }
 }
 
 /// A page laying a banner over its window while a state says so, and a field under it always.
 private struct Noticed: ContentView {
     let banner: State<Bool>
 
-    var content: any View {
+    var content: some View {
         let banner = banner
         return ModifiedContent(node: label("home")).overlays {
             if banner.wrappedValue { ModifiedContent(node: label("banner")) }

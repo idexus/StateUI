@@ -8,7 +8,7 @@ struct Row: ContentView {
     let index: Int?
     let chosen: Bool
 
-    var content: any View {
+    var content: some View {
         let mine = pass.entries.filter { $0.scene == scene }
         let built = mine.filter { if case .built = $0.outcome { return true } else { return false } }.count
         let carried = mine.filter { $0.outcome == .carried }.count

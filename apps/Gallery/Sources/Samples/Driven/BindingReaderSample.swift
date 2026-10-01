@@ -30,7 +30,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
         private struct Knob: ContentView {
             @Binding var level: Double
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     Slider($level)
                         .motion(.eased(600, .cubicOut))
@@ -46,7 +46,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
         private struct ReadingMeter: ContentView {
             @Binding var level: Double
 
-            var content: any View {
+            var content: some View {
                 let count = debugInfo()          // this view's own build count
 
                 return VStack {
@@ -60,7 +60,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
         private struct ConvertedMeter: ContentView {
             @Binding var level: Double
 
-            var content: any View {
+            var content: some View {
                 let count = debugInfo()          // stays at one
 
                 return VStack {
@@ -73,7 +73,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             Knob(level: $level)
 
@@ -120,7 +120,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
 private struct Knob: ContentView {
     @Binding var level: Double
 
-    var content: any View {
+    var content: some View {
         VStack {
             Slider($level)
                 .accessibilityIdentifier("bindingReader.level")
@@ -154,7 +154,7 @@ private struct Knob: ContentView {
 private struct ReadingMeter: ContentView {
     @Binding var level: Double
 
-    var content: any View {
+    var content: some View {
         // Taken before the container, so it is this view's own reading.
         let count = BuildCount.of(debugInfo())
 
@@ -176,7 +176,7 @@ private struct ReadingMeter: ContentView {
 private struct ConvertedMeter: ContentView {
     @Binding var level: Double
 
-    var content: any View {
+    var content: some View {
         let count = BuildCount.of(debugInfo())
 
         return VStack {

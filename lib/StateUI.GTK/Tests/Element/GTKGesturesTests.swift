@@ -13,7 +13,7 @@ private struct TapsPage: ContentView {
     @State private var taps = 0
     @State private var shown = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("taps \(taps)")
             if shown {
@@ -37,7 +37,7 @@ private struct DragPage: ContentView {
     @State private var x = 10.0
     @State private var said = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("x \(Int(x)) \(said)")
             ColorBox(.steelBlue)

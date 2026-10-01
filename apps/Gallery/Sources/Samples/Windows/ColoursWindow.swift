@@ -18,7 +18,7 @@ struct ColoursPage: ContentView {
     /// The page itself - what it is called, and its padding.
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("The accent this gallery's bars are painted in.")
                 .fontSize(13)

@@ -63,7 +63,7 @@ struct Card: ContentView {
     /// render, and hands the rebuilt `dip` the storage its predecessor held;
     /// an eager `body` would hand out a fresh 1.0 on every render and the dip
     /// would have nowhere to live.
-    var content: any View {
+    var content: some View {
         // Copies for the handler to capture. The locals keep `self` out of
         // the closure, and a BINDING is copied like anything else the
         // handler holds. ConcurrencyTests pins this shape on the library's

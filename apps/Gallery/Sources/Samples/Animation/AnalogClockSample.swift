@@ -194,7 +194,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         Grid {
             DebugInfoLabel()
 

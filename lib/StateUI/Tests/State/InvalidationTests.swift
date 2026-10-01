@@ -32,7 +32,7 @@ private final class Chooses: ContentView {
         self.second = second
     }
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label("\(decision ? first.get() : second.get())"))
     }
 }
@@ -42,7 +42,7 @@ private final class Chooses: ContentView {
 private struct Shows: ContentView {
     let state: State<Int>
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label("\(state.get())"))
     }
 }
@@ -53,7 +53,7 @@ private struct Tile: ContentView {
     let tag: String
     @State var n = 0
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: label("\(tag)\(n)"))
     }
@@ -65,7 +65,7 @@ private struct Panel: ContentView {
     let child: Builds
     @State var title = "t"
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: "c").body]))
     }
@@ -78,7 +78,7 @@ private struct Handing: ContentView {
     let child: Builds
     @State var title = "t"
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: title).body]))
     }
@@ -89,7 +89,7 @@ private struct FlagOwner: ContentView {
     let reader: Builds
     @State var flag = false
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: stack([FlagReader(builds: reader, flag: $flag).body]))
     }
@@ -99,7 +99,7 @@ private struct FlagReader: ContentView {
     let builds: Builds
     @Binding var flag: Bool
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: label("\(flag)"))
     }
@@ -113,7 +113,7 @@ private struct FlagReader: ContentView {
 private struct TapCounter: ContentView {
     @State var count = 0
 
-    var content: any View {
+    var content: some View {
         Button("Count: \(count)").onClicked { count += 1 }
     }
 }
@@ -126,12 +126,12 @@ private struct Switcher: ContentView {
     @State var editing = false
     @State var taps = 0
 
-    var content: any View {
+    var content: some View {
         if editing {
-            return Button("done").onClicked { taps += 1 }
+            Button("done").onClicked { taps += 1 }
+        } else {
+            Label("view \(taps)")
         }
-
-        return Label("view \(taps)")
     }
 }
 
@@ -141,7 +141,7 @@ private struct Switcher: ContentView {
 private struct Fields: ContentView {
     @State var editing = false
 
-    var content: any View {
+    var content: some View {
         VStack {
             if editing {
                 Label("banner")
@@ -156,7 +156,7 @@ private struct Fields: ContentView {
 private struct RowList: ContentView {
     @State var n = 2
 
-    var content: any View {
+    var content: some View {
         VStack {
             ForEach(0..<n) { i in
                 Label("row \(i)").id("r\(i)")
@@ -173,7 +173,7 @@ private struct Outer: ContentView {
     let innerCount: State<Int>
     @State var title = "t"
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: stack([label(title), Inner(builds: innerBuilds, count: innerCount).body]))
     }
@@ -183,7 +183,7 @@ private struct Inner: ContentView {
     let builds: Builds
     let count: State<Int>
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: label("inner \(count.get())"))
     }
@@ -195,7 +195,7 @@ private struct Inner: ContentView {
 private struct Tabbed: ContentView {
     @State var showing = 0
 
-    var content: any View {
+    var content: some View {
         Grid {
             Label("one").isVisible(showing == 0).gridRow(1).id("one")
             Label("two").isVisible(showing == 1).gridRow(1).id("two")
@@ -888,7 +888,7 @@ final class InvalidationTests: XCTestCase {
             let builds: Builds
             let ticker: Ticker
 
-            var content: any View {
+            var content: some View {
                 builds.count += 1
                 return ModifiedContent(node: label("\(ticker.ticks)"))
             }
@@ -918,7 +918,7 @@ final class InvalidationTests: XCTestCase {
             let toggle: State<Bool>
             let counter: State<Int>
 
-            var content: any View {
+            var content: some View {
                 builds.count += 1
                 return ModifiedContent(node: toggle.get() ? label("\(counter.get())") : label("off"))
             }
@@ -964,7 +964,7 @@ private final class WritingPage: @unchecked Sendable {
 }
 
 private struct WritingBody: ContentView {
-    var content: any View {
+    var content: some View {
         let page = WritingPage.shared
         let shown = page.count.wrappedValue
 
@@ -995,7 +995,7 @@ private final class Aside: @unchecked Sendable {
 }
 
 private struct AsideBody: ContentView {
-    var content: any View {
+    var content: some View {
         let aside = Aside.shared
 
         if aside.writes > 0 {
@@ -1029,7 +1029,7 @@ private final class Chosen: @unchecked Sendable {
 private struct ChosenPage: ContentView {
     let text: String
 
-    var content: any View { ModifiedContent(node: label(text)) }
+    var content: some View { ModifiedContent(node: label(text)) }
 }
 
 private struct ChosenWindow: Window {

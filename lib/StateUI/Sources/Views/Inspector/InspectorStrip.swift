@@ -7,7 +7,7 @@ struct InspectorStrip: ContentView {
     /// The scene it looks at, by its number.
     let scene: String
 
-    var content: any View {
+    var content: some View {
         let model = InspectorModel.shared
 
         // Built again as renders land, the way the whole inspector is.

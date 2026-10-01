@@ -28,7 +28,7 @@ private final class Palette {
 private struct Accent: ContentView {
     @Environment private var palette: Palette
 
-    var content: any View { Label(palette.accent) }
+    var content: some View { Label(palette.accent) }
 }
 
 /// The session's main page: its accent and the value it keeps, and a button
@@ -39,7 +39,7 @@ private struct Home: ContentView {
     @Environment private var scene: SceneSession
     @Binding var shade: String
 
-    var content: any View {
+    var content: some View {
         VStack {
             Accent()
             Label(shade)
@@ -60,7 +60,7 @@ private struct MainWindow: Window {
 
 /// A page showing the session's accent.
 private struct Showing: ContentView {
-    var content: any View { Accent() }
+    var content: some View { Accent() }
 }
 
 /// The one fonts window a session may open.
@@ -73,7 +73,7 @@ private struct FontsWindow: Window {
 private struct Retargeting: ContentView {
     @Binding var number: Int
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("Document \(number)")
             Button("seven").onClicked { number = 7 }
@@ -113,7 +113,7 @@ private struct Studio: Application {
 
 /// A page with nothing on it.
 private struct Blank: ContentView {
-    var content: any View { Label("blank") }
+    var content: some View { Label("blank") }
 }
 
 /// A window and nothing else.
@@ -130,7 +130,7 @@ private struct Alone: Application {
 private struct Waiting: ContentView {
     @Binding var loading: Bool
 
-    var content: any View { Button("ready").onClicked { loading = false } }
+    var content: some View { Button("ready").onClicked { loading = false } }
 }
 
 /// What shows while a session is getting ready.
@@ -164,7 +164,7 @@ private struct StartingApp: Application {
 private struct Counting: ContentView {
     @Binding var opened: Int
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("\(opened)")
             Button("more").onClicked { opened += 1 }
@@ -188,7 +188,7 @@ private struct CountingApp: Application {
 private struct Naming: ContentView {
     @Environment private var window: WindowSession
 
-    var content: any View {
+    var content: some View {
         VStack {
             Button("rename").onClicked { window.title = "Renamed" }
         }
@@ -212,7 +212,7 @@ private struct Listing: ContentView {
     @Environment private var application: ApplicationSession
     @Environment private var scene: SceneSession
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("\(application.scenes.count) scenes")
             Label(scene.windows.map(\.key).joined(separator: ", "))

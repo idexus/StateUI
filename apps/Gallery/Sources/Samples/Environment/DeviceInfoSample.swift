@@ -20,7 +20,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
             @Environment var device: DeviceInfo
             @Environment var app: AppInfo
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     // The device never changes, so this stands at one build.
                     DebugInfoLabel()
@@ -38,7 +38,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

@@ -126,7 +126,7 @@ enum Sheet: Hashable {
 struct Home: ContentView {
     @Binding var sheets: [Sheet]
 
-    var content: any View {
+    var content: some View {
         Button("Settings").onClicked { sheets.append(.settings) }
     }
 }
@@ -135,7 +135,7 @@ struct Presented: ContentView {
     let title: String
     @Binding var sheets: [Sheet]
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(title)
             Button("Close").onClicked { sheets.removeLast() }
@@ -175,7 +175,7 @@ with the state it follows - a notice comes and goes with its state:
 struct OfflineNotice: ContentView {
     @Binding var shown: Bool
 
-    var content: any View {
+    var content: some View {
         HStack {
             Label("Working offline")
             Button("Dismiss").onClicked { shown = false }
@@ -189,7 +189,7 @@ struct OfflineNotice: ContentView {
 struct LibraryPage: ContentView {
     @State private var offline = false
 
-    var content: any View {
+    var content: some View {
         Switch($offline)
             .overlays {
                 if offline {

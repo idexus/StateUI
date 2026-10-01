@@ -163,7 +163,7 @@ struct WindowPhasePage: ContentView {
 
     @Environment private var window: WindowSession
 
-    var content: any View {
+    var content: some View {
         let (log, window) = (self.log, self.window)
         return Label("Window")
             .onCreated { log.values.append(window.phase) }
@@ -201,7 +201,7 @@ struct NotesPage: ContentView {
     @Environment private var scene: SceneSession
     @Environment private var application: ApplicationSession
 
-    var content: any View {
+    var content: some View {
         let (scene, application) = (self.scene, self.application)
         return VStack {
             Button("Open").onClicked { try await scene.openWindow(NotesApplication.note, value: 7) }.id("open")

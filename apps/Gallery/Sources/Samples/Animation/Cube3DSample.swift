@@ -841,7 +841,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
             """))
     #endif
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

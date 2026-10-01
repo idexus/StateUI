@@ -130,7 +130,7 @@ struct MenusPage: ContentView {
 
     @State private var recent = ["a.txt"]
 
-    var content: any View {
+    var content: some View {
         let (heard, recent) = (heard, $recent)
         return VStack { Button("More").onClicked { recent.wrappedValue.append("b.txt") }.id("more") }
             .menuBar {

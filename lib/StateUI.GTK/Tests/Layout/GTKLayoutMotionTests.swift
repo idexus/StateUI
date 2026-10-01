@@ -12,7 +12,7 @@ import XCTest
 private struct LengtheningPage: ContentView {
     @State private var long = false
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(long ? "Text & typing" : "Text").horizontalAlignment(.start)
             Button("Longer").onClicked { long = true }

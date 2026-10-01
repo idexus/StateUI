@@ -15,7 +15,7 @@ struct TabsControls: ContentView {
     /// the binding and the screen agree.
     let thisTab: DemoTab
 
-    var content: any View {
+    var content: some View {
         VStack {
             SectionTitle("The tab bar, as Swift describes it")
 

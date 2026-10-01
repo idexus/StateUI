@@ -307,7 +307,7 @@ private struct AimedFieldPage: ContentView {
     @Environment private var page: PageSession
     @Aim(TextField.self) private var field
 
-    var content: any View {
+    var content: some View {
         let (page, field) = (self.page, self.field)
         return VStack {
             TextField(State(wrappedValue: "").projectedValue).aim(field)

@@ -22,7 +22,7 @@ struct GroupPage: ContentView {
     /// Which kind of device this is - what decides which samples are listed.
     @Environment var device: DeviceInfo
 
-    var content: any View {
+    var content: some View {
         ScrollView {
             VStack {
                 Label(group.title)

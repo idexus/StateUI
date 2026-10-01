@@ -10,7 +10,7 @@ import XCTest
 struct NotePage: ContentView {
     @State private var shown = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             if shown {
                 Label("note")
@@ -131,7 +131,7 @@ private struct LeavingMainWindow: Window {
 private struct LeavingOpeningPage: ContentView {
     @Environment private var scene: SceneSession
 
-    var content: any View {
+    var content: some View {
         let scene = self.scene
         return VStack {
             Button("Open").onClicked { try await scene.openWindow(WindowType("leave.tool")) }

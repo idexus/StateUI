@@ -184,7 +184,7 @@ public struct ScrollReader: ContentView {
     }
 
     /// The views, and the empty scroller lying over them.
-    public var content: any View {
+    public var content: some View {
         let content = held
         let sideways = across
         let downward = down

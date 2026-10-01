@@ -12,7 +12,7 @@ private struct Watcher: ContentView {
     @State var count = 0
     let log: Log
 
-    var content: any View {
+    var content: some View {
         VStack {
             Button("Bump").onClicked { count += 1 }
         }
@@ -168,7 +168,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         struct Panel: ContentView {
-            var content: any View { Label("panel") }
+            var content: some View { Label("panel") }
         }
 
         func tree(_ value: Int) -> Node {
@@ -255,7 +255,7 @@ final class ChangesTests: XCTestCase {
     func testAWatchWrittenOnACarriedViewFiresWhenItsValueMoves() {
         struct Row: ContentView {
             let item: String
-            var content: any View { Label(item) }
+            var content: some View { Label(item) }
         }
 
         let renders = Renders()

@@ -40,7 +40,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
         private struct StackCell: ContentView {
             let text: String
 
-            var content: any View {
+            var content: some View {
                 Label(text)
                     .textColor(.white)
                     .background(Palette.accent)
@@ -49,7 +49,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             SectionTitle("Vertical")
 
@@ -100,7 +100,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 private struct StackCell: ContentView {
     let text: String
 
-    var content: any View {
+    var content: some View {
         Label(text)
             .fontSize(13)
             .textColor(.white)

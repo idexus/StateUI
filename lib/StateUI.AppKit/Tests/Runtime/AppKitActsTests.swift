@@ -78,7 +78,7 @@ private struct Focusing: ContentView {
     @State private var answer = "-"
     @Aim(TextField.self) private var field
 
-    var content: any View {
+    var content: some View {
         VStack {
             TextField($name).aim(field)
             Button("Focus").onClicked { answer = try await field.focus() ? "took" : "refused" }
@@ -101,7 +101,7 @@ private struct EnablingAndFocusing: ContentView {
     @State private var answer = "-"
     @Aim(TextField.self) private var field
 
-    var content: any View {
+    var content: some View {
         VStack {
             TextField($name).aim(field).isEnabled(enabled)
             Button("Enable and focus").onClicked {

@@ -43,7 +43,7 @@ struct LevelPage: ContentView {
     @State private var leaving = 0
     @State private var left = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             SectionTitle("Pushed page")
 

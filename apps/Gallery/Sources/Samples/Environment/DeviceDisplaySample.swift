@@ -14,7 +14,7 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
         struct DisplayBadge: ContentView {
             @Environment var display: DeviceDisplay
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     // The display is read here, so a turn or a resize builds
                     // this closure.
@@ -38,7 +38,7 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

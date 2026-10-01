@@ -33,7 +33,7 @@ private struct StyledApp: Application {
 }
 
 private struct Home: ContentView {
-    var content: any View { ModifiedContent(node: label("home")) }
+    var content: some View { ModifiedContent(node: label("home")) }
 }
 
 final class StyleTests: XCTestCase {
@@ -220,7 +220,7 @@ final class StyleTests: XCTestCase {
     /// them and builds the view when it moved.
     func testAStyleThatMovedReachesACarriedView() {
         struct Card: ContentView {
-            var content: any View { Label("card") }
+            var content: some View { Label("card") }
         }
 
         let renders = Renders()
@@ -234,7 +234,7 @@ final class StyleTests: XCTestCase {
     /// built with the same inputs under the same sheet is not built again.
     func testAnUnchangedSheetLeavesACarriedViewAlone() {
         struct Card: ContentView {
-            var content: any View { Label("card") }
+            var content: some View { Label("card") }
         }
 
         let renders = Renders()
@@ -380,7 +380,7 @@ final class StyleTests: XCTestCase {
     private struct Tinted: ContentView {
         let tint: Binding<Color>
 
-        var content: any View { ColorBox().background(tint) }
+        var content: some View { ColorBox().background(tint) }
     }
 
     /// Counts how often the closure writing a label runs.
@@ -397,7 +397,7 @@ final class StyleTests: XCTestCase {
     private struct Wearing: ContentView {
         let runs: Runs
 
-        var content: any View {
+        var content: some View {
             VStack {
                 Label(runs.text("Hi")).textColor(Color(light: .black, dark: .white))
             }
@@ -458,14 +458,14 @@ final class StyleTests: XCTestCase {
     /// A label whose colour has two halves, built where the differ can see
     /// the read.
     private struct Themed: ContentView {
-        var content: any View {
+        var content: some View {
             Label("Hi").textColor(Color(light: .black, dark: .white))
         }
     }
 
     /// The same label with one half, which asks the theme nothing.
     private struct Plain: ContentView {
-        var content: any View {
+        var content: some View {
             Label("Hi").textColor(.black)
         }
     }

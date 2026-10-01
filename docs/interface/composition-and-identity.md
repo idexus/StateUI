@@ -15,7 +15,7 @@ struct StatusBadge: ContentView {
     let title: String
     let ready: Bool
 
-    var content: any View {
+    var content: some View {
         HStack {
             ColorBox(ready ? .green : .gray)
                 .width(8)
@@ -50,7 +50,7 @@ A modifier specific to the composed concept returns another `Self`:
 struct Badge: ContentView {
     private var color = Color.cornflowerBlue
 
-    var content: any View {
+    var content: some View {
         Label("New")
             .textColor(.white)
             .background(color)
@@ -119,7 +119,7 @@ itself.
 struct FileRow: ContentView {
     let path: String
 
-    var content: any View {
+    var content: some View {
         TextField()
             .placeholder(path)
             .id(path)
@@ -248,7 +248,7 @@ Call `debugInfo()` inside the description whose work you want to understand:
 struct BuildProbe: ContentView {
     @State private var count = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(debugInfo())
             Button("Build").onClicked { count += 1 }

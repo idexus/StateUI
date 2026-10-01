@@ -55,7 +55,7 @@ private struct GridPlacement: ExampleContent {
             let text: String
             let color: String
 
-            var content: any View {
+            var content: some View {
                 Label(text)
                     .textColor(.white)
                     .background(Color(color))
@@ -64,7 +64,7 @@ private struct GridPlacement: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 
@@ -128,7 +128,7 @@ private struct GridCell: ContentView {
     let text: String
     let color: String
 
-    var content: any View {
+    var content: some View {
         Label(text)
             .fontSize(12)
             .textColor(.white)

@@ -55,7 +55,7 @@ struct MenuRow: ContentView {
     }
 
     /// A view, as everything placed in a stack is.
-    var content: any View {
+    var content: some View {
         // Copies for the handler to capture, never `self` - see the note in
         // Card.swift: a closure written in a body getter that captures the view
         // is moved off this library's executor by the compiler, and the press

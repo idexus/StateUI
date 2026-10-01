@@ -10,7 +10,7 @@ import XCTest
 private struct SpinnerPage: ContentView {
     @State private var running = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             ActivityIndicator(running)
             Button("Stop").onClicked { running = false }

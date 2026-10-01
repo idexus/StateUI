@@ -49,7 +49,7 @@ private struct LayerRows: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             // Nothing here reads the count - a handler reads when it fires -
             // so this closure stands at one build however often you press.
@@ -197,7 +197,7 @@ private struct LayerCost: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             HStack {
                 Button("+1")
@@ -270,7 +270,7 @@ private struct Described: ContentView {
 
     let leaves: Int
 
-    var content: any View {
+    var content: some View {
         HStack {
             let began = ContinuousClock.now
 
@@ -308,7 +308,7 @@ private struct Channelled: ContentView {
 
     let leaves: Int
 
-    var content: any View {
+    var content: some View {
         HStack {
             let began = ContinuousClock.now
 

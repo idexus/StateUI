@@ -35,7 +35,7 @@ struct WindowPhaseLog: ContentView {
     /// The window this view stands in, whose phase it follows.
     @Environment private var window: WindowSession
 
-    var content: any View {
+    var content: some View {
         ColorBox(Color("#00000000"))
             .width(0)
             .height(0)

@@ -35,7 +35,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
         @State private var atLeading = false
         @State private var addWords = false
 
-        var content: any View {
+        var content: some View {
             VStack {
                 // The counts are read here, so every toolbar item that acts
                 // builds this closure.
@@ -112,7 +112,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

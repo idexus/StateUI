@@ -43,7 +43,7 @@ private struct Borrower {
 private struct Counter: ContentView {
     @State var count = 0
 
-    var content: any View {
+    var content: some View {
         Button("Count: \(count)").onClicked { count += 1 }
     }
 }
@@ -53,7 +53,7 @@ private struct Counter: ContentView {
 private struct Timer: ContentView {
     @State var count = 100
 
-    var content: any View {
+    var content: some View {
         Button("Tick: \(count)").onClicked { count += 1 }
     }
 }
@@ -71,7 +71,7 @@ private struct Shelf: ContentView {
 
     @State var count = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             if let extra {
                 ModifiedContent(node: extra.body)
@@ -90,7 +90,7 @@ private struct QueryPage: ContentView {
     @Environment private var page: PageSession
     @State var query = ""
 
-    var content: any View {
+    var content: some View {
         Label(query)
             .titleView { SearchField($query).placeholder("Type here") }
             .onCreated { page.title = "Results: \(query)" }
@@ -107,7 +107,7 @@ private struct TitledPage: ContentView {
     @Environment private var page: PageSession
     let titled: Bool
 
-    var content: any View {
+    var content: some View {
         Counter()
             .onCreated { page.title = titled ? "Named" : nil }
             .onChanged(titled) { page.title = titled ? "Named" : nil }
@@ -128,7 +128,7 @@ private struct Shown: ContentView {
         self.read = read
     }
 
-    var content: any View {
+    var content: some View {
         read()
         return Label("shown")
     }
@@ -226,7 +226,7 @@ final class StateTests: XCTestCase {
 
     func testAViewInsideAViewKeepsItsOwnState() {
         struct Wrapper: ContentView {
-            var content: any View {
+            var content: some View {
                 VStack { Counter() }
             }
         }
@@ -292,7 +292,7 @@ final class StateTests: XCTestCase {
                 self.parts = parts()
             }
 
-            var content: any View {
+            var content: some View {
                 VStack { parts }
             }
         }
@@ -382,7 +382,7 @@ final class StateTests: XCTestCase {
         struct Borrowing: ContentView {
             @Binding var counter: Int
 
-            var content: any View {
+            var content: some View {
                 Button("Count: \(counter)").onClicked { counter += 1 }
             }
         }

@@ -89,7 +89,7 @@ private struct WideDetail: ContentView {
         self.detail = detail
     }
 
-    var content: any View {
+    var content: some View {
         let window = self.window
         return VStack { ModifiedContent(node: detail.body) }
             .onCreated {

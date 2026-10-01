@@ -86,7 +86,7 @@ private struct BrowsingPage: ContentView {
     @State private var forward = false
     let heard: Received<String>
 
-    var content: any View {
+    var content: some View {
         let browser = self.browser
         let heard = self.heard
         return VStack {

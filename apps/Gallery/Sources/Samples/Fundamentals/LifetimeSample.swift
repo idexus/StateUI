@@ -62,7 +62,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
             @Binding var log: [String]
             @State private var taps = 0
 
-            var content: any View {
+            var content: some View {
                 Button("Card \\(number) · tapped \\(taps)")
                     .onClicked { taps += 1 }
                     // Once, after the render that brings the card in - its
@@ -79,7 +79,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 
@@ -150,7 +150,7 @@ private struct LifetimeCard: ContentView {
     @Binding var log: [String]
     @State private var taps = 0
 
-    var content: any View {
+    var content: some View {
         Button("Card \(number) · tapped \(taps)")
             .fontSize(15)
             .textColor(.white)

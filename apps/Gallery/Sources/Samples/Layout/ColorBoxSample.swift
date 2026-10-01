@@ -36,7 +36,7 @@ struct ColorBoxSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             HStack {
                 ColorBox(Palette.accent)

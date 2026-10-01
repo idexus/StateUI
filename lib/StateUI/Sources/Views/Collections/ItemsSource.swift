@@ -136,7 +136,8 @@ struct ItemsEntry: ContentView {
     let identity: String
     let source: any ItemsViews
 
-    var content: any View {
-        source.view(for: identity) ?? VStack {}
+    var content: some View {
+        // Chosen by identity, so held as `any View` and handed on as its node.
+        ModifiedContent(node: (source.view(for: identity) ?? VStack {}).body)
     }
 }

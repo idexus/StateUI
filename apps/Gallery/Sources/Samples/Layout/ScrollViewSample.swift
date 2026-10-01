@@ -68,7 +68,7 @@ private struct DescribedOffset: ContentView {
     /// below reads it.
     @Binding var offset: Point
 
-    var content: any View {
+    var content: some View {
         Grid {
             columnTitle("DESCRIBED")
 
@@ -108,7 +108,7 @@ private struct PacedOffset: ContentView {
     /// state, so the get below is a get like any other.
     let shown: Point
 
-    var content: any View {
+    var content: some View {
         Grid {
             columnTitle("ON A CADENCE")
 
@@ -145,7 +145,7 @@ private struct DrivenOffset: ContentView {
     /// Handed to the scroller and to the conversion, and read by nobody.
     @Binding var offset: Point
 
-    var content: any View {
+    var content: some View {
         Grid {
             columnTitle("A CHANNEL")
 
@@ -218,7 +218,7 @@ private struct OffsetStrips: ExampleContent {
             // all three and handed down.
             @Binding var offset: Point
 
-            var content: any View {
+            var content: some View {
                 Grid {
                     columnTitle("DESCRIBED")
 
@@ -247,7 +247,7 @@ private struct OffsetStrips: ExampleContent {
             // ordinary state, so this is an ordinary get.
             let shown: Point
 
-            var content: any View {
+            var content: some View {
                 Grid {
                     columnTitle("ON A CADENCE")
 
@@ -270,7 +270,7 @@ private struct OffsetStrips: ExampleContent {
         struct DrivenOffset: ContentView {
             @Binding var offset: Point
 
-            var content: any View {
+            var content: some View {
                 Grid {
                     columnTitle("A CHANNEL")
 
@@ -299,7 +299,7 @@ private struct OffsetStrips: ExampleContent {
             @State private var pacedShown = Point.zero
             @State private var driven = Point.zero
 
-            var content: any View {
+            var content: some View {
                 Grid {
                     Grid {
                         DescribedOffset(offset: $described)
@@ -330,7 +330,7 @@ private struct OffsetStrips: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         Grid {
             // THREE IDENTICAL STRIPS over three states. What differs is where
             // each column's reading comes from, and the count under it is
@@ -451,7 +451,7 @@ private struct RestStrips: ExampleContent {
             @State private var offset = Point.zero
             @State private var rested = 1
 
-            var content: any View {
+            var content: some View {
                 Grid {
                     tileStrip()
                         .scrollOffset($offset)
@@ -479,7 +479,7 @@ private struct RestStrips: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         Grid {
             tileStrip()
                 .scrollOffset($offset)
@@ -547,7 +547,7 @@ private struct RestStrips: ExampleContent {
 private struct BarStrips: ExampleContent {
     static let code = """
         struct BarStrips: ContentView {
-            var content: any View {
+            var content: some View {
                 Grid {
                     barCase(.always).gridColumn(0)
                     barCase(.never).gridColumn(1)
@@ -570,7 +570,7 @@ private struct BarStrips: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         Grid {
             barCase(.always, "verticalScrollBarVisibility(.always)")
                 .gridColumn(0)

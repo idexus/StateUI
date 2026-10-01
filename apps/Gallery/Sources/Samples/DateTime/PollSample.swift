@@ -72,7 +72,7 @@ struct PollSample: SampleContent, ExampleContent {
         .onDestroying { poll.stop() }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

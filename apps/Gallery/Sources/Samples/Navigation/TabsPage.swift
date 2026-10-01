@@ -19,7 +19,7 @@ struct TabsPage: ContentView {
     /// the whole of why each tab keeps its place.
     @Binding var path: [Route]
 
-    var content: any View {
+    var content: some View {
         ScrollView {
             VStack {
                 SectionTitle("A section arranged as tabs")

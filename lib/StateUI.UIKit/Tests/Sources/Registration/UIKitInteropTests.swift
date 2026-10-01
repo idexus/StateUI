@@ -80,7 +80,7 @@ private struct Calling: ContentView {
     @State private var heard: [HostEventSubscription] = []
     @Aim(Lamp.self) private var lamp
 
-    var content: any View {
+    var content: some View {
         VStack {
             Button("Ask").onClicked {
                 do {

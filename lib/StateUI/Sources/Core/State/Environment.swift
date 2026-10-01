@@ -23,7 +23,7 @@ protocol EnvironmentSlot: AnyObject {
 ///     struct BasketRow: ContentView {
 ///         @Environment var basket: Basket
 ///
-///         var content: any View {
+///         var content: some View {
 ///             Label("\(basket.items.count) item(s)")
 ///         }
 ///     }

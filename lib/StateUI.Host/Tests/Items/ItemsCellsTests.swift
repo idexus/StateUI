@@ -24,7 +24,7 @@ private struct ListWindow: Window {
 private struct ListPage: ContentView {
     @State private var chosen: Int?
 
-    var content: any View {
+    var content: some View {
         ItemsView(0..<100) { Label("\($0)") }
             .selection($chosen)
             .onItemActivated { Heard.opened.append($0) }

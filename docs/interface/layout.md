@@ -437,7 +437,7 @@ to run under them, so its background colours the status bar's strip:
 import StateUI
 
 struct Header: ContentView {
-    var content: any View {
+    var content: some View {
         VStack {
             Label("StateUI")
         }

@@ -37,7 +37,7 @@ struct SamplePage: ContentView {
         .barBackgroundColor(bar)
     }
 
-    var content: any View {
+    var content: some View {
         // Dressed as every page of the gallery is. What a sample adds to the
         // bar it writes from its own `.onCreated`, which runs AFTER this one,
         // being further in - so its buttons go before these and its title

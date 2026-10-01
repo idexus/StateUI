@@ -17,7 +17,7 @@ import XCTest
 private struct BarredPage: ContentView {
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         Label("one")
             .toolbar {
                 ToolbarItem("Save")
@@ -133,7 +133,7 @@ final class PageBarTests: XCTestCase {
     /// view holds the one view it was given.
     func testAnArrangementsGroupFollowsItsPagesAndATitleViewHoldsOneView() {
         struct Plain: ContentView {
-            var content: any View { Label("one") }
+            var content: some View { Label("one") }
         }
 
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Plain() } destination: { _ in Plain() }
@@ -179,7 +179,7 @@ final class PageBarTests: XCTestCase {
     /// not told to empty one.
     func testAPageWithNoToolbarSendsNoSlot() {
         struct Plain: ContentView {
-            var content: any View { Label("one") }
+            var content: some View { Label("one") }
         }
 
         XCTAssertEqual(Node.page(Plain()).built.children.map { $0.type }, ["Label"])

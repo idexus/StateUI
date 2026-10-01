@@ -12,7 +12,7 @@ struct MainPage: ContentView {
     @State private var count = 0
     @State private var name = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             Image("stateui_tile.png")
                 .height(120)

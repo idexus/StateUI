@@ -95,7 +95,7 @@ extension HostActCall {
 private struct Reading: ContentView {
     let read: () -> Void
 
-    var content: any View {
+    var content: some View {
         read()
         return ModifiedContent(node: label("reader"))
     }

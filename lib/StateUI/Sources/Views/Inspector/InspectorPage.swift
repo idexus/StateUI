@@ -12,7 +12,7 @@ struct InspectorPage: ContentView {
     /// The page itself.
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         InspectorView(scene: scene, place: .window, wide: true)
             .onCreated {
                 page.background = Look.ground

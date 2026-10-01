@@ -456,7 +456,7 @@ final class BuilderTests: XCTestCase {
 private struct Field: ContentView {
     let editing: Bool
 
-    var content: any View {
+    var content: some View {
         if editing {
             TextField("name")
         } else {

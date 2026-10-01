@@ -52,7 +52,7 @@ struct IdentitySample: SampleContent, ExampleContent {
             let item: String
             @Binding var items: [String]
 
-            var content: any View {
+            var content: some View {
                 HStack {
                     Label(item)
                         .width(90)
@@ -71,7 +71,7 @@ struct IdentitySample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             HStack {
                 Button("Add")
@@ -140,7 +140,7 @@ private struct IdentityRow: ContentView {
     let item: String
     @Binding var items: [String]
 
-    var content: any View {
+    var content: some View {
         HStack {
             Label(item)
                 .fontSize(15)

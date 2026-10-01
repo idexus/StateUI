@@ -16,7 +16,7 @@ struct HiddenPage: ContentView {
 
     let nav: Navigation
 
-    var content: any View {
+    var content: some View {
         ScrollView {
             VStack {
                 SectionTitle("A row that is not there")

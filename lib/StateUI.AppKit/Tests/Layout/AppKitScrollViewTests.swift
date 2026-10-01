@@ -438,7 +438,7 @@ private final class ScrollWheelSpyView: NSScrollView {
 private struct TappedRun: ContentView {
     @State private var across = Point.zero
 
-    var content: any View {
+    var content: some View {
         ScrollReader(across: 300) {
             ColorBox(Color("#3366FF"))
         }
@@ -450,7 +450,7 @@ private struct TappedRun: ContentView {
 private struct BoundStrip: ContentView {
     @State private var offset = Point.zero
 
-    var content: any View {
+    var content: some View {
         VStack {
             ScrollView {
                 ColorBox(Color("#3366FF")).height(2_000)

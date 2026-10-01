@@ -127,7 +127,7 @@ public struct SessionPage: ContentView {
         self.write = write
     }
 
-    public var content: any View {
+    public var content: some View {
         let (write, page, window) = (self.write, self.page, self.window)
         return VStack { [Label("Page")] + beside }
             .onCreated { write(page, window) }
@@ -175,7 +175,7 @@ public struct DeclaringPage: ContentView {
         self.items = items
     }
 
-    public var content: any View {
+    public var content: some View {
         let (items, words) = (self.items, VStack { [Label("Page")] + beside })
         let grouped = group.map { words.toolbar(side, id: $0, order: order) { items() } }
             ?? words.toolbar(side, order: order) { items() }

@@ -300,12 +300,13 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     }
 
     /// The cards, the shape they stand in, and the scroller that turns them.
-    public var content: any View {
+    public var content: some View {
         let items = source.items
         let count = items.count
 
+        // The empty view is held as `any View`, so every answer goes as a node.
         if count == 0, let empty {
-            return empty
+            return ModifiedContent(node: empty.body)
         }
 
         // Locals rather than `self`, which holds a class.
@@ -427,10 +428,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             })
 
         guard swipes else {
-            return Grid {
+            return ModifiedContent(node: Grid {
                 ModifiedContent(node: cards.body)
                 turning
-            }
+            }.body)
         }
 
         var reader = ScrollReader(across: Double(count - 1) * step) { cards }
@@ -486,7 +487,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             }
         }
 
-        return Grid {
+        let deck = Grid {
             reader
                 // After each layout the run is put where the position says,
                 // asking again until it lands: an unlaid scroller clamps.
@@ -509,6 +510,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
             turning
         }
+
+        return ModifiedContent(node: deck.body)
     }
 
     /// How long one crossing between two shapes lasts, in milliseconds - what the
@@ -724,7 +727,7 @@ private struct Turning: ContentView {
     /// What a new shape means.
     let wore: () async throws -> Void
 
-    var content: any View {
+    var content: some View {
         let position = at()
 
         return ColorBox(Color("#00000000"))

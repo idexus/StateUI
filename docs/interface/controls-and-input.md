@@ -283,7 +283,7 @@ struct ContactsPage: ContentView {
 
     let contacts: [Contact]
 
-    var content: any View {
+    var content: some View {
         Grid {
             ItemsView(contacts, id: \.name) { contact in
                 VStack {

@@ -223,7 +223,7 @@ struct TitledPage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let log = self.log
         let title = self.title
         let page = self.page
@@ -243,7 +243,7 @@ private struct SearchingPage: ContentView {
     @Environment private var page: PageSession
     @State private var query = ""
 
-    var content: any View {
+    var content: some View {
         let page = self.page
         let query = $query
         return Label("Results")

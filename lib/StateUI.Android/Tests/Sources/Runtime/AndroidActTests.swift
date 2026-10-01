@@ -56,7 +56,7 @@ private struct FocusPage: ContentView {
     @Aim(TextField.self) private var field
     let answers: Received<Bool>
 
-    var content: any View {
+    var content: some View {
         let answers = self.answers
         let field = self.field
         return VStack {

@@ -11,7 +11,7 @@ import XCTest
 private struct SaidPage: ContentView {
     @State private var said = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             if said {
                 VStack { Label("Title") }.accessibilityLabel("The title").accessibilityHint("Names the page").id("group")

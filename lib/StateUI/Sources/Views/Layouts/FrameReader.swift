@@ -112,7 +112,7 @@ public struct FrameReader: ContentView {
 
     /// The content, in a Grid that fills the offered space and writes its own
     /// frame into the state this body reads.
-    public var content: any View {
+    public var content: some View {
         Grid { BuiltViews(nodes: build(frame)) }
             .onFrameChanged(in: space) { frame = $0 }
     }

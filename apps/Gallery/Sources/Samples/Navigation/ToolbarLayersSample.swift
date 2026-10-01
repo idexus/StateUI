@@ -17,7 +17,7 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
         let nav: Navigation
         @State private var refreshed = 0
 
-        var content: any View {
+        var content: some View {
             VStack {
                 // The count is read here, so Refresh builds this closure.
                 DebugInfoLabel()
@@ -38,7 +38,7 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
             @Binding var path: [Route]
             @State private var shared = 0
 
-            var content: any View {
+            var content: some View {
                 Label("Layer \\(depth)")
                     .toolbar {
                         ToolbarItem("Share").onClicked { shared += 1 }
@@ -48,7 +48,7 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

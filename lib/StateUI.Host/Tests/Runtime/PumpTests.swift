@@ -135,7 +135,7 @@ final class PumpTests: XCTestCase {
 private struct CountingPage: ContentView {
     @State private var count = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("count \(count)")
             Button("Add")

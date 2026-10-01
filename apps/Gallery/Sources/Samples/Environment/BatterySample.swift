@@ -15,7 +15,7 @@ struct BatterySample: SampleContent, ExampleContent {
         struct BatteryBadge: ContentView {
             @Environment var battery: Battery
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     // The battery is read here, so a change the host reports
                     // builds this closure - and nothing else on the page.
@@ -33,7 +33,7 @@ struct BatterySample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

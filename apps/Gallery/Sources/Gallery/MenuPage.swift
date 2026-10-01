@@ -36,7 +36,7 @@ struct MenuPage: ContentView {
     /// The window the menu stands in - whether the desktop shows through it.
     @Environment private var window: WindowSession
 
-    var content: any View {
+    var content: some View {
         Grid {
             header
 

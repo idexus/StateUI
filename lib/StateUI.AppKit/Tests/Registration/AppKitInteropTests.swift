@@ -34,7 +34,7 @@ private struct Calling: ContentView {
     @State private var answer = "-"
     @State private var heard: [HostEventSubscription] = []
 
-    var content: any View {
+    var content: some View {
         VStack {
             Button("Ask")
                 .onClicked {

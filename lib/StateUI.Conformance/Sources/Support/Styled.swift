@@ -63,7 +63,7 @@ struct StyledPage: ContentView {
 
     @Environment private var application: ApplicationSession
 
-    var content: any View {
+    var content: some View {
         let (inner, application) = (self.inner, self.application)
         return VStack { ModifiedContent(node: inner.body) }.onCreated { application.styles = Styled.sheet }
     }

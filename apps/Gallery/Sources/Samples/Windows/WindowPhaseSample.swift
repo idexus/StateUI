@@ -31,7 +31,7 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
 
     var notes: (any View)? { nil }
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 
@@ -71,7 +71,7 @@ private struct PhaseRow: ContentView {
     let name: String
     let value: String
 
-    var content: any View {
+    var content: some View {
         HStack {
             Label(name)
                 .fontSize(13)

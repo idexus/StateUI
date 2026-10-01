@@ -160,7 +160,7 @@ struct ShapesSample: SampleContent, ExampleContent {
         Point(54.6, 19.3), Point(11.5, 50.6),
     ]
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

@@ -11,7 +11,7 @@ import XCTest
 struct CounterPage: ContentView {
     @State private var count = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("count \(count)")
             Button("Add")
@@ -97,7 +97,7 @@ final class GTKRendererTests: XCTestCase {
 private struct SizedPage: ContentView {
     @Environment private var window: WindowSession
 
-    var content: any View {
+    var content: some View {
         let window = self.window
         return Label("sized").onCreated {
             window.width = 700

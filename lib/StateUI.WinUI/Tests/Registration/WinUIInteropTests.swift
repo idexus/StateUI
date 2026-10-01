@@ -33,7 +33,7 @@ private struct Calling: ContentView {
     @State private var answer = "-"
     @State private var heard: [HostEventSubscription] = []
 
-    var content: any View {
+    var content: some View {
         VStack {
             Button("Ask")
                 .onClicked {
@@ -141,7 +141,7 @@ private struct Pulling: ContentView {
     @State private var on = true
     @Aim(Lamp.self) private var lamp
 
-    var content: any View {
+    var content: some View {
         VStack {
             Lamp()
                 .lit(on)

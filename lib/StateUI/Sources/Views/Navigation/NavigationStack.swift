@@ -29,7 +29,7 @@
 ///         @Binding var path: [Route]
 ///         @Environment private var page: PageSession
 ///
-///         var content: any View {
+///         var content: some View {
 ///             Button("Open the first")
 ///                 .onClicked { path.append(.details("first")) }
 ///                 .onCreated { page.title = "Home" }

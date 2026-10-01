@@ -22,7 +22,7 @@ import XCTest
 private struct BatteryLabel: ContentView {
     @Environment var battery: Battery
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label("\(Int(battery.chargeLevel * 100))% \(battery.state)"))
     }
 }
@@ -37,7 +37,7 @@ private struct Heading: ContentView {
     /// Whether the heading fits - the question a page asks of the screen.
     var fits: Bool { display.orientation != .landscape }
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label(fits ? "fits" : "too wide"))
     }
 }
@@ -46,7 +46,7 @@ private struct Heading: ContentView {
 private struct Bystander: ContentView {
     let builds: Builds
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: label("still"))
     }

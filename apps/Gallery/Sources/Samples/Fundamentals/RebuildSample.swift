@@ -27,7 +27,7 @@ struct RebuildSample: SampleContent, ExampleContent {
             let name: String
             @Binding var value: Int
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     Label("\\(name) is \\(value)")
 
@@ -44,13 +44,13 @@ struct RebuildSample: SampleContent, ExampleContent {
         private struct Passenger: ContentView {
             // Reads nothing and is built with nothing, so every rebuild of the
             // panel carries it - it keeps saying `1 build, first time`.
-            var content: any View {
+            var content: some View {
                 Label(debugInfo())
             }
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             HStack {
                 Button("Change left")
@@ -108,7 +108,7 @@ private struct RebuildPanel: ContentView {
 
     @Binding var value: Int
 
-    var content: any View {
+    var content: some View {
         ZStack {
             VStack {
                 Label("\(name) is \(value)")
@@ -136,7 +136,7 @@ private struct RebuildPanel: ContentView {
 /// A view that reads nothing and is built with nothing, so every rebuild of the
 /// panel above it carries it: its reading stays at the first build.
 private struct RebuildPassenger: ContentView {
-    var content: any View {
+    var content: some View {
         Label(debugInfo())
             .fontSize(12)
             .textColor(Palette.subtle)

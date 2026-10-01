@@ -128,7 +128,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     }
 
     /// The views, each wrapped for the host to place from the run.
-    public var content: any View {
+    public var content: some View {
         let held = source
 
         let slots = held.items.enumerated().map { offset, item in

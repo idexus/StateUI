@@ -29,7 +29,7 @@ struct ModalSample: SampleContent, ExampleContent {
         struct HomePage: ContentView {
             @Binding var sheets: [Sheet]
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     DebugInfoLabel()
 
@@ -42,7 +42,7 @@ struct ModalSample: SampleContent, ExampleContent {
         struct SettingsPage: ContentView {
             @Binding var sheets: [Sheet]
 
-            var content: any View {
+            var content: some View {
                 Button("Close")
                     .onClicked { sheets.removeLast() }
             }
@@ -51,7 +51,7 @@ struct ModalSample: SampleContent, ExampleContent {
 
     var notes: (any View)? { nil }
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

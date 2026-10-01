@@ -12,7 +12,7 @@ struct InspectorPanel: ContentView {
 
     @Environment private var device: DeviceInfo
 
-    var content: any View {
+    var content: some View {
         // Read here, so a panel folding or opening out is the one view built
         // again - the window under it standing as it was.
         let collapsed = place == .bottom && InspectorModel.shared.collapsed.contains(scene)

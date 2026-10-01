@@ -61,7 +61,7 @@ private final class ForeignCart {
 private struct CartPage: ContentView {
     @State var cart = Cart()
 
-    var content: any View {
+    var content: some View {
         Button("Items: \(cart.items.count)").onClicked { cart.items.append("one") }
     }
 }
@@ -96,7 +96,7 @@ private struct Field: ContentView {
     let note: Binding<String>
     let tally: Tally
 
-    var content: any View {
+    var content: some View {
         tally.builds += 1
         return TextField(note)
     }
@@ -112,7 +112,7 @@ private struct Reader: ContentView {
         self.read = read
     }
 
-    var content: any View {
+    var content: some View {
         read(debugInfo())
         return Label("reader")
     }

@@ -11,7 +11,7 @@ import XCTest
 private struct SpannedPage: ContentView {
     @State private var spanned = true
 
-    var content: any View {
+    var content: some View {
         VStack {
             if spanned {
                 Label("own").spans { TextSpan("runs") }.id("words")

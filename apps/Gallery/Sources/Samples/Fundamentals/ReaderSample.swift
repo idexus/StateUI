@@ -74,7 +74,7 @@ struct ReaderSample: SampleContent, ExampleContent {
         private struct Reading: ContentView {
             @Binding var value: Double
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     Label("a child that reads: \\(percent(value))")
                     DebugInfoLabel()                            // climbs
@@ -85,7 +85,7 @@ struct ReaderSample: SampleContent, ExampleContent {
         private struct Holding: ContentView {
             @Binding var value: Double
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     Slider($value)
                     DebugInfoLabel()                            // stays at one
@@ -97,7 +97,7 @@ struct ReaderSample: SampleContent, ExampleContent {
             @Binding var pulses: Int
             @State private var said = "pulses · 0"
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     Label($said)
                     DebugInfoLabel()                            // stays at one
@@ -114,7 +114,7 @@ struct ReaderSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             Slider($value)
                 .accessibilityIdentifier("reader.value")
@@ -256,7 +256,7 @@ struct ReaderSample: SampleContent, ExampleContent {
 private struct Reading: ContentView {
     @Binding var value: Double
 
-    var content: any View {
+    var content: some View {
         ZStack {
             VStack {
                 Label("5 · a child that reads the value it borrowed")
@@ -283,7 +283,7 @@ private struct Reading: ContentView {
 private struct Holding: ContentView {
     @Binding var value: Double
 
-    var content: any View {
+    var content: some View {
         ZStack {
             VStack {
                 Label("6 · a child that only hands the binding on")
@@ -313,7 +313,7 @@ private struct Pulsed: ContentView {
 
     @State private var said = "pulses · 0"
 
-    var content: any View {
+    var content: some View {
         ZStack {
             VStack {
                 Label("7 · a state by binding")

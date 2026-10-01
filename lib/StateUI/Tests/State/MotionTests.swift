@@ -139,7 +139,7 @@ final class MotionTests: XCTestCase {
         struct Panel: ContentView {
             let fade: Double
 
-            var content: any View {
+            var content: some View {
                 ZStack { Label("x") }.opacity(fade)
             }
         }

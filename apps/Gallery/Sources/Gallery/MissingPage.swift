@@ -28,7 +28,7 @@ struct MissingPage: ContentView {
     /// tab's own.
     @Binding var path: [Route]
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("No sample called \"\(id)\"")
                 .fontSize(20)

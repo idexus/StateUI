@@ -186,7 +186,7 @@ struct NotesPage: ContentView {
     @Environment private var page: PageSession
     @State private var note = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(note.isEmpty ? "A new note" : note)
             TextField($note).placeholder("Write something")
@@ -231,7 +231,7 @@ struct RegisteredWindow: Window {
 }
 
 struct RegisteredPage: ContentView {
-    var content: any View { Label("Hello, StateUI") }
+    var content: some View { Label("Hello, StateUI") }
 }
 
 @_cdecl("stateui_app_register")

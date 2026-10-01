@@ -314,7 +314,7 @@
 struct SectionPage: ContentView {
     @State(sceneKey: SceneKey("conformance.section", of: Int.self)) private var section = 0
 
-    var content: any View {
+    var content: some View {
         let section = $section
         return VStack { Button("Second").onClicked { section.wrappedValue = 2 }.id("write") }
     }

@@ -38,7 +38,7 @@ private struct LoadingList: ExampleContent {
         .rows(.auto, .fill)
         """
 
-    var content: any View {
+    var content: some View {
         Grid {
             HStack {
                 Label(loading ? "Loading" : "\(count) items")

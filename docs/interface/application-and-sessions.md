@@ -32,7 +32,7 @@ struct MainWindow: Window {
 }
 
 struct HomePage: ContentView {
-    var content: any View { Label("Home") }
+    var content: some View { Label("Home") }
 }
 ```
 
@@ -397,7 +397,7 @@ struct EditorPage: ContentView {
     @Environment private var page: PageSession
     @State private var dirty = false
 
-    var content: any View {
+    var content: some View {
         TextEditor()
             .toolbar {
                 ToolbarItem("Save")

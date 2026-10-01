@@ -16,13 +16,13 @@ and this table maps the two.
 | member | property, event or method | a property, an event or an act an element declares |
 | wear (a tier) | adopt, conform to | an element contract taking a tier's members |
 | layer (`ElementLayer`) | implementation source | who realizes a node type or a member: the platform, an adaptation, StateUI, the structure or a provider |
-| slot | named placeholder | a structural child that holds authored content in a known place: `Content`, `LeadingContent`, `TitleView` |
+| slot | named placeholder | a structural child that holds authored content in a known place: `TitleView` |
 | slot child | auxiliary child | a child a modifier appends after the laid-out ones: a context menu |
 | watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |
 | mixin tier | mixin, trait | a tier several contracts wear for one group of members |
 | Normal (visual state) | default visual state | the visual state a control is in when none of its other states holds |
-| arrangement (`PageArrangement`) | page container | a page that arranges other pages: a stack, tabs, a split view |
-| arrangement (navigation) | navigation container | `NavigationStack`, `TabbedView` and `SplitView`: what decides which page shows |
+| arrangement (`PageArrangement`) | page container | a page that arranges other pages: a stack, tabs, a split view, a modal stack |
+| arrangement (navigation) | navigation container | `NavigationStack`, `TabbedView`, `SplitView` and `ModalStack`: what decides which page shows |
 | session | per-instance runtime state | the values one opening of an application, a scene, a window or a page holds |
 | session (`PageSession`) | per-page state | the runtime values a page holds while it is shown |
 
@@ -57,7 +57,9 @@ and this table maps the two.
 | render | reconcile | build the patch between the tree the host holds and the tree the state describes |
 | patch (`HostPatch`) | diff | the sparse change from one tree to the next |
 | road (walk, build, complete) | render mode | how a render reaches the elements it describes |
-| path (builder) | structural key | where a statement stood in its builder: `1.else.0` |
+| path (builder) | structural key | where a statement stood in its builder: `1.else` |
+| `Views` | view sequence | what a container holds: none, one or several views in order, each keyed |
+| `Statements`, `Either` | statement sequence, branch | a builder's several statements; the branches of an `if`/`else` |
 | clean walk (`revisit`) | partial re-render | only the elements whose reads meet the changes are rebuilt |
 | resync (`describeAll`) | full sync | the complete tree sent to a host that lost its generation |
 | settle pass | handler flush | the handlers a render found run, their writes merged into the same message |

@@ -23,7 +23,7 @@ private enum Route: Hashable {
 private struct Root: ContentView {
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label("home")).onCreated { page.title = "Home" }
     }
 }
@@ -33,7 +33,7 @@ private struct Destination: ContentView {
     @Environment private var page: PageSession
     let name: String
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label(name)).onCreated { page.title = name }
     }
 }
@@ -44,7 +44,7 @@ private struct DressedDestination: ContentView {
     @Environment private var page: PageSession
     let depth: Int
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label("level \(depth)"))
             .titleView { ModifiedContent(node: label("on the bar")) }
             .onCreated {

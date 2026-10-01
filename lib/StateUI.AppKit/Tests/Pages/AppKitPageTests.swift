@@ -1088,7 +1088,7 @@ private struct ChromePage: ContentView {
     @Environment private var page: PageSession
     let route: ChromeRoute
 
-    var content: any View {
+    var content: some View {
         Label("Pushed").toolbar { ToolbarItem("Save") }.onCreated {
             switch route {
             case .plain: break

@@ -514,7 +514,7 @@ private extension WindowType {
 
 private struct AppKitSessionPage: ContentView {
     let caption: String
-    var content: any View { Label(caption) }
+    var content: some View { Label(caption) }
 }
 
 private struct AppKitSessionMainWindow: Window {

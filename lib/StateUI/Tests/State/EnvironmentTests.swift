@@ -44,7 +44,7 @@ private struct NameLabel: ContentView {
     let builds: Builds
     @Environment var session: Session
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: label(session.name))
     }
@@ -55,7 +55,7 @@ private struct AccentLabel: ContentView {
     let builds: Builds
     @Environment var theme: Theme
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: label(theme.accent))
     }
@@ -67,7 +67,7 @@ private struct Provider: ContentView {
     let reader: Builds
     @State var session = Session()
 
-    var content: any View {
+    var content: some View {
         builds.count += 1
         return ModifiedContent(node: stack([NameLabel(builds: reader).environment(session).body]))
     }
@@ -79,7 +79,7 @@ private struct Provider: ContentView {
 private struct VisitButton: ContentView {
     @Environment var session: Session
 
-    var content: any View {
+    var content: some View {
         Button("visits \(session.visits)").onClicked { session.visits += 1 }
     }
 }
@@ -89,7 +89,7 @@ private struct VisitButton: ContentView {
 private struct RenameButton: ContentView {
     @Environment var session: Session
 
-    var content: any View {
+    var content: some View {
         Button("rename").onClicked {
             let name: Binding<String> = $session.name
             name.wrappedValue = "typed"
@@ -104,7 +104,7 @@ private struct Holder: ContentView {
     @State var session = Session()
     @State var title = "t"
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(title)
             NameLabel(builds: reader).id("m")
@@ -143,7 +143,7 @@ final class EnvironmentTests: XCTestCase {
             let outer: Session
             let inner: Session
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     NameLabel(builds: Builds())
                     NameLabel(builds: Builds()).environment(inner)
@@ -205,7 +205,7 @@ final class EnvironmentTests: XCTestCase {
             let session: Session
             let theme: Theme
 
-            var content: any View {
+            var content: some View {
                 VStack {
                     NameLabel(builds: names)
                     AccentLabel(builds: accents)

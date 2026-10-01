@@ -15,7 +15,7 @@ struct SecondTabPage: ContentView {
 
     let nav: Navigation
 
-    var content: any View {
+    var content: some View {
         ScrollView {
             VStack {
                 SectionTitle("The other tab")

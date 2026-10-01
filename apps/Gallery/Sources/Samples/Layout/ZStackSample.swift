@@ -48,7 +48,7 @@ private struct Areas: ExampleContent {
             let text: String
             let color: String
 
-            var content: any View {
+            var content: some View {
                 Label(text)
                     .textColor(.white)
                     .background(Color(color))
@@ -57,7 +57,7 @@ private struct Areas: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             // NO BUILD READING HERE. `proportional` is read inside the stack's
             // own braces, and a container describes its children when the
@@ -121,7 +121,7 @@ private struct Layers: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             ZStack {
                 ColorBox(Color("#E53935"))
@@ -155,7 +155,7 @@ private struct Marker: ContentView {
     let text: String
     let color: String
 
-    var content: any View {
+    var content: some View {
         Label(text)
             .fontSize(12)
             .textColor(.white)

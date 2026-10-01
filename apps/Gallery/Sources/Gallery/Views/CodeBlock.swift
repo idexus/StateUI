@@ -25,7 +25,7 @@ struct CodeBlock: ContentView {
         return copy
     }
 
-    var content: any View {
+    var content: some View {
         ScrollView {
             snippet
         }

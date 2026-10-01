@@ -63,7 +63,7 @@ struct MenuPage: ContentView {
     @State private var canPaste = false
     @State private var shares = ["Mail"]
 
-    var content: any View {
+    var content: some View {
         let (heard, canPaste, shares) = (self.heard, $canPaste, $shares)
         return VStack {
             Label("Row").contextMenu {

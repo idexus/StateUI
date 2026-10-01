@@ -19,21 +19,21 @@ private final class Counts {
 private struct Titled: ContentView {
     let text: String
 
-    var content: any View { Label(text) }
+    var content: some View { Label(text) }
 }
 
 /// A composed view that reads the model's count.
 private struct Reads: ContentView {
     let counts: Counts
 
-    var content: any View { Label("\(counts.count)") }
+    var content: some View { Label("\(counts.count)") }
 }
 
 /// A composed view holding both.
 private struct Holds: ContentView {
     let counts: Counts
 
-    var content: any View {
+    var content: some View {
         VStack {
             Titled(text: "fixed")
             Reads(counts: counts)
@@ -43,7 +43,7 @@ private struct Holds: ContentView {
 
 /// A page with nothing on it.
 private struct Blank: ContentView {
-    var content: any View { Label("blank") }
+    var content: some View { Label("blank") }
 }
 
 /// A scene's main window.
@@ -61,7 +61,7 @@ private let drawn = Drawn()
 
 /// A page that reads it, so a write to it has a reader.
 private struct Showing: ContentView {
-    var content: any View { Label("\(drawn.revision)") }
+    var content: some View { Label("\(drawn.revision)") }
 }
 
 private struct ShowingWindow: Window {

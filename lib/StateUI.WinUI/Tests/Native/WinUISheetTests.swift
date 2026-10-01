@@ -18,7 +18,7 @@ private struct SheetsPage: ContentView {
     @Binding var sheets: [Sheet]
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let (log, page, sheets) = (log, page, $sheets)
         return VStack {
             Label("beneath")
@@ -43,7 +43,7 @@ private struct SheetPage: ContentView {
     @Binding var sheets: [Sheet]
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let page = page
         let name = name
         return VStack {

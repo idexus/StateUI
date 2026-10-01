@@ -57,7 +57,7 @@ private struct Watching: ContentView {
     @State private var editing = false
     @Aim(TextField.self) private var field
 
-    var content: any View {
+    var content: some View {
         VStack {
             TextField($name).aim(field).isFocused($editing)
             Button("Focus").onClicked { try await field.focus() }

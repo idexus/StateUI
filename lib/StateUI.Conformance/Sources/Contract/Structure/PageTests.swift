@@ -141,7 +141,7 @@ struct PhasePage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let (title, log, page) = (self.title, self.log, self.page)
         return Label(title)
             .onCreated { page.title = title }

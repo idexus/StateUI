@@ -53,7 +53,7 @@ public protocol Application {
 ///     struct MainPage: ContentView {
 ///         @Environment private var window: WindowSession
 ///
-///         var content: any View {
+///         var content: some View {
 ///             VStack { … }
 ///                 .onCreated {
 ///                     window.title = "My Application"
@@ -152,7 +152,7 @@ extension Node {
 ///     struct MainPage: ContentView {
 ///         @Environment private var page: PageSession
 ///
-///         var content: any View {
+///         var content: some View {
 ///             VStack { … }
 ///                 .onCreated { page.title = "Home" }
 ///         }

@@ -85,7 +85,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
         .onDestroying { running = false }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

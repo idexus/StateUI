@@ -63,7 +63,7 @@ private struct Filling: SampleContent, ExampleContent {
     static let scrolls = false
     static let fills = true
 
-    var content: any View {
+    var content: some View {
         ScrollView {
             Label("row")
         }
@@ -85,7 +85,7 @@ private struct TwoSided: SampleContent, ExampleContent {
         .swift("let row = HostRow()"),
         .java("Row row = new Row(context);"))
 
-    var content: any View {
+    var content: some View {
         Label("row")
     }
 

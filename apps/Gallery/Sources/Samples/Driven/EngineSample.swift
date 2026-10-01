@@ -87,7 +87,7 @@ struct EngineSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             // What says the clock below ticks without a render: nothing in
             // this closure reads the running time, so it stands at one build

@@ -12,7 +12,7 @@ import XCTest
 private struct CutPage: ContentView {
     @State private var moved = false
 
-    var content: any View {
+    var content: some View {
         VStack {
             VStack { Label("cut") }
                 .width(40)

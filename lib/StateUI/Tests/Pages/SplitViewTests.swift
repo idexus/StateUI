@@ -17,7 +17,7 @@ private struct MenuPage: ContentView {
     @Binding var section: String
     @Binding var menu: Bool
 
-    var content: any View {
+    var content: some View {
         VStack {
             Button("Today").onClicked {
                 section = "today"
@@ -38,7 +38,7 @@ private struct DetailPage: ContentView {
     @Environment private var page: PageSession
     let section: String
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label(section))
             .onCreated { page.title = section }
             .onChanged(section) { page.title = section }

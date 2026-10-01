@@ -106,7 +106,7 @@ struct HomePage: ContentView {
     /// out of patience.
     @State private var waited = 0.0
 
-    var content: any View {
+    var content: some View {
         let groups = catalog.groups
 
         // THE CEILING AND THE CHROME ARE READ HERE, in the body, and handed to
@@ -499,7 +499,7 @@ private struct Caption: ContentView {
     /// What the device is, for the count - a phone is shown fewer samples.
     let formFactor: FormFactor
 
-    var content: any View {
+    var content: some View {
         let groups = catalog.groups
         let group = groups[min(max(position, 0), max(groups.count - 1, 0))]
 
@@ -533,7 +533,7 @@ private struct Steps: ContentView {
     /// How many there are, which is where the arrows stop.
     let count: Int
 
-    var content: any View {
+    var content: some View {
         HStack {
             step("‹", to: position - 1)
             step("›", to: position + 1)
@@ -569,7 +569,7 @@ private struct GroupFace: ContentView {
     let summary: String
     let picture: ImageSource
 
-    var content: any View {
+    var content: some View {
         ZStack {
             Grid {
                 Image(picture)

@@ -82,7 +82,7 @@ struct ScenePhasePage: ContentView {
 
     @Environment private var scene: SceneSession
 
-    var content: any View {
+    var content: some View {
         let (log, scene) = (self.log, self.scene)
         return Label("Scene")
             .onCreated { log.values.append(scene.phase) }
@@ -96,7 +96,7 @@ struct ApplicationPage: ContentView {
 
     @Environment private var application: ApplicationSession
 
-    var content: any View {
+    var content: some View {
         let (sessions, application) = (self.sessions, self.application)
         return Label("Application").onCreated { sessions.values.append(application) }
     }

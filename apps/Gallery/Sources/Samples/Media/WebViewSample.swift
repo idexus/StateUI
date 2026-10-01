@@ -39,7 +39,7 @@ private struct WebBrowserPart: ExampleContent {
 
             @Aim(WebView.self) private var browser
 
-            var content: any View {
+            var content: some View {
                 Grid {
                     VStack {
                         // The history flags are read by this bar, so every
@@ -100,7 +100,7 @@ private struct WebBrowserPart: ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         Grid {
             VStack {
                 DebugInfoLabel()
@@ -196,14 +196,14 @@ private struct WebBrowserPart: ExampleContent {
 private struct WrittenInPlacePart: ExampleContent {
     static let code = """
         struct WrittenInPlacePart: ContentView {
-            var content: any View {
+            var content: some View {
                 WebView()
                     .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
             }
         }
         """
 
-    var content: any View {
+    var content: some View {
         WebView()
             .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
     }

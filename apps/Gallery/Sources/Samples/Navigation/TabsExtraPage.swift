@@ -22,7 +22,7 @@ struct TabsExtraPage: ContentView {
     /// holds while this page is showing.
     let number: Int
 
-    var content: any View {
+    var content: some View {
         ScrollView {
             VStack {
                 SectionTitle("A tab the user added")

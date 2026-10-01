@@ -11,7 +11,7 @@ import XCTest
 private struct TintedPage: ContentView {
     @State private var blue = false
 
-    var content: any View {
+    var content: some View {
         VStack {
             CheckBox(true).tint(blue ? Color("#0000FF") : Color("#FF0000"))
             Button("Blue").onClicked { blue = true }

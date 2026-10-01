@@ -14,7 +14,7 @@ private struct Greeting: ContentView {
     @State private var count = 0
     @State private var name = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(name.isEmpty ? "Hello" : "Hello, \(name)")
             TextField($name).maximumLength(5)

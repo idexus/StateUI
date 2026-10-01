@@ -28,7 +28,7 @@ import XCTest
 private struct Shows: ContentView {
     let fade: State<Double>
 
-    var content: any View {
+    var content: some View {
         ModifiedContent(node: label("\(fade.get())"))
     }
 }

@@ -12,7 +12,7 @@ import XCTest
 private struct OverlaidPage: ContentView {
     let notice: State<Bool>
 
-    var content: any View {
+    var content: some View {
         let notice = notice
         return Button("Beneath")
             .horizontalAlignment(.fill)
@@ -30,7 +30,7 @@ private struct ScenePage: ContentView {
     let scenes: Received<SceneSession>
     @Environment private var scene: SceneSession
 
-    var content: any View {
+    var content: some View {
         let (scenes, scene) = (self.scenes, self.scene)
         return Button("Beneath")
             .horizontalAlignment(.fill)

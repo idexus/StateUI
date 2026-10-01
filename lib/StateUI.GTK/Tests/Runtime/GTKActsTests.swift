@@ -12,7 +12,7 @@ import XCTest
 private struct AskingPage: ContentView {
     @State private var said = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(said)
             Button("Time").onClicked {
@@ -48,7 +48,7 @@ private struct FocusPage: ContentView {
     @State private var words = ""
     @State private var said = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(said)
             TextField($words).aim(field)
@@ -65,7 +65,7 @@ private struct FocusPage: ContentView {
 private struct QuestionsPage: ContentView {
     @State private var said = ""
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label(said)
             Button("Alert").onClicked {

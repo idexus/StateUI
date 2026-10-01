@@ -112,7 +112,7 @@ struct ConverterSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             row("1 · the source, 0 to 1") {
                 Slider($volume)

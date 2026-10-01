@@ -40,7 +40,7 @@ to reach it:
 struct MovingPanel: ContentView {
     @State private var expanded = false
 
-    var content: any View {
+    var content: some View {
         VStack {
             ColorBox(.cornflowerBlue)
                 .width(expanded ? 280 : 120)

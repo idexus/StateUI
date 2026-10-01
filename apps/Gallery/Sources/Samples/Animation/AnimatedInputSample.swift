@@ -103,7 +103,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             VStack {
                 Label("A get")

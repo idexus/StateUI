@@ -200,7 +200,7 @@ private struct TitledPage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let title = self.title
         let page = self.page
         return Label(title).onCreated { page.title = title }
@@ -211,7 +211,7 @@ private struct TitledPage: ContentView {
 private struct PaintedPage: ContentView {
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let page = self.page
         return Label("Painted").onCreated { page.background = Color("#F7F5FC") }
     }

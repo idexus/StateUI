@@ -11,7 +11,7 @@ import XCTest
 struct CounterPage: ContentView {
     @State private var count = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("count \(count)")
             Button("Add")
@@ -157,7 +157,7 @@ private struct PhasePage: ContentView {
     @Environment private var application: ApplicationSession
     @Environment private var window: WindowSession
 
-    var content: any View {
+    var content: some View {
         Label("\(application.phase) \(window.phase)")
     }
 }
@@ -180,7 +180,7 @@ private struct ToolMainWindow: Window {
 private struct ToolOpeningPage: ContentView {
     @Environment private var scene: SceneSession
 
-    var content: any View {
+    var content: some View {
         let scene = self.scene
         return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
     }
@@ -194,7 +194,7 @@ private struct ToolWindow: Window {
 private struct DisplayPage: ContentView {
     @Environment private var display: DeviceDisplay
 
-    var content: any View {
+    var content: some View {
         Label("\(Int(display.width)) \(display.rotation)")
     }
 }
@@ -204,7 +204,7 @@ private struct EnvironmentPage: ContentView {
     @Environment private var device: DeviceInfo
     @Environment private var app: AppInfo
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("\(device.platform) \(device.formFactor)")
             Label("\(app.requestedTheme)")

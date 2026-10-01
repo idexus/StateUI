@@ -14,7 +14,7 @@ private struct OverlaidPage: ContentView {
     let scenes: Received<SceneSession>
     @Environment private var scene: SceneSession
 
-    var content: any View {
+    var content: some View {
         let (menus, scenes, scene) = (self.menus, self.scenes, self.scene)
         return Button("Beneath")
             .horizontalAlignment(.fill)

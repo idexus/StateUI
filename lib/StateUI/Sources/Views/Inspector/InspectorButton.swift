@@ -13,7 +13,7 @@ public struct InspectorButton: ContentView {
     public init() {}
 
     /// The button, as a view.
-    public var content: any View {
+    public var content: some View {
         Button("ⓘ")
             .fontSize(16)
             .textColor(Look.subtle)

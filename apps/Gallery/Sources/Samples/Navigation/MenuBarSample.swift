@@ -22,7 +22,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
         @State private var pageSaves = false
         @State private var ownMenu = false
 
-        var content: any View {
+        var content: some View {
             VStack {
                 // The counts are read here, so every entry that acts builds
                 // this closure.
@@ -66,7 +66,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

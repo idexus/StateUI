@@ -127,7 +127,7 @@ lateness instead of adding it to the next interval.
 struct Countdown: ContentView {
     @State private var ticker = Ticker(every: .seconds(1), limit: 10)
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("\((ticker.limit ?? 0) - ticker.ticks)")
 

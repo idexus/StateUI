@@ -27,7 +27,7 @@
 ///     struct TodayPage: ContentView {
 ///         @Environment private var page: PageSession
 ///
-///         var content: any View {
+///         var content: some View {
 ///             Label("Nothing due.")
 ///                 .onCreated {
 ///                     page.title = "Today"           // the caption

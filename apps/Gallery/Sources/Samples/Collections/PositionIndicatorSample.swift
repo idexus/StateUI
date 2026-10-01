@@ -102,7 +102,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
     private static let steps = ["Describe", "Diff", "Send", "Render"]
 
-    var content: any View {
+    var content: some View {
         VStack {
             DebugInfoLabel()
 

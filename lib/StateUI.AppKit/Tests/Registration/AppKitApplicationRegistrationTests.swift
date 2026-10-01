@@ -74,7 +74,7 @@ private struct Pulling: ContentView {
     @State private var on = true
     @Aim(Lamp.self) private var lamp
 
-    var content: any View {
+    var content: some View {
         VStack {
             Lamp()
                 .lit(on)

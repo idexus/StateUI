@@ -71,7 +71,7 @@ struct SheetsPage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let (sheets, log, page) = (self.sheets, self.log, self.page)
         return VStack {
             Label("beneath")

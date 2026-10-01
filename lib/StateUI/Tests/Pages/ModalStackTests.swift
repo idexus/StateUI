@@ -25,7 +25,7 @@ private struct HomePage: ContentView {
     @Environment private var page: PageSession
     @Binding var sheets: [Sheet]
 
-    var content: any View {
+    var content: some View {
         Button("Settings")
             .onClicked { sheets.append(.settings) }
             .onCreated { page.title = "Home" }
@@ -41,7 +41,7 @@ private struct SheetPage: ContentView {
 
     let name: String
 
-    var content: any View {
+    var content: some View {
         Button("Close")
             .onClicked { sheets.removeLast() }
             .onCreated {

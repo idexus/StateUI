@@ -30,7 +30,7 @@
 ///         @Binding var menu: Bool
 ///         @Environment private var page: PageSession
 ///
-///         var content: any View {
+///         var content: some View {
 ///             VStack {
 ///                 ForEach(Section.allCases, id: \.self) { which in
 ///                     Button("\(which)")

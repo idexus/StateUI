@@ -42,7 +42,7 @@ private struct KeepingWindow: Window {
 }
 
 private struct KeepingPage: ContentView {
-    var content: any View { Label("kept") }
+    var content: some View { Label("kept") }
 }
 
 /// A MODEL that keeps two of its settings - the shape an application's own

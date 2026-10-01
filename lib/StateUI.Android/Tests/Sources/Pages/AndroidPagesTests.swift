@@ -616,7 +616,7 @@ private struct FurnishedPage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let page = self.page
         let title = self.title
         let back = hasBackButton
@@ -636,7 +636,7 @@ private struct SearchingPage: ContentView {
     @Environment private var page: PageSession
     @State private var query = ""
 
-    var content: any View {
+    var content: some View {
         let page = self.page
         let query = $query
         return Label("Results")
@@ -663,7 +663,7 @@ private struct ScenePage: ContentView {
 
     @Environment private var scene: SceneSession
 
-    var content: any View {
+    var content: some View {
         let (scenes, scene) = (self.scenes, self.scene)
         return TitledPage(title: "Page", log: log).onCreated { scenes.values.append(scene) }
     }
@@ -691,7 +691,7 @@ private struct TitledPage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: any View {
+    var content: some View {
         let log = self.log
         let title = self.title
         let page = self.page
