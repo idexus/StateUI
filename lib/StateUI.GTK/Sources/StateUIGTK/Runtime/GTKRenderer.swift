@@ -123,10 +123,10 @@ final class GTKRenderer {
         scenes.restore(GTKKeptValues.readScenes(applicationID: applicationID), in: runtime)
     }
 
-    /// The desktop's style turned dark or light: the core hears it, and renders what it changed.
+    /// The desktop's style, the power or the network changed: the core hears what stands now, the tree follows the
+    /// language's direction, and a turn renders what it changed.
     func environmentChanged() {
-        GTKEnvironment.reportChanging(to: runtime.core)
-        runtime.pump.turn()
+        runtime.environmentChanged { GTKEnvironment.reportChanging(to: runtime.core) }
     }
 
     /// Shows every window element in a GTK window of its own, in the tree's order - a window the tree no longer

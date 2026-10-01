@@ -100,10 +100,19 @@ handlers leave before GTK destroys it.
 As the host starts it tells the core what it stands on: a desktop, Linux, the
 machine's model and maker as the kernel reads them, the host's name, the
 system's version, whether the machine is virtual; the application's name and
-its identifier. It tells the core the desktop's style - dark or light, as
-libadwaita's style manager reads it from the desktop's settings - and again
-whenever it turns, and once the window stands, the screen it stands on: its
-size in pixels, its scale and its refresh rate.
+its identifier. It tells the core what may change, and again whenever the
+desktop says one did, through the host layer ([the
+environment](../../host/runtime.md#the-environment)): the desktop's style -
+dark or light, as libadwaita's style manager reads it from the desktop's
+settings; the locale - the language and region GLib reads from the
+environment, the local zone, and the clock, the first day of the week and the
+measures of the C library's locale, the week's first day read as GTK's own
+calendar reads it; the power - UPower's display device, whether the machine
+is on mains, and whether the power profiles save energy, no battery where
+UPower stands nowhere; and the network - GIO's monitor, and the kind of
+connection NetworkManager calls the primary one. Once the window stands it
+tells the screen it stands on: its size in pixels, its scale and its refresh
+rate.
 
 ## Acts
 

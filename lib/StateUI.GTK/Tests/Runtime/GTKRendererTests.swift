@@ -154,6 +154,36 @@ extension GTKRendererTests {
     }
 }
 
+extension GTKRendererTests {
+    /// The page reads the machine the desktop describes: the locale GLib and the C library have, the power UPower
+    /// has - none on a machine with no battery - and the network GIO has; none is left unknown.
+    func testThePageReadsTheMachinesLocalePowerAndNetwork() throws {
+        try onUIThread {
+            let host = GTKRenderer.running { MachinePage() }
+            let said = try XCTUnwrap(host.views(GTKLabelView.self).first?.text).split(separator: " ").map(String.init)
+            let language = g_get_language_names()?.pointee.map { String(cString: $0) } ?? ""
+
+            XCTAssertEqual(said.count, 4, said.joined(separator: " "))
+            guard said.count == 4 else { return }
+            XCTAssertTrue(language.hasPrefix(said[0].replacingOccurrences(of: "-", with: "_")) || language == "C", said[0])
+            XCTAssertFalse(said[1].isEmpty, "a time zone")
+            XCTAssertNotEqual(said[2], "\(BatteryState.unknown)", "the power")
+            XCTAssertNotEqual(said[3], "\(NetworkAccess.unknown)", "the network")
+        }
+    }
+}
+
+/// A page saying the locale's name and zone, the battery's state and the network's access.
+private struct MachinePage: ContentView {
+    @Environment private var locale: LocaleInfo
+    @Environment private var battery: Battery
+    @Environment private var connectivity: Connectivity
+
+    var content: some View {
+        Label("\(locale.name) \(locale.timeZone) \(battery.state) \(connectivity.networkAccess)")
+    }
+}
+
 /// A page saying the application's phase and its window's.
 private struct PhasePage: ContentView {
     @Environment private var application: ApplicationSession

@@ -27,15 +27,20 @@ enum GTKEnvironment {
         reportChanging(to: core)
     }
 
-    /// Tells `core` the desktop's style as it stands now: dark or light.
+    /// Tells `core` what may change as it stands now: the desktop's style, dark or light, the locale, the power and
+    /// the network.
     static func reportChanging(to core: CoreLink) {
         let style = adw_style_manager_get_default()
         core.setTheme(adw_style_manager_get_dark(style) != 0 ? .dark : .light)
+        core.setLocaleInfo(locale)
+        core.setBatteryInfo(battery)
+        core.setConnectivityInfo(connectivity)
     }
 
-    /// Calls `changed` whenever the desktop's style turns dark or light.
+    /// Calls `changed` whenever the desktop's style turns dark or light, or the power or the network change.
     static func watch(_ changed: @escaping @MainActor () -> Void) {
         onChange = changed
+        watchMachine(changed)
         guard !watching else { return }
         watching = true
         let style = adw_style_manager_get_default()!
