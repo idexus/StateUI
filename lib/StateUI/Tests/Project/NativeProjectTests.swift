@@ -362,7 +362,9 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(families.count, 70, "the walk found almost no family")
 
         let lib = repository.appendingPathComponent("lib")
-        let runners = try SourceTree.files(under: lib, entering: { !$0.contains(".build") && !$0.hasPrefix("StateUI/") })
+        // A component runs its own family, and the tiers' for its element: not every host's whole list.
+        let runners = try SourceTree.files(
+            under: lib, entering: { !$0.contains(".build") && !$0.hasPrefix("StateUI/") && !$0.hasPrefix("Controls/") })
             .filter { $0.hasSuffix("ConformanceTests.swift") }
         XCTAssertFalse(runners.isEmpty, "no host runs the conformance cases")
         for runner in runners {

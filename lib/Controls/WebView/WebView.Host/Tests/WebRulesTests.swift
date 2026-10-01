@@ -41,4 +41,12 @@ final class WebRulesTests: XCTestCase {
         XCTAssertEqual(cause.current, .forward)
         XCTAssertEqual(cause.begin(told: .refresh), .refresh)
     }
+
+    /// A document with no address of its own is gone to as a `data:` address holding it, its words in base64.
+    func testADocumentWithNoAddressIsGoneToAsADataAddress() {
+        XCTAssertEqual(WebDocument.address(of: "<p>Hi</p>"), "data:text/html;charset=utf-8;base64,PHA+SGk8L3A+")
+        XCTAssertEqual(WebDocument.base64(Array("a".utf8)), "YQ==")
+        XCTAssertEqual(WebDocument.base64(Array("ab".utf8)), "YWI=")
+        XCTAssertEqual(WebDocument.base64(Array("żółw".utf8)), "xbzDs8WCdw==")
+    }
 }

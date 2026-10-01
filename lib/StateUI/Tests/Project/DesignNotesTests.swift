@@ -13,6 +13,8 @@ final class DesignNotesTests: XCTestCase {
         "lib/StateUI/Sources/Core", "lib/StateUI/Sources/Views",
         "lib/StateUI.AppKit/Sources", "lib/StateUI.UIKit/Sources", "lib/StateUI.Android/Sources",
         "lib/StateUI.WinUI/Sources", "lib/StateUI.GTK/Sources", "lib/StateUI.Conformance/Sources",
+        "lib/Controls/WebView/Core/Sources", "lib/Controls/WebView/WebView.Host/Sources",
+        "lib/Controls/WebView/WebView.Conformance/Sources", "lib/Controls/WebView/WebView.GTK/Sources",
     ]
 
     /// Every `Design:` reference in a source names a note and a heading that exist.
@@ -21,6 +23,7 @@ final class DesignNotesTests: XCTestCase {
         var sources = try SourceTree.allSources().map { ("lib/StateUI/Sources/\($0.path)", $0.text) }
         sources += try SourceTree.runtimeSources().map { ("lib/\($0.path)", $0.text) }
         sources += try SourceTree.testSources().map { ($0.path, $0.text) }
+        sources += try SourceTree.componentSources()
         var read = 0
         var broken: [String] = []
 

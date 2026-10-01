@@ -1,0 +1,33 @@
+# revision 1.1
+WebView.allowDrop: not realized
+WebView.area: ✅
+WebView.canDrag: not realized
+WebView.dragLeave: not realized
+WebView.dragOver: not realized
+WebView.dragStarting: not realized
+WebView.dragText: not realized
+WebView.drop: not realized
+WebView.dropCompleted: not realized
+WebView.frameChanged: ✅
+WebView.gridColumn: ✅
+WebView.gridColumnSpan: ✅
+WebView.gridRow: ✅
+WebView.gridRowSpan: ✅
+WebView.horizontalAlignment: ✅
+WebView.margin: ✅
+WebView.panTouchCount: ✅
+WebView.panUpdated: ✅
+WebView.panXChannel: ✅
+WebView.panYChannel: ✅
+WebView.pinchUpdated: 🔌 pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+WebView.pointerEntered: ✅
+WebView.pointerExited: ✅
+WebView.pointerMoved: ✅
+WebView.pointerPressed: ✅
+WebView.pointerReleased: ✅
+WebView.swipeDirection: ✅
+WebView.swipeThreshold: ✅
+WebView.swiped: ✅
+WebView.tapCount: ✅
+WebView.tapped: ✅
+WebView.verticalAlignment: ✅

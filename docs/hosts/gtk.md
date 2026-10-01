@@ -22,6 +22,8 @@ libadwaita's widgets, and the light or dark style the desktop is set to.
 lib/StateUI.GTK/
   Sources/StateUIGTK/        the host: its runtime, elements, registrations, layout and window
   Sources/CStateUIGTK/       GTK's and libadwaita's headers, found by pkg-config
+lib/StateUI.GTK.Testing/
+  Sources/StateUIGTKDriver/  the driver every conformance run on GTK goes through
   Tests/                     the host's suite, run by swift test
 .scripts/GTK/
   run-app.sh                 builds an application's GTK head and starts it
@@ -181,7 +183,7 @@ breakpoint in the application's Swift holds from the first line.
 ## Testing
 
 ```bash
-swift test --package-path lib/StateUI.GTK
+swift test --package-path lib/StateUI.GTK.Testing
 ```
 
 The suite is XCTest. GTK's widgets stand on the test thread with no main loop

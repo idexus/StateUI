@@ -71,6 +71,7 @@ final class GTKDriver: HostDriver {
             return "the class of the host's style sheet the widget wears: GTK reads back no \(member)"
         }
         return Self.byHostReasons[ability] ?? Self.byHostReasons[Ability(ability).act]
+            ?? Self.components.values.lazy.compactMap { $0.byHost[ability] }.first
     }
 
     /// The members read from the classes of the host's style sheet a widget wears.
@@ -107,7 +108,7 @@ final class GTKDriver: HostDriver {
     /// The host's log, as the driver listens to it.
     let written = GTKLogLines()
 
-    var register: HostRegister { GTKRealization.register }
+    var register: HostRegister { GTKRealization.register.and(componentRecords) }
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
         written.listen()
@@ -134,6 +135,7 @@ final class GTKDriver: HostDriver {
         if act == .close, element.type == .window { return try close(element) }
         if case .answer = act, try windowAct(act, on: element) { return }
         if element.type == .window, try windowAct(act, on: element) { return }
+        if try componentPerforms(act, on: element) { return }
         if act == .goBack {
             guard renderer?.goBack() == true else { throw DriverCannot(act, on: element) }
             return
@@ -184,6 +186,7 @@ final class GTKDriver: HostDriver {
         if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {
             return try barHolds(property, element)
         }
+        if let value = componentHolds(property, on: element) { return value }
         let view = (element.native as? GTKElement)?.view
         if let picker = view as? GTKPopoverPickerView, let value = held(property, on: picker) { return value }
         if let value = try recorded(property, on: element, view: view) { return value }

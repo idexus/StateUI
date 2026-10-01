@@ -74,7 +74,8 @@ case "WinUI"?:
 case "GTK"?:
     targets.append(contentsOf: [
         .executableTarget(
-            name: "GalleryGTK", dependencies: head + ["CGalleryOpenGL"],
+            name: "GalleryGTK",
+            dependencies: head + ["CGalleryOpenGL", .product(name: "StateUIWebViewGTK", package: "StateUIWebViewGTK")],
             path: "Platforms/GTK", exclude: ["OpenGL"], swiftSettings: settings),
         // OpenGL for the cube, through libepoxy - the loader GTK itself draws with.
         .systemLibrary(name: "CGalleryOpenGL", path: "Platforms/GTK/OpenGL", pkgConfig: "epoxy"),
@@ -97,7 +98,9 @@ let package = Package(
     products: products,
     // The StateUI checkout: the library at its root, and a head's host.
     dependencies: [.package(path: "../.."), .package(name: "StateUIWebView", path: "../../lib/Controls/WebView")]
-        + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")]),
+        + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")])
+        // The web view's backend for the head's host.
+        + (host == "GTK" ? [.package(name: "StateUIWebViewGTK", path: "../../lib/Controls/WebView/WebView.GTK")] : []),
     targets: targets,
     cxxLanguageStandard: .cxx20
 )

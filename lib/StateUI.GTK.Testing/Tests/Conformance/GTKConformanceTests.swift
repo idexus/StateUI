@@ -85,13 +85,6 @@ final class GTKConformanceTests: XCTestCase {
 
     /// Runs `family` on GTK, and holds its verdicts to the family's file of GTK's marks.
     private func conform(_ family: any ConformanceFamily.Type) {
-        guard !GTKExports.skips(family.name, at: "marks/gtk/\(family.name).txt") else { return }
-        let verdicts = onUIThread {
-            Conformance.run(
-                family, on: GTKDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) })
-        }
-        XCTAssertNoThrow(try GTKExports.hold(
-            HostVerdict.text(verdicts, revision: GTKExports.revision(of: family.name)),
-            at: "marks/gtk/\(family.name).txt"))
+        onUIThread { GTKExports.library.conform(family) }
     }
 }

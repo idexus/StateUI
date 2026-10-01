@@ -14,10 +14,12 @@ final class GTKGLibNamesTests: XCTestCase {
     /// the host's, which C resolves on every GLib, and a set of flags made of a number is made by `rawValue:`.
     func testSwiftNamesNoGLibFlag() throws {
         let tests = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
-        let package = tests.deletingLastPathComponent()
-        let roots = [package.appendingPathComponent("Sources"), tests,
-                     package.appendingPathComponent("../../apps/Gallery/Platforms/GTK").standardized,
-                     package.appendingPathComponent("../../apps/Gallery/Sources").standardized]
+        let testing = tests.deletingLastPathComponent()
+        let host = testing.deletingLastPathComponent().appendingPathComponent("StateUI.GTK")
+        let roots = [host.appendingPathComponent("Sources"), testing.appendingPathComponent("Sources"), tests,
+                     host.appendingPathComponent("../../apps/Gallery/Platforms/GTK").standardized,
+                     host.appendingPathComponent("../../apps/Gallery/Sources").standardized,
+                     host.appendingPathComponent("../Controls").standardized]
         // A GLib constant by its name, or a flag made of a bare number: an option set takes only `rawValue:`.
         let pattern = try NSRegularExpression(pattern: #"\bG_[A-Z][A-Z_]*\b|\bG[A-Z][A-Za-z]*Flags\((?!rawValue:)"#)
         var named: [String] = []

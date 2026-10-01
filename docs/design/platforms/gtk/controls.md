@@ -272,3 +272,23 @@ stands a context of no assistive technology, which GTK 4.14 announces through
 a call it lacks - the process dies. There no one listens, and the act is
 answered all the same.
 
+## A web view
+
+The web view is a component's: its GTK backend (`WebView.GTK`) is WebKitGTK
+6.0's web view, made through the GTK host's registration of an
+application's own controls, so an application that shows none links no
+WebKit. A page at an address is loaded; a document written in place is shown
+at its own address, and one with none is gone to as a `data:` address, which
+WebKit keeps in the page's history ([a document with no
+address](../../host/web.md#a-document-with-no-address)). A page asked for is
+loaded once the element's values are applied, so the agent the tree gives
+is the one it is asked with. What the page does comes back as WebKit tells
+it: a navigation as its load starts, why it began by the host layer's rule -
+the program's step, else what WebKit's decision on it says (a link or a form
+a new page, a reload the page again, a step through the history unknown,
+since WebKit tells no step back from one forward) - and as its load
+finishes, or fails, a load called off a cancel; whether there is a page
+behind and ahead, said as the history changes; and the end of its web
+process. A script's answer is the JSON WebKit writes its value in, read by
+the host layer's rule. WebKit's calls are declared by the backend itself
+over untyped pointers, as GTK's headers belong to the host's own module.

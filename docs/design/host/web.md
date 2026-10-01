@@ -26,3 +26,11 @@ page again - where one was asked, else for what the platform tells: a new
 page, a step through the history, the page fetched again. The cause is kept
 to the navigation's end, whatever is asked meanwhile, and the next navigation
 begins for what is told again (`WebNavigationCause`).
+
+## A document with no address
+
+A document written in place with an address of its own is shown at that
+address. One with none is, on a WebKit web view, gone to as a `data:`
+address holding it - its words as UTF-8, in base64 - because WebKit keeps
+no history of a document shown without an address, and the way back and
+forward is the page's history like any other (`WebDocument`).

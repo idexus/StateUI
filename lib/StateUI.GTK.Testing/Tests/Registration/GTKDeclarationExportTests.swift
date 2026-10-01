@@ -15,7 +15,7 @@ final class GTKDeclarationExportTests: XCTestCase {
     /// The export is what the registry says, to the line.
     @MainActor
     func testWhatThisHostDeclaresIsWhatItExports() throws {
-        try GTKExports.hold(GTKRealization.declaration.text, at: "gtk.txt")
+        try GTKExports.library.hold(GTKRealization.declaration.text, at: "gtk.txt")
     }
 
     /// The export is deterministic: the same registry writes the same text.

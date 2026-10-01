@@ -655,7 +655,7 @@ enum SourceTree {
         let lib = repository.appendingPathComponent("lib")
         let roots = [
             "StateUI.Host/Sources", "StateUI.AppKit/Sources", "StateUI.UIKit/Sources", "StateUI.Android/Sources",
-            "StateUI.WinUI/Sources", "StateUI.GTK/Sources/StateUIGTK",
+            "StateUI.WinUI/Sources", "StateUI.GTK/Sources",
         ]
         var found: [(path: String, text: String)] = []
 
@@ -668,6 +668,19 @@ enum SourceTree {
         }
 
         return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: lib, moreThan: 35)
+    }
+
+    /// Every Swift source of the components under `lib/Controls` - each package's sources and tests - by its path
+    /// from the repository.
+    static func componentSources() throws -> [(path: String, text: String)] {
+        let controls = repository.appendingPathComponent("lib/Controls")
+        var found: [(path: String, text: String)] = []
+        guard let walk = FileManager.default.enumerator(atPath: controls.path) else { return [] }
+        for case let name as String in walk where name.hasSuffix(".swift") && !name.contains(".build/") {
+            let text = try String(contentsOf: controls.appendingPathComponent(name), encoding: .utf8)
+            found.append((path: "lib/Controls/\(name.replacingOccurrences(of: "\\", with: "/"))", text: text))
+        }
+        return found.sorted { $0.path < $1.path }
     }
 
     /// Every active test source, so a guard can ask whether some test names a
@@ -683,8 +696,8 @@ enum SourceTree {
             ("StateUIUIKitTests", repository.appendingPathComponent("lib/StateUI.UIKit/Tests/Sources")),
             ("StateUIAndroidTests", repository.appendingPathComponent("lib/StateUI.Android/Tests/Sources")),
             ("StateUIWinUITests", repository.appendingPathComponent("lib/StateUI.WinUI/Tests")),
-            ("StateUIGTKTests", repository.appendingPathComponent("lib/StateUI.GTK/Tests")),
-            ("StateUIGTKDriver", repository.appendingPathComponent("lib/StateUI.GTK/Sources/StateUIGTKDriver")),
+            ("StateUIGTKTests", repository.appendingPathComponent("lib/StateUI.GTK.Testing/Tests")),
+            ("StateUIGTKDriver", repository.appendingPathComponent("lib/StateUI.GTK.Testing/Sources/StateUIGTKDriver")),
             ("StateUIHostTests", repository.appendingPathComponent("lib/StateUI.Host/Tests")),
             ("StateUIConformance", repository.appendingPathComponent("lib/StateUI.Conformance/Sources")),
             ("StateUIConformanceTests", repository.appendingPathComponent("lib/StateUI.Conformance/Tests")),
