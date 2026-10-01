@@ -2,10 +2,15 @@ ActivityIndicator
   isRunning
   tint
 Button
+  aspect
   background
   fontAttributes
   fontFamily
   fontSize
+  icon
+  iconPosition
+  iconSpacing
+  lineBreak
   padding
   shape
   stroke
@@ -14,6 +19,8 @@ Button
   textCase
   textColor
   clicked()
+  pressed()
+  released()
 Canvas
   drawable
   dragged()
@@ -21,10 +28,24 @@ Canvas
   released()
 CheckBox
   isOn
+  tint
   toggled()
 ColorBox
   color
   cornerRadius
+DatePicker
+  date
+  fontAttributes
+  fontFamily
+  fontSize
+  format
+  isOpen
+  maximumDate
+  minimumDate
+  textColor
+  closed()
+  dateChanged()
+  opened()
 Ellipse
   aspect
   fill
@@ -116,8 +137,12 @@ Path
   strokeMiterLimit
   strokeWidth
 Picker
+  fontAttributes
+  fontFamily
+  fontSize
   options
   selectedIndex
+  textColor
   selectedIndexChanged()
 Polygon
   aspect
@@ -205,6 +230,7 @@ SearchField
 Slider
   maximum
   minimum
+  tint
   value
   valueChanged()
 Stepper
@@ -215,6 +241,7 @@ Stepper
   valueChanged()
 Switch
   isOn
+  tint
   toggled()
 TextEditor
   cursorPosition
@@ -255,6 +282,17 @@ TextField
   textColor
   submitted()
   textChanged()
+TimePicker
+  fontAttributes
+  fontFamily
+  fontSize
+  format
+  isOpen
+  textColor
+  time
+  closed()
+  opened()
+  timeChanged()
 VStack
   background
   clipsContent
