@@ -18,6 +18,9 @@ enum UIKitRealization {
     /// tier's record reaches them: only a member the entry's own records name is realized.
     static let viewless: Set<String> = ["Span"]
 
+    /// The entries an iPhone and an iPad will not have; none.
+    static let notPlanned: [String: String] = [:]
+
     /// Every record, beside what the registry's export says.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
@@ -100,7 +103,7 @@ enum UIKitRealization {
 
     /// What UIKit realizes, member by member: these records before what its registry says.
     @MainActor static var register: HostRegister {
-        HostRegister(records: records, unrealized: unrealized, viewless: viewless, notPlanned: [:]).and(declaration)
+        HostRegister(records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned).and(declaration)
     }
 }
 #endif
