@@ -186,6 +186,54 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A page that refuses the way back offers none: the host's way back leaves it, as the bar shows no back button.
+    func testAPageRefusingTheWayBackKeepsItsPlace() throws {
+        try onUIThread {
+            let path = State(wrappedValue: [1])
+            let host = GTKRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { _ in
+                    TitledPage(title: "Signed in", hidesBack: true)
+                }
+            }
+            host.settle { host.windowTitle == "Signed in" }
+
+            XCTAssertFalse(host.goBack(), "no way back")
+            XCTAssertEqual(path.wrappedValue, [1])
+        }
+    }
+
+    /// A tab that is a stack shows one bar, the stack's page's, the tabs beneath it: the tabs' frame shows none over
+    /// it.
+    func testATabThatIsAStackShowsOneBar() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                TabbedView([0, 1]) { tab in
+                    if tab == 0 {
+                        NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                            TitledPage(title: "Inbox")
+                        } destination: { _ in TitledPage(title: "Message") }
+                        .title("Mail")
+                    } else {
+                        TitledPage(title: "Settings")
+                    }
+                }
+            }
+            host.layOut()
+            let window = try XCTUnwrap(host.window).widget
+            let bars = { GTKTestHost.descendants(of: window).filter {
+                GTKTestHost.holds($0, adw_header_bar_get_type()) && gtk_widget_get_mapped($0) != 0
+                    && gtk_widget_get_height($0) > 0
+            } }
+            host.settle { bars().count == 1 }
+
+            XCTAssertEqual(bars().count, 1, "the stack's page's bar alone")
+            let switcher = try XCTUnwrap(host.views(GTKTabbedView.self).first?.switcher)
+            XCTAssertNotEqual(gtk_widget_get_mapped(switcher.widget), 0, "the tabs beneath it")
+        }
+    }
+
     /// A bar painted with no colour written for its words stands them light on a dark band and dark on a light one.
     func testABarsWordsFollowHowDarkItIs() throws {
         try onUIThread {
@@ -274,6 +322,7 @@ struct TitledPage: ContentView {
     var log: Received<String>? = nil
     var actions: [ToolbarItem] = []
     var hidesBar = false
+    var hidesBack = false
 
     @Environment private var page: PageSession
 
@@ -287,6 +336,7 @@ struct TitledPage: ContentView {
             .onCreated {
                 page.title = title
                 if hidesBar { page.hasNavigationBar = false }
+                if hidesBack { page.hasBackButton = false }
             }
             .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
     }

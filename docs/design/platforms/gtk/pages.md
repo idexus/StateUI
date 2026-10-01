@@ -66,7 +66,9 @@ shorter pops to where it now ends, any other change replaces the stack - each
 as the program's move, whose `popped` is its echo. The user's back - the back
 button, the swipe, Alt+Left, the mouse's back button - pops in GTK first, and
 the stack's `popped` then tells the path how many pages remain; a path that
-does not follow is put back by the next render. A page is pushed named as the
+does not follow is put back by the next render. The host's own way back is
+the window's (`WindowPresentation.wayBack`): a top page that refuses it - no
+back button - offers none. A page is pushed named as the
 tree names it, or after the application until it does: libadwaita asks every
 page for a title.
 
@@ -102,7 +104,11 @@ and the tabs' bar scrolls them across where the page is narrower than they
 are. The
 switcher's choice is the user's: the pages hear it, then the selection's
 state, and the header bar follows the chosen tab whether or not the
-application renders again.
+application renders again. Over a tab that is a stack the stack's bar is the
+one (the host layer's `showsTheStacksBar`): the tabbed view's frame shows no
+header bar, and the switcher - with a split view's sidebar toggle - stands
+beneath the header bar of the stack's page the user sees, moving with it as
+pages come and go.
 
 ## The window's overlays
 

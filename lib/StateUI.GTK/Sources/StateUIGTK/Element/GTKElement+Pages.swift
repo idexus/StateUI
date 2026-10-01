@@ -30,6 +30,12 @@ extension GTKElement {
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     var chrome: GTKPageChrome {
         if type == .tabbedView {
+            // Over a tab that is a stack the stack's page shows the bar, the tabs beneath it (`composeChrome`).
+            guard element.showsTheStacksBar else {
+                var chrome = GTKPageChrome()
+                chrome.showsBar = false
+                return chrome
+            }
             var chrome = element.selectedTab?.visiblePage?.gtk.chrome ?? GTKPageChrome()
             chrome.title = element.titledPage?.value(.title)?.string
                 ?? element.enclosing(type: .window)?.value(.title)?.string ?? ""
@@ -56,14 +62,18 @@ extension GTKElement {
     }
 
     /// Writes each framed element's chrome on its header bar, through this arrangement and every one it holds;
-    /// `sidebar` shows a split view's sidebar from the header bar of the page the user sees in its detail.
-    func composeChrome(showingSidebar sidebar: (shows: Bool, toggle: () -> Void)? = nil) {
+    /// `sidebar` shows a split view's sidebar, and `tabs` a tabbed view's switcher, from the header bar of the page the
+    /// user sees in it.
+    func composeChrome(showingSidebar sidebar: (shows: Bool, toggle: () -> Void)? = nil, tabs: GTKView? = nil) {
         switch type {
         case .navigationStack:
             guard let navigation = view as? GTKNavigationView else { return }
             for (index, (page, frame)) in zip(children, navigation.frames).enumerated() {
                 var chrome = page.chrome
-                if index == children.count - 1 { chrome.sidebar = sidebar }
+                if index == children.count - 1 {
+                    chrome.sidebar = sidebar
+                    if let tabs { chrome.tabs = tabs }
+                }
                 frame.show(chrome)
                 navigation.describe(
                     frame, title: page.element.visiblePage?.value(.title)?.string ?? "", canPop: chrome.offersBack)
@@ -84,13 +94,15 @@ extension GTKElement {
                     var chrome = detail.chrome
                     chrome.sidebar = showing
                     frame.show(chrome)
-                    detail.composeChrome()
+                    detail.composeChrome(showingSidebar: chrome.showsBar ? nil : showing)
                 } else {
                     detail.composeChrome(showingSidebar: showing)
                 }
             }
         case .tabbedView:
-            element.selectedTab?.gtk.composeChrome()
+            let handsDown = !element.showsTheStacksBar
+            element.selectedTab?.gtk.composeChrome(
+                showingSidebar: handsDown ? sidebar : nil, tabs: handsDown ? (view as? GTKTabbedView)?.switcher : nil)
         default:
             break
         }
@@ -123,15 +135,6 @@ extension GTKElement {
     }
 
     // MARK: - The way back, and the sidebar
-
-    /// Takes the visible stack's top page away as the user does; whether there was one to take.
-    func goBack() -> Bool {
-        guard let stack = element.visibleNavigationStack, stack.children.count > 1,
-              let navigation = stack.gtk.view as? GTKNavigationView
-        else { return false }
-
-        return navigation.popByUser()
-    }
 
     /// The user took the stack's top pages away - the back button, the swipe, the keys: the path is told how long
     /// it is now.

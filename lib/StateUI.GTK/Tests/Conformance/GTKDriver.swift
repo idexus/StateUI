@@ -84,6 +84,10 @@ final class GTKDriver: HostDriver {
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
         if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
+        if act == .goBack {
+            guard renderer?.goBack() == true else { throw DriverCannot(act, on: element) }
+            return
+        }
         let view = (element.native as? GTKElement)?.view
         switch (act, view) {
         // GTK lets a click reach no button that cannot be chosen.

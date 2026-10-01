@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 7 ✅ · 2 – | `UINavigationController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `ViewGroup` stack + `Toolbar` |  |
 | WinUI 3 | ✅ | 9 ✅ | `Frame` |  |
-| GTK 4 | ✅ | 3 ✅ · 2 – | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
+| GTK 4 | ✅ | 4 ✅ · 2 – | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
 | Web |  |  | History API | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
@@ -52,7 +52,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackCo
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `popped` | event | `Int` | adaptive | 🔌 | ✅ | · | ✅ |  |  | only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet; GTK 4: not realized |
+| `popped` | event | `Int` | adaptive | 🔌 | ✅ | · | ✅ | ✅ |  | only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

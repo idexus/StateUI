@@ -165,10 +165,19 @@ final class GTKRenderer {
         view.adapt(in: window.widget)
     }
 
-    /// Goes the way back the arrangement the window shows offers, as the user does - a stack's top page going;
-    /// whether there was one.
+    /// Goes the way back the window offers (`WindowPresentation.wayBack`), as the user does: a stack's top page goes
+    /// in GTK first, the path then told; a sheet goes through the host layer. Whether there was one.
+    /// Design: docs/design/host/pages.md#the-way-back
     func goBack() -> Bool {
-        presentation.arrangement?.gtk.goBack() ?? false
+        guard let way = presentation.wayBack else { return false }
+        switch way {
+        case .pop(let stack):
+            return (stack.gtk.view as? GTKNavigationView)?.popByUser() ?? false
+        case .dismissSheet:
+            guard let window = runtime.tree.root?.first(type: .window) else { return false }
+            runtime.goBack(way, in: window)
+            return true
+        }
     }
 }
 
@@ -191,8 +200,9 @@ extension GTKRenderer: FramePresenter {
         runtime.frames.commit(now: now)
     }
 
+    /// A frame that moves what the chrome shows - a bar's colour, the window's frame - shows the window again.
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        runtime.tree.present(states: states, properties: properties)
+        if runtime.tree.present(states: states, properties: properties).windowChrome { showWindow() }
     }
 
     func renderIfNeeded() {

@@ -42,6 +42,7 @@ enum GTKRealization {
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Label", "background", missing: "A brush fills the box with its first colour alone."),
+        .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "disappearing"),
         .complete("Page", "hasNavigationBar"),
