@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 7 ✅ · 2 – | `UINavigationController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `ViewGroup` stack + `Toolbar` |  |
 | WinUI 3 | ✅ | 9 ✅ | `Frame` |  |
-| GTK 4 | ✅ | 5 ✅ · 2 – | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
+| GTK 4 | ✅ | 5 ✅ · 3 – | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
 | Web |  |  | History API | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
@@ -80,5 +80,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ |  |  | cannot read icon of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read icon of NavigationStack - Android's driver has no path for it yet; GTK 4: not realized |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ | – |  | cannot read icon of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read icon of NavigationStack - Android's driver has no path for it yet; GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions. |
 | `title` | property | `String` | native | · | ✅ | · | ✅ | ✅ |  | cannot read title of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read title of NavigationStack - Android's driver has no path for it yet |

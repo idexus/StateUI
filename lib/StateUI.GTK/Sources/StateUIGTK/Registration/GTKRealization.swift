@@ -37,6 +37,8 @@ enum GTKRealization {
         .complete("MenuItemElement", "icon"),
         .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
+        .notPlanned("PageElement", "icon",
+                    reason: "GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions."),
         .complete("PageElement", "title"),
         .complete("VisualElement", "style"),
 

@@ -77,20 +77,20 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ | 3 ✅ · 2 – |  |
 | [MenuSeparator](MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](ModalStack.md) | 7 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ | 4 ✅ · 2 – |  |
-| [NavigationStack](NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 2 – |  |
+| [NavigationStack](NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 3 – |  |
 | [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |
-| [Page](Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 10 ✅ | 8 ✅ |  |
+| [Page](Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 10 ✅ | 8 ✅ · 1 – |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [Span](Span.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 2 – |  |
-| [TabbedView](TabbedView.md) | 10 | 5 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 2 – |  |
+| [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 3 – |  |
+| [TabbedView](TabbedView.md) | 10 | 5 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 3 – |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ |  |
 | [ToolbarItems](ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ | 8 ✅ · 5 – |  |
-| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 93 of 125 met |  |
+| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 97 of 125 met |  |
 <!-- structure:end -->
 
 ## Tiers

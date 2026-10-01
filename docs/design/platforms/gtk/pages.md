@@ -115,6 +115,9 @@ header bar, and the switcher - with a split view's sidebar toggle - stands
 beneath the header bar of the stack's page the user sees, moving with it as
 pages come and go.
 
+A tab shows its caption alone. The switcher draws a page's icon in place of
+its caption, never beside it, so a tab's picture is not given to it.
+
 ## Menus
 
 A menu is GTK's model of one: the host layer's walk of its entries

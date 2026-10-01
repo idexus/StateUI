@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 11 ✅ | `UIViewController` |  |
 | Android Views | ✅ | 7 ✅ | custom `ViewGroup` |  |
 | WinUI 3 | ✅ | 10 ✅ | `Page` |  |
-| GTK 4 | ✅ | 8 ✅ | custom `GtkWidget` |  |
+| GTK 4 | ✅ | 8 ✅ · 1 – | custom `GtkWidget` |  |
 | Web |  |  | `<section>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift`.
@@ -69,5 +69,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet; GTK 4: not realized |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ | – |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet; GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions. |
 | `title` | property | `String` | native | ◐ | ✅ | · | ✅ | ✅ |  | cannot read title of Page - AppKit's driver has no path for it yet; Android Views: cannot read title of Page - Android's driver has no path for it yet |
