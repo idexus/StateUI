@@ -229,7 +229,16 @@ extern "C" double stateui_winui_opacity(StateUIObjectRef handle) {
 
 extern "C" bool stateui_winui_is_shown(StateUIObjectRef handle) {
     try {
-        return as<xaml::UIElement>(handle).Visibility() == xaml::Visibility::Visible;
+        auto element = as<xaml::UIElement>(handle);
+        auto root = element.XamlRoot();
+        if (!root) return false;
+        auto content = root.Content();
+        for (xaml::DependencyObject at = element; at; at = xaml::Media::VisualTreeHelper::GetParent(at)) {
+            if (auto each = at.try_as<xaml::UIElement>(); each && each.Visibility() != xaml::Visibility::Visible)
+                return false;
+            if (at == content) return true;
+        }
+        return false;
     } catch (...) {
         report("reading whether an element shows");
         return false;

@@ -309,7 +309,7 @@ void stateui_winui_transform(StateUIObjectRef element, double *values);
 /// The element's Opacity as WinUI holds it.
 double stateui_winui_opacity(StateUIObjectRef element);
 
-/// Whether the element shows: its Visibility, as WinUI holds it.
+/// Whether the element shows: it and everything around it visible, up to the content of the window it stands in.
 bool stateui_winui_is_shown(StateUIObjectRef element);
 
 /// A control's IsEnabled as WinUI holds it; true for an element that is no control.
