@@ -3,7 +3,6 @@
 
 import GalleryUI
 import StateUIAndroid
-import StateUIWebViewAndroid
 
 // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
 // says what it answers for the application - the controls it realizes, the acts it performs, the events it raises,
@@ -15,7 +14,6 @@ public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMu
         GalleryControls.register()
         GalleryActs.register()
         GalleryEventSources.register()
-        StateUIWebViewAndroid.register()
     }
     return StateUIAndroid.load(machine)
 }

@@ -1,5 +1,4 @@
 import StateUI
-import StateUIWebView
 
 /// A page of the web: fetched by URL, and HTML written in place.
 struct WebViewSample: SampleContent {

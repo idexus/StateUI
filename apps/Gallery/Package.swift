@@ -27,8 +27,7 @@ var products: [Product] = [
 var targets: [Target] = [
     .target(
         name: "GalleryUI",
-        // A component is a library of its own: the Gallery shows a web view, so it imports one.
-        dependencies: ["StateUI", .product(name: "StateUIWebView", package: "StateUIWebView")],
+        dependencies: ["StateUI"],
         path: "Sources", swiftSettings: settings),
     .testTarget(
         name: "GalleryTests",
@@ -42,9 +41,10 @@ var targets: [Target] = [
 // library the platform loads. StateUIHead brings the host; the gallery's cube
 // adds a native module to three of them.
 let head: [Target.Dependency] = ["GalleryUI", .product(name: "StateUIHead", package: "StateUIHead")]
-// The web view's backend for the head's host, which the head registers: every host but AppKit has one.
+// The web view's backend where the host's platform does not ship one - GTK's WebKitGTK, WinUI's WebView2 - which
+// the head registers: ../../lib/Backends/WebView.<Host>.
 let webBackend: [Target.Dependency] = host.flatMap { host in
-    host == "AppKit" ? nil : [.product(name: "StateUIWebView\(host)", package: "StateUIWebView\(host)")]
+    ["GTK", "WinUI"].contains(host) ? [.product(name: "StateUIWebView\(host)", package: "StateUIWebView\(host)")] : nil
 } ?? []
 switch host {
 case "Android"?:
@@ -101,10 +101,10 @@ let package = Package(
     ],
     products: products,
     // The StateUI checkout: the library at its root, and a head's host.
-    dependencies: [.package(path: "../.."), .package(name: "StateUIWebView", path: "../../lib/Controls/WebView")]
+    dependencies: [.package(path: "../..")]
         + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")])
         + (webBackend.isEmpty ? [] : host.map { host in
-            [.package(name: "StateUIWebView\(host)", path: "../../lib/Controls/WebView/WebView.\(host)")]
+            [.package(name: "StateUIWebView\(host)", path: "../../lib/Backends/WebView.\(host)")]
         } ?? []),
     targets: targets,
     cxxLanguageStandard: .cxx20

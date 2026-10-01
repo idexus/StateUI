@@ -7,8 +7,7 @@ import XCTest
 /// The code says what a declaration is; `docs/design/` says why.
 /// Design: docs/design/README.md#the-golden-rule
 final class DesignNotesTests: XCTestCase {
-    /// The directories that keep the golden rule, relative to the repository: StateUI's, and every part's of every
-    /// component.
+    /// The directories that keep the golden rule, relative to the repository: StateUI's, and every backend's.
     private static var held: [String] {
         [
             "lib/StateUI/StateUI.Host/Sources", "lib/StateUI/Core/Sources/Types", "lib/StateUI/Core/Sources/Contracts",
@@ -16,25 +15,22 @@ final class DesignNotesTests: XCTestCase {
             "lib/StateUI/StateUI.AppKit/Sources", "lib/StateUI/StateUI.UIKit/Sources",
             "lib/StateUI/StateUI.Android/Sources", "lib/StateUI/StateUI.WinUI/Sources", "lib/StateUI/StateUI.GTK/Sources",
             "lib/StateUI/StateUI.Conformance/Sources",
-        ] + componentSources
+        ] + backendSources
     }
 
-    /// The `Sources` of each part of each component under `lib/Controls` - its Core and each package beside it.
-    private static var componentSources: [String] {
+    /// The `Sources` of each backend under `lib/Backends`.
+    private static var backendSources: [String] {
         let files = FileManager.default
-        let controls = SourceTree.repository.appendingPathComponent("lib/Controls")
-        return ((try? files.contentsOfDirectory(atPath: controls.path)) ?? []).sorted().flatMap { component in
-            let parts = (try? files.contentsOfDirectory(atPath: controls.appendingPathComponent(component).path)) ?? []
-            return parts.sorted().map { "lib/Controls/\(component)/\($0)/Sources" }
-                .filter { files.fileExists(atPath: SourceTree.repository.appendingPathComponent($0).path) }
-        }
+        let backends = SourceTree.repository.appendingPathComponent("lib/Backends")
+        return ((try? files.contentsOfDirectory(atPath: backends.path)) ?? []).sorted()
+            .map { "lib/Backends/\($0)/Sources" }
+            .filter { files.fileExists(atPath: SourceTree.repository.appendingPathComponent($0).path) }
     }
 
-    /// Every component's part is held, so a new one keeps the rule from its first source.
-    func testEveryComponentsSourcesAreHeld() {
-        XCTAssertTrue(Self.held.contains("lib/Controls/WebView/Core/Sources"))
-        XCTAssertTrue(Self.held.contains("lib/Controls/WebView/WebView.GTK/Sources"))
-        XCTAssertTrue(Self.held.contains("lib/Controls/WebView/WebView.Conformance/Sources"))
+    /// Every backend is held, so a new one keeps the rule from its first source.
+    func testEveryBackendsSourcesAreHeld() {
+        XCTAssertTrue(Self.held.contains("lib/Backends/WebView.GTK/Sources"))
+        XCTAssertTrue(Self.held.contains("lib/Backends/WebView.WinUI/Sources"))
     }
 
     /// Every `Design:` reference in a source names a note and a heading that exist.
@@ -43,7 +39,7 @@ final class DesignNotesTests: XCTestCase {
         var sources = try SourceTree.allSources().map { ("lib/StateUI/Core/Sources/\($0.path)", $0.text) }
         sources += try SourceTree.runtimeSources().map { ("lib/StateUI/\($0.path)", $0.text) }
         sources += try SourceTree.testSources().map { ($0.path, $0.text) }
-        sources += try SourceTree.componentSources()
+        sources += try SourceTree.backendSources()
         var read = 0
         var broken: [String] = []
 

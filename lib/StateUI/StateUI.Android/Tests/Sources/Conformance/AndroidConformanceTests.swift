@@ -43,6 +43,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testTextField", testTextField),
             ("testTimePicker", testTimePicker),
             ("testVStack", testVStack),
+            ("testWebView", testWebView),
             ("testZStack", testZStack),
             ("testApplication", testApplication),
             ("testContextMenu", testContextMenu),
@@ -117,6 +118,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testTextField() throws { try conform(TextFieldTests.self) }
     func testTimePicker() throws { try conform(TimePickerTests.self) }
     func testVStack() throws { try conform(VStackTests.self) }
+    func testWebView() throws { try conform(WebViewTests.self) }
     func testZStack() throws { try conform(ZStackTests.self) }
     func testApplication() throws { try conform(ApplicationTests.self) }
     func testContextMenu() throws { try conform(ContextMenuTests.self) }

@@ -93,7 +93,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(WindowType("document").propValue, .name("document"))
     }
 
-    /// A shape, a grid's lengths and a drawing cross as
+    /// A shape, a grid's lengths, a web view's source and a drawing cross as
     /// their kind and then what that kind is made of; a kind without its
     /// parts, or one this library has none of, reads as no value.
     func testAKindCrossesInFrontOfItsParts() {
@@ -103,11 +103,18 @@ final class ContractTests: XCTestCase {
             [GridLength.auto, .fixed(100)].propValue,
             .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
         XCTAssertEqual(
+            WebViewSource.url("https://example.com").propValue,
+            .values([.enumeration(0), .string("https://example.com")]))
+        XCTAssertEqual(
+            WebViewSource.html("<p>Hi</p>", baseUrl: nil).propValue,
+            .values([.enumeration(1), .string("<p>Hi</p>"), .nothing]))
+        XCTAssertEqual(
             [Draw.fillColor(.gold)].propValue,
             .values([.values([.enumeration(0), Color.gold.propValue])]))
 
         XCTAssertNil(ContainerShape(propValue: .values([.enumeration(1)])), "a rounded rectangle without its radius")
         XCTAssertNil(GridLength(propValue: .values([.enumeration(9), .number(1)])), "a kind with no member")
+        XCTAssertNil(WebViewSource(propValue: .values([.enumeration(1), .string("<p/>")])), "two places, not three")
     }
 
     /// The unions cross exactly as their parts do, and read back.
@@ -157,6 +164,8 @@ final class ContractTests: XCTestCase {
             SafeAreaEdges.uniform(.all),
             SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container),
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
+            WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseUrl: nil),
+            WebViewSource.html("<p/>", baseUrl: "https://example.com"),
             MapRegion(latitude: 52.25, longitude: 21.01, radiusMeters: 1500),
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
@@ -173,7 +182,7 @@ final class ContractTests: XCTestCase {
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.leading,
             SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!,
-            GesturePhase.running,
+            WebNavigationEvent(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.running,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center,
             ItemsEntries(header: "h", sections: [ItemsEntries.Section(footer: "f", items: ["1", "2"])]),

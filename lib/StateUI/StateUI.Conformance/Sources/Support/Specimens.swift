@@ -3,7 +3,6 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
-import Synchronization
 
 /// One element of each kind the library declares, as small as it can be and standing where an application puts
 /// one: a control in a stack, a span in a label's words, a menu's item in a view's menu, a toolbar's on its page's
@@ -45,41 +44,10 @@ import Synchronization
         case "TextField": return dressing.dress(TextField())
         case "TimePicker": return dressing.dress(TimePicker())
         case "VStack": return dressing.dress(VStack())
+        case "WebView": return dressing.dress(WebView())
         case "ZStack": return dressing.dress(ZStack())
-        default: return components.withLock { $0.first { $0.contract.nodeType.name == element } }?.make(dressing)
+        default: return nil
         }
-    }
-
-    /// An element a component adds beside the library's: its contract, its specimen and the style the families
-    /// dress it in.
-    struct Component: Sendable {
-        let contract: any ElementContract.Type
-        let make: @Sendable (Dressing) -> (any View)?
-        let style: @Sendable () -> [AnyStyle]
-    }
-
-    /// The elements components added, in the order they were.
-    private static let components = Mutex<[Component]>([])
-
-    /// Adds a component's element - of a library of its own, beside StateUI's - to the specimens: the families
-    /// find it, a tier's cases cover it and a style is written for it, as for the library's own, where the
-    /// component's tests run them. A second add of an element replaces the first.
-    ///
-    ///     Specimens.add(WebViewContract.self, view: WebView.self) { $0.dress(WebView()) }
-    public static func add<Target: StyleTarget & SendableMetatype>(
-        _ contract: any ElementContract.Type, view: Target.Type,
-        specimen: @escaping @Sendable (Dressing) -> (any View)?
-    ) {
-        let component = Component(contract: contract, make: specimen, style: { Styled.dimmed(Target.self) })
-        components.withLock { added in
-            added.removeAll { $0.contract.nodeType.name == contract.nodeType.name }
-            added.append(component)
-        }
-    }
-
-    /// The styles of the components' elements, each dimming its view as `Styled` does the library's.
-    static var componentStyles: [AnyStyle] {
-        components.withLock { $0 }.flatMap { $0.style() }
     }
 
     /// `element`'s control wearing `worn`, found by `id` - or words naming the element that stands in no stack, which
@@ -126,9 +94,9 @@ import Synchronization
         }
     }
 
-    /// Every element wearing `tier`, in the library's order, then the components' in theirs.
+    /// Every element wearing `tier`, in the library's order.
     public static func wearing(_ tier: any Contract.Type) -> [String] {
-        (LibraryContracts.elements + components.withLock { $0 }.map(\.contract))
+        LibraryContracts.elements
             .filter { element in element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(tier) } }
             .map { $0.nodeType.name }
     }

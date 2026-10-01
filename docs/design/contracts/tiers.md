@@ -38,7 +38,7 @@ Swift protocols behind them refine each other.
   View               ActivityIndicator, Button, Canvas, CheckBox, ColorBox,
                      DatePicker, Image, Label, Map, Picker, ProgressBar,
                      RadioButton, ScrollView, Slider, Stepper, Switch,
-                     TimePicker; a component's WebView
+                     TimePicker, WebView
   Layout             Grid, ZStack
   StackBase          HStack, VStack
   InputView          SearchField, TextEditor, TextField

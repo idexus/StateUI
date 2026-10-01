@@ -67,10 +67,7 @@ a layout hidden with its children hides them.
 
 ## A web view
 
-A WebView is a component's: its UIKit backend (`WebView.UIKit`) is WebKit's
-own web view, made through the host's registration of an application's own
-views, its page asked for once the element's values are applied. A page at
-an address is loaded; a
+A WebView is WebKit's own web view. A page at an address is loaded; a
 document written in place with an address of its own is shown there, and
 one with none is gone to as a `data:` address - WebKit keeps no history of a
 document shown without one, and the user's way back and forward is the page's

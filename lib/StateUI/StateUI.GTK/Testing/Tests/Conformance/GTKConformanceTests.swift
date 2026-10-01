@@ -11,6 +11,10 @@ import XCTest
 /// The conformance suite on GTK: a family a contract, each one test, its verdicts GTK's column of the
 /// control dictionary.
 final class GTKConformanceTests: XCTestCase {
+    override func setUp() {
+        onUIThread { GTKBackends.registered }
+    }
+
     func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
     func testButton() { conform(ButtonTests.self) }
     func testCanvas() { conform(CanvasTests.self) }
@@ -41,6 +45,7 @@ final class GTKConformanceTests: XCTestCase {
     func testTextField() { conform(TextFieldTests.self) }
     func testTimePicker() { conform(TimePickerTests.self) }
     func testVStack() { conform(VStackTests.self) }
+    func testWebView() { conform(WebViewTests.self) }
     func testZStack() { conform(ZStackTests.self) }
     func testApplication() { conform(ApplicationTests.self) }
     func testContextMenu() { conform(ContextMenuTests.self) }

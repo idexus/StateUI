@@ -1019,6 +1019,40 @@ VStack.translationY: 🔌 read translationY of VStack: the host's own transform:
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 VStack.zIndex: not realized
+WebView.accessibilityHeadingLevel: ✅
+WebView.accessibilityHint: ✅
+WebView.accessibilityLabel: ✅
+WebView.automationExcludedWithChildren: ✅
+WebView.background: not realized
+WebView.focus: ✅
+WebView.frame: ✅
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.ignoresInput: not realized
+WebView.isAccessibilityHidden: ✅
+WebView.isEnabled: ✅
+WebView.isFocusedChanged: ✅
+WebView.isVisible: ✅
+WebView.layoutDirection: not realized
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+WebView.opacity: ✅
+WebView.pivotX: 🔌 read pivotX of WebView: the host's own transform: GTK reads back no part of one
+WebView.pivotY: 🔌 read pivotY of WebView: the host's own transform: GTK reads back no part of one
+WebView.rotation: 🔌 read rotation of WebView: the host's own transform: GTK reads back no part of one
+WebView.rotationX: 🔌 read rotationX of WebView: the host's own transform: GTK reads back no part of one
+WebView.rotationY: 🔌 read rotationY of WebView: the host's own transform: GTK reads back no part of one
+WebView.scale: 🔌 read scale of WebView: the host's own transform: GTK reads back no part of one
+WebView.scaleX: 🔌 read scaleX of WebView: the host's own transform: GTK reads back no part of one
+WebView.scaleY: 🔌 read scaleY of WebView: the host's own transform: GTK reads back no part of one
+WebView.style: ✅
+WebView.translationX: 🔌 read translationX of WebView: the host's own transform: GTK reads back no part of one
+WebView.translationY: 🔌 read translationY of WebView: the host's own transform: GTK reads back no part of one
+WebView.unfocus: ✅
+WebView.width: ✅
+WebView.zIndex: not realized
 ZStack.accessibilityHeadingLevel: ✅
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅

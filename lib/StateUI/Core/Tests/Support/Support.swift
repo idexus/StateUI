@@ -671,15 +671,15 @@ enum SourceTree {
         return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: lib, moreThan: 35)
     }
 
-    /// Every Swift source of the components under `lib/Controls` - each package's sources and tests - by its path
+    /// Every Swift source of the backends under `lib/Backends` - each package's sources and tests - by its path
     /// from the repository.
-    static func componentSources() throws -> [(path: String, text: String)] {
-        let controls = repository.appendingPathComponent("lib/Controls")
+    static func backendSources() throws -> [(path: String, text: String)] {
+        let backends = repository.appendingPathComponent("lib/Backends")
         var found: [(path: String, text: String)] = []
-        guard let walk = FileManager.default.enumerator(atPath: controls.path) else { return [] }
+        guard let walk = FileManager.default.enumerator(atPath: backends.path) else { return [] }
         for case let name as String in walk where name.hasSuffix(".swift") && !name.contains(".build/") {
-            let text = try String(contentsOf: controls.appendingPathComponent(name), encoding: .utf8)
-            found.append((path: "lib/Controls/\(name.replacingOccurrences(of: "\\", with: "/"))", text: text))
+            let text = try String(contentsOf: backends.appendingPathComponent(name), encoding: .utf8)
+            found.append((path: "lib/Backends/\(name.replacingOccurrences(of: "\\", with: "/"))", text: text))
         }
         return found.sorted { $0.path < $1.path }
     }

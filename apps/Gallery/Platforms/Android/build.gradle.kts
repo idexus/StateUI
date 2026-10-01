@@ -32,8 +32,6 @@ android {
             manifest.srcFile("AndroidManifest.xml")
             java.srcDir(stated("stateui.java"))
             java.srcDir("Java")
-            // The Java half of the web view's Android backend, a component the gallery shows.
-            java.srcDir("../../../../lib/Controls/WebView/WebView.Android/Java")
             jniLibs.srcDir(stated("stateui.libraries"))
             assets.srcDir(stated("stateui.assets"))
             res.srcDir(stated("stateui.res"))

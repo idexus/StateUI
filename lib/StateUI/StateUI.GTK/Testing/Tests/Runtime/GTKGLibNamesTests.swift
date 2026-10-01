@@ -19,7 +19,7 @@ final class GTKGLibNamesTests: XCTestCase {
         let roots = [host.appendingPathComponent("Sources"), testing.appendingPathComponent("Sources"), tests,
                      host.appendingPathComponent("../../../apps/Gallery/Platforms/GTK").standardized,
                      host.appendingPathComponent("../../../apps/Gallery/Sources").standardized,
-                     host.appendingPathComponent("../../Controls").standardized]
+                     host.appendingPathComponent("../../Backends").standardized]
         // A GLib constant by its name, or a flag made of a bare number: an option set takes only `rawValue:`.
         let pattern = try NSRegularExpression(pattern: #"\bG_[A-Z][A-Z_]*\b|\bG[A-Z][A-Za-z]*Flags\((?!rawValue:)"#)
         var named: [String] = []

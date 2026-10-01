@@ -18,6 +18,7 @@ final class ContractPayloadTests: XCTestCase {
     /// types it declares - and the table is every event member.
     func testEveryEventMembersPayloadDecodesAsDeclared() {
         let frame: [Double] = [0, 0, 100, 40, 0, 0, 100, 40]
+        let address = PropValue.string("https://example.com")
 
         // What every drawn element and every view reports.
         check(VisualElementContract.isFocusedChanged, [.bool(true)])
@@ -90,6 +91,11 @@ final class ContractPayloadTests: XCTestCase {
         check(TimePickerContract.closed)
         check(TimePickerContract.opened)
         check(TimePickerContract.timeChanged, [.numbers([9, 30, 0])])
+        check(WebViewContract.canGoBackChanged, [.bool(true)])
+        check(WebViewContract.canGoForwardChanged, [.bool(false)])
+        check(WebViewContract.navigated, [.enumeration(1), .enumeration(3), address])
+        check(WebViewContract.navigating, [.enumeration(3), address])
+        check(WebViewContract.processTerminated)
         check(WindowContract.activated)
         check(WindowContract.created)
         check(WindowContract.deactivated)

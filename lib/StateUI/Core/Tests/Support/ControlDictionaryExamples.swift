@@ -512,6 +512,22 @@ extension ControlDictionary {
             .padding(24)
             """#),
 
+        (WebViewContract.self, #"""
+            @Aim(WebView.self) var browser
+            @State var canGoBack = false
+
+            Grid {
+                Button("Back")
+                    .isEnabled(canGoBack)
+                    .onClicked { try await browser.goBack() }
+                WebView("https://example.com")
+                    .canGoBack($canGoBack)
+                    .aim(browser)
+                    .gridRow(1)
+            }
+            .rows(.auto, .fill)
+            """#),
+
         (WindowContract.self, #"""
             struct MainWindow: Window {
                 var page: any Page { MainPage() }

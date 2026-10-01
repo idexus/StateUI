@@ -110,9 +110,9 @@ element's key, and an `Aim` is that key, declared where the view declares its
 state:
 
 ```text
-  @Aim(TextField.self) private var name          declared, typed by the control
-  TextField($text).aim(name)                     put on a view
-  try await name.focus()                         an act the control's type offers
+  @Aim(WebView.self) private var browser         declared, typed by the control
+  WebView(address).aim(browser)                  put on a view
+  try await browser.goBack()                     an act the control's type offers
 
   the differ, reaching the element, writes its key into the aim's box
   the act sends it as argument 0: a number, or the .id() name as text

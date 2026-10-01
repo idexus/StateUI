@@ -85,7 +85,7 @@ final class WinUIRenderer {
         shared = renderer
         renderer.runtime.core.setRealization(
             WinUIRegistrations.registry.realization,
-            unrealized: WinUIRealization.unrealized.union(WinUIRealization.byApplication))
+            unrealized: WinUIRealization.unmade)
         if previous == nil { WinUIPersistence.restore(into: renderer.runtime.core) }
         renderer.show()
         WinUIDoorbell.install()

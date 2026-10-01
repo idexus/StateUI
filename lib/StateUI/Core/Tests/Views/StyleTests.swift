@@ -587,7 +587,7 @@ final class StyleTests: XCTestCase {
             }
         }
 
-        XCTAssertGreaterThan(read, 25, "the scan read almost nothing")
+        XCTAssertGreaterThan(read, 30, "the scan read almost nothing")
     }
 
     /// And the other half of the same rule: a control's OWN property surface

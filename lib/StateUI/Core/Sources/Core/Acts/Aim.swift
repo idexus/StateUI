@@ -8,15 +8,15 @@
 
 /// Which control an act is aimed at, declared on the view beside its state.
 ///
-///     @Aim(TextField.self) private var name
+///     @Aim(WebView.self) private var browser
 ///
-///     TextField($text).aim(name)
-///     Button("Edit").onClicked { try await name.focus() }
+///     WebView(address).aim(browser)
+///     Button("Back").onClicked { try await browser.goBack() }
 ///
 /// `.aim(_:)` puts it on a view, and the act reaches exactly that view: there is
 /// no name to spell, and two instances of one composed view each aim at their
 /// own. The declared type is the control, so the aim offers what that control
-/// can do - `focus()` on any, `scrollTo` on a list's. A view handed an aim keeps
+/// can do - `focus()` on any, `goBack` on a web view's. A view handed an aim keeps
 /// it in a plain property and aims at its parent's control.
 ///
 /// An aim is not a key: a collection's rows still want `.id()`, and the two

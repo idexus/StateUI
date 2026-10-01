@@ -44,6 +44,11 @@ The host builds on Linux, on arm64 or x64:
   `librsvg2-common`, which a desktop has and a minimal system may not; from
   gdk-pixbuf 2.44, which reads pictures through glycin, glycin's loaders
   (the `glycin` package on Arch);
+- WebKitGTK 6.0 with its headers - `libwebkitgtk-6.0-dev` on Ubuntu,
+  `webkitgtk-6.0` on Arch - for the web view's backend,
+  `lib/Backends/WebView.GTK`: an application showing a web view depends on it
+  from its GTK head and calls `StateUIWebViewGTK.register()` before the host
+  runs, and the host's own tests register it to prove the web view;
 - a desktop session to show the windows in, the test suite's included.
 
 ## The head

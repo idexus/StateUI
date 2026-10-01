@@ -24,7 +24,7 @@ final class AndroidRegistrationTests: XCTestCase {
                     "ActivityIndicator", "Button", "Canvas", "CheckBox", "ColorBox", "DatePicker", "Ellipse", "Grid",
                     "HStack", "Image", "ItemsView", "Label", "Line", "Path", "Polygon", "Polyline", "Rectangle",
                     "Picker", "ProgressBar", "RadioButton", "ScrollView", "SearchField", "Slider", "Stepper",
-                    "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "ZStack",
+                    "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "WebView", "ZStack",
                 ])
             for member in [
                 HostRealizedMember(element: "Button", owner: "Button", member: "clicked"),

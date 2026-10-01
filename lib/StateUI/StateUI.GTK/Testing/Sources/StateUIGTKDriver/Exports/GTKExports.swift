@@ -6,9 +6,9 @@ import XCTest
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIConformance
 
-/// What this host's runs write into an `exports` folder - the library's in `lib`, or a component's in its own
-/// folder: what its runtime realizes, and what its passing tests proved - held to the file, or written into it on a
-/// run with STATEUI_UPDATE_EXPORTS=1, then read in the diff.
+/// What this host's runs write into the library's `exports` folder: what its runtime realizes, and what its passing
+/// tests proved - held to the file, or written into it on a run with STATEUI_UPDATE_EXPORTS=1, then read in the
+/// diff.
 struct GTKExports {
     /// The folder the files stand in.
     let folder: URL
@@ -31,14 +31,6 @@ struct GTKExports {
     static let library = GTKExports(
         folder: repository.appendingPathComponent("lib/StateUI/exports"),
         revisionFiles: [repository.appendingPathComponent("lib/StateUI/StateUI.Conformance/revisions.txt")])
-
-    /// A component's, in its folder laid out as StateUI is: `exports` there, at the revisions of its conformance
-    /// package's `revisions.txt` - its family's - and the library's, for the families of the tiers its element wears.
-    static func component(_ folder: URL, named name: String) -> GTKExports {
-        GTKExports(
-            folder: folder.appendingPathComponent("exports"),
-            revisionFiles: [folder.appendingPathComponent("\(name).Conformance/revisions.txt")] + library.revisionFiles)
-    }
 
     /// The revision `family`'s verdicts on this host stand at.
     /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
@@ -80,17 +72,13 @@ struct GTKExports {
             file: file, line: line)
     }
 
-    /// Runs `family` on GTK - for `element` alone where one is named, as a component runs a tier's - and holds its
-    /// verdicts to the family's file of GTK's marks here.
+    /// Runs `family` on GTK, and holds its verdicts to the family's file of GTK's marks here.
     @MainActor
-    func conform(
-        _ family: any ConformanceFamily.Type, element: String? = nil, file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
+    func conform(_ family: any ConformanceFamily.Type, file: StaticString = #filePath, line: UInt = #line) {
         let path = "marks/gtk/\(family.name).txt"
         guard !skips(family.name, at: path) else { return }
         let verdicts = Conformance.run(
-            family, element: element, on: GTKDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) })
+            family, on: GTKDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         XCTAssertNoThrow(
             try hold(HostVerdict.text(verdicts, revision: revision(of: family.name)), at: path), file: file, line: line)
     }

@@ -20,6 +20,13 @@ final class AndroidActToolkit: ActToolkit {
     private var dialogs: [Int64: (Bool, String?) -> Void] = [:]
     private static var nextDialogTicket: Int64 = 1
 
+    /// The scripts not answered yet, by ticket.
+    private var scripts: [Int64: HostActCall] = [:]
+
+    /// The next script's ticket: one number across every renderer of the process, below zero so it is never a
+    /// dialog's.
+    private(set) static var nextScriptTicket: Int64 = -1
+
     init(core: CoreLink, context: JavaObject, root: JavaObject, tree: @escaping () -> MountedTree) {
         self.core = core
         self.context = context
@@ -85,8 +92,10 @@ final class AndroidActToolkit: ActToolkit {
         return true
     }
 
-    /// The dialog under `ticket` was answered: accepted or not, with the words chosen or typed.
+    /// The act under `ticket` was answered: a dialog accepted or not, with the words chosen or typed; or a script's
+    /// value as text.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
+        if let call = scripts.removeValue(forKey: ticket) { return core.reply(call, [words.propValue]) }
         dialogs.removeValue(forKey: ticket)?(accepted, words)
     }
 
@@ -131,9 +140,10 @@ final class AndroidActToolkit: ActToolkit {
         return true
     }
 
-    /// An ItemsView's scroll to an item.
+    /// A web view's own acts - stepping back or forward, loading again, running a script, which answers by ticket -
+    /// and an ItemsView's scroll to an item.
     func performOwn(_ call: HostActCall) -> Bool {
-        guard call.act == .scrollTo else { return false }
+        guard [.goBack, .goForward, .reload, .evaluateJavaScript, .scrollTo].contains(call.act) else { return false }
         let element: MountedElement
         do {
             element = try tree().aimed(call)
@@ -141,15 +151,39 @@ final class AndroidActToolkit: ActToolkit {
             core.fail(call, error.reason, log: { AndroidRenderer.log.error($0) })
             return true
         }
-        guard let items = (element.native as? AndroidElement)?.view as? AndroidItemsView else {
-            core.fail(call, "scrollTo is an act of an ItemsView", log: { AndroidRenderer.log.error($0) })
+        if call.act == .scrollTo {
+            guard let items = (element.native as? AndroidElement)?.view as? AndroidItemsView else {
+                core.fail(call, "scrollTo is an act of an ItemsView", log: { AndroidRenderer.log.error($0) })
+                return true
+            }
+            items.scroll(
+                to: call.arguments.value(1)?.string ?? "",
+                anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+            core.reply(call, [])
             return true
         }
-        items.scroll(
-            to: call.arguments.value(1)?.string ?? "",
-            anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+        guard let web = (element.native as? AndroidElement)?.view as? AndroidWebView else {
+            core.fail(call, "\(call.act.name) is an act of a web view", log: { AndroidRenderer.log.error($0) })
+            return true
+        }
+        switch call.act {
+        case .goBack: web.goBack()
+        case .goForward: web.goForward()
+        case .reload: web.reload()
+        default:
+            web.evaluate(call.arguments.value(1)?.string ?? "", ticket: waitForScript(call))
+            return true
+        }
         core.reply(call, [])
         return true
+    }
+
+    /// Keeps a script's `call` waiting for its answer, under the ticket this answers.
+    private func waitForScript(_ call: HostActCall) -> Int64 {
+        let ticket = Self.nextScriptTicket
+        Self.nextScriptTicket -= 1
+        scripts[ticket] = call
+        return ticket
     }
 
     func performRegistered(_ call: HostActCall) -> Bool {

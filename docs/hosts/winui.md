@@ -48,6 +48,11 @@ The host builds on Windows 10 1809 or newer, on arm64 or x64:
   SDK from nuget.org the first time, each checked against nuget.org's own
   hash, and generates the C++/WinRT projection the relay includes.
 
+The web view is a backend, `lib/Backends/WebView.WinUI` - WinUI's `WebView2`
+over the system's WebView2 runtime, which WinUI does not ship: an application
+showing a web view depends on it from its WinUI head and calls
+`StateUIWebViewWinUI.register()` before the host runs.
+
 ## The head
 
 An application's WinUI head is an executable. Its `main` names the

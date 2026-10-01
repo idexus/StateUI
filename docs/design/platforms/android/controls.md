@@ -208,14 +208,7 @@ put where it said, within it.
 
 ## A web view
 
-A WebView is a component's: its Android backend (`WebView.Android`) is
-Android's own web view, standing in a holder of the component's Java, made
-through the host's registration of an application's own controls; the
-holder tells its Swift half by native methods of its own, registered as the
-first view is made. Its page keeps the user's hand: the host's watch of a
-view's touches reaches no control of an application's, so a web view's
-taps, pans and pointer stand unheard until the registration offers one.
-Where its web
+A WebView is Android's own web view, standing in a holder. Where its web
 process dies - a crash, or the system reclaiming memory - Android leaves the
 view unusable: the holder makes it again, blank, and the element hears the
 process ended; a reload shows the page again. A navigation is reported as it
@@ -226,10 +219,9 @@ name the view asks by, the name written first: written while a page loads,
 Android leaves that page out of the history, and there is no way back to it. Whether there is a page
 behind and ahead is said when it changes. A script runs in the page and
 answers later, by ticket, with its value as text: a string as itself, none
-for null, anything else as JSON writes it. The page is asked for once the
-element's values are applied, so it crosses with the name the tree gives.
-The web view runs scripts and keeps the page's storage, as a browser does,
-and lets go of its page and its web process when its element leaves.
+for null, anything else as JSON writes it. The web view runs scripts and
+keeps the page's storage, as a browser does, and lets go of its page and its
+web process when its element leaves.
 
 ## The keyboard's focus
 

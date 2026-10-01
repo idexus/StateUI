@@ -16,7 +16,7 @@ lib/StateUI/StateUI.WinUI/         WinUI host package, its C++/WinRT relay and t
 lib/StateUI/StateUI.GTK/           GTK host package, Swift over GTK's C API
 lib/StateUI/StateUI.GTK/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the host every application's head is built with
-lib/Controls/                      components an application imports apart - WebView
+lib/Backends/                      a host's realization needing a library the platform does not ship - WebView.GTK, WebView.WinUI
 lib/StateUI.VSCode/                the editor extension
 .scripts/AppKit/                   AppKit Gallery bundling
 .scripts/Android/                  Android Views builds, runs, devices and tests

@@ -269,11 +269,95 @@ them; one lone dot is hidden unless `hideSingle(false)` asks for it;
 whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.
 
+## Web content
+
+`WebView` puts a page of the web in the tree: one fetched from an address, or
+a document written in place:
+
+```swift
+WebView("https://example.com")
+```
+
+A document written in place shows without the network. Its relative links
+resolve against the address given beside it, where one is:
+
+```swift
+WebView().source(html: "<h1>Offline</h1><p>Written in place.</p>")
+```
+
+The web content scrolls itself, so give it room of its own - a Grid row, or a
+page without a scroller - rather than a place inside a ScrollView.
+
+What the view is told to do is an act called through its aim; whether there
+is a page behind and ahead arrives in a binding:
+
+```swift
+@Aim(WebView.self) var browser
+@State var canGoBack = false
+@State var title = ""
+
+Grid {
+    HStack {
+        Button("Back")
+            .isEnabled(canGoBack)
+            .onClicked { try await browser.goBack() }
+        Button("Reload")
+            .onClicked { try await browser.reload() }
+        Button("Title?")
+            .onClicked { title = try await browser.evaluateJavaScript("document.title") }
+    }
+    WebView("https://example.com")
+        .canGoBack($canGoBack)
+        .aim(browser)
+        .gridRow(1)
+}
+.rows(.auto, .fill)
+```
+
+A script answers what it evaluated to as text: words as they are, a number as
+it is written, anything else as JSON, and nothing for no value. A navigation
+is heard as it starts, with why - a new page, back, forward, the page again -
+and as it ends, with how; the web process ending under the view is heard
+too, and `reload()` brings the page back:
+
+```swift
+@State var status = "nothing has loaded yet"
+
+WebView("https://example.com")
+    .onNavigating { navigation in status = "going to \(navigation.url)" }
+    .onNavigated { navigated in status = "\(navigated.result): \(navigated.url)" }
+    .onProcessTerminated { status = "the page's process ended" }
+```
+
+| Host | The web view |
+| --- | --- |
+| AppKit | none yet |
+| UIKit | WebKit's `WKWebView` |
+| Android Views | Android's `WebView` |
+| WinUI 3 | WinUI's `WebView2`, over the system's WebView2 runtime - a backend |
+| GTK 4 | WebKitGTK 6.0's `WebKitWebView` - a backend |
+| Web | not yet |
+
+Where the web engine is a library the platform does not ship with its
+toolkit - WebKitGTK, WebView2's runtime - the web view's realization is a
+backend, a package of its own in `lib/Backends`, so an application that
+shows no web page links no engine. An application showing one depends on it
+from that head and registers it before the host runs:
+
+```text
+Package.swift
+  dependencies:  .package(path: "<StateUI>/lib/Backends/WebView.<Host>")   for GTK or WinUI
+  the head:      .product(name: "StateUIWebView<Host>", package: "StateUIWebView<Host>")
+
+Platforms/<Host>/main.swift
+  StateUIWebView<Host>.register()         before the host runs
+```
+
 ## Provisional native surfaces
 
-The following declarations express a candidate semantic contract but are not
+The following declaration expresses a candidate semantic contract but is not
 part of the usable base surface until the platform matrix records a verified
-host. Their presence in the Swift module is not a support claim:
+host. Its presence in the Swift module is not a support claim:
 
 | Surface | Semantic contract under evaluation |
 | --- | --- |
@@ -283,24 +367,12 @@ host. Their presence in the Swift module is not a support claim:
 feature sets are not one base-platform primitive. A host with no map of its
 own shows the one the application registers with it, the pins drawn as the
 map's children ([Children a control
-draws](../hosts/gtk.md#children-a-control-draws), on each host's page). The other candidates enter
-the base contract only if the target native toolkits can preserve the stated
-ownership, input, accessibility, and lifecycle semantics without growing a
-second UI system in the host. A surface that cannot meet that bar is removed
-vertically from API, vocabulary, tests, Gallery, and documentation.
-
-The intended source/event/aim shapes above keep design review explicit; they do
-not authorize production use on an unmarked host.
-
-## Components
-
-A control that pulls in a large engine of its platform is a component: a
-library of its own beside StateUI, which an application imports only where it
-shows one, so an application without it links neither the component nor the
-engine. `WebView` is one - `lib/Controls/WebView`, imported as
-`StateUIWebView` - and an application that shows a web page also registers the
-web view's backend for its host in its head. The component's README is its
-handbook.
+draws](../hosts/gtk.md#children-a-control-draws), on each host's page); the
+platform matrix marks it 🧩 there. It enters the base contract only if the
+native map toolkits preserve the stated ownership, input, accessibility and
+lifecycle semantics without growing a second UI system in the host; one that
+cannot meet that bar is removed vertically from API, vocabulary, tests,
+Gallery, and documentation.
 
 ## Collections
 

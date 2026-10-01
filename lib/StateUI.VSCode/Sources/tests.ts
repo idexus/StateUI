@@ -35,8 +35,8 @@ export interface Suite {
  * - A Swift package with a test target runs with `swift test`. For AppKit an
  *   APPLICATION runs as the host - `STATEUI_HOST=appkit` on `.build/appkit`.
  * - A host's own package - `lib/StateUI/StateUI.AppKit`, or its tests' own,
- *   `lib/StateUI/StateUI.GTK/Testing` - and a component's backend for a host -
- *   `lib/Controls/WebView/WebView.GTK` - run only for that host.
+ *   `lib/StateUI/StateUI.GTK/Testing` - and a backend for a host -
+ *   `lib/Backends/WebView.GTK` - run only for that host.
  * - For the Android host an application runs as plain Swift, its Android build
  *   running only on a device, and the host's own tests -
  *   `lib/StateUI/StateUI.Android/Tests` - run on the device chosen, by
@@ -58,10 +58,10 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
     const appKitEnvironment = Object.fromEntries(
         Object.entries(environment("appkit")).filter((entry): entry is [string, string] => entry[1] !== undefined));
 
-    // The library's packages stand in lib/StateUI, a component's in lib/Controls/<Component>, and a package's own
-    // tests may stand in a package of their own, Testing, inside it.
-    const library = [path.join(root, "lib"), path.join(root, "lib", "StateUI"), path.join(root, "lib", "Controls")];
-    const grouped = [...library.flatMap(children), ...children(path.join(root, "lib", "Controls")).flatMap(children)];
+    // The library's packages stand in lib/StateUI, the backends in lib/Backends, and a package's own tests may
+    // stand in a package of their own, Testing, inside it.
+    const library = [path.join(root, "lib"), path.join(root, "lib", "StateUI"), path.join(root, "lib", "Backends")];
+    const grouped = library.flatMap(children);
     const packages = [root, ...grouped.flatMap((each) => [each, path.join(each, "Testing")]), ...children(path.join(root, "apps"))];
     for (const directory of packages) {
         const manifest = path.join(directory, "Package.swift");

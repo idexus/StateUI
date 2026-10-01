@@ -137,6 +137,7 @@ of its members each meets, and why a cell is empty.
 | [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [WebView](controls/WebView.md) | native |  | ⌛ | ⌛ | ⌛ | ✅ |  |
 | [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 <!-- creation:end -->
@@ -222,6 +223,7 @@ may still choose another class that preserves the same contract.
 | `Rectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | `GskPath` in a snapshot | inline SVG |
 | `Line` / `Path` / `Polygon` / `Polyline` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | `GskPath` in a snapshot | inline SVG |
 | `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | the application's own, registered | the application's own, registered | the application's own, registered | — |
+| `WebView` | `WKWebView` | `WKWebView` | `WebView` | `WebView2`, a backend | WebKitGTK `WebKitWebView`, a backend | `<iframe>` (?) |
 | `ItemsView` | `NSCollectionView` / `NSTableView` | `UICollectionView` | AndroidX `RecyclerView` | `ItemsView` | `GtkListView` / `GtkGridView` | semantic list or grid |
 | `TitleView` | structure | structure | structure | structure | structure | structure |
 
@@ -248,6 +250,7 @@ These surfaces lack an honest native counterpart on at least one target:
 - `ActivityIndicator`: Web has no spinner; an indeterminate `<progress>` draws a bar.
 - `Map` / `Pin`: Android Views, WinUI 3 and GTK 4 have no map of the platform's own - Google Play services, Azure Maps and libshumate each need a provider and its key - so the application registers its own with the host, the pins as the map's children; Web has no map element.
 - `ItemsView`: Android Views depends on AndroidX `RecyclerView`; Web has no native virtualized list.
+- `WebView`: WinUI 3 and GTK 4 depend on an engine their toolkit does not ship - the WebView2 runtime, WebKitGTK - so their web view is a backend the application registers (`lib/Backends`); Web cannot observe navigation or set a user agent in a cross-origin `<iframe>`.
 
 ## Shared state, patch, and motion capabilities
 
@@ -319,6 +322,10 @@ the tier.
 | `utcOffset` | [Application](controls/Application.md) |
 | `scrollTo` | [ItemsView](controls/ItemsView.md) |
 | `moveToRegion` | [Map](controls/Map.md) |
+| `evaluateJavaScript` | [WebView](controls/WebView.md) |
+| `goBack` | [WebView](controls/WebView.md) |
+| `goForward` | [WebView](controls/WebView.md) |
+| `reload` | [WebView](controls/WebView.md) |
 <!-- acts:end -->
 
 ## Shared view members
@@ -445,8 +452,9 @@ Every control, and every part an application, its windows and its pages are made
 | [TextField](controls/TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 60 ✅ · 1 – |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ | 49 ✅ · 1 – |  |
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
+| [WebView](controls/WebView.md) | 77 |  |  |  |  | 52 ✅ · 1 – |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅, – and 🧩 | 2370 | 1005 of 2370 met | 1006 of 2370 met | 1780 of 2370 met | 1893 of 2370 met | 1582 of 2370 met |  |
+| **Met** - ✅, – and 🧩 | 2447 | 1005 of 2447 met | 1006 of 2447 met | 1780 of 2447 met | 1893 of 2447 met | 1635 of 2447 met |  |
 
 ### Application structure
 
@@ -474,16 +482,6 @@ Every control, and every part an application, its windows and its pages are made
 | [Window](controls/Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ | 8 ✅ · 8 – |  |
 | **Met** - ✅, – and 🧩 | 125 | 63 of 125 met | 74 of 125 met | 58 of 125 met | 119 of 125 met | 112 of 125 met |  |
 <!-- dictionary:end -->
-
-### Components
-
-A component is a library of its own beside StateUI, which an application imports only where it shows one - `lib/Controls/<Component>`, each backend a package of its own. Its marks stand in its own exports, its family's and its element's tiers', and its handbook is its README.
-
-<!-- components:begin -->
-| Component | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
-| --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [WebView](../lib/Controls/WebView/README.md) | 78 |  |  |  |  | 53 ✅ · 1 – |  |
-<!-- components:end -->
 
 ## Contract members
 
@@ -564,6 +562,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  | 2 ✅ |  | 2 ✅ | 3 ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
+| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  |  |  |  | 6 ✅ |  |
 | [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ | 8 ✅ · 8 – |  |
 <!-- members:end -->
 
@@ -589,7 +588,7 @@ realizes the element and each of its members.
 `Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `Scene`,
 `ScrollView`, `SearchField`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`,
 `Switch`, `TabbedView`, `TextEditor`, `TextField`, `TimePicker`, `TitleView`,
-`ToolbarItem`, `ToolbarItems`, `VStack`, `Window`, `ZStack`.
+`ToolbarItem`, `ToolbarItems`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties
 
@@ -625,29 +624,30 @@ realizes the element and each of its members.
 `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`,
 `swipeDirection`, `swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
 `textDecorations`, `time`, `tint`, `title`, `translationX`, `translationY`,
-`type`, `value`, `verticalAlignment`, `verticalScrollBarVisibility`,
-`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
-`y`, `y1`, `y2`, `zIndex`.
+`type`, `userAgent`, `value`, `verticalAlignment`,
+`verticalScrollBarVisibility`, `verticalTextAlignment`, `width`, `windowType`,
+`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 
-`activated`, `appearing`, `clicked`, `closed`, `created`, `currentPageChanged`,
-`dateChanged`, `deactivated`, `destroying`, `disappearing`, `dragCompleted`,
-`dragged`, `dragLeave`, `dragOver`, `dragStarted`, `dragStarting`, `drop`,
-`dropCompleted`, `endReached`, `frameChanged`, `isFocusedChanged`,
-`isSidebarVisibleChanged`, `itemActivated`, `mapClicked`, `navigatedFrom`,
-`navigatedTo`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
+`activated`, `appearing`, `canGoBackChanged`, `canGoForwardChanged`, `clicked`,
+`closed`, `created`, `currentPageChanged`, `dateChanged`, `deactivated`,
+`destroying`, `disappearing`, `dragCompleted`, `dragged`, `dragLeave`,
+`dragOver`, `dragStarted`, `dragStarting`, `drop`, `dropCompleted`,
+`endReached`, `frameChanged`, `isFocusedChanged`, `isSidebarVisibleChanged`,
+`itemActivated`, `mapClicked`, `navigated`, `navigatedFrom`, `navigatedTo`,
+`navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
 `pinClicked`, `pinDetailsClicked`, `pointerEntered`, `pointerExited`,
 `pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
-`realizedChanged`, `released`, `resumed`, `scrollStopped`, `scrollXChanged`,
-`scrollYChanged`, `selectedIndexChanged`, `selectionChanged`, `stopped`,
-`submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`, `toggled`,
-`valueChanged`, `windowClosed`, `windowRestored`.
+`processTerminated`, `realizedChanged`, `released`, `resumed`, `scrollStopped`,
+`scrollXChanged`, `scrollYChanged`, `selectedIndexChanged`, `selectionChanged`,
+`stopped`, `submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`,
+`toggled`, `valueChanged`, `windowClosed`, `windowRestored`.
 
 ### Acts
 
 `alert`, `announce`, `chooseAction`, `confirm`, `currentTime`,
-`currentTimeZone`, `focus`, `handlerFailed`, `hideOnScreenKeyboard`,
-`moveToRegion`, `persistSceneValue`, `persistValue`, `prompt`, `scrollTo`,
-`unfocus`, `utcOffset`.
+`currentTimeZone`, `evaluateJavaScript`, `focus`, `goBack`, `goForward`,
+`handlerFailed`, `hideOnScreenKeyboard`, `moveToRegion`, `persistSceneValue`,
+`persistValue`, `prompt`, `reload`, `scrollTo`, `unfocus`, `utcOffset`.
 <!-- vocabulary:end -->

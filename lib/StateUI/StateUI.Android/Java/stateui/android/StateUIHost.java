@@ -81,7 +81,8 @@ final class StateUIHost {
     static native void chose(long view, int index);
 
     /**
-     * The dialog waiting under `ticket` was answered: accepted or not, and the words chosen or typed.
+     * The act waiting under `ticket` was answered: a dialog accepted or not, and the words chosen or typed;
+     * a script's value as text.
      */
     static native void answered(long ticket, boolean accepted, String words);
 
@@ -106,6 +107,18 @@ final class StateUIHost {
 
     /** The activity is finishing - the user left it, or it finished itself: its window is going. */
     static native void destroying();
+
+    /** A web view's navigation started: why, as StateUI numbers it, and where it is going. */
+    static native void webNavigating(long view, int cause, String address);
+
+    /** A web view's navigation ended: how and why, as StateUI numbers them, and where it went. */
+    static native void webNavigated(long view, int result, int cause, String address);
+
+    /** Whether a web view has a page behind it and ahead of it, as its history now stands. */
+    static native void webHistory(long view, boolean back, boolean forward);
+
+    /** A web view's web process died, and the view was made again, blank. */
+    static native void webProcessGone(long view);
 
     /** An ItemsView's recycler needs a new cell - an item's, 0, or a header's or a footer's, 1 - which it answers. */
     static native View itemCell(long view, int kind);

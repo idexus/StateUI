@@ -74,15 +74,17 @@ members it writes, through the element's own `setValue`, and finds by its id
 or as the one element of its kind. The case runs on a host for each element
 the host realizes, and proves the member there.
 
-## A component's element
+## A backend's element
 
-A component - a library of its own beside StateUI's - adds its element to
-the specimens (`Specimens.add`): its contract, its specimen and the view a
-style is written for. From then on the families find it as they find the
-library's, and a tier's cases are made for it too. The component's tests run
-its own family, and each family of a tier its element wears for that element
-alone (`Conformance.run(_:element:on:)`), through the host's driver; the
-verdicts stand in the component's own exports, never in the library's.
+A backend - a package realizing a library element on one host,
+`lib/Backends/<Element>.<Host>`, for a library the platform does not ship -
+is registered by the host's tests before the families run, as an
+application's head registers it. From then on the element is realized
+there: its family and the families of the tiers it wears make their cases
+for it, and the verdicts stand in the host's column with the rest. What the
+driver cannot know of the backend's own widget - a member it holds, an act
+through it, what it reaches only past the toolkit - the host's tests hand the
+driver beside it (`GTKDriver.backends`).
 
 ## The driver
 
@@ -104,12 +106,11 @@ have yet is its driver's "cannot". A case's first start of an application is
 its first launch: the driver forgets what the host's stores keep, and a
 start after it in the same case is the next launch, which finds them.
 
-A host's driver is a library of a package of its own inside the host's folder,
-`Testing`, which also holds the host's own suite - the GTK host's
-`StateUIGTKDriver` - so the host's tests and a component's both run the
-families through it, and every one of them links the host's one dynamic
-library: a driver in the host's own package would carry a second copy of the
-host into a component's tests. It reads the host's own views, so it is built
+A host's driver and its suite are a package of their own inside the host's
+folder, `Testing` - the GTK host's `StateUIGTKDriver` and its tests. They
+register the host's backends, which depend on the host, so they stand beside
+the host's package rather than in it, and everything there links the host's
+one dynamic library. The driver reads the host's own views, so it is built
 where the host is built for testing: a debug build, `swift test`.
 
 ## A session

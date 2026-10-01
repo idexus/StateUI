@@ -24,6 +24,7 @@ enum AndroidRegistrations {
         shapes(registry)
         drawing(registry)
         indicators(registry)
+        web(registry)
         items(registry)
         shared(registry)
 
@@ -38,6 +39,7 @@ enum AndroidRegistrations {
         ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
         ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard, ApplicationContract.persistValue,
         ApplicationContract.prompt, ApplicationContract.utcOffset,
+        WebViewContract.evaluateJavaScript, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
         ItemsViewContract.scrollTo,
     ]
 

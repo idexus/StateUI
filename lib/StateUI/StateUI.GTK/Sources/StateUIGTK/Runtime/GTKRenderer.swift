@@ -109,7 +109,7 @@ final class GTKRenderer {
         shared = renderer
         renderer.runtime.core.setRealization(
             GTKRegistrations.registry.realization,
-            unrealized: GTKRealization.unrealized.union(GTKRealization.byApplication))
+            unrealized: GTKRealization.unmade)
         renderer.show()
         GTKDoorbell.install()
         return renderer

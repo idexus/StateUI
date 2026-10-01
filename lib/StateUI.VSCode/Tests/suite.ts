@@ -463,12 +463,11 @@ export async function run(): Promise<void> {
             say(`gtk suites: ${gtkSuites.map((each) => each.label).join(", ")}`);
             const own = gtkSuites.find((each) => each.label === "lib/StateUI/StateUI.GTK/Testing");
             const testing = path.join(root.uri.fsPath, "lib", "StateUI", "StateUI.GTK", "Testing");
-            check("gtk runs the core and the Gallery as plain Swift, its own tests' package and a component's GTK backend by swift test, and no other host's",
+            check("gtk runs the core and the Gallery as plain Swift, its own tests' package by swift test, and no other host's",
                 gtkSuites.some((each) => each.label === "StateUI")
                 && own?.command === "swift" && own.args.join(" ") === `test --package-path ${testing}`
-                && gtkSuites.some((each) => each.label === "lib/Controls/WebView/WebView.GTK")
                 && !gtkSuites.some((each) => ["lib/StateUI/StateUI.AppKit", "lib/StateUI/StateUI.WinUI", "lib/StateUI/StateUI.Android/Tests",
-                    "lib/Controls/WebView/WebView.UIKit"].includes(each.label)));
+                    "lib/Backends/WebView.WinUI"].includes(each.label)));
         }
 
         const palette = await vscode.commands.getCommands(true);

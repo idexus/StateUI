@@ -15,6 +15,16 @@ enum WinUIRealization {
     /// no map of its own, and a map needs a provider and its key.
     static let byApplication: Set<String> = ["Map", "Pin"]
 
+    /// The entries a backend realizes on this host - a package of its own, for what WinUI does not ship - which the
+    /// application's head registers: WebView2's web view. Realized none of until it is registered.
+    static let backends: Set<String> = ["WebView"]
+
+    /// What the running host realizes none of: what it never makes, what it leaves to the application, and each
+    /// backend no one registered.
+    @MainActor static var unmade: Set<String> {
+        unrealized.union(byApplication).union(backends.subtracting(WinUIRegistrations.registry.realization.elements))
+    }
+
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
     /// tier's record reaches them: only a member the entry's own records name is realized.
     static let viewless: Set<String> = ["Span"]
@@ -120,8 +130,9 @@ enum WinUIRealization {
     /// What WinUI realizes, member by member: these records before what its registry says.
     @MainActor static var register: HostRegister {
         HostRegister(
-            records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned,
-            byApplication: byApplication
+            records: records,
+            unrealized: unrealized.union(backends.subtracting(WinUIRegistrations.registry.realization.elements)),
+            viewless: viewless, notPlanned: notPlanned, byApplication: byApplication
         ).and(declaration)
     }
 }

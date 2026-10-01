@@ -47,7 +47,7 @@
         SpansContract.self, SplitViewContract.self, StepperContract.self, SwitchContract.self,
         TabbedViewContract.self, TextEditorContract.self, TextFieldContract.self, TimePickerContract.self,
         TitleViewContract.self, ToolbarItemContract.self, ToolbarItemsContract.self,
-        VStackContract.self,
+        VStackContract.self, WebViewContract.self,
         WindowContract.self, ZStackContract.self,
     ]
 
