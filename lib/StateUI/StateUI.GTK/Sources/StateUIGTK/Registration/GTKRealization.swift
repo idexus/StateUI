@@ -91,6 +91,10 @@ enum GTKRealization {
         .complete("Scene", "stopped"),
         .complete("Scene", "windowClosed"),
         .complete("Scene", "windowRestored"),
+        .notPlanned("Slider", "dragCompleted", reason: "GTK's scale tells no one it is held: its range claims the "
+            + "press, and GTK denies every other gesture on it."),
+        .notPlanned("Slider", "dragStarted", reason: "GTK's scale tells no one it is held: its range claims the "
+            + "press, and GTK denies every other gesture on it."),
         .complete("Span", "background"),
         .complete("Span", "characterSpacing"),
         .complete("Span", "fontAttributes"),

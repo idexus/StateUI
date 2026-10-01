@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 30 ✅ · 3 – | `UISlider` |  |
 | Android Views | ✅ | 55 ✅ · 1 ☑️ · 3 – | `SeekBar` |  |
 | WinUI 3 | ✅ | 57 ✅ | `Slider` |  |
-| GTK 4 | ✅ | 46 ✅ · 1 – | `GtkScale` |  |
+| GTK 4 | ✅ | 46 ✅ · 3 – | `GtkScale` |  |
 | Web |  |  | `<input type=range>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SliderContract.swift`.
@@ -47,8 +47,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SliderContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onDragCompleted` (`dragCompleted`) | event |  | native | · | 🔌 | ✅ |  |  |  | cannot drag on Slider - AppKit's driver has no path for it yet; UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent; WinUI 3: not realized; GTK 4: not realized |
-| `onDragStarted` (`dragStarted`) | event |  | native | · | 🔌 | ✅ |  |  |  | cannot drag on Slider - AppKit's driver has no path for it yet; UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent; WinUI 3: not realized; GTK 4: not realized |
+| `onDragCompleted` (`dragCompleted`) | event |  | native | · | 🔌 | ✅ |  | – |  | cannot drag on Slider - AppKit's driver has no path for it yet; UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent; WinUI 3: not realized; GTK 4: GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it. |
+| `onDragStarted` (`dragStarted`) | event |  | native | · | 🔌 | ✅ |  | – |  | cannot drag on Slider - AppKit's driver has no path for it yet; UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent; WinUI 3: not realized; GTK 4: GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it. |
 | `maximum` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimum` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `value` | property | `Double` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot slide on Slider - Android's driver has no path for it yet |

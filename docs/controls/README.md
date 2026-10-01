@@ -52,7 +52,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Rectangle](Rectangle.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 45 ✅ · 4 – |  |
 | [ScrollView](ScrollView.md) | 77 | 32 ✅ · 2 ☑️ · 3 – | 33 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 – | 50 ✅ · 1 – |  |
 | [SearchField](SearchField.md) | 89 | 41 ✅ · 1 – | 45 ✅ | 65 ✅ · 1 ☑️ · 1 – | 64 ✅ · 1 ☑️ | 59 ✅ · 1 – |  |
-| [Slider](Slider.md) | 73 | 34 ✅ · 1 ☑️ | 30 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 57 ✅ | 46 ✅ · 1 – |  |
+| [Slider](Slider.md) | 73 | 34 ✅ · 1 ☑️ | 30 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 57 ✅ | 46 ✅ · 3 – |  |
 | [Stepper](Stepper.md) | 71 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 57 ✅ | 47 ✅ · 1 – |  |
 | [Switch](Switch.md) | 69 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ | 44 ✅ · 1 – |  |
 | [TextEditor](TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 59 ✅ · 1 – |  |
@@ -61,7 +61,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
 | [WebView](WebView.md) | 77 |  |  |  |  | 52 ✅ · 1 – |  |
 | [ZStack](ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅, – and 🧩 | 2447 | 1005 of 2447 met | 1006 of 2447 met | 1780 of 2447 met | 1893 of 2447 met | 1635 of 2447 met |  |
+| **Met** - ✅, – and 🧩 | 2447 | 1005 of 2447 met | 1006 of 2447 met | 1780 of 2447 met | 1893 of 2447 met | 1637 of 2447 met |  |
 <!-- controls:end -->
 
 ## Application structure

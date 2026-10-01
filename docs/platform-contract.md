@@ -445,7 +445,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Rectangle](controls/Rectangle.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 45 ✅ · 4 – |  |
 | [ScrollView](controls/ScrollView.md) | 77 | 32 ✅ · 2 ☑️ · 3 – | 33 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 – | 50 ✅ · 1 – |  |
 | [SearchField](controls/SearchField.md) | 89 | 41 ✅ · 1 – | 45 ✅ | 65 ✅ · 1 ☑️ · 1 – | 64 ✅ · 1 ☑️ | 59 ✅ · 1 – |  |
-| [Slider](controls/Slider.md) | 73 | 34 ✅ · 1 ☑️ | 30 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 57 ✅ | 46 ✅ · 1 – |  |
+| [Slider](controls/Slider.md) | 73 | 34 ✅ · 1 ☑️ | 30 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 57 ✅ | 46 ✅ · 3 – |  |
 | [Stepper](controls/Stepper.md) | 71 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 57 ✅ | 47 ✅ · 1 – |  |
 | [Switch](controls/Switch.md) | 69 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ | 44 ✅ · 1 – |  |
 | [TextEditor](controls/TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 59 ✅ · 1 – |  |
@@ -454,7 +454,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  | 52 ✅ · 1 – |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅, – and 🧩 | 2447 | 1005 of 2447 met | 1006 of 2447 met | 1780 of 2447 met | 1893 of 2447 met | 1635 of 2447 met |  |
+| **Met** - ✅, – and 🧩 | 2447 | 1005 of 2447 met | 1006 of 2447 met | 1780 of 2447 met | 1893 of 2447 met | 1637 of 2447 met |  |
 
 ### Application structure
 
@@ -551,7 +551,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 7 | 5 ✅ | 5 ✅ | 2 ✅ | 7 ✅ | 7 ✅ |  |
 | [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 2 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
-| [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
+| [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ · 2 – |  |
 | [Span](controls/Span.md) | `background` | 1 |  |  |  | 1 ✅ | 1 ✅ |  |
 | [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | 2 | 2 ✅ | 2 ✅ |  | 2 ✅ | 2 ✅ |  |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 2 ✅ | 2 ✅ |  | 5 ✅ | 5 ✅ |  |
