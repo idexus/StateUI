@@ -11,13 +11,15 @@ final class GTKGLibNamesTests: XCTestCase {
     private static let plainEnumerations = ["G_PRIORITY_", "G_BUS_TYPE_", "G_NETWORK_CONNECTIVITY_"]
 
     /// Every GLib constant Swift names is one of a plain enumeration: a flag stands in CStateUIGTK.h under a name of
-    /// the host's, which C resolves on every GLib.
+    /// the host's, which C resolves on every GLib, and a set of flags made of a number is made by `rawValue:`.
     func testSwiftNamesNoGLibFlag() throws {
         let tests = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
         let package = tests.deletingLastPathComponent()
         let roots = [package.appendingPathComponent("Sources"), tests,
-                     package.appendingPathComponent("../../apps/Gallery/Platforms/GTK").standardized]
-        let pattern = try NSRegularExpression(pattern: #"\bG_[A-Z][A-Z_]*\b"#)
+                     package.appendingPathComponent("../../apps/Gallery/Platforms/GTK").standardized,
+                     package.appendingPathComponent("../../apps/Gallery/Sources").standardized]
+        // A GLib constant by its name, or a flag made of a bare number: an option set takes only `rawValue:`.
+        let pattern = try NSRegularExpression(pattern: #"\bG_[A-Z][A-Z_]*\b|\bG[A-Z][A-Za-z]*Flags\((?!rawValue:)"#)
         var named: [String] = []
         for root in roots {
             let files = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)?

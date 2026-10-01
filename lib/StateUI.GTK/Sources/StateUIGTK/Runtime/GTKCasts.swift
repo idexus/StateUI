@@ -122,7 +122,7 @@ func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number
 }
 
 private func connect(_ instance: UnsafeMutableRawPointer, _ signal: String, _ number: Int64, _ callback: GCallback) -> gulong {
-    g_signal_connect_data(instance, signal, callback, UnsafeMutableRawPointer(bitPattern: Int(number)), nil, GConnectFlags(0))
+    g_signal_connect_data(instance, signal, callback, UnsafeMutableRawPointer(bitPattern: Int(number)), nil, GConnectFlags(rawValue: 0))
 }
 
 /// `words` as a list of C strings ending in NULL, for as long as `body` runs.

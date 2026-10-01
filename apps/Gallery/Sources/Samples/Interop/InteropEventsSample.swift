@@ -167,7 +167,7 @@ struct InteropEventsSample: SampleContent, ExampleContent {
                     }
                     g_signal_connect_data(
                         UnsafeMutableRawPointer(device), "g-properties-changed",
-                        unsafeBitCast(changed, to: GCallback.self), nil, nil, GConnectFlags(0))
+                        unsafeBitCast(changed, to: GCallback.self), nil, nil, GConnectFlags(rawValue: 0))
                     report()
                 }
 

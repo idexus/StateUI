@@ -105,7 +105,7 @@ final class OpenGLCube3DWidget: GTKControl {
             ("render", unsafeBitCast(render, to: GCallback.self)),
             ("map", unsafeBitCast(mapped, to: GCallback.self)),
         ] {
-            g_signal_connect_data(UnsafeMutableRawPointer(widget), signal, handler, me, nil, GConnectFlags(0))
+            g_signal_connect_data(UnsafeMutableRawPointer(widget), signal, handler, me, nil, GConnectFlags(rawValue: 0))
         }
         followClock()
     }

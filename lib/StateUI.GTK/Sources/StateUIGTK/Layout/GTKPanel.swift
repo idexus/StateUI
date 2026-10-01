@@ -85,7 +85,7 @@ enum GTKPanel {
                 GTKPanel.widgetDispose?(object)
             }
         },
-        guint(MemoryLayout<GtkWidget>.size), nil, GTypeFlags(0))
+        guint(MemoryLayout<GtkWidget>.size), nil, GTypeFlags(rawValue: 0))
 
     /// A new panel carrying `number`.
     static func make(number: Int64) -> GTKWidget {
