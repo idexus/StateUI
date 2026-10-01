@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 46 ✅ | `UITextView` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | multi-line `EditText` |  |
 | WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
-| GTK 4 | ✅ | 23 ✅ | `GtkTextView` |  |
+| GTK 4 | ✅ | 25 ✅ | `GtkTextView` |  |
 | Web |  |  | `<textarea>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextEditorContract.swift`.
@@ -158,8 +158,8 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ◐ |  | Android Views: waits on TextEditor.isReadOnly; GTK 4: waits on TextEditor.textCase |
-| `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextEditor.isReadOnly |
+| `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 

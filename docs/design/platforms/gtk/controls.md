@@ -107,9 +107,11 @@ only where they differ from the field's own, so the render a keystroke causes
 leaves the user's words and caret alone. Words the program writes put the
 caret after them.
 
-`maximumLength` is the entry's own bound, in characters, as the contract
-counts them: GTK keeps the first characters that fit, from a key, a paste and
-a program's write alike.
+`maximumLength` and `textCase` are kept as words go in: GTK holds no case and
+bounds code points, so the entry's `insert-text` takes what goes in in the
+field's case and its first characters that fit, as the contract counts them
+([typed words](../../host/runtime.md#typed-words)) - from a key, a paste and
+a program's write alike. An editor's buffer does the same.
 
 A field submits when Enter is pressed in it, through the entry's `activate`.
 A test types by writing the entry's words outside a program's write, which

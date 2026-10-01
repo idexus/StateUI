@@ -46,6 +46,28 @@ final class GTKInputViewTests: XCTestCase {
         }
     }
 
+    /// What the user types stands in the field's case, and its state hears it so - in a field and an editor alike.
+    func testTypedWordsStandInTheFieldsCase() throws {
+        try onUIThread {
+            let (upper, lower) = (State(wrappedValue: ""), State(wrappedValue: ""))
+            let host = GTKRenderer.running {
+                VStack {
+                    TextField(upper.projectedValue).textCase(.uppercase)
+                    TextEditor(lower.projectedValue).textCase(.lowercase)
+                }
+            }
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            let editor = try XCTUnwrap(host.views(GTKTextEditorView.self).first)
+
+            GTKTestHost.emit(gtk_editable_get_delegate(field.widget.opaque), "insert-at-cursor", words: "Ada")
+            GTKTestHost.emit(OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)), "insert-at-cursor", words: "Ada")
+            host.settle { upper.wrappedValue == "ADA" && lower.wrappedValue == "ada" }
+
+            XCTAssertEqual([field.text, editor.text], ["ADA", "ada"])
+            XCTAssertEqual([upper.wrappedValue, lower.wrappedValue], ["ADA", "ada"])
+        }
+    }
+
     /// Words the program writes into a field or an editor stand there and are heard by nobody: only the user's are.
     func testTheProgramsWordsAreHeardByNobody() throws {
         try onUIThread {

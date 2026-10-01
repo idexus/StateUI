@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 46 ✅ | `UITextField` |  |
 | Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
 | WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
-| GTK 4 | ✅ | 23 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
+| GTK 4 | ✅ | 24 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
 | Web |  |  | `<input>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift`.
@@ -164,7 +164,7 @@ What every element showing words has: the words, and the case they are drawn in.
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ◐ |  | Android Views: waits on TextField.isReadOnly; GTK 4: cannot read isPassword of TextField - GTK's driver has no path for it yet |
-| `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 

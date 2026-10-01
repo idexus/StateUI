@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 45 ✅ | `UISearchBar` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | `SearchView` |  |
 | WinUI 3 | ✅ | 64 ✅ · 1 ☑️ | `AutoSuggestBox` |  |
-| GTK 4 | ✅ | 23 ✅ | `GtkSearchEntry` |  |
+| GTK 4 | ✅ | 25 ✅ | `GtkSearchEntry` |  |
 | Web |  |  | `<input type=search>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SearchFieldContract.swift`.
@@ -161,8 +161,8 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ◐ |  | Android Views: waits on SearchField.isReadOnly; GTK 4: waits on SearchField.textCase |
-| `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on SearchField.isReadOnly |
+| `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 

@@ -18,6 +18,7 @@ class GTKTextFieldView: GTKView, GTKInputView {
 
     private var wordsClass: String?
     private var maximumLength: Int?
+    private var textCase: TextCase?
 
     convenience init() {
         self.init { gtk_entry_new() }
@@ -67,13 +68,20 @@ class GTKTextFieldView: GTKView, GTKInputView {
         maximumLength = length
     }
 
-    /// Words going in at `place`: where they would take the field past its bound, only the first characters that
-    /// fit go in (`InputWords.fitting`) - from a key, a paste and a program's write alike.
+    /// The case the words stand in. GTK holds none, so the host turns what goes in into it.
+    func setTextCase(_ textCase: TextCase?) {
+        self.textCase = textCase
+    }
+
+    /// Words going in at `place`: in the field's case, and where they would take the field past its bound only the
+    /// first characters that fit (`InputWords.fitting`) - from a key, a paste and a program's write alike.
     private func inserting(_ typed: UnsafePointer<CChar>?, _ bytes: Int32, at place: UnsafeMutablePointer<Int32>?) {
-        guard let typed, maximumLength != nil else { return }
+        guard let typed else { return }
         let inserted = bytes < 0
             ? String(cString: typed) : String(decoding: UnsafeRawBufferPointer(start: typed, count: Int(bytes)), as: UTF8.self)
-        guard let fitting = InputWords.fitting(inserted, beside: text, toBound: maximumLength) else { return }
+        guard let fitting = InputWords.fitting(inserted, beside: text, in: textCase, toBound: maximumLength) else {
+            return
+        }
         g_signal_stop_emission_by_name(UnsafeMutableRawPointer(words), "insert-text")
         guard !fitting.isEmpty else { return }
         gtk_editable_insert_text(OpaquePointer(words), fitting, -1, place)

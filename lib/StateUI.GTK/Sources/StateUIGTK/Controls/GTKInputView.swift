@@ -24,6 +24,9 @@ protocol GTKInputView: GTKView {
     /// The most characters the user can type; nil for no bound.
     func setMaximumLength(_ length: Int?)
 
+    /// The case the view holds its words in, the program's and those typed alike; nil as written.
+    func setTextCase(_ textCase: TextCase?)
+
     /// Whether the user can change the words, and what the input method is told of them.
     func setBehaviour(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose)
 
@@ -38,8 +41,7 @@ protocol GTKInputView: GTKView {
 }
 
 extension GTKInputView {
-    /// What GTK tells the input method of words typed with `traits`: the keys by the purpose, and the hints for
-    /// checking, completing, emoji and capitals. GTK holds no hint for correction.
+    /// What GTK tells the input method of words typed with `traits`.
     /// Design: docs/design/platforms/gtk/controls.md#a-field-and-its-words
     static func input(_ traits: InputTraits) -> (GtkInputHints, GtkInputPurpose) {
         var hints = (traits.checksSpelling ? GTK_INPUT_HINT_SPELLCHECK : GTK_INPUT_HINT_NO_SPELLCHECK).rawValue

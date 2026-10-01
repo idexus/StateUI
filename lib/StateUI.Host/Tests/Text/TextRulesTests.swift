@@ -64,13 +64,17 @@ final class TextRulesTests: XCTestCase {
         XCTAssertNil(InputWords.held("Mixed", in: TextCase.none, toBound: nil))
     }
 
-    /// Words going into a field before they stand there - where a toolkit asks before it inserts - are cut to the
-    /// characters that fit beside the words held: an emoji whole or not at all, none where the bound is reached.
-    func testWordsGoingInAreCutToWhatFitsBesideTheHeld() {
+    /// Words going into a field before they stand there - where a toolkit asks before it inserts - go in the field's
+    /// case, cut to the characters that fit beside the words held: an emoji whole or not at all, none where the bound
+    /// is reached.
+    func testWordsGoingInAreCasedAndCutToWhatFitsBesideTheHeld() {
         XCTAssertEqual(InputWords.fitting("👍🏽b", beside: "a", toBound: 2), "👍🏽")
         XCTAssertEqual(InputWords.fitting("m", beside: "Ada", toBound: 3), "")
         XCTAssertNil(InputWords.fitting("d", beside: "A", toBound: 3))
         XCTAssertNil(InputWords.fitting("Adam", beside: "", toBound: nil))
+        XCTAssertEqual(InputWords.fitting("ab", beside: "X", in: .uppercase, toBound: 2), "A")
+        XCTAssertEqual(InputWords.fitting("Ada", beside: "", in: .lowercase, toBound: nil), "ada")
+        XCTAssertNil(InputWords.fitting("ADA", beside: "", in: .uppercase, toBound: 5))
     }
 
     /// A selection in characters reaches a toolkit in the UTF-16 units those characters take, its ends kept within

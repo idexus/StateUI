@@ -193,6 +193,7 @@ SearchField
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()
@@ -226,6 +227,7 @@ TextEditor
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   textChanged()
 TextField
@@ -244,6 +246,7 @@ TextField
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()

@@ -426,8 +426,10 @@ the scenes as they stood before it.
 A field holds its words in its case: the program's are written so, and what
 a user types is turned into it, then cut past the field's bound to its first
 characters that fit, as the contract counts characters (`InputWords.held`,
-`InputWords.cut`), and written back as the program's. A caret and a selection the tree puts, in characters,
-reach a toolkit counting UTF-16 units as the units those characters take
+`InputWords.cut`), and written back as the program's; a toolkit that asks
+before it inserts takes what goes in, in the case and within the bound, in
+the same terms (`InputWords.fitting`). A caret and a selection the tree
+puts, in characters, reach a toolkit counting UTF-16 units as the units those characters take
 (`InputWords.utf16Selection`), so a character outside the basic plane - an
 emoji - is never split. A picker is given its choices where they changed, and
 its choice only where the tree changed it or the choices (`PickerChoices`):

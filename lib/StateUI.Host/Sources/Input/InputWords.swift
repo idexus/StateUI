@@ -21,11 +21,15 @@
         return held == typed ? nil : held
     }
 
-    /// What of `inserted` goes in beside `held` within `bound` characters, where a toolkit asks before it inserts:
-    /// its first characters that fit, where it runs past; nil where it fits whole, or there is no bound.
-    public static func fitting(_ inserted: String, beside held: String, toBound bound: Int?) -> String? {
-        guard let bound, held.count + inserted.count > bound else { return nil }
-        return String(inserted.prefix(max(0, bound - held.count)))
+    /// What of `inserted` goes in beside `held`, where a toolkit asks before it inserts: in the field's case, then its
+    /// first characters that fit within `bound`; nil where it goes in as typed.
+    public static func fitting(
+        _ inserted: String, beside held: String, in textCase: TextCase? = nil, toBound bound: Int?
+    ) -> String? {
+        let cased = (textCase ?? .none).applied(to: inserted)
+        let fits = bound.map { held.count + cased.count > $0 ? String(cased.prefix(max(0, $0 - held.count))) : cased }
+        let going = fits ?? cased
+        return going == inserted ? nil : going
     }
 
     /// A selection of `length` characters from the `start`th, in the UTF-16 units a toolkit counts in, each end

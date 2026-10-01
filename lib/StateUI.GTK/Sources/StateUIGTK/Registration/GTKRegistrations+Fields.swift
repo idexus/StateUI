@@ -48,7 +48,8 @@ extension GTKRegistrations {
     /// What every view the user types in takes: its words, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers: [any ContractMember] = [
-        TextElementContract.text, InputViewContract.placeholder, InputViewContract.maximumLength,
+        TextElementContract.text, TextElementContract.textCase, InputViewContract.placeholder,
+        InputViewContract.maximumLength,
         VisualElementContract.isEnabled, InputViewContract.isReadOnly, InputViewContract.isSpellCheckEnabled,
         InputViewContract.isTextPredictionEnabled, InputViewContract.inputPurpose, FontElementContract.fontSize,
         FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
@@ -60,7 +61,11 @@ extension GTKRegistrations {
         if values.changed(InputViewContract.maximumLength) {
             view.setMaximumLength(values[InputViewContract.maximumLength].flatMap { $0 > 0 ? $0 : nil })
         }
-        if values.changed(TextElementContract.text) { view.setText(values[TextElementContract.text] ?? "") }
+        if values.changed(TextElementContract.textCase) { view.setTextCase(values[TextElementContract.textCase]) }
+        if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
+            let textCase = values[TextElementContract.textCase] ?? .none
+            view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
+        }
         if values.changed(InputViewContract.placeholder) { view.setPlaceholder(values[InputViewContract.placeholder]) }
         if values.changed(VisualElementContract.isEnabled) {
             view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
