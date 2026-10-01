@@ -56,7 +56,7 @@ dragging the slider rebuilds nothing:
 struct CounterPage: ContentView {
     @State private var count = 0
 
-    var content: any View {
+    var content: some View {
         VStack {
             Label("Tapped \(count) times")
             Button("Tap me").onClicked { count += 1 }
