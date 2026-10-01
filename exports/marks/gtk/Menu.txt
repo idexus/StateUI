@@ -1,4 +1,4 @@
 # revision 1.1
-Menu: not realized
-Menu.isEnabled: not realized
-Menu.text: not realized
+Menu: ✅
+Menu.isEnabled: ✅
+Menu.text: ✅

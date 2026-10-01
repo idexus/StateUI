@@ -1,9 +1,9 @@
 # revision 1.1
-MenuItem.clicked: not realized
-MenuItem.icon: not realized
-MenuItem.isDestructive: not realized
-MenuItem.isEnabled: not realized
-MenuItem.text: not realized
+MenuItem.clicked: ✅
+MenuItem.icon: – GNOME's menus show words alone, no picture beside them.
+MenuItem.isDestructive: – GNOME's menus mark no entry as destroying something.
+MenuItem.isEnabled: ✅
+MenuItem.text: ✅
 ToolbarItem.clicked: ✅
 ToolbarItem.icon: ✅
 ToolbarItem.isDestructive: not realized

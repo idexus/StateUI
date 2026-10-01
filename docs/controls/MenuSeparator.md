@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ |  | `UIMenu` / `UIAction` |  |
 | Android Views | ✅ |  | `PopupMenu` / `MenuItem`; no menu bar |  |
 | WinUI 3 | ✅ |  | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | not realized |
+| GTK 4 | ✅ |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuSeparatorContract.swift`.

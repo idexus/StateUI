@@ -43,6 +43,14 @@ enum GTKPanel {
                     GTKPanel.view(number)?.allocate(width: Double(width), height: Double(height))
                     GTKRenderer.shared?.runtime.frames.laidOut()
                 }
+                // A popover on a panel - a context menu - stands where the panel now stands.
+                var child = gtk_widget_get_first_child(widget)
+                while let each = child {
+                    if g_type_check_instance_is_a(each.of(GTypeInstance.self), gtk_popover_get_type()) != 0 {
+                        gtk_popover_present(each.of(GtkPopover.self))
+                    }
+                    child = gtk_widget_get_next_sibling(each)
+                }
             }
             widgetClass.pointee.snapshot = { widget, snapshot in
                 let number = GTKPanel.number(of: widget)

@@ -57,6 +57,7 @@ final class GTKElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
+        offerContextMenu()
         if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
     }
 

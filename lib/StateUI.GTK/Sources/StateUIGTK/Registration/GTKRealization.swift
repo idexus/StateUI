@@ -10,8 +10,7 @@
 enum GTKRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Canvas", "ContextMenu", "DatePicker", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "Pin",
-        "PositionIndicator", "TimePicker", "WebView",
+        "Canvas", "DatePicker", "Map", "Pin", "PositionIndicator", "TimePicker", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -31,6 +30,9 @@ enum GTKRealization {
                     reason: "A GNOME header bar is its page's own and shows no application's mark."),
         .notPlanned("BarElement", "barTitle",
                     reason: "A GNOME header bar is its page's own and names that page; an application names itself in none."),
+        .complete("MenuBar", "order"),
+        .complete("Menu", "isEnabled"),
+        .complete("Menu", "text"),
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "icon"),
         .complete("MenuItemElement", "isEnabled"),
@@ -42,6 +44,8 @@ enum GTKRealization {
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Label", "background", missing: "A brush fills the box with its first colour alone."),
+        .notPlanned("MenuItem", "icon", reason: "GNOME's menus show words alone, no picture beside them."),
+        .notPlanned("MenuItem", "isDestructive", reason: "GNOME's menus mark no entry as destroying something."),
         .complete("ModalStack", "popped"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),

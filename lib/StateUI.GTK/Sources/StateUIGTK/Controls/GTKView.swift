@@ -45,6 +45,11 @@ class GTKView {
     /// The style sheet's class giving the view its padding.
     private var paddingClass: String?
 
+    /// The menu the view offers where the user asks for one; nil for none.
+    var contextMenu: GTKContextMenu? {
+        didSet { if contextMenu !== oldValue { oldValue?.remove() } }
+    }
+
     private static let live = LiveViews<GTKView>()
 
     /// Takes the next number and holds the widget `make` makes, handed that number.
@@ -60,6 +65,7 @@ class GTKView {
     /// owner of its child, and takes it out itself.
     isolated deinit {
         Self.live.release(number)
+        contextMenu?.remove()
         if let parent = gtk_widget_get_parent(widget), GTKPanel.holds(parent) { gtk_widget_unparent(widget) }
         g_object_unref(widget)
     }
@@ -226,5 +232,6 @@ class GTKView {
     /// calls this first.
     func detach() {
         hear([]) { _ in }
+        contextMenu = nil
     }
 }

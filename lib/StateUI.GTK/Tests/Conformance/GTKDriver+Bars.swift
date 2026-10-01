@@ -122,7 +122,7 @@ extension GTKDriver {
     }
 
     /// The frame whose header bar stands over `page`: the innermost holding its view.
-    private func frame(of page: MountedElement) throws -> GTKPageFrame {
+    func frame(of page: MountedElement) throws -> GTKPageFrame {
         guard let view = (page.native as? GTKElement)?.view else { throw DriverCannot("read the bar of \(page.type.name)") }
         let holding = frames().filter { $0.page === view || gtk_widget_is_ancestor(view.widget, $0.widget) != 0 }
         guard let innermost = holding.first(where: { frame in
@@ -132,7 +132,7 @@ extension GTKDriver {
     }
 
     /// Every page's frame the window shows: a page by itself, a stack's pages, a split view's panes.
-    private func frames() -> [GTKPageFrame] {
+    func frames() -> [GTKPageFrame] {
         guard let renderer else { return [] }
         return (renderer.window?.pageFrame.map { [$0] } ?? []) + renderer.views(GTKNavigationView.self).flatMap(\.frames)
             + renderer.views(GTKSplitView.self).flatMap { [$0.sidebarFrame, $0.detailFrame].compactMap { $0 } }

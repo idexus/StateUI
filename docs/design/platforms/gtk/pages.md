@@ -110,6 +110,25 @@ header bar, and the switcher - with a split view's sidebar toggle - stands
 beneath the header bar of the stack's page the user sees, moving with it as
 pages come and go.
 
+## Menus
+
+A menu is GTK's model of one: the host layer's walk of its entries
+([menus](../../host/pages.md#the-menus-of-a-path)) as a `GMenu` - the
+entries between two separators a section, a submenu a link - each item an
+action of a group the menu hands the widget it stands on, which GTK runs only
+while it is enabled; a submenu out of reach is one whose tracking action is
+not. GNOME's menus show words alone: no picture beside them, no entry marked
+as destroying something.
+
+A view's context menu is a `GtkPopoverMenu` on the view's widget, opened where
+the user clicks with the secondary button or holds a finger, at that point; a
+panel presents it as it lays out. A menu of no entries is none.
+
+A desktop of header bars has no menu bar: the menus a page's path declares
+stand in the main menu at the very end of its header bar - GNOME's
+`open-menu-symbolic` button - each a submenu holding its entries, joined by
+the host layer's rule. A page that declares none shows no main menu.
+
 ## Sheets
 
 A page a window's modal stack presents is a sheet: libadwaita's `AdwDialog`

@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 1 ✅ · 1 ☑️ | `UIMenu` / `UIAction` |  |
 | Android Views | ✅ | 2 ✅ | `PopupMenu` / `MenuItem`; no menu bar |  |
 | WinUI 3 | ✅ | 2 ✅ | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | not realized |
+| GTK 4 | ✅ | 2 ✅ | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuContract.swift`.
@@ -52,5 +52,5 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isEnabled` | property | `Bool` | native | ✅ | ☑️ | ✅ | ✅ |  |  | UIKit: UIKit holds no menu out of reach itself: each of its entries is.; GTK 4: not realized |
-| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `isEnabled` | property | `Bool` | native | ✅ | ☑️ | ✅ | ✅ | ✅ |  | UIKit: UIKit holds no menu out of reach itself: each of its entries is. |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

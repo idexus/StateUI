@@ -84,6 +84,7 @@ final class GTKDriver: HostDriver {
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
         if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
+        if act == .activate, element.type == .menuItem { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
         if act == .goBack {
             guard renderer?.goBack() == true else { throw DriverCannot(act, on: element) }
@@ -116,6 +117,7 @@ final class GTKDriver: HostDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .toolbarItem { return try actionHolds(property, element) }
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .menuItem { return try menuItemHolds(property, element) }
         if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {
             return try barHolds(property, element)
         }

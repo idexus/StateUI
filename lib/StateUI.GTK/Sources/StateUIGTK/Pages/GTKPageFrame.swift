@@ -35,6 +35,9 @@ final class GTKPageFrame {
     private(set) var buttons: [GTKButtonView] = []
     private var sidebarButton: GTKButtonView?
     private var overflowButton: GTKWidget?
+
+    /// The bar's main menu - GNOME's in place of a menu bar - and the menus it holds; nil while the page declares none.
+    private(set) var mainMenu: (button: GTKWidget, menu: GTKMenu)?
     fileprivate var overflowPopover: GTKWidget?
 
     /// The bar beneath the header bar holding a tabbed view's switcher, where the page has one.
@@ -97,6 +100,7 @@ final class GTKPageFrame {
             paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
         }
         showActions(leading: chrome.leading, trailing: chrome.trailing, overflow: chrome.overflow)
+        showMainMenu(chrome.mainMenu)
         showSidebarButton(chrome.sidebar)
         self.chrome = chrome
     }
@@ -221,6 +225,23 @@ final class GTKPageFrame {
 }
 
 extension GTKPageFrame {
+    /// The menus at the bar's very end, as GNOME's applications hold theirs: a main menu holding each as a submenu.
+    /// Design: docs/design/platforms/gtk/pages.md#menus
+    private func showMainMenu(_ menu: GTKMenu?) {
+        if let mainMenu, let menu, menu.stands(like: mainMenu.menu) { return }
+        if let mainMenu { gtk_box_remove(endBox.of(GtkBox.self), mainMenu.button) }
+        mainMenu = nil
+        guard let menu, !menu.isEmpty else { return }
+
+        let button = gtk_menu_button_new()!
+        gtk_menu_button_set_icon_name(button.opaque, "open-menu-symbolic")
+        gtk_widget_set_tooltip_text(button, "Main Menu")
+        gtk_menu_button_set_menu_model(button.opaque, g_menu_model(menu.model))
+        gtk_widget_insert_action_group(button, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+        gtk_box_append(endBox.of(GtkBox.self), button)
+        mainMenu = (button, menu)
+    }
+
     /// `action`, closing the overflow's menu first.
     private func closingOverflow(_ action: GTKToolbarAction) -> () -> Void {
         { [weak self] in
