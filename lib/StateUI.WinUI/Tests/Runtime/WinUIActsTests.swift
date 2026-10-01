@@ -71,6 +71,19 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
+    /// A question asked as its window's page is made, before WinUI has loaded the window, stands once it is loaded.
+    func testAQuestionAskedAsItsWindowOpensStandsOverIt() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { Label("Draft").onCreated { try await Dialogs.alert("Saved", message: "The draft is safe") } }
+            let window = try XCTUnwrap(host.window)
+            host.settle(until: { Self.asks(window) })
+            XCTAssertTrue(Self.asks(window), "over the window just opened")
+
+            _ = stateui_winui_answer(try XCTUnwrap(window.content).handle, 1, nil)
+            host.settle(until: { !Self.asks(window) })
+        }
+    }
+
     /// Whether a question stands over `window`'s content.
     @MainActor
     private static func asks(_ window: WinUIWindow) -> Bool {

@@ -187,6 +187,11 @@ answer - the cancelling one too; a dialog dismissed any other way, Escape
 among them, answers that nothing was chosen. A prompt's field takes the
 placeholder, the most characters and the keyboard its purpose asks for.
 
+A dialog needs its window's `XamlRoot`, which a window opened a moment ago -
+a page asking as it is made - does not have until WinUI has loaded it. The
+question is made at once and shown on the content's `Loaded`; answering it
+"not chosen" there would lose it without the user ever seeing it.
+
 ## Kept values
 
 Windows keeps no store for an application that is no package, so the host
