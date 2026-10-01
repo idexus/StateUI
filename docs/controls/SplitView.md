@@ -53,7 +53,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ | 🔌 | ✅ | · |  | Android Views: only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it; GTK 4: cannot read isSidebarVisible of SplitView - GTK's driver has no path for it yet |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ✅ | 🔌 | ✅ |  |  | Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call; GTK 4: not realized |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ✅ | 🔌 | ✅ | · |  | Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call; GTK 4: cannot read isSidebarVisible of SplitView - GTK's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

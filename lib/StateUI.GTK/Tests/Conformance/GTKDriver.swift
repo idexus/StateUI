@@ -75,12 +75,16 @@ final class GTKDriver: HostDriver {
         "read tint of Switch": "the tint the host gave the track's node: GTK's style sheet tells no one",
         "read tint of CheckBox": "the tint the host gave the box's node: GTK's style sheet tells no one",
         "read tint of Slider": "the tint the host gave the track's node: GTK's style sheet tells no one",
+        "pinch": "the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down",
         "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
         "read minimumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
         "read maximumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
     ]
 
     private(set) var renderer: GTKRenderer?
+
+    /// The pointer's press the driver holds down.
+    let pressed = GTKPress()
 
     var register: HostRegister { GTKRealization.register }
 
@@ -112,6 +116,7 @@ final class GTKDriver: HostDriver {
         }
         let view = (element.native as? GTKElement)?.view
         if let picker = view as? GTKPopoverPickerView, perform(act, on: picker) { return }
+        if let view, !(view is GTKCanvasView), input(act, on: view) { return }
         switch (act, view) {
         // GTK lets a click reach no button that cannot be chosen.
         case (.activate, let button as GTKButtonView): if gtk_widget_is_sensitive(button.widget) != 0 { button.click() }
@@ -130,8 +135,6 @@ final class GTKDriver: HostDriver {
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
-        case (.pressDown, let button as GTKButtonView): GTKTestHost.emit(button.press, "drag-begin", [0, 0])
-        case (.lift, let button as GTKButtonView): GTKTestHost.emit(button.press, "drag-end", [0, 0])
         case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
              (.lift, let canvas as GTKCanvasView):
             try press(act, on: canvas, element)
