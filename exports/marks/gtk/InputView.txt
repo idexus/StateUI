@@ -1,5 +1,5 @@
 # revision 1.1
-SearchField.cursorPosition: ❌ 2 expected, 7 came - the value the tree gave
+SearchField.cursorPosition: ✅
 SearchField.inputPurpose: ✅
 SearchField.isEnabled: ✅
 SearchField.isReadOnly: ✅
@@ -8,7 +8,7 @@ SearchField.isTextPredictionEnabled: ✅
 SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
 SearchField.placeholderColor: 🔌 read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
-SearchField.selectionLength: ❌ 3 expected, 7 came - the value the tree gave
+SearchField.selectionLength: ✅
 SearchField.text: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: ✅
@@ -23,7 +23,7 @@ TextEditor.placeholderColor: 🔌 read placeholderColor of TextEditor: the class
 TextEditor.selectionLength: ✅
 TextEditor.text: ✅
 TextEditor.textChanged: ✅
-TextField.cursorPosition: ❌ 2 expected, 7 came - the value the tree gave
+TextField.cursorPosition: ✅
 TextField.inputPurpose: ✅
 TextField.isEnabled: ✅
 TextField.isReadOnly: ✅
@@ -32,6 +32,6 @@ TextField.isTextPredictionEnabled: ✅
 TextField.maximumLength: ✅
 TextField.placeholder: ✅
 TextField.placeholderColor: 🔌 read placeholderColor of TextField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
-TextField.selectionLength: ❌ 3 expected, 7 came - the value the tree gave
+TextField.selectionLength: ✅
 TextField.text: ✅
 TextField.textChanged: ✅

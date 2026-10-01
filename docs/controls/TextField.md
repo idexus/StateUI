@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 46 ✅ | `UITextField` |  |
 | Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
 | WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
-| GTK 4 | ✅ | 55 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
+| GTK 4 | ✅ | 57 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
 | Web |  |  | `<input>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift`.
@@ -146,7 +146,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native | · | ✅ | ✅ | ✅ | ❌ |  | cannot read cursorPosition of TextField - AppKit's driver has no path for it yet; GTK 4: 2 expected, 7 came - the value the tree gave |
+| `cursorPosition` | property | `Int` | native | · | ✅ | ✅ | ✅ | ✅ |  | cannot read cursorPosition of TextField - AppKit's driver has no path for it yet |
 | `inputPurpose` | property | `InputPurpose` | adaptive | 🔌 | ✅ | ✅ | ✅ | ✅ |  | only through the host's own: read inputPurpose of TextField: the traits the host keeps; a Mac shows no keys a purpose picks |
 | `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  | Android Views: not realized |
 | `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ | – | ✅ | ✅ |  | cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet; Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off. |
@@ -154,7 +154,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of TextField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
 | `placeholder` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `placeholderColor` | property | `Color` | native | · | · | ✅ | ✅ | 🔌 |  | cannot read placeholderColor of TextField - AppKit's driver has no path for it yet; UIKit: cannot read placeholderColor of TextField - UIKit's driver has no path for it yet; GTK 4: only through the host's own: read placeholderColor of TextField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor |
-| `selectionLength` | property | `Int` | native | · | ✅ | ✅ | ✅ | ❌ |  | cannot read selectionLength of TextField - AppKit's driver has no path for it yet; GTK 4: 3 expected, 7 came - the value the tree gave |
+| `selectionLength` | property | `Int` | native | · | ✅ | ✅ | ✅ | ✅ |  | cannot read selectionLength of TextField - AppKit's driver has no path for it yet |
 | `onTextChanged` (`textChanged`) | event | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)

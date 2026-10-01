@@ -20,6 +20,10 @@ class GTKTextFieldView: GTKView, GTKInputView {
     private var maximumLength: Int?
     private var textCase: TextCase?
 
+    /// The caret and the selection the program put, which stand over the field's first focus; nil once that has
+    /// passed or the user has changed the words.
+    private var programCaret: (start: Int, length: Int)?
+
     convenience init() {
         self.init { gtk_entry_new() }
     }
@@ -29,9 +33,16 @@ class GTKTextFieldView: GTKView, GTKInputView {
         connect("changed") { _, data in
             MainActor.assumeIsolated {
                 guard let view = GTKView.find(viewNumber(data)) as? GTKTextFieldView else { return }
+                if !ProgramWrite.isWriting { view.programCaret = nil }
                 view.onTextChanged?(view.text)
             }
         }
+        let focus = gtk_event_controller_focus_new()!
+        connectSignal(UnsafeMutableRawPointer(focus), "enter", number: number) {
+            (_: UnsafeMutableRawPointer?, data: gpointer?) in
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKTextFieldView)?.focused() }
+        }
+        gtk_widget_add_controller(widget, focus)
         connect("activate") { _, data in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKTextFieldView)?.onSubmitted?() }
         }
@@ -107,8 +118,22 @@ class GTKTextFieldView: GTKView, GTKInputView {
     }
 
     func select(start: Int, length: Int) {
-        let start = Int32(clamping: max(0, start))
-        gtk_editable_select_region(editable, start, start + Int32(clamping: max(0, length)))
+        if ProgramWrite.isWriting { programCaret = (start, length) }
+        let first = Int32(clamping: max(0, start))
+        gtk_editable_select_region(editable, first, first + Int32(clamping: max(0, length)))
+    }
+
+    /// The field took the focus: GNOME has selected its words whole, and the program's caret, where it put one,
+    /// stands again - once.
+    /// Design: docs/design/platforms/gtk/controls.md#a-field-and-its-words
+    private func focused() {
+        guard programCaret != nil else { return }
+        GTKDoorbell.afterLayout { [weak self] in
+            guard let self, let caret = self.programCaret else { return }
+            self.programCaret = nil
+            ProgramWrite.perform { self.select(start: caret.start, length: caret.length) }
+            self.programCaret = nil
+        }
     }
 
     override func detach() {

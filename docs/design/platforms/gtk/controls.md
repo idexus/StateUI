@@ -144,7 +144,11 @@ GTK's text widgets mark no spelling themselves; the input method is what
 checks. A password field hides each character behind a dot. The words stand
 across the field as their alignment says, and the caret and the selection are
 put where the tree put them, in the characters GTK counts, only where the
-tree changed them: the caret at the selection's end, as GTK selects.
+tree changed them: the caret at the selection's end, as GTK selects. GNOME
+selects a field's words whole as it takes the focus; a caret or a selection
+the program put stands over the field's first focus, written again once GTK
+has selected - and once that focus has passed or the user has changed the
+words, GNOME's own way stands.
 
 A field's font and colour are a class of the display-wide sheet
 ([a widget's own box](drawing.md#a-widgets-own-box)) rather than Pango

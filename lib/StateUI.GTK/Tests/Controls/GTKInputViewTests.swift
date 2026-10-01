@@ -26,6 +26,34 @@ private struct RewrittenPage: ContentView {
 final class GTKInputViewTests: XCTestCase {
     /// Typing stops at the most characters allowed - an emoji one character, whole or not at all - in a field and an
     /// editor alike.
+    /// GNOME selects a field's words whole as it takes the focus: a caret or a selection the program put there stands
+    /// over the field's first focus - and once the user has acted in the field, GNOME's own way stands.
+    func testTheProgramsCaretOutlastsTheFieldsFirstFocus() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Button("First")
+                    TextField(State(wrappedValue: "abcdefg").projectedValue).cursorPosition(2).selectionLength(3)
+                }
+            }
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            let editable = field.widget.opaque
+
+            gtk_widget_grab_focus(field.widget)
+            host.settle { false }
+
+            var (start, end): (Int32, Int32) = (0, 0)
+            _ = gtk_editable_get_selection_bounds(editable, &start, &end)
+            XCTAssertEqual([start, end], [2, 5], "the program's selection, not GNOME's whole")
+            gtk_editable_select_region(editable, 0, -1)
+            gtk_widget_grab_focus(host.views(GTKButtonView.self)[0].widget)
+            gtk_widget_grab_focus(field.widget)
+            host.settle { false }
+            _ = gtk_editable_get_selection_bounds(editable, &start, &end)
+            XCTAssertEqual([start, end], [0, 7], "once the user has been there, GNOME's own")
+        }
+    }
+
     func testTypingStopsAtTheMostCharactersAllowed() throws {
         try onUIThread {
             let host = GTKRenderer.running {

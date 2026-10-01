@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 45 ✅ | `UISearchBar` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | `SearchView` |  |
 | WinUI 3 | ✅ | 64 ✅ · 1 ☑️ | `AutoSuggestBox` |  |
-| GTK 4 | ✅ | 54 ✅ | `GtkSearchEntry` |  |
+| GTK 4 | ✅ | 56 ✅ | `GtkSearchEntry` |  |
 | Web |  |  | `<input type=search>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SearchFieldContract.swift`.
@@ -144,7 +144,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native | · | ✅ | ✅ |  | ❌ |  | cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet; WinUI 3: not realized; GTK 4: 2 expected, 7 came - the value the tree gave |
+| `cursorPosition` | property | `Int` | native | · | ✅ | ✅ |  | ✅ |  | cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet; WinUI 3: not realized |
 | `inputPurpose` | property | `InputPurpose` | adaptive | 🔌 | ✅ | ✅ |  | ✅ |  | only through the host's own: read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks; WinUI 3: not realized |
 | `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  | Android Views: not realized |
 | `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ | – |  | ✅ |  | cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet; Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off.; WinUI 3: not realized |
@@ -152,7 +152,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of SearchField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
 | `placeholder` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `placeholderColor` | property | `Color` | native | · | · | ✅ | ✅ | 🔌 |  | cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet; UIKit: cannot read placeholderColor of SearchField - UIKit's driver has no path for it yet; GTK 4: only through the host's own: read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor |
-| `selectionLength` | property | `Int` | native | · | ✅ | ✅ |  | ❌ |  | cannot read selectionLength of SearchField - AppKit's driver has no path for it yet; WinUI 3: not realized; GTK 4: 3 expected, 7 came - the value the tree gave |
+| `selectionLength` | property | `Int` | native | · | ✅ | ✅ |  | ✅ |  | cannot read selectionLength of SearchField - AppKit's driver has no path for it yet; WinUI 3: not realized |
 | `onTextChanged` (`textChanged`) | event | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
