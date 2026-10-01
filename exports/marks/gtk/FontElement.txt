@@ -3,10 +3,10 @@ Button.fontAttributes: cannot read fontAttributes of Button - GTK's driver has n
 Button.fontAutoScalingEnabled: not realized
 Button.fontFamily: cannot read fontFamily of Button - GTK's driver has no path for it yet
 Button.fontSize: cannot read fontSize of Button - GTK's driver has no path for it yet
-DatePicker.fontAttributes: not realized
+DatePicker.fontAttributes: cannot read fontAttributes of DatePicker - GTK's driver has no path for it yet
 DatePicker.fontAutoScalingEnabled: not realized
-DatePicker.fontFamily: not realized
-DatePicker.fontSize: not realized
+DatePicker.fontFamily: cannot read fontFamily of DatePicker - GTK's driver has no path for it yet
+DatePicker.fontSize: cannot read fontSize of DatePicker - GTK's driver has no path for it yet
 Label.fontAttributes: cannot read fontAttributes of Label - GTK's driver has no path for it yet
 Label.fontAutoScalingEnabled: not realized
 Label.fontFamily: cannot read fontFamily of Label - GTK's driver has no path for it yet
@@ -35,7 +35,7 @@ TextField.fontAttributes: cannot read fontAttributes of TextField - GTK's driver
 TextField.fontAutoScalingEnabled: not realized
 TextField.fontFamily: cannot read fontFamily of TextField - GTK's driver has no path for it yet
 TextField.fontSize: cannot read fontSize of TextField - GTK's driver has no path for it yet
-TimePicker.fontAttributes: not realized
+TimePicker.fontAttributes: cannot read fontAttributes of TimePicker - GTK's driver has no path for it yet
 TimePicker.fontAutoScalingEnabled: not realized
-TimePicker.fontFamily: not realized
-TimePicker.fontSize: not realized
+TimePicker.fontFamily: cannot read fontFamily of TimePicker - GTK's driver has no path for it yet
+TimePicker.fontSize: cannot read fontSize of TimePicker - GTK's driver has no path for it yet

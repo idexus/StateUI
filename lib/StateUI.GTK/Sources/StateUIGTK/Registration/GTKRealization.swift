@@ -10,7 +10,7 @@
 enum GTKRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "DatePicker", "Map", "Pin", "PositionIndicator", "TimePicker", "WebView",
+        "Map", "Pin", "PositionIndicator", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -41,6 +41,11 @@ enum GTKRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .partial("DatePicker", "format", missing: "GTK writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
+        .partial("DatePicker", "maximumDate",
+                 missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
+        .partial("DatePicker", "minimumDate",
+                 missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Label", "background", missing: "A brush fills the box with its first colour alone."),
@@ -63,6 +68,8 @@ enum GTKRealization {
         .complete("Span", "textDecorations"),
         .complete("SplitView", "isSidebarVisible"),
         .complete("TabbedView", "currentPage"),
+        .partial("TimePicker", "format",
+                 missing: "GTK writes hours and minutes in the user's own clock, whatever the format asks: no seconds, no pattern."),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "showsText"),
         .complete("ToolbarItems", "order"),

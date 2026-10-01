@@ -184,6 +184,29 @@ and the user's choice is reported onto the state it is carried in. GTK gives a
 drop-down no placeholder and no way to open or close its list from outside, so
 the title and the list's opening and closing are not realized.
 
+## A day and a time
+
+A DatePicker and a TimePicker are each a `GtkMenuButton`: its words - a
+label of its own beside the button's arrow - the day or the time, and its
+popover the face the user picks from. Only the user's opening and closing of
+the face are heard, by the host layer's rule
+([a day and a time](../../host/runtime.md#a-day-and-a-time)).
+
+A DatePicker's face is a `GtkCalendar`, which stays open as the user picks,
+as GNOME's calendars do. Its day is written on the button in the user's own
+way - `%x` - and `"D"` writes the long form, the weekday and the month by
+name; another pattern writes the short form. GTK's calendar offers every
+day: the range lives in the host, and a day the user picks past it is moved
+to that end, as a day the program writes is.
+
+GTK has no time picker. A TimePicker's face is the clock GNOME's own
+applications set a time with: the hour and the minute, each an upright
+`GtkSpinButton` going round past its ends and written in two digits, and on
+a twelve-hour clock a button turning the half of the day, named as the
+locale names it. Each wheel the user moves is one change, heard at once. The
+time is written on the button in the user's clock, hours and minutes; the
+format is not read.
+
 ## What shows work
 
 A progress bar is a `GtkProgressBar` over the range 0 to 1, a fraction past

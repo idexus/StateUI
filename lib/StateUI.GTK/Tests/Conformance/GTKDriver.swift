@@ -28,6 +28,7 @@ final class GTKDriver: HostDriver {
                 "GTK bounds code points, not characters, so the host cuts what is typed; typing proves it",
             "read maximumLength of SearchField":
                 "GTK bounds code points, not characters, so the host cuts what is typed; typing proves it",
+            "read format of TimePicker": "GTK's clock holds no format: it writes hours and minutes in the user's own clock",
         ]
         let shapes = ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
@@ -58,6 +59,11 @@ final class GTKDriver: HostDriver {
     /// with why, rather than failing: GTK's reads and acts are written on Linux (work-plan.md, ON LINUX).
     func reason(cannot ability: String) -> String? {
         cannot[ability] ?? "GTK's driver has no path for it yet"
+    }
+
+    /// What the driver reaches past GTK, through the host's own entry or record - 🔌.
+    func byHost(_ ability: String) -> String? {
+        Self.pickersByHost[ability] ?? Self.pickersByHost[Ability(ability).act]
     }
 
     private(set) var renderer: GTKRenderer?
@@ -91,6 +97,7 @@ final class GTKDriver: HostDriver {
             return
         }
         let view = (element.native as? GTKElement)?.view
+        if let picker = view as? GTKPopoverPickerView, perform(act, on: picker) { return }
         switch (act, view) {
         // GTK lets a click reach no button that cannot be chosen.
         case (.activate, let button as GTKButtonView): if gtk_widget_is_sensitive(button.widget) != 0 { button.click() }
@@ -125,6 +132,7 @@ final class GTKDriver: HostDriver {
             return try barHolds(property, element)
         }
         let view = (element.native as? GTKElement)?.view
+        if let picker = view as? GTKPopoverPickerView, let value = held(property, on: picker) { return value }
         switch (property, view) {
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue

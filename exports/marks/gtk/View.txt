@@ -160,7 +160,7 @@ ColorBox.tapCount: cannot tap on ColorBox - GTK's driver has no path for it yet
 ColorBox.tapped: cannot tap on ColorBox - GTK's driver has no path for it yet
 ColorBox.verticalAlignment: ✅
 DatePicker.allowDrop: not realized
-DatePicker.area: not realized
+DatePicker.area: ✅
 DatePicker.canDrag: not realized
 DatePicker.dragLeave: not realized
 DatePicker.dragOver: not realized
@@ -168,29 +168,29 @@ DatePicker.dragStarting: not realized
 DatePicker.dragText: not realized
 DatePicker.drop: not realized
 DatePicker.dropCompleted: not realized
-DatePicker.frameChanged: not realized
-DatePicker.gridColumn: not realized
-DatePicker.gridColumnSpan: not realized
-DatePicker.gridRow: not realized
-DatePicker.gridRowSpan: not realized
-DatePicker.horizontalAlignment: not realized
-DatePicker.margin: not realized
-DatePicker.panTouchCount: not realized
-DatePicker.panUpdated: not realized
-DatePicker.panXChannel: not realized
-DatePicker.panYChannel: not realized
-DatePicker.pinchUpdated: not realized
-DatePicker.pointerEntered: not realized
-DatePicker.pointerExited: not realized
-DatePicker.pointerMoved: not realized
-DatePicker.pointerPressed: not realized
-DatePicker.pointerReleased: not realized
-DatePicker.swipeDirection: not realized
-DatePicker.swipeThreshold: not realized
-DatePicker.swiped: not realized
-DatePicker.tapCount: not realized
-DatePicker.tapped: not realized
-DatePicker.verticalAlignment: not realized
+DatePicker.frameChanged: ✅
+DatePicker.gridColumn: ✅
+DatePicker.gridColumnSpan: ✅
+DatePicker.gridRow: ✅
+DatePicker.gridRowSpan: ✅
+DatePicker.horizontalAlignment: ✅
+DatePicker.margin: ✅
+DatePicker.panTouchCount: cannot pan on DatePicker - GTK's driver has no path for it yet
+DatePicker.panUpdated: cannot pan on DatePicker - GTK's driver has no path for it yet
+DatePicker.panXChannel: cannot pan on DatePicker - GTK's driver has no path for it yet
+DatePicker.panYChannel: cannot pan on DatePicker - GTK's driver has no path for it yet
+DatePicker.pinchUpdated: cannot pinch on DatePicker - GTK's driver has no path for it yet
+DatePicker.pointerEntered: cannot hover on DatePicker - GTK's driver has no path for it yet
+DatePicker.pointerExited: cannot hover on DatePicker - GTK's driver has no path for it yet
+DatePicker.pointerMoved: cannot hover on DatePicker - GTK's driver has no path for it yet
+DatePicker.pointerPressed: cannot hover on DatePicker - GTK's driver has no path for it yet
+DatePicker.pointerReleased: cannot hover on DatePicker - GTK's driver has no path for it yet
+DatePicker.swipeDirection: cannot pan on DatePicker - GTK's driver has no path for it yet
+DatePicker.swipeThreshold: cannot pan on DatePicker - GTK's driver has no path for it yet
+DatePicker.swiped: cannot pan on DatePicker - GTK's driver has no path for it yet
+DatePicker.tapCount: cannot tap on DatePicker - GTK's driver has no path for it yet
+DatePicker.tapped: cannot tap on DatePicker - GTK's driver has no path for it yet
+DatePicker.verticalAlignment: ✅
 Ellipse.allowDrop: not realized
 Ellipse.area: ✅
 Ellipse.canDrag: not realized
@@ -928,7 +928,7 @@ TextField.tapCount: cannot tap on TextField - GTK's driver has no path for it ye
 TextField.tapped: cannot tap on TextField - GTK's driver has no path for it yet
 TextField.verticalAlignment: ✅
 TimePicker.allowDrop: not realized
-TimePicker.area: not realized
+TimePicker.area: ✅
 TimePicker.canDrag: not realized
 TimePicker.dragLeave: not realized
 TimePicker.dragOver: not realized
@@ -936,29 +936,29 @@ TimePicker.dragStarting: not realized
 TimePicker.dragText: not realized
 TimePicker.drop: not realized
 TimePicker.dropCompleted: not realized
-TimePicker.frameChanged: not realized
-TimePicker.gridColumn: not realized
-TimePicker.gridColumnSpan: not realized
-TimePicker.gridRow: not realized
-TimePicker.gridRowSpan: not realized
-TimePicker.horizontalAlignment: not realized
-TimePicker.margin: not realized
-TimePicker.panTouchCount: not realized
-TimePicker.panUpdated: not realized
-TimePicker.panXChannel: not realized
-TimePicker.panYChannel: not realized
-TimePicker.pinchUpdated: not realized
-TimePicker.pointerEntered: not realized
-TimePicker.pointerExited: not realized
-TimePicker.pointerMoved: not realized
-TimePicker.pointerPressed: not realized
-TimePicker.pointerReleased: not realized
-TimePicker.swipeDirection: not realized
-TimePicker.swipeThreshold: not realized
-TimePicker.swiped: not realized
-TimePicker.tapCount: not realized
-TimePicker.tapped: not realized
-TimePicker.verticalAlignment: not realized
+TimePicker.frameChanged: ✅
+TimePicker.gridColumn: ✅
+TimePicker.gridColumnSpan: ✅
+TimePicker.gridRow: ✅
+TimePicker.gridRowSpan: ✅
+TimePicker.horizontalAlignment: ✅
+TimePicker.margin: ✅
+TimePicker.panTouchCount: cannot pan on TimePicker - GTK's driver has no path for it yet
+TimePicker.panUpdated: cannot pan on TimePicker - GTK's driver has no path for it yet
+TimePicker.panXChannel: cannot pan on TimePicker - GTK's driver has no path for it yet
+TimePicker.panYChannel: cannot pan on TimePicker - GTK's driver has no path for it yet
+TimePicker.pinchUpdated: cannot pinch on TimePicker - GTK's driver has no path for it yet
+TimePicker.pointerEntered: cannot hover on TimePicker - GTK's driver has no path for it yet
+TimePicker.pointerExited: cannot hover on TimePicker - GTK's driver has no path for it yet
+TimePicker.pointerMoved: cannot hover on TimePicker - GTK's driver has no path for it yet
+TimePicker.pointerPressed: cannot hover on TimePicker - GTK's driver has no path for it yet
+TimePicker.pointerReleased: cannot hover on TimePicker - GTK's driver has no path for it yet
+TimePicker.swipeDirection: cannot pan on TimePicker - GTK's driver has no path for it yet
+TimePicker.swipeThreshold: cannot pan on TimePicker - GTK's driver has no path for it yet
+TimePicker.swiped: cannot pan on TimePicker - GTK's driver has no path for it yet
+TimePicker.tapCount: cannot tap on TimePicker - GTK's driver has no path for it yet
+TimePicker.tapped: cannot tap on TimePicker - GTK's driver has no path for it yet
+TimePicker.verticalAlignment: ✅
 VStack.allowDrop: not realized
 VStack.area: ✅
 VStack.canDrag: not realized

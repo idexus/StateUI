@@ -2,7 +2,7 @@
 Button.characterSpacing: not realized
 Button.textColor: cannot read textColor of Button - GTK's driver has no path for it yet
 DatePicker.characterSpacing: not realized
-DatePicker.textColor: not realized
+DatePicker.textColor: cannot read textColor of DatePicker - GTK's driver has no path for it yet
 Label.characterSpacing: cannot read characterSpacing of Label - GTK's driver has no path for it yet
 Label.textColor: cannot read textColor of Label - GTK's driver has no path for it yet
 Picker.characterSpacing: not realized
@@ -18,4 +18,4 @@ TextEditor.textColor: cannot read textColor of TextEditor - GTK's driver has no 
 TextField.characterSpacing: not realized
 TextField.textColor: cannot read textColor of TextField - GTK's driver has no path for it yet
 TimePicker.characterSpacing: not realized
-TimePicker.textColor: not realized
+TimePicker.textColor: cannot read textColor of TimePicker - GTK's driver has no path for it yet

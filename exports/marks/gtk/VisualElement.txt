@@ -169,39 +169,39 @@ ColorBox.translationY: cannot read translationY of ColorBox - GTK's driver has n
 ColorBox.unfocus: waits on ColorBox.isFocusedChanged
 ColorBox.width: ✅
 ColorBox.zIndex: not realized
-DatePicker.accessibilityHeadingLevel: not realized
-DatePicker.accessibilityHint: not realized
-DatePicker.accessibilityLabel: not realized
-DatePicker.automationExcludedWithChildren: not realized
+DatePicker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of DatePicker - GTK's driver has no path for it yet
+DatePicker.accessibilityHint: cannot read accessibilityHint of DatePicker - GTK's driver has no path for it yet
+DatePicker.accessibilityLabel: cannot read accessibilityLabel of DatePicker - GTK's driver has no path for it yet
+DatePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of DatePicker - GTK's driver has no path for it yet
 DatePicker.background: not realized
-DatePicker.focus: not realized
-DatePicker.frame: not realized
-DatePicker.frameChanged: not realized
-DatePicker.height: not realized
+DatePicker.focus: waits on DatePicker.isFocusedChanged
+DatePicker.frame: ✅
+DatePicker.frameChanged: ✅
+DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
-DatePicker.isAccessibilityHidden: not realized
-DatePicker.isEnabled: not realized
+DatePicker.isAccessibilityHidden: cannot read isAccessibilityHidden of DatePicker - GTK's driver has no path for it yet
+DatePicker.isEnabled: ✅
 DatePicker.isFocusedChanged: not realized
-DatePicker.isVisible: not realized
+DatePicker.isVisible: ✅
 DatePicker.layoutDirection: not realized
-DatePicker.maximumHeight: not realized
-DatePicker.maximumWidth: not realized
-DatePicker.minimumHeight: not realized
-DatePicker.minimumWidth: not realized
-DatePicker.opacity: not realized
-DatePicker.pivotX: not realized
-DatePicker.pivotY: not realized
-DatePicker.rotation: not realized
-DatePicker.rotationX: not realized
-DatePicker.rotationY: not realized
-DatePicker.scale: not realized
-DatePicker.scaleX: not realized
-DatePicker.scaleY: not realized
-DatePicker.style: not realized
-DatePicker.translationX: not realized
-DatePicker.translationY: not realized
-DatePicker.unfocus: not realized
-DatePicker.width: not realized
+DatePicker.maximumHeight: ✅
+DatePicker.maximumWidth: ✅
+DatePicker.minimumHeight: ✅
+DatePicker.minimumWidth: ✅
+DatePicker.opacity: ✅
+DatePicker.pivotX: cannot read pivotX of DatePicker - GTK's driver has no path for it yet
+DatePicker.pivotY: cannot read pivotY of DatePicker - GTK's driver has no path for it yet
+DatePicker.rotation: cannot read rotation of DatePicker - GTK's driver has no path for it yet
+DatePicker.rotationX: cannot read rotationX of DatePicker - GTK's driver has no path for it yet
+DatePicker.rotationY: cannot read rotationY of DatePicker - GTK's driver has no path for it yet
+DatePicker.scale: cannot read scale of DatePicker - GTK's driver has no path for it yet
+DatePicker.scaleX: cannot read scaleX of DatePicker - GTK's driver has no path for it yet
+DatePicker.scaleY: cannot read scaleY of DatePicker - GTK's driver has no path for it yet
+DatePicker.style: ✅
+DatePicker.translationX: cannot read translationX of DatePicker - GTK's driver has no path for it yet
+DatePicker.translationY: cannot read translationY of DatePicker - GTK's driver has no path for it yet
+DatePicker.unfocus: waits on DatePicker.isFocusedChanged
+DatePicker.width: ✅
 DatePicker.zIndex: not realized
 Ellipse.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Ellipse - GTK's driver has no path for it yet
 Ellipse.accessibilityHint: cannot read accessibilityHint of Ellipse - GTK's driver has no path for it yet
@@ -985,39 +985,39 @@ TextField.translationY: cannot read translationY of TextField - GTK's driver has
 TextField.unfocus: waits on TextField.isFocusedChanged
 TextField.width: ✅
 TextField.zIndex: not realized
-TimePicker.accessibilityHeadingLevel: not realized
-TimePicker.accessibilityHint: not realized
-TimePicker.accessibilityLabel: not realized
-TimePicker.automationExcludedWithChildren: not realized
+TimePicker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TimePicker - GTK's driver has no path for it yet
+TimePicker.accessibilityHint: cannot read accessibilityHint of TimePicker - GTK's driver has no path for it yet
+TimePicker.accessibilityLabel: cannot read accessibilityLabel of TimePicker - GTK's driver has no path for it yet
+TimePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TimePicker - GTK's driver has no path for it yet
 TimePicker.background: not realized
-TimePicker.focus: not realized
-TimePicker.frame: not realized
-TimePicker.frameChanged: not realized
-TimePicker.height: not realized
+TimePicker.focus: waits on TimePicker.isFocusedChanged
+TimePicker.frame: ✅
+TimePicker.frameChanged: ✅
+TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
-TimePicker.isAccessibilityHidden: not realized
-TimePicker.isEnabled: not realized
+TimePicker.isAccessibilityHidden: cannot read isAccessibilityHidden of TimePicker - GTK's driver has no path for it yet
+TimePicker.isEnabled: ✅
 TimePicker.isFocusedChanged: not realized
-TimePicker.isVisible: not realized
+TimePicker.isVisible: ✅
 TimePicker.layoutDirection: not realized
-TimePicker.maximumHeight: not realized
-TimePicker.maximumWidth: not realized
-TimePicker.minimumHeight: not realized
-TimePicker.minimumWidth: not realized
-TimePicker.opacity: not realized
-TimePicker.pivotX: not realized
-TimePicker.pivotY: not realized
-TimePicker.rotation: not realized
-TimePicker.rotationX: not realized
-TimePicker.rotationY: not realized
-TimePicker.scale: not realized
-TimePicker.scaleX: not realized
-TimePicker.scaleY: not realized
-TimePicker.style: not realized
-TimePicker.translationX: not realized
-TimePicker.translationY: not realized
-TimePicker.unfocus: not realized
-TimePicker.width: not realized
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.opacity: ✅
+TimePicker.pivotX: cannot read pivotX of TimePicker - GTK's driver has no path for it yet
+TimePicker.pivotY: cannot read pivotY of TimePicker - GTK's driver has no path for it yet
+TimePicker.rotation: cannot read rotation of TimePicker - GTK's driver has no path for it yet
+TimePicker.rotationX: cannot read rotationX of TimePicker - GTK's driver has no path for it yet
+TimePicker.rotationY: cannot read rotationY of TimePicker - GTK's driver has no path for it yet
+TimePicker.scale: cannot read scale of TimePicker - GTK's driver has no path for it yet
+TimePicker.scaleX: cannot read scaleX of TimePicker - GTK's driver has no path for it yet
+TimePicker.scaleY: cannot read scaleY of TimePicker - GTK's driver has no path for it yet
+TimePicker.style: ✅
+TimePicker.translationX: cannot read translationX of TimePicker - GTK's driver has no path for it yet
+TimePicker.translationY: cannot read translationY of TimePicker - GTK's driver has no path for it yet
+TimePicker.unfocus: waits on TimePicker.isFocusedChanged
+TimePicker.width: ✅
 TimePicker.zIndex: not realized
 VStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of VStack - GTK's driver has no path for it yet
 VStack.accessibilityHint: cannot read accessibilityHint of VStack - GTK's driver has no path for it yet

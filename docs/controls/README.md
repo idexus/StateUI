@@ -33,7 +33,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Canvas](Canvas.md) | 70 | 26 ✅ · 1 ☑️ · 3 – | 25 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 52 ✅ · 3 – | 24 ✅ |  |
 | [CheckBox](CheckBox.md) | 69 | 32 ✅ · 1 ☑️ | 26 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ | 22 ✅ |  |
 | [ColorBox](ColorBox.md) | 68 | 27 ✅ · 3 – | 26 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 22 ✅ |  |
-| [DatePicker](DatePicker.md) | 80 | 35 ✅ · 1 ☑️ | 29 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 63 ✅ · 1 ☑️ |  |  |
+| [DatePicker](DatePicker.md) | 80 | 35 ✅ · 1 ☑️ | 29 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 63 ✅ · 1 ☑️ | 25 ✅ · 1 ☑️ |  |
 | [Ellipse](Ellipse.md) | 76 | 25 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 49 ✅ · 1 ☑️ · 3 – | 58 ✅ · 3 – | 25 ✅ |  |
 | [Grid](Grid.md) | 77 | 32 ✅ · 3 – | 34 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 26 ✅ |  |
 | [HStack](HStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 23 ✅ |  |
@@ -57,11 +57,11 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Switch](Switch.md) | 69 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ | 22 ✅ |  |
 | [TextEditor](TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 25 ✅ |  |
 | [TextField](TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 24 ✅ |  |
-| [TimePicker](TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ |  |  |
+| [TimePicker](TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ | 23 ✅ |  |
 | [VStack](VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 23 ✅ |  |
 | [WebView](WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – | 44 ✅ · 18 – |  |  |
 | [ZStack](ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 22 ✅ |  |
-| **Met** - ✅ and – | 2521 | 1005 of 2521 met | 1040 of 2521 met | 1763 of 2521 met | 1881 of 2521 met | 664 of 2521 met |  |
+| **Met** - ✅ and – | 2521 | 1005 of 2521 met | 1040 of 2521 met | 1763 of 2521 met | 1881 of 2521 met | 712 of 2521 met |  |
 <!-- controls:end -->
 
 ## Application structure
