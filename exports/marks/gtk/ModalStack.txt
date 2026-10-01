@@ -1,5 +1,5 @@
 # revision 2.1
-ModalStack: not realized
-ModalStack.popped: not realized
-Page.appearing: waits on ModalStack
-Page.disappearing: waits on ModalStack
+ModalStack: ✅
+ModalStack.popped: ✅
+Page.appearing: ✅
+Page.disappearing: ✅

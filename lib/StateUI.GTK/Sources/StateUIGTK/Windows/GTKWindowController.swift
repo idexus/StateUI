@@ -20,6 +20,9 @@ final class GTKWindowController {
     /// What the window shows, by the host layer's rule.
     let presentation = WindowPresentation()
 
+    /// A sheet for each page the window's modal stack presents, the last on top.
+    private(set) var sheets: [(element: MountedElement, sheet: GTKSheet)] = []
+
     init(_ element: MountedElement, application: UnsafeMutablePointer<GtkApplication>) {
         self.element = element
         window = GTKWindow(application: application)
@@ -41,7 +44,32 @@ final class GTKWindowController {
                 window.show(arrangement?.gtk.view)
             }
         }
+        if let pages = changes.sheets { showSheets(pages, in: runtime) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
+    }
+
+    /// Keeps a sheet for each page presented, in its order: a sheet gone closes, the last first, and one new is shown
+    /// over those before it.
+    /// Design: docs/design/platforms/gtk/pages.md#sheets
+    private func showSheets(_ pages: [MountedElement], in runtime: HostRuntime) {
+        let kept = sheets.filter { entry in
+            pages.contains { $0 === entry.element && $0.gtk.view === entry.sheet.page }
+        }
+        for entry in sheets.reversed() where !kept.contains(where: { $0.sheet === entry.sheet }) { entry.sheet.close() }
+        sheets = pages.compactMap { page in
+            if let entry = kept.first(where: { $0.element === page }) { return entry }
+            guard let view = page.gtk.view else { return nil }
+            let sheet = GTKSheet(page: view, framed: GTKElement.framedTypes.contains(page.type))
+            sheet.onClosedByUser = { [weak self] in self?.dismissTopSheet(in: runtime) }
+            sheet.present(over: window)
+            return (page, sheet)
+        }
+    }
+
+    /// The user took the top sheet away - Escape, its close button: the modal stack is told how many remain.
+    private func dismissTopSheet(in runtime: HostRuntime) {
+        guard let element, !presentation.sheets.isEmpty else { return }
+        runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
     }
 
     /// Writes every shown page's chrome on its header bar, and names the window after the page the user sees.
@@ -55,6 +83,12 @@ final class GTKWindowController {
         }
         arrangement?.composeChrome()
         if let split = arrangement?.view as? GTKSplitView { split.adapt(in: window.widget) }
+        for (page, sheet) in sheets {
+            let chrome = page.gtk.chrome
+            sheet.frame?.show(chrome)
+            sheet.setTitle(page.visiblePage?.value(.title)?.string ?? chrome.title)
+            page.gtk.composeChrome()
+        }
         let title = WindowChrome(window: element, arrangement: presentation.arrangement).title
         window.setTitle(title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
     }

@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 11 ✅ | `UIViewController` |  |
 | Android Views | ✅ | 7 ✅ | custom `ViewGroup` |  |
 | WinUI 3 | ✅ | 10 ✅ | `Page` |  |
-| GTK 4 | ✅ | 3 ✅ | custom `GtkWidget` |  |
+| GTK 4 | ✅ | 5 ✅ | custom `GtkWidget` |  |
 | Web |  |  | `<section>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift`.
@@ -52,10 +52,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: waits on ModalStack |
+| `appearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `backButtonTitle` | property | `String` | adaptive | · |  |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `background` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
-| `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: waits on ModalStack |
+| `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `hasBackButton` | property | `Bool` | adaptive | · | ✅ | · |  |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
 | `hasNavigationBar` | property | `Bool` | adaptive | · | ✅ | · | ✅ | · |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet; GTK 4: cannot read hasNavigationBar of Page - GTK's driver has no path for it yet |
 | `navigatedFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

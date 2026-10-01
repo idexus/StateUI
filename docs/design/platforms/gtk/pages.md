@@ -110,6 +110,20 @@ header bar, and the switcher - with a split view's sidebar toggle - stands
 beneath the header bar of the stack's page the user sees, moving with it as
 pages come and go.
 
+## Sheets
+
+A page a window's modal stack presents is a sheet: libadwaita's `AdwDialog`
+over the window, each over those before it, the last on top - a page in a
+frame of its own, whose header bar holds the dialog's close button, or an
+arrangement whose pages carry theirs. A sheet asks for 560 by 480, which
+libadwaita fits to the window, rising from its bottom where the window is
+narrow. The user's close - Escape, the close button - takes the top sheet
+away through the host layer's way back, the modal stack told how many remain;
+a sheet the program takes away closes and tells nothing. A sheet starts a path
+of its own ([the visible path](../../host/pages.md#the-visible-path)): it
+wears no bar of what stands around it, and names the dialog by its page's
+title.
+
 ## The window's overlays
 
 What a window lays over everything it shows - the overlays the pages on its

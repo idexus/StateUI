@@ -10,8 +10,8 @@
 enum GTKRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Canvas", "ContextMenu", "DatePicker", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack",
-        "Pin", "PositionIndicator", "TimePicker", "WebView",
+        "Canvas", "ContextMenu", "DatePicker", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "Pin",
+        "PositionIndicator", "TimePicker", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -42,6 +42,7 @@ enum GTKRealization {
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Label", "background", missing: "A brush fills the box with its first colour alone."),
+        .complete("ModalStack", "popped"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "disappearing"),

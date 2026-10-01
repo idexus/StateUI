@@ -234,6 +234,33 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A sheet is libadwaita's dialog over the window, its page in a frame of its own; the user closing it - Escape,
+    /// its close button - takes it off the modal stack, and the program's close tells nothing.
+    func testASheetTheUserClosesLeavesTheModalStack() throws {
+        try onUIThread {
+            let sheets = State(wrappedValue: [1, 2])
+            let host = GTKRenderer.running {
+                ModalStack(sheets.projectedValue) {
+                    TitledPage(title: "Beneath")
+                } destination: { number in
+                    TitledPage(title: "Sheet \(number)")
+                }
+            }
+            let controller = try XCTUnwrap(host.windows.first)
+            host.settle { controller.sheets.count == 2 }
+            XCTAssertEqual(controller.sheets.map { $0.sheet.frame?.chrome.title }, ["Sheet 1", "Sheet 2"])
+            XCTAssertNotEqual(gtk_widget_get_mapped(controller.sheets[1].sheet.page.widget), 0, "the top sheet shows")
+
+            adw_dialog_close(controller.sheets[1].sheet.dialog)
+            host.settle { sheets.wrappedValue == [1] }
+            XCTAssertEqual(sheets.wrappedValue, [1], "the user's close")
+
+            sheets.wrappedValue = []
+            host.settle { controller.sheets.isEmpty }
+            XCTAssertEqual(sheets.wrappedValue, [], "the program's close heard by nobody")
+        }
+    }
+
     /// A bar painted with no colour written for its words stands them light on a dark band and dark on a light one.
     func testABarsWordsFollowHowDarkItIs() throws {
         try onUIThread {
