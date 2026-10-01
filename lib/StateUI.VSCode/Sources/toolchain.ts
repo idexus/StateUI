@@ -431,6 +431,38 @@ export function debuggerFinding(types: readonly string[]): Finding {
     };
 }
 
+/** Why an lldb-dap did not start, read from what it said to `--version` - the library its loader found missing - or
+ *  undefined where it started. */
+export function lldbDapFailure(output: string | undefined): string | undefined {
+    if (output === undefined) {
+        return "it did not run";
+    }
+    const missing = output.match(/error while loading shared libraries: ([^:\s]+)/);
+    if (missing) {
+        return `${missing[1]} is missing`;
+    }
+    return /LLVM version/.test(output) ? undefined : output.split(/\r?\n/)[0].trim();
+}
+
+/** On Linux, whether the lldb-dap a Debug launch starts - the one LLDB DAP's `lldb-dap.executable-path` names, else the
+ *  search path's - starts at all: a swift.org toolchain's LLDB is linked with the Python of the distribution it was
+ *  built for, which another distribution may not have. Undefined elsewhere, where the toolchain matches its system. */
+export async function lldbDapFinding(configured?: string): Promise<Finding | undefined> {
+    if (process.platform !== "linux") {
+        return undefined;
+    }
+    const executable = configured || onPath("lldb-dap");
+    const output = executable ? await run(executable, ["--version"]) : undefined;
+    const failure = executable ? lldbDapFailure(output) : "none is on the search path";
+    return {
+        component: "an lldb-dap that starts", neededBy: "Debug",
+        found: failure === undefined ? `${output?.match(/LLVM version \S+/)?.[0] ?? "it starts"} (${executable})` : undefined,
+        advice: `${executable ?? "lldb-dap"}: ${failure}. A swift.org toolchain's LLDB takes the Python library of the`
+            + " distribution it was built for: install that library - libpython3.9 is python39 from the AUR on Arch - or"
+            + " set lldb-dap.executable-path to an lldb-dap that starts.",
+    };
+}
+
 /** The findings as the output shows them: a line each, found, too old or missing, and what to install for each not found. */
 export function report(findings: readonly Finding[]): string[] {
     return findings.map((each) => each.found !== undefined

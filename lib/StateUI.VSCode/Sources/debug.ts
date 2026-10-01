@@ -38,6 +38,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { Application, appKitProgram, gtkProgram, winUIProgram } from "./applications";
+import { lldbDapFinding } from "./toolchain";
 import { androidScript } from "./devices";
 import { environment, Host } from "./hosts";
 import { uiKitScript } from "./uiKitDevices";
@@ -133,6 +134,13 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         const named = typeof launch.application === "string" ? launch.application : undefined;
         const application = await this.choices.application(root, host, named);
         if (!application) {
+            return undefined;
+        }
+
+        // A debugger that cannot start stops the launch before the build, saying why: else the build ends and nothing runs.
+        const debuggerStarts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
+        if (debuggerStarts && debuggerStarts.found === undefined) {
+            void vscode.window.showErrorMessage(`StateUI: the debugger does not start - ${debuggerStarts.advice}`);
             return undefined;
         }
 

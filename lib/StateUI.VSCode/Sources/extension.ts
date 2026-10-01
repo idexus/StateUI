@@ -22,7 +22,7 @@ import { checkoutOf, makeApplication, nameProblem } from "./newApplication";
 import { cloneRelease, groupNameProblem, listReleases, makeProjectGroup, releaseDirectory } from "./projectGroup";
 import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
 import { Rebuild, rebuildSteps } from "./conformance";
-import { checkToolchain, debuggerFinding, report } from "./toolchain";
+import { checkToolchain, debuggerFinding, lldbDapFinding, report } from "./toolchain";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -512,7 +512,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 () => checkToolchain());
             const types = vscode.extensions.all.flatMap((each) =>
                 ((each.packageJSON?.contributes?.debuggers ?? []) as { type?: string }[]).map((debug) => debug.type ?? ""));
-            const all = [...findings, debuggerFinding(types)];
+            const starts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
+            const all = [...findings, debuggerFinding(types), ...(starts ? [starts] : [])];
             const served = availableHosts().map((each) => each.label).join(", ");
             toolchain.clear();
             toolchain.appendLine(`What ${served || "StateUI"} needs on this machine (${process.platform}, ${process.arch}):`);

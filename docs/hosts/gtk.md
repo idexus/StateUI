@@ -33,7 +33,10 @@ apps/<App>/Platforms/GTK/
 
 The host builds on Linux, on arm64 or x64:
 
-- Swift 6.4 from swift.org;
+- Swift 6.4 from swift.org - for Debug, its `lldb-dap` has to start: a
+  toolchain's LLDB takes the Python library of the distribution it was built
+  for, so on another one install that library (a toolchain built for UBI 9
+  takes `libpython3.9`, `python39` from the AUR on Arch);
 - GTK 4.14 and libadwaita 1.5 or newer, with their headers and pkg-config -
   on Ubuntu 24.04 or newer, `libgtk-4-dev` and `libadwaita-1-dev`;
 - gdk-pixbuf's SVG loader, through which GTK reads a vector picture -
