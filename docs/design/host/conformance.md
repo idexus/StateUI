@@ -69,7 +69,7 @@ tier's case is written once and made for each element: every element the
 library declares has a specimen, the smallest of its kind standing where an
 application puts one - a control in a stack, a span in a label's words, a
 menu's item in a view's menu, a toolbar's on its page's bar, an arrangement
-as the page, a title bar over its window - which the case dresses with the
+as the page - which the case dresses with the
 members it writes, through the element's own `setValue`, and finds by its id
 or as the one element of its kind. The case runs on a host for each element
 the host realizes, and proves the member there.

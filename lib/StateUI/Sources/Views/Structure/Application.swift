@@ -46,9 +46,8 @@ public protocol Application {
 ///
 /// A type you declare, never a value you chain onto: `page` is its one
 /// requirement, and it may hold `@State` of its own. What the window is as it
-/// runs - its title, its frame, its title bar, the pages presented over it,
-/// its lifecycle - is its `WindowSession`, in the environment of everything in
-/// it:
+/// runs - its title, its frame, its lifecycle - is its `WindowSession`, in the
+/// environment of everything in it:
 ///
 ///     struct MainPage: ContentView {
 ///         @Environment private var window: WindowSession
@@ -78,8 +77,7 @@ extension Window {
     /// `var scene: any Scene { MainWindow() }`.
     public var windows: Windows { Windows(main: { self }) }
 
-    /// The window as a node: its page, and what hangs off it - its title bar
-    /// and the pages presented over it.
+    /// The window as a node: its page, and the library's overlay over it.
     public var body: Node {
         let request = ElementSession(WindowSession.self) { WindowSession() }
 

@@ -48,17 +48,14 @@ A page's view is a value its parent builds afresh on every render, so
 nothing stored on it outlives a build. The session lives on the element the
 page is: made when the page is first built, handed back on every build after,
 and gone with it. An arrangement - a `NavigationStack`, a `TabbedView`, a
-`SplitView` - is a page already and has no session: it is told what it is by
-modifier, from `PageElement`.
+`SplitView`, a `ModalStack` - is a page already and has no session: it is
+told what it is by modifier, from `PageElement` and `BarElement`.
 
-## Values and views written into a session
+## Values written into a session
 
 A value written into a session is put on the node as the page or window
 builds, and a colour or a picture with a half for each theme is picked
-there, so it is right in both themes whenever it was written. A view a
-window's session still holds - a title bar's slot - is built where it is
-shown: a composed view there reads its own state as it builds, builds again
-when that state moves, and a binding handed to a control keeps it live.
+there, so it is right in both themes whenever it was written.
 
 ## Collections hang as one node
 

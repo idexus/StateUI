@@ -47,9 +47,9 @@ An application declares types; the tree under a window is views.
                                                                           layouts, each with its modifiers
 ```
 
-A window's node carries its page and what hangs off it - the title bar and the
-modal stack from its session, the inspector's panel - and a page's node carries
-the view and its toolbar, menus and title view. See pages.md.
+A window's node carries its page and the library's overlay - the inspector's
+panel - and a page's node carries the view and what it declares: its
+toolbar, menus, title view and overlays. See pages.md.
 
 ## What a view is
 

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A window as it runs: its lifecycle, title, requested geometry, chrome,
-/// presented pages, and close operation.
+/// A window as it runs: its lifecycle, title, requested geometry,
+/// translucency, and close operation.
 ///
 ///     @Environment private var window: WindowSession
 ///
