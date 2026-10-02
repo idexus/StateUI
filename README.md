@@ -118,9 +118,12 @@ npm run package
 code --install-extension ../../artifacts/stateui-*.vsix
 ```
 
-The AppKit host needs only Xcode 27, on macOS 26 or newer. StateUI builds
-with one Swift release everywhere, Swift 6.4: Xcode 27's on macOS and the
-swift.org 6.4.0 toolchain on the other platforms.
+The AppKit host needs only Xcode 27, on macOS 26 or newer, and the UIKit host
+adds Xcode's iOS 26 or newer simulator runtime. StateUI builds with one Swift
+release everywhere, Swift 6.4: Xcode 27's on macOS and the swift.org 6.4.0
+toolchain on the other platforms. WinUI builds on Windows and GTK on Linux;
+their pages say what each needs: [WinUI host](docs/hosts/winui.md#requirements),
+[GTK host](docs/hosts/gtk.md#requirements).
 
 Android asks for more, and builds on macOS only:
 
@@ -136,8 +139,10 @@ Then open the repository in VS Code:
 
 1. Run **StateUI: Check Toolchain** from the Command Palette. It lists what
    this machine has of the above, and what to install for the rest.
-2. Choose the host in the status bar - **AppKit** or **Android** - and the
-   application, **Gallery**.
+2. Choose the host in the status bar - **AppKit**, **UIKit** or **Android**
+   on macOS, **WinUI** on Windows, **GTK** on Linux - and the application,
+   **Gallery**. For UIKit and Android the third item picks the simulator or
+   the device.
 3. Press **F5**. **StateUI: Debug** builds the Gallery for that host and starts
    it under the debugger; **StateUI: Release** runs the optimized build.
 4. Run **StateUI: Run Tests** from the Command Palette for every suite of that
@@ -157,12 +162,14 @@ From a terminal, the same builds are:
 ## Continuous integration
 
 Every workflow runs on pushes and pull requests to `main` and `dev`; a pull
-request targets `dev`.
+request targets `dev`. Each badge above is one workflow.
 
-`Tests` runs the StateUI, StateUI.Host, StateUI.AppKit, and Gallery suites on
-macOS. The Windows and Linux workflows run the StateUI and StateUI.Host suites
-on those machines, Linux the conformance runner too, and Windows the WinUI
-host with every verdict held.
+**Core macOS**, **Core Linux** and **Core Windows** run the core's suites on
+each machine - StateUI, the host layer and the conformance runner, and on
+macOS the Gallery's and HelloWorld's too. Each host has a workflow of its own
+that runs its suite with every verdict held: **AppKit**, **UIKit** on an
+iPhone and an iPad simulator, **Android** built on macOS and run on an
+emulator, **WinUI** on Windows and **GTK** on Linux.
 
 ## License
 

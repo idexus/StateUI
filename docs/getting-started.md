@@ -59,24 +59,24 @@ The extension installs the **Swift** extension (swiftlang) with it. Install
 
 Open the repository folder. The status bar shows two StateUI items:
 
-- **the host** - AppKit or Android. The editor works as that host: code under
-  `#if APPKIT` is completed only while AppKit is chosen, and as Android the
-  language server compiles for Android with the Swift SDK for Android.
-  Switching restarts the Swift language server without reloading the window.
-  Android is offered for an application with an Android head. Both run on
-  macOS; on Windows and Linux the item says **no host**, and the editor and
-  the suites work as plain Swift.
+- **the host** - AppKit, UIKit or Android on macOS, WinUI on Windows, GTK on
+  Linux; UIKit and Android only for an application with that head. The editor
+  works as that host: code under `#if APPKIT` is completed only while AppKit
+  is chosen, as UIKit the language server compiles for the iOS simulator, and
+  as Android for Android with the Swift SDK for Android. Switching restarts
+  the Swift language server without reloading the window.
 - **the application** - Gallery, HelloWorld, or any other under `apps/`. It is
   remembered for the workspace.
 
-While the host is Android a third item shows the device: an attached phone or
-a running emulator, or an emulator started when it is picked.
+While the host is UIKit or Android a third item shows the device: an iPhone,
+an iPad or a simulator for UIKit; an attached phone or an emulator, started
+when it is picked, for Android.
 
 Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
-and Debug. On AppKit the application's head is built and started under
-`lldb-dap`. On Android it is built, installed and started on the chosen device,
-and its terminal follows the application's log; a Debug launch then attaches
-`lldb-dap` to it, and a Release one runs without a debugger.
+and Debug. The application's head is built, installed where the host needs
+it, and started under `lldb-dap`, a breakpoint holding from the first line; on
+UIKit and Android its terminal follows the application's log. A Release
+launch runs without a debugger.
 
 `.vscode/launch.json` holds only those two launches. The extension resolves
 each one into the chosen host's own debugger.
@@ -87,14 +87,17 @@ The Command Palette offers the rest under **StateUI:**
 
 | Command | What it does |
 | --- | --- |
-| Select Host | AppKit or Android, as the status bar item does |
+| Select Host | the host the editor and the launches work as, as the status bar item does |
+| Select UIKit Device | the iPhone, iPad or simulator a UIKit head runs on |
 | Select Android Device | the device or emulator an Android head runs on |
 | Select Application | the application F5 runs |
 | Run Tests | the workspace's suites, run as the chosen host |
+| Conformance - Rebuild all / changed | the chosen host's marks run again - every family, or the stale ones - and the documents rendered |
 | New Application in apps/ | a new application in a checkout's or a project group's `apps/`, made by `.scripts/new-app.sh` |
 | New Project Group | a folder of applications outside the checkout - see [A project group](#a-project-group) |
 | Clean Index | removes the language server's index and builds it again |
 | Check Toolchain | what this machine has of what its hosts need, and what to install for the rest |
+| Reinstall VS Code Extension | packs the extension from the checkout and installs it again |
 
 The extension's own README, `lib/StateUI.VSCode/README.md`, describes each of
 them in detail.
@@ -269,10 +272,11 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
-The UIKit head calls the same `stateui_app_register` before `StateUIUIKit.run`;
-[UIKit host](hosts/uikit.md) describes that head. The Android head calls it
-when Android loads its library; [Android Views host](hosts/android.md)
-describes that head.
+The UIKit, WinUI and GTK heads call the same `stateui_app_register` before
+their host's `run`, and the Android head when Android loads its library; each
+host's page describes its head: [UIKit](hosts/uikit.md),
+[Android Views](hosts/android.md), [WinUI](hosts/winui.md),
+[GTK](hosts/gtk.md).
 
 The repository examples use this directory shape:
 
@@ -286,10 +290,16 @@ apps/Notes/
   Platforms/
     AppKit/
       main.swift
+    UIKit/
+      main.swift
     Android/
       build.gradle.kts
       AndroidManifest.xml
       Swift/
+    WinUI/
+      main.swift
+    GTK/
+      main.swift
   Resources/
     AppIcon/
     Images/
