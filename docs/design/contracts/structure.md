@@ -21,7 +21,7 @@ own.
   MenuBar, Menu, MenuItem,           a page's menus, their entries, and the lines between them
   Divider
   ContextMenu                        the menu a view offers where the user asks for one
-  ToolbarItems, ToolbarItem          a page's actions in its bar or toolbar
+  ToolbarItemGroup, ToolbarItem          a page's actions in its bar or toolbar
   TitleView                          the view a page shows in its bar in place of its title
   Spans, Span                        the runs of text a label is made of
 ```
@@ -35,7 +35,7 @@ again when that state moves.
 
 ## Collections as one node
 
-A page's toolbar items hang off it as one `ToolbarItems` node holding them
+A page's toolbar items hang off it as one `ToolbarItemGroup` node holding them
 all, its menus as one `MenuBar`, and a label's runs as one `Spans`. The host
 has a list to keep in step, and a list needs a parent of its own to be matched
 against. Where the host

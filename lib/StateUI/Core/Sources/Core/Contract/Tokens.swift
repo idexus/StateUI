@@ -68,7 +68,7 @@ extension NodeType {
     static let tabView = TabViewContract.nodeType
     static let timePicker = TimePickerContract.nodeType
     static let toolbarItem = ToolbarItemContract.nodeType
-    static let toolbarItems = ToolbarItemsContract.nodeType
+    static let toolbarItemGroup = ToolbarItemGroupContract.nodeType
     static let vStack = VStackContract.nodeType
     static let webView = WebViewContract.nodeType
     static let window = WindowContract.nodeType
@@ -183,7 +183,7 @@ extension NodeType {
     static let showsBackButton = PageContract.showsBackButton.token
     static let showsNavigationBar = PageContract.showsNavigationBar.token
     static let opacity = VisualElementContract.opacity.token
-    static let order = ToolbarItemsContract.order.token
+    static let order = ToolbarItemGroupContract.order.token
     static let placement = ToolbarItemContract.placement.token
     static let orientation = ScrollViewContract.orientation.token
     static let padding = PaddingElementContract.padding.token
@@ -208,7 +208,7 @@ extension NodeType {
     static let scrollOffset = ScrollViewContract.scrollOffset.token
     static let selectedIndex = PickerContract.selectedIndex.token
     static let selectionLength = InputViewContract.selectionLength.token
-    static let side = ToolbarItemsContract.side.token
+    static let side = ToolbarItemGroupContract.side.token
     static let source = ImageContract.source.token
     static let spacing = StackBaseContract.spacing.token
     static let stroke = ShapeContract.stroke.token

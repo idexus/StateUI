@@ -18,7 +18,7 @@ android TextAlignmentElement 2
 appkit InputView 2
 android InputView 2
 ToolbarItem 3
-ToolbarItems 2
+ToolbarItemGroup 2
 TitleView 2
 MenuBar 2
 Window 2

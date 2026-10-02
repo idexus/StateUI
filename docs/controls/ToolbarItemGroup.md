@@ -1,6 +1,6 @@
 <!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
-# ToolbarItems
+# ToolbarItemGroup
 
 A group of actions a page or an arrangement declares for its bar: one shared background where the platform draws one, joined by the groups of the same id declared further in.
 
@@ -51,9 +51,9 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
-Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarItemsContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarItemGroupContract.swift`.
 
-## ToolbarItems's own members
+## ToolbarItemGroup's own members
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

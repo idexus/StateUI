@@ -61,7 +61,7 @@ there, so it is right in both themes whenever it was written.
 
 A page's menus hang off the page as one node holding the collection,
 `MenuBar`, and each toolbar group off the element declaring it as one
-`ToolbarItems` node, rather than as one node each. The host has a list to keep
+`ToolbarItemGroup` node, rather than as one node each. The host has a list to keep
 in step, and a list needs a parent of its own to be matched against; a swipe
 view's actions hang the same way.
 

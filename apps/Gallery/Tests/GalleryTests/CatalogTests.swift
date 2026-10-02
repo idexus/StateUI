@@ -1535,7 +1535,7 @@ final class CatalogTests: XCTestCase {
 
     /// The words of the actions an element declares on the bar.
     private func actions(on patch: HostPatch) -> [String] {
-        patch.children.filter { $0.type == .toolbarItems }
+        patch.children.filter { $0.type == .toolbarItemGroup }
             .flatMap(\.children)
             .compactMap { $0.properties[.text]?.string }
     }

@@ -488,7 +488,7 @@ extension ControlDictionary {
                 }
             """#),
 
-        (ToolbarItemsContract.self, #"""
+        (ToolbarItemGroupContract.self, #"""
             @State var edited = false
 
             TextEditor()

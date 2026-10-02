@@ -72,10 +72,10 @@ extension PropertyContainer where Self: Page {
 
     private func toolbarGroup(_ side: ToolbarSide, id: String?, order: Int, _ items: [ToolbarItem]) -> Modified {
         modified {
-            var group = Node(contract: ToolbarItemsContract.self, children: items.map(\.node))
+            var group = Node(contract: ToolbarItemGroupContract.self, children: items.map(\.node))
             group.id = id
-            group.write(ToolbarItemsContract.side, side)
-            group.write(ToolbarItemsContract.order, order)
+            group.write(ToolbarItemGroupContract.side, side)
+            group.write(ToolbarItemGroupContract.order, order)
 
             // After the element's own children; the host finds it by type.
             // Design: docs/design/views/modifiers.md#slot-children

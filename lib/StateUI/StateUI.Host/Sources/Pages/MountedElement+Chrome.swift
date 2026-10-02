@@ -13,7 +13,7 @@ extension MountedElement {
     public var chromeActions: ChromeActions {
         guard value(.showsNavigationBar)?.bool != false else { return ChromeActions() }
 
-        return ChromeActions(declared(.toolbarItems))
+        return ChromeActions(declared(.toolbarItemGroup))
     }
 
     /// What stands in this page's title place: the title view declared innermost on its path; nil where none.

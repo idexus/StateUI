@@ -826,7 +826,7 @@ final class AppKitPageTests: XCTestCase {
         var save = HostPatch(id: .manual("save"), type: .toolbarItem)
         save.properties[.text] = .string("Save")
         save.events = .replace([.clicked: 50])
-        var toolbar = HostPatch(id: .manual("toolbar"), type: .toolbarItems)
+        var toolbar = HostPatch(id: .manual("toolbar"), type: .toolbarItemGroup)
         toolbar.children = .arranged([save])
 
         var details = page("details", title: "Ignored", events: 200)
@@ -914,7 +914,7 @@ final class AppKitPageTests: XCTestCase {
             return item
         }
         func group(_ id: String, order: Double, side: ToolbarSide = .trailing, _ items: [HostPatch]) -> HostPatch {
-            var group = HostPatch(id: .manual(id), type: .toolbarItems)
+            var group = HostPatch(id: .manual(id), type: .toolbarItemGroup)
             group.properties = [.order: .number(order), .side: .enumeration(side.rawValue)]
             group.children = .arranged(items)
             return group

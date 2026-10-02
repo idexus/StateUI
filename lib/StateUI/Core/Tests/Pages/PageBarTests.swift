@@ -74,7 +74,7 @@ final class PageBarTests: XCTestCase {
 
         XCTAssertEqual(page.children.map { $0.type }, ["Text"])
         let label = page.children[0]
-        XCTAssertEqual(label.children.map { $0.type }, ["ToolbarItems", "ToolbarItems", "MenuBar"])
+        XCTAssertEqual(label.children.map { $0.type }, ["ToolbarItemGroup", "ToolbarItemGroup", "MenuBar"])
 
         let toolbar = label.children[0]
         XCTAssertEqual(toolbar.props["side"], .enumeration(0))
@@ -141,7 +141,7 @@ final class PageBarTests: XCTestCase {
             .titleView { Text("title") }
         let built = stack.node
 
-        XCTAssertEqual(built.children.map { $0.type }.suffix(2), ["ToolbarItems", "TitleView"], "after the root page")
+        XCTAssertEqual(built.children.map { $0.type }.suffix(2), ["ToolbarItemGroup", "TitleView"], "after the root page")
         XCTAssertEqual(built.children.count, 3)
         XCTAssertEqual(built.children[2].children.map { $0.type }, ["Text"])
     }
@@ -159,7 +159,7 @@ final class PageBarTests: XCTestCase {
             return stack.node
         }
         let differ = Differ()
-        let group = { (patch: HostPatch) in patch.children.first { $0.type == "ToolbarItems" } }
+        let group = { (patch: HostPatch) in patch.children.first { $0.type == "ToolbarItemGroup" } }
 
         let first = differ.reconcile(nil, with: view(false, true))
         let before = try XCTUnwrap(group(first.patch)?.id)
@@ -169,7 +169,7 @@ final class PageBarTests: XCTestCase {
         XCTAssertEqual(grown.node.children.last?.children.first?.id, .manual("save"))
 
         let gone = differ.reconcile(grown.node, with: view(true, false))
-        XCTAssertFalse(gone.node.children.contains { $0.type == "ToolbarItems" })
+        XCTAssertFalse(gone.node.children.contains { $0.type == "ToolbarItemGroup" })
 
         let back = differ.reconcile(gone.node, with: view(true, true))
         XCTAssertNotEqual(back.node.children.last?.id, before, "a group declared anew is another element")

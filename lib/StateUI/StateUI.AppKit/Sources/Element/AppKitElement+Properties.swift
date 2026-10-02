@@ -36,7 +36,7 @@ extension AppKitElement {
             page.translatesAutoresizingMaskIntoConstraints = true
             return page
 
-        case .modalStack, .titleView, .toolbarItems, .menuBar, .contextMenu,
+        case .modalStack, .titleView, .toolbarItemGroup, .menuBar, .contextMenu,
              .menu, .menuItem,
              .divider, .spans, .span:
             return nil

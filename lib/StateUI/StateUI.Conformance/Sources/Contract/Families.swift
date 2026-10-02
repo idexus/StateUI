@@ -57,7 +57,7 @@
         TabViewTests.self,
         TitleViewTests.self,
         ToolbarItemTests.self,
-        ToolbarItemsTests.self,
+        ToolbarItemGroupTests.self,
         WindowTests.self,
         PropertyContainerTests.self,
         VisualElementTests.self,

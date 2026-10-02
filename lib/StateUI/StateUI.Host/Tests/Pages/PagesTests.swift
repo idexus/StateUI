@@ -169,7 +169,7 @@ final class PagesTests: XCTestCase {
     /// An action's words stand on the bar beside its picture only where it says so, and always where it has none.
     func testAnActionShowsItsWordsBesideItsPictureWhereItSaysSo() throws {
         let runtime = runtime(node("page", .page, children: [
-            node("items", .toolbarItems, children: [
+            node("items", .toolbarItemGroup, children: [
                 node("words", .toolbarItem, [.text: .string("Words")]),
                 node("picture", .toolbarItem, [.text: .string("Picture"), .icon: .string("add")]),
                 node("both", .toolbarItem, [.text: .string("Both"), .icon: .string("add"), .showsText: .bool(true)]),
@@ -193,7 +193,7 @@ final class PagesTests: XCTestCase {
             node("stack", .navigationStack, [.barBackgroundColor: .string("stack")], children: [
                 node("home", .page, [.backButtonTitle: .string("Home")]),
                 node("detail", .page, [.title: .string("Detail")], children: [
-                    node("items", .toolbarItems, children: [item("first", false), item("more", true), item("next", false)]),
+                    node("items", .toolbarItemGroup, children: [item("first", false), item("more", true), item("next", false)]),
                     node("view", .titleView, children: [node("words", .text)]),
                 ]),
             ]),
@@ -214,7 +214,7 @@ final class PagesTests: XCTestCase {
     private func toolbarGroup(
         _ id: String, _ items: [HostPatch], side: ToolbarSide = .trailing, order: Double = 0
     ) -> HostPatch {
-        node(id, .toolbarItems, [.side: .enumeration(side.rawValue), .order: .number(order)], children: items)
+        node(id, .toolbarItemGroup, [.side: .enumeration(side.rawValue), .order: .number(order)], children: items)
     }
 
     /// An action captioned `text`, where one is said.
@@ -361,7 +361,7 @@ final class PagesTests: XCTestCase {
 
         var window = HostPatch(id: .manual("window"), type: .window)
         var stack = HostPatch(id: .manual("stack"), type: .navigationStack)
-        var group = HostPatch(id: .manual("shared"), type: .toolbarItems)
+        var group = HostPatch(id: .manual("shared"), type: .toolbarItemGroup)
         var home = HostPatch(id: .manual("home"), type: .toolbarItem)
         home.properties = [.text: .string("Start")]
         group.children = .changed([home])
@@ -628,7 +628,7 @@ final class PagesTests: XCTestCase {
     func testAnArrangementsDeclarationsAreNotItsPages() throws {
         let runtime = runtime(stackWindow([
             node("a", .page), node("b", .page),
-            node("items", .toolbarItems, children: [node("save", .toolbarItem)]),
+            node("items", .toolbarItemGroup, children: [node("save", .toolbarItem)]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
         let stack = try XCTUnwrap(root.first(id: .manual("stack")))
@@ -644,7 +644,7 @@ final class PagesTests: XCTestCase {
     func testNoElementPlacesWhatIsDeclaredOnIt() throws {
         for type in [NodeType.page, .vStack] {
             let runtime = runtime(node("declarer", type, children: [
-                node("items", .toolbarItems),
+                node("items", .toolbarItemGroup),
                 node("view", .titleView, children: [node("field", .textField)]),
                 node("words", .text),
             ])) { _ in }

@@ -4,17 +4,17 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ToolbarItemsContract` on a host: a group a page declares stands on its bar while the page is shown; a group its
+/// `ToolbarItemGroupContract` on a host: a group a page declares stands on its bar while the page is shown; a group its
 /// stack declares stands on every page's bar, in place at the edge, and a page's own come and go with it; a group
 /// stands by its order and at its side; a group of an id joins the one around it, and an item of an outer item's id
 /// stands in its place.
-@_spi(Host) public enum ToolbarItemsTests: ConformanceFamily {
-    public static let name = "ToolbarItems"
+@_spi(Host) public enum ToolbarItemGroupTests: ConformanceFamily {
+    public static let name = "ToolbarItemGroup"
 
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("theVisiblePagesItemsStandOnItsBar", proves: [
-                Covered(ToolbarItemsContract.self), Covered(MenuItemElementContract.clicked, on: "ToolbarItem"),
+                Covered(ToolbarItemGroupContract.self), Covered(MenuItemElementContract.clicked, on: "ToolbarItem"),
             ]) { s in
                 let path = State(wrappedValue: [Int]())
                 let heard = Received<String>()
@@ -35,7 +35,7 @@
                 s.settle { heard.values.count == 2 }
                 s.expect(heard.values, ["save", "share"], "each page's own, while it is the visible one")
             },
-            ConformanceCase("aStacksGroupStandsOnEveryPageInPlace", proves: [Covered(ToolbarItemsContract.self)]) { s in
+            ConformanceCase("aStacksGroupStandsOnEveryPageInPlace", proves: [Covered(ToolbarItemGroupContract.self)]) { s in
                 let path = State(wrappedValue: [Int]())
                 s.start {
                     NavigationStack(path.projectedValue) {
@@ -58,7 +58,7 @@
                 try s.settle { try bar() == "|[save] [home]|" }
                 s.expect(try bar(), "|[save] [home]|", "back, as it stood: nothing restored, nothing left")
             },
-            ConformanceCase("groupsStandByTheirOrder", proves: [Covered(ToolbarItemsContract.order)]) { s in
+            ConformanceCase("groupsStandByTheirOrder", proves: [Covered(ToolbarItemGroupContract.order)]) { s in
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         DeclaringPage { [ToolbarItem("Save").id("save")] }
@@ -71,7 +71,7 @@
                 try s.settle { try bar() == "|[save] [home] [later]|" }
                 s.expect(try bar(), "|[save] [home] [later]|", "the group of order 1 after those of 0")
             },
-            ConformanceCase("aLeadingGroupStandsAtTheLeadingEdge", proves: [Covered(ToolbarItemsContract.side)]) { s in
+            ConformanceCase("aLeadingGroupStandsAtTheLeadingEdge", proves: [Covered(ToolbarItemGroupContract.side)]) { s in
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         DeclaringPage(side: .leading) { [ToolbarItem("Filter").id("filter")] }
@@ -84,7 +84,7 @@
                 s.expect(try bar(), "[filter]|[home]|")
             },
             ConformanceCase("aGroupJoinsTheOneOfItsIdAndAnItemStandsInPlace", proves: [
-                Covered(ToolbarItemsContract.self),
+                Covered(ToolbarItemGroupContract.self),
             ]) { s in
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {

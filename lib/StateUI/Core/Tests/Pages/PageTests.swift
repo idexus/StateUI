@@ -478,7 +478,7 @@ final class PageTests: XCTestCase {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.children.map { $0.type.name }, ["Text"], "the content alone")
-        XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarItems", "MenuBar"])
+        XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarItemGroup", "MenuBar"])
     }
 
     // MARK: - What the values look like
@@ -644,7 +644,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
         XCTAssertEqual(page.children.map(\.type), [.text])
         let content = page.children[0]
-        XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarItems, .menuBar])
+        XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarItemGroup, .menuBar])
 
         let item = try XCTUnwrap(content.children[1].children.first)
         XCTAssertEqual(item.props, [

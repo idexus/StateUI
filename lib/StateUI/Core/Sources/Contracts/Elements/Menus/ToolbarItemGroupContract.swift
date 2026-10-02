@@ -3,9 +3,9 @@
 
 /// A group of actions a page or an arrangement declares for its bar: one shared background where the platform draws
 /// one, joined by the groups of the same id declared further in.
-public enum ToolbarItemsContract: ElementContract {
+public enum ToolbarItemGroupContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = "ToolbarItems"
+    public static let nodeType: NodeType = "ToolbarItemGroup"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

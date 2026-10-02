@@ -524,6 +524,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = TabbedView([0, 1]) { _ in Text(\"tab\") }",
             contract: "_ = TabView([0, 1]) { _ in Text(\"tab\") }"),
         Road(
+            name: "a toolbar's group as ToolbarItems",
+            removed: "_ = ToolbarItemsContract.side",
+            contract: "_ = ToolbarItemGroupContract.side"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

@@ -66,7 +66,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testTabView() { conform(TabViewTests.self) }
     func testTitleView() { conform(TitleViewTests.self) }
     func testToolbarItem() { conform(ToolbarItemTests.self) }
-    func testToolbarItems() { conform(ToolbarItemsTests.self) }
+    func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
     func testWindow() { conform(WindowTests.self) }
     func testPropertyContainer() { conform(PropertyContainerTests.self) }
     func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 10)) }
