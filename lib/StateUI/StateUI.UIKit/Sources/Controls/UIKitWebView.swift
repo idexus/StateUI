@@ -26,14 +26,13 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
     var onProcessGone: (() -> Void)?
 
     /// Why the navigation under way began, and why the next begins where the program said so.
-    private var cause = WebNavigationEvent.unknown
-    private var asked: WebNavigationEvent?
+    private var cause = WebNavigationCause()
 
     /// The page last asked for by its address.
     private var shown: URLRequest?
 
-    /// The history as last said: whether there was a page behind and ahead.
-    private var said = (back: false, forward: false)
+    /// The way back and forward as last said.
+    private var history = WebHistory()
 
     init() {
         super.init(frame: .zero, configuration: WKWebViewConfiguration())
@@ -47,7 +46,7 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
 
     /// Shows the page at an address, or a document written in place, asking as `agent` - the platform's own where
     /// none; no source leaves the page as it is. A document with no address of its own is gone to as a `data:`
-    /// address, which WebKit keeps in the page's history as it keeps any other.
+    /// address (`WebDocument`).
     func show(_ source: WebViewSource?, userAgent agent: String?) {
         customUserAgent = agent
         switch source {
@@ -58,8 +57,7 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
         case .html(let document, let base?)?:
             loadHTMLString(document, baseURL: URL(string: base))
         case .html(let document, nil)?:
-            guard let url = URL(string: "data:text/html;charset=utf-8;base64," + Data(document.utf8).base64EncodedString())
-            else { return }
+            guard let url = URL(string: WebDocument.address(of: document)) else { return }
             shown = URLRequest(url: url)
             load(URLRequest(url: url))
         case nil:
@@ -70,7 +68,7 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
     /// Steps back or forward in the page's history, or loads the page again - the navigation's cause said as the
     /// program's.
     func step(_ event: WebNavigationEvent) {
-        asked = event
+        cause.ask(event)
         switch event {
         case .back: _ = goBack()
         case .forward: _ = goForward()
@@ -85,22 +83,19 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
         }
     }
 
-    /// Runs `script` in the page; `answered` hears what it evaluated to, as text - nothing for no value.
+    /// Runs `script` in the page; `answered` hears what it evaluated to, as text (`ScriptAnswer`) - nothing for no
+    /// value.
     func evaluate(_ script: String, answered: @escaping (String?) -> Void) {
         evaluateJavaScript(script) { value, _ in
-            MainActor.assumeIsolated { answered(Self.text(value)) }
+            MainActor.assumeIsolated { answered(ScriptAnswer.text(json: Self.json(value))) }
         }
     }
 
-    /// A script's value as text: words as they are, a number as it is written, anything else as JSON.
-    static func text(_ value: Any?) -> String? {
-        switch value {
-        case nil, is NSNull: nil
-        case let words as String: words
-        case let number as NSNumber: number.stringValue
-        case let other?:
-            (try? JSONSerialization.data(withJSONObject: other)).flatMap { String(data: $0, encoding: .utf8) }
-        }
+    /// The value WebKit hands back, written as JSON; nil for none.
+    static func json(_ value: Any?) -> String? {
+        guard let value, !(value is NSNull) else { return nil }
+        return (try? JSONSerialization.data(withJSONObject: value, options: .fragmentsAllowed))
+            .flatMap { String(data: $0, encoding: .utf8) }
     }
 
     // MARK: - What the page does
@@ -110,15 +105,13 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
         decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void
     ) {
         if action.targetFrame?.isMainFrame != false {
-            defer { asked = nil }
             let told: WebNavigationEvent = switch action.navigationType {
             case .backForward: backForward(to: action.request.url)
             case .reload: .refresh
             case .linkActivated, .formSubmitted, .formResubmitted, .other: .newPage
             @unknown default: .unknown
             }
-            cause = asked ?? told
-            onNavigating?(cause, action.request.url?.absoluteString ?? "")
+            onNavigating?(cause.begin(told: told), action.request.url?.absoluteString ?? "")
         }
         decisionHandler(.allow)
     }
@@ -134,27 +127,22 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
 
     func webView(_ web: WKWebView, didFinish navigation: WKNavigation?) {
         sayHistory()
-        onNavigated?(.success, cause, url?.absoluteString ?? "")
+        onNavigated?(.success, cause.current, url?.absoluteString ?? "")
     }
 
-    /// The history as it stands: a flag that changed is said - the way back before the way forward.
+    /// The history as it stands: a way that changed is said - the way back before the way forward.
     private func sayHistory() {
-        if canGoBack != said.back {
-            said.back = canGoBack
-            onCanGoBack?(canGoBack)
-        }
-        if canGoForward != said.forward {
-            said.forward = canGoForward
-            onCanGoForward?(canGoForward)
-        }
+        let changed = history.changes(back: canGoBack, forward: canGoForward)
+        if let back = changed.back { onCanGoBack?(back) }
+        if let forward = changed.forward { onCanGoForward?(forward) }
     }
 
     func webView(_ web: WKWebView, didFail navigation: WKNavigation?, withError error: any Error) {
-        onNavigated?(Self.result(error), cause, url?.absoluteString ?? "")
+        onNavigated?(Self.result(error), cause.current, url?.absoluteString ?? "")
     }
 
     func webView(_ web: WKWebView, didFailProvisionalNavigation navigation: WKNavigation?, withError error: any Error) {
-        onNavigated?(Self.result(error), cause, url?.absoluteString ?? "")
+        onNavigated?(Self.result(error), cause.current, url?.absoluteString ?? "")
     }
 
     func webViewWebContentProcessDidTerminate(_ web: WKWebView) {

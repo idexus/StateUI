@@ -255,6 +255,18 @@ final class UIKitDriver: HostDriver {
         }
     }
 
+    /// What a web view shows, by the address WebKit gives back: a document with no address of its own from the
+    /// `data:` address holding it.
+    private static func shown(by web: UIKitWebView) throws -> WebViewSource? {
+        guard let address = web.url?.absoluteString else { return nil }
+        let prefix = "data:text/html;charset=utf-8;base64,"
+        guard address.hasPrefix(prefix) else { return .url(address) }
+        guard let bytes = Data(base64Encoded: String(address.dropFirst(prefix.count))) else {
+            throw DriverCannot("read a document from an address that holds none")
+        }
+        return .html(String(decoding: bytes, as: UTF8.self), baseUrl: nil)
+    }
+
     /// Where the element's view stands in its window, as UIKit placed it.
     func place(of element: MountedElement) throws -> Rect {
         guard let view = (element.native as? UIKitElement)?.view, view.window != nil else {
@@ -313,6 +325,7 @@ final class UIKitDriver: HostDriver {
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
         case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
         case (.userAgent, let web as UIKitWebView): return web.customUserAgent.propValue
+        case (.source, let web as UIKitWebView): return try Self.shown(by: web)?.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.
         case (.isVisible, let view?):
             return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue

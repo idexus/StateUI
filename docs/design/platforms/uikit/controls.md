@@ -76,5 +76,6 @@ as it starts, with why, and as it ends, with how; whether there is a page
 behind and ahead, said as a whole as a navigation commits and ends - the way
 back first, and only a flag that changed; its web process dying. A step back,
 forward or a load again the program asks for carries that as its cause; a
-page still coming, which WebKit reloads without asking, is asked for again. A script's value answers as text: words
-as they are, a number as it is written, anything else as JSON.
+page still coming, which WebKit reloads without asking, is asked for again. A script's value is written as JSON
+and answers as text by the host layer's rule, as on every host
+(docs/design/host/web.md).
