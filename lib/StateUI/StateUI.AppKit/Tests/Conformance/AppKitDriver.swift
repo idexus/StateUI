@@ -187,6 +187,10 @@ final class AppKitDriver: HostDriver {
         layOutWindows()
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
+        if element.type == .pin { return try pinHolds(property, element) }
+        if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
+            return held
+        }
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
         if property == .barBackgroundColor { return try barHolds(element) }
         // Whether a page offers the way back: the window's toolbar holds its back item while the page shows.

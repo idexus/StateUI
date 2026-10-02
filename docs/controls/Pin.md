@@ -38,8 +38,8 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
-| UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
+| AppKit | ✅ | 6 ✅ | `MKMapView` / `MKAnnotation` |  |
+| UIKit | ✅ | 4 ✅ · 2 ✓ | `MKMapView` / `MKAnnotation` |  |
 | Android Views | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
 | WinUI 3 | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
 | GTK 4 | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
@@ -51,9 +51,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PinContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `address` | property | `String` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `label` | property | `String` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `location` | property | `Location` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `onPinClicked` (`pinClicked`) | event |  | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `type` | property | `PinType` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `address` | property | `String` | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  | Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `label` | property | `String` | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  | Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `location` | property | `Location` | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  | Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `onPinClicked` (`pinClicked`) | event |  | provider | ✅ | ✓ | 🧩 | 🧩 | 🧩 |  | UIKit: only through the host's own: open on Pin: the map's delegate told of the callout's button, no touch; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider | ✅ | ✓ | 🧩 | 🧩 | 🧩 |  | UIKit: only through the host's own: open on Pin: the map's delegate told of the callout's button, no touch; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `type` | property | `PinType` | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  | Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |

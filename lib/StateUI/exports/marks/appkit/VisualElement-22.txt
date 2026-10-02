@@ -15,7 +15,7 @@ Image.rotation: ✓ read rotation of Image: the host's own transform, checked ag
 ItemsView.layoutDirection: ✅
 Label.isAccessibilityHidden: ✅
 Line.accessibilityLabel: ✅
-Map.frame: not realized
+Map.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
 Path.width: ✅

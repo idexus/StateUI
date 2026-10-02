@@ -17,8 +17,8 @@ Label.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
 Line.width: ✅
-Map.isVisible: not realized
-Map.translationX: not realized
+Map.isVisible: ✅
+Map.translationX: ✓ read translationX of Map: the host's own transform, checked against the layer it composed itself
 Path.scale: ✓ read scale of Path: the host's own transform, checked against the layer it composed itself
 Picker.rotation: ✓ read rotation of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.layoutDirection: ✅

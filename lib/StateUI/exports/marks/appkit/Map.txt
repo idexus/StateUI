@@ -1,11 +1,11 @@
 # revision 1.1
-Map: not realized
-Map.frameChanged: not realized
-Map.isScrollEnabled: not realized
-Map.isTrafficEnabled: not realized
-Map.isZoomEnabled: not realized
-Map.mapClicked: not realized
-Map.mapType: not realized
-Map.moveToRegion: not realized
-Map.region: not realized
-Map.showsUserLocation: not realized
+Map: ✅
+Map.frameChanged: ✅
+Map.isScrollEnabled: ✅
+Map.isTrafficEnabled: ✅
+Map.isZoomEnabled: ✅
+Map.mapClicked: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
+Map.mapType: ✅
+Map.moveToRegion: ✅
+Map.region: ✅
+Map.showsUserLocation: ✅

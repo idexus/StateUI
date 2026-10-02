@@ -17,8 +17,9 @@
             ]) { s in
                 s.start { VStack { Map(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000).height(300).id("map") } }
 
-                s.expect(try s.held(MapContract.region, on: s.element("map")),
-                         MapRegion(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000))
+                let shown = try s.held(MapContract.region, on: s.element("map"))
+                s.expect(Self.shows(shown, MapRegion(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000)), true,
+                         "shows \(String(describing: shown))")
             },
             ConformanceCase("anActMovesTheMapToARegion", proves: [
                 Covered(MapContract.moveToRegion), Covered(MapContract.region),
@@ -37,13 +38,11 @@
 
                 try s.perform(.activate, on: s.element("move"))
                 s.settle { moved.values == ["moved"] }
-                try s.settle {
-                    try s.held(MapContract.region, on: s.element("map"))
-                        == MapRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2_000)
-                }
+                let krakow = MapRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2_000)
+                try s.settle { Self.shows(try s.held(MapContract.region, on: s.element("map")), krakow) }
                 s.expect(moved.values, ["moved"], "the act answered")
-                s.expect(try s.held(MapContract.region, on: s.element("map")),
-                         MapRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2_000))
+                let shown = try s.held(MapContract.region, on: s.element("map"))
+                s.expect(Self.shows(shown, krakow), true, "shows \(String(describing: shown))")
             },
             ConformanceCase("aClickOnTheMapIsHeardWhereItFell", proves: [Covered(MapContract.mapClicked)]) { s in
                 let heard = Received<Location>()
@@ -64,5 +63,14 @@
             Aspects.holds(MapContract.isTrafficEnabled, on: "Map", false, then: true),
             Aspects.holds(MapContract.showsUserLocation, on: "Map", false, then: true),
         ]
+    }
+
+    /// Whether a map showing `shown` shows `asked`: within about a meter of its centre and a percent of its radius,
+    /// as a map's engine fits a region to its view.
+    /// Design: docs/design/host/maps.md#what-a-map-shows
+    static func shows(_ shown: MapRegion?, _ asked: MapRegion) -> Bool {
+        guard let shown else { return false }
+        return abs(shown.latitude - asked.latitude) < 0.00001 && abs(shown.longitude - asked.longitude) < 0.00001
+            && abs(shown.radiusMeters - asked.radiusMeters) <= asked.radiusMeters / 100
     }
 }

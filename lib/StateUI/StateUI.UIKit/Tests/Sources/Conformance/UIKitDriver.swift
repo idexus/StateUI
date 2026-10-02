@@ -158,8 +158,13 @@ final class UIKitDriver: HostDriver {
     }
 
     private func performing(_ act: UserAct, on element: MountedElement) throws {
+        if element.type == .pin { return try performOnPin(act, element) }
         let view = (element.native as? UIKitElement)?.view
         switch (act, view) {
+        case (.tap(let count), let map as UIKitMapView):
+            // A tap on a map is the map's, and the view's where it hears taps too.
+            try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
+            map.tap(at: CGPoint(x: map.bounds.midX, y: map.bounds.midY))
         case (.activate, _) where element.parent?.type == .itemsView:
             guard let items = (element.parent?.native as? UIKitElement)?.view as? UIKitItemsView,
                   case .manual(let identity) = element.id
@@ -289,6 +294,10 @@ final class UIKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .pin { return try pinHolds(property, element) }
+        if let map = (element.native as? UIKitElement)?.view as? UIKitMapView, let held = mapHolds(property, map) {
+            return held
+        }
         if let held = try pageHolds(property, element) { return held }
         let view = (element.native as? UIKitElement)?.view
         switch (property, view) {

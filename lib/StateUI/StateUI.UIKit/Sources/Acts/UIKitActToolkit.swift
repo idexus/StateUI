@@ -90,9 +90,11 @@ final class UIKitActToolkit: ActToolkit {
     }
 
     /// A web view's own acts: stepping back or forward, loading again, running a script - which answers once the
-    /// page has run it; and an ItemsView's scroll to an item.
+    /// page has run it; an ItemsView's scroll to an item; and a map's slide to a region.
     func performOwn(_ call: HostActCall) -> Bool {
-        guard [.goBack, .goForward, .reload, .evaluateJavaScript, .scrollTo].contains(call.act) else { return false }
+        guard [.goBack, .goForward, .reload, .evaluateJavaScript, .scrollTo, .moveToRegion].contains(call.act) else {
+            return false
+        }
         let core = CoreLink()
         let element: MountedElement
         do {
@@ -109,6 +111,16 @@ final class UIKitActToolkit: ActToolkit {
             items.scroll(
                 to: call.arguments.value(1)?.string ?? "",
                 anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+            core.reply(call, [])
+            return true
+        }
+        if call.act == .moveToRegion {
+            guard let map = (element.native as? UIKitElement)?.view as? UIKitMapView else {
+                core.fail(call, "moveToRegion is an act of a Map", log: { UIKitRenderer.log.error($0) })
+                return true
+            }
+            let number = { call.arguments.value($0)?.number ?? 0 }
+            map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
             core.reply(call, [])
             return true
         }

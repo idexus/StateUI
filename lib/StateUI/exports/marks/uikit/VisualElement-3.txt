@@ -14,7 +14,7 @@ Image.scaleY: ✓ read scaleY of Image: the host's own transform, checked agains
 ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.pivotY: ✓ read pivotY of Label: the host's own transform, checked against the layer it composed itself
 Line.background: not realized
-Map.accessibilityHeadingLevel: not realized
+Map.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Path.style: ✅
 Picker.ignoresInput: ✅
 Polygon.isEnabled: not realized

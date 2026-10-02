@@ -45,11 +45,11 @@ Line.drop: not realized
 Line.frameChanged: ✅
 Line.horizontalAlignment: ✅
 Line.verticalAlignment: ✅
-Map.pointerEntered: not realized
-Map.pointerExited: not realized
-Map.pointerMoved: not realized
-Map.pointerPressed: not realized
-Map.pointerReleased: not realized
+Map.pointerEntered: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
+Map.pointerExited: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
+Map.pointerMoved: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
+Map.pointerPressed: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
+Map.pointerReleased: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Path.swipeDirection: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.swipeThreshold: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.swiped: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent

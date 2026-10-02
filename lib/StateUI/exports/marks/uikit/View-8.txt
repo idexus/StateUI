@@ -38,9 +38,9 @@ ItemsView.pinchUpdated: ✓ pinch on ItemsView: the view's listening handed the 
 Label.panYChannel: ✓ pan on Label: the view's listening handed the recognizer's states, no touch sent
 Line.tapCount: ✓ tap on Line: the view's listening handed the recognizer's states, no touch sent
 Line.tapped: ✓ tap on Line: the view's listening handed the recognizer's states, no touch sent
-Map.frameChanged: not realized
-Map.gridColumn: not realized
-Map.gridRow: not realized
+Map.frameChanged: ✅
+Map.gridColumn: ✅
+Map.gridRow: ✅
 Path.allowDrop: not realized
 Path.dragLeave: not realized
 Path.dragOver: not realized

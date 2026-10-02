@@ -353,26 +353,54 @@ Platforms/<Host>/main.swift
   StateUIWebView<Host>.register()         before the host runs
 ```
 
-## Provisional native surfaces
+## Maps
 
-The following declaration expresses a candidate semantic contract but is not
-part of the usable base surface until the platform matrix records a verified
-host. Its presence in the Swift module is not a support claim:
-
-| Surface | Semantic contract under evaluation |
-| --- | --- |
-| `Map` | provider-owned native map; initial region in the declaration; pins and tap reports; later region changes through an aim |
-
-`Map` is provider-owned because credentials, map engines, permissions, and
-feature sets are not one base-platform primitive. A host with no map of its
-own shows the one the application registers with it, the pins drawn as the
-map's children ([Children a control
+`Map` shows the platform's own map of the world: MapKit's on macOS, iOS and
+iPadOS. Where the platform has no map of its own - Android, Windows, Linux -
+the application registers the one it chooses with the host, with the
+provider and the key that map needs ([Children a control
 draws](../hosts/gtk.md#children-a-control-draws), on each host's page); the
-platform matrix marks it 🧩 there. It enters the base contract only if the
-native map toolkits preserve the stated ownership, input, accessibility and
-lifecycle semantics without growing a second UI system in the host; one that
-cannot meet that bar is removed vertically from API, vocabulary, tests,
-Gallery, and documentation.
+platform matrix marks it 🧩 there.
+
+A map opens on the region its initializer gives: a centre and a radius in
+meters, the circle the map shows whole whatever its proportions. Its pins are
+its children, and a tap is heard where it fell - on the map itself, on a pin,
+or on a pin's details:
+
+```swift
+@State var said = "tap the map or a pin"
+
+Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
+    .mapType(.hybrid)
+    .pins {
+        Pin("Wawel Castle")
+            .address("Wawel 5")
+            .type(.place)
+            .location(latitude: 50.0540, longitude: 19.9354)
+            .onPinClicked { said = "the castle" }
+            .onPinDetailsClicked { said = "the castle's details" }
+    }
+    .onMapClicked { place in said = "\(place.latitude), \(place.longitude)" }
+    .height(300)
+```
+
+The user pans and zooms the map as the platform lets them, and
+`isScrollEnabled` and `isZoomEnabled` say whether they may. The region in the
+initializer is where the map opens; moving it later is an act through its
+aim, which slides the map there:
+
+```swift
+@Aim(Map.self) var map
+
+Button("Kraków")
+    .onClicked { try await map.moveToRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2000) }
+```
+
+`showsUserLocation(true)` draws the user's own position. The platform asks
+the user, once, for leave to know it, in words the application gives in its
+head's property list: `NSLocationWhenInUseUsageDescription` in
+`Platforms/UIKit/Info.plist` on iOS and iPadOS, `NSLocationUsageDescription`
+in the Mac application's. Without them the position is never drawn.
 
 ## Collections
 

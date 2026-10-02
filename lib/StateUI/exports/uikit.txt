@@ -56,7 +56,6 @@ Grid
   clipsContent
   columnSpacing
   columns
-  ignoresInput
   letsInputThrough
   padding
   rowSpacing
@@ -67,7 +66,6 @@ Grid
 HStack
   background
   clipsContent
-  ignoresInput
   letsInputThrough
   padding
   shape
@@ -119,6 +117,14 @@ Line
   x2
   y1
   y2
+Map
+  isScrollEnabled
+  isTrafficEnabled
+  isZoomEnabled
+  mapType
+  region
+  showsUserLocation
+  mapClicked()
 Path
   aspect
   data
@@ -139,6 +145,13 @@ Picker
   closed()
   opened()
   selectedIndexChanged()
+Pin
+  address
+  label
+  location
+  type
+  pinClicked()
+  pinDetailsClicked()
 Polygon
   aspect
   fill
@@ -218,6 +231,7 @@ SearchField
   maximumLength
   placeholder
   placeholderColor
+  returnKey
   selectionLength
   text
   textCase
@@ -279,7 +293,9 @@ TextField
   maximumLength
   placeholder
   placeholderColor
+  returnKey
   selectionLength
+  showsClearButton
   text
   textCase
   textColor
@@ -292,7 +308,6 @@ TimePicker
 VStack
   background
   clipsContent
-  ignoresInput
   letsInputThrough
   padding
   shape
@@ -310,7 +325,6 @@ WebView
 ZStack
   background
   clipsContent
-  ignoresInput
   letsInputThrough
   padding
   shape
@@ -380,6 +394,7 @@ ZStack
   goForward()
   handlerFailed()
   hideOnScreenKeyboard()
+  moveToRegion()
   persistValue()
   prompt()
   reload()

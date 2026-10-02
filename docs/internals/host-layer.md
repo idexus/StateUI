@@ -34,13 +34,15 @@ lib/StateUI/StateUI.Host/Sources/
   Acts/          answering acts, questions for the user, the application's acts
   Items/         what a platform's collection holds of an ItemsView, and tells back
   Web/           the web view's rules: its history, a script's answer, a document's address
+  Maps/          how a map frames a region, and reads back the one it shows
   Environment/   the machine a host stands on, in the core's terms
 ```
 
 The design notes give each part's reasons: [the runtime](../design/host/runtime.md),
 [the mounted tree](../design/host/tree.md), [pages](../design/host/pages.md),
 [layout](../design/host/layout.md), [motion](../design/host/motion.md),
-[patches](../design/host/patches.md) and [conformance](../design/host/conformance.md).
+[patches](../design/host/patches.md), [maps](../design/host/maps.md) and
+[conformance](../design/host/conformance.md).
 The [glossary](../design/glossary.md) maps StateUI's words to the common ones.
 
 ## What a host provides

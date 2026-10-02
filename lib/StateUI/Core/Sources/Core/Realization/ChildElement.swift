@@ -36,8 +36,8 @@
     /// The child, as the host keeps it.
     let source: HostChild
 
-    /// The child the host keeps.
-    init(_ source: HostChild) {
+    /// The child the host keeps - the one a mounted element gives as a drawn child.
+    public init(_ source: HostChild) {
         self.source = source
     }
 

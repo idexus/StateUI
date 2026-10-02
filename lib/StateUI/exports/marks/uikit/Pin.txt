@@ -1,8 +1,8 @@
 # revision 1.1
-Pin: not realized
-Pin.address: not realized
-Pin.label: not realized
-Pin.location: not realized
-Pin.pinClicked: not realized
-Pin.pinDetailsClicked: not realized
-Pin.type: not realized
+Pin: ✅
+Pin.address: ✅
+Pin.label: ✅
+Pin.location: ✅
+Pin.pinClicked: ✓ open on Pin: the map's delegate told of the callout's button, no touch
+Pin.pinDetailsClicked: ✓ open on Pin: the map's delegate told of the callout's button, no touch
+Pin.type: ✅

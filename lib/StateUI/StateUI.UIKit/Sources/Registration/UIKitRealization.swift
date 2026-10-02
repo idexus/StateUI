@@ -10,9 +10,7 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
-    static let unrealized: Set<String> = [
-        "Map", "Pin",
-    ]
+    static let unrealized: Set<String> = []
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
     /// tier's record reaches them: only a member the entry's own records name is realized.
@@ -101,7 +99,7 @@ enum UIKitRealization {
         let registry = UIKitRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + UIKitRegistrations.webActs + UIKitRegistrations.itemsActs).map(\.name))
+            acts: (HostActs.performed + UIKitRegistrations.webActs + UIKitRegistrations.itemsActs + [MapContract.moveToRegion]).map(\.name))
     }
 
     /// What UIKit realizes, member by member: these records before what its registry says.

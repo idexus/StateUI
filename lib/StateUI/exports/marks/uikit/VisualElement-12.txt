@@ -14,7 +14,7 @@ ItemsView.ignoresInput: ✅
 Label.isEnabled: ✅
 Label.zIndex: not realized
 Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
-Map.rotationY: not realized
+Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
 Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
 Picker.background: not realized
 Polygon.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level

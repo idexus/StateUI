@@ -15,9 +15,9 @@ Image.layoutDirection: ✅
 ItemsView.isAccessibilityHidden: ✅
 Label.accessibilityLabel: ✅
 Line.frame: ✅
-Map.frameChanged: not realized
-Map.height: not realized
-Map.width: not realized
+Map.frameChanged: ✅
+Map.height: ✅
+Map.width: ✅
 Path.isVisible: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself
 Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself

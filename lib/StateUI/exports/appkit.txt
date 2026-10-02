@@ -92,6 +92,14 @@ Line
   x2
   y1
   y2
+Map
+  isScrollEnabled
+  isTrafficEnabled
+  isZoomEnabled
+  mapType
+  region
+  showsUserLocation
+  mapClicked()
 Page
   padding
 Path
@@ -121,6 +129,13 @@ Picker
   closed()
   opened()
   selectedIndexChanged()
+Pin
+  address
+  label
+  location
+  type
+  pinClicked()
+  pinDetailsClicked()
 Polygon
   aspect
   fill
@@ -340,6 +355,7 @@ VStack
   focus()
   handlerFailed()
   hideOnScreenKeyboard()
+  moveToRegion()
   persistSceneValue()
   persistValue()
   prompt()

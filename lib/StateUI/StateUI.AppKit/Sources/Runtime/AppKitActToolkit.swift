@@ -100,19 +100,25 @@ final class AppKitActToolkit: ActToolkit {
         return true
     }
 
-    /// An ItemsView's scroll to an item.
+    /// An ItemsView's scroll to an item, and a map's slide to a region.
     func performOwn(_ call: HostActCall) -> Bool {
-        guard call.act == .scrollTo else { return false }
+        guard call.act == .scrollTo || call.act == .moveToRegion else { return false }
         let core = CoreLink()
         do {
             let element = try renderer.runtime.tree.aimed(call)
-            guard let items = (element.native as? AppKitElement)?.view as? AppKitItemsView else {
-                core.fail(call, "scrollTo is an act of an ItemsView", log: { AppKitRenderer.log.error($0) })
+            switch (call.act, (element.native as? AppKitElement)?.view) {
+            case (.scrollTo, let items as AppKitItemsView):
+                items.scroll(
+                    to: call.arguments.value(1)?.string ?? "",
+                    anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+            case (.moveToRegion, let map as AppKitMapView):
+                let number = { call.arguments.value($0)?.number ?? 0 }
+                map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
+            default:
+                let owner = call.act == .scrollTo ? "an ItemsView" : "a Map"
+                core.fail(call, "\(call.act.name) is an act of \(owner)", log: { AppKitRenderer.log.error($0) })
                 return true
             }
-            items.scroll(
-                to: call.arguments.value(1)?.string ?? "",
-                anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
             core.reply(call, [])
         } catch {
             core.fail(call, error.reason, log: { AppKitRenderer.log.error($0) })

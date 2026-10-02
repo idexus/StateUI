@@ -18,7 +18,7 @@ Image.translationX: ✓ read translationX of Image: the host's own transform, ch
 ItemsView.scale: ✓ read scale of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.rotation: ✓ read rotation of Label: the host's own transform, checked against the layer it composed itself
 Line.layoutDirection: ✅
-Map.isAccessibilityHidden: not realized
+Map.isAccessibilityHidden: ✅
 Path.accessibilityLabel: ✅
 Picker.frame: ✅
 Polygon.frameChanged: ✅

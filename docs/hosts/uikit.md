@@ -199,9 +199,9 @@ StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map
 }
 ```
 
-A library element a host does not realize - a `Map` where the platform has no
-map of its own - is registered the same way, with the provider and the key it
-needs.
+This host draws a `Map` with MapKit itself. A library element a host does
+not realize - a `Map` on a platform with no map of its own - is registered
+the same way, with the provider and the key it needs.
 
 ### An act
 

@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (77) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `WKWebView` | not realized |
-| UIKit | ✅ | 38 ✅ · 26 ✓ | `WKWebView` |  |
+| UIKit | ✅ | 39 ✅ · 26 ✓ | `WKWebView` |  |
 | Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `WebView` |  |
 | WinUI 3 | ✅ | 20 ✅ · 15 – | `WebView2`, a backend |  |
 | GTK 4 | ✅ | 52 ✅ · 12 ✓ · 1 – | WebKitGTK `WebKitWebView`, a backend |  |
@@ -73,7 +73,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  | ✅ |  | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
+| `accessibilityIdentifier` | property | `String` | native |  | ✅ | ✅ |  | – |  | not realized; GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -121,35 +121,35 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `area` | property | `Area` | structure |  | ✅ | ✅ | ✅ | ✅ |  |  |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `area` | property | `Area` | structure |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
+| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `dragStarting` | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
-| `gridColumn` | property | `Int` | stateUI |  | ✅ | ✅ | ✅ | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  | ✅ | ✅ | ✅ | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI |  | ✅ | ✅ | ✅ | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  | ✅ | ✅ | ✅ | ✅ |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  | ✅ | ✅ | ✅ | ✅ |  |  |
-| `margin` | property | `Insets` | native |  | ✅ | ✅ | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  | ✓ | ☑️ | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; Android Views: The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `panXChannel` | property | `Int` | structure |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `panYChannel` | property | `Int` | structure |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  | ✓ | ✅ | – | ✓ |  | UIKit: only through the host's own: pinch on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).; GTK 4: only through the host's own: pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPointerExited` (`pointerExited`) | event |  | native |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `swipeDirection` | property | `SwipeDirection` | structure |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `swipeThreshold` | property | `Double` | structure |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `tapCount` | property | `Int` | structure |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onTapped` (`tapped`) | event |  | native |  | ✓ | ✅ | – | ✅ |  | UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `verticalAlignment` | property | `Alignment` | native |  | ✅ | ✅ | ✅ | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
+| `gridColumnSpan` | property | `Int` | stateUI |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
+| `gridRow` | property | `Int` | stateUI |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
+| `gridRowSpan` | property | `Int` | stateUI |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
+| `horizontalAlignment` | property | `Alignment` | native |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
+| `margin` | property | `Insets` | native |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
+| `panTouchCount` | property | `Int` | structure |  | ✓ | ☑️ | – | ✅ |  | not realized; UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; Android Views: The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `panXChannel` | property | `Int` | structure |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `panYChannel` | property | `Int` | structure |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  | ✓ | ✅ | – | ✓ |  | not realized; UIKit: only through the host's own: pinch on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).; GTK 4: only through the host's own: pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerExited` (`pointerExited`) | event |  | native |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `swipeDirection` | property | `SwipeDirection` | structure |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `swipeThreshold` | property | `Double` | structure |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `tapCount` | property | `Int` | structure |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onTapped` (`tapped`) | event |  | native |  | ✓ | ✅ | – | ✅ |  | not realized; UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `verticalAlignment` | property | `Alignment` | native |  | ✅ | ✅ | ✅ | ✅ |  | not realized |

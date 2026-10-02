@@ -57,10 +57,10 @@ struct MapSample: SampleContent, ExampleContent {
                 SwitchRow("Traffic", $traffic)
 
                 SwitchRow("Show me", $showsMe)
-
-                // Both at once, which is what "locked" means to a user.
-                SwitchRow("Locked", $locked)
             }
+
+            // Both at once, which is what "locked" means to a user.
+            SwitchRow("Locked", $locked)
 
             // Where it OPENS is the initializer's - kept until the platform's
             // map has connected. Moving later is the act the buttons perform.
@@ -132,9 +132,12 @@ struct MapSample: SampleContent, ExampleContent {
                 SwitchRow("Traffic", $traffic)
 
                 SwitchRow("Show me", $showsMe)
-
-                SwitchRow("Locked", $locked)
             }
+            .spacing(16)
+            .horizontalAlignment(.center)
+
+            SwitchRow("Locked", $locked)
+                .horizontalAlignment(.center)
 
             // The opening region is the INITIALIZER's, not an `.onCreated` act:
             // written here it is kept until the platform's map has connected,

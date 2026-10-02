@@ -105,7 +105,7 @@ of its members each meets, and why a cell is empty.
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Label](controls/Label.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Map](controls/Map.md) | provider |  |  | 🧩 | 🧩 | 🧩 |  |
+| [Map](controls/Map.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  |
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -116,7 +116,7 @@ of its members each meets, and why a cell is empty.
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Picker](controls/Picker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Pin](controls/Pin.md) | provider |  |  | 🧩 | 🧩 | 🧩 |  |
+| [Pin](controls/Pin.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  |
 | [Polygon](controls/Polygon.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Polyline](controls/Polyline.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ProgressBar](controls/ProgressBar.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -437,7 +437,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ItemsView](controls/ItemsView.md) | 76 | 34 ✅ · 1 ☑️ · 29 ✓ | 31 ✅ · 29 ✓ · 3 – | 61 ✅ · 1 ☑️ · 1 ✓ | 60 ✅ | 51 ✅ · 11 ✓ · 1 – |  |
 | [Label](controls/Label.md) | 81 | 39 ✅ · 1 ☑️ · 25 ✓ · 4 – | 41 ✅ · 25 ✓ · 3 – | 62 ✅ · 1 ☑️ · 3 – | 63 ✅ · 3 – | 52 ✅ · 13 ✓ · 4 – |  |
 | [Line](controls/Line.md) | 80 | 30 ✅ · 1 ☑️ · 25 ✓ · 3 – | 32 ✅ · 25 ✓ · 3 – | 54 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 – | 48 ✅ · 11 ✓ · 4 – |  |
-| [Map](controls/Map.md) | 74 |  |  | 74 🧩 | 74 🧩 | 74 🧩 |  |
+| [Map](controls/Map.md) | 74 | 33 ✅ · 1 ☑️ · 26 ✓ · 3 – | 33 ✅ · 26 ✓ · 3 – | 74 🧩 | 74 🧩 | 74 🧩 |  |
 | [Path](controls/Path.md) | 77 | 27 ✅ · 1 ☑️ · 25 ✓ · 3 – | 29 ✅ · 25 ✓ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 45 ✅ · 11 ✓ · 4 – |  |
 | [Picker](controls/Picker.md) | 82 | 39 ✅ · 1 ☑️ · 26 ✓ · 1 – | 27 ✅ · 29 ✓ · 3 – | 53 ✅ · 1 ☑️ · 2 ✓ · 3 – | 65 ✅ | 49 ✅ · 11 ✓ · 7 – |  |
 | [Polygon](controls/Polygon.md) | 78 | 28 ✅ · 1 ☑️ · 25 ✓ · 3 – | 30 ✅ · 25 ✓ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 – | 46 ✅ · 11 ✓ · 4 – |  |
@@ -454,12 +454,12 @@ Every control, and every part an application, its windows and its pages are made
 | [TextField](controls/TextField.md) | 90 | 43 ✅ · 1 ☑️ · 26 ✓ · 3 – | 50 ✅ · 25 ✓ | 71 ✅ · 1 ☑️ · 2 – | 69 ✅ · 1 ☑️ | 60 ✅ · 12 ✓ · 1 – |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 35 ✅ · 1 ☑️ · 26 ✓ · 1 – | 32 ✅ · 25 ✓ | 59 ✅ · 1 ☑️ · 1 ✓ · 3 – | 58 ✅ | 45 ✅ · 11 ✓ · 1 – |  |
 | [VStack](controls/VStack.md) | 74 | 30 ✅ · 25 ✓ · 3 – | 32 ✅ · 25 ✓ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 11 ✓ · 4 – |  |
-| [WebView](controls/WebView.md) | 77 |  | 38 ✅ · 26 ✓ | 59 ✅ · 1 ☑️ · 3 – | 20 ✅ · 15 – | 52 ✅ · 12 ✓ · 1 – |  |
+| [WebView](controls/WebView.md) | 77 |  | 39 ✅ · 26 ✓ | 59 ✅ · 1 ☑️ · 3 – | 20 ✅ · 15 – | 52 ✅ · 12 ✓ · 1 – |  |
 | [ZStack](controls/ZStack.md) | 73 | 29 ✅ · 25 ✓ · 3 – | 31 ✅ · 25 ✓ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 11 ✓ · 4 – |  |
-| ✅ |  | 985 | 1025 | 1735 | 1788 | 1466 |  |
-| ✓ |  | 768 | 793 | 7 | 0 | 359 |  |
-| – |  | 64 | 78 | 85 | 66 | 87 |  |
-| **Met** | 2447 | **1817** | **1896** | **1827** | **1854** | **1912** |  |
+| ✅ |  | 1018 | 1059 | 1735 | 1788 | 1466 |  |
+| ✓ |  | 794 | 819 | 7 | 0 | 359 |  |
+| – |  | 67 | 81 | 85 | 66 | 87 |  |
+| **Met** | 2447 | **1879** | **1959** | **1827** | **1854** | **1912** |  |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 |  |
 
 ### Application structure
@@ -476,7 +476,7 @@ Every control, and every part an application, its windows and its pages are made
 | [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [Page](controls/Page.md) | 12 | 8 ✅ | 12 ✅ | 7 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – |  |
-| [Pin](controls/Pin.md) | 6 |  |  | 6 🧩 | 6 🧩 | 6 🧩 |  |
+| [Pin](controls/Pin.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [Span](controls/Span.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
 | [Spans](controls/Spans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -486,10 +486,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](controls/Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – |  |
-| ✅ |  | 64 | 67 | 40 | 113 | 78 |  |
-| ✓ |  | 15 | 10 | 10 | 0 | 7 |  |
+| ✅ |  | 70 | 71 | 40 | 113 | 78 |  |
+| ✓ |  | 15 | 12 | 10 | 0 | 7 |  |
 | – |  | 0 | 8 | 13 | 0 | 28 |  |
-| **Met** | 125 | **79** | **85** | **63** | **113** | **113** |  |
+| **Met** | 125 | **85** | **91** | **63** | **113** | **113** |  |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 <!-- dictionary:end -->
 
@@ -544,7 +544,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ |  |
 | [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
-| [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 |  |  | 7 🧩 | 7 🧩 | 7 🧩 |  |
+| [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 |  |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [ModalStack](controls/ModalStack.md) | `popped` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
@@ -552,7 +552,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 8 ✅ | 10 ✅ | 7 ✅ · 1 – | 8 ✅ | 7 ✅ |  |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | 7 | 3 ✅ · 1 ✓ | 4 ✓ | 2 ✅ · 2 ✓ | 7 ✅ | 3 ✅ · 4 – |  |
-| [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` | 6 |  |  | 6 🧩 | 6 🧩 | 6 🧩 |  |
+| [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 |  |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
