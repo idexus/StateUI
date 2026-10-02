@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>32 ✅ · 25 ✓</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 1 ✓ · 3 –</td><td><code>TimePickerDialog</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>58 ✅</td><td><code>TimePicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>46 ✅ · 11 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkPopover</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>51 ✅ · 12 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkPopover</code></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;input type=time&gt;</code></td></tr>
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
@@ -48,17 +48,17 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerCont
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">⌛</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit, WinUI 3: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>format</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✓</td><td align="center">·</td><td align="center">⌛</td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit: not realized<br>Android Views: only through the host's own: read format of TimePicker: the pattern the relay writes the field in<br>WinUI 3: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">⌛</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>format</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✓</td><td align="center">·</td><td align="center">·</td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit: not realized<br>Android Views: only through the host's own: read format of TimePicker: the pattern the relay writes the field in<br>WinUI 3: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock<br>GTK 4: cannot read format of TimePicker - GTK's clock holds no format: it writes hours and minutes in the user's own clock</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit, WinUI 3: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">⌛</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit, WinUI 3: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>time</code></td><td>property</td><td><code>ClockTime</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onTimeChanged</code> (<code>timeChanged</code>)</td><td>event</td><td><code>ClockTime</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>time</code></td><td>property</td><td><code>ClockTime</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onTimeChanged</code> (<code>timeChanged</code>)</td><td>event</td><td><code>ClockTime</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action<br>GTK 4: only through the host's own: pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -153,7 +153,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDropCompleted</code> (<code>dropCompleted</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>gridColumn</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>gridColumnSpan</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>gridRow</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>

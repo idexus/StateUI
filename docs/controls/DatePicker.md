@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>31 ✅ · 25 ✓ · 3 –</td><td><code>UIDatePicker</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 3 ✓ · 3 –</td><td><code>DatePickerDialog</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>63 ✅ · 1 ☑️</td><td><code>CalendarDatePicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>46 ✅ · 11 ✓ · 1 –</td><td><code>GtkCalendar</code> in a <code>GtkPopover</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 13 ✓ · 1 –</td><td><code>GtkCalendar</code> in a <code>GtkPopover</code></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;input type=date&gt;</code></td></tr>
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
@@ -49,20 +49,20 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/DatePickerCont
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>date</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onDateChanged</code> (<code>dateChanged</code>)</td><td>event</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
+<tbody><tr></tr><tr><td><code>date</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDateChanged</code> (<code>dateChanged</code>)</td><td>event</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pickDate on DatePicker: the host's change handler called, not the picker's action</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>format</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✓</td><td align="center">☑️</td><td align="center">⌛</td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit: not realized<br>Android Views: only through the host's own: read format of DatePicker: the pattern the relay writes the field in<br>WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d".</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>format</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✓</td><td align="center">☑️</td><td align="center">☑️</td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit: not realized<br>Android Views: only through the host's own: read format of DatePicker: the pattern the relay writes the field in<br>WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d".<br>GTK 4: GTK writes "D" and "d" in the user's own way, and any other pattern as "d".</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>maximumDate</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
-<tr><td colspan="9">Android Views: only through the host's own: read maximumDate of DatePicker: the bounds the relay hands its calendar as it opens</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>minimumDate</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
-<tr><td colspan="9">Android Views: only through the host's own: read minimumDate of DatePicker: the bounds the relay hands its calendar as it opens</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximumDate</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">Android Views: only through the host's own: read maximumDate of DatePicker: the bounds the relay hands its calendar as it opens<br>GTK 4: only through the host's own: read maximumDate of DatePicker: the range the host holds the day in: GtkCalendar holds none</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>minimumDate</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">Android Views: only through the host's own: read minimumDate of DatePicker: the bounds the relay hands its calendar as it opens<br>GTK 4: only through the host's own: read minimumDate of DatePicker: the range the host holds the day in: GtkCalendar holds none</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit: not realized</td></tr></tbody>
 </table>
 
@@ -158,7 +158,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDropCompleted</code> (<code>dropCompleted</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>gridColumn</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>gridColumnSpan</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>gridRow</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>

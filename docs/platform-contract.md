@@ -97,7 +97,7 @@ of its members each meets, and why a cell is empty.
 | [CheckBox](controls/CheckBox.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ColorBox](controls/ColorBox.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ContextMenu](controls/ContextMenu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
+| [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Ellipse](controls/Ellipse.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Grid](controls/Grid.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [HStack](controls/HStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -134,7 +134,7 @@ of its members each meets, and why a cell is empty.
 | [TabbedView](controls/TabbedView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
+| [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | structure | ✓ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ |  |
@@ -429,7 +429,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Canvas](controls/Canvas.md) | 70 | 27 ✅ · 1 ☑️ · 28 ✓ · 3 – | 27 ✅ · 28 ✓ · 3 – | 54 ✅ · 1 ☑️ · 3 – | 52 ✅ · 3 – | 44 ✅ · 11 ✓ · 4 – |  |
 | [CheckBox](controls/CheckBox.md) | 69 | 33 ✅ · 1 ☑️ · 25 ✓ | 28 ✅ · 26 ✓ · 3 – | 54 ✅ · 1 ☑️ · 3 – | 56 ✅ | 45 ✅ · 12 ✓ · 1 – |  |
 | [ColorBox](controls/ColorBox.md) | 68 | 28 ✅ · 25 ✓ · 3 – | 28 ✅ · 25 ✓ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 42 ✅ · 11 ✓ · 4 – |  |
-| [DatePicker](controls/DatePicker.md) | 80 | 37 ✅ · 1 ☑️ · 26 ✓ · 1 – | 31 ✅ · 25 ✓ · 3 – | 59 ✅ · 1 ☑️ · 3 ✓ · 3 – | 63 ✅ · 1 ☑️ | 46 ✅ · 11 ✓ · 1 – |  |
+| [DatePicker](controls/DatePicker.md) | 80 | 37 ✅ · 1 ☑️ · 26 ✓ · 1 – | 31 ✅ · 25 ✓ · 3 – | 59 ✅ · 1 ☑️ · 3 ✓ · 3 – | 63 ✅ · 1 ☑️ | 52 ✅ · 1 ☑️ · 13 ✓ · 1 – |  |
 | [Ellipse](controls/Ellipse.md) | 76 | 26 ✅ · 1 ☑️ · 25 ✓ · 3 – | 28 ✅ · 25 ✓ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 58 ✅ · 3 – | 45 ✅ · 11 ✓ · 4 – |  |
 | [Grid](controls/Grid.md) | 77 | 33 ✅ · 25 ✓ · 3 – | 35 ✅ · 25 ✓ · 3 – | 56 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 48 ✅ · 11 ✓ · 4 – |  |
 | [HStack](controls/HStack.md) | 74 | 30 ✅ · 25 ✓ · 3 – | 32 ✅ · 25 ✓ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 45 ✅ · 11 ✓ · 4 – |  |
@@ -452,14 +452,14 @@ Every control, and every part an application, its windows and its pages are made
 | [Switch](controls/Switch.md) | 69 | 32 ✅ · 1 ☑️ · 25 ✓ | 29 ✅ · 25 ✓ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ | 45 ✅ · 12 ✓ · 1 – |  |
 | [TextEditor](controls/TextEditor.md) | 87 | 47 ✅ · 1 ☑️ · 26 ✓ · 1 – | 48 ✅ · 25 ✓ | 69 ✅ · 1 ☑️ · 1 – | 70 ✅ | 59 ✅ · 1 ☑️ · 12 ✓ · 1 – |  |
 | [TextField](controls/TextField.md) | 90 | 43 ✅ · 1 ☑️ · 26 ✓ · 3 – | 50 ✅ · 25 ✓ | 71 ✅ · 1 ☑️ · 2 – | 69 ✅ · 1 ☑️ | 61 ✅ · 12 ✓ · 1 – |  |
-| [TimePicker](controls/TimePicker.md) | 78 | 35 ✅ · 1 ☑️ · 26 ✓ · 1 – | 32 ✅ · 25 ✓ | 59 ✅ · 1 ☑️ · 1 ✓ · 3 – | 58 ✅ | 46 ✅ · 11 ✓ · 1 – |  |
+| [TimePicker](controls/TimePicker.md) | 78 | 35 ✅ · 1 ☑️ · 26 ✓ · 1 – | 32 ✅ · 25 ✓ | 59 ✅ · 1 ☑️ · 1 ✓ · 3 – | 58 ✅ | 51 ✅ · 12 ✓ · 1 – |  |
 | [VStack](controls/VStack.md) | 74 | 30 ✅ · 25 ✓ · 3 – | 32 ✅ · 25 ✓ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 45 ✅ · 11 ✓ · 4 – |  |
 | [WebView](controls/WebView.md) | 77 |  | 39 ✅ · 26 ✓ | 59 ✅ · 1 ☑️ · 3 – | 20 ✅ · 15 – | 53 ✅ · 12 ✓ · 1 – |  |
 | [ZStack](controls/ZStack.md) | 73 | 29 ✅ · 25 ✓ · 3 – | 31 ✅ · 25 ✓ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 44 ✅ · 11 ✓ · 4 – |  |
-| ✅ |  | 1018 | 1059 | 1735 | 1788 | 1496 |  |
-| ✓ |  | 794 | 819 | 7 | 0 | 359 |  |
+| ✅ |  | 1018 | 1059 | 1735 | 1788 | 1507 |  |
+| ✓ |  | 794 | 819 | 7 | 0 | 362 |  |
 | – |  | 67 | 81 | 85 | 66 | 87 |  |
-| **Met** | 2447 | **1879** | **1959** | **1827** | **1854** | **1942** |  |
+| **Met** | 2447 | **1879** | **1959** | **1827** | **1854** | **1956** |  |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 |  |
 
 ### Application structure
@@ -538,7 +538,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 4 ✅ | 4 ✅ | 4 ✅ |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
-| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ |  |  |
+| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ |  |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ |  |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ |  |
@@ -569,7 +569,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ |  | 2 ✅ | 2 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 2 – | 4 ✅ | 3 ✅ · 1 – | 1 ☑️ | 2 ✅ |  |
-| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ |  |  |
+| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 6 ✅ · 1 ✓ | 5 ✅ | 7 ✅ | 6 ✅ · 1 ✓ |  |
