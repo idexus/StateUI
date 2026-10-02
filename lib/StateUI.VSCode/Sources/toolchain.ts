@@ -162,6 +162,11 @@ function served(version: string | undefined, minimum: string, where?: string): s
     return atLeast(version, minimum) ? (where ? `${version} (${where})` : version) : new TooOld(version);
 }
 
+/** The first Apple Development identity `security find-identity -v -p codesigning` lists, by its name. */
+export function developmentIdentityIn(text: string): string | undefined {
+    return text.match(/"(Apple Development: [^"]+)"/)?.[1];
+}
+
 /** An NDK's release in its `source.properties`: "30.0.16248370". */
 export function ndkRevisionIn(properties: string): string | undefined {
     return properties.match(/^Pkg\.Revision\s*=\s*(\S+)/m)?.[1];
@@ -321,6 +326,12 @@ function macChecks(): Check[] {
             component: "an iOS 26 or newer simulator runtime", neededBy: "UIKit",
             advice: "Install the iOS platform in Xcode's Settings, Components.",
             look: async () => served(newestIOSRuntime((await run("xcrun", ["simctl", "list", "runtimes", "available", "-j"])) ?? ""), "26"),
+        },
+        {
+            component: "an Apple Development certificate", neededBy: "UIKit on an iPhone or iPad",
+            advice: "Sign in with your Apple Account in Xcode's Settings, Accounts, and make a development certificate there;"
+                + " Xcode makes a device's profile the first time it runs an application on it.",
+            look: async () => developmentIdentityIn((await run("security", ["find-identity", "-v", "-p", "codesigning"])) ?? ""),
         },
         {
             component: "Swift 6.4 from swift.org, with the Swift SDK for Android of the same release", neededBy: "Android",

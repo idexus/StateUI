@@ -27,7 +27,7 @@ import { cloneCommand, groupNameProblem, listReleases, releaseDirectory, release
 import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
 import {
-    atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report, svgLoaderIn,
+    atLeast, checkToolchain, debuggerFinding, developmentIdentityIn, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report, svgLoaderIn,
     lldbDapFailure, svgLoaderInGlycin, xcodeVersion,
 } from "../Sources/toolchain";
 
@@ -435,7 +435,7 @@ export async function run(): Promise<void> {
         {
             const winUISuites = findSuites(root.uri.fsPath, "winui");
             say(`winui suites: ${winUISuites.map((each) => each.label).join(", ")}`);
-            const own = winUISuites.find((each) => each.label === "lib/StateUI/StateUI.WinUI");
+            const own = winUISuites.find((each) => each.label === "lib/StateUI/StateUI.WinUI/Testing");
             check("winui runs the core and the Gallery as plain Swift, its own package by test-winui.ps1, and no AppKit or Android",
                 winUISuites.some((each) => each.label === "StateUI")
                 && own?.command === "powershell" && own.args[own.args.length - 1].endsWith("test-winui.ps1")
@@ -665,8 +665,8 @@ export async function run(): Promise<void> {
                 ...(svg ? ['"/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-svg.so"',
                     '"svg" 6 "gdk-pixbuf" "Scalable Vector Graphics" "LGPL"', '"image/svg+xml" "image/svg" ""', ""] : []),
             ].join("\n");
-            check("Check Toolchain compares versions part by part, reads Xcode's, simctl's, a toolchain's, an NDK's and "
-                + "gdk-pixbuf's words, and says a version too old",
+            check("Check Toolchain compares versions part by part, reads Xcode's, simctl's, a toolchain's, an NDK's, the "
+                + "keychain's and gdk-pixbuf's words, and says a version too old",
                 commands.includes("stateui.checkToolchain")
                 && atLeast("6.4.1", "6.4") && atLeast("26", "26.0") && !atLeast("6.3.9", "6.4") && !atLeast("4.13", "4.14")
                 && xcodeVersion("Xcode 27.0\nBuild version 27A123") === "27.0"
@@ -685,6 +685,9 @@ export async function run(): Promise<void> {
                 && lldbDapFailure(undefined) === "it did not run"
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
                 && ndkRevisionIn("Pkg.Desc = Android NDK\nPkg.Revision = 30.0.16248370\n") === "30.0.16248370"
+                && developmentIdentityIn('  1) 0A1B "Apple Development: Ann Doe (AB12CD34EF)"\n     1 valid identities found\n')
+                    === "Apple Development: Ann Doe (AB12CD34EF)"
+                && developmentIdentityIn("     0 valid identities found\n") === undefined
                 && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]
                     === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it.");
             const findings = await checkToolchain();
