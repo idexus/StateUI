@@ -26,6 +26,13 @@ nothing, false or 0, leaving the object as it was. An exception crossing the
 C boundary ends the process where nobody can say why; a guard reads every
 function of the relay for its catch (`testNoCppExceptionLeavesTheRelay`).
 
+A WinRT object the relay keeps for the process beside WinUI - a watcher of
+the screens, the system's settings - is made with `new` and never destroyed:
+a static one is destroyed as the process exits, after WinUI is gone, and
+Windows ends the process there. The test thread's WinUI itself is the one
+exception: destroying its statics as the process exits is its shutdown
+(`testTheWinUIRelaysDestroyNoWinRTObjectAtExit`).
+
 ## The callbacks
 
 The host hands the relay one table of functions, which the relay calls on the

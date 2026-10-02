@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <optional>
 
 #include <winrt/Microsoft.UI.Composition.h>
 #include <winrt/Microsoft.UI.Xaml.Documents.h>
@@ -257,8 +258,9 @@ extern "C" bool stateui_winui_is_enabled(StateUIObjectRef handle) {
 
 extern "C" bool stateui_winui_animations_enabled(void) {
     try {
-        // One, kept: a fresh UISettings for every reading is a WinRT activation each time.
-        static winrt::Windows::UI::ViewManagement::UISettings settings;
+        // One, kept for the process and never destroyed: a fresh UISettings for every reading is a WinRT activation
+        // each time.
+        static auto &settings = **new std::optional(winrt::Windows::UI::ViewManagement::UISettings());
         return settings.AnimationsEnabled();
     } catch (...) {
         report("reading whether animations are on");

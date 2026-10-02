@@ -293,6 +293,37 @@ final class NativeProjectTests: XCTestCase {
         }
     }
 
+    /// A WinRT object a WinUI relay keeps for the process beside WinUI is made with `new` and never destroyed: a
+    /// static one is destroyed as the process exits, after WinUI is gone, and Windows ends the process there (a
+    /// display watcher did, `RaiseFailFastException` in Microsoft.UI.Windowing.dll on every window's close). The
+    /// test thread's WinUI itself - its dispatcher, application and XAML manager - is destroyed then, which is its
+    /// shutdown; kept past it, the process ends in an access violation.
+    func testTheWinUIRelaysDestroyNoWinRTObjectAtExit() throws {
+        let kept = try NSRegularExpression(
+            pattern: #"^\s+static\s+(const\s+)?(auto|winrt::|xaml::|controls::|media::|power::)(?!.*\bnew\b)"#,
+            options: [.anchorsMatchLines])
+        var found: [String] = []
+        for folder in ["lib/StateUI/StateUI.WinUI/Sources/CStateUIWinUI", "lib/Backends/WebView.WinUI/Relay"] {
+            let root = SourceTree.repository.appendingPathComponent(folder)
+            for name in try FileManager.default.contentsOfDirectory(atPath: root.path) where name.hasSuffix(".cpp") {
+                let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+                for match in kept.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+                    let at = Range(match.range, in: text)!.lowerBound
+                    let line = text[at...].prefix { $0 != "\n" }
+                    guard !Self.winUIItself.contains(where: { line.contains($0) }) else { continue }
+                    found.append("\(name):\(text[..<at].filter { $0 == "\n" }.count + 1)")
+                }
+            }
+        }
+        XCTAssertEqual(found.sorted(), [], "a WinRT object destroyed at exit")
+    }
+
+    /// What makes the test thread's WinUI, which shuts down as its statics are destroyed.
+    private static let winUIItself = [
+        "DispatcherQueueController::CreateOnCurrentThread", "make<StateUIApplication>",
+        "WindowsXamlManager::InitializeForCurrentThread",
+    ]
+
     /// What a backend's engine needs beside a WinUI application is the backend's to lay there, and only beside an
     /// application linking it: the host's scripts name no file of WebView2's, and the web view's backend lays them
     /// where its library stands.
