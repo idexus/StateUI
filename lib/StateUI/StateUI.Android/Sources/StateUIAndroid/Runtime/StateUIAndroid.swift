@@ -191,18 +191,18 @@ enum JavaNatives {
                 AndroidRenderer.shared?.answered(ticket: ticket, accepted: accepted != 0, words: words.map { Java.text($0) })
             }
         }
-        let webNavigating: @convention(c) (Environment, jclass?, jlong, jint, jstring?) -> Void = {
-            _, _, number, cause, address in
+        let webNavigating: @convention(c) (Environment, jclass?, jlong, jstring?) -> Void = {
+            _, _, number, address in
             nonisolated(unsafe) let address = address
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidWebView)?.navigating(cause: cause, to: Java.text(address))
+                (AndroidView.find(number) as? AndroidWebView)?.navigating(to: Java.text(address))
             }
         }
-        let webNavigated: @convention(c) (Environment, jclass?, jlong, jint, jint, jstring?) -> Void = {
-            _, _, number, result, cause, address in
+        let webNavigated: @convention(c) (Environment, jclass?, jlong, jint, jstring?) -> Void = {
+            _, _, number, result, address in
             nonisolated(unsafe) let address = address
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidWebView)?.navigated(result: result, cause: cause, to: Java.text(address))
+                (AndroidView.find(number) as? AndroidWebView)?.navigated(result: result, to: Java.text(address))
             }
         }
         let webHistory: @convention(c) (Environment, jclass?, jlong, jboolean, jboolean) -> Void = {
@@ -313,8 +313,8 @@ enum JavaNatives {
             ("chose", "(JI)V", unsafeBitCast(chose, to: UnsafeMutableRawPointer.self)),
             ("canvasTouched", "(JIFF)V", unsafeBitCast(canvasTouched, to: UnsafeMutableRawPointer.self)),
             ("answered", "(JZLjava/lang/String;)V", unsafeBitCast(answered, to: UnsafeMutableRawPointer.self)),
-            ("webNavigating", "(JILjava/lang/String;)V", unsafeBitCast(webNavigating, to: UnsafeMutableRawPointer.self)),
-            ("webNavigated", "(JIILjava/lang/String;)V", unsafeBitCast(webNavigated, to: UnsafeMutableRawPointer.self)),
+            ("webNavigating", "(JLjava/lang/String;)V", unsafeBitCast(webNavigating, to: UnsafeMutableRawPointer.self)),
+            ("webNavigated", "(JILjava/lang/String;)V", unsafeBitCast(webNavigated, to: UnsafeMutableRawPointer.self)),
             ("webHistory", "(JZZ)V", unsafeBitCast(webHistory, to: UnsafeMutableRawPointer.self)),
             ("webProcessGone", "(J)V", unsafeBitCast(webProcessGone, to: UnsafeMutableRawPointer.self)),
             ("itemCell", "(JI)Landroid/view/View;", unsafeBitCast(itemCell, to: UnsafeMutableRawPointer.self)),

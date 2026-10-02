@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `WKWebView` | not realized |
 | UIKit | ✅ | 11 ✅ | `WKWebView` |  |
-| Android Views | ✅ | 6 ✅ | `WebView` |  |
+| Android Views | ✅ | 10 ✅ | `WebView` |  |
 | WinUI 3 | ✅ | 20 ✅ · 15 – | `WebView2`, a backend |  |
 | GTK 4 | ✅ | 52 ✅ · 1 – | WebKitGTK `WebKitWebView`, a backend |  |
 | Web |  |  | `<iframe>` (?) | no host yet |
@@ -57,15 +57,15 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContrac
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `canGoBackChanged` | event | `Bool` | native |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
 | `canGoForwardChanged` | event | `Bool` | native |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
-| `evaluateJavaScript` | act | `(String) -> String?` |  |  | ✅ | ◐ | ✅ | ✅ |  | not realized; Android Views: cannot read userAgent of WebView - Android's driver has no path for it yet |
+| `evaluateJavaScript` | act | `(String) -> String?` |  |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
 | `goBack` | act | `() -> Void` |  |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
 | `goForward` | act | `() -> Void` |  |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
-| `onNavigated` (`navigated`) | event | `(WebNavigationResult, WebNavigationEvent, String)` | native |  | ✅ | · | ✅ | ✅ |  | not realized; Android Views: cannot read source of WebView - Android's driver has no path for it yet |
-| `onNavigating` (`navigating`) | event | `(WebNavigationEvent, String)` | native |  | ✅ | ◐ | ✅ | ✅ |  | not realized; Android Views: cannot read source of WebView - Android's driver has no path for it yet |
-| `onProcessTerminated` (`processTerminated`) | event |  | native |  | 🔌 | · | ✅ | ✅ |  | not realized; UIKit: only through the host's own: endContent on WebView: the navigation delegate told, no web process ended; Android Views: cannot endContent on WebView - Android's driver has no path for it yet |
+| `onNavigated` (`navigated`) | event | `(WebNavigationResult, WebNavigationEvent, String)` | native |  | ✅ | · | ✅ | ✅ |  | not realized; Android Views: cannot read a document written in place - Android's web view gives back no address for it |
+| `onNavigating` (`navigating`) | event | `(WebNavigationEvent, String)` | native |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
+| `onProcessTerminated` (`processTerminated`) | event |  | native |  | 🔌 | ✅ | ✅ | ✅ |  | not realized; UIKit: only through the host's own: endContent on WebView: the navigation delegate told, no web process ended |
 | `reload` | act | `() -> Void` |  |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
-| `source` | property | `WebViewSource` | native |  | ✅ | · | ✅ | 🔌 |  | not realized; Android Views: cannot read source of WebView - Android's driver has no path for it yet; GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written |
-| `userAgent` | property | `String` | adaptive |  | ✅ | · | ✅ | ✅ |  | not realized; Android Views: cannot read userAgent of WebView - Android's driver has no path for it yet |
+| `source` | property | `WebViewSource` | native |  | ✅ | · | ✅ | 🔌 |  | not realized; Android Views: cannot read a document written in place - Android's web view gives back no address for it; GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written |
+| `userAgent` | property | `String` | adaptive |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// A WebView: Android's own web view, in the host's `StateUIWebView`, which makes it again should its web
-/// process die. What the page does comes back as the element's events; a history flag only when it changes.
+/// process die. What the page does comes back as the element's events, by the host layer's web rules: why a
+/// navigation began (`WebNavigationCause`), a way back or forward only as it changes (`WebHistory`).
 /// Design: docs/design/platforms/android/controls.md#a-web-view
 @MainActor
 final class AndroidWebView: AndroidView {
@@ -22,8 +23,11 @@ final class AndroidWebView: AndroidView {
     /// What the view does when its web process died, leaving it blank.
     var onProcessGone: (() -> Void)?
 
-    private var canGoBack = false
-    private var canGoForward = false
+    /// Why the navigation under way began, and why the next begins where the program said so.
+    private var cause = WebNavigationCause()
+
+    /// The way back and forward as last said.
+    private var history = WebHistory()
 
     /// The page's own touches and hovering are seen by its element's gestures before the page gets them.
     override func watchTouches() {
@@ -60,34 +64,40 @@ final class AndroidWebView: AndroidView {
         Java.frame { Java.call(reference, JavaAPI.setWebUserAgent, .object(agent.flatMap(Java.string))) }
     }
 
-    func goBack() { Java.call(reference, JavaAPI.webGoBack) }
-    func goForward() { Java.call(reference, JavaAPI.webGoForward) }
-    func reload() { Java.call(reference, JavaAPI.webReload) }
+    /// Steps back, forward, or loads the page again - the navigation's cause the program's. Android tells a
+    /// navigation after the call returns.
+    func goBack() {
+        if Java.callBool(reference, JavaAPI.webGoBack) { cause.ask(.back) }
+    }
+
+    func goForward() {
+        if Java.callBool(reference, JavaAPI.webGoForward) { cause.ask(.forward) }
+    }
+
+    func reload() {
+        cause.ask(.refresh)
+        Java.call(reference, JavaAPI.webReload)
+    }
 
     /// Runs `script` in the page; what it evaluated to answers the act waiting under `ticket`.
     func evaluate(_ script: String, ticket: Int64) {
         Java.frame { Java.call(reference, JavaAPI.webEvaluate, .object(Java.string(script)), .long(ticket)) }
     }
 
-    func navigating(cause: Int32, to address: String) {
-        onNavigating?(WebNavigationEvent(rawValue: cause) ?? .unknown, address)
+    /// A navigation began: Android tells no reason, so one the program did not ask for is a new page.
+    func navigating(to address: String) {
+        onNavigating?(cause.begin(told: .newPage), address)
     }
 
-    func navigated(result: Int32, cause: Int32, to address: String) {
-        onNavigated?(
-            WebNavigationResult(rawValue: result) ?? .unknown, WebNavigationEvent(rawValue: cause) ?? .unknown, address)
+    func navigated(result: Int32, to address: String) {
+        onNavigated?(WebNavigationResult(rawValue: result) ?? .unknown, cause.current, address)
     }
 
-    /// The history as it stands: a flag that changed is said.
+    /// The history as it stands: a way that changed is said - the way back before the way forward.
     func history(back: Bool, forward: Bool) {
-        if back != canGoBack {
-            canGoBack = back
-            onCanGoBack?(back)
-        }
-        if forward != canGoForward {
-            canGoForward = forward
-            onCanGoForward?(forward)
-        }
+        let changed = history.changes(back: back, forward: forward)
+        if let back = changed.back { onCanGoBack?(back) }
+        if let forward = changed.forward { onCanGoForward?(forward) }
     }
 
     /// The element left: the web view lets go of its page and its web process.

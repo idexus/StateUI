@@ -58,20 +58,15 @@ final class AndroidWebViewTests: XCTestCase {
         }
     }
 
-    /// A script's value is text: a string as itself, none for null, anything else as JSON writes it; the act
-    /// waits under its ticket and answers with it.
+    /// A script's value, which Android hands over as JSON, answers as text (`ScriptAnswer`); the act waits under its
+    /// ticket and answers with it.
     func testAScriptsValueAnswersAsText() throws {
         try onMainActor {
-            XCTAssertEqual(TestWeb.text("\"Example \\\"Domain\\\"\""), "Example \"Domain\"")
-            XCTAssertNil(TestWeb.text("null"))
-            XCTAssertEqual(TestWeb.text("42"), "42")
-            XCTAssertEqual(TestWeb.text("{\"a\":1}"), "{\"a\":1}")
-
             let heard = Received<String>()
             let host = AndroidRenderer.running { BrowsingPage(heard: heard) }
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
             host.runtime.pump.turn()
-            host.answered(ticket: AndroidActToolkit.nextScriptTicket + 1, accepted: true, words: "Example Domain")
+            host.answered(ticket: AndroidActToolkit.nextScriptTicket + 1, accepted: true, words: "\"Example Domain\"")
             host.settle { heard.values.contains { $0.hasPrefix("title") } }
 
             XCTAssertEqual(heard.values, ["title Example Domain"])
@@ -117,7 +112,6 @@ enum TestWeb {
     private static let finished = Java.method(JavaAPI.webView, "finished", "(Ljava/lang/String;)V")
     static let failed = Java.method(JavaAPI.webView, "failed", "(I)V")
     static let processGone = Java.method(JavaAPI.webView, "processGone", "()V")
-    private static let textOf = Java.staticMethod(JavaAPI.webView, "text", "(Ljava/lang/String;)Ljava/lang/String;")
 
     /// A navigation to `address` started.
     static func start(_ web: AndroidWebView, at address: String) {
@@ -127,11 +121,5 @@ enum TestWeb {
     /// The navigation to `address` ended.
     static func finish(_ web: AndroidWebView, at address: String) {
         Java.frame { Java.call(web.reference, finished, .object(Java.string(address))) }
-    }
-
-    static func text(_ json: String) -> String? {
-        Java.frame {
-            Java.callStaticObject(JavaAPI.webView, textOf, .object(Java.string(json))).map { Java.text($0) }
-        }
     }
 }

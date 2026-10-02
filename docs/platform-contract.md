@@ -452,9 +452,9 @@ Every control, and every part an application, its windows and its pages are made
 | [TextField](controls/TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 60 ✅ · 1 – |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 34 ✅ · 1 ☑️ | 30 ✅ | 58 ✅ · 1 ☑️ · 3 – | 58 ✅ | 45 ✅ · 1 – |  |
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
-| [WebView](controls/WebView.md) | 77 |  | 11 ✅ | 6 ✅ | 20 ✅ · 15 – | 52 ✅ · 1 – |  |
+| [WebView](controls/WebView.md) | 77 |  | 11 ✅ | 10 ✅ | 20 ✅ · 15 – | 52 ✅ · 1 – |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅, – and 🧩 | 2447 | 1007 of 2447 met | 1017 of 2447 met | 1796 of 2447 met | 1928 of 2447 met | 1627 of 2447 met |  |
+| **Met** - ✅, – and 🧩 | 2447 | 1007 of 2447 met | 1017 of 2447 met | 1800 of 2447 met | 1928 of 2447 met | 1627 of 2447 met |  |
 
 ### Application structure
 
@@ -562,7 +562,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ | 2 ✅ | 5 ✅ | 2 ✅ |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
-| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 6 ✅ | 2 ✅ | 7 ✅ | 6 ✅ |  |
+| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 6 ✅ | 5 ✅ | 7 ✅ | 6 ✅ |  |
 | [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ | 8 ✅ · 8 – |  |
 <!-- members:end -->
 

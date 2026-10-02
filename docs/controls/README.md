@@ -59,9 +59,9 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TextField](TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 60 ✅ · 1 – |  |
 | [TimePicker](TimePicker.md) | 78 | 34 ✅ · 1 ☑️ | 30 ✅ | 58 ✅ · 1 ☑️ · 3 – | 58 ✅ | 45 ✅ · 1 – |  |
 | [VStack](VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
-| [WebView](WebView.md) | 77 |  | 11 ✅ | 6 ✅ | 20 ✅ · 15 – | 52 ✅ · 1 – |  |
+| [WebView](WebView.md) | 77 |  | 11 ✅ | 10 ✅ | 20 ✅ · 15 – | 52 ✅ · 1 – |  |
 | [ZStack](ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅, – and 🧩 | 2447 | 1007 of 2447 met | 1017 of 2447 met | 1796 of 2447 met | 1928 of 2447 met | 1627 of 2447 met |  |
+| **Met** - ✅, – and 🧩 | 2447 | 1007 of 2447 met | 1017 of 2447 met | 1800 of 2447 met | 1928 of 2447 met | 1627 of 2447 met |  |
 <!-- controls:end -->
 
 ## Application structure

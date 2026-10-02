@@ -2,13 +2,13 @@
 WebView: ✅
 WebView.canGoBackChanged: ✅
 WebView.canGoForwardChanged: ✅
-WebView.evaluateJavaScript: ◐ cannot read userAgent of WebView - Android's driver has no path for it yet
+WebView.evaluateJavaScript: ✅
 WebView.frameChanged: ✅
 WebView.goBack: ✅
 WebView.goForward: ✅
-WebView.navigated: cannot read source of WebView - Android's driver has no path for it yet
-WebView.navigating: ◐ cannot read source of WebView - Android's driver has no path for it yet
-WebView.processTerminated: cannot endContent on WebView - Android's driver has no path for it yet
+WebView.navigated: cannot read a document written in place - Android's web view gives back no address for it
+WebView.navigating: ✅
+WebView.processTerminated: ✅
 WebView.reload: ✅
-WebView.source: cannot read source of WebView - Android's driver has no path for it yet
-WebView.userAgent: cannot read userAgent of WebView - Android's driver has no path for it yet
+WebView.source: cannot read a document written in place - Android's web view gives back no address for it
+WebView.userAgent: ✅

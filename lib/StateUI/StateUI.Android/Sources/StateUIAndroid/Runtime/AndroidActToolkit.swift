@@ -93,9 +93,11 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     /// The act under `ticket` was answered: a dialog accepted or not, with the words chosen or typed; or a script's
-    /// value as text.
+    /// value as JSON, said as text (`ScriptAnswer`).
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        if let call = scripts.removeValue(forKey: ticket) { return core.reply(call, [words.propValue]) }
+        if let call = scripts.removeValue(forKey: ticket) {
+            return core.reply(call, [ScriptAnswer.text(json: words).propValue])
+        }
         dialogs.removeValue(forKey: ticket)?(accepted, words)
     }
 

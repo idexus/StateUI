@@ -30,6 +30,7 @@ extension AndroidDriver {
             }
             _ = Java.callBool(cell.reference, JavaAPI.performClick)
         case (.scroll(let target), let items as AndroidItemsView): items.scrollForTesting(to: target)
+        case (.endContent, let web as AndroidWebView): try Self.endContent(of: web)
         case (.activate, _) where element.type == .menuItem || element.type == .toolbarItem: try choose(element)
         case (.activate, let button as AndroidButtonView): button.click()
         case (.toggle, let toggle as AndroidToggleView): toggle.click()
