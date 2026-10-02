@@ -76,7 +76,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
 
             Text("A stack")
                 .fontSize(11)
-                .characterSpacing(1)
+                .tracking(1)
                 .textColor(Palette.subtle)
 
             VStack {
@@ -116,7 +116,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
 
             Text("A grid, its columns changing width")
                 .fontSize(11)
-                .characterSpacing(1)
+                .tracking(1)
                 .textColor(Palette.subtle)
 
             Grid {

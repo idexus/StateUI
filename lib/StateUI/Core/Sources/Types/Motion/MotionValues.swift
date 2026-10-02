@@ -58,7 +58,7 @@ public struct MotionValues: OptionSet, Sendable {
     public static let spacing = MotionValues(rawValue: 1 << 6)
 
     /// How its words are set: `.fontSize`, `.lineHeight` and
-    /// `.characterSpacing`.
+    /// `.tracking`.
     public static let text = MotionValues(rawValue: 1 << 7)
 
     /// Everything a view has, which is what a motion applies to unless it says

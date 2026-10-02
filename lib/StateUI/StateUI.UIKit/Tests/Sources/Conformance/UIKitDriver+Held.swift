@@ -27,7 +27,7 @@ extension UIKitDriver {
             return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
-        case .fontSize, .fontAttributes, .fontFamily, .textColor, .characterSpacing, .lineHeight, .textDecorations:
+        case .fontSize, .fontAttributes, .fontFamily, .textColor, .tracking, .lineHeight, .textDecorations:
             return try words(property, view)
         case .background:
             if let held = try controlHolds(property, view) { return held }
@@ -78,7 +78,7 @@ extension UIKitDriver {
             if traits.contains(.traitItalic) { attributes.insert(.italic) }
             return attributes.propValue
         case .textColor: return drawn.color.map { color($0).propValue }
-        case .characterSpacing:
+        case .tracking:
             guard written != nil else { throw DriverCannot("read the spacing of a \(type(of: view))") }
             return ((first?[.kern] as? Double) ?? 0).propValue
         case .lineHeight:

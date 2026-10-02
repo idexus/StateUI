@@ -101,7 +101,7 @@ extension NodeType {
     static let barSubtitle = BarElementContract.barSubtitle.token
     static let barTitle = BarElementContract.barTitle.token
     static let canDrag = ViewContract.canDrag.token
-    static let characterSpacing = TextStyleElementContract.characterSpacing.token
+    static let tracking = TextStyleElementContract.tracking.token
     static let selectedItems = ItemsViewContract.selectedItems.token
     static let selectionMode = ItemsViewContract.selectionMode.token
     static let shape = BorderElementContract.shape.token

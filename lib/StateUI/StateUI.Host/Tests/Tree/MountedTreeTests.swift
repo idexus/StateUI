@@ -566,7 +566,7 @@ final class MountedTreeTests: XCTestCase {
         let (tree, _) = Self.tree()
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
-            .fontSize: .number(15), .fontFamily: .name("Menlo"), .characterSpacing: .number(2),
+            .fontSize: .number(15), .fontFamily: .name("Menlo"), .tracking: .number(2),
             .lineHeight: .number(1.2), .textDecorations: .enumeration(TextDecorations.underline.rawValue),
         ]
         tree.apply(label, complete: true)

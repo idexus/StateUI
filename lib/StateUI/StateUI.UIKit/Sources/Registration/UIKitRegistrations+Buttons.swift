@@ -30,7 +30,7 @@ extension UIKitRegistrations {
                 }
             }
             button.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
-            button.property(TextStyleElementContract.characterSpacing) { view, spacing in
+            button.property(TextStyleElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             button.applies([ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing]) { view, values in

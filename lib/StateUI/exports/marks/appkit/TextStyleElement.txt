@@ -1,21 +1,21 @@
 # revision 1.1
-Button.characterSpacing: not realized
 Button.textColor: ✅
-DatePicker.characterSpacing: not realized
+Button.tracking: not realized
 DatePicker.textColor: ✅
-Picker.characterSpacing: not realized
+DatePicker.tracking: not realized
 Picker.textColor: ✅
-RadioButton.characterSpacing: not realized
+Picker.tracking: not realized
 RadioButton.textColor: ✅
-SearchField.characterSpacing: not realized
+RadioButton.tracking: not realized
 SearchField.textColor: ✅
-Span.characterSpacing: not realized
+SearchField.tracking: not realized
 Span.textColor: not realized
-Text.characterSpacing: ✅
+Span.tracking: not realized
 Text.textColor: ✅
-TextEditor.characterSpacing: not realized
+Text.tracking: ✅
 TextEditor.textColor: ✅
-TextField.characterSpacing: not realized
+TextEditor.tracking: not realized
 TextField.textColor: ✅
-TimePicker.characterSpacing: not realized
+TextField.tracking: not realized
 TimePicker.textColor: ✅
+TimePicker.tracking: not realized

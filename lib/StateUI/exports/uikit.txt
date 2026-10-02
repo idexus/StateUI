@@ -3,7 +3,6 @@ ActivityIndicator
   tint
 Button
   background
-  characterSpacing
   fontAttributes
   fontFamily
   fontSize
@@ -19,6 +18,7 @@ Button
   text
   textCase
   textColor
+  tracking
   clicked()
   pressed()
   released()
@@ -243,7 +243,6 @@ Switch
   toggled()
 Text
   background
-  characterSpacing
   fontAttributes
   fontFamily
   fontSize
@@ -257,6 +256,7 @@ Text
   textCase
   textColor
   textDecorations
+  tracking
   verticalTextAlignment
 TextEditor
   cursorPosition

@@ -143,7 +143,7 @@ extension GTKDriver {
             return .some(gtk_label_get_wrap(label) != 0 && lines > 0 ? Int(lines).propValue : nil)
         case .horizontalTextAlignment: return Self.alignment(gtk_label_get_xalign(label)).propValue
         case .verticalTextAlignment: return Self.alignment(gtk_label_get_yalign(label)).propValue
-        case .characterSpacing: return run.holds(property) ?? 0.0.propValue
+        case .tracking: return run.holds(property) ?? 0.0.propValue
         case .lineHeight, .textDecorations, .fontSize, .fontAttributes, .fontFamily, .textColor:
             if let held = run.holds(property) { return held }
             return wordsHolds(property, widget)
@@ -160,7 +160,7 @@ extension GTKDriver {
             return String(decoding: words[start..<end], as: UTF8.self).propValue
         }
         let run = PangoRun(gtk_label_get_attributes(label), at: UInt32(start))
-        if property == .characterSpacing { return run.holds(property) ?? 0.0.propValue }
+        if property == .tracking { return run.holds(property) ?? 0.0.propValue }
         return run.holds(property)
     }
 
@@ -351,7 +351,7 @@ private struct PangoRun {
             return first(PANGO_ATTR_WEIGHT) == nil && first(PANGO_ATTR_STYLE) == nil ? nil : attributes.propValue
         case .textColor: return color(PANGO_ATTR_FOREGROUND, PANGO_ATTR_FOREGROUND_ALPHA)?.propValue
         case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Background.color($0).propValue }
-        case .characterSpacing:
+        case .tracking:
             return first(PANGO_ATTR_LETTER_SPACING).map { (Double(Self.number($0)) / Double(PANGO_SCALE)).propValue }
         case .lineHeight:
             return first(PANGO_ATTR_LINE_HEIGHT).map {

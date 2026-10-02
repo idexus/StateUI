@@ -146,7 +146,7 @@ struct HomePage: View {
                         Text("StateUI Gallery")
                             .fontSize(34)
                             .fontAttributes(.bold)
-                            .characterSpacing(-0.5)
+                            .tracking(-0.5)
                             .textColor(Palette.onBrand)
 
                         Text("Native interfaces, written in Swift")

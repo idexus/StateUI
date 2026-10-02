@@ -24,7 +24,7 @@ extension WinUIRegistrations {
             label.property(VisualElementContract.background) { view, background in
                 view.setBackground(background?.propValue)
             }
-            label.property(TextStyleElementContract.characterSpacing) { view, spacing in
+            label.property(TextStyleElementContract.tracking) { view, spacing in
                 view.setLetterSpacing(spacing ?? 0)
             }
             label.property(LineHeightElementContract.lineHeight) { view, height in view.setLineHeight(height) }

@@ -179,10 +179,10 @@ extension WinUIDriver {
             if (Int(try read(view, "fontWeight")) ?? 400) >= 600 { attributes.insert(.bold) }
             if try read(view, "italic") == "1" { attributes.insert(.italic) }
             return attributes.propValue
-        case "characterSpacing":
+        case "tracking":
             // Thousandths of an em on WinUI: back in DIPs, to the tenth WinUI keeps.
             let size = Double(try read(view, "fontSize")) ?? 14
-            let spacing = (Double(try read(view, "characterSpacing")) ?? 0) * size / 1000
+            let spacing = (Double(try read(view, "tracking")) ?? 0) * size / 1000
             return ((spacing * 10).rounded() / 10).propValue
         case "lineHeight":
             // DIPs on WinUI: back to a multiple of the font's own line, as the host writes it.
@@ -412,7 +412,7 @@ extension WinUIDriver {
             let families = try read(label, "runFamilies").split(separator: "\u{1F}", omittingEmptySubsequences: false)
             guard families.indices.contains(index), !families[index].isEmpty else { return nil }
             return Name(String(families[index])).propValue
-        case "characterSpacing":
+        case "tracking":
             // Thousandths of an em of the run's size on WinUI: back in DIPs, to the tenth WinUI keeps.
             let spacings = try read(label, "runSpacings").split(separator: "\u{1F}", omittingEmptySubsequences: false)
             guard spacings.indices.contains(index) else { return nil }

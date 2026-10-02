@@ -84,7 +84,7 @@ tree at all - can both wear them.
 
 There are two text tiers because some controls colour text they do not own. A
 Picker shows the chosen item, and a DatePicker and a TimePicker format a value:
-each carries `textColor` and `characterSpacing` through `TextStyleElement`, and
+each carries `textColor` and `tracking` through `TextStyleElement`, and
 only a control that says something of its own wears `TextElement`, which adds
 the text and its case. Changing the case of a formatted picker value would be
 a different, platform-specific promise, so `textCase` is on `TextElement`.

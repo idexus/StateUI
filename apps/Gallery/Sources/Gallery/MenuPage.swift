@@ -92,7 +92,7 @@ struct MenuPage: View {
             Text("StateUI")
                 .fontSize(24)
                 .fontAttributes(.bold)
-                .characterSpacing(-0.5)
+                .tracking(-0.5)
                 .textColor(Palette.onBrand)
 
             Text("Native interfaces, written in Swift")

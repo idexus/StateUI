@@ -141,7 +141,7 @@ final class DrivenPatchTests: XCTestCase {
             Text("words")
                 .fontSize(number.projectedValue)
                 .textColor(colour.projectedValue)
-                .characterSpacing(number.projectedValue)
+                .tracking(number.projectedValue)
         }
         .opacity(number.projectedValue)
         .background(colour.projectedValue)
@@ -195,7 +195,7 @@ final class DrivenPatchTests: XCTestCase {
                 .merging(tied(["margin", "padding"], to: 3, .inOut, .property)) { $1 })
         XCTAssertEqual(
             ties(page, .auto(3), .auto(4), .auto(5)),
-            tied(["characterSpacing", "fontSize"], to: 1, .inOut, .property)
+            tied(["tracking", "fontSize"], to: 1, .inOut, .property)
                 .merging(tied(["textColor"], to: 2, .inOut, .property)) { $1 })
         XCTAssertEqual(
             ties(page, .auto(3), .auto(6)),

@@ -46,7 +46,7 @@ extension AppKitDriver {
             let all: [LineBreak] = [.noWrap, .wordWrap, .characterWrap, .headTruncation, .tailTruncation, .middleTruncation]
             return all.first { NSLineBreakMode($0) == field.lineBreakMode && $0.wraps == wraps }?.propValue
         case .horizontalTextAlignment: return alignment(field).propValue
-        case .characterSpacing: return Double((attributes[.kern] as? NSNumber)?.doubleValue ?? 0).propValue
+        case .tracking: return Double((attributes[.kern] as? NSNumber)?.doubleValue ?? 0).propValue
         case .lineHeight:
             guard let font = attributes[.font] as? NSFont,
                   let paragraph = attributes[.paragraphStyle] as? NSParagraphStyle, paragraph.minimumLineHeight > 0

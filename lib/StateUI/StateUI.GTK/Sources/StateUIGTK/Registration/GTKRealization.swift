@@ -97,7 +97,7 @@ enum GTKRealization {
         .notPlanned("Slider", "pressed", reason: "GTK's scale tells no one it is held: its range claims the "
             + "press, and GTK denies every other gesture on it."),
         .complete("Span", "background"),
-        .complete("Span", "characterSpacing"),
+        .complete("Span", "tracking"),
         .complete("Span", "fontAttributes"),
         .complete("Span", "fontFamily"),
         .complete("Span", "fontSize"),

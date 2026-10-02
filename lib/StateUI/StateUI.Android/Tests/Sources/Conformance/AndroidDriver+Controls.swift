@@ -35,7 +35,7 @@ extension AndroidDriver {
             // Gravity's vertical bits: centre 0x10, top 0x30, bottom 0x50.
             guard let gravity = number("gravity").map(Int.init) else { return nil }
             return (gravity & 0x70 == 0x10 ? TextAlignment.center : gravity & 0x70 == 0x50 ? .end : .start).propValue
-        case .characterSpacing:
+        case .tracking:
             // Pixels, from ems of the size: back in points, to the tenth.
             return number("letterSpacing").map { ($0 / view.density * 10).rounded() / 10 }?.propValue
         case .lineHeight: return number("lineHeight")?.propValue

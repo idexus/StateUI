@@ -106,7 +106,7 @@ final class ControlTests: XCTestCase {
                             .fontFamily("Menlo")
                             .fontAttributes(.bold)
                             .isFontAutoScalingEnabled(false)
-                            .characterSpacing(0.5)
+                            .tracking(0.5)
                             .lineHeight(1.2)
                             .textDecorations(.underline)
 
@@ -455,7 +455,7 @@ final class ControlTests: XCTestCase {
 
                     Text("Tiers")
                         .textColor(.firebrick)
-                        .characterSpacing(1.5)
+                        .tracking(1.5)
                         .textCase(.uppercase)
                         .fontSize(20)
                         .fontFamily("OpenSansRegular")

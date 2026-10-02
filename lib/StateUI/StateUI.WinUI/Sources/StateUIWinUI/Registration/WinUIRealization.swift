@@ -87,7 +87,7 @@ enum WinUIRealization {
         .complete("Scene", "windowClosed"),
         .complete("Scene", "windowRestored"),
         .complete("Span", "background"),
-        .complete("Span", "characterSpacing"),
+        .complete("Span", "tracking"),
         .complete("Span", "fontAttributes"),
         .complete("Span", "fontFamily"),
         .complete("Span", "fontSize"),

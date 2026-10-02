@@ -42,7 +42,7 @@ struct StyleSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
                 .fontSize(17)
                 .fontAttributes(.italic)
-                .characterSpacing(0.3)
+                .tracking(0.3)
                 .horizontalTextAlignment(.center)
 
             Style<Text>("QuoteLoud")

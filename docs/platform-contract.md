@@ -516,7 +516,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
 | [Shape](controls/tiers/Shape.md) | `contentMode`, `fill`, `renderTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineJoin`, `miterLimit`, `lineWidth` | 10 |
 | [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 2 |
-| [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` | 2 |
+| [TextStyleElement](controls/tiers/TextStyleElement.md) | `tracking`, `textColor` | 2 |
 | [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `isFontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |
 | [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment`, `verticalTextAlignment` | 2 |
 | [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | 1 |
@@ -606,17 +606,16 @@ realizes the element and each of its members.
 `accessibilityLabel`, `address`, `allowsDrop`, `area`,
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
 `background`, `barBackgroundColor`, `barForegroundColor`, `barIcon`,
-`barSubtitle`, `barTitle`, `canDrag`, `characterSpacing`, `clipsContent`,
-`color`, `columns`, `columnSpacing`, `contentMode`, `cornerRadius`,
-`cursorPosition`, `dash`, `dashPhase`, `data`, `date`, `dragText`, `drawing`,
-`endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
-`fontFamily`, `fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`,
-`gridRow`, `gridRowSpan`, `groupName`, `growsWithText`, `height`,
-`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollIndicator`,
-`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
-`ignoresInput`, `inputPurpose`, `isAccessibilityHidden`, `isAnimating`,
-`isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
-`isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
+`barSubtitle`, `barTitle`, `canDrag`, `clipsContent`, `color`, `columns`,
+`columnSpacing`, `contentMode`, `cornerRadius`, `cursorPosition`, `dash`,
+`dashPhase`, `data`, `date`, `dragText`, `drawing`, `endReachedWithin`, `fill`,
+`fillRule`, `floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`, `format`,
+`frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `groupName`,
+`growsWithText`, `height`, `hidesWhenInactive`, `horizontalAlignment`,
+`horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
+`iconSpacing`, `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`,
+`isAnimating`, `isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`,
+`isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
 `isScrollEnabled`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
 `isTranslucent`, `isVisible`, `isZoomEnabled`, `items`, `itemsLayout`, `label`,
 `layoutDirection`, `letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`,
@@ -633,10 +632,10 @@ realizes the element and each of its members.
 `showsTraffic`, `showsUserLocation`, `side`, `source`, `spacing`, `step`,
 `stroke`, `style`, `submitLabel`, `swipeDirection`, `swipeThreshold`,
 `tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `time`, `tint`,
-`title`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
-`verticalAlignment`, `verticalScrollIndicator`, `verticalTextAlignment`,
-`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
-`zIndex`.
+`title`, `tracking`, `translationX`, `translationY`, `type`, `userAgent`,
+`value`, `verticalAlignment`, `verticalScrollIndicator`,
+`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
+`y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 

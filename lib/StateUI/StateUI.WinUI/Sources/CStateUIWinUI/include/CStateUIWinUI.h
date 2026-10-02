@@ -378,7 +378,7 @@ int32_t stateui_winui_text_runs(StateUIObjectRef text, double *values, int32_t c
 /// thousandths of an em, the height of a line in DIPs, 0 for the font's, and the lines under or through its words.
 void stateui_winui_text_set_lines(StateUIObjectRef text, bool wraps, int32_t lines, bool trims);
 void stateui_winui_text_set_alignment(StateUIObjectRef text, int32_t horizontal);
-void stateui_winui_text_set_spacing(StateUIObjectRef text, int32_t characterSpacing, double lineHeight);
+void stateui_winui_text_set_spacing(StateUIObjectRef text, int32_t tracking, double lineHeight);
 void stateui_winui_text_set_decorations(StateUIObjectRef text, bool underline, bool strikethrough);
 
 StateUIObjectRef stateui_winui_button_make(int64_t view);

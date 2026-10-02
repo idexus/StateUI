@@ -123,10 +123,10 @@ extern "C" void stateui_winui_text_set_alignment(StateUIObjectRef handle, int32_
     }
 }
 
-extern "C" void stateui_winui_text_set_spacing(StateUIObjectRef handle, int32_t characterSpacing, double lineHeight) {
+extern "C" void stateui_winui_text_set_spacing(StateUIObjectRef handle, int32_t tracking, double lineHeight) {
     try {
         auto block = labelWords(handle);
-        block.CharacterSpacing(characterSpacing);
+        block.CharacterSpacing(tracking);
         block.LineStackingStrategy(lineHeight > 0 ? xaml::LineStackingStrategy::BlockLineHeight
                                                   : xaml::LineStackingStrategy::MaxHeight);
         block.LineHeight(lineHeight > 0 ? lineHeight : 0);

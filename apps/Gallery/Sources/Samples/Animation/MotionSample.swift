@@ -86,21 +86,21 @@ struct MotionSample: SampleContent, ExampleContent {
 
             Text("A change that travels")
                 .fontSize(11)
-                .characterSpacing(1)
+                .tracking(1)
                 .textColor(Palette.subtle)
 
             panel(travels: true)
 
             Text("The same, told to stay still")
                 .fontSize(11)
-                .characterSpacing(1)
+                .tracking(1)
                 .textColor(Palette.subtle)
 
             panel(travels: false)
 
             Text("The same, holding only its size still")
                 .fontSize(11)
-                .characterSpacing(1)
+                .tracking(1)
                 .textColor(Palette.subtle)
 
             sized()

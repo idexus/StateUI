@@ -7,7 +7,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 ```swift
 Text("Overdue")
     .textColor(.firebrick)
-    .characterSpacing(1.5)
+    .tracking(1.5)
 ```
 
 Wears: [PropertyContainer](PropertyContainer.md)
@@ -20,5 +20,5 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `characterSpacing` | property | `Double` | native |
+| `tracking` | property | `Double` | native |
 | `textColor` | property | `Color` | native |

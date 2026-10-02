@@ -28,7 +28,7 @@ struct TextSample: SampleContent, ExampleContent {
                 .maximumLines(1)
 
             Text("Letters spaced out")
-                .characterSpacing(3)
+                .tracking(3)
 
             // The height of a line as a MULTIPLE of the font's own: the same
             // two lines packed tight, then opened out.
@@ -89,7 +89,7 @@ struct TextSample: SampleContent, ExampleContent {
 
             Text("Letters spaced out")
                 .fontSize(16)
-                .characterSpacing(3)
+                .tracking(3)
 
             // The height of a line as a MULTIPLE of the font's own: the same
             // two lines packed tight, then opened out.

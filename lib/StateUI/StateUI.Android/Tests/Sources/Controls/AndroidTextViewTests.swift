@@ -64,7 +64,7 @@ final class AndroidTextViewTests: XCTestCase {
     func testATextsCaseAndLetterSpacingAreItsOwn() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Text("Hello").textCase(.uppercase).fontSize(20).characterSpacing(2)
+                Text("Hello").textCase(.uppercase).fontSize(20).tracking(2)
             }
 
             let label = try XCTUnwrap(host.views(AndroidTextView.self).first)

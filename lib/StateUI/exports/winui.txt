@@ -238,7 +238,6 @@ Switch
   toggled()
 Text
   background
-  characterSpacing
   fontAttributes
   fontFamily
   fontSize
@@ -251,6 +250,7 @@ Text
   textCase
   textColor
   textDecorations
+  tracking
   verticalTextAlignment
 TextEditor
   cursorPosition

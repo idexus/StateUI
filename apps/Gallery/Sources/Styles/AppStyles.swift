@@ -41,7 +41,7 @@ enum AppStyles {
                 .textColor(Palette.text)
                 .fontSize(32)
                 .fontAttributes(.bold)
-                .characterSpacing(-0.5)
+                .tracking(-0.5)
                 .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)
 
@@ -53,7 +53,7 @@ enum AppStyles {
                 .textColor(Palette.subtle)
                 .fontSize(17)
                 .fontAttributes(.italic)
-                .characterSpacing(0.3)
+                .tracking(0.3)
                 .horizontalTextAlignment(.center)
 
             Style<Text>("QuoteLoud")

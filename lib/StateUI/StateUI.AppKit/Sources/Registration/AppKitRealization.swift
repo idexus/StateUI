@@ -54,7 +54,7 @@ enum AppKitRealization {
         .complete("Button", "padding"),
         .partial("Button", "shape", missing: "AppKit rounds an oval button into a capsule: a layer's corners draw no oval."),
         .complete("Text", "accessibilityIdentifier"),
-        .complete("Text", "characterSpacing"),
+        .complete("Text", "tracking"),
         .complete("Text", "fontAttributes"),
         .complete("Text", "fontFamily"),
         .complete("Text", "fontSize"),

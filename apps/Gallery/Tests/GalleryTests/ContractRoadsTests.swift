@@ -500,6 +500,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = HeadingLevel.level2",
             contract: "_ = AccessibilityHeadingLevel.h2"),
         Road(
+            name: "letter spacing as characterSpacing",
+            removed: #"_ = Text("Hi").characterSpacing(2)"#,
+            contract: #"_ = Text("Hi").tracking(2)"#),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

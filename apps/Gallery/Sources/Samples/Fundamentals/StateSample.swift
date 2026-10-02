@@ -69,7 +69,7 @@ struct StateSample: SampleContent, ExampleContent {
             VStack {
                 Text("This closure reads `counter`")
                     .fontSize(11)
-                    .characterSpacing(1)
+                    .tracking(1)
                     .textColor(Palette.accent)
 
                 DebugInfoLabel()
@@ -102,7 +102,7 @@ struct StateSample: SampleContent, ExampleContent {
                     VStack {
                         Text("And this one reads `name`")
                             .fontSize(11)
-                            .characterSpacing(1)
+                            .tracking(1)
                             .textColor(Palette.accent)
 
                         DebugInfoLabel()

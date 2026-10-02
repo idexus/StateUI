@@ -128,11 +128,11 @@
     ]
 
     private static let labelProperties: Set<Prop> = [
-        .padding, .fontSize, .textColor, .characterSpacing, .lineHeight,
+        .padding, .fontSize, .textColor, .tracking, .lineHeight,
     ]
 
     private static let spanProperties: Set<Prop> = [
-        .background, .fontSize, .textColor, .characterSpacing, .lineHeight,
+        .background, .fontSize, .textColor, .tracking, .lineHeight,
     ]
 
     private static let textControlProperties: Set<Prop> = [.fontSize, .textColor]

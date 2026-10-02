@@ -625,7 +625,7 @@ extension ControlDictionary {
         (TextStyleElementContract.self, #"""
             Text("Overdue")
                 .textColor(.firebrick)
-                .characterSpacing(1.5)
+                .tracking(1.5)
             """#),
 
         (FontElementContract.self, #"""

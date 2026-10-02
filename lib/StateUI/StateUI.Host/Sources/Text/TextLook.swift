@@ -85,7 +85,7 @@ extension MountedElement {
         look.attributesGiven = value(.fontAttributes) != nil
         look.family = value(.fontFamily)?.name
         look.color = value(.textColor)
-        look.letterSpacing = number(.characterSpacing) ?? 0
+        look.letterSpacing = number(.tracking) ?? 0
         look.lineHeight = number(.lineHeight)
         look.decorations = value(.textDecorations)?.enumeration.map { TextDecorations(rawValue: $0) } ?? .none
         return look

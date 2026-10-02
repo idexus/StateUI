@@ -34,7 +34,7 @@ final class PatchShapeTests: XCTestCase {
 
         if sized {
             props["fontSize"] = .number(20)
-            props["characterSpacing"] = .number(1.5)
+            props["tracking"] = .number(1.5)
         }
 
         return Node(type: "Text", props: props)
@@ -77,7 +77,7 @@ final class PatchShapeTests: XCTestCase {
         //    it says, every container's arrangement in full.
         let first = render(page(count: 0, items: ["a", "b"]))
         XCTAssertEqual(first.at(counter)?.props, [
-            "text": .string("Count: 0"), "fontSize": .number(20), "characterSpacing": .number(1.5),
+            "text": .string("Count: 0"), "fontSize": .number(20), "tracking": .number(1.5),
         ])
         XCTAssertEqual(first.at(button)?.eventNames, ["clicked"])
         XCTAssertEqual(first.at(list)?.arrangement, [.manual("a"), .manual("b")])
@@ -106,7 +106,7 @@ final class PatchShapeTests: XCTestCase {
         //    SAME identities, so nothing on screen is replaced.
         let resync = render(page(count: 1, items: ["z", "b"]), complete: true)
         XCTAssertEqual(resync.at(counter)?.props, [
-            "text": .string("Count: 1"), "fontSize": .number(20), "characterSpacing": .number(1.5),
+            "text": .string("Count: 1"), "fontSize": .number(20), "tracking": .number(1.5),
         ])
         XCTAssertEqual(resync.at(list)?.arrangement, [.manual("z"), .manual("b")])
         let kept = first.subtree.map(\.id).filter { $0 != .manual("a") } + [.manual("z")]
@@ -121,7 +121,7 @@ final class PatchShapeTests: XCTestCase {
         //    its handlers and its state.
         let cleared = render(page(count: 1, items: ["z", "b"], sized: false))
         let label = try XCTUnwrap(cleared.at(counter))
-        XCTAssertEqual(label.cleared, ["characterSpacing", "fontSize"])
+        XCTAssertEqual(label.cleared, ["fontSize", "tracking"])
         XCTAssertEqual(label.props, [:])
         XCTAssertFalse(label.replace)
         XCTAssertEqual(Self.speaking(cleared), [.auto(4)])

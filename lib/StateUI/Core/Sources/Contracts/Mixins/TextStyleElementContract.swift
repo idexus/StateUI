@@ -11,12 +11,12 @@ public enum TextStyleElementContract: Contract {
     public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
 
     /// The space between the letters.
-    public static let characterSpacing = ElementProperty<Self, Double>(
-        "characterSpacing", layer: .native, moves: .text)
+    public static let tracking = ElementProperty<Self, Double>(
+        "tracking", layer: .native, moves: .text)
 
     /// The colour the text is drawn in.
     public static let textColor = ElementProperty<Self, Color>("textColor", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [characterSpacing, textColor]
+    public static let members: [any ContractMember] = [tracking, textColor]
 }

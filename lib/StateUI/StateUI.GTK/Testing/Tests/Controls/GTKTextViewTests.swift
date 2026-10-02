@@ -47,7 +47,7 @@ final class GTKTextViewTests: XCTestCase {
                         .fontAttributes([.bold, .italic])
                         .fontFamily("monospace")
                         .textColor(Color("#FF0000"))
-                        .characterSpacing(2)
+                        .tracking(2)
                         .lineHeight(1.5)
                         .textDecorations(.underline)
                         .maximumLines(2)

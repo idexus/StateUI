@@ -20,7 +20,7 @@ final class AppKitTextViewTests: XCTestCase {
             .textColor: .color(red: 20, green: 40, blue: 60, alpha: 255),
             .fontSize: .number(18),
             .fontAttributes: .enumeration(FontAttributes.bold.rawValue),
-            .characterSpacing: .number(2),
+            .tracking: .number(2),
             .textDecorations: .enumeration(
                 TextDecorations.underline.union(.strikethrough).rawValue),
             .lineHeight: .number(1.5),

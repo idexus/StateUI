@@ -23,7 +23,7 @@ extension AndroidRegistrations {
                     horizontal: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
                     vertical: values[TextAlignmentElementContract.verticalTextAlignment] ?? .start)
             }
-            label.property(TextStyleElementContract.characterSpacing) { view, spacing in
+            label.property(TextStyleElementContract.tracking) { view, spacing in
                 view.setLetterSpacing(spacing ?? 0)
             }
             label.property(LineHeightElementContract.lineHeight) { view, height in view.setLineHeight(height) }
