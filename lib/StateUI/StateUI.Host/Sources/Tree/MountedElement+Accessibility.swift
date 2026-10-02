@@ -35,7 +35,7 @@
 extension MountedElement {
     /// What assistive technology meets; a change to any of them puts the element's words on its view again.
     public static let accessibilityProperties: Set<Prop> = [
-        .accessibilityIdentifier, .accessibilityLabel, .accessibilityHint, .accessibilityHeadingLevel,
+        .accessibilityIdentifier, .accessibilityLabel, .accessibilityHint, .accessibilityHeading,
         .isAccessibilityHidden, .automationExcludedWithChildren,
     ]
 
@@ -51,7 +51,7 @@ extension MountedElement {
         }
         return AccessibilityWords(
             identifier: string(.accessibilityIdentifier), label: string(.accessibilityLabel),
-            hint: string(.accessibilityHint), headingLevel: max(0, value(.accessibilityHeadingLevel)?.enumeration ?? 0),
+            hint: string(.accessibilityHint), headingLevel: max(0, value(.accessibilityHeading)?.enumeration ?? 0),
             presence: presence)
     }
 

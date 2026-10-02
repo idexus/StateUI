@@ -20,7 +20,7 @@ DatePicker.layoutDirection: ✅
 DatePicker.translationY: ✅
 Ellipse.rotation: ✅
 Ellipse.style: ✅
-Grid.accessibilityHeadingLevel: ✅
+Grid.accessibilityHeading: ✅
 Grid.opacity: ✅
 Grid.scale: ✅
 HStack.background: ✅
@@ -50,7 +50,7 @@ Picker.layoutDirection: ✅
 Picker.translationY: ✅
 Polygon.rotation: ✅
 Polygon.style: ✅
-Polyline.accessibilityHeadingLevel: ✅
+Polyline.accessibilityHeading: ✅
 Polyline.opacity: ✅
 Polyline.scale: ✅
 ProgressBar.background: not realized
@@ -90,7 +90,7 @@ Text.scaleY: ✅
 Text.width: ✅
 TextEditor.rotation: ✅
 TextEditor.style: ✅
-TextField.accessibilityHeadingLevel: ✅
+TextField.accessibilityHeading: ✅
 TextField.opacity: ✅
 TextField.scale: ✅
 TimePicker.background: not realized

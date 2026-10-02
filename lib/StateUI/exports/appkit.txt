@@ -301,7 +301,7 @@ WebView
   navigating()
   processTerminated()
 (every element)
-  accessibilityHeadingLevel
+  accessibilityHeading
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel

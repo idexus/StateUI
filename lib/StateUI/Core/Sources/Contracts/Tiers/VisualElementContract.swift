@@ -12,8 +12,8 @@ public enum VisualElementContract: Contract {
     public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
 
     /// How deep a heading the element is, for a user moving by headings.
-    public static let accessibilityHeadingLevel = ElementProperty<Self, HeadingLevel>(
-        "accessibilityHeadingLevel", layer: .native)
+    public static let accessibilityHeading = ElementProperty<Self, AccessibilityHeadingLevel>(
+        "accessibilityHeading", layer: .native)
 
     /// What happens when the element is used, said after its label.
     public static let accessibilityHint = ElementProperty<Self, String>(
@@ -138,7 +138,7 @@ public enum VisualElementContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        accessibilityHeadingLevel, accessibilityHint, accessibilityLabel,
+        accessibilityHeading, accessibilityHint, accessibilityLabel,
         automationExcludedWithChildren, background, focus, frame, height, ignoresInput,
         isAccessibilityHidden, isEnabled, isFocusedChanged, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,

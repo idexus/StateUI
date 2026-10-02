@@ -24,7 +24,7 @@ extension AppKitDriver {
              .automationExcludedWithChildren:
             guard let native else { return nil }
             return accessibility(property, native.accessibilityTarget(of: view), view)
-        case .accessibilityHeadingLevel:
+        case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "AppKit marks a heading, not its level")
         case .fontSize, .fontAttributes, .fontFamily, .textColor:
             return try words(property, view)

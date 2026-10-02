@@ -199,8 +199,8 @@ enum PatchDump {
             return spelled(member, as: SafeArea.self)
         case Prop.layoutDirection.name:
             return spelled(member, as: LayoutDirection.self)
-        case Prop.accessibilityHeadingLevel.name:
-            return spelled(member, as: HeadingLevel.self)
+        case Prop.accessibilityHeading.name:
+            return spelled(member, as: AccessibilityHeadingLevel.self)
 
         // The inputs.
         case Prop.inputPurpose.name:

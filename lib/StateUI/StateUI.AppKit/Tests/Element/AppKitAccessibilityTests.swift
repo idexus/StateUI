@@ -19,7 +19,7 @@ final class AppKitAccessibilityTests: XCTestCase {
             .accessibilityIdentifier: .string("semantics.heading"),
             .accessibilityLabel: .string("Accessible title"),
             .accessibilityHint: .string("Opens the section"),
-            .accessibilityHeadingLevel: .enumeration(2),
+            .accessibilityHeading: .enumeration(2),
         ]
 
         renderer.applyForTesting(tree(label))
@@ -49,7 +49,7 @@ final class AppKitAccessibilityTests: XCTestCase {
             .accessibilityIdentifier: .string("decoration"),
             .accessibilityLabel: .string("Temporary"),
             .accessibilityHint: .string("Temporary hint"),
-            .accessibilityHeadingLevel: .enumeration(1),
+            .accessibilityHeading: .enumeration(1),
             .isAccessibilityHidden: .bool(false),
         ]
         renderer.applyForTesting(tree(box))
@@ -60,7 +60,7 @@ final class AppKitAccessibilityTests: XCTestCase {
             .accessibilityIdentifier,
             .accessibilityLabel,
             .accessibilityHint,
-            .accessibilityHeadingLevel,
+            .accessibilityHeading,
             .isAccessibilityHidden,
         ]
         renderer.applyForTesting(changedTree(cleared))

@@ -1,7 +1,7 @@
 # revision 1.1
 ActivityIndicator.pivotY: ✓ read pivotY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Canvas.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Canvas.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
 CheckBox.style: ✅
 ColorBox.ignoresInput: ✅
 DatePicker.isEnabled: ✅
@@ -10,7 +10,7 @@ Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform, checked ag
 Grid.rotationY: ✓ read rotationY of Grid: the host's own transform, checked against the layer it composed itself
 HStack.pivotY: ✓ read pivotY of HStack: the host's own transform, checked against the layer it composed itself
 Image.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-ItemsView.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+ItemsView.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
 Line.ignoresInput: ✅
 Map.isEnabled: not realized
 Map.zIndex: not realized
@@ -18,7 +18,7 @@ Path.scaleY: ✓ read scaleY of Path: the host's own transform, checked against 
 Picker.rotationY: ✓ read rotationY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-ProgressBar.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+ProgressBar.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
 RadioButton.style: ✅
 Rectangle.ignoresInput: ✅
 ScrollView.isEnabled: not realized
@@ -28,7 +28,7 @@ Slider.rotationY: ✓ read rotationY of Slider: the host's own transform, checke
 Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 Text.style: ✅
-TextEditor.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+TextEditor.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
 TextField.style: ✅
 TimePicker.ignoresInput: ✅
 VStack.isEnabled: not realized

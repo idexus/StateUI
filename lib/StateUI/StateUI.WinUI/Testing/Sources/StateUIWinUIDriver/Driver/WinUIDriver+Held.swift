@@ -126,7 +126,7 @@ extension WinUIDriver {
         case "accessibilityLabel": return .string(view.automationWords.name)
         case "accessibilityHint": return .string(view.automationWords.help)
         case "accessibilityIdentifier": return .string(view.automationWords.identifier)
-        case "accessibilityHeadingLevel": return (HeadingLevel(rawValue: view.automationFacts.heading) ?? HeadingLevel.none).propValue
+        case "accessibilityHeading": return (AccessibilityHeadingLevel(rawValue: view.automationFacts.heading) ?? AccessibilityHeadingLevel.none).propValue
         case "isAccessibilityHidden":
             let facts = view.automationFacts
             return (!facts.isControl && !facts.isContent).propValue

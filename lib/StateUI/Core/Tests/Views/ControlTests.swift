@@ -468,7 +468,7 @@ final class ControlTests: XCTestCase {
                         .accessibilityIdentifier("tiers")
                         .accessibilityLabel("The shared tier")
                         .accessibilityHint("Everything every view can be told")
-                        .accessibilityHeadingLevel(.level2)
+                        .accessibilityHeading(.h2)
                         .isAccessibilityHidden(false)
                         .automationExcludedWithChildren(false)
                         .gridRow(1)

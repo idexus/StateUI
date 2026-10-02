@@ -1,7 +1,7 @@
 # revision 1.1
 ActivityIndicator.rotation: ✅
 ActivityIndicator.style: ✅
-Button.accessibilityHeadingLevel: ✅
+Button.accessibilityHeading: ✅
 Button.opacity: ✅
 Button.scale: ✅
 Canvas.background: not realized
@@ -68,7 +68,7 @@ RadioButton.layoutDirection: ✅
 RadioButton.translationY: ✅
 Rectangle.rotation: ✅
 Rectangle.style: ✅
-ScrollView.accessibilityHeadingLevel: ✅
+ScrollView.accessibilityHeading: ✅
 ScrollView.opacity: ✅
 ScrollView.scale: ✅
 SearchField.background: not realized
@@ -90,7 +90,7 @@ Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.scaleY: ✅
 Switch.width: ✅
-Text.accessibilityHeadingLevel: ✅
+Text.accessibilityHeading: ✅
 Text.opacity: ✅
 Text.scale: ✅
 TextEditor.frame: ✅
@@ -106,6 +106,6 @@ VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the ho
 VStack.translationY: ✅
 WebView.rotation: ✅
 WebView.style: ✅
-ZStack.accessibilityHeadingLevel: ✅
+ZStack.accessibilityHeading: ✅
 ZStack.opacity: ✅
 ZStack.scale: ✅

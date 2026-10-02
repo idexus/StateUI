@@ -1,6 +1,6 @@
 # revision 1.1
 ActivityIndicator.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Button.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Button.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
 Canvas.style: ✅
 CheckBox.ignoresInput: ✅
 ColorBox.isEnabled: not realized
@@ -9,7 +9,7 @@ DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform, chec
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform, checked against the layer it composed itself
 Grid.pivotY: ✓ read pivotY of Grid: the host's own transform, checked against the layer it composed itself
 HStack.background: ✅
-Image.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Image.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
 ItemsView.style: not realized
 Line.isEnabled: not realized
 Line.zIndex: not realized
@@ -17,7 +17,7 @@ Map.scaleY: ✓ read scaleY of Map: the host's own transform, checked against th
 Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
 Picker.pivotY: ✓ read pivotY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Polyline.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Polyline.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
 ProgressBar.style: ✅
 RadioButton.ignoresInput: ✅
 Rectangle.isEnabled: not realized
@@ -26,7 +26,7 @@ ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform, chec
 SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.pivotY: ✓ read pivotY of Slider: the host's own transform, checked against the layer it composed itself
 Stepper.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Switch.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Switch.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
 Text.ignoresInput: ✅
 TextEditor.style: ✅
 TextField.ignoresInput: ✅

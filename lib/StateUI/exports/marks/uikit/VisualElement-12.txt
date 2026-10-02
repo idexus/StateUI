@@ -1,5 +1,5 @@
 # revision 1.1
-ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+ActivityIndicator.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Button.style: ✅
 Canvas.ignoresInput: ✅
 CheckBox.isEnabled: ✅
@@ -8,14 +8,14 @@ ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform, checked 
 DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
 Ellipse.pivotY: ✓ read pivotY of Ellipse: the host's own transform, checked against the layer it composed itself
 Grid.background: ✅
-HStack.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+HStack.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Image.style: ✅
 ItemsView.ignoresInput: ✅
 Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
 Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
 Picker.background: not realized
-Polygon.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+Polygon.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Polyline.style: ✅
 ProgressBar.ignoresInput: ✅
 RadioButton.isEnabled: ✅
@@ -24,7 +24,7 @@ Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checke
 ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.background: not realized
-Stepper.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+Stepper.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Switch.style: ✅
 Text.isEnabled: ✅
 Text.zIndex: not realized

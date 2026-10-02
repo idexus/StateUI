@@ -42,11 +42,11 @@ extension VisualElementProperties {
 
     /// That this view is a heading, and how deep.
     ///
-    ///     Text("Settings").fontSize(24).accessibilityHeadingLevel(.level1)
+    ///     Text("Settings").fontSize(24).accessibilityHeading(.h1)
     ///
     /// A screen-reader user moves through a long page by its headings; a Text
     /// drawn big is not one until this says so.
-    public func accessibilityHeadingLevel(_ value: HeadingLevel) -> Modified { setValue(VisualElementContract.accessibilityHeadingLevel, value) }
+    public func accessibilityHeading(_ value: AccessibilityHeadingLevel) -> Modified { setValue(VisualElementContract.accessibilityHeading, value) }
 }
 
 extension VisualElement {
@@ -74,10 +74,10 @@ extension VisualElement {
         words(VisualElementContract.accessibilityLabel, by: state)
     }
 
-    /// `accessibilityHeadingLevel` from a state, `$x`: the host sets each new
+    /// `accessibilityHeading` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
-    public func accessibilityHeadingLevel(_ state: Binding<HeadingLevel>) -> Modified {
-        plain(VisualElementContract.accessibilityHeadingLevel, by: state)
+    public func accessibilityHeading(_ state: Binding<AccessibilityHeadingLevel>) -> Modified {
+        plain(VisualElementContract.accessibilityHeading, by: state)
     }
 
     /// `accessibilityHint` from a state, `$x`: the host writes each new text,

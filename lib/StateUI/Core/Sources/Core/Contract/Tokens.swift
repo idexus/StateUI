@@ -76,7 +76,7 @@ extension NodeType {
 }
 
 @_spi(Host) public extension Prop {
-    static let accessibilityHeadingLevel = VisualElementContract.accessibilityHeadingLevel.token
+    static let accessibilityHeading = VisualElementContract.accessibilityHeading.token
     static let accessibilityHint = VisualElementContract.accessibilityHint.token
     static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token

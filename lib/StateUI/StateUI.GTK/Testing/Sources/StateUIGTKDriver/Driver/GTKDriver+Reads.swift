@@ -289,11 +289,11 @@ extension GTKDriver {
                 .string ?? ""
             return differs(stateui_test_accessible_property_is_words(UnsafeMutableRawPointer(accessible), Int32(property.rawValue), given))
                 ? "(GTK holds other words)".propValue : given.propValue
-        case .accessibilityHeadingLevel:
+        case .accessibilityHeading:
             guard gtk_accessible_get_accessible_role(accessible) == GTK_ACCESSIBLE_ROLE_HEADING,
                   gtk_test_accessible_has_property(accessible, GTK_ACCESSIBLE_PROPERTY_LEVEL) != 0
-            else { return HeadingLevel.none.propValue }
-            for level in (1...6).compactMap({ HeadingLevel(rawValue: $0) }) {
+            else { return AccessibilityHeadingLevel.none.propValue }
+            for level in (1...6).compactMap({ AccessibilityHeadingLevel(rawValue: $0) }) {
                 if !differs(stateui_test_accessible_property_is_number(
                     UnsafeMutableRawPointer(accessible), Int32(GTK_ACCESSIBLE_PROPERTY_LEVEL.rawValue), Int32(level.rawValue))) {
                     return level.propValue

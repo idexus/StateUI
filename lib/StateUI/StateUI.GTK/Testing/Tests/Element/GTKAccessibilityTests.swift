@@ -32,7 +32,7 @@ final class GTKAccessibilityTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     VStack { Text("Title") }.accessibilityLabel("The title").accessibilityHint("Names the page")
-                    Text("Title").accessibilityHeadingLevel(.level2)
+                    Text("Title").accessibilityHeading(.h2)
                     VStack { Text("Plain") }
                 }
             }

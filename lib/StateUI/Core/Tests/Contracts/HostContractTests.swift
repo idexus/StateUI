@@ -534,7 +534,7 @@ final class HostContractTests: XCTestCase {
 
         XCTAssertTrue(properties.isSuperset(of: [
             "accessibilityIdentifier", "accessibilityLabel", "accessibilityHint",
-            "accessibilityHeadingLevel", "isAccessibilityHidden",
+            "accessibilityHeading", "isAccessibilityHidden",
         ]))
         XCTAssertTrue(
             properties.isDisjoint(with: [
@@ -558,7 +558,7 @@ final class HostContractTests: XCTestCase {
                 XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
             }
         }
-        XCTAssertTrue(everything.contains("public enum HeadingLevel"))
+        XCTAssertTrue(everything.contains("public enum AccessibilityHeadingLevel"))
         XCTAssertTrue(everything.contains("public func isAccessibilityHidden(_ value: Bool)"))
     }
 

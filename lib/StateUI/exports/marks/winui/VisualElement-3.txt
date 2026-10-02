@@ -7,7 +7,7 @@ Button.layoutDirection: ✅
 Button.translationY: ✅
 Canvas.rotation: ✅
 Canvas.style: ✅
-CheckBox.accessibilityHeadingLevel: ✅
+CheckBox.accessibilityHeading: ✅
 CheckBox.opacity: ✅
 CheckBox.scale: ✅
 ColorBox.background: not realized
@@ -39,7 +39,7 @@ ItemsView.isEnabled: not realized
 ItemsView.scaleX: ✅
 Line.rotation: ✅
 Line.style: ✅
-Map.accessibilityHeadingLevel: 🧩
+Map.accessibilityHeading: 🧩
 Map.opacity: 🧩
 Map.scale: 🧩
 Path.background: not realized
@@ -74,7 +74,7 @@ ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the directio
 ScrollView.translationY: ✅
 SearchField.rotation: ✅
 SearchField.style: ✅
-Slider.accessibilityHeadingLevel: ✅
+Slider.accessibilityHeading: ✅
 Slider.opacity: ✅
 Slider.scale: ✅
 Stepper.background: not realized

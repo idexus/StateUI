@@ -489,7 +489,7 @@ final class MountedTreeTests: XCTestCase {
         root.children = .arranged([
             label("said", [
                 .accessibilityIdentifier: .string("greeting"), .accessibilityLabel: .string("Hello"),
-                .accessibilityHint: .string("Says hello"), .accessibilityHeadingLevel: .enumeration(2),
+                .accessibilityHint: .string("Says hello"), .accessibilityHeading: .enumeration(2),
                 .isAccessibilityHidden: .bool(false),
             ]),
             label("both", [.isAccessibilityHidden: .bool(true), .automationExcludedWithChildren: .bool(true)]),

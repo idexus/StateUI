@@ -4,7 +4,7 @@ ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator
 ActivityIndicator.translationY: ✅
 Button.rotation: ✅
 Button.style: ✅
-Canvas.accessibilityHeadingLevel: ✅
+Canvas.accessibilityHeading: ✅
 Canvas.opacity: ✅
 Canvas.scale: ✅
 CheckBox.background: ✅
@@ -37,7 +37,7 @@ Image.scaleX: ✅
 ItemsView.ignoresInput: ✅
 ItemsView.layoutDirection: ✅
 ItemsView.translationY: ✅
-Line.accessibilityHeadingLevel: ✅
+Line.accessibilityHeading: ✅
 Line.opacity: ✅
 Line.scale: ✅
 Map.background: 🧩
@@ -72,7 +72,7 @@ Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction 
 Rectangle.translationY: ✅
 ScrollView.rotation: ✅
 ScrollView.style: ✅
-SearchField.accessibilityHeadingLevel: ✅
+SearchField.accessibilityHeading: ✅
 SearchField.opacity: ✅
 SearchField.scale: ✅
 Slider.background: not realized

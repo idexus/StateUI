@@ -1,5 +1,5 @@
 # revision 1.1
-ActivityIndicator.accessibilityHeadingLevel: ✅
+ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.opacity: ✅
 ActivityIndicator.scale: ✅
 Button.background: ✅
@@ -34,7 +34,7 @@ HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the ho
 HStack.translationY: ✅
 Image.rotation: ✅
 Image.style: ✅
-ItemsView.accessibilityHeadingLevel: ✅
+ItemsView.accessibilityHeading: ✅
 ItemsView.opacity: ✅
 ItemsView.scale: ✅
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
@@ -62,7 +62,7 @@ ProgressBar.layoutDirection: ✅
 ProgressBar.translationY: ✅
 RadioButton.rotation: ✅
 RadioButton.style: ✅
-Rectangle.accessibilityHeadingLevel: ✅
+Rectangle.accessibilityHeading: ✅
 Rectangle.opacity: ✅
 Rectangle.scale: ✅
 ScrollView.background: ✅
@@ -104,7 +104,7 @@ TimePicker.layoutDirection: ✅
 TimePicker.translationY: ✅
 VStack.rotation: ✅
 VStack.style: ✅
-WebView.accessibilityHeadingLevel: ✅
+WebView.accessibilityHeading: ✅
 WebView.opacity: ✅
 WebView.scale: ✅
 ZStack.background: ✅

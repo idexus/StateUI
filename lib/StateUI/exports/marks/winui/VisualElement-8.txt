@@ -24,7 +24,7 @@ Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the 
 Ellipse.translationY: ✅
 Grid.rotation: ✅
 Grid.style: ✅
-HStack.accessibilityHeadingLevel: ✅
+HStack.accessibilityHeading: ✅
 HStack.opacity: ✅
 HStack.scale: ✅
 Image.background: not realized
@@ -56,7 +56,7 @@ Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the 
 Polygon.translationY: ✅
 Polyline.rotation: ✅
 Polyline.style: ✅
-ProgressBar.accessibilityHeadingLevel: ✅
+ProgressBar.accessibilityHeading: ✅
 ProgressBar.opacity: ✅
 ProgressBar.scale: ✅
 RadioButton.background: ✅
@@ -94,7 +94,7 @@ TextEditor.layoutDirection: ✅
 TextEditor.translationY: ✅
 TextField.rotation: ✅
 TextField.style: ✅
-TimePicker.accessibilityHeadingLevel: ✅
+TimePicker.accessibilityHeading: ✅
 TimePicker.opacity: ✅
 TimePicker.scale: ✅
 VStack.background: ✅

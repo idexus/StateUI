@@ -32,7 +32,7 @@ extension AppKitElement {
             accessibilityChildrenSuppressed = false
         }
 
-        let headingLevel = max(0, enumeration(.accessibilityHeadingLevel) ?? 0)
+        let headingLevel = max(0, enumeration(.accessibilityHeading) ?? 0)
         let carriesSemantics = string(.accessibilityLabel) != nil
             || string(.accessibilityHint) != nil
             || headingLevel > 0

@@ -31,7 +31,7 @@ Grid.layoutDirection: ✓ read layoutDirection of Grid: the direction the host l
 Grid.translationY: ✅
 HStack.rotation: ✅
 HStack.style: ✅
-Image.accessibilityHeadingLevel: ✅
+Image.accessibilityHeading: ✅
 Image.opacity: ✅
 Image.scale: ✅
 ItemsView.background: not realized
@@ -62,7 +62,7 @@ Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction th
 Polyline.translationY: ✅
 ProgressBar.rotation: ✅
 ProgressBar.style: ✅
-RadioButton.accessibilityHeadingLevel: ✅
+RadioButton.accessibilityHeading: ✅
 RadioButton.opacity: ✅
 RadioButton.scale: ✅
 Rectangle.background: not realized
@@ -101,7 +101,7 @@ TextField.layoutDirection: ✅
 TextField.translationY: ✅
 TimePicker.rotation: ✅
 TimePicker.style: ✅
-VStack.accessibilityHeadingLevel: ✅
+VStack.accessibilityHeading: ✅
 VStack.opacity: ✅
 VStack.scale: ✅
 WebView.background: not realized

@@ -17,7 +17,7 @@ ColorBox.layoutDirection: ✓ read layoutDirection of ColorBox: the direction th
 ColorBox.translationY: ✅
 DatePicker.rotation: ✅
 DatePicker.style: ✅
-Ellipse.accessibilityHeadingLevel: ✅
+Ellipse.accessibilityHeading: ✅
 Ellipse.opacity: ✅
 Ellipse.scale: ✅
 Grid.background: ✅
@@ -49,7 +49,7 @@ Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host l
 Path.translationY: ✅
 Picker.rotation: ✅
 Picker.style: ✅
-Polygon.accessibilityHeadingLevel: ✅
+Polygon.accessibilityHeading: ✅
 Polygon.opacity: ✅
 Polygon.scale: ✅
 Polyline.background: not realized
@@ -87,7 +87,7 @@ Switch.style: ✅
 Text.frame: ✅
 Text.pivotX: ✅
 Text.zIndex: not realized
-TextEditor.accessibilityHeadingLevel: ✅
+TextEditor.accessibilityHeading: ✅
 TextEditor.opacity: ✅
 TextEditor.scale: ✅
 TextField.background: not realized

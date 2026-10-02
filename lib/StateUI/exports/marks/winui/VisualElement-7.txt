@@ -12,7 +12,7 @@ CheckBox.layoutDirection: ✅
 CheckBox.translationY: ✅
 ColorBox.rotation: ✅
 ColorBox.style: ✅
-DatePicker.accessibilityHeadingLevel: ✅
+DatePicker.accessibilityHeading: ✅
 DatePicker.opacity: ✅
 DatePicker.scale: ✅
 Ellipse.background: not realized
@@ -45,7 +45,7 @@ Map.layoutDirection: 🧩
 Map.translationY: 🧩
 Path.rotation: ✅
 Path.style: ✅
-Picker.accessibilityHeadingLevel: ✅
+Picker.accessibilityHeading: ✅
 Picker.opacity: ✅
 Picker.scale: ✅
 Polygon.background: not realized
@@ -80,7 +80,7 @@ Slider.layoutDirection: ✅
 Slider.translationY: ✅
 Stepper.rotation: ✅
 Stepper.style: ✅
-Switch.accessibilityHeadingLevel: ✅
+Switch.accessibilityHeading: ✅
 Switch.opacity: ✅
 Switch.scale: ✅
 Text.accessibilityLabel: ✅

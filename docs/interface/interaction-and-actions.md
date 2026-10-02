@@ -284,7 +284,7 @@ Accessibility modifiers describe meaning, not test-only metadata:
 Text("Order total")
     .accessibilityLabel("Order total: 42 euros")
     .accessibilityHint("Updates after the cart changes")
-    .accessibilityHeadingLevel(.level1)
+    .accessibilityHeading(.h1)
     .accessibilityIdentifier("checkout.total")
 ```
 

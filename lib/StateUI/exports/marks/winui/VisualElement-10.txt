@@ -9,7 +9,7 @@ Canvas.layoutDirection: ✓ read layoutDirection of Canvas: the direction the ho
 Canvas.translationY: ✅
 CheckBox.rotation: ✅
 CheckBox.style: ✅
-ColorBox.accessibilityHeadingLevel: ✅
+ColorBox.accessibilityHeading: ✅
 ColorBox.opacity: ✅
 ColorBox.scale: ✅
 DatePicker.background: not realized
@@ -41,7 +41,7 @@ Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host l
 Line.translationY: ✅
 Map.rotation: 🧩
 Map.style: 🧩
-Path.accessibilityHeadingLevel: ✅
+Path.accessibilityHeading: ✅
 Path.opacity: ✅
 Path.scale: ✅
 Picker.background: not realized
@@ -76,7 +76,7 @@ SearchField.layoutDirection: ✅
 SearchField.translationY: ✅
 Slider.rotation: ✅
 Slider.style: ✅
-Stepper.accessibilityHeadingLevel: ✅
+Stepper.accessibilityHeading: ✅
 Stepper.opacity: ✅
 Stepper.scale: ✅
 Switch.background: ✅

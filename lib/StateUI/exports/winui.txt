@@ -326,7 +326,7 @@ ZStack
   shape
   stroke
 (every element)
-  accessibilityHeadingLevel
+  accessibilityHeading
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel

@@ -19,7 +19,7 @@
                 reachable(element), framed(element), focused(element), styled(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
-                Aspects.holds(VisualElementContract.accessibilityHeadingLevel, on: element, .level2, then: .level3),
+                Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
                 Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true, with: named),
                 Aspects.holds(
                     VisualElementContract.automationExcludedWithChildren, on: element, false, then: true, with: named),

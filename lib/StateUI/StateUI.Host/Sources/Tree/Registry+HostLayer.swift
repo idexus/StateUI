@@ -47,7 +47,7 @@ extension Registry {
         if identifying { everyElementRealizes(PropertyContainerContract.accessibilityIdentifier) }
         everyElementRealizes(VisualElementContract.accessibilityLabel)
         everyElementRealizes(VisualElementContract.accessibilityHint)
-        everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)
+        everyElementRealizes(VisualElementContract.accessibilityHeading)
         everyElementRealizes(VisualElementContract.isAccessibilityHidden)
         everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
     }

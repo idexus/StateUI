@@ -25,7 +25,7 @@ final class AndroidAccessibilityTests: XCTestCase {
                         .accessibilityIdentifier("save")
                         .accessibilityLabel("Save the file")
                         .accessibilityHint("Writes it to disk")
-                        .accessibilityHeadingLevel(.level2)
+                        .accessibilityHeading(.h2)
                     Text("Hidden").isAccessibilityHidden(true)
                     Text("Met").isAccessibilityHidden(false)
                     VStack { Text("Inside") }.automationExcludedWithChildren(true)

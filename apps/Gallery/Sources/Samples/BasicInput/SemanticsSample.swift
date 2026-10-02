@@ -53,7 +53,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             // Read as a heading: somewhere a user jumping through the page
             // can land.
             Text("A heading, and drawn the same")
-                .accessibilityHeadingLevel(.level1)
+                .accessibilityHeading(.h1)
 
             // Said out loud, now, whatever the user was on. An ACT, because
             // it is something that happens at a moment rather than a value a
@@ -168,7 +168,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 Text("A heading, and drawn the same")
                     .fontSize(20)
                     .fontAttributes(.bold)
-                    .accessibilityHeadingLevel(.level1)
+                    .accessibilityHeading(.h1)
             }
             .spacing(4)
 
@@ -264,7 +264,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             Text("Two jobs, four modifiers, and they do not stand in for one another. "
                 + "`.accessibilityLabel` and `.accessibilityHint` are what a screen reader "
                 + "SAYS: the first names the control, the second says what using it does. "
-                + "`.accessibilityHeadingLevel` marks a view as a heading, which is how a "
+                + "`.accessibilityHeading` marks a view as a heading, which is how a "
                 + "user moves through a long page. `.accessibilityIdentifier` is a handle nobody "
                 + "hears - it is what a UI test, a script or an agent driving the "
                 + "application asks the platform to find.")

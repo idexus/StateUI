@@ -492,6 +492,14 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = ScrollBarVisibility.always",
             contract: "_ = ScrollIndicatorVisibility.visible"),
         Road(
+            name: "a heading's level as a level",
+            removed: #"_ = Text("Settings").accessibilityHeadingLevel(.level1)"#,
+            contract: #"_ = Text("Settings").accessibilityHeading(.h1)"#),
+        Road(
+            name: "the heading levels as HeadingLevel",
+            removed: "_ = HeadingLevel.level2",
+            contract: "_ = AccessibilityHeadingLevel.h2"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

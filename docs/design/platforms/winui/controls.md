@@ -182,7 +182,7 @@ was: the box is given it back, and nobody hears it as the user's.
 
 What an element says for assistive technology - its identifier, its label,
 its hint and its heading level - is WinUI's `AutomationProperties`:
-`AutomationId`, `Name`, `HelpText` and `HeadingLevel`, level for level. A word
+`AutomationId`, `Name`, `HelpText` and `AccessibilityHeadingLevel`, level for level. A word
 the element does not say is cleared, not written empty, so a control's own
 name - a button's caption - stands where no label replaces it.
 

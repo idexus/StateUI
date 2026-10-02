@@ -6,7 +6,7 @@ Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform, checked agai
 CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform, checked against the layer it composed itself
 ColorBox.pivotY: ✓ read pivotY of ColorBox: the host's own transform, checked against the layer it composed itself
 DatePicker.background: not realized
-Ellipse.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+Ellipse.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Grid.style: ✅
 HStack.ignoresInput: ✅
 Image.isEnabled: not realized
@@ -14,7 +14,7 @@ Image.zIndex: not realized
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself
 Line.pivotY: ✓ read pivotY of Line: the host's own transform, checked against the layer it composed itself
 Map.background: not realized
-Path.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+Path.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Picker.style: ✅
 Polygon.ignoresInput: ✅
 Polyline.isEnabled: not realized
@@ -23,7 +23,7 @@ ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform, ch
 RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.background: ✅
-SearchField.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+SearchField.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Slider.style: ✅
 Stepper.ignoresInput: ✅
 Switch.isEnabled: ✅
@@ -33,5 +33,5 @@ TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform, chec
 TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.pivotY: ✓ read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.background: ✅
-WebView.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+WebView.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 ZStack.style: ✅
