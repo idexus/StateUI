@@ -262,7 +262,7 @@ struct HomePage: View {
         .padding(Self.margin, Self.margin)
         // THE PAGE'S OWN ROOM, written by the host and read by the arithmetic
         // that sizes the run. Nothing is built for it, which is the whole
-        // difference between this and measuring a page with a `FrameReader`:
+        // difference between this and measuring a page with a `GeometryReader`:
         // the run's height then rode a render per settling pass, and everything
         // standing under it rode them too.
         .frame($room)

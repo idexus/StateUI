@@ -1,16 +1,16 @@
 import StateUI
 
 /// Content built from the space it was given, and frames reported on request.
-struct FrameReaderSample: SampleContent, ExampleContent {
+struct GeometryReaderSample: SampleContent, ExampleContent {
     @State private var slot = Rect(0, 0, 0, 0)
     @State private var window = Rect(0, 0, 0, 0)
     @State private var safe = Rect(0, 0, 0, 0)
 
     @State private var width = 220.0
 
-    static let id = "frameReader"
+    static let id = "geometryReader"
     static let title = "Measuring a frame"
-    static let summary = "FrameReader builds from its measured frame; `.onFrameChanged` reports any view's."
+    static let summary = "GeometryReader builds from its measured frame; `.onFrameChanged` reports any view's."
 
     static let code = """
         @State private var width = 220.0
@@ -36,7 +36,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
                 // is the reader's own @State. The three handlers write the
                 // page's states instead, and the lines below print them - so
                 // a settled frame builds the reader AND the page's braces.
-                FrameReader { frame in
+                GeometryReader { frame in
                     Text("\\(Int(frame.width)) × \\(Int(frame.height))")
                 }
                 // Driven: the host carries the width, and no render
@@ -94,7 +94,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
                 // is the reader's own @State. The three handlers write the
                 // page's states instead, and the three lines below print
                 // them - so a settled frame builds the reader AND the page.
-                FrameReader { frame in
+                GeometryReader { frame in
                     Text("\(Int(frame.width)) × \(Int(frame.height))")
                         .fontSize(22)
                         .fontAttributes(.bold)

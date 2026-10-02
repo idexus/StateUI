@@ -175,7 +175,7 @@ struct RuntimeSummary: View {
 
 Use `DeviceInfo.formFactor` for a semantic form-factor decision, never for
 layout: a window can be smaller than its display, and resized. Lay out by the
-room a view is given - `.onFrameChanged` and `FrameReader`
+room a view is given - `.onFrameChanged` and `GeometryReader`
 ([layout](../interface/layout.md)) - and read display points (`pixels / density`) for the
 screen itself, handling zero density before the first host report. Use `AppInfo.colorScheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.

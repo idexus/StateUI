@@ -50,7 +50,7 @@ step of the layout it causes.
 
 ## Frame reader
 
-`FrameReader` is composed over the modifier, and earns its place by what the
+`GeometryReader` is composed over the modifier, and earns its place by what the
 modifier cannot do: its content is built from the measurement. It holds the
 last frame in a `@State` of its own, in a `Grid` that fills the offered space
 and reports its own frame, so the closure runs again whenever the frame
@@ -62,7 +62,7 @@ layout the closure is given a zero rectangle.
 
 `.frame($room)` writes the same frame into a state with no render at all: the
 arithmetic that lays views out has it, and no view is built for it - the
-difference from `FrameReader`, whose answer is a value the tree can show. Only
+difference from `GeometryReader`, whose answer is a value the tree can show. Only
 the host writes it; nothing this side writes reaches the platform, a view's
 frame being the layout's answer.
 

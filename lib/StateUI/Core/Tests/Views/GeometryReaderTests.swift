@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // `.onFrameChanged` hands its handler the four values its space means, out of
-// the one eight-number report the host sends - and a FrameReader builds its
+// the one eight-number report the host sends - and a GeometryReader builds its
 // content FROM that measurement, holding it in a @State of its own. See
-// FrameReader.swift.
+// GeometryReader.swift.
 
 import XCTest
 @_spi(Host) @testable import StateUI
 
-final class FrameReaderTests: XCTestCase {
+final class GeometryReaderTests: XCTestCase {
     /// What the last handler run was given, shared with the assert the way a
     /// state box would be.
     private final class Heard: @unchecked Sendable {
@@ -153,7 +153,7 @@ final class FrameReaderTests: XCTestCase {
 
     // MARK: - The container
 
-    /// A FrameReader's content is built FROM the measurement: zero before the
+    /// A GeometryReader's content is built FROM the measurement: zero before the
     /// first report, the measured frame after - the closure running again
     /// because the report wrote the reader's own `@State`.
     func testAReadersContentIsBuiltFromTheMeasurement() {
@@ -162,7 +162,7 @@ final class FrameReaderTests: XCTestCase {
         func tree() -> Node {
             Node(type: "Window", children: [
                 VStack {
-                    FrameReader { frame in
+                    GeometryReader { frame in
                         Text("\(Int(frame.width)) wide")
                     }
                 }.node,
@@ -198,7 +198,7 @@ final class FrameReaderTests: XCTestCase {
         func tree() -> Node {
             Node(type: "Window", children: [
                 VStack {
-                    FrameReader { frame in
+                    GeometryReader { frame in
                         Text("\(Int(frame.width)) wide")
                     }
 

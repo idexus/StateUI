@@ -336,7 +336,7 @@ There are three readings of the same native measurement:
 | --- | --- |
 | `.frame($room)` | a one-way host feed of the parent-space rectangle into state |
 | `.onFrameChanged(in:)` | an asynchronous handler for one selected coordinate space |
-| `FrameReader` | local content rebuilt from its last measured rectangle |
+| `GeometryReader` | local content rebuilt from its last measured rectangle |
 
 The frame feed is useful when an engine or authored layout needs the native
 rectangle without making a body read it:
@@ -387,12 +387,12 @@ report never changes layout by itself. A visual transform never reports,
 because it does not alter the layout rectangle; an animated layout property
 reports the rectangles that the host actually settles.
 
-`FrameReader` owns the measured rectangle as its own state and rebuilds only
+`GeometryReader` owns the measured rectangle as its own state and rebuilds only
 its content from that value. Its closure first receives a zero rectangle; the first
 native frame report supplies the measured rectangle:
 
 ```swift
-FrameReader { frame in
+GeometryReader { frame in
     Text("\(Int(frame.width)) x \(Int(frame.height))")
 }
 ```

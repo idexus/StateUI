@@ -47,7 +47,7 @@ extension VisualElement {
     ///         .placement($run)
     ///         .frame($room)
     ///
-    /// For arithmetic that lays views out; `FrameReader` is for content built
+    /// For arithmetic that lays views out; `GeometryReader` is for content built
     /// from the frame. Writing the state moves nothing: the frame is the
     /// layout's answer. A layout reporting its frame gives its children their
     /// new sizes at once, and a size worked out from the frame elsewhere wants

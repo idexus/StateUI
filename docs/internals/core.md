@@ -160,7 +160,7 @@ turns the nodes into the patch.
   `…Properties` protocol of its own. *Application.*
   ([Controls](../design/views/controls.md);
   [controls and input](../interface/controls-and-input.md), [layout](../interface/layout.md))
-- **The composed layouts** - `FrameReader`, `ScrollReader` and `PlacedLayout`
+- **The composed layouts** - `GeometryReader`, `ScrollReader` and `PlacedLayout`
   (`Layouts/`), `GalleryView` and `PositionIndicator` (`Collections/`) - are
   StateUI's composition over measurement, placement and scrolling, which no
   host builds again. *Application.*

@@ -24,7 +24,7 @@
 //
 // The same for an explicit initializer's parameters: a defaulted parameter is
 // the same door with the same knob on it, so an optional argument is a second
-// initializer delegating to the first - `FrameReader` carries that pair.
+// initializer delegating to the first - `GeometryReader` carries that pair.
 
 import Foundation
 import XCTest
@@ -57,7 +57,7 @@ final class CompositionTests: XCTestCase {
                 offenders.append(
                     "\(view.file): \(view.name).init has a defaulted parameter '\(parameter)'. "
                         + "A value a caller may leave out is a modifier, or a second "
-                        + "initializer delegating to this one - see FrameReader.")
+                        + "initializer delegating to this one - see GeometryReader.")
             }
         }
 

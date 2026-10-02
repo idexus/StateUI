@@ -1,7 +1,7 @@
 # Composition
 
 An application builds its interface out of composed views - `View`s -
-and the library builds several of its own the same way: `FrameReader`,
+and the library builds several of its own the same way: `GeometryReader`,
 `PlacedLayout`, `ScrollReader`, `GalleryView`, the inspector. A
 composed view is a value that says what it is made of; the differ decides when
 that is read.

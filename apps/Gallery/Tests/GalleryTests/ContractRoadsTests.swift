@@ -544,6 +544,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = StackBaseContract.spacing",
             contract: "_ = StackContract.spacing"),
         Road(
+            name: "a view built from its room as FrameReader",
+            removed: #"_ = FrameReader { frame in Text("\\(frame.width)") }"#,
+            contract: #"_ = GeometryReader { frame in Text("\\(frame.width)") }"#),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

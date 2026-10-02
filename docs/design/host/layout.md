@@ -74,7 +74,7 @@ measured, each within its bounds (`LayoutValues.offer`, `sized`). A host
 measures its native view at that width and nothing more.
 
 The trap is a child measured at one width and placed at another: a stated
-width wider than its room - a `FrameReader`'s width a frame late as a
+width wider than its room - a `GeometryReader`'s width a frame late as a
 window is resized - wraps its words for the stated width while it stands
 in the room. Most toolkits show the words cut; WinUI, which measures until
 its layout settles, finds the words' size changing at every pass and ends

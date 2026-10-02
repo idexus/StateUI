@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Measuring what a layout decided: `.onFrameChanged` on any view, and
-// `FrameReader`, a composed view whose content is built from its frame.
+// `GeometryReader`, a composed view whose content is built from its frame.
 // Design: docs/design/views/measured-layouts.md#frame-reports
 
 /// Which coordinates a measurement is answered in.
@@ -68,7 +68,7 @@ private final class LastFrame: @unchecked Sendable {
 
 /// A container whose content is built from the space it was given.
 ///
-///     FrameReader { frame in
+///     GeometryReader { frame in
 ///         Text("half of \(Int(frame.width)) is \(Int(frame.width / 2))")
 ///             .width(frame.width / 2)
 ///     }
@@ -77,7 +77,7 @@ private final class LastFrame: @unchecked Sendable {
 /// first layout it is given a zero rectangle. Several views stack on top of
 /// each other, as in a `Grid`. To report a frame rather than build from it,
 /// write `.onFrameChanged` on the view.
-public struct FrameReader: View {
+public struct GeometryReader: View {
     /// The last frame the layout settled on - zero until the first report.
     @State private var frame = Rect(0, 0, 0, 0)
 

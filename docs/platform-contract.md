@@ -173,7 +173,7 @@ platform's collection shows it. Its host adapters map to `NSCollectionView`,
 `GtkGridView`, and a semantic DOM list/grid; each member's mark is its case's
 verdict on that host, as for every element.
 
-`ForEach`, `FrameReader`, `ScrollReader`, `PlacedLayout`, and `GalleryView` are
+`ForEach`, `GeometryReader`, `ScrollReader`, `PlacedLayout`, and `GalleryView` are
 StateUI compositions or readers rather than additional platform controls. The
 core implements them once; their platform behavior depends only on the
 primitive rows they use.

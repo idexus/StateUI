@@ -200,7 +200,7 @@ public struct ScrollReader: View {
             Grid { BuiltViews(nodes: content()) }
                 .ignoresInput(true)
 
-            FrameReader { room in
+            GeometryReader { room in
                 ScrollView {
                     // Nothing to see, only a length: the room plus how far the
                     // run goes beyond it. Across the axis it is one unit - or

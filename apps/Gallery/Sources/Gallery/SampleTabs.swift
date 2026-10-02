@@ -66,7 +66,7 @@ struct SampleTabPage: View {
     let nav: Navigation
 
     var body: some View {
-        FrameReader { frame in
+        GeometryReader { frame in
             held
                 .height(frame.height)
                 .width(frame.width)
