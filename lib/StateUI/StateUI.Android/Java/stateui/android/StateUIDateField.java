@@ -19,8 +19,8 @@ import java.util.Locale;
 
 /**
  * A DatePicker or a TimePicker: a field showing the day or the time in the user's locale, which opens the
- * platform's own calendar or clock. The user's choice, the dialog opening and it closing reach Swift by the
- * field's number; the program's opening and closing report nothing.
+ * platform's own calendar or clock. The user's choice and every opening and closing of the dialog reach Swift by
+ * the field's number; Swift tells whose they were.
  */
 final class StateUIDateField extends TextView
         implements View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener,
@@ -33,7 +33,6 @@ final class StateUIDateField extends TextView
     private int[] latest = new int[0];
     private String format = "";
     private Dialog dialog;
-    private boolean closing;
 
     StateUIDateField(Context context, long view, boolean time) {
         super(context, null, android.R.attr.spinnerStyle);
@@ -70,22 +69,18 @@ final class StateUIDateField extends TextView
         show();
     }
 
-    /** Opens the calendar or the clock, or closes it; the program's own change reports nothing. */
+    /** Opens the calendar or the clock, or closes it. */
     void setOpen(boolean open) {
         if (open && dialog == null) {
             showDialog();
         } else if (!open && dialog != null) {
-            closing = true;
             dialog.dismiss();
-            closing = false;
         }
     }
 
     @Override
     public void onClick(View clicked) {
-        if (dialog != null) return;
-        showDialog();
-        StateUIHost.opened(view);
+        if (dialog == null) showDialog();
     }
 
     @Override
@@ -103,7 +98,7 @@ final class StateUIDateField extends TextView
     @Override
     public void onDismiss(DialogInterface dismissed) {
         dialog = null;
-        if (!closing) StateUIHost.closed(view);
+        StateUIHost.closed(view);
     }
 
     private void showDialog() {
@@ -118,6 +113,7 @@ final class StateUIDateField extends TextView
         }
         dialog.setOnDismissListener(this);
         dialog.show();
+        StateUIHost.opened(view);
     }
 
     /** The first or the last moment of a day in the device's zone. */

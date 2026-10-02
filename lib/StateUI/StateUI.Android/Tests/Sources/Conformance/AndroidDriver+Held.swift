@@ -16,6 +16,7 @@ extension AndroidDriver {
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
         if property == .barSubtitle || property == .barBackgroundColor { return Self.barHolds(property, of: element) }
         let view = (element.native as? AndroidElement)?.view
+        if let field = view as? AndroidDateFieldView, let held = try Self.dateFieldHolds(property, field) { return held }
         switch (property, view) {
         case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
         case (.value, let slider as AndroidSliderView): return slider.value.propValue

@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 34 ✅ · 1 ☑️ | `NSDatePicker` in time mode |  |
 | UIKit | ✅ | 30 ✅ | `UIDatePicker` in time mode |  |
-| Android Views | ⌛ | 52 ✅ · 1 ☑️ · 3 – | `TimePickerDialog` |  |
+| Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – | `TimePickerDialog` |  |
 | WinUI 3 | ✅ | 58 ✅ | `TimePicker` |  |
 | GTK 4 | ⌛ | 45 ✅ · 1 – | an hour's and a minute's `GtkSpinButton` in a `GtkPopover` |  |
 | Web |  |  | `<input type=time>` | no host yet |
@@ -46,12 +46,12 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerCont
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClosed` (`closed`) | event |  | native |  |  | ⌛ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
-| `format` | property | `String` | native |  |  | ⌛ | · | ⌛ |  | not realized; UIKit: not realized; WinUI 3: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock |
-| `isOpen` | property | `Bool` | native |  |  | ⌛ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
-| `onOpened` (`opened`) | event |  | native |  |  | ⌛ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
-| `time` | property | `ClockTime` | native | ✅ | ✅ | ⌛ | ✅ | ⌛ |  |  |
-| `onTimeChanged` (`timeChanged`) | event | `ClockTime` | native | 🔌 | ✅ | ⌛ | ✅ | ⌛ |  | only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action |
+| `onClosed` (`closed`) | event |  | native |  |  | ✅ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
+| `format` | property | `String` | native |  |  | 🔌 | · | ⌛ |  | not realized; UIKit: not realized; Android Views: only through the host's own: read format of TimePicker: the pattern the relay writes the field in; WinUI 3: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock |
+| `isOpen` | property | `Bool` | native |  |  | ✅ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
+| `onOpened` (`opened`) | event |  | native |  |  | ✅ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
+| `time` | property | `ClockTime` | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |  |
+| `onTimeChanged` (`timeChanged`) | event | `ClockTime` | native | 🔌 | ✅ | ✅ | ✅ | ⌛ |  | only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -116,7 +116,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ⌛ | ✅ | ⌛ |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |  |
 | `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

@@ -176,10 +176,11 @@ a report of that row, or of the title's, is no change. The picker is given
 its options where they changed and the choice only where the tree changed it
 or them (`PickerChoices`): a new title leaves the user's choice standing.
 
-The list opens on the user's tap, which is reported, or on `isOpen`, which
-is not. It takes the window's focus while it shows, and the focus coming back
-is the list closing - Android has no call for it. Nor does it let a program
-close the list: `isOpen` set to false leaves it to the user.
+The list opens on the user's tap or on `isOpen`; the spinner tells every
+opening and closing, and the host layer's rule (`PickerOpening`) hears only
+the user's. It takes the window's focus while it shows, and the focus coming
+back is the list closing - Android has no call for it. Nor does it let a
+program close the list: `isOpen` set to false leaves it to the user.
 
 ## A day and a time
 
@@ -187,10 +188,13 @@ A date picker and a time picker are one field of the host's, showing the day
 or the time in the user's locale - "D" and "d" the long and short day, "T" and
 "t" the long and short time, which follows the user's choice of a 24-hour
 clock, any other text a pattern - and opening the platform's own calendar or
-clock, within the bounds the tree gave. The user's choice is written into the
-field and reported; the program's day or time is only written. The dialog
-opening on the user's tap and it closing are reported; the program opening or
-closing it is not, and a field that leaves closes its dialog.
+clock, within the bounds the tree gave. A day and a time stand by the host
+layer's rule (`CalendarArithmetic`): a day not in the calendar keeps the day
+shown, one past the bounds stands at the nearer, and a time is added up from
+midnight. The user's choice is written into the field and reported; the
+program's day or time is only written. The field tells every opening and
+closing of its dialog, and only the user's are heard (`PickerOpening`); a
+field that leaves closes its dialog.
 
 ## Work under way
 

@@ -9,7 +9,8 @@
 extension AndroidDriver {
     func byHost(_ ability: String) -> String? {
         switch Ability(ability).act {
-        case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
+        case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close"
+        where Ability(ability).element == "Window":
             return "the host told the activity's phase, no activity moved"
         case "toggle" where Ability(ability).element == "SplitView":
             return "the host's own entry the scrim's tap and the bar's button call"
@@ -22,6 +23,9 @@ extension AndroidDriver {
         case "read isSidebarVisible of SplitView": return "the split's own flag; the drawer slides on it"
         case "read selectionMode of ItemsView": return "the mode the relay keeps, which its cells tell TalkBack"
         case "read a question": return "what the relay keeps of the dialog it showed"
+        case "read minimumDate of DatePicker", "read maximumDate of DatePicker":
+            return "the bounds the relay hands its calendar as it opens"
+        case "read format of DatePicker", "read format of TimePicker": return "the pattern the relay writes the field in"
         default: return nil
         }
     }

@@ -22,6 +22,10 @@ final class AndroidPickerView: AndroidView {
     /// The arrow's colour the picker was made with.
     private var madeTint: JavaObject??
 
+    /// Who opened or closed the list - only the user's are heard - and whether it shows.
+    private var opening = PickerOpening()
+    private var listShows = false
+
     init() {
         super.init { number in
             Java.new(JavaAPI.picker, JavaAPI.newPicker, .object(AndroidRenderer.context), .long(number))
@@ -57,8 +61,9 @@ final class AndroidPickerView: AndroidView {
         }
     }
 
-    /// Opens the list; the user did not, so no `opened` is reported.
+    /// Opens the list for the program, heard by nobody. A spinner's list closes only by the user's hand.
     func openList() {
+        guard opening.programAsks(open: true, shown: listShows) else { return }
         Java.call(reference, JavaAPI.openList)
     }
 
@@ -76,11 +81,13 @@ final class AndroidPickerView: AndroidView {
     }
 
     override func opened() {
-        onOpened?()
+        listShows = true
+        if opening.heard(open: true) { onOpened?() }
     }
 
     override func closed() {
-        onClosed?()
+        listShows = false
+        if opening.heard(open: false) { onClosed?() }
     }
 
     override func detach() {

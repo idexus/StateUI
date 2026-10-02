@@ -95,7 +95,7 @@ of its members each meets, and why a cell is empty.
 | [CheckBox](controls/CheckBox.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ColorBox](controls/ColorBox.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ContextMenu](controls/ContextMenu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ⌛ | ✅ | ⌛ |  |
+| [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
 | [Ellipse](controls/Ellipse.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Grid](controls/Grid.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [HStack](controls/HStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -132,7 +132,7 @@ of its members each meets, and why a cell is empty.
 | [TabbedView](controls/TabbedView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ⌛ | ✅ | ⌛ |  |
+| [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ |  |
@@ -427,7 +427,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Canvas](controls/Canvas.md) | 70 | 26 ✅ · 1 ☑️ · 3 – | 25 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 52 ✅ · 3 – | 43 ✅ · 4 – |  |
 | [CheckBox](controls/CheckBox.md) | 69 | 32 ✅ · 1 ☑️ | 26 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ | 44 ✅ · 1 – |  |
 | [ColorBox](controls/ColorBox.md) | 68 | 27 ✅ · 3 – | 26 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 41 ✅ · 4 – |  |
-| [DatePicker](controls/DatePicker.md) | 80 | 36 ✅ · 1 ☑️ | 29 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 63 ✅ · 1 ☑️ | 45 ✅ · 1 – |  |
+| [DatePicker](controls/DatePicker.md) | 80 | 36 ✅ · 1 ☑️ | 29 ✅ · 3 – | 58 ✅ · 1 ☑️ · 3 – | 63 ✅ · 1 ☑️ | 45 ✅ · 1 – |  |
 | [Ellipse](controls/Ellipse.md) | 76 | 25 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 49 ✅ · 1 ☑️ · 3 – | 58 ✅ · 3 – | 44 ✅ · 4 – |  |
 | [Grid](controls/Grid.md) | 77 | 32 ✅ · 3 – | 34 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 47 ✅ · 4 – |  |
 | [HStack](controls/HStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
@@ -450,11 +450,11 @@ Every control, and every part an application, its windows and its pages are made
 | [Switch](controls/Switch.md) | 69 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ | 44 ✅ · 1 – |  |
 | [TextEditor](controls/TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 59 ✅ · 1 – |  |
 | [TextField](controls/TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 60 ✅ · 1 – |  |
-| [TimePicker](controls/TimePicker.md) | 78 | 34 ✅ · 1 ☑️ | 30 ✅ | 52 ✅ · 1 ☑️ · 3 – | 58 ✅ | 45 ✅ · 1 – |  |
+| [TimePicker](controls/TimePicker.md) | 78 | 34 ✅ · 1 ☑️ | 30 ✅ | 58 ✅ · 1 ☑️ · 3 – | 58 ✅ | 45 ✅ · 1 – |  |
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
 | [WebView](controls/WebView.md) | 77 |  |  | 6 ✅ | 20 ✅ · 15 – | 52 ✅ · 1 – |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅, – and 🧩 | 2447 | 1007 of 2447 met | 1006 of 2447 met | 1784 of 2447 met | 1928 of 2447 met | 1627 of 2447 met |  |
+| **Met** - ✅, – and 🧩 | 2447 | 1007 of 2447 met | 1006 of 2447 met | 1796 of 2447 met | 1928 of 2447 met | 1627 of 2447 met |  |
 
 ### Application structure
 
@@ -528,7 +528,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ | 1 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
-| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ | 4 ✅ |  | 7 ✅ · 1 ☑️ |  |  |
+| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ | 4 ✅ | 5 ✅ | 7 ✅ · 1 ☑️ |  |  |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ |  |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ | 5 ✅ | 8 ✅ | 9 ✅ | 9 ✅ |  |
@@ -559,7 +559,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 | 1 ✅ | 2 ✅ |  | 2 ✅ | 2 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ | 2 ✅ | 2 ✅ | 1 ☑️ | 2 ✅ |  |
-| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ | 2 ✅ |  | 2 ✅ |  |  |
+| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ | 2 ✅ | 5 ✅ | 2 ✅ |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  |  | 2 ✅ | 7 ✅ | 6 ✅ |  |

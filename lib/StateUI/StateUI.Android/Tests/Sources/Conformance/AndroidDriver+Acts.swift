@@ -15,6 +15,7 @@ import CStateUIAndroid
 extension AndroidDriver {
     func perform(_ act: UserAct, on element: MountedElement) throws {
         let view = (element.native as? AndroidElement)?.view
+        if let field = view as? AndroidDateFieldView, try performOnDateField(act, field) { return }
         switch (act, view) {
         case (.activate, _) where element.parent?.type == .itemsView:
             // A tap on the cell showing the item: its click, as the recycler's cell takes it.

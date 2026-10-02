@@ -69,7 +69,10 @@ what is asked, in the units Android keeps it in: a text view's lines,
 ellipsis, gravity, letter spacing in pixels, line spacing, paint flags, hint,
 selection and kind of input; a view's padding in whole pixels, back to whole
 points; a layout's clipping to its outline, a scroller's bars, a picture's
-scale type, a control's tint. What StateUI draws in its own views and
+scale type, a control's tint. A date field's day or time is read from the
+words it shows, in the platform's own form, and whether its dialog shows from
+the dialog; the user picks in that dialog and presses its OK, and Back
+cancels it. What StateUI draws in its own views and
 drawables - a shape's paint, a layout's box - and where StateUI's layout places
 the children hold nothing of Android's: they do not apply here, each proven by
 its effect in another case.

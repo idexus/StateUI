@@ -35,7 +35,6 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
     private int chosenRow;
 
     private boolean open;
-    private boolean opening;
 
     private float textSize;
     private int textColor;
@@ -72,11 +71,9 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
         rows.notifyDataSetChanged();
     }
 
-    /** Opens the list for the program: the user did not open it, so nothing is reported. */
+    /** Opens the list for the program; Swift tells whose the opening was. */
     void openList() {
-        opening = true;
         performClick();
-        opening = false;
     }
 
     @Override
@@ -84,7 +81,7 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
         boolean handled = super.performClick();
         if (!open) {
             open = true;
-            if (!opening) StateUIHost.opened(view);
+            StateUIHost.opened(view);
         }
         return handled;
     }

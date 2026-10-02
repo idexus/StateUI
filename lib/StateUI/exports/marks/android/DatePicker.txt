@@ -1,11 +1,11 @@
-# revision 1.1
+# revision 2.1
 DatePicker: ✅
-DatePicker.closed: cannot open on DatePicker - Android's driver has no path for it yet
-DatePicker.date: cannot read date of DatePicker - Android's driver has no path for it yet
-DatePicker.dateChanged: cannot read date of DatePicker - Android's driver has no path for it yet
-DatePicker.format: cannot read format of DatePicker - Android's driver has no path for it yet
+DatePicker.closed: ✅
+DatePicker.date: ✅
+DatePicker.dateChanged: ✅
+DatePicker.format: 🔌 read format of DatePicker: the pattern the relay writes the field in
 DatePicker.frameChanged: ✅
-DatePicker.isOpen: cannot open on DatePicker - Android's driver has no path for it yet
-DatePicker.maximumDate: cannot read maximumDate of DatePicker - Android's driver has no path for it yet
-DatePicker.minimumDate: cannot read minimumDate of DatePicker - Android's driver has no path for it yet
-DatePicker.opened: cannot open on DatePicker - Android's driver has no path for it yet
+DatePicker.isOpen: ✅
+DatePicker.maximumDate: 🔌 read maximumDate of DatePicker: the bounds the relay hands its calendar as it opens
+DatePicker.minimumDate: 🔌 read minimumDate of DatePicker: the bounds the relay hands its calendar as it opens
+DatePicker.opened: ✅
