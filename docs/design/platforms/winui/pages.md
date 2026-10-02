@@ -113,6 +113,17 @@ window wide enough for both panes opens with the sidebar shown; after that,
 the user and the application decide. The window learns its room inside a
 layout pass, so the binding hears it in the turn after it.
 
+The navigation view draws a border round itself and keeps a margin above and
+below the page in its pane - a line and a band of another tone between the
+window's bar and the sidebar - so its own resources set both to none
+(`NavigationViewBorderThickness`, `NavigationViewPaneContentGridMargin`): the
+sidebar page fills its pane from the top. The rows of the pane's own items
+beneath the page still show the window's backdrop where nothing paints them,
+so the pane wears the sidebar page's background, written into the
+navigation view's own `NavigationViewExpandedPaneBackground` and
+`NavigationViewDefaultPaneBackground` and written again as that background
+changes; a page with none, or with a gradient, leaves the pane its own.
+
 ## A native arrangement
 
 WinUI's navigation view lays its pages out in the room it is arranged in, and
@@ -205,6 +216,12 @@ item with its picture and its mark - and hears a choice by the item's place
 among the items, submenus' included; the item's own handler runs. A bar's
 menus are written the same way. Any entry the tree changes, adds or removes
 gives the view its menu again, and a menu with no entries is none.
+
+The window's menu bar is one of its bars: it wears the bars' colour as the
+title bar does, its `Background` and the theme of its words - light on a dark
+bar - and its menus' words take the bars' colour through
+`MenuBarItemForeground`, the brush their template reads, written into the
+bar's own resources. Where nothing is declared it keeps the platform's own.
 
 A stack with a menu is hit across its bounds, as a listening one is
 ([listening](input.md#listening)): a right click anywhere across it opens the

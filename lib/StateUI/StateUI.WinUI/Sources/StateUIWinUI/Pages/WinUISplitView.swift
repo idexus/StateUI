@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIWinUI
 
 /// A SplitView: the sidebar page in WinUI's own navigation pane - beside the detail page where the window is wide,
 /// over it and closed by a click beside it where it is narrow - which WinUI places, as it places any Windows app's.
@@ -30,6 +31,10 @@ final class WinUISplitView: WinUILayoutView {
     private var arranged: LayoutSize?
     private var asked = LayoutSize.zero
     private var adaptation = SidebarAdaptation()
+
+    /// The colour the pane was last painted in, once it was.
+    private var paneIsPainted = false
+    private var paneFill: UInt32?
 
     override init() {
         super.init()
@@ -110,6 +115,19 @@ final class WinUISplitView: WinUILayoutView {
                 sidebar: pages.first?.view, detail: pages.dropFirst().first?.view, row: detailRow,
                 open: isPresented)
         }
+        paintPane()
+    }
+
+    /// Paints the pane in the sidebar page's background, so the room WinUI keeps around the page in it shows no
+    /// window backdrop; said again whenever that page's background changes.
+    /// Design: docs/design/platforms/winui/pages.md#a-split-view
+    func paintPane() {
+        let fill = (pages.first?.view as? WinUILayoutView)?.box.fill?.argb
+        guard !paneIsPainted || fill != paneFill else { return }
+
+        paneIsPainted = true
+        paneFill = fill
+        stateui_winui_split_set_pane_background(sidebar.handle, fill != nil, fill ?? 0)
     }
 
     override func detach() {

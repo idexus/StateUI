@@ -433,6 +433,11 @@ void stateui_winui_menu_bar_set(StateUIObjectRef bar, int64_t view, int32_t cons
                                 bool const *enabled, char const *const *identifiers, char const *const *icons,
                                 bool const *destructive, int32_t count);
 
+/// Paints a menu bar as one of the window's bars: its background, its menus' words - `words` 1 light, 2 dark, 0 the
+/// theme's - and the platform's own again where none is given.
+void stateui_winui_menu_bar_set_colours(StateUIObjectRef bar, bool hasBackground, uint32_t background,
+                                        bool hasForeground, uint32_t foreground, int32_t words);
+
 /// A view's context menu, or a bar's menus, as a test reads them: items by caption, "!" before one that cannot be
 /// chosen, "-" a separator, a submenu's entries - and a bar's menu's - in brackets after its caption, ";" between -
 /// in UTF-8; the length it needs.
@@ -728,6 +733,10 @@ void stateui_winui_title_bar_set_title_view(StateUIObjectRef bar, StateUIObjectR
 StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
                              StateUIObjectRef row, bool open);
+
+/// Paints a split view's pane, around the sidebar page in it, in that page's background; the platform's own where
+/// none is given.
+void stateui_winui_split_set_pane_background(StateUIObjectRef split, bool hasBackground, uint32_t background);
 
 /// Whether a window's content shows the keys it takes - the way back's, Escape's - in a tip over everything it
 /// holds: what a test reads.

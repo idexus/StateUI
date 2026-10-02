@@ -270,6 +270,10 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expand
         split.IsBackButtonVisible(controls::NavigationViewBackButtonVisible::Collapsed);
         split.IsPaneToggleButtonVisible(false);
         split.IsTitleBarAutoPaddingEnabled(false);
+        // The sidebar page fills its pane from the top: no border of the view's, no margin of the pane's above it.
+        // Design: docs/design/platforms/winui/pages.md#a-split-view
+        split.Resources().Insert(winrt::box_value(L"NavigationViewBorderThickness"), winrt::box_value(xaml::Thickness{0, 0, 0, 0}));
+        split.Resources().Insert(winrt::box_value(L"NavigationViewPaneContentGridMargin"), winrt::box_value(xaml::Thickness{-1, 0, 0, 0}));
         split.Content(rows({true, false}));
         // The pane's own content stands in a row sized to what it holds, so a sidebar's scroller would never scroll.
         // Design: docs/design/platforms/winui/pages.md#a-split-view
@@ -323,6 +327,37 @@ extern "C" void stateui_winui_split_set(
         if (split.IsPaneOpen() != open) split.IsPaneOpen(open);
     } catch (...) {
         report("setting a split view");
+    }
+}
+
+extern "C" void stateui_winui_split_set_pane_background(StateUIObjectRef handle, bool hasBackground, uint32_t background) {
+    try {
+        // The pane's own room - its margin, the rows beneath the page - takes the page's tone, not the window's backdrop.
+        // Design: docs/design/platforms/winui/pages.md#a-split-view
+        auto brush = hasBackground ? xaml::Media::Brush(media::SolidColorBrush(color(background))) : nullptr;
+        writeResources(borrow<controls::NavigationView>(handle),
+                       {{L"NavigationViewExpandedPaneBackground", brush}, {L"NavigationViewDefaultPaneBackground", brush}});
+    } catch (...) {
+        report("painting a split view's pane");
+    }
+}
+
+extern "C" void stateui_winui_menu_bar_set_colours(
+    StateUIObjectRef handle, bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t words
+) {
+    try {
+        // One of the window's bars, painted as the title bar is; its menus' words through the brush their template reads.
+        // Design: docs/design/platforms/winui/pages.md#menus
+        auto bar = borrow<controls::MenuBar>(handle);
+        if (hasBackground) bar.Background(media::SolidColorBrush(color(background)));
+        else bar.ClearValue(controls::Control::BackgroundProperty());
+        auto theme = words == 1 ? xaml::ElementTheme::Dark
+            : words == 2 ? xaml::ElementTheme::Light : xaml::ElementTheme::Default;
+        if (bar.RequestedTheme() != theme) bar.RequestedTheme(theme);
+        auto brush = hasForeground ? xaml::Media::Brush(media::SolidColorBrush(color(foreground))) : nullptr;
+        writeResources(bar, {{L"MenuBarItemForeground", brush}});
+    } catch (...) {
+        report("painting a menu bar");
     }
 }
 

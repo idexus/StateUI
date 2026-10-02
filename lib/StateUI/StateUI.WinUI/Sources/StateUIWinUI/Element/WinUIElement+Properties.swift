@@ -74,7 +74,9 @@ extension WinUIElement {
             switch property {
             case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
             case .isVisible: view.setShown(isShown)
-            case .background: (view as? WinUILayoutView)?.setBackground(value(.background))
+            case .background:
+                (view as? WinUILayoutView)?.setBackground(value(.background))
+                (parent?.view as? WinUISplitView)?.paintPane()
             case .padding where type == .page:
                 (view as? WinUISingleChildView)?.padding = element.insets(.padding)
             default: break

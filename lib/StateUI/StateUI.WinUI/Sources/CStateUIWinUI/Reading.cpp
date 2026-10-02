@@ -378,6 +378,18 @@ namespace {
         if (auto radio = object.try_as<controls::RadioButton>(); radio && what == "groupName") {
             return narrow(radio.GroupName());
         }
+        // The brushes the host wrote into a control's own resources, by their names.
+        if (auto bar = object.try_as<controls::MenuBar>(); bar && what == "itemForeground") {
+            auto own = ownBrush(bar.Resources(), L"MenuBarItemForeground");
+            return own ? colour(own) : std::string();
+        }
+        if (auto split = object.try_as<controls::NavigationView>(); split && what == "paneBackground") {
+            auto own = ownBrush(split.Resources(), L"NavigationViewExpandedPaneBackground");
+            return own ? colour(own) : std::string();
+        }
+        if (auto element = object.try_as<xaml::FrameworkElement>(); element && what == "theme") {
+            return number(static_cast<int32_t>(element.RequestedTheme()));
+        }
         if (auto box = object.try_as<controls::NumberBox>()) {
             if (what == "minimum") return number(box.Minimum());
             if (what == "maximum") return number(box.Maximum());

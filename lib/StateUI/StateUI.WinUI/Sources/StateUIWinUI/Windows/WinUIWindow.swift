@@ -119,6 +119,7 @@ final class WinUIWindow {
     func apply(_ chrome: WinUIWindowChrome, tabs: WinUIWindowTabs?) {
         setTitle(chrome.title)
         titleBar.apply(chrome)
+        menuBar.paint(background: chrome.background, foreground: chrome.foreground)
         menuBar.show(chrome.menuBar)
         if chrome.menuBar.isEmpty == menuBarStands {
             menuBarStands.toggle()

@@ -179,6 +179,73 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// The menu bar is one of the window's bars: it wears their colour, its menus' words the bars' words - the colour
+    /// written, else light on a dark bar - and the platform's own again where nothing is declared.
+    func testTheMenuBarWearsTheBarsColours() throws {
+        try onUIThread {
+            let painted = State(wrappedValue: true)
+            let (navy, yellow) = (Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 230, blue: 0))
+            let host = WinUIRenderer.running {
+                let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Label("Root")
+                        .menuBar { Menu("File") { MenuItem("Save") } }
+                } destination: { _ in Label("Pushed") }
+                return painted.wrappedValue ? stack.barBackgroundColor(navy).barForegroundColor(yellow) : stack
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle { window.menuBarStands }
+            XCTAssertEqual(Self.words(window.menuBar, "background"), "#FF000080", "the bars' colour")
+            XCTAssertEqual(Self.words(window.menuBar, "itemForeground"), "#FFFFE600", "the bars' words")
+            XCTAssertEqual(Self.words(window.menuBar, "theme"), "2", "the dark theme of a dark bar")
+
+            painted.wrappedValue = false
+            host.settle { Self.words(window.menuBar, "theme") == "0" }
+            XCTAssertNotEqual(Self.words(window.menuBar, "background"), "#FF000080", "the platform's own again")
+            XCTAssertEqual(Self.words(window.menuBar, "itemForeground"), "")
+        }
+    }
+
+    /// The pane holding a sidebar wears the sidebar page's background, so no room WinUI keeps around the page in it
+    /// shows the window's backdrop.
+    func testTheSidebarsPaneWearsItsPagesBackground() throws {
+        try onUIThread {
+            let tone = State(wrappedValue: Color(red: 0, green: 0, blue: 128))
+            let host = WinUIRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TonedSidebar(tone: tone.wrappedValue)
+                } detail: {
+                    Label("detail")
+                }
+            }
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            host.settle { Self.words(split.sidebar, "paneBackground") == "#FF000080" }
+            XCTAssertEqual(Self.words(split.sidebar, "paneBackground"), "#FF000080")
+
+            tone.wrappedValue = Color(red: 128, green: 0, blue: 0)
+            host.settle { Self.words(split.sidebar, "paneBackground") == "#FF800000" }
+            XCTAssertEqual(Self.words(split.sidebar, "paneBackground"), "#FF800000", "and follows it")
+        }
+    }
+
+    /// The sidebar page stands at the top of the split view: no border of the navigation view's and no margin of its
+    /// pane's stands above it, as a band of another tone between the window's bar and the page.
+    func testTheSidebarPageStandsAtTheSplitViewsTop() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TonedSidebar(tone: Color(red: 0, green: 0, blue: 128))
+                } detail: {
+                    Label("detail")
+                }
+            }
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            host.settle { host.views(WinUILabelView.self).contains { $0.text == "sidebar" && $0.frame.height > 0 } }
+            host.layOut()
+            let sidebar = try XCTUnwrap(host.views(WinUILabelView.self).first { $0.text == "sidebar" })
+            XCTAssertEqual(sidebar.origin.y, split.origin.y, accuracy: 0.5, "the page at the split view's top")
+        }
+    }
+
     /// The actions on a painted bar stand in its words' colour - the one written, else light on a dark bar and dark
     /// on a light one - not in the theme's.
     func testTheBarsActionsStandInItsWordsColour() throws {
@@ -424,5 +491,17 @@ private struct TitledPage: ContentView {
                 if hidesBar { page.hasNavigationBar = false }
             }
             .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
+    }
+}
+
+/// A sidebar page in `tone`, written on its session as it is made and as the tone changes.
+private struct TonedSidebar: ContentView {
+    @Environment private var page: PageSession
+    let tone: Color
+
+    var content: some View {
+        Label("sidebar")
+            .onCreated { page.background = tone }
+            .onChanged(tone) { page.background = tone }
     }
 }
