@@ -77,6 +77,23 @@ jobs:
 
           & $swift.FullName --version
 
+      # The web view's backend, which the host's tests register, draws through
+      # the WebView2 runtime. Windows 11 has it; the runner's image names none,
+      # so it is looked for where Check Toolchain looks, and installed by
+      # Microsoft's Evergreen bootstrapper where it is missing.
+      - name: The WebView2 runtime
+        run: |
+          $application = "${env:ProgramFiles(x86)}\Microsoft\EdgeWebView\Application"
+          $found = { Get-ChildItem $application -Directory -ErrorAction SilentlyContinue | Where-Object Name -match '^\d+\.' }
+          if (-not (& $found)) {
+            $setup = Join-Path $env:RUNNER_TEMP 'MicrosoftEdgeWebview2Setup.exe'
+            Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile $setup
+            Start-Process $setup -ArgumentList '/silent', '/install' -Wait
+          }
+          $version = & $found | Select-Object -First 1
+          if (-not $version) { throw 'no WebView2 runtime, installed or found' }
+          Write-Host "the WebView2 runtime $($version.Name)"
+
       - name: WinUI host tests
         run: .scripts/WinUI/test-winui.ps1
 
