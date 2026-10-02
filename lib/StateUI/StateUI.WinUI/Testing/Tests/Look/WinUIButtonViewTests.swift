@@ -114,13 +114,13 @@ final class WinUIButtonViewTests: XCTestCase {
     func testAPictureAloneFillsItsButtonAsItsAspectSays() throws {
         try onUIThread {
             for (aspect, drawn, empty) in [
-                (Aspect.fit, [(20.0, 20.0)], [(20.0, 5.0), (60.0, 20.0)]),
-                (Aspect.fill, [(20.0, 5.0), (20.0, 35.0), (2.0, 20.0)], [(60.0, 20.0)]),
+                (ContentMode.fit, [(20.0, 20.0)], [(20.0, 5.0), (60.0, 20.0)]),
+                (ContentMode.fill, [(20.0, 5.0), (20.0, 35.0), (2.0, 20.0)], [(60.0, 20.0)]),
             ] {
                 let host = WinUIRenderer.running {
                     HStack {
                         Button(icon: "test_wide.png")
-                            .aspect(aspect)
+                            .contentMode(aspect)
                             .background(.transparent)
                             .lineWidth(0)
                             .padding(0, 0)

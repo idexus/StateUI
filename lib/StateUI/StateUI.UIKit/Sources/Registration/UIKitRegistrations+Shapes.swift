@@ -77,7 +77,7 @@ extension UIKitRegistrations {
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
-        ShapeContract.aspect, ShapeContract.renderTransform,
+        ShapeContract.contentMode, ShapeContract.renderTransform,
     ]
 
     private static func paint<Realized: ElementContract>(_ view: UIKitShapeView, _ values: ElementValues<Realized>) {
@@ -97,7 +97,7 @@ extension UIKitRegistrations {
     private static func authored<Realized: ElementContract>(
         _ curves: [HostCurveCommand], evenOdd: Bool, _ values: ElementValues<Realized>
     ) -> UIKitShapeView.Geometry {
-        .authored(curves, evenOdd: evenOdd, aspect: values[ShapeContract.aspect] ?? .fit, transform: transform(values))
+        .authored(curves, evenOdd: evenOdd, aspect: values[ShapeContract.contentMode] ?? .fit, transform: transform(values))
     }
 
     /// The shape's own transform's six numbers, where it has one that is all numbers.

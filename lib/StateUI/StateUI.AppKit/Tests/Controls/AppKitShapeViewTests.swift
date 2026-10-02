@@ -163,7 +163,7 @@ final class AppKitShapeViewTests: XCTestCase {
         line.properties[.stroke] = brush(.black)
         line.properties[.lineWidth] = .number(3)
         line.properties[.dash] = .numbers([2, 1])
-        line.properties[.aspect] = .enumeration(Aspect.center.rawValue)
+        line.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
         renderer.applyForTesting(tree(line))
 
         let native = try XCTUnwrap(
@@ -185,7 +185,7 @@ final class AppKitShapeViewTests: XCTestCase {
         line.properties[.y1] = .number(2)
         line.properties[.x2] = .number(21)
         line.properties[.y2] = .number(12)
-        line.properties[.aspect] = .enumeration(Aspect.center.rawValue)
+        line.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
         line.properties[.renderTransform] = .values([
             .number(1), .number(0), .number(0),
             .number(1), .number(10), .number(20),
@@ -285,10 +285,10 @@ final class AppKitShapeViewTests: XCTestCase {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var fitted = HostPatch(id: .manual("fitted"), type: type)
-            fitted.properties = geometry.merging([.aspect: .enumeration(Aspect.fit.rawValue)]) { $1 }
+            fitted.properties = geometry.merging([.contentMode: .enumeration(ContentMode.fit.rawValue)]) { $1 }
             var moved = HostPatch(id: .manual("moved"), type: type)
             moved.properties = geometry.merging([
-                .aspect: .enumeration(Aspect.stretch.rawValue),
+                .contentMode: .enumeration(ContentMode.stretch.rawValue),
                 .renderTransform: .values([
                     .number(1), .number(0), .number(0),
                     .number(1), .number(10), .number(20),

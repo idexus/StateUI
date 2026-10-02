@@ -17,11 +17,11 @@ extension AndroidRegistrations {
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
             button.applies([
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.aspect,
+                ImageElementContract.contentMode,
             ]) { view, values in
                 view.setIcon(
                     values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .leading,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.aspect] ?? .fit)
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.applies([
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,

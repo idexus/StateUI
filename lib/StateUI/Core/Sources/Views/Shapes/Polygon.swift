@@ -9,7 +9,7 @@ extension PolygonProperties {
     ///
     ///     Polygon().points([Point(20, 0), Point(40, 40), Point(0, 40)])
     ///
-    /// The numbers are device units in the shape's own space, which `.aspect`
+    /// The numbers are device units in the shape's own space, which `.contentMode`
     /// fits to the room the layout gives it.
     public func points(_ value: [Point]) -> Modified {
         setValue(PolygonContract.points, value)

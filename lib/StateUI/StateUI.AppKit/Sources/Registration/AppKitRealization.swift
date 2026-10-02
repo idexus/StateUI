@@ -50,7 +50,7 @@ enum AppKitRealization {
         .notPlanned("TextField", "showsClearButton", reason: "AppKit's text field has no button of its own that empties it."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
-        .partial("Button", "aspect", missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
+        .partial("Button", "contentMode", missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .complete("Button", "padding"),
         .partial("Button", "shape", missing: "AppKit rounds an oval button into a capsule: a layer's corners draw no oval."),
         .complete("Text", "accessibilityIdentifier"),

@@ -34,7 +34,7 @@ final class WinUIButtonView: WinUIView {
 
     /// The picture beside the caption - the files it may stand in (`PictureArithmetic.files`), none for none -
     /// where it stands, how far from the words (nil for WinUI's own gap), and how it fills the button alone.
-    func setIcon(_ icon: [String], position: IconPosition, spacing: Double?, aspect: Aspect) {
+    func setIcon(_ icon: [String], position: IconPosition, spacing: Double?, aspect: ContentMode) {
         look.icon = icon
         look.position = position
         look.spacing = spacing
@@ -79,7 +79,7 @@ final class WinUIButtonView: WinUIView {
         var icon: [String] = []
         var position = IconPosition.leading
         var spacing: Double?
-        var aspect = Aspect.fit
+        var aspect = ContentMode.fit
         var lineBreak: LineBreak?
     }
 

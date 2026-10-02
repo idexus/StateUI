@@ -27,12 +27,12 @@ extension WinUIRegistrations {
             }
             button.applies([
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.aspect,
+                ImageElementContract.contentMode,
             ]) { view, values in
                 view.setIcon(
                     values[ButtonContract.icon].flatMap { $0.isEmpty ? nil : PictureArithmetic.files(for: $0.file) } ?? [],
                     position: values[ButtonContract.iconPosition] ?? .leading,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.aspect] ?? .fit)
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             button.property(VisualElementContract.isEnabled) { view, enabled in

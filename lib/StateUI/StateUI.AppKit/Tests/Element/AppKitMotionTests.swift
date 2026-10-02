@@ -854,7 +854,7 @@ final class AppKitMotionTests: XCTestCase {
         initial.properties[.y1] = .number(2)
         initial.properties[.x2] = .number(21)
         initial.properties[.y2] = .number(12)
-        initial.properties[.aspect] = .enumeration(Aspect.center.rawValue)
+        initial.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("line"), type: .line)
@@ -890,7 +890,7 @@ final class AppKitMotionTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var initial = HostPatch(id: .manual("line"), type: .line)
-        initial.properties[.aspect] = .enumeration(Aspect.center.rawValue)
+        initial.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
         initial.properties[.stroke] = Brush.solidColor(Color("#000000")).propValue
         initial.properties[.dash] = .numbers([1, 1])
         renderer.applyForTesting(initial)

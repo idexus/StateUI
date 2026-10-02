@@ -15,7 +15,7 @@ final class WinUIPathView: WinUIView {
     enum Geometry: Equatable {
         case rectangle([Double], transform: [Double]?)
         case ellipse(transform: [Double]?)
-        case authored([Double], evenOdd: Bool, aspect: Aspect, transform: [Double]?)
+        case authored([Double], evenOdd: Bool, aspect: ContentMode, transform: [Double]?)
     }
 
     private var geometry = Geometry.rectangle([0, 0, 0, 0], transform: nil)

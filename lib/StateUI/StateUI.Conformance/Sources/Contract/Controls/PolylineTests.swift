@@ -19,7 +19,7 @@
                 s.start {
                     VStack {
                         Polyline(moved.wrappedValue ? [Point(0, 30), Point(40, 30)] : [Point(0, 10), Point(40, 10)])
-                            .stroke(.red).lineWidth(4).aspect(.center).width(40).height(40).id("shape")
+                            .stroke(.red).lineWidth(4).contentMode(.center).width(40).height(40).id("shape")
                         Button("Move").onClicked { moved.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)
@@ -38,7 +38,7 @@
                 let rule = State(wrappedValue: FillRule.evenOdd)
                 s.start {
                     VStack {
-                        Polyline(PolygonTests.woundTwice).fillRule(rule.wrappedValue).fill(.blue).aspect(.center)
+                        Polyline(PolygonTests.woundTwice).fillRule(rule.wrappedValue).fill(.blue).contentMode(.center)
                             .width(40).height(40).id("shape")
                         Button("Nonzero").onClicked { rule.wrappedValue = .nonzero }.id("change")
                     }

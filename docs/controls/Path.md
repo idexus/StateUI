@@ -7,7 +7,7 @@ Whatever an outline can be, written in SVG path syntax.
 ```swift
 Path("M 0,40 L 20,0 L 40,40 Z")
     .fill(.gold)
-    .aspect(.fit)
+    .contentMode(.fit)
 ```
 
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
@@ -189,8 +189,8 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>aspect</code></td><td>property</td><td><code>Aspect</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read aspect of Path - StateUI draws a shape in its view's draw(_:), which holds none of its aspect; its drawing proves it<br>UIKit: cannot read aspect of Path - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it<br>Android Views: cannot read aspect of Path - StateUI draws a shape in its view's onDraw, which holds none of its aspect; its drawing proves it</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: cannot read contentMode of Path - StateUI draws a shape in its view's draw(_:), which holds none of its aspect; its drawing proves it<br>UIKit: cannot read contentMode of Path - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it<br>Android Views: cannot read contentMode of Path - StateUI draws a shape in its view's onDraw, which holds none of its aspect; its drawing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fill</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">◐</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit: cannot read fill of Path - StateUI draws a shape in its view's draw(_:), which holds none of its fill; its drawing proves it<br>Android Views: cannot read fill of Path - StateUI draws a shape in its view's onDraw, which holds none of its fill; its drawing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>renderTransform</code></td><td>property</td><td><code>ViewTransform</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>

@@ -128,7 +128,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("IconButton", source: "Button.swift",
                 Button(icon: "tab_list.png")
-                    .aspect(.fit)
+                    .contentMode(.fit)
                     .onClicked {}),
 
             ControlCase("TextField", source: "TextField.swift",
@@ -146,7 +146,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Image", source: "Image.swift",
                 Image("tab_list.png")
-                    .aspect(.fill)
+                    .contentMode(.fill)
                     .isAnimating(true)),
 
 
@@ -445,7 +445,7 @@ final class ControlTests: XCTestCase {
                         .lineCap(.round)
                         .lineJoin(.bevel)
                         .miterLimit(4)
-                        .aspect(.fill)
+                        .contentMode(.fill)
                         // The one transform, on the geometry: a matrix with a
                         // lean in it exercises the part only a geometry draws.
                         .renderTransform(Self.leaned)

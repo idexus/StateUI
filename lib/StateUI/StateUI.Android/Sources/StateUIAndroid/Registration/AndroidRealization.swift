@@ -48,7 +48,7 @@ enum AndroidRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
-        .partial("Button", "aspect", missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
+        .partial("Button", "contentMode", missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .complete("Menu", "isEnabled"),

@@ -5,11 +5,11 @@ Ellipse.lineJoin: cannot read lineJoin of Ellipse - StateUI draws a shape in its
 Ellipse.lineWidth: ✅
 Ellipse.renderTransform: cannot read renderTransform of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its renderTransform; its drawing proves it
 Ellipse.stroke: ✅
-Line.aspect: ✅
+Line.contentMode: ✅
 Line.dashPhase: cannot read dashPhase of Line - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
 Line.miterLimit: cannot read miterLimit of Line - StateUI draws a shape in its view's draw(_:), which holds none of its miterLimit; its drawing proves it
 Line.stroke: cannot read stroke of Line - StateUI draws a shape in its view's draw(_:), which holds none of its stroke; its drawing proves it
-Path.aspect: cannot read aspect of Path - StateUI draws a shape in its view's draw(_:), which holds none of its aspect; its drawing proves it
+Path.contentMode: cannot read contentMode of Path - StateUI draws a shape in its view's draw(_:), which holds none of its aspect; its drawing proves it
 Path.fill: ✅
 Path.lineCap: cannot read lineCap of Path - StateUI draws a shape in its view's draw(_:), which holds none of its lineCap; its drawing proves it
 Path.lineWidth: cannot read lineWidth of Path - StateUI draws a shape in its view's draw(_:), which holds none of its lineWidth; its drawing proves it
@@ -20,11 +20,11 @@ Polygon.lineJoin: cannot read lineJoin of Polygon - StateUI draws a shape in its
 Polygon.lineWidth: ✅
 Polygon.renderTransform: cannot read renderTransform of Polygon - StateUI draws a shape in its view's draw(_:), which holds none of its renderTransform; its drawing proves it
 Polygon.stroke: ✅
-Polyline.aspect: ✅
+Polyline.contentMode: ✅
 Polyline.dashPhase: cannot read dashPhase of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
 Polyline.miterLimit: cannot read miterLimit of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its miterLimit; its drawing proves it
 Polyline.stroke: cannot read stroke of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its stroke; its drawing proves it
-Rectangle.aspect: cannot read aspect of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its aspect; its drawing proves it
+Rectangle.contentMode: cannot read contentMode of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its aspect; its drawing proves it
 Rectangle.fill: ✅
 Rectangle.lineCap: cannot read lineCap of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its lineCap; its drawing proves it
 Rectangle.lineWidth: cannot read lineWidth of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its lineWidth; its drawing proves it

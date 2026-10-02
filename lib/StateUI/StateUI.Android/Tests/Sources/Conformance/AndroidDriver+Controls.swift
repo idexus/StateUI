@@ -71,7 +71,7 @@ extension AndroidDriver {
             let bars: [String: ScrollBarVisibility] = ["never": .never, "always": .always, "default": .default]
             return bar.flatMap { bars[$0] }?.propValue
         case .aspect where view is AndroidImageView:
-            let aspects: [String: Aspect] = ["FIT_CENTER": .fit, "CENTER_CROP": .fill, "FIT_XY": .stretch, "CENTER": .center]
+            let aspects: [String: ContentMode] = ["FIT_CENTER": .fit, "CENTER_CROP": .fill, "FIT_XY": .stretch, "CENTER": .center]
             return read("scaleType").flatMap { aspects[$0] }?.propValue
         case .tint:
             return number("tint").map { color(UInt32(bitPattern: Int32(truncatingIfNeeded: Int($0)))).propValue }

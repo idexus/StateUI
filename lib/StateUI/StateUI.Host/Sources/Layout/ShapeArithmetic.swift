@@ -12,7 +12,7 @@
     /// its proportions, to cover, each axis on its own, or not at all - centred, then moved by the shape's own
     /// `transform`, as a transform moves a view after its layout.
     public static func placement(
-        of bounds: Rect, in size: LayoutSize, aspect: Aspect, transform: [Double]?
+        of bounds: Rect, in size: LayoutSize, aspect: ContentMode, transform: [Double]?
     ) -> [Double] {
         let across = bounds.width > 0 ? size.width / bounds.width : 0
         let down = bounds.height > 0 ? size.height / bounds.height : 0

@@ -151,8 +151,8 @@ final class AppKitButtonViewTests: XCTestCase {
             button.properties = properties
             return button
         }
-        func icon(_ aspect: Aspect) -> [Prop: HostValue] {
-            [.icon: .string("save.png"), .aspect: .enumeration(aspect.rawValue)]
+        func icon(_ aspect: ContentMode) -> [Prop: HostValue] {
+            [.icon: .string("save.png"), .contentMode: .enumeration(aspect.rawValue)]
         }
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([

@@ -21,7 +21,7 @@
                         Polygon(moved.wrappedValue
                                 ? [Point(40, 0), Point(40, 40), Point(0, 40)]
                                 : [Point(0, 0), Point(40, 0), Point(0, 40)])
-                            .fill(.blue).aspect(.center).width(40).height(40).id("shape")
+                            .fill(.blue).contentMode(.center).width(40).height(40).id("shape")
                         Button("Move").onClicked { moved.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)
@@ -40,7 +40,7 @@
                 let rule = State(wrappedValue: FillRule.evenOdd)
                 s.start {
                     VStack {
-                        Polygon(Self.woundTwice).fillRule(rule.wrappedValue).fill(.blue).aspect(.center)
+                        Polygon(Self.woundTwice).fillRule(rule.wrappedValue).fill(.blue).contentMode(.center)
                             .width(40).height(40).id("shape")
                         Button("Nonzero").onClicked { rule.wrappedValue = .nonzero }.id("change")
                     }

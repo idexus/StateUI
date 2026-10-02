@@ -23,7 +23,7 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `aspect` | property | `Aspect` | native |
+| `contentMode` | property | `ContentMode` | native |
 | `fill` | property | `Brush` | stateUI |
 | `renderTransform` | property | `ViewTransform` | native |
 | `stroke` | property | `Brush` | stateUI |

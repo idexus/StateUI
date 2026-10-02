@@ -189,8 +189,8 @@ enum PatchDump {
             return spelled(member, as: LineBreak.self)
         case Prop.textCase.name:
             return spelled(member, as: TextCase.self)
-        case Prop.aspect.name:
-            return spelled(member, as: Aspect.self)
+        case Prop.contentMode.name:
+            return spelled(member, as: ContentMode.self)
         case Prop.iconPosition.name:
             return spelled(member, as: IconPosition.self)
         case Prop.type.name:

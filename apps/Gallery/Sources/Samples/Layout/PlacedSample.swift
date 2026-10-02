@@ -346,7 +346,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             ZStack {
                 Grid {
                     Image(ImageSource(card.art))
-                        .aspect(.fill)
+                        .contentMode(.fill)
 
                     VStack {
                         Text(card.name)
@@ -528,7 +528,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         ZStack {
             Grid {
                 Image(ImageSource(card.art))
-                    .aspect(.fill)
+                    .contentMode(.fill)
 
                 VStack {
                     // ONE LINE, whatever the card's width: a caption that

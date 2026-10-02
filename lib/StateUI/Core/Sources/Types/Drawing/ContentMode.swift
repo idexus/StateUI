@@ -5,10 +5,10 @@
 // Design: docs/design/types/vocabularies.md#written-out-and-appended
 
 /// How a picture or a shape fills the room it was given, when the two are not
-/// the same shape - what `.aspect` takes on an `Image` and on a shape alike.
+/// the same shape - what `.contentMode` takes on an `Image` and on a shape alike.
 ///
 /// Something has to give: the space, the edges, or the proportions.
-public enum Aspect: Int32, Sendable {
+public enum ContentMode: Int32, Sendable {
     /// Fits it all in, keeping the proportions - so there may be space at the
     /// sides. The default.
     case fit = 0
@@ -23,5 +23,5 @@ public enum Aspect: Int32, Sendable {
     case center = 3
 }
 
-extension Aspect: HostRepresentable {}
-extension Aspect: StateChoice {}
+extension ContentMode: HostRepresentable {}
+extension ContentMode: StateChoice {}

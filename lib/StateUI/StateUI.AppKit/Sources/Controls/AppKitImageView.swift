@@ -14,7 +14,7 @@ import AppKit
 final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     private let imageView = NSImageView()
 
-    private(set) var aspect: Aspect = .fit
+    private(set) var aspect: ContentMode = .fit
 
     var image: NSImage? { imageView.image }
     var animationPlaying: Bool { imageView.animates }
@@ -42,7 +42,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     /// the host's to answer, since the files and the cache over them are its.
     var picture: ((String) -> NSImage?)?
 
-    func apply(image: NSImage?, aspect: Aspect, animationPlaying: Bool) {
+    func apply(image: NSImage?, aspect: ContentMode, animationPlaying: Bool) {
         let imageChanged = imageView.image !== image
         imageView.image = image
         imageView.animates = animationPlaying
@@ -63,7 +63,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     ///   - source: the picture's file, or none to show nothing.
     ///   - aspect: how it fills the room it is given.
     ///   - animationPlaying: whether an animated picture runs.
-    func apply(source: ImageSource?, aspect: Aspect, animationPlaying: Bool) {
+    func apply(source: ImageSource?, aspect: ContentMode, animationPlaying: Bool) {
         apply(
             image: source.flatMap { $0.isEmpty ? nil : picture?($0.file) },
             aspect: aspect,

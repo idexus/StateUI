@@ -1,5 +1,5 @@
 # revision 1.1
-Ellipse.aspect: ✅
+Ellipse.contentMode: ✅
 Ellipse.dash: ✅
 Ellipse.dashPhase: ✅
 Ellipse.fill: ✅
@@ -9,7 +9,7 @@ Ellipse.lineWidth: ✅
 Ellipse.miterLimit: ✅
 Ellipse.renderTransform: ✅
 Ellipse.stroke: ✅
-Line.aspect: ✅
+Line.contentMode: ✅
 Line.dash: ✅
 Line.dashPhase: ✅
 Line.fill: ✅
@@ -19,7 +19,7 @@ Line.lineWidth: ✅
 Line.miterLimit: ✅
 Line.renderTransform: ✅
 Line.stroke: ✅
-Path.aspect: ✅
+Path.contentMode: ✅
 Path.dash: ✅
 Path.dashPhase: ✅
 Path.fill: ✅
@@ -29,7 +29,7 @@ Path.lineWidth: ✅
 Path.miterLimit: ✅
 Path.renderTransform: ✅
 Path.stroke: ✅
-Polygon.aspect: ✅
+Polygon.contentMode: ✅
 Polygon.dash: ✅
 Polygon.dashPhase: ✅
 Polygon.fill: ✅
@@ -39,7 +39,7 @@ Polygon.lineWidth: ✅
 Polygon.miterLimit: ✅
 Polygon.renderTransform: ✅
 Polygon.stroke: ✅
-Polyline.aspect: ✅
+Polyline.contentMode: ✅
 Polyline.dash: ✅
 Polyline.dashPhase: ✅
 Polyline.fill: ✅
@@ -49,7 +49,7 @@ Polyline.lineWidth: ✅
 Polyline.miterLimit: ✅
 Polyline.renderTransform: ✅
 Polyline.stroke: ✅
-Rectangle.aspect: ✅
+Rectangle.contentMode: ✅
 Rectangle.dash: ✅
 Rectangle.dashPhase: ✅
 Rectangle.fill: ✅

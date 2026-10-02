@@ -468,6 +468,14 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = Draw.strokeWidth(2)",
             contract: "_ = Draw.lineWidth(2)"),
         Road(
+            name: "a picture's fit as an aspect",
+            removed: #"_ = Image("photo.png").aspect(.fit)"#,
+            contract: #"_ = Image("photo.png").contentMode(.fit)"#),
+        Road(
+            name: "the fitting values as Aspect",
+            removed: "_ = Aspect.fill",
+            contract: "_ = ContentMode.fill"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

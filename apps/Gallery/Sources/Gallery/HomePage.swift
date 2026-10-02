@@ -573,7 +573,7 @@ private struct GroupFace: View {
         ZStack {
             Grid {
                 Image(picture)
-                    .aspect(.fill)
+                    .contentMode(.fill)
 
                 Grid {
                     Text(title)

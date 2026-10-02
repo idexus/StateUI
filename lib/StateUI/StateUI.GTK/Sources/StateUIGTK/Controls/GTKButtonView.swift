@@ -92,7 +92,7 @@ final class GTKButtonView: GTKView {
     /// The picture `source` names beside the caption - before it, after it, above or below it, `spacing` apart,
     /// libadwaita's 6 where it is nil - or in its place where there are no words, filling the room as `aspect`
     /// says; none shows the caption alone.
-    func setPicture(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: Aspect) {
+    func setPicture(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
         guard let source, !source.isEmpty else {
             guard picture != nil else { return }
             picture = nil

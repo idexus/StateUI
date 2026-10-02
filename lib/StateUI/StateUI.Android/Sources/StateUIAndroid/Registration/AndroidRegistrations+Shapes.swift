@@ -50,7 +50,7 @@ extension AndroidRegistrations {
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
-        ShapeContract.aspect, ShapeContract.renderTransform,
+        ShapeContract.contentMode, ShapeContract.renderTransform,
     ]
 
     private static func draw<Realized: ElementContract>(
@@ -67,7 +67,7 @@ extension AndroidRegistrations {
             cap: values[ShapeContract.lineCap]?.rawValue ?? 0,
             join: values[ShapeContract.lineJoin]?.rawValue ?? 0,
             miterLimit: values[ShapeContract.miterLimit] ?? 10,
-            aspect: values[ShapeContract.aspect]?.rawValue ?? 0,
+            aspect: values[ShapeContract.contentMode]?.rawValue ?? 0,
             transform: transform.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil })
     }
 }

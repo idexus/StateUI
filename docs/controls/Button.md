@@ -258,6 +258,6 @@ How a picture fills the room it was given.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>aspect</code></td><td>property</td><td><code>Aspect</code></td><td>native</td><td align="center">·</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read aspect of Button - AppKit's button has no covering scale, as the register records: a fill shows fitted<br>UIKit: not realized<br>Android Views: cannot read aspect of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read aspect of Button: how the host's own panel fills its room: GTK's snapshot holds no aspect</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">·</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: cannot read contentMode of Button - AppKit's button has no covering scale, as the register records: a fill shows fitted<br>UIKit: not realized<br>Android Views: cannot read contentMode of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read contentMode of Button: how the host's own panel fills its room: GTK's snapshot holds no aspect</td></tr></tbody>
 </table>

@@ -35,8 +35,8 @@ extension UIKitDriver {
             return purpose(field.keyboardType, spelling: field.spellCheckingType).propValue
         case (.inputPurpose, let editor as UITextView):
             return purpose(editor.keyboardType, spelling: editor.spellCheckingType).propValue
-        case (.aspect, let image as UIImageView):
-            let aspects: [UIView.ContentMode: Aspect] = [
+        case (.contentMode, let image as UIImageView):
+            let aspects: [UIView.ContentMode: ContentMode] = [
                 .scaleAspectFit: .fit, .scaleAspectFill: .fill, .scaleToFill: .stretch, .center: .center,
             ]
             return aspects[image.contentMode]?.propValue

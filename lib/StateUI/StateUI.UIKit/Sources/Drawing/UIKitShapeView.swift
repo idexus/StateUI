@@ -16,7 +16,7 @@ final class UIKitShapeView: UIView {
     enum Geometry: Equatable {
         case rectangle([Double], transform: [Double]?)
         case ellipse(transform: [Double]?)
-        case authored([HostCurveCommand], evenOdd: Bool, aspect: Aspect, transform: [Double]?)
+        case authored([HostCurveCommand], evenOdd: Bool, aspect: ContentMode, transform: [Double]?)
     }
 
     /// How the outline is drawn: its width, its dashes and gaps with their offset in widths, its ends and joins.

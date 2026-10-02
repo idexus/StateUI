@@ -26,11 +26,11 @@ extension GTKRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.applies([
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing, ImageElementContract.aspect,
+                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing, ImageElementContract.contentMode,
             ]) { view, values in
                 view.setPicture(
                     values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .leading,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.aspect] ?? .fit)
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             button.property(VisualElementContract.isEnabled) { view, enabled in

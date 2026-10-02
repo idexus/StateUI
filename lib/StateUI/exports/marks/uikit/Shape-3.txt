@@ -1,9 +1,9 @@
 # revision 1.1
-Ellipse.aspect: ✅
+Ellipse.contentMode: ✅
 Ellipse.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Ellipse.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Ellipse.stroke: ✅
-Line.aspect: cannot read aspect of Line - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
+Line.contentMode: cannot read contentMode of Line - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
 Line.fill: ✅
 Line.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Line.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
@@ -14,11 +14,11 @@ Path.lineJoin: cannot read the line of a shape drawing no outline - UIKit draws 
 Path.lineWidth: ✅
 Path.renderTransform: cannot read renderTransform of Path - StateUI places and moves a shape's figure into its layer's path, which holds no renderTransform; its drawing proves it
 Path.stroke: ✅
-Polygon.aspect: ✅
+Polygon.contentMode: ✅
 Polygon.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Polygon.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Polygon.stroke: ✅
-Polyline.aspect: cannot read aspect of Polyline - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
+Polyline.contentMode: cannot read contentMode of Polyline - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
 Polyline.fill: ✅
 Polyline.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Polyline.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line

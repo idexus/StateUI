@@ -19,7 +19,7 @@
                 s.start {
                     VStack {
                         Path(flipped.wrappedValue ? "M 0 40 L 40 40 L 40 0 Z" : "M 0 0 L 40 0 L 0 40 Z")
-                            .fill(.red).aspect(.stretch).width(40).height(40).id("shape")
+                            .fill(.red).contentMode(.stretch).width(40).height(40).id("shape")
                         Button("Flip").onClicked { flipped.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)

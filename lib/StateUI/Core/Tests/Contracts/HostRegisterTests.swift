@@ -32,10 +32,10 @@ final class HostRegisterTests: XCTestCase {
     /// its reason, and an element realized none of judges nothing and runs nothing.
     func testNeverComesFromTheRegister() {
         let register = HostRegister(
-            records: [.complete("Button", "text"), .notPlanned("Button", "aspect", reason: "No such screen.")],
+            records: [.complete("Button", "text"), .notPlanned("Button", "contentMode", reason: "No such screen.")],
             unrealized: ["Map"], viewless: [], notPlanned: ["MenuBar": "No bar on a phone."])
 
-        XCTAssertEqual(register.judgement(of: "aspect", on: "Button", from: nil), .notPlanned(reason: "No such screen."))
+        XCTAssertEqual(register.judgement(of: "contentMode", on: "Button", from: nil), .notPlanned(reason: "No such screen."))
         XCTAssertEqual(register.judgement(of: "text", on: "MenuBar", from: nil), .notPlanned(reason: "No bar on a phone."))
         XCTAssertEqual(register.judgement(ofElement: "MenuBar"), .notPlanned(reason: "No bar on a phone."))
         XCTAssertNil(register.judgement(of: "text", on: "Map", from: nil))

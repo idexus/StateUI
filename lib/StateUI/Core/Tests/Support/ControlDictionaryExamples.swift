@@ -116,7 +116,7 @@ extension ControlDictionary {
 
         (ImageContract.self, #"""
             Image("avatar.png")
-                .aspect(.fill)
+                .contentMode(.fill)
                 .width(64)
                 .height(64)
             """#),
@@ -258,7 +258,7 @@ extension ControlDictionary {
         (PathContract.self, #"""
             Path("M 0,40 L 20,0 L 40,40 Z")
                 .fill(.gold)
-                .aspect(.fit)
+                .contentMode(.fit)
             """#),
 
         (PickerContract.self, #"""
@@ -669,7 +669,7 @@ extension ControlDictionary {
 
         (ImageElementContract.self, #"""
             Button(icon: "trash.png")
-                .aspect(.fit)
+                .contentMode(.fit)
                 .accessibilityLabel("Delete")
             """#),
 

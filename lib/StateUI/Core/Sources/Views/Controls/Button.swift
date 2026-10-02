@@ -66,7 +66,7 @@ public struct Button: ElementView, TextElement, FontElement, PaddingElement, Bor
     ///     Button(icon: ImageSource(light: "trash.png", dark: "trash_dark.png"))
     ///
     /// The same button as one with a caption - the same outline, shape and
-    /// pressed state - with `.aspect` for how its picture fills it.
+    /// pressed state - with `.contentMode` for how its picture fills it.
     public init(icon: ImageSource) {
         node = Node(contract: ButtonContract.self)
         node.write(ButtonContract.icon, icon)

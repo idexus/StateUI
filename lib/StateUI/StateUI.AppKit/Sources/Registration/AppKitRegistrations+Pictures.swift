@@ -16,11 +16,11 @@ extension AppKitRegistrations {
     static func pictures(_ registry: Registry<NSView>) {
         registry.add(ImageContract.self, create: { _ in AppKitImageView() }) { image in
             image.applies([
-                ImageContract.source, ImageElementContract.aspect, ImageContract.isAnimating,
+                ImageContract.source, ImageElementContract.contentMode, ImageContract.isAnimating,
             ]) { view, values in
                 view.apply(
                     source: values[ImageContract.source],
-                    aspect: values[ImageElementContract.aspect] ?? .fit,
+                    aspect: values[ImageElementContract.contentMode] ?? .fit,
                     animationPlaying: values[ImageContract.isAnimating] ?? false)
             }
         }

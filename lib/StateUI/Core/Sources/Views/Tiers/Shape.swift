@@ -72,17 +72,17 @@ extension ShapeProperties {
         setValue(ShapeContract.miterLimit, value)
     }
 
-    /// What the shape does with the room it is given - the `Aspect` an Image
+    /// What the shape does with the room it is given - the `ContentMode` an Image
     /// takes too. `.fit`, the default, scales the drawing to fit and keeps its
     /// proportions; `.center` keeps the size its own numbers say.
-    public func aspect(_ value: Aspect) -> Modified { setValue(ShapeContract.aspect, value) }
+    public func contentMode(_ value: ContentMode) -> Modified { setValue(ShapeContract.contentMode, value) }
 }
 
 extension Shape {
     /// `aspect` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
-    public func aspect(_ state: Binding<Aspect>) -> Modified {
-        plain(ShapeContract.aspect, by: state)
+    public func contentMode(_ state: Binding<ContentMode>) -> Modified {
+        plain(ShapeContract.contentMode, by: state)
     }
 
     /// `dashPhase` from a state, `$x`: the host animates the property to

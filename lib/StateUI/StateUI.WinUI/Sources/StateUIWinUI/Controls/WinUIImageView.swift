@@ -15,7 +15,7 @@ final class WinUIImageView: WinUIView {
     private(set) var found = false
 
     /// How the picture fills its room.
-    private var aspect = Aspect.fit
+    private var aspect = ContentMode.fit
 
     /// The size an SVG declares, in DIPs; nil for a bitmap, whose size WinUI knows once it has read it.
     private var declared: LayoutSize?
@@ -29,7 +29,7 @@ final class WinUIImageView: WinUIView {
 
     /// Shows the picture `source` names, filling its room as `aspect` says. Its layout is told itself: WinUI hears
     /// nothing from a picture that asks it for no room.
-    func apply(source: ImageSource?, aspect: Aspect) {
+    func apply(source: ImageSource?, aspect: ContentMode) {
         file = source?.file ?? ""
         self.aspect = aspect
         var size = [0.0, 0.0]

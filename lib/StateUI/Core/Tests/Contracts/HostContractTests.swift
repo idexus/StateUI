@@ -477,13 +477,13 @@ final class HostContractTests: XCTestCase {
             "a grid length is named in markup words")
     }
 
-    /// An image and a shape fill their room in one vocabulary: `.aspect(.fit)`,
+    /// An image and a shape fill their room in one vocabulary: `.contentMode(.fit)`,
     /// `.fill`, `.stretch` or `.center` - no second enum for shapes and no case
     /// that repeats its type.
     func testAspectIsOneWordForImagesAndShapes() throws {
-        let aspectSource = try SourceTree.text(in: "Aspect.swift")
+        let aspectSource = try SourceTree.text(in: "ContentMode.swift")
         for aspect in ["case fit = 0", "case fill = 1", "case stretch = 2", "case center = 3"] {
-            XCTAssertTrue(aspectSource.contains(aspect), "Aspect does not declare `\(aspect)`")
+            XCTAssertTrue(aspectSource.contains(aspect), "ContentMode does not declare `\(aspect)`")
         }
 
         let files = try FileManager.default

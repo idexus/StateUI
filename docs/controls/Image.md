@@ -6,7 +6,7 @@ A picture from the application's resources.
 
 ```swift
 Image("avatar.png")
-    .aspect(.fill)
+    .contentMode(.fill)
     .width(64)
     .height(64)
 ```
@@ -193,5 +193,5 @@ How a picture fills the room it was given.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>aspect</code></td><td>property</td><td><code>Aspect</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 </table>

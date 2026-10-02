@@ -96,7 +96,7 @@ final class AppKitImageViewTests: XCTestCase {
         var picture = HostPatch(id: .manual("picture"), type: .image)
         picture.properties = [
             .source: .string("picture.png"),
-            .aspect: .enumeration(Aspect.fill.rawValue),
+            .contentMode: .enumeration(ContentMode.fill.rawValue),
             .isAnimating: .bool(true),
         ]
 

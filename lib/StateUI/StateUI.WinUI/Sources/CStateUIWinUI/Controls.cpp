@@ -197,7 +197,7 @@ extern "C" void stateui_winui_button_set_content(
             button.Content(block);
             return;
         }
-        // Alone, the picture fills the room inside the padding as StateUI's Aspect says: fit, fill, stretch,
+        // Alone, the picture fills the room inside the padding as StateUI's ContentMode says: fit, fill, stretch,
         // centre. Beside words it stands at its own size, smaller where the button is.
         controls::Viewbox box;
         box.Child(picture);

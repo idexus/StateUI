@@ -6,7 +6,7 @@ How a picture fills the room it was given.
 
 ```swift
 Button(icon: "trash.png")
-    .aspect(.fit)
+    .contentMode(.fit)
     .accessibilityLabel("Delete")
 ```
 
@@ -20,4 +20,4 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `aspect` | property | `Aspect` | native |
+| `contentMode` | property | `ContentMode` | native |

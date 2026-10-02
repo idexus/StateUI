@@ -27,7 +27,7 @@ extension AppKitDriver {
         case (.horizontalScrollBarVisibility, let scroll as NSScrollView):
             return bar(shown: scroll.hasHorizontalScroller, hides: scroll.autohidesScrollers).propValue
         case (.isAnimating, let image as AppKitImageView): return image.animationPlaying.propValue
-        case (.aspect, let image as AppKitImageView): return aspect(of: image).propValue
+        case (.contentMode, let image as AppKitImageView): return aspect(of: image).propValue
         case (.horizontalTextAlignment, let picker as AppKitPickerView):
             return alignment(picker.presentedControl as? NSControl).propValue
         default: return nil
@@ -159,7 +159,7 @@ extension AppKitDriver {
     }
 
     /// How a picture fills its room: by the image view's scaling, and covering where the view stands past it.
-    private static func aspect(of image: AppKitImageView) -> Aspect {
+    private static func aspect(of image: AppKitImageView) -> ContentMode {
         switch image.nativeImageScaling {
         case .scaleProportionallyUpOrDown: .fit
         case .scaleNone: .center

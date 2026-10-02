@@ -243,7 +243,7 @@ extern "C" bool stateui_winui_image_set(
     size[0] = size[1] = 0;
     try {
         auto image = borrow<controls::Image>(handle);
-        // StateUI's Aspect: fit, fill, stretch, centre - at the picture's own size, in the middle of the room.
+        // StateUI's ContentMode: fit, fill, stretch, centre - at the picture's own size, in the middle of the room.
         auto centred = aspect == 3;
         image.Stretch(aspect == 1 ? xaml::Media::Stretch::UniformToFill
                       : aspect == 2 ? xaml::Media::Stretch::Fill

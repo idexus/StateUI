@@ -2,7 +2,7 @@ ActivityIndicator
   isAnimating
   tint
 Button
-  aspect
+  contentMode
   fontAttributes
   fontFamily
   fontSize
@@ -49,7 +49,7 @@ DatePicker
   dateChanged()
   opened()
 Ellipse
-  aspect
+  contentMode
   dash
   dashPhase
   fill
@@ -79,7 +79,7 @@ HStack
   spacing
   stroke
 Image
-  aspect
+  contentMode
   source
 ItemsView
   endReachedWithin
@@ -92,7 +92,7 @@ ItemsView
   realizedChanged()
   selectedItemsChanged()
 Line
-  aspect
+  contentMode
   dash
   dashPhase
   fill
@@ -107,7 +107,7 @@ Line
   y1
   y2
 Path
-  aspect
+  contentMode
   dash
   dashPhase
   data
@@ -134,7 +134,7 @@ Picker
   opened()
   selectedIndexChanged()
 Polygon
-  aspect
+  contentMode
   dash
   dashPhase
   fill
@@ -147,7 +147,7 @@ Polygon
   renderTransform
   stroke
 Polyline
-  aspect
+  contentMode
   dash
   dashPhase
   fill
@@ -174,7 +174,7 @@ RadioButton
   textColor
   toggled()
 Rectangle
-  aspect
+  contentMode
   cornerRadius
   dash
   dashPhase

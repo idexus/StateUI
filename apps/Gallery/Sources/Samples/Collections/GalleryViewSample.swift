@@ -152,7 +152,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             ZStack {
                 Grid {
                     Image(ImageSource(card.art))
-                        .aspect(.fill)
+                        .contentMode(.fill)
 
                     Text(card.name)
                         .verticalAlignment(.end)
@@ -275,7 +275,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         ZStack {
             Grid {
                 Image(ImageSource(card.art))
-                    .aspect(.fill)
+                    .contentMode(.fill)
 
                 Text(card.name)
                     .fontSize(18)

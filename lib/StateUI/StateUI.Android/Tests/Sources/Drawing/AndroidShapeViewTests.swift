@@ -54,7 +54,7 @@ final class AndroidShapeViewTests: XCTestCase {
     func testAPathsArcBendsToItsTop() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Path("M 0 10 A 10 10 0 0 1 20 10 Z").fill(.red).aspect(.center)
+                Path("M 0 10 A 10 10 0 0 1 20 10 Z").fill(.red).contentMode(.center)
                     .width(20).height(20).horizontalAlignment(.start)
             }
             host.layOut()

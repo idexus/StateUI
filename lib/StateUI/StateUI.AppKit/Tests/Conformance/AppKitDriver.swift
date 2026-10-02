@@ -15,7 +15,7 @@ import AppKit
 final class AppKitDriver: HostDriver {
     let host = "AppKit"
     let cannot = [
-        "read aspect of Button": "AppKit's button has no covering scale, as the register records: a fill shows fitted",
+        "read contentMode of Button": "AppKit's button has no covering scale, as the register records: a fill shows fitted",
         "read shape of a box shorter than its radius":
             "AppKit's layer holds the radius it draws, at most half the box's shorter side",
     ]
@@ -33,7 +33,7 @@ final class AppKitDriver: HostDriver {
                 "AppKit's field keeps no bound: the host cuts what is typed, and typing proves it"
         }
         let shapePaint = [
-            "aspect", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "contentMode", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {

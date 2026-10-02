@@ -32,7 +32,7 @@ final class GTKDriver: HostDriver {
         ]
         let shapes = ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
-            "aspect", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "contentMode", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in shapes {
@@ -80,8 +80,8 @@ final class GTKDriver: HostDriver {
     private static let byHostReasons = [
         "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read icon of Button": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
-        "read aspect of Image": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
-        "read aspect of Button": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
+        "read contentMode of Image": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
+        "read contentMode of Button": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
         "read tint of ProgressBar": "the tint the host gave the done part's node: GTK's style sheet tells no one",
         "read tint of Switch": "the tint the host gave the track's node: GTK's style sheet tells no one",
         "read tint of CheckBox": "the tint the host gave the box's node: GTK's style sheet tells no one",
@@ -211,11 +211,11 @@ final class GTKDriver: HostDriver {
         case (.iconSpacing, let button as GTKButtonView):
             return button.pictureAndCaption.map { Double(gtk_box_get_spacing($0.of(GtkBox.self))).propValue }
         case (.lineBreak, let button as GTKButtonView): return button.captionLabel.map { Self.lineBreak(of: $0).propValue }
-        case (.aspect, let button as GTKButtonView): return button.picture?.aspect.propValue
+        case (.contentMode, let button as GTKButtonView): return button.picture?.aspect.propValue
         case (.tint, let spinner as GTKActivityIndicatorView): return Self.color(of: spinner.widget).propValue
         case (.tint, let view?): return view.tint.map { Self.color($0).propValue }
         case (.source, let image as GTKImageView): return image.found ? ImageSource(image.file).propValue : nil
-        case (.aspect, let image as GTKImageView): return image.aspect.propValue
+        case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
         case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)

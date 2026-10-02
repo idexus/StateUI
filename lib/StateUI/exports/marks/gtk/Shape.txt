@@ -1,5 +1,5 @@
 # revision 1.1
-Ellipse.aspect: ✅
+Ellipse.contentMode: ✅
 Ellipse.dash: cannot read dash of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
 Ellipse.dashPhase: cannot read dashPhase of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
 Ellipse.fill: ✅
@@ -9,7 +9,7 @@ Ellipse.lineWidth: ✅
 Ellipse.miterLimit: cannot read miterLimit of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
 Ellipse.renderTransform: ✅
 Ellipse.stroke: ✅
-Line.aspect: ✅
+Line.contentMode: ✅
 Line.dash: cannot read dash of Line - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
 Line.dashPhase: cannot read dashPhase of Line - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
 Line.fill: ✅
@@ -19,7 +19,7 @@ Line.lineWidth: ✅
 Line.miterLimit: cannot read miterLimit of Line - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
 Line.renderTransform: ✅
 Line.stroke: ✅
-Path.aspect: ✅
+Path.contentMode: ✅
 Path.dash: cannot read dash of Path - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
 Path.dashPhase: cannot read dashPhase of Path - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
 Path.fill: ✅
@@ -29,7 +29,7 @@ Path.lineWidth: ✅
 Path.miterLimit: cannot read miterLimit of Path - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
 Path.renderTransform: ✅
 Path.stroke: ✅
-Polygon.aspect: ✅
+Polygon.contentMode: ✅
 Polygon.dash: cannot read dash of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
 Polygon.dashPhase: cannot read dashPhase of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
 Polygon.fill: ✅
@@ -39,7 +39,7 @@ Polygon.lineWidth: ✅
 Polygon.miterLimit: cannot read miterLimit of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
 Polygon.renderTransform: ✅
 Polygon.stroke: ✅
-Polyline.aspect: ✅
+Polyline.contentMode: ✅
 Polyline.dash: cannot read dash of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
 Polyline.dashPhase: cannot read dashPhase of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
 Polyline.fill: ✅
@@ -49,7 +49,7 @@ Polyline.lineWidth: ✅
 Polyline.miterLimit: cannot read miterLimit of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
 Polyline.renderTransform: ✅
 Polyline.stroke: ✅
-Rectangle.aspect: ✅
+Rectangle.contentMode: ✅
 Rectangle.dash: cannot read dash of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
 Rectangle.dashPhase: cannot read dashPhase of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
 Rectangle.fill: ✅

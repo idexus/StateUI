@@ -21,12 +21,12 @@ final class WinUIDriver: HostDriver {
     let platformHasNone = [
         "read growsWithText of TextEditor":
             "an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it",
-        "read aspect of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
-        "read aspect of Ellipse": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
-        "read aspect of Line": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
-        "read aspect of Path": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
-        "read aspect of Polygon": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
-        "read aspect of Polyline": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
+        "read contentMode of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
+        "read contentMode of Ellipse": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
+        "read contentMode of Line": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
+        "read contentMode of Path": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
+        "read contentMode of Polygon": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
+        "read contentMode of Polyline": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read renderTransform of Rectangle": "WinUI folds a shape's transform into its figure; its drawing proves it",
         "read renderTransform of Ellipse": "WinUI folds a shape's transform into its figure; its drawing proves it",
         "read renderTransform of Line": "WinUI folds a shape's transform into its figure; its drawing proves it",

@@ -22,7 +22,7 @@
                 Aspects.holds(ShapeContract.lineCap, on: element, .flat, then: .round, with: figure(element)),
                 Aspects.holds(ShapeContract.lineJoin, on: element, .miter, then: .bevel, with: figure(element)),
                 Aspects.holds(ShapeContract.miterLimit, on: element, 10, then: 4, with: figure(element)),
-                Aspects.holds(ShapeContract.aspect, on: element, .fit, then: .stretch, with: figure(element)),
+                Aspects.holds(ShapeContract.contentMode, on: element, .fit, then: .stretch, with: figure(element)),
                 Aspects.holds(ShapeContract.renderTransform, on: element, .identity, then: .rotate(45), with: figure(element)),
             ]
         }
@@ -78,7 +78,7 @@
     /// across it as its aspect says; a rectangle and an ellipse fill their room either way.
     static func placedByItsAspect(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isPlacedInItsRoomAsItsAspectSays", proves: [
-            Covered(ShapeContract.aspect, on: element),
+            Covered(ShapeContract.contentMode, on: element),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let stretched = State(wrappedValue: false)
             let paint: [any Worn] = element == "Line" || element == "Polyline"
@@ -86,7 +86,7 @@
                 : [Write(ShapeContract.fill, Brush.solidColor(.red))]
             s.start {
                 Specimens.page(element, small(element) + paint + [
-                    Write(ShapeContract.aspect, stretched.wrappedValue ? Aspect.stretch : .fit),
+                    Write(ShapeContract.contentMode, stretched.wrappedValue ? ContentMode.stretch : .fit),
                     Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
                     Write(ViewContract.horizontalAlignment, Alignment.start),
                 ], beside: [Button("Stretch").onClicked { stretched.wrappedValue = true }.id("change")])
@@ -156,7 +156,7 @@
         case "Polyline":
             [Write(PolylineContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40), Point(0, 0)])]
         case "Path":
-            [Write(PathContract.data, "M 0 0 L 40 0 L 40 40 L 0 40 Z"), Write(ShapeContract.aspect, Aspect.stretch)]
+            [Write(PathContract.data, "M 0 0 L 40 0 L 40 40 L 0 40 Z"), Write(ShapeContract.contentMode, ContentMode.stretch)]
         default:
             []
         }

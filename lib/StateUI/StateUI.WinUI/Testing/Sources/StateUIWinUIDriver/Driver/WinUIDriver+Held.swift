@@ -314,9 +314,9 @@ extension WinUIDriver {
         case ("iconPosition", let button as WinUIButtonView):
             return IconPosition(rawValue: Int32(try read(button, "iconPosition")) ?? 0)?.propValue
         case ("iconSpacing", let button as WinUIButtonView): return Double(try read(button, "iconSpacing"))?.propValue
-        case ("aspect", _) where view is WinUIImageView || view is WinUIButtonView:
+        case ("contentMode", _) where view is WinUIImageView || view is WinUIButtonView:
             let stretch = Int(try read(view, "stretch")) ?? 2
-            let aspect: Aspect = stretch == 3 ? .fill : stretch == 1 ? .stretch : stretch == 0 ? .center : .fit
+            let aspect: ContentMode = stretch == 3 ? .fill : stretch == 1 ? .stretch : stretch == 0 ? .center : .fit
             return aspect.propValue
         case ("scrollOffset", let scroll as WinUIScrollView): return scroll.offset.propValue
         case ("verticalScrollBarVisibility", let scroll as WinUIScrollView):

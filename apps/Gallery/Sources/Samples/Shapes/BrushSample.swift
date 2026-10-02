@@ -34,7 +34,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     Self.stops,
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
-                .aspect(.stretch)        // fills the room, proportions and all
+                .contentMode(.stretch)        // fills the room, proportions and all
                 .height(80)
 
             Button("endPoint: \\(Self.ends[end].name)")
@@ -92,7 +92,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     Self.stops,
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
-                .aspect(.stretch)
+                .contentMode(.stretch)
                 .height(80)
 
             Button("endPoint: \(Self.ends[end].name)")

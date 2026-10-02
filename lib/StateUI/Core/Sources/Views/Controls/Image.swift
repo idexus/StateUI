@@ -14,7 +14,7 @@ extension ImageProperties {
 /// A picture from the application's resources.
 ///
 ///     Image("tab_list.png")
-///         .aspect(.fit)
+///         .contentMode(.fit)
 ///         .height(20)
 ///
 /// The name is a file among the application's image resources, and artwork

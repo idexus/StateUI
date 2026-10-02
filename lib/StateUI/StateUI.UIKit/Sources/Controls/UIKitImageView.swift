@@ -23,7 +23,7 @@ final class UIKitImageView: UIImageView {
     }
 
     /// The picture and how it fills the room it stands in.
-    func apply(source: ImageSource?, aspect: Aspect) {
+    func apply(source: ImageSource?, aspect: ContentMode) {
         self.source = source
         contentMode = switch aspect {
         case .fit: .scaleAspectFit

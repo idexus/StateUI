@@ -395,7 +395,7 @@ void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush backgro
 /// What a button shows: its words - wrapped onto more lines or cut short with an ellipsis where they do not fit,
 /// else on one line - and the picture the first of the files `icons` names that the pictures hold (each ended by
 /// a line feed, empty for none): beside the words - StateUI's IconPosition, `spacing` DIPs apart, a negative one
-/// WinUI Gallery's gap - at its own size, or alone, filling the room inside the padding as StateUI's Aspect says.
+/// WinUI Gallery's gap - at its own size, or alone, filling the room inside the padding as StateUI's ContentMode says.
 void stateui_winui_button_set_content(StateUIObjectRef button, char const *words, char const *icons,
                                       int32_t position, double spacing, int32_t aspect, bool wraps, bool trims);
 /// Bounds the picture beside a button's words to the room a button `height` DIPs tall keeps for it, inside its
@@ -874,7 +874,7 @@ bool stateui_winui_store(char const *name, char const *utf8);
 void stateui_winui_set_pictures(char const *folder);
 
 /// An Image showing the first of the `count` files `names` lists that the pictures hold, filling its room as
-/// StateUI's Aspect says: fit, fill, stretch, centre. Answers whether a picture was found, or none was named;
+/// StateUI's ContentMode says: fit, fill, stretch, centre. Answers whether a picture was found, or none was named;
 /// `size` takes the size an SVG declares, in DIPs, and zero for a bitmap, whose size WinUI knows once it has read
 /// it.
 StateUIObjectRef stateui_winui_image_make(void);

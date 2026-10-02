@@ -41,7 +41,7 @@ final class AppKitShapeView: AppKitHitTestView {
     private var lineCap: Int32 = 0
     private var lineJoin: Int32 = 0
     private var miterLimit: CGFloat = 10
-    private var aspect = Aspect.fit
+    private var aspect = ContentMode.fit
     private var renderTransform: [Double]?
     private var geometry: AppKitShapeGeometry
 
@@ -74,7 +74,7 @@ final class AppKitShapeView: AppKitHitTestView {
         lineCap: Int32,
         lineJoin: Int32,
         miterLimit: Double,
-        aspect: Aspect,
+        aspect: ContentMode,
         renderTransform: [Double]?,
         geometry: AppKitShapeGeometry
     ) {

@@ -5,11 +5,11 @@ Ellipse.lineJoin: cannot read the line of a shape drawing no outline - UIKit dra
 Ellipse.lineWidth: ✅
 Ellipse.renderTransform: cannot read renderTransform of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no renderTransform; its drawing proves it
 Ellipse.stroke: ✅
-Line.aspect: ✅
+Line.contentMode: ✅
 Line.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Line.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Line.stroke: ✅
-Path.aspect: cannot read aspect of Path - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
+Path.contentMode: cannot read contentMode of Path - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
 Path.fill: ✅
 Path.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Path.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
@@ -20,11 +20,11 @@ Polygon.lineJoin: cannot read the line of a shape drawing no outline - UIKit dra
 Polygon.lineWidth: ✅
 Polygon.renderTransform: cannot read renderTransform of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no renderTransform; its drawing proves it
 Polygon.stroke: ✅
-Polyline.aspect: ✅
+Polyline.contentMode: ✅
 Polyline.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Polyline.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Polyline.stroke: ✅
-Rectangle.aspect: cannot read aspect of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
+Rectangle.contentMode: cannot read contentMode of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
 Rectangle.fill: ✅
 Rectangle.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Rectangle.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line

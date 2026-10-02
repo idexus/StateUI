@@ -28,7 +28,7 @@ final class AndroidShapeView: AndroidView {
 
     /// Whether the shape draws geometry of its own, which its aspect places.
     private var drawsGeometry = false
-    private var aspect = Aspect.fit
+    private var aspect = ContentMode.fit
     private var transform: [Double]?
 
     /// Where the drawn geometry stands before it is placed, in points, as Android measures it.
@@ -72,7 +72,7 @@ final class AndroidShapeView: AndroidView {
         }
         fitCorners()
         drawsGeometry = kind == 2
-        self.aspect = Aspect(rawValue: aspect) ?? .fit
+        self.aspect = ContentMode(rawValue: aspect) ?? .fit
         self.transform = transform
         if drawsGeometry { geometryBounds = readGeometryBounds() }
         place()

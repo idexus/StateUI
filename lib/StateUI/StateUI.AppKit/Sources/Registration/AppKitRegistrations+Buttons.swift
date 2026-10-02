@@ -26,7 +26,7 @@ extension AppKitRegistrations {
             button.applies([
                 TextElementContract.text, TextElementContract.textCase, ButtonContract.icon,
                 ButtonContract.iconPosition,
-                ImageElementContract.aspect, ButtonContract.lineBreak,
+                ImageElementContract.contentMode, ButtonContract.lineBreak,
                 TextStyleElementContract.textColor, VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
@@ -44,7 +44,7 @@ extension AppKitRegistrations {
                     ? .imageOnly
                     : Self.imagePosition(values[ButtonContract.iconPosition] ?? .leading)
                 let scaling: NSImageScaling = Self.imageScaling(
-                    values[ImageElementContract.aspect] ?? .fit)
+                    values[ImageElementContract.contentMode] ?? .fit)
                 let textColor: NSColor = values[TextStyleElementContract.textColor]
                     .flatMap { nsColor($0.propValue) } ?? .controlTextColor
                 let background: NSColor? = values[VisualElementContract.background]
@@ -90,7 +90,7 @@ extension AppKitRegistrations {
     /// `.fit` and `.fill` come out the same: a native button has no covering
     /// scale, which is what this host's declaration says about `aspect` on a
     /// button.
-    private static func imageScaling(_ aspect: Aspect) -> NSImageScaling {
+    private static func imageScaling(_ aspect: ContentMode) -> NSImageScaling {
         switch aspect {
         case .stretch: .scaleAxesIndependently
         case .center: .scaleNone

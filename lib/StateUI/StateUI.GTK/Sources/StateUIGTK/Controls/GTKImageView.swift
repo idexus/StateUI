@@ -15,7 +15,7 @@ final class GTKImageView: GTKPanelView {
     private(set) var found = false
 
     /// How the picture fills its room.
-    private(set) var aspect = Aspect.fit
+    private(set) var aspect = ContentMode.fit
 
     /// The file read, its own size in logical pixels, and whether it is an SVG, drawn at the size it shows at.
     private var path: String?
@@ -31,7 +31,7 @@ final class GTKImageView: GTKPanelView {
     }
 
     /// Shows the picture `source` names, filling its room as `aspect` says.
-    func apply(source: ImageSource?, aspect: Aspect) {
+    func apply(source: ImageSource?, aspect: ContentMode) {
         file = source?.file ?? ""
         self.aspect = aspect
         path = GTKPictures.path(of: file)

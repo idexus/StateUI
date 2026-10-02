@@ -10,8 +10,8 @@ public enum ImageElementContract: Contract {
     public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
 
     /// How the picture fills its room when the two are not the same shape.
-    public static let aspect = ElementProperty<Self, Aspect>("aspect", layer: .native)
+    public static let contentMode = ElementProperty<Self, ContentMode>("contentMode", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [aspect]
+    public static let members: [any ContractMember] = [contentMode]
 }

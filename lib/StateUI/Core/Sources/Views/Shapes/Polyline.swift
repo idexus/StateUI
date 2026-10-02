@@ -11,7 +11,7 @@ extension PolylineProperties {
     ///
     ///     Polyline().points([Point(0, 30), Point(20, 5), Point(40, 25)])
     ///
-    /// The numbers are device units in the shape's own space, which `.aspect`
+    /// The numbers are device units in the shape's own space, which `.contentMode`
     /// fits to the room the layout gives it.
     public func points(_ value: [Point]) -> Modified {
         setValue(PolylineContract.points, value)

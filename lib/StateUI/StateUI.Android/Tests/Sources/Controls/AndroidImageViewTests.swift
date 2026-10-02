@@ -45,8 +45,8 @@ final class AndroidImageViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Image("test_wide.png").aspect(.fill).width(20).height(20).horizontalAlignment(.start)
-                    Image("test_wide.png").aspect(.fit).width(20).height(20).horizontalAlignment(.start)
+                    Image("test_wide.png").contentMode(.fill).width(20).height(20).horizontalAlignment(.start)
+                    Image("test_wide.png").contentMode(.fit).width(20).height(20).horizontalAlignment(.start)
                 }
             }
             host.layOut()
@@ -63,7 +63,7 @@ final class AndroidImageViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Image("test_wide.png").aspect(.fill).width(20).height(10).horizontalAlignment(.start)
+                    Image("test_wide.png").contentMode(.fill).width(20).height(10).horizontalAlignment(.start)
                     Image("test_wide.png").horizontalAlignment(.start)
                 }
             }
@@ -85,7 +85,7 @@ final class AndroidImageViewTests: XCTestCase {
             let host = AndroidRenderer.running(reducesMotion: true) {
                 VStack {
                     if shown.wrappedValue {
-                        Image("test_wide.png").aspect(.fill).width(10).height(5)
+                        Image("test_wide.png").contentMode(.fill).width(10).height(5)
                     }
                     Button("Flip").onClicked { shown.wrappedValue.toggle() }
                 }

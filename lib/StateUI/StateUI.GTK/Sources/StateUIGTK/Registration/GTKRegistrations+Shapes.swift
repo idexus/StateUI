@@ -59,7 +59,7 @@ extension GTKRegistrations {
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
-        ShapeContract.aspect, ShapeContract.renderTransform,
+        ShapeContract.contentMode, ShapeContract.renderTransform,
     ]
 
     private static func paint<Realized: ElementContract>(_ view: GTKShapeView, _ values: ElementValues<Realized>) {
@@ -78,7 +78,7 @@ extension GTKRegistrations {
     private static func authored<Realized: ElementContract>(
         _ commands: [Double], evenOdd: Bool, _ values: ElementValues<Realized>
     ) -> GTKShapeView.Geometry {
-        .authored(commands, evenOdd: evenOdd, aspect: values[ShapeContract.aspect] ?? .fit, transform: moved(values))
+        .authored(commands, evenOdd: evenOdd, aspect: values[ShapeContract.contentMode] ?? .fit, transform: moved(values))
     }
 
     /// The shape's transform, as the six numbers of its matrix; nil for none, or numbers that are not six and finite.

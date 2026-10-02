@@ -617,7 +617,7 @@
     ]
 
     private static let enumerationProperties: Set<Prop> = [
-        .aspect, .layoutDirection, .fontAttributes,
+        .contentMode, .layoutDirection, .fontAttributes,
         .horizontalAlignment, .horizontalScrollBarVisibility,
         .horizontalTextAlignment, .inputPurpose,
         .lineBreak, .orientation, .returnKey, .textDecorations, .textCase,

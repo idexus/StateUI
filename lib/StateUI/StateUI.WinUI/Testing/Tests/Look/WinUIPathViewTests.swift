@@ -45,7 +45,7 @@ final class WinUIPathViewTests: XCTestCase {
         XCTAssertEqual(fitted, [Self.red, 0])
 
         let stretched = try drawn(width: 80, height: 40, at: [(75, 5), (70, 20), (5, 35)]) {
-            Path("M 0 0 L 10 0 L 10 10 Z").fill(Color("#FF0000")).aspect(.stretch).width(80).height(40)
+            Path("M 0 0 L 10 0 L 10 10 Z").fill(Color("#FF0000")).contentMode(.stretch).width(80).height(40)
         }
         XCTAssertEqual(stretched, [Self.red, Self.red, 0])
     }

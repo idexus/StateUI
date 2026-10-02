@@ -30,7 +30,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
             HStack {
                 Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                     .style("IconButton")
-                    .aspect(.fit)
+                    .contentMode(.fit)
                     .width(64)
                     .height(64)
                     .stroke(Palette.outline)
@@ -42,7 +42,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
 
                 Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                     .style("IconButton")
-                    .aspect(.fit)
+                    .contentMode(.fit)
                     .width(64)
                     .height(64)
                     .shape(.roundedRectangle(32))
@@ -76,7 +76,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
             HStack {
                 Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                     .style("IconButton")
-                    .aspect(.fit)
+                    .contentMode(.fit)
                     .width(64)
                     .height(64)
                     .padding(12)
@@ -89,7 +89,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
 
                 Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                     .style("IconButton")
-                    .aspect(.fit)
+                    .contentMode(.fit)
                     .width(64)
                     .height(64)
                     .padding(12)

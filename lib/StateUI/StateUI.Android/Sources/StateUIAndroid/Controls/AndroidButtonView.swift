@@ -108,7 +108,7 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// The picture beside the words `spacing` points away - the platform's gap for nil - or alone where
     /// there are none, filling its room as `aspect` says.
-    func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: Aspect) {
+    func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
         let file = source?.file ?? ""
         if file != icon.file {
             letGoOfIcon()
@@ -220,7 +220,7 @@ final class AndroidButtonView: AndroidTextualView {
         var file = ""
         var position: IconPosition = .leading
         var spacing: Double?
-        var aspect: Aspect = .fit
+        var aspect: ContentMode = .fit
         var picture: JavaObject?
 
         /// What an icon shows as: its picture, where, and its size alone in pixels.

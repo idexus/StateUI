@@ -33,7 +33,7 @@
     /// Where a picture `size` across stands in a room at the origin, as `aspect` says: fitted in or covering it,
     /// its proportions kept, or at its own size, in its middle; stretched over the whole of it. A picture of no
     /// size stands nowhere.
-    public static func place(_ size: LayoutSize, in room: LayoutSize, aspect: Aspect) -> Rect {
+    public static func place(_ size: LayoutSize, in room: LayoutSize, aspect: ContentMode) -> Rect {
         guard aspect != .stretch else { return Rect(x: 0, y: 0, width: room.width, height: room.height) }
         guard size.width > 0, size.height > 0 else {
             return Rect(x: room.width / 2, y: room.height / 2, width: 0, height: 0)

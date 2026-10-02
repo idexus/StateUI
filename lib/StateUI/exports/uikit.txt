@@ -41,7 +41,7 @@ DatePicker
   minimumDate
   dateChanged()
 Ellipse
-  aspect
+  contentMode
   dash
   dashPhase
   fill
@@ -73,7 +73,7 @@ HStack
   spacing
   stroke
 Image
-  aspect
+  contentMode
   source
 ItemsView
   endReachedWithin
@@ -86,7 +86,7 @@ ItemsView
   realizedChanged()
   selectedItemsChanged()
 Line
-  aspect
+  contentMode
   dash
   dashPhase
   fill
@@ -109,7 +109,7 @@ Map
   showsUserLocation
   mapClicked()
 Path
-  aspect
+  contentMode
   dash
   dashPhase
   data
@@ -136,7 +136,7 @@ Pin
   pinClicked()
   pinDetailsClicked()
 Polygon
-  aspect
+  contentMode
   dash
   dashPhase
   fill
@@ -149,7 +149,7 @@ Polygon
   renderTransform
   stroke
 Polyline
-  aspect
+  contentMode
   dash
   dashPhase
   fill
@@ -176,7 +176,7 @@ RadioButton
   textColor
   toggled()
 Rectangle
-  aspect
+  contentMode
   cornerRadius
   dash
   dashPhase

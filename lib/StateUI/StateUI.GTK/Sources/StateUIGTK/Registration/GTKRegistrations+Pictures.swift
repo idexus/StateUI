@@ -8,8 +8,8 @@ extension GTKRegistrations {
     /// An Image: its picture and how it fills its room. A ColorBox: its colour and its corners.
     static func pictures(_ registry: Registry<GTKView>) {
         registry.add(ImageContract.self, create: { _ in GTKImageView() }) { image in
-            image.applies([ImageContract.source, ImageElementContract.aspect]) { view, values in
-                view.apply(source: values[ImageContract.source], aspect: values[ImageElementContract.aspect] ?? .fit)
+            image.applies([ImageContract.source, ImageElementContract.contentMode]) { view, values in
+                view.apply(source: values[ImageContract.source], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
         }
         registry.add(ColorBoxContract.self, create: { _ in GTKColorBoxView() }) { box in

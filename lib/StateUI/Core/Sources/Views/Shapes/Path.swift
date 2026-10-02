@@ -5,10 +5,10 @@
 ///
 ///     Path("M 0,40 L 20,0 L 40,40 Z")
 ///         .fill(.gold)
-///         .aspect(.fit)
+///         .contentMode(.fit)
 ///
 /// `M` moves, `L` draws a line, `C` a curve, `A` an arc and `Z` closes the
-/// figure. The numbers are device units in the path's OWN space, and `.aspect`
+/// figure. The numbers are device units in the path's OWN space, and `.contentMode`
 /// says what happens to that space in the room the layout gives it - a path
 /// drawn 40 wide fills a 200-wide cell under `.fit` and stays 40 under
 /// `.center`.

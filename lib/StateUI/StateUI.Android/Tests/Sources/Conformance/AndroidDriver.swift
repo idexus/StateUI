@@ -30,7 +30,7 @@ final class AndroidDriver: HostDriver {
                 "Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it"
         }
         let shapePaint = [
-            "aspect", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "contentMode", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {

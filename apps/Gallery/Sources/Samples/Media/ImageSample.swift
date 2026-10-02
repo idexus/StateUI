@@ -32,20 +32,20 @@ struct ImageSample: SampleContent, ExampleContent {
             HStack {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
-                        .aspect(.fit)
+                        .contentMode(.fit)
                         .width(120)
                         .height(60)
 
-                    Text(".aspect(.fit)")
+                    Text(".contentMode(.fit)")
                 }
 
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
-                        .aspect(.fill)
+                        .contentMode(.fill)
                         .width(120)
                         .height(60)
 
-                    Text(".aspect(.fill)")
+                    Text(".contentMode(.fill)")
                 }
             }
 
@@ -100,12 +100,12 @@ struct ImageSample: SampleContent, ExampleContent {
             HStack {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
-                        .aspect(.fit)
+                        .contentMode(.fit)
                         .width(120)
                         .height(60)
                         .background(Palette.surface)
 
-                    Text(".aspect(.fit)")
+                    Text(".contentMode(.fit)")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -114,12 +114,12 @@ struct ImageSample: SampleContent, ExampleContent {
 
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
-                        .aspect(.fill)
+                        .contentMode(.fill)
                         .width(120)
                         .height(60)
                         .background(Palette.surface)
 
-                    Text(".aspect(.fill)")
+                    Text(".contentMode(.fill)")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -168,7 +168,7 @@ struct ImageSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`.aspect` is the choice between showing all of the picture and filling "
+            Text("`.contentMode` is the choice between showing all of the picture and filling "
                 + "every corner: `.fit` keeps the whole picture and leaves room on "
                 + "two sides, `.fill` covers the box and crops what will not fit.")
                 .fontSize(12)
