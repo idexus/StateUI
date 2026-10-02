@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 27 ✅ · 1 ☑️ · 25 ✓ · 3 – | `NSView` drawing `NSBezierPath` |  |
 | UIKit | ✅ | 29 ✅ · 25 ✓ · 3 – | `UIView` drawing `UIBezierPath` |  |
-| Android Views | ✅ | 50 ✅ · 1 ☑️ · 3 – | `View` drawing `Path` |  |
+| Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | `View` drawing `Path` |  |
 | WinUI 3 | ✅ | 59 ✅ · 3 – | `Microsoft.UI.Xaml.Shapes` |  |
 | GTK 4 | ✅ | 45 ✅ · 11 ✓ · 4 – | `GskPath` in a snapshot |  |
 | Web |  |  | inline SVG | no host yet |
@@ -75,7 +75,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Rectangle takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

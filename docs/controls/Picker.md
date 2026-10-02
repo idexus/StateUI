@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 39 ✅ · 1 ☑️ · 26 ✓ · 1 – | `NSPopUpButton` |  |
 | UIKit | ✅ | 27 ✅ · 29 ✓ · 3 – | pop-up `UIButton` menu |  |
-| Android Views | ✅ | 52 ✅ · 1 ☑️ · 2 ✓ · 3 – | `Spinner` |  |
+| Android Views | ✅ | 53 ✅ · 1 ☑️ · 2 ✓ · 3 – | `Spinner` |  |
 | WinUI 3 | ✅ | 65 ✅ | `ComboBox` |  |
 | GTK 4 | ✅ | 49 ✅ · 11 ✓ · 7 – | `GtkDropDown` |  |
 | Web |  |  | `<select>` | no host yet |
@@ -82,7 +82,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: Picker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

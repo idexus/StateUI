@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 39 ✅ · 1 ☑️ · 25 ✓ · 1 – | `NSButton` radio |  |
 | UIKit | ✅ | 36 ✅ · 26 ✓ · 3 – | composed by StateUI |  |
-| Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `RadioButton` |  |
+| Android Views | ✅ | 60 ✅ · 1 ☑️ · 3 – | `RadioButton` |  |
 | WinUI 3 | ✅ | 63 ✅ | `RadioButton` |  |
 | GTK 4 | ✅ | 51 ✅ · 12 ✓ · 1 – | grouped `GtkCheckButton` |  |
 | Web |  |  | `<input type=radio>` | no host yet |
@@ -85,7 +85,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: RadioButton takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: RadioButton takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

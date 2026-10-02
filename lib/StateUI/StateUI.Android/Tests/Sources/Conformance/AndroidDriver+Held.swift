@@ -82,6 +82,9 @@ extension AndroidDriver {
         case .isVisible: return Java.callBool(reference, isShown).propValue
         case .opacity: return float(getAlpha).propValue
         case .isEnabled: return Java.callBool(reference, isEnabled).propValue
+        // The direction Android resolved for the view: LAYOUT_DIRECTION_RTL is 1.
+        case .layoutDirection:
+            return (Java.callInt(reference, getLayoutDirection) == 1 ? LayoutDirection.rightToLeft : .leftToRight).propValue
         case .translationX: return (float(getTranslationX) / 2).propValue
         case .translationY: return (float(getTranslationY) / 2).propValue
         case .rotation: return float(getRotation).propValue
@@ -115,6 +118,7 @@ extension AndroidDriver {
 
 
     static let isShown = Java.method(JavaAPI.view, "isShown", "()Z")
+    static let getLayoutDirection = Java.method(JavaAPI.view, "getLayoutDirection", "()I")
     static let onCheckIsTextEditor = Java.method(JavaAPI.view, "onCheckIsTextEditor", "()Z")
     static let getImeOptions = Java.method(JavaAPI.textView, "getImeOptions", "()I")
     static let getTranslationX = Java.method(JavaAPI.view, "getTranslationX", "()F")

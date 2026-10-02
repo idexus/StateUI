@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 27 ✅ · 1 ☑️ · 25 ✓ · 3 – | `NSProgressIndicator` bar |  |
 | UIKit | ✅ | 28 ✅ · 25 ✓ · 3 – | `UIProgressView` |  |
-| Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | horizontal `ProgressBar` |  |
+| Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | horizontal `ProgressBar` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `ProgressBar` |  |
 | GTK 4 | ✅ | 40 ✅ · 12 ✓ · 4 – | `GtkProgressBar` |  |
 | Web |  |  | `<progress>` | no host yet |
@@ -75,7 +75,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

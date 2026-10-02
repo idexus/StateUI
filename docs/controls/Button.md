@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 41 ✅ · 1 ☑️ · 27 ✓ · 1 – | `NSButton` |  |
 | UIKit | ✅ | 43 ✅ · 27 ✓ · 3 – | `UIButton` |  |
-| Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `Button` |  |
+| Android Views | ✅ | 60 ✅ · 1 ☑️ · 3 – | `Button` |  |
 | WinUI 3 | ✅ | 71 ✅ | `Button` |  |
 | GTK 4 | ✅ | 54 ✅ · 18 ✓ · 1 – | `GtkButton` |  |
 | Web |  |  | `<button>` | no host yet |
@@ -81,7 +81,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: Button takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

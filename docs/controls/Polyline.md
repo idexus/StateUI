@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 28 ✅ · 1 ☑️ · 25 ✓ · 3 – | `NSView` drawing `NSBezierPath` |  |
 | UIKit | ✅ | 30 ✅ · 25 ✓ · 3 – | `UIView` drawing `UIBezierPath` |  |
-| Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | `View` drawing `Path` |  |
+| Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `View` drawing `Path` |  |
 | WinUI 3 | ✅ | 60 ✅ · 3 – | `Microsoft.UI.Xaml.Shapes` |  |
 | GTK 4 | ✅ | 46 ✅ · 11 ✓ · 4 – | `GskPath` in a snapshot |  |
 | Web |  |  | inline SVG | no host yet |
@@ -75,7 +75,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Polyline takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Polyline takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

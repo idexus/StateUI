@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `WKWebView` | not realized |
 | UIKit | ✅ | 38 ✅ · 26 ✓ | `WKWebView` |  |
-| Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – | `WebView` |  |
+| Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `WebView` |  |
 | WinUI 3 | ✅ | 20 ✅ · 15 – | `WebView2`, a backend |  |
 | GTK 4 | ✅ | 52 ✅ · 12 ✓ · 1 – | WebKitGTK `WebKitWebView`, a backend |  |
 | Web |  |  | `<iframe>` (?) | no host yet |
@@ -94,7 +94,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized |
 | `isFocusedChanged` | event | `Bool` | native |  | ✅ | – |  | ✅ |  | not realized; Android Views: WebView takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native |  | ✅ | ✅ |  | ✅ |  | not realized |
-| `layoutDirection` | property | `LayoutDirection` | native |  | ✅ |  |  |  |  | not realized; Android Views: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native |  | ✅ | ✅ |  |  |  | not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native |  | ✅ | ✅ |  | ✅ |  | not realized |
 | `maximumWidth` | property | `Double` | native |  | ✅ | ✅ |  | ✅ |  | not realized |
 | `minimumHeight` | property | `Double` | native |  | ✅ | ✅ |  | ✅ |  | not realized |

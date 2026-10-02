@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 29 ✅ · 25 ✓ · 3 – | custom `NSView` |  |
 | UIKit | ✅ | 31 ✅ · 25 ✓ · 3 – | custom `UIView` |  |
-| Android Views | ◐ | 51 ✅ · 1 ☑️ · 3 – | custom `ViewGroup` | cannot read what reaches ColorBox - Android's driver has no path for it yet |
+| Android Views | ◐ | 52 ✅ · 1 ☑️ · 3 – | custom `ViewGroup` | cannot read what reaches ColorBox - Android's driver has no path for it yet |
 | WinUI 3 | ✅ | 55 ✅ · 3 – | `Canvas` |  |
 | GTK 4 | ✅ | 43 ✅ · 11 ✓ · 4 – | `GtkFixed` |  |
 | Web |  |  | `position: absolute` | no host yet |
@@ -76,7 +76,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | ZStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: ZStack takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

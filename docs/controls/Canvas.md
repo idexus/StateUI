@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 27 ✅ · 1 ☑️ · 28 ✓ · 3 – | custom `NSView` drawing |  |
 | UIKit | ✅ | 27 ✅ · 28 ✓ · 3 – | `UIView` `draw(_:)` |  |
-| Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `View` `onDraw(Canvas)` |  |
+| Android Views | ✅ | 54 ✅ · 1 ☑️ · 3 – | `View` `onDraw(Canvas)` |  |
 | WinUI 3 | ✅ | 52 ✅ · 3 – | Direct2D in a `SurfaceImageSource` |  |
 | GTK 4 | ✅ | 43 ✅ · 11 ✓ · 4 – | `GtkDrawingArea` |  |
 | Web |  |  | `<canvas>` | no host yet |
@@ -82,7 +82,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Canvas takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Canvas takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
