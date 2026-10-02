@@ -13,7 +13,7 @@ offered to every view the way an object an ancestor provides is.
   DeviceDisplay        width, height, density, orientation, rotation, refreshRate
   LocaleInfo           language, region, name, timeZone, uses24HourClock, firstDayOfWeek, isMetric
   DeviceInfo           formFactor, platform, model, manufacturer, name, versionString, deviceType
-  AppInfo              name, packageName, versionString, buildString, requestedTheme
+  AppInfo              name, packageName, versionString, buildString, colorScheme
   ApplicationSession   phase, and what the application writes: styles, motion, kept keys
 ```
 
@@ -28,7 +28,7 @@ The host seeds every provider before the first render, so the first tree
 already knows its form factor and its locale, and writes again whenever the
 platform reports a change. A host writes through `HostBoundary`, one setter
 per provider - `setBatteryInfo`, `setConnectivityInfo`, `setDisplayInfo`,
-`setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setTheme`, and
+`setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setColorScheme`, and
 `setApplicationPhase` - each with the whole report, typed.
 
 ## Exactly the readers rebuild

@@ -11,8 +11,8 @@
     public static var needsRender: Bool { Renderer.shared.needsRender }
 
     /// Updates the appearance used to resolve themed values before rendering.
-    public static func setTheme(_ theme: Theme) {
-        update(StandardEnvironment.app, \.requestedTheme, theme)
+    public static func setColorScheme(_ theme: ColorScheme) {
+        update(StandardEnvironment.app, \.colorScheme, theme)
     }
 
     /// Replaces the standard device report used by application builds.

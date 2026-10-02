@@ -79,7 +79,7 @@ final class GTKRendererTests: XCTestCase {
             _ = GTKRenderer.running { Text("styled") }
             let dark = adw_style_manager_get_dark(adw_style_manager_get_default()) != 0
 
-            XCTAssertEqual(StandardEnvironment.app.requestedTheme, dark ? .dark : .light)
+            XCTAssertEqual(StandardEnvironment.app.colorScheme, dark ? .dark : .light)
         }
     }
 

@@ -20,7 +20,7 @@ public final class AppInfo {
     /// Light or dark, as the system asks, updated live when the user switches.
     /// A `Color(light:dark:)` follows the theme by itself; read this for logic
     /// that branches on the theme.
-    @State public var requestedTheme: Theme = .system
+    @State public var colorScheme: ColorScheme = .system
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.

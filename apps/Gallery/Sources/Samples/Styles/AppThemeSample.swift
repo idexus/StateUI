@@ -20,12 +20,12 @@ struct AppThemeSample: SampleContent, ExampleContent {
                     // closure.
                     DebugInfoLabel()
 
-                    Text("\\(app.requestedTheme)")
+                    Text("\\(app.colorScheme)")
 
                     // LOGIC on the theme - a different WORD, not a colour.
                     // A colour that differs by theme is Color(light:dark:),
                     // which follows by itself.
-                    Text(app.requestedTheme == .dark
+                    Text(app.colorScheme == .dark
                         ? "lights off - a view can choose calmer artwork"
                         : "lights on - a view can choose vivid artwork")
                 }
@@ -37,12 +37,12 @@ struct AppThemeSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Text("\(app.requestedTheme)")
+            Text("\(app.colorScheme)")
                 .fontSize(34)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Text(app.requestedTheme == .dark
+            Text(app.colorScheme == .dark
                 ? "lights off - a view can choose calmer artwork"
                 : "lights on - a view can choose vivid artwork")
                 .fontSize(15)

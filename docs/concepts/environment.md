@@ -122,7 +122,7 @@ StateUI's contract:
 | display — `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
 | locale — `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric` | host-normalized language, region, IANA zone, clock and calendar conventions; text starts empty, the clock starts 12-hour, the week on Sunday, and units metric |
 | device — `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
-| app — `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` | manifest identity and live requested appearance; text starts empty and theme `.system` |
+| app — `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme` | manifest identity and live requested appearance; text starts empty and theme `.system` |
 | application — `ApplicationSession` | `phase` | process-wide visibility state; the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a domain. The documented fallback remains
@@ -145,7 +145,7 @@ The closed vocabulary used by these fields is:
 | `Weekday` | `sunday` through `saturday` |
 | `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
 | `DeviceType` | `unknown`, `physical`, `virtual` |
-| `Theme` | `system`, `light`, `dark` |
+| `ColorScheme` | `system`, `light`, `dark` |
 | `ApplicationPhase` | `active`, `inactive`, `background` |
 
 The [Platform contract](../platform-contract.md) is the implementation-status
@@ -177,7 +177,7 @@ Use `DeviceInfo.formFactor` for a semantic form-factor decision, never for
 layout: a window can be smaller than its display, and resized. Lay out by the
 room a view is given - `.onFrameChanged` and `FrameReader`
 ([layout](../interface/layout.md)) - and read display points (`pixels / density`) for the
-screen itself, handling zero density before the first host report. Use `AppInfo.requestedTheme` only when logic itself branches on the
+screen itself, handling zero density before the first host report. Use `AppInfo.colorScheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
 `Connectivity.networkAccess == .internet` means ordinary internet access.

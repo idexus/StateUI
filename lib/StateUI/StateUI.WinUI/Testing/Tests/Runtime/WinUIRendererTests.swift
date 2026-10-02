@@ -208,7 +208,7 @@ private struct EnvironmentPage: View {
     var body: some View {
         VStack {
             Text("\(device.platform) \(device.formFactor)")
-            Text("\(app.requestedTheme)")
+            Text("\(app.colorScheme)")
         }
     }
 }

@@ -147,7 +147,7 @@
     // MARK: - The application, its scenes and its kept values
 
     /// Reports the appearance themed values resolve against.
-    public func setTheme(_ theme: Theme) { HostBoundary.setTheme(theme) }
+    public func setColorScheme(_ theme: ColorScheme) { HostBoundary.setColorScheme(theme) }
 
     /// Reports the device the application runs on.
     public func setDeviceInfo(_ info: HostDeviceInfo) { HostBoundary.setDeviceInfo(info) }

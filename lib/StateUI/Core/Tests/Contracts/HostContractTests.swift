@@ -590,7 +590,7 @@ final class HostContractTests: XCTestCase {
             }
         }
         for spelling in [
-            "public struct Insets:", "public enum FormFactor", "public enum Theme", "case system",
+            "public struct Insets:", "public enum FormFactor", "public enum ColorScheme", "case system",
             "public enum GesturePhase", "case sineIn", "case sineOut", "public enum ScreenReader",
             "public enum OnScreenKeyboard", "public enum SafeArea", "case keyboard",
             "func avoidsSafeArea(", "public protocol ModifiableElement", "var formFactor",

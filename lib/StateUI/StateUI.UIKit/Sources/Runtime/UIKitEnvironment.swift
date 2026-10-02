@@ -83,7 +83,7 @@ final class UIKitEnvironment {
 
     /// The theme a scene stands in: dark, else light.
     func reportTheme(_ style: UIUserInterfaceStyle) {
-        core.setTheme(style == .dark ? .dark : .light)
+        core.setColorScheme(style == .dark ? .dark : .light)
     }
 
     func reportLocale() {

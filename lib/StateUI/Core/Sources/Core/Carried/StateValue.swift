@@ -130,7 +130,7 @@ extension Color: StateValue {
     /// Red, green, blue and alpha, each from nought to one. A colour pair crosses as
     /// the half in force (`State.Storage.wearThemedPair()`).
     public var carried: StateCarried {
-        let half = dark.flatMap { StandardEnvironment.app.$requestedTheme.standing == .dark ? $0 : nil } ?? light
+        let half = dark.flatMap { StandardEnvironment.app.$colorScheme.standing == .dark ? $0 : nil } ?? light
 
         return .lanes([
             Double(half.red) / 255,

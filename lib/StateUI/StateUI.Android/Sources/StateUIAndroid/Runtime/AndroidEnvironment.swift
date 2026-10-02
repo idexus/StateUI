@@ -19,7 +19,7 @@ enum AndroidEnvironment {
     static func report(to core: CoreLink, activity: jobject) {
         reportChanging(to: core, context: activity)
         guard Java.jni.IsInstanceOf(Java.env, activity, JavaAPI.androidActivity) != 0 else {
-            return core.setTheme(.light)
+            return core.setColorScheme(.light)
         }
 
         Java.frame {
@@ -43,7 +43,7 @@ enum AndroidEnvironment {
             core.setApplicationInfo(HostApplicationInfo(
                 name: application[0], packageName: application[1],
                 versionString: application[2], buildString: application[3]))
-            core.setTheme(display[6] == 1 ? .dark : .light)
+            core.setColorScheme(display[6] == 1 ? .dark : .light)
         }
     }
 

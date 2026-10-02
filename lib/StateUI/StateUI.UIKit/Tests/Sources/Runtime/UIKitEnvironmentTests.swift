@@ -20,12 +20,12 @@ final class UIKitEnvironmentTests: XCTestCase {
         }
 
         scene.traitOverrides.userInterfaceStyle = .dark
-        host.settle { StandardEnvironment.app.requestedTheme == .dark }
-        XCTAssertEqual(StandardEnvironment.app.requestedTheme, .dark)
+        host.settle { StandardEnvironment.app.colorScheme == .dark }
+        XCTAssertEqual(StandardEnvironment.app.colorScheme, .dark)
 
         scene.traitOverrides.userInterfaceStyle = .light
-        host.settle { StandardEnvironment.app.requestedTheme == .light }
-        XCTAssertEqual(StandardEnvironment.app.requestedTheme, .light)
+        host.settle { StandardEnvironment.app.colorScheme == .light }
+        XCTAssertEqual(StandardEnvironment.app.colorScheme, .light)
     }
 
     /// The display is the screen as the scene stands on it now: turned a quarter, it is landscape, its width and

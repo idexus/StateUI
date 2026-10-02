@@ -5,7 +5,7 @@
 // Design: docs/design/types/vocabularies.md#written-out-and-appended
 
 /// Which look the system asked for.
-public enum Theme: Int32, Sendable {
+public enum ColorScheme: Int32, Sendable {
     /// The system did not say.
     case system = 0
 

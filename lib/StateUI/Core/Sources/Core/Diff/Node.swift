@@ -81,7 +81,7 @@ public enum PropValue: Equatable, Sendable {
     func resolvingTheme() -> PropValue {
         switch self {
         case .themed(let light, let dark):
-            (StandardEnvironment.app.requestedTheme == .dark ? dark : light).resolvingTheme()
+            (StandardEnvironment.app.colorScheme == .dark ? dark : light).resolvingTheme()
         case .values(let values):
             .values(values.map { $0.resolvingTheme() })
         default:

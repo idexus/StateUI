@@ -198,7 +198,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Time/` | `CalendarDate`, `ClockTime`, `TimeZoneInfo`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
 | `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
-| `Environment/` | the standard providers - `Battery`, `Connectivity`, `DeviceDisplay`, `DeviceInfo`, `LocaleInfo`, `AppInfo` - their vocabularies and `Theme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
+| `Environment/` | the standard providers - `Battery`, `Connectivity`, `DeviceDisplay`, `DeviceInfo`, `LocaleInfo`, `AppInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
 | `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, `PageSession`, their phases, `WindowOverlays` | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
 | `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarItemPlacement`, `PinType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
 
@@ -502,7 +502,7 @@ values ([core link](../design/host/runtime.md#core-link)). The
 - **The UI thread.** `runJobs()` drains `MainActor`'s queued jobs on the
   calling thread, and `waitForWork()` parks the doorbell until work arrives.
   ([The doorbell](../design/core/concurrency.md#the-doorbell))
-- **What the host knows.** `setTheme`, `setDeviceInfo`, `setDisplayInfo`,
+- **What the host knows.** `setColorScheme`, `setDeviceInfo`, `setDisplayInfo`,
   `setApplicationInfo`, `setBatteryInfo`, `setConnectivityInfo`,
   `setLocaleInfo` and `setApplicationPhase` each write one standard provider,
   only where a field differs; `languageDirection` reads back the way the

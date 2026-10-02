@@ -85,7 +85,7 @@ final class AppKitEnvironment {
     /// The system's appearance: dark or light.
     func reportTheme() {
         let appearance = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua])
-        core.setTheme(appearance == .darkAqua ? .dark : .light)
+        core.setColorScheme(appearance == .darkAqua ? .dark : .light)
     }
 
     func reportLocale() {

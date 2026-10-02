@@ -504,6 +504,14 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = Text("Hi").characterSpacing(2)"#,
             contract: #"_ = Text("Hi").tracking(2)"#),
         Road(
+            name: "the system's look as a Theme",
+            removed: "_ = Theme.dark",
+            contract: "_ = ColorScheme.dark"),
+        Road(
+            name: "the system's look as requestedTheme",
+            removed: #"_ = \AppInfo.requestedTheme"#,
+            contract: #"_ = \AppInfo.colorScheme"#),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

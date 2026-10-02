@@ -91,7 +91,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.app.packageName = ""
         StandardEnvironment.app.versionString = ""
         StandardEnvironment.app.buildString = ""
-        StandardEnvironment.app.requestedTheme = .system
+        StandardEnvironment.app.colorScheme = .system
         StandardEnvironment.application.phase = .active
 
         // Display providers are process-wide. Restore every field so a later
@@ -295,12 +295,12 @@ final class HostEnvironmentTests: XCTestCase {
 
         HostBoundary.setApplicationInfo(HostApplicationInfo(
             name: "Gallery", packageName: "com.example.gallery", versionString: "1.2", buildString: "34"))
-        HostBoundary.setTheme(.dark)
+        HostBoundary.setColorScheme(.dark)
         XCTAssertEqual(StandardEnvironment.app.name, "Gallery")
         XCTAssertEqual(StandardEnvironment.app.packageName, "com.example.gallery")
         XCTAssertEqual(StandardEnvironment.app.versionString, "1.2")
         XCTAssertEqual(StandardEnvironment.app.buildString, "34")
-        XCTAssertEqual(StandardEnvironment.app.requestedTheme, .dark)
+        XCTAssertEqual(StandardEnvironment.app.colorScheme, .dark)
 
         HostBoundary.setApplicationPhase(.inactive)
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)

@@ -27,7 +27,7 @@ enum WinUIEnvironment {
     /// Tells `core` the theme, the user's locale, the battery and the network, as they stand now.
     static func reportChanging(to core: CoreLink) {
         let theme = facts(StateUIFactsTheme)
-        core.setTheme(theme.first == "1" ? .dark : .light)
+        core.setColorScheme(theme.first == "1" ? .dark : .light)
 
         if let locale = HostLocaleInfo(words: facts(StateUIFactsLocale)) { core.setLocaleInfo(locale) }
 

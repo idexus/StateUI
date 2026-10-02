@@ -298,9 +298,9 @@ final class StyleTests: XCTestCase {
     /// the element wearing it is the theme's reader, whoever wrote it.
     func testAThemedColourWrittenOutsideEveryBuildFollowsTheTheme() {
         let app = StandardEnvironment.app
-        let was = app.requestedTheme
-        defer { app.requestedTheme = was }
-        app.requestedTheme = .light
+        let was = app.colorScheme
+        defer { app.colorScheme = was }
+        app.colorScheme = .light
 
         let written = Text("Hi").textColor(Color(light: .black, dark: .white)).node
         let renders = Renders()
@@ -308,7 +308,7 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(first.child(.auto(1))?.props["textColor"], Color.black.propValue)
 
         Renderer.shared.clearInvalidation()
-        app.requestedTheme = .dark
+        app.colorScheme = .dark
         let flipped = renders.revisit(changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(
@@ -321,9 +321,9 @@ final class StyleTests: XCTestCase {
     /// again.
     func testAThemeChangeBuildsTheElementWearingThePairAlone() {
         let app = StandardEnvironment.app
-        let was = app.requestedTheme
-        defer { app.requestedTheme = was }
-        app.requestedTheme = .light
+        let was = app.colorScheme
+        defer { app.colorScheme = was }
+        app.colorScheme = .light
 
         let runs = Runs()
         let renders = Renders()
@@ -331,7 +331,7 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(runs.count, 1)
 
         Renderer.shared.clearInvalidation()
-        app.requestedTheme = .dark
+        app.colorScheme = .dark
         let flipped = renders.revisit(changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(runs.count, 1, "the closure that wrote the label read nothing")
@@ -357,9 +357,9 @@ final class StyleTests: XCTestCase {
     /// to the other half - the way a pair written on a node crosses.
     func testAColourPairTheHostCarriesFollowsTheTheme() {
         let app = StandardEnvironment.app
-        let was = app.requestedTheme
-        defer { app.requestedTheme = was }
-        app.requestedTheme = .light
+        let was = app.colorScheme
+        defer { app.colorScheme = was }
+        app.colorScheme = .light
 
         let tint = State(Color(light: .black, dark: .white))
         let renders = Renders()
@@ -368,7 +368,7 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(tint.storage.journeyLanes?.destination, Color.black)
 
         Renderer.shared.clearInvalidation()
-        app.requestedTheme = .dark
+        app.colorScheme = .dark
         renders.revisit(changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(
@@ -419,13 +419,13 @@ final class StyleTests: XCTestCase {
     /// The read is what makes the next theme change find this view: a colour
     /// with two halves asks `AppInfo` which one to use, and that read is
     /// recorded against whichever view is being built - against the THEME
-    /// property, so the change that finds it is a write to `requestedTheme`
+    /// property, so the change that finds it is a write to `colorScheme`
     /// and nothing else the app object says.
     func testWritingAThemedColourRecordsAReadOfTheTheme() {
         let app = StandardEnvironment.app
-        let was = app.requestedTheme
-        defer { app.requestedTheme = was }
-        app.requestedTheme = .light
+        let was = app.colorScheme
+        defer { app.colorScheme = was }
+        app.colorScheme = .light
 
         // Built by the differ, inside the view's own read scope - a node the
         // test builds eagerly as an argument is read by nobody. In a block of
@@ -437,7 +437,7 @@ final class StyleTests: XCTestCase {
             XCTAssertEqual(first.child(.auto(1))?.props["textColor"], Color.black.propValue)
 
             Renderer.shared.clearInvalidation()
-            app.requestedTheme = .dark
+            app.colorScheme = .dark
             let flipped = renders.revisit(changed: Renderer.shared.pendingChanges)
 
             XCTAssertEqual(flipped.child(.auto(1))?.props["textColor"], Color.white.propValue,
@@ -449,7 +449,7 @@ final class StyleTests: XCTestCase {
         let plain = Renders()
         plain.render(stack([Plain().node], id: "root"))
         Renderer.shared.clearInvalidation()
-        app.requestedTheme = .light
+        app.colorScheme = .light
 
         XCTAssertFalse(Renderer.shared.needsRender, "a colour with one half asks nothing")
         _ = plain

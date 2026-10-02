@@ -285,7 +285,7 @@ verdict for a domain as a whole, so none is claimed for any host.
 - `DeviceDisplay`: `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate`
 - `LocaleInfo`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`
 - `DeviceInfo`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType`
-- `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, `requestedTheme`
+- `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`
 - `ApplicationSession`: `phase`
 
 The public provider and its fallback values exist whatever a host supplies.

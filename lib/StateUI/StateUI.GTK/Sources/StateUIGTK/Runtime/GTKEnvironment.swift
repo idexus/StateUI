@@ -31,7 +31,7 @@ enum GTKEnvironment {
     /// the network.
     static func reportChanging(to core: CoreLink) {
         let style = adw_style_manager_get_default()
-        core.setTheme(adw_style_manager_get_dark(style) != 0 ? .dark : .light)
+        core.setColorScheme(adw_style_manager_get_dark(style) != 0 ? .dark : .light)
         core.setLocaleInfo(locale)
         core.setBatteryInfo(battery)
         core.setConnectivityInfo(connectivity)
