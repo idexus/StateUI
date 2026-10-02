@@ -461,22 +461,22 @@ Every control, and every part an application, its windows and its pages are made
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Application](controls/Application.md) | 12 | 7 ✅ | 6 ✅ | 4 ✅ | 12 ✅ | 11 ✅ |  |
-| [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
+| [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Menu](controls/Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [MenuBar](controls/MenuBar.md) | 1 |  |  | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ | 3 ✅ · 3 – |  |
-| [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
+| [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ModalStack](controls/ModalStack.md) | 7 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ | 4 ✅ · 3 – |  |
 | [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
-| [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
+| [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [Page](controls/Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 10 ✅ | 8 ✅ · 1 – |  |
 | [Pin](controls/Pin.md) | 6 |  |  | 6 🧩 | 6 🧩 | 6 🧩 |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [Span](controls/Span.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
-| [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
+| [Spans](controls/Spans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [SplitView](controls/SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
 | [TabbedView](controls/TabbedView.md) | 10 | 5 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
-| [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
+| [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](controls/Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ | 8 ✅ · 8 – |  |

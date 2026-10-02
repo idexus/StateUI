@@ -604,7 +604,8 @@ struct ControlDictionary {
     }
 
     /// One table of counts: a row per element, how many members its page
-    /// lists, and how many each host realizes.
+    /// lists, and how many each host realizes - an element with none, its own
+    /// mark.
     func summary(of elements: [any ElementContract.Type], heading: String, linking prefix: String) -> String {
         var lines = [
             "| \(heading) | Members | " + Self.platforms.joined(separator: " | ") + " |",
@@ -622,7 +623,9 @@ struct ControlDictionary {
                 totals[platform, default: Marks()].partial += marks.partial
                 totals[platform, default: Marks()].notPlanned += marks.notPlanned
                 totals[platform, default: Marks()].byApplication += marks.byApplication
-                return Self.counted(marks)
+                // An element with no members is said by its own mark: whether the host makes it.
+                guard page.members == 0 else { return Self.counted(marks) }
+                return column(of: platform)?.mark(of: nil, on: element.name).mark ?? ""
             }
 
             lines.append("| [\(element.name)](\(prefix)\(element.name).md) | \(page.members) | "
