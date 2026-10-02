@@ -66,17 +66,17 @@ struct TimePickerSample: SampleContent, ExampleContent {
             HStack {
                 Button("Morning")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { alarm = ClockTime(hour: 7, minute: 30) }
 
                 Button("Lunch")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { alarm = ClockTime(hour: 12, minute: 0) }
 
                 Button("Evening")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { alarm = ClockTime(hour: 21, minute: 5) }
             }
             .spacing(10)

@@ -61,7 +61,7 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
 
             Button("Open a page with its own actions")
                 .accessibilityIdentifier("layers.open")
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .onClicked { nav.push(.layer(1)) }
         }
         .spacing(12)

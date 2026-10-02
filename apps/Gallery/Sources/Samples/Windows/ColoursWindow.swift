@@ -30,14 +30,14 @@ struct ColoursPage: View {
                     .textColor(.white)
                     .background(accent.color)
                     .shape(.roundedRectangle(8))
-                    .padding(14, 8)
+                    .padding(horizontal: 14, vertical: 8)
                     .onClicked { style.accent = accent }
             }
 
             // The window closes itself, through its own session.
             Button("Done")
                 .fontSize(13)
-                .padding(14, 6)
+                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.end)
                 .onClicked { try await window.close() }
         }

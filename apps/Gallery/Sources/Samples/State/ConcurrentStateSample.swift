@@ -102,7 +102,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .background(running ? Palette.disabled : Palette.accent)
                 .textColor(Palette.onAccent)
                 .shape(.roundedRectangle(10))
-                .padding(22, 12)
+                .padding(horizontal: 22, vertical: 12)
                 .isEnabled(!running)
                 .horizontalAlignment(.center)
                 .onClicked {

@@ -31,7 +31,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 ForEach(items) { item in
                     ZStack {
                         Text(item)
-                            .padding(12, 8)
+                            .padding(horizontal: 12, vertical: 8)
                     }
                     .style("Card")
                     .stroke(Palette.accent)
@@ -92,7 +92,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                     ZStack {
                         Text(item)
                             .fontSize(14)
-                            .padding(12, 8)
+                            .padding(horizontal: 12, vertical: 8)
                     }
                     .style("Card")
                     .stroke(Palette.accent)
@@ -149,7 +149,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             Button("Empty it")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .isEnabled(!basket.isEmpty)
                 .onClicked { basket = [] }

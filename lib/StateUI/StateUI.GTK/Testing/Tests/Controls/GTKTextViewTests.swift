@@ -98,7 +98,7 @@ final class GTKTextViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     Text("words")
-                    Text("words").padding(24, 8, 12, 4)
+                    Text("words").padding(left: 24, top: 8, right: 12, bottom: 4)
                 }
             }
             let labels = host.views(GTKTextView.self)

@@ -259,7 +259,7 @@ struct HomePage: View {
         .rowSpacing(Self.gap)
         // The margin is the rows' own to lose: the frame below is this grid's
         // outer one, so the arithmetic takes the margin off explicitly.
-        .padding(Self.margin, Self.margin)
+        .padding(horizontal: Self.margin, vertical: Self.margin)
         // THE PAGE'S OWN ROOM, written by the host and read by the arithmetic
         // that sizes the run. Nothing is built for it, which is the whole
         // difference between this and measuring a page with a `GeometryReader`:
@@ -551,7 +551,7 @@ private struct Steps: View {
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(8))
-            .padding(18, 2)
+            .padding(horizontal: 18, vertical: 2)
             .isEnabled(to >= 0 && to < count)
             .onClicked { position = to }
     }
@@ -581,7 +581,7 @@ private struct GroupFace: View {
                         .fontAttributes(.bold)
                         .textColor(Palette.onBrand)
                         .lineBreak(.tailTruncation)
-                        .padding(12, 10)
+                        .padding(horizontal: 12, vertical: 10)
                 }
                 .background(Color("#B3000000"))
                 .verticalAlignment(.end)

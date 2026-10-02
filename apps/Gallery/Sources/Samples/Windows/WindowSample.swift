@@ -143,7 +143,7 @@ struct WindowSample: SampleContent, ExampleContent {
     private func action(_ title: String, _ write: @escaping () -> Void) -> some View {
         Button(title)
             .fontSize(13)
-            .padding(16, 6)
+            .padding(horizontal: 16, vertical: 6)
             .onClicked { write() }
     }
 

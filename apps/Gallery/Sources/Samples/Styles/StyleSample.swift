@@ -26,7 +26,7 @@ struct StyleSample: SampleContent, ExampleContent {
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
                 .shape(.roundedRectangle(10))
-                .padding(16, 11)
+                .padding(horizontal: 16, vertical: 11)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .background(Palette.outline)

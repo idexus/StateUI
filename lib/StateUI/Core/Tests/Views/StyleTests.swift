@@ -678,7 +678,7 @@ final class StyleTests: XCTestCase {
                 .textColor(.white)
                 .background(Color("#512BD4"))
                 .shape(.roundedRectangle(8))
-                .padding(14, 10)
+                .padding(horizontal: 14, vertical: 10)
                 .minimumHeight(44)
                 .visualState(.disabled) { $0
                     .textColor(Color(light: Color("#141414"),

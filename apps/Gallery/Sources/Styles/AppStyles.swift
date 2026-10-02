@@ -79,7 +79,7 @@ enum AppStyles {
                 .fontAttributes(.bold)
                 .lineWidth(0)
                 .shape(.roundedRectangle(10))                
-                .padding(16, 11)
+                .padding(horizontal: 16, vertical: 11)
                 .minimumHeight(44)
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
@@ -106,7 +106,7 @@ enum AppStyles {
                 .fontAttributes(.bold)
                 .lineWidth(0)
                 .shape(.roundedRectangle(10))
-                .padding(14, 4)
+                .padding(horizontal: 14, vertical: 4)
                 .minimumHeight(0)
                 .minimumWidth(0)
                 .visualState(.disabled) { $0
@@ -260,7 +260,7 @@ enum AppStyles {
 
             Style<HStack>("MenuRow")
                 .spacing(14)
-                .padding(18, 13)
+                .padding(horizontal: 18, vertical: 13)
                 .background(.transparent)
 
             Style<Text>("MenuRowText")

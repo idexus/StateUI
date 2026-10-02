@@ -60,7 +60,7 @@ private struct LayerRows: ExampleContent {
                 .background(Palette.accent)
                 .textColor(Palette.onAccent)
                 .shape(.roundedRectangle(8))
-                .padding(22, 10)
+                .padding(horizontal: 22, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
@@ -205,7 +205,7 @@ private struct LayerCost: ExampleContent {
                     .background(Palette.accent)
                     .textColor(Palette.onAccent)
                     .shape(.roundedRectangle(8))
-                    .padding(18, 8)
+                    .padding(horizontal: 18, vertical: 8)
                     .onClicked { counter += 1 }
 
                 // A choice of more than two, so a button that cycles them.
@@ -216,7 +216,7 @@ private struct LayerCost: ExampleContent {
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(18, 8)
+                    .padding(horizontal: 18, vertical: 8)
                     .onClicked { leaves = leaves == 25 ? 100 : leaves == 100 ? 400 : 25 }
             }
             .spacing(10)
@@ -287,7 +287,7 @@ private struct Described: View {
             Text("Counter \(counter)")
                 .fontSize(13)
                 .fontAttributes(.bold)
-                .margin(6, 0)
+                .margin(horizontal: 6, vertical: 0)
 
             Text(took(began, leaves))
                 .fontSize(12)
@@ -325,7 +325,7 @@ private struct Channelled: View {
             Text($counter.convert { "Counter \($0)" })
                 .fontSize(13)
                 .fontAttributes(.bold)
-                .margin(6, 0)
+                .margin(horizontal: 6, vertical: 0)
 
             Text(took(began, leaves))
                 .fontSize(12)

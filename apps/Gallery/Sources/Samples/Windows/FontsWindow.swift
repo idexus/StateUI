@@ -37,7 +37,7 @@ struct FontsPage: View {
                     .stroke(Palette.subtle)
                     .lineWidth(chosen ? 0 : 1)
                     .shape(.roundedRectangle(8))
-                    .padding(14, 8)
+                    .padding(horizontal: 14, vertical: 8)
                     .onClicked { style.font = family }
 
                 return family.isEmpty ? button : button.fontFamily(family)
@@ -46,7 +46,7 @@ struct FontsPage: View {
             // The window closes itself, through its own session.
             Button("Done")
                 .fontSize(13)
-                .padding(14, 6)
+                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.end)
                 .onClicked { try await window.close() }
         }

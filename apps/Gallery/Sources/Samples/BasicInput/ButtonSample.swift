@@ -40,7 +40,7 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .background(Palette.accent)
                 .textColor(.white)
                 .shape(.roundedRectangle(8))
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
@@ -54,13 +54,13 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .stroke(Palette.accent)
                 .lineWidth(1)
                 .shape(.roundedRectangle(8))
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
             Button("Disabled")
                 .isEnabled(false)
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
         }
         .spacing(12)

@@ -17,7 +17,7 @@ struct TurningRow: View {
                 Text("B").width(10).height(10)
             }
             .spacing(4)
-            .padding(6, 0)
+            .padding(horizontal: 6, vertical: 0)
 
             Button("Turn")
                 .onClicked { rightToLeft.toggle() }

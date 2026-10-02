@@ -556,7 +556,7 @@ extension WinUIDriver {
     /// Four sides the reader writes as numbers apart by commas.
     static func insets(_ words: String) -> Insets? {
         let sides = words.split(separator: ",").compactMap { Double($0) }
-        return sides.count == 4 ? Insets(sides[0], sides[1], sides[2], sides[3]) : nil
+        return sides.count == 4 ? Insets(left: sides[0], top: sides[1], right: sides[2], bottom: sides[3]) : nil
     }
 
     /// A day the reader writes as year-month-day.

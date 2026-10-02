@@ -85,7 +85,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Button("Count \(counter)")
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
@@ -212,6 +212,6 @@ private struct Row: View {
             DebugInfoLabel()
         }
         .spacing(2)
-        .padding(12, 8)
+        .padding(horizontal: 12, vertical: 8)
     }
 }

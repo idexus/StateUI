@@ -22,7 +22,7 @@ Optional capabilities are modifiers:
 ```swift
 Button("Save")
     .isEnabled(true)
-    .padding(18, 10)
+    .padding(horizontal: 18, vertical: 10)
     .shape(.roundedRectangle(8))
     .onClicked { }
 ```
@@ -431,7 +431,7 @@ struct ContactsPage: View {
                     Text(contact.name).fontAttributes(.bold)
                     Text(contact.phone)
                 }
-                .padding(14, 10)
+                .padding(horizontal: 14, vertical: 10)
             }
             .selection($chosen)
             .onItemActivated { name in chosen = name }

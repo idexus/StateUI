@@ -103,7 +103,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 Button("Grow")
                     .background(Palette.accent)
                     .shape(.roundedRectangle(8))
-                    .padding(16, 8)
+                    .padding(horizontal: 16, vertical: 8)
                     .onClicked {
                         try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
                     }
@@ -111,7 +111,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 Button("Shrink")
                     .background(Palette.accent)
                     .shape(.roundedRectangle(8))
-                    .padding(16, 8)
+                    .padding(horizontal: 16, vertical: 8)
                     .onClicked {
                         try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
                     }
@@ -122,7 +122,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(16, 8)
+                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { $width.journey.stop() }
             }
             .spacing(10)

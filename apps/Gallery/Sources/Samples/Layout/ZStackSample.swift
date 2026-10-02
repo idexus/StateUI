@@ -52,7 +52,7 @@ private struct Areas: ExampleContent {
                 Text(text)
                     .textColor(.white)
                     .background(Color(color))
-                    .padding(10, 6)
+                    .padding(horizontal: 10, vertical: 6)
             }
         }
         """
@@ -160,6 +160,6 @@ private struct Marker: View {
             .fontSize(12)
             .textColor(.white)
             .background(Color(color))
-            .padding(10, 6)
+            .padding(horizontal: 10, vertical: 6)
     }
 }

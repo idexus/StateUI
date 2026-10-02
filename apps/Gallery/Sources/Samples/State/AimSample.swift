@@ -94,7 +94,7 @@ struct AimSample: SampleContent, ExampleContent {
                 Button("Focus the first")
                     .background(Palette.accent)
                     .shape(.roundedRectangle(8))
-                    .padding(14, 8)
+                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await field.focus()
                         says = "focused \(field)"
@@ -103,7 +103,7 @@ struct AimSample: SampleContent, ExampleContent {
                 Button("Focus the second")
                     .background(Palette.accent)
                     .shape(.roundedRectangle(8))
-                    .padding(14, 8)
+                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await note.focus()
                         says = "focused \(note)"
@@ -115,7 +115,7 @@ struct AimSample: SampleContent, ExampleContent {
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(14, 8)
+                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await field.unfocus()
                         says = "let go of \(field)"

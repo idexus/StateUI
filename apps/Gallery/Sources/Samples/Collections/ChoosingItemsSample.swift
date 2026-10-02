@@ -23,7 +23,7 @@ private struct PickList: ExampleContent {
 
             // A Set binding: as many chosen as the user likes.
             ItemsView(0..<1_000) { number in
-                Text("Row \\(number)").padding(14, 10)
+                Text("Row \\(number)").padding(horizontal: 14, vertical: 10)
             }
             .selection($chosen)
             .aim(list)
@@ -43,17 +43,17 @@ private struct PickList: ExampleContent {
             HStack {
                 Button("Top")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { try await list.scrollTo(0, anchor: .start) }
 
                 Button("Row 500")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { try await list.scrollTo(500, anchor: .start) }
 
                 Button("Clear")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(!chosen.isEmpty)
                     .onClicked { chosen = [] }
             }
@@ -64,7 +64,7 @@ private struct PickList: ExampleContent {
             ItemsView(0..<1_000) { number in
                 Text("Row \(number)")
                     .fontSize(14)
-                    .padding(14, 10)
+                    .padding(horizontal: 14, vertical: 10)
             }
             .selection($chosen)
             .aim(list)

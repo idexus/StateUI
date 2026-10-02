@@ -177,7 +177,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
             Button("Close swatch 2")
                 .fontSize(13)
-                .padding(14, 6)
+                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { await closeSwatch(2) }
 
@@ -187,14 +187,14 @@ struct MultiWindowSample: SampleContent, ExampleContent {
                 .background(style.accent.color)
                 .textColor(.white)
                 .shape(.roundedRectangle(8))
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.open")
                 .onClicked { await openAnother() }
 
             Button("Close this gallery")
                 .fontSize(13)
-                .padding(14, 6)
+                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.close")
                 .onClicked { await closeThis() }
@@ -228,7 +228,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .background(style.accent.color)
             .textColor(.white)
             .shape(.roundedRectangle(8))
-            .padding(20, 8)
+            .padding(horizontal: 20, vertical: 8)
             .accessibilityIdentifier(handle("window.open", caption))
             .onClicked { await open(type, caption) }
     }
@@ -237,7 +237,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     private func closes(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
             .fontSize(13)
-            .padding(14, 6)
+            .padding(horizontal: 14, vertical: 6)
             .accessibilityIdentifier(handle("window.close", caption))
             .onClicked { await close(type, caption) }
     }
@@ -282,7 +282,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .background(SwatchPage.colour(of: number))
             .textColor(.white)
             .shape(.roundedRectangle(8))
-            .padding(16, 8)
+            .padding(horizontal: 16, vertical: 8)
             .accessibilityIdentifier("window.open.swatch.\(number)")
             .onClicked { await openSwatch(number) }
     }

@@ -106,7 +106,7 @@ struct BuilderSample: SampleContent, ExampleContent {
                 } else {
                     Button("turn \(turn)")
                         .fontSize(13)
-                        .padding(16, 6)
+                        .padding(horizontal: 16, vertical: 6)
                         .horizontalAlignment(.start)
                         .onClicked { chosen = turn }
                 }

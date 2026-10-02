@@ -43,7 +43,7 @@ gesture or an `.id()` written on a style does not compile.
 
 Every modifier returns a modified copy. Nothing mutates in place, so a view is
 a value all the way down and a chain reads in one direction:
-`Text("Total").fontSize(20).textColor(.gray).margin(0, 8)`.
+`Text("Total").fontSize(20).textColor(.gray).margin(horizontal: 0, vertical: 8)`.
 
 ## Why events live on the element side
 

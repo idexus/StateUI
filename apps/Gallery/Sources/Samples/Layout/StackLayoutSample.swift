@@ -44,7 +44,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
                 Text(text)
                     .textColor(.white)
                     .background(Palette.accent)
-                    .padding(14, 8)
+                    .padding(horizontal: 14, vertical: 8)
             }
         }
         """
@@ -105,7 +105,7 @@ private struct StackCell: View {
             .fontSize(13)
             .textColor(.white)
             .background(Palette.accent)
-            .padding(14, 8)
+            .padding(horizontal: 14, vertical: 8)
             .horizontalTextAlignment(.center)
     }
 }

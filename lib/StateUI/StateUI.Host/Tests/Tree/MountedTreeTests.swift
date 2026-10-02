@@ -337,7 +337,7 @@ final class MountedTreeTests: XCTestCase {
         tree.apply(page, complete: true)
         let element = try XCTUnwrap(tree.root)
 
-        XCTAssertEqual(element.insets(.padding), Insets(1, 2, 3, 4))
+        XCTAssertEqual(element.insets(.padding), Insets(left: 1, top: 2, right: 3, bottom: 4))
         XCTAssertEqual(element.insets(.margin), Insets(0), "fewer than four")
         XCTAssertEqual(element.insets(Prop("sides")), Insets(0), "none given")
     }

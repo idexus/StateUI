@@ -22,7 +22,7 @@ private struct LoadingList: ExampleContent {
                 .gridRow(0)
 
             ItemsView(0..<count) { number in
-                Text("Item \\(number + 1)").padding(14, 10)
+                Text("Item \\(number + 1)").padding(horizontal: 14, vertical: 10)
             }
             // Within five items of the end, thirty more - once each time.
             .onEndReached(within: 5) {
@@ -48,7 +48,7 @@ private struct LoadingList: ExampleContent {
 
                 Button("Start over")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(count > 30)
                     .onClicked { count = 30 }
             }
@@ -61,7 +61,7 @@ private struct LoadingList: ExampleContent {
             ItemsView(0..<count) { number in
                 Text("Item \(number + 1)")
                     .fontSize(14)
-                    .padding(14, 10)
+                    .padding(horizontal: 14, vertical: 10)
             }
             .onEndReached(within: 5) {
                 guard !loading, count < 300 else { return }

@@ -66,12 +66,12 @@ struct TickerSample: SampleContent, ExampleContent {
             HStack {
                 Button(ticker.isRunning ? "Stop" : "Start")
                     .fontSize(13)
-                    .padding(20, 6)
+                    .padding(horizontal: 20, vertical: 6)
                     .onClicked { ticker.isRunning ? ticker.stop() : ticker.start() }
 
                 Button("Reset")
                     .fontSize(13)
-                    .padding(20, 6)
+                    .padding(horizontal: 20, vertical: 6)
                     .onClicked { ticker.reset() }
             }
             .spacing(10)
@@ -81,7 +81,7 @@ struct TickerSample: SampleContent, ExampleContent {
                 ForEach([10, 30, 60]) { length in
                     Button("\(length)s")
                         .fontSize(12)
-                        .padding(14, 4)
+                        .padding(horizontal: 14, vertical: 4)
                         .onClicked {
                             ticker.reset()
                             ticker.limit = length

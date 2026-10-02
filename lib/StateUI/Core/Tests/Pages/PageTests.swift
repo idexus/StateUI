@@ -69,7 +69,7 @@ private struct EveryPropertyPage: View {
                 // The page's own.
                 page.title = "Everything"
                 page.icon = ImageSource("tab.png")
-                page.padding = Insets(4, 8, 12, 16)
+                page.padding = Insets(left: 4, top: 8, right: 12, bottom: 16)
                 page.background = .whiteSmoke
 
                 // What it asks of a NavigationStack.

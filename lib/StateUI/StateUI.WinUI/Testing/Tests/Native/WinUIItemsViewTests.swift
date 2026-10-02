@@ -21,9 +21,9 @@ final class WinUIItemsViewTests: XCTestCase {
                             Text("\(number)").width(90)
                             Text("\(number * number)")
                         }
-                        .padding(14, 10)
+                        .padding(horizontal: 14, vertical: 10)
                     }
-                    .header(Text("N and N²").padding(14, 8))
+                    .header(Text("N and N²").padding(horizontal: 14, vertical: 8))
                     .gridRow(0)
 
                     Text("Tap a row.").gridRow(1)

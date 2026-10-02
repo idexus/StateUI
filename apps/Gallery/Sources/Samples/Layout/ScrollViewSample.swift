@@ -30,7 +30,7 @@ private func numberedLines() -> ScrollView {
             ForEach(1...40) { line in
                 Text("Line \(line)")
                     .fontSize(14)
-                    .padding(8, 6)
+                    .padding(horizontal: 8, vertical: 6)
             }
         }
     }
@@ -200,7 +200,7 @@ private struct OffsetStrips: ExampleContent {
                 VStack {
                     ForEach(1...40) { line in
                         Text("Line \\(line)")
-                            .padding(8, 6)
+                            .padding(horizontal: 8, vertical: 6)
                     }
                 }
             }
@@ -355,12 +355,12 @@ private struct OffsetStrips: ExampleContent {
             HStack {
                 Button("Top")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { try await move(to: 0) }
 
                 Button("Line 9")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { try await move(to: 240) }
             }
             .spacing(16)
@@ -561,7 +561,7 @@ private struct BarStrips: ExampleContent {
                     VStack {
                         ForEach(1...40) { line in
                             Text("Line \\(line)")
-                                .padding(6, 4)
+                                .padding(horizontal: 6, vertical: 4)
                         }
                     }
                 }
@@ -594,7 +594,7 @@ private struct BarStrips: ExampleContent {
                     ForEach(1...40) { line in
                         Text("Line \(line)")
                             .fontSize(13)
-                            .padding(6, 4)
+                            .padding(horizontal: 6, vertical: 4)
                     }
                 }
             }

@@ -131,7 +131,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 Button("Press")
                     .background(Palette.accent)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { visits += 1 }
 
                 Button("Start over")
@@ -140,7 +140,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .isEnabled(visits != 0)
                     .onClicked { visits = 0 }
             }
@@ -168,7 +168,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(16, 8)
+                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { shade = shade == .quiet ? .bold : .quiet }
             }
             .spacing(12)

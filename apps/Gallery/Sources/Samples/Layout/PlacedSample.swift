@@ -448,15 +448,15 @@ struct PlacedSample: SampleContent, ExampleContent {
                 // read: the switch below is the only thing here a build
                 // depends on, and the ring itself turns for no build at all.
                 DebugInfoLabel()
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
 
                 Button("Back")
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .isEnabled(!grabbing)
                     .onClicked { try await move(-1) }
 
                 Button("Next")
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .isEnabled(!grabbing)
                     .onClicked { try await move(1) }
             }
@@ -545,7 +545,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                         .opacity(0.8)
                         .lineBreak(.tailTruncation)
                 }
-                .padding(12, 10)
+                .padding(horizontal: 12, vertical: 10)
                 .spacing(1)
                 // A dark strip under the words, so a caption reads over a
                 // picture of any colour.

@@ -443,7 +443,7 @@
     /// The four sides `property` gives - leading, top, trailing, bottom - or nothing all round where it gives none.
     public func insets(_ property: Prop) -> Insets {
         guard let sides = value(property)?.numbers, sides.count >= 4 else { return Insets(0) }
-        return Insets(sides[0], sides[1], sides[2], sides[3])
+        return Insets(left: sides[0], top: sides[1], right: sides[2], bottom: sides[3])
     }
 
     /// The handler of `event`, when the tree listens to it.

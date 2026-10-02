@@ -15,7 +15,7 @@ private struct LongList: ExampleContent {
                     Text("\\(number)").width(90)
                     Text("\\(number * number)")
                 }
-                .padding(14, 10)
+                .padding(horizontal: 14, vertical: 10)
             }
             .header(Text("N and N², a thousand times"))
             .footer(Text("That is all of them."))
@@ -48,18 +48,18 @@ private struct LongList: ExampleContent {
                         .verticalAlignment(.center)
                 }
                 .spacing(12)
-                .padding(14, 10)
+                .padding(horizontal: 14, vertical: 10)
             }
             .header(Text("N and N², a thousand times")
                 .fontSize(11)
                 .fontAttributes(.bold)
                 .textColor(Palette.subtle)
-                .padding(14, 8)
+                .padding(horizontal: 14, vertical: 8)
                 .background(Palette.raised))
             .footer(Text("That is all of them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-                .padding(14, 8))
+                .padding(horizontal: 14, vertical: 8))
             .selection($chosen)
             .gridRow(0)
 
@@ -108,7 +108,7 @@ private struct AcrossList: ExampleContent {
             // Each tag as wide as its word.
             ItemsView(tags) { tag in
                 Text(tag)
-                    .padding(14, 0)
+                    .padding(horizontal: 14, vertical: 0)
                     .verticalTextAlignment(.center)
                     .background(Palette.raised)
             }
@@ -135,7 +135,7 @@ private struct AcrossList: ExampleContent {
             ItemsView(Self.tags) { tag in
                 Text(tag)
                     .fontSize(13)
-                    .padding(14, 0)
+                    .padding(horizontal: 14, vertical: 0)
                     .verticalTextAlignment(.center)
                     .background(Palette.raised)
             }
@@ -249,13 +249,13 @@ private struct GroupedList: ExampleContent {
             // A group per shelf, named so two shelves may hold the same item.
             ItemsView(groups: shelves.map { shelf in
                 let group = Section(shelf.items) { item in
-                    Text(item).padding(14, 10)
+                    Text(item).padding(horizontal: 14, vertical: 10)
                 }
                 .id(shelf.name)
-                .header(Text(shelf.name).fontAttributes(.bold).padding(14, 8))
+                .header(Text(shelf.name).fontAttributes(.bold).padding(horizontal: 14, vertical: 8))
 
                 return counts
-                    ? group.footer(Text("\\(shelf.items.count) items").padding(14, 6))
+                    ? group.footer(Text("\\(shelf.items.count) items").padding(horizontal: 14, vertical: 6))
                     : group
             })
             .gridRow(1)
@@ -275,21 +275,21 @@ private struct GroupedList: ExampleContent {
                 let group = Section(shelf.items) { item in
                     Text(item)
                         .fontSize(14)
-                        .padding(14, 10)
+                        .padding(horizontal: 14, vertical: 10)
                 }
                 .id(shelf.name)
                 .header(Text(shelf.name)
                     .fontSize(12)
                     .fontAttributes(.bold)
                     .textColor(Palette.subtle)
-                    .padding(14, 8)
+                    .padding(horizontal: 14, vertical: 8)
                     .background(Palette.raised))
 
                 return counts
                     ? group.footer(Text("\(shelf.items.count) items")
                         .fontSize(12)
                         .textColor(Palette.subtle)
-                        .padding(14, 6))
+                        .padding(horizontal: 14, vertical: 6))
                     : group
             })
             .gridRow(1)

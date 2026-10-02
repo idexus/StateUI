@@ -104,7 +104,7 @@ struct EngineSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.center)
             }
             .style("Card")
-            .padding(24, 16)
+            .padding(horizontal: 24, vertical: 16)
             .background(Palette.surface)
             .stroke(.transparent)
             .shape(.roundedRectangle(12))
@@ -119,7 +119,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 Button()
                     .text($caption)
                     .fontSize(13)
-                    .padding(14, 6)
+                    .padding(horizontal: 14, vertical: 6)
                     .onClicked {
                         running.toggle()
                         caption = running ? "Stop" : "Start"
@@ -199,7 +199,7 @@ struct EngineSample: SampleContent, ExampleContent {
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)
-            .padding(14, 6)
+            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
 }

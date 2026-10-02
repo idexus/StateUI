@@ -40,7 +40,7 @@ final class GTKGridViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     Grid { Text("Waiting for the first render of this scene") }
-                    Grid { Text("Waiting for the first render of this scene").margin(8, 4) }
+                    Grid { Text("Waiting for the first render of this scene").margin(horizontal: 8, vertical: 4) }
                 }
                 .horizontalAlignment(.start)
             }

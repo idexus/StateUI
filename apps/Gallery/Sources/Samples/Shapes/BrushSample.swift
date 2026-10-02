@@ -50,7 +50,7 @@ struct BrushSample: SampleContent, ExampleContent {
 
             ZStack {
                 Text("A stroke is a brush too")
-                    .padding(16, 10)
+                    .padding(horizontal: 16, vertical: 10)
             }
             .style("Card")
             .lineWidth(4)
@@ -97,7 +97,7 @@ struct BrushSample: SampleContent, ExampleContent {
 
             Button("endPoint: \(Self.ends[end].name)")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { end = (end + 1) % Self.ends.count }
 
@@ -117,7 +117,7 @@ struct BrushSample: SampleContent, ExampleContent {
             ZStack {
                 Text("A stroke is a brush too")
                     .fontSize(14)
-                    .padding(16, 10)
+                    .padding(horizontal: 16, vertical: 10)
             }
             .style("Card")
             .lineWidth(4)

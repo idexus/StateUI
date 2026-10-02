@@ -137,7 +137,7 @@ struct PinchSample: SampleContent, ExampleContent {
 
             Button("Back to life size")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked {
                     pinch = 1

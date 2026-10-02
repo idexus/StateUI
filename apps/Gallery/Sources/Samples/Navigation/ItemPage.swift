@@ -36,7 +36,7 @@ struct ItemPage: View {
                     .horizontalTextAlignment(.center)
 
                 Button("Back")
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { path.removeLast() }
             }

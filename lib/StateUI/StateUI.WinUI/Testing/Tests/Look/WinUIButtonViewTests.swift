@@ -20,7 +20,7 @@ final class WinUIButtonViewTests: XCTestCase {
                         .background(Color("#512BD4"))
                         .textColor(Color("#FFFFFF"))
                         .shape(.roundedRectangle(10))
-                        .padding(16, 11)
+                        .padding(horizontal: 16, vertical: 11)
                         .width(120)
                         .height(40)
                         .horizontalAlignment(.start)
@@ -96,7 +96,7 @@ final class WinUIButtonViewTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    Button("Go").icon("test_wide.png").fontSize(6).padding(4, 0).height(12).horizontalAlignment(.start)
+                    Button("Go").icon("test_wide.png").fontSize(6).padding(horizontal: 4, vertical: 0).height(12).horizontalAlignment(.start)
                 }
             }
             let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
@@ -123,7 +123,7 @@ final class WinUIButtonViewTests: XCTestCase {
                             .contentMode(aspect)
                             .background(.transparent)
                             .lineWidth(0)
-                            .padding(0, 0)
+                            .padding(horizontal: 0, vertical: 0)
                             .width(40)
                             .height(40)
                         Text("").width(40).height(40)

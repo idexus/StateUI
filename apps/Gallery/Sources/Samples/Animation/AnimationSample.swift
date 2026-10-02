@@ -113,7 +113,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 Text("Animate me")
                     .fontSize(17)
                     .textColor(Palette.onBrand)
-                    .padding(24, 16)
+                    .padding(horizontal: 24, vertical: 16)
             }
             .style("Card")
             // Four DRIVEN properties. Read off a state the host moves, so none
@@ -222,7 +222,7 @@ struct AnimationSample: SampleContent, ExampleContent {
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)
-            .padding(14, 6)
+            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
 

@@ -131,7 +131,7 @@ struct StateClassSample: SampleContent, ExampleContent {
                     .background(Palette.accent)
                     .textColor(.white)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { basket.items.append("Item \(basket.items.count + 1)") }
 
                 Button("Remove")
@@ -140,7 +140,7 @@ struct StateClassSample: SampleContent, ExampleContent {
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .isEnabled(!basket.items.isEmpty)
                     .onClicked { basket.items.removeLast() }
             }
@@ -155,7 +155,7 @@ struct StateClassSample: SampleContent, ExampleContent {
                 .background(.transparent)
                 .textColor(Palette.subtle)
                 .shape(.roundedRectangle(8))
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .onClicked { basket.plainTaps += 1 }
 
         }

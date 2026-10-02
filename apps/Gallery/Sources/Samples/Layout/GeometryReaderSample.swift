@@ -141,7 +141,7 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Button("Animate the width")
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked {
                     // Nothing is described: the host carries the width and the

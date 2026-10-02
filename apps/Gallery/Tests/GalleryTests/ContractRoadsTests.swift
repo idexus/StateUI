@@ -552,6 +552,22 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = ItemsGroup(["a", "b"]) { Text($0) }"#,
             contract: #"_ = Section(["a", "b"]) { Text($0) }"#),
         Road(
+            name: "padding by two unnamed numbers",
+            removed: #"_ = Text("Hi").padding(16, 8)"#,
+            contract: #"_ = Text("Hi").padding(horizontal: 16, vertical: 8)"#),
+        Road(
+            name: "padding by four unnamed numbers",
+            removed: #"_ = Text("Hi").padding(16, 34, 16, 18)"#,
+            contract: #"_ = Text("Hi").padding(left: 16, top: 34, right: 16, bottom: 18)"#),
+        Road(
+            name: "a margin by two unnamed numbers",
+            removed: #"_ = Text("Hi").margin(0, 8)"#,
+            contract: #"_ = Text("Hi").margin(horizontal: 0, vertical: 8)"#),
+        Road(
+            name: "insets by unnamed numbers",
+            removed: "_ = Insets(16, 8)",
+            contract: "_ = Insets(horizontal: 16, vertical: 8)"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

@@ -27,8 +27,8 @@ enum Look {
             .stroke(edge)
             .lineWidth(1)
             .shape(.roundedRectangle(7))
-            .padding(10, 2)
-            .margin(0, 0, 6, 4)
+            .padding(horizontal: 10, vertical: 2)
+            .margin(left: 0, top: 0, right: 6, bottom: 4)
             .onClicked { run() }
     }
 

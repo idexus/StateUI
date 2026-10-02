@@ -77,7 +77,7 @@ struct SearchSample: SampleContent, ExampleContent {
 
             Button("Clear the box")
                 .isEnabled(!query.isEmpty)
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { query = "" }
         }

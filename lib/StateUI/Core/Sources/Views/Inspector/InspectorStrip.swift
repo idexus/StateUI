@@ -26,7 +26,7 @@ struct InspectorStrip: View {
                         .fontSize(12)
                         .textColor(Look.subtle)
                         .lineBreak(.tailTruncation)
-                        .margin(8, 4)
+                        .margin(horizontal: 8, vertical: 4)
                 }
             }
             .verticalAlignment(.center)
@@ -44,6 +44,6 @@ struct InspectorStrip: View {
             .gridColumn(1)
         }
         .columns(.fill, .auto)
-        .padding(2, 4)
+        .padding(horizontal: 2, vertical: 4)
     }
 }

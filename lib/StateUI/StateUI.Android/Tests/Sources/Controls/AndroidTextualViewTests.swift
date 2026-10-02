@@ -48,7 +48,7 @@ final class AndroidTextualViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Button("Styled").background(Color("#512BD4")).padding(16, 11)
+                    Button("Styled").background(Color("#512BD4")).padding(horizontal: 16, vertical: 11)
                 }
             }
             let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)

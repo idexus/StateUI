@@ -31,7 +31,7 @@ struct Row: View {
                 .lineBreak(.tailTruncation)
         }
         .spacing(1)
-        .padding(8, 4)
+        .padding(horizontal: 8, vertical: 4)
         .background(chosen ? Look.chosen : .transparent)
     }
 }

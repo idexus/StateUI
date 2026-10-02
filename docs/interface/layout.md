@@ -22,7 +22,7 @@ Text("Summary")
     .minimumHeight(44)
     .horizontalAlignment(.center)
     .verticalAlignment(.start)
-    .margin(16, 8)
+    .margin(horizontal: 16, vertical: 8)
 ```
 
 A request is input to measurement, not a promise that the platform has that
@@ -445,7 +445,7 @@ struct Header: View {
         VStack {
             Text("StateUI")
         }
-        .padding(20, 60, 20, 20)
+        .padding(left: 20, top: 60, right: 20, bottom: 20)
         .background(.steelBlue)
         .avoidsSafeArea(.none)
     }

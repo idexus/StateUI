@@ -113,7 +113,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .background(Palette.accent)
                     .textColor(.white)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                 Button("Back")
@@ -125,7 +125,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
             }
             .spacing(12)

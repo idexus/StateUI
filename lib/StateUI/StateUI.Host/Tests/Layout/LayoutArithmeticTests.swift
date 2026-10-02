@@ -54,11 +54,11 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testARowRightToLeftFillsFromTheRight() {
         var first = Child(width: 20, height: 10)
-        first.values.margin = Insets(3, 0, 0, 0)
+        first.values.margin = Insets(left: 3, top: 0, right: 0, bottom: 0)
         let items = [first, Child(width: 30, height: 10)]
 
         let places = StackArithmetic.places(
-            of: items, axis: .horizontal, spacing: 5, padding: Insets(2, 0, 0, 0), in: Rect(0, 0, 100, 10),
+            of: items, axis: .horizontal, spacing: 5, padding: Insets(left: 2, top: 0, right: 0, bottom: 0), in: Rect(0, 0, 100, 10),
             direction: .rightToLeft)
 
         XCTAssertEqual(places[0], Rect(75, 0, 20, 10), "the first child against the right edge, inside padding and margin")
@@ -123,10 +123,10 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let room = Rect(0, 0, 100, 10)
         XCTAssertEqual(
-            SingleChildArithmetic.place(of: child, in: room, padding: Insets(4, 0, 0, 0), direction: .rightToLeft),
+            SingleChildArithmetic.place(of: child, in: room, padding: Insets(left: 4, top: 0, right: 0, bottom: 0), direction: .rightToLeft),
             Rect(76, 0, 20, 10))
         XCTAssertEqual(
-            SingleChildArithmetic.place(of: child, in: room, padding: Insets(4, 0, 0, 0), direction: .leftToRight),
+            SingleChildArithmetic.place(of: child, in: room, padding: Insets(left: 4, top: 0, right: 0, bottom: 0), direction: .leftToRight),
             Rect(4, 0, 20, 10))
     }
 
@@ -230,7 +230,7 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testAZStackMeasuresAsItsNeediestChild() {
         var margined = Child(width: 30, height: 10)
-        margined.values.margin = Insets(5, 0, 5, 0)
+        margined.values.margin = Insets(left: 5, top: 0, right: 5, bottom: 0)
         var badge = Child(width: 20, height: 10)
         badge.values.area = .absolute(10, 5, 40, 30)
         var half = Child(width: 30, height: 20)
@@ -258,7 +258,7 @@ final class LayoutArithmeticTests: XCTestCase {
     func testEveryLayoutOffersAChildItsRoomLessItsMarginOnce() {
         let offers = Offers()
         var child = Child(width: 10, height: 10)
-        child.values.margin = Insets(8, 4)
+        child.values.margin = Insets(horizontal: 8, vertical: 4)
         child.values.horizontal = 0
         child.offers = offers
         var half = child

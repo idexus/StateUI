@@ -38,12 +38,12 @@ struct SwatchPage: View {
             HStack {
                 Button("Next")
                     .fontSize(13)
-                    .padding(14, 6)
+                    .padding(horizontal: 14, vertical: 6)
                     .onClicked { number += 1 }
 
                 Button("Done")
                     .fontSize(13)
-                    .padding(14, 6)
+                    .padding(horizontal: 14, vertical: 6)
                     .onClicked { try await window.close() }
             }
             .spacing(10)

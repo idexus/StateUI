@@ -131,7 +131,7 @@ private struct Knob: View {
                 Button("Full")
                     .background(Palette.accent)
                     .shape(.roundedRectangle(8))
-                    .padding(16, 8)
+                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { level = 1 }
 
                 Button("Empty")
@@ -140,7 +140,7 @@ private struct Knob: View {
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(16, 8)
+                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { level = 0 }
             }
             .spacing(10)

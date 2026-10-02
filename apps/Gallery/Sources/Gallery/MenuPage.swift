@@ -109,7 +109,7 @@ struct MenuPage: View {
         // and the name cut mid-letter). The gradient was always meant to run
         // behind the status bar anyway.
         .avoidsSafeArea(.none)
-        .padding(20, 40, 20, 22)
+        .padding(left: 20, top: 40, right: 20, bottom: 22)
         .background(Palette.identity)
     }
 
@@ -156,7 +156,7 @@ struct MenuPage: View {
             // Room under it for the home indicator, the content being edge to
             // edge: a phone with no home button draws a bar across the bottom
             // of the screen, and this line would otherwise sit under it.
-            .padding(16, 16, 16, 30)
+            .padding(left: 16, top: 16, right: 16, bottom: 30)
             // The footer's own row, written on the footer.
             .gridRow(2)
     }

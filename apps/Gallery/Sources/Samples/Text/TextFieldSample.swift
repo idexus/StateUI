@@ -132,7 +132,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
             // for the selection the field already has says nothing at all.
             Button(selectAll ? "Clear the selection" : "Select the lot")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { selectAll.toggle() }
 

@@ -92,7 +92,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                             .verticalAlignment(.center)
                     }
                     .style("Card")
-                    .padding(Insets(12, 8, 12, 8))
+                    .padding(Insets(left: 12, top: 8, right: 12, bottom: 8))
                     .background(Palette.raised)
                     .lineWidth(0)
                     .height(40)

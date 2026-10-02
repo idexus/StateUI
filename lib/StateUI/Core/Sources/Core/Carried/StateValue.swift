@@ -119,7 +119,7 @@ extension Insets: StateValue {
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
-        self.init(lanes[0], lanes[1], lanes[2], lanes[3])
+        self.init(left: lanes[0], top: lanes[1], right: lanes[2], bottom: lanes[3])
     }
 
     /// Four.

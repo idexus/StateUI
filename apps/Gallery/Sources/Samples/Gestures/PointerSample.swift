@@ -86,7 +86,7 @@ struct PointerSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .spacing(6)
-            .padding(40, 100)
+            .padding(horizontal: 40, vertical: 100)
         }
         .style("Card")
         // The box reacts, so its look is part of what it says: the outline is

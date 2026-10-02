@@ -92,7 +92,7 @@ struct PollSample: SampleContent, ExampleContent {
 
             Button(poll.isRunning || checking ? "Stop" : "Start")
                 .fontSize(13)
-                .padding(20, 6)
+                .padding(horizontal: 20, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked {
                     if poll.isRunning || checking {

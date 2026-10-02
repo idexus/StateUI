@@ -38,7 +38,7 @@ struct TabsExtraPage: View {
                 TabsControls(nav: nav, thisTab: .extra(number))
 
                 Button("Back to the Navigation samples")
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }
             }

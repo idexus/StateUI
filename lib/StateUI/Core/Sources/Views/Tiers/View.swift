@@ -35,7 +35,7 @@ public protocol ViewProperties: VisualElementProperties {}
 /// too, written after its own, since they return a `ModifiedContent`:
 ///
 ///     Header("Settings")
-///         .margin(0, 8)
+///         .margin(horizontal: 0, vertical: 8)
 ///         .gridRow(1)
 public protocol View: VisualElement, ViewProperties, Page, Views where Modified: View {
     /// The view it is made of.
@@ -51,17 +51,17 @@ extension ViewProperties {
     /// Padding is the space inside.
     ///
     ///     Text("Total").margin(16)                      // all four sides
-    ///     Text("Total").margin(Insets(16, 0, 0, 0))  // the left edge only
+    ///     Text("Total").margin(Insets(left: 16, top: 0, right: 0, bottom: 0))  // the left edge only
     public func margin(_ value: Insets) -> Modified { setValue(ViewContract.margin, value) }
 
-    /// Left and right, then top and bottom.
-    public func margin(_ horizontalSize: Double, _ verticalSize: Double) -> Modified {
-        margin(Insets(horizontalSize, verticalSize))
+    /// The same on the left and the right, and the same above and below.
+    public func margin(horizontal: Double, vertical: Double) -> Modified {
+        margin(Insets(horizontal: horizontal, vertical: vertical))
     }
 
-    /// Each side in turn: left, top, right, bottom.
-    public func margin(_ left: Double, _ top: Double, _ right: Double, _ bottom: Double) -> Modified {
-        margin(Insets(left, top, right, bottom))
+    /// Each side by name.
+    public func margin(left: Double, top: Double, right: Double, bottom: Double) -> Modified {
+        margin(Insets(left: left, top: top, right: right, bottom: bottom))
     }
 
     /// How the view uses the width its parent offers - filling it, or sitting at

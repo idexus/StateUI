@@ -18,7 +18,7 @@ public struct InspectorButton: View {
             .fontSize(16)
             .textColor(Look.subtle)
             .background(.transparent)
-            .padding(10, 2)
+            .padding(horizontal: 10, vertical: 2)
             .accessibilityIdentifier("stateui.inspector")
             .accessibilityLabel("Inspector")
             .onClicked { Inspector.toggle(in: scene) }

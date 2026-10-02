@@ -154,7 +154,7 @@ struct PanSample: SampleContent, ExampleContent {
 
             Button("Put it back")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 // A SETPOINT, so the box TRAVELS home from wherever it was
                 // left - the same two states, written the other way.

@@ -483,7 +483,7 @@ final class ControlTests: XCTestCase {
                         // the path that describes nothing.
                         .panX(followed.projectedValue)
                         .panY(followed.projectedValue)
-                        .padding(8, 4)
+                        .padding(horizontal: 8, vertical: 4)
 
                     // The input tier, which TextField, TextEditor and SearchField all
                     // share - checked here rather than in each of their cases,
@@ -506,8 +506,8 @@ final class ControlTests: XCTestCase {
                 .clipsContent(true)
                 .letsInputThrough(true)
                 .style("Card")
-                .padding(24, 16, 24, 16)
-                .margin(4, 8, 4, 8)
+                .padding(left: 24, top: 16, right: 24, bottom: 16)
+                .margin(left: 4, top: 8, right: 4, bottom: 8)
                 .horizontalAlignment(.center)
                 .verticalAlignment(.fill)
                 .isVisible(true)

@@ -71,7 +71,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                     let (index, item) = pair
                     return Text(item)
                         .fontSize(16)
-                        .padding(14, 10)
+                        .padding(horizontal: 14, vertical: 10)
                         .background(Palette.raised)
                         .contextMenu {
                             MenuItem("Duplicate")
@@ -110,7 +110,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                 .textColor(Palette.accent)
 
             Button("Start again")
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.start)
                 .onClicked {
                     items = ["Alpha", "Beta", "Gamma"]

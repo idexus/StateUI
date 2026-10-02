@@ -69,7 +69,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
 
             Button("Push it to New Year")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { due = CalendarDate(year: 2027, month: 1, day: 1) }
         }

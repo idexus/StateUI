@@ -62,7 +62,7 @@ struct InspectorView: View {
         }
         .rows(.auto, .auto, .fill)
         .rowSpacing(6)
-        .padding(10, 8)
+        .padding(horizontal: 10, vertical: 8)
     }
 
     /// A scene's history: the renders that reached it, in the order given.
@@ -107,7 +107,7 @@ struct InspectorView: View {
                     .fontSize(15)
                     .fontAttributes(.bold)
                     .textColor(Look.ink)
-                    .margin(0, 0, 10, 4)
+                    .margin(left: 0, top: 0, right: 10, bottom: 4)
 
                 Look.action(model.paused ? "Record" : "Pause") { model.pause() }
                 Look.action("Clear") { model.clear() }
@@ -285,7 +285,7 @@ private struct Branch: View {
             .fontSize(12)
             .textColor(colour)
             .lineBreak(.tailTruncation)
-            .padding(Double(entry.depth) * 12 + 6, 2)
+            .padding(horizontal: Double(entry.depth) * 12 + 6, vertical: 2)
             .horizontalAlignment(.start)
     }
 }

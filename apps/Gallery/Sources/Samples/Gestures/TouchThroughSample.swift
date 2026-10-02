@@ -37,7 +37,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                     Text("tap the child")
                         .textColor(Palette.onBrand)
                         .background(Palette.brand)
-                        .padding(14, 8)
+                        .padding(horizontal: 14, vertical: 8)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                         .onTapped { child += 1 }
@@ -74,7 +74,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                     Text("tap the child")
                         .textColor(Palette.onBrand)
                         .background(Palette.brand)
-                        .padding(24, 12)
+                        .padding(horizontal: 24, vertical: 12)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                         .onTapped { child += 1 }

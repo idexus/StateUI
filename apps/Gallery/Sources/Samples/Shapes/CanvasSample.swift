@@ -80,7 +80,7 @@ private struct FollowsState: ExampleContent {
 
             Button("Different numbers")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { bars = bars.map { _ in Double.random(in: 0.15...1) } }
         }
@@ -157,7 +157,7 @@ private struct FollowsAFinger: ExampleContent {
 
             Button("Clear")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .isEnabled(!trail.isEmpty)
                 .onClicked { trail = [] }

@@ -27,7 +27,7 @@ extension GTKDriver {
             guard let sides = named("stateui-padding-")?.split(separator: "-").compactMap({ Self.number($0) }),
                   sides.count == 4
             else { return .some(nil) }
-            return Insets(sides[3], sides[0], sides[1], sides[2]).propValue
+            return Insets(left: sides[3], top: sides[0], right: sides[1], bottom: sides[2]).propValue
         case (.background, is GTKTextualView):
             return .some(named("stateui-fill-").flatMap(Self.color).map { Background.color($0).propValue })
         case (.background, is GTKButtonView), (.stroke, is GTKButtonView), (.lineWidth, is GTKButtonView),

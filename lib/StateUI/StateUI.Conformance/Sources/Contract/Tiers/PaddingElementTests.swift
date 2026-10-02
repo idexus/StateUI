@@ -13,7 +13,7 @@
     public static var cases: [ConformanceCase] {
         Specimens.wearing(PaddingElementContract.self).flatMap { element in
             (holdsChildren(element) ? [keepsItsChildIn(element)] : [])
-                + [Aspects.holds(PaddingElementContract.padding, on: element, Insets(4), then: Insets(8, 2, 8, 2),
+                + [Aspects.holds(PaddingElementContract.padding, on: element, Insets(4), then: Insets(left: 8, top: 2, right: 8, bottom: 2),
                                  with: Words.on(element))]
         }
     }
@@ -32,7 +32,7 @@
             let frames = Received<[Double]>()
             s.start {
                 VStack {
-                    Padded.layout(element, padding: wide.wrappedValue ? Insets(20, 12, 0, 0) : Insets(10, 6, 0, 0)) {
+                    Padded.layout(element, padding: wide.wrappedValue ? Insets(left: 20, top: 12, right: 0, bottom: 0) : Insets(left: 10, top: 6, right: 0, bottom: 0)) {
                         ColorBox(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
                             .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                     }

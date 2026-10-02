@@ -241,7 +241,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)
-            .padding(14, 6)
+            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
 }

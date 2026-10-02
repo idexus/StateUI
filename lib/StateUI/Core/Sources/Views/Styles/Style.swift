@@ -12,7 +12,7 @@
 ///         .textColor(.white)
 ///         .background(AppColors.primary)
 ///         .shape(.roundedRectangle(8))
-///         .padding(14, 10)
+///         .padding(horizontal: 14, vertical: 10)
 ///         .visualState(.disabled) { $0
 ///             .textColor(AppColors.gray950)
 ///             .background(AppColors.gray200)

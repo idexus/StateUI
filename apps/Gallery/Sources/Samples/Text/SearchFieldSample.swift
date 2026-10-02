@@ -64,7 +64,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
                 ForEach(matches) { item in
                     Text(item)
                         .fontSize(15)
-                        .padding(8, 4)
+                        .padding(horizontal: 8, vertical: 4)
                         .id(item)
                 }
             }

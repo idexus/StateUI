@@ -7,7 +7,7 @@
 ///     @State private var chosen: String?
 ///
 ///     ItemsView(files, id: \.path) { file in
-///         Text(file.name).padding(14, 10)
+///         Text(file.name).padding(horizontal: 14, vertical: 10)
 ///     }
 ///     .selection($chosen)
 ///     .onItemActivated { path in open(path) }

@@ -108,7 +108,7 @@ struct Card: View {
             // column is given what the others left, and a Text given a width
             // wraps to it.
             .columns(.auto, .fill, .auto)
-            .padding(16, 14)
+            .padding(horizontal: 16, vertical: 14)
         }
         .style("Card")
         // A CARD IS A ZSTACK WITH A TAP ON IT, which no platform reads as a

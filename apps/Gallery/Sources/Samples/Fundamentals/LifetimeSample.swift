@@ -88,12 +88,12 @@ struct LifetimeSample: SampleContent, ExampleContent {
             HStack {
                 Button("A new card")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { identity += 1 }
 
                 Button("Build this again · \(builds)")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { builds += 1 }
             }
             .spacing(10)
@@ -156,7 +156,7 @@ private struct LifetimeCard: View {
             .textColor(.white)
             .background(Palette.accent)
             .shape(.roundedRectangle(10))
-            .padding(20, 12)
+            .padding(horizontal: 20, vertical: 12)
             .horizontalAlignment(.center)
             .onClicked { taps += 1 }
             .onCreated {

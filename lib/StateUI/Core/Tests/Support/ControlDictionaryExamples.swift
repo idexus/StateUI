@@ -125,7 +125,7 @@ extension ControlDictionary {
             @State var chosen: String? = nil
 
             ItemsView(["Apple", "Banana", "Cherry"]) { fruit in
-                Text(fruit).padding(14, 10)
+                Text(fruit).padding(horizontal: 14, vertical: 10)
             }
             .selection($chosen)
             .onItemActivated { fruit in chosen = fruit }
@@ -577,7 +577,7 @@ extension ControlDictionary {
             @State var taps = 0
 
             Text("Tapped \(taps) times")
-                .margin(16, 8)
+                .margin(horizontal: 16, vertical: 8)
                 .horizontalAlignment(.center)
                 .onTapped { taps += 1 }
             """#),
@@ -653,7 +653,7 @@ extension ControlDictionary {
 
         (PaddingElementContract.self, #"""
             Button("Save")
-                .padding(18, 10)
+                .padding(horizontal: 18, vertical: 10)
             """#),
 
         (BorderElementContract.self, #"""

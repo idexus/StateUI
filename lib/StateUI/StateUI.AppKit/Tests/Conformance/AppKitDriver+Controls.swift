@@ -62,8 +62,8 @@ extension AppKitDriver {
             let frame = field.frame
             let bounds = label.bounds
             return Insets(
-                Double(frame.minX - bounds.minX), Double(frame.minY - bounds.minY),
-                Double(bounds.maxX - frame.maxX), Double(bounds.maxY - frame.maxY)).propValue
+                left: Double(frame.minX - bounds.minX), top: Double(frame.minY - bounds.minY),
+                right: Double(bounds.maxX - frame.maxX), bottom: Double(bounds.maxY - frame.maxY)).propValue
         default: return nil
         }
     }

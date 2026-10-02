@@ -15,7 +15,7 @@ final class WinUIGridViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Grid { Text("Waiting for the first render of this scene") }
-                    Grid { Text("Waiting for the first render of this scene").margin(8, 4) }
+                    Grid { Text("Waiting for the first render of this scene").margin(horizontal: 8, vertical: 4) }
                 }
                 .horizontalAlignment(.start)
             }
@@ -43,9 +43,9 @@ final class WinUIGridViewTests: XCTestCase {
                         .columns(.fixed(140), .fixed(130), .proportional(2), .proportional(3))
                         .columnSpacing(12)
                     }
-                    .padding(14, 12)
+                    .padding(horizontal: 14, vertical: 12)
                 }
-                .padding(24, 20)
+                .padding(horizontal: 24, vertical: 20)
             }
             let labels = host.views(WinUITextView.self)
             let words = try XCTUnwrap(labels.last)

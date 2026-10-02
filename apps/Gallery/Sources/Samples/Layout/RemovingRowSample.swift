@@ -82,12 +82,12 @@ struct RemovingRowSample: SampleContent, ExampleContent {
 
                         Button("Delete")
                             .fontSize(12)
-                            .padding(10, 4)
+                            .padding(horizontal: 10, vertical: 4)
                             .gridColumn(1)
                             .onClicked { remove(row) }
                     }
                     .columns(.fill, .auto)
-                    .padding(14, 6)
+                    .padding(horizontal: 14, vertical: 6)
                     .background(Palette.raised)
                     .height(46)
                     .isVisible(!gone.contains(row) && !atOnce.contains(row))

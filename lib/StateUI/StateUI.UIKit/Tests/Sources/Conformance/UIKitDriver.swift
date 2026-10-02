@@ -367,9 +367,9 @@ final class UIKitDriver: HostDriver {
         case (.isEnabled, let editor as UITextView): return (editor.isEditable || editor.isSelectable).propValue
         case (.padding, let button as UIButton):
             guard let insets = button.configuration?.contentInsets else { return nil }
-            return Insets(insets.leading, insets.top, insets.trailing, insets.bottom).propValue
+            return Insets(left: insets.leading, top: insets.top, right: insets.trailing, bottom: insets.bottom).propValue
         case (.padding, let label as UIKitTextView):
-            return Insets(label.padding.left, label.padding.top, label.padding.right, label.padding.bottom).propValue
+            return Insets(left: label.padding.left, top: label.padding.top, right: label.padding.right, bottom: label.padding.bottom).propValue
         case (_, let view?):
             if let held = try Self.viewHolds(property, view, element.native as? UIKitElement) { return held }
             throw DriverCannot(reading: property, of: element)

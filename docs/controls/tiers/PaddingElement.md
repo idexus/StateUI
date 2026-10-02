@@ -6,7 +6,7 @@ The space kept inside an element, around what it holds.
 
 ```swift
 Button("Save")
-    .padding(18, 10)
+    .padding(horizontal: 18, vertical: 10)
 ```
 
 Wears: [VisualElement](VisualElement.md)

@@ -157,7 +157,7 @@ final class ContractTests: XCTestCase {
             Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]),
             Brush.radialGradient([GradientStop(.white, 0), GradientStop(.steelBlue, 1)], radius: 0.8),
             Background.color(.tomato), Background.brush(.linearGradient([GradientStop(.gold, 0)])),
-            Insets(1, 2, 3, 4), Rect(1, 2, 3, 4), Point(5, 6),
+            Insets(left: 1, top: 2, right: 3, bottom: 4), Rect(1, 2, 3, 4), Point(5, 6),
             [Point(1, 2), Point(3, 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
             ImageSource("logo.png"), ImageSource(light: "logo.png", dark: "logo_dark.png"),
             ViewTransform.rotate(15).scaleX(1.2),

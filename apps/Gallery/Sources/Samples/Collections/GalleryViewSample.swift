@@ -220,26 +220,26 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 // again.
                 Button(Self.shapes[shape].1)
                     .width(88)
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .onClicked { shape = (shape + 1) % Self.shapes.count }
 
                 Button("Back")
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .isEnabled(shown > 0)
                     .onClicked { shown -= 1 }
 
                 Button("Next")
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .isEnabled(shown < Self.cards.count - 1)
                     .onClicked { shown += 1 }
 
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
 
                 SwitchRow("Swipeable", $swipes)
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
 
                 SwitchRow("Shaded", $shaded)
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
             }
             .spacing(8)
             .horizontalAlignment(.center)
@@ -282,7 +282,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .fontAttributes(.bold)
                     .textColor(Palette.onBrand)
                     .lineBreak(.tailTruncation)
-                    .padding(12, 10)
+                    .padding(horizontal: 12, vertical: 10)
                     .background(Color("#B3000000"))
                     .verticalAlignment(.end)
             }

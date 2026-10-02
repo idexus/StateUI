@@ -97,7 +97,7 @@ struct WindowNotice: View {
                 .onClicked { shown = false }
         }
         .spacing(12)
-        .padding(16, 8)
+        .padding(horizontal: 16, vertical: 8)
         .background(Palette.accent)
         .shape(.roundedRectangle(10))
         .margin(12)

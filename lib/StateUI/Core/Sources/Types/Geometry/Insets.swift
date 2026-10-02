@@ -4,7 +4,7 @@
 /// Space on the four sides of something.
 ///
 ///     VStack { … }.padding(24)
-///     Text("Total").margin(0, 8, 0, 16)
+///     Text("Total").margin(left: 0, top: 8, right: 0, bottom: 16)
 ///
 /// `.padding` keeps it INSIDE the control, between its edge and its content;
 /// `.margin` keeps it OUTSIDE, between the control and its neighbours. A
@@ -25,19 +25,18 @@ public struct Insets: Equatable, Sendable, HostRepresentable {
 
     /// The same value on all four sides.
     public init(_ uniformSize: Double) {
-        self.init(uniformSize, uniformSize, uniformSize, uniformSize)
+        self.init(left: uniformSize, top: uniformSize, right: uniformSize, bottom: uniformSize)
     }
 
     /// Left and right first, then top and bottom.
     ///
-    ///     Insets(16, 8)   // 16 either side, 8 above and below
-    public init(_ horizontalSize: Double, _ verticalSize: Double) {
-        self.init(horizontalSize, verticalSize, horizontalSize, verticalSize)
+    ///     Insets(horizontal: 16, vertical: 8)   // 16 either side, 8 above and below
+    public init(horizontal: Double, vertical: Double) {
+        self.init(left: horizontal, top: vertical, right: horizontal, bottom: vertical)
     }
 
-    /// Each side in turn: left, top, right, bottom - clockwise from the LEFT,
-    /// not from the top.
-    public init(_ left: Double, _ top: Double, _ right: Double, _ bottom: Double) {
+    /// Each side by name.
+    public init(left: Double, top: Double, right: Double, bottom: Double) {
         self.left = left
         self.top = top
         self.right = right
@@ -54,7 +53,7 @@ public struct Insets: Equatable, Sendable, HostRepresentable {
     public init?(propValue: PropValue) {
         guard let numbers = propValue.numbers, numbers.count == 4 else { return nil }
 
-        self.init(numbers[0], numbers[1], numbers[2], numbers[3])
+        self.init(left: numbers[0], top: numbers[1], right: numbers[2], bottom: numbers[3])
     }
 }
 

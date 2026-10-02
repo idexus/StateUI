@@ -123,7 +123,7 @@ private struct RebuildPanel: View {
                 RebuildPassenger()
             }
             .spacing(4)
-            .padding(14, 12)
+            .padding(horizontal: 14, vertical: 12)
         }
         .style("Card")
         .stroke(Palette.outline)

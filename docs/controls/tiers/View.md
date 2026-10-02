@@ -8,7 +8,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 @State var taps = 0
 
 Text("Tapped \(taps) times")
-    .margin(16, 8)
+    .margin(horizontal: 16, vertical: 8)
     .horizontalAlignment(.center)
     .onTapped { taps += 1 }
 ```

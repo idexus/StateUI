@@ -93,7 +93,7 @@ struct TabsControls: View {
             if nav.tabs.count > 1 {
                 Button("close")
                     .fontSize(12)
-                    .padding(10, 2)
+                    .padding(horizontal: 10, vertical: 2)
                     .onClicked { nav.closeTab(tab, showing: thisTab) }
             }
         }
@@ -104,7 +104,7 @@ struct TabsControls: View {
     private func move(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)
-            .padding(16, 6)
+            .padding(horizontal: 16, vertical: 6)
             .horizontalAlignment(.start)
             .onClicked(act)
     }

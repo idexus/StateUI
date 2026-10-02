@@ -23,7 +23,7 @@ final class GTKButtonViewTests: XCTestCase {
                         .stroke(Color("#FF0000"))
                         .lineWidth(2)
                         .shape(.roundedRectangle(10))
-                        .padding(16, 11)
+                        .padding(horizontal: 16, vertical: 11)
                 }
             }
             let button = try XCTUnwrap(host.views(GTKButtonView.self).first)
@@ -52,7 +52,7 @@ final class GTKButtonViewTests: XCTestCase {
                         .stroke(Color("#FFFFFF"))
                         .lineWidth(2)
                         .shape(.roundedRectangle(8))
-                        .padding(16, 11)
+                        .padding(horizontal: 16, vertical: 11)
                 }
             }
             let button = try XCTUnwrap(host.views(GTKButtonView.self).first)

@@ -76,7 +76,7 @@ struct IdentitySample: SampleContent, ExampleContent {
             HStack {
                 Button("Add")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked {
                         items.append("Item \(nextItem)")
                         nextItem += 1
@@ -84,7 +84,7 @@ struct IdentitySample: SampleContent, ExampleContent {
 
                 Button("Insert at the top")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked {
                         items.insert("Item \(nextItem)", at: 0)
                         nextItem += 1
@@ -92,7 +92,7 @@ struct IdentitySample: SampleContent, ExampleContent {
 
                 Button("Rotate")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(items.count > 1)
                     .onClicked {
                         items = Array(items.dropFirst()) + [items[0]]
@@ -155,7 +155,7 @@ private struct IdentityRow: View {
 
             Button("Remove")
                 .fontSize(12)
-                .padding(12, 6)
+                .padding(horizontal: 12, vertical: 6)
                 .onClicked {
                     items = items.filter { $0 != item }
                 }

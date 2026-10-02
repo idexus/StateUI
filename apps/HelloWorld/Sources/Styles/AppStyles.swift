@@ -23,7 +23,7 @@ enum AppStyles {
                 .fontSize(14)
                 .fontAttributes(.bold)
                 .shape(.roundedRectangle(10))
-                .padding(16, 11)
+                .padding(horizontal: 16, vertical: 11)
         }
     }
 }

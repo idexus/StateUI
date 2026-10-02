@@ -127,7 +127,7 @@ final class GTKZStackViewTests: XCTestCase {
                     ColorBox(.red)
                     ColorBox(.blue).area(.absolute(10, 20, 30, 40))
                 }
-                .padding(10, 5, 20, 15)
+                .padding(left: 10, top: 5, right: 20, bottom: 15)
             }
             let room = try XCTUnwrap(host.views(GTKZStackView.self).first).frame
 

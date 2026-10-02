@@ -142,7 +142,7 @@ final class AndroidZStackViewTests: XCTestCase {
                     ColorBox(.red)
                     ColorBox(.blue).area(.absolute(10, 20, 30, 40))
                 }
-                .padding(10, 5, 20, 15)
+                .padding(left: 10, top: 5, right: 20, bottom: 15)
             }
 
             host.layOut(width: 1080, height: 1920)

@@ -13,14 +13,14 @@ extension PaddingElement {
     ///     VStack { … }.padding(24)
     public func padding(_ value: Insets) -> Modified { setValue(PaddingElementContract.padding, value) }
 
-    /// Left and right, then top and bottom.
-    public func padding(_ horizontalSize: Double, _ verticalSize: Double) -> Modified {
-        padding(Insets(horizontalSize, verticalSize))
+    /// The same on the left and the right, and the same above and below.
+    public func padding(horizontal: Double, vertical: Double) -> Modified {
+        padding(Insets(horizontal: horizontal, vertical: vertical))
     }
 
-    /// Each side in turn: left, top, right, bottom.
-    public func padding(_ left: Double, _ top: Double, _ right: Double, _ bottom: Double) -> Modified {
-        padding(Insets(left, top, right, bottom))
+    /// Each side by name.
+    public func padding(left: Double, top: Double, right: Double, bottom: Double) -> Modified {
+        padding(Insets(left: left, top: top, right: right, bottom: bottom))
     }
 }
 
