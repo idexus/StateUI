@@ -15,7 +15,7 @@ public struct DrawCommand: Equatable, Sendable {
         case fillColor = 0
         case strokeColor = 1
         case textColor = 2
-        case strokeWidth = 3
+        case lineWidth = 3
         case fontSize = 4
         case opacity = 5
 

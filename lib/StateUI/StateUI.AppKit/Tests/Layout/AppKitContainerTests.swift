@@ -692,7 +692,7 @@ final class AppKitContainerTests: XCTestCase {
                     .orientation(.horizontal)
                     .background(Color("#00FF00"))
                     .stroke(Color("#FF0000"))
-                    .strokeWidth(2)
+                    .lineWidth(2)
                     .shape(.roundedRectangle(12))
                     .height(60)
             }
@@ -725,7 +725,7 @@ final class AppKitContainerTests: XCTestCase {
             .padding: .numbers([4, 6, 8, 10]),
             .background: .color(red: 0, green: 0, blue: 255, alpha: 255),
             .stroke: Brush.solidColor(Color("#FF0000")).propValue,
-            .strokeWidth: .number(6),
+            .lineWidth: .number(6),
         ]
         layout.children = .arranged([box("inside", [:])])
         let renderer = arranged(layout, in: NSSize(width: 100, height: 60))

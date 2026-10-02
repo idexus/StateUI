@@ -11,10 +11,10 @@ Button
   iconPosition
   iconSpacing
   lineBreak
+  lineWidth
   padding
   shape
   stroke
-  strokeWidth
   text
   textCase
   textColor
@@ -48,15 +48,15 @@ DatePicker
   opened()
 Ellipse
   aspect
+  dash
+  dashPhase
   fill
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 Grid
   background
   clipsContent
@@ -64,22 +64,22 @@ Grid
   columns
   ignoresInput
   letsInputThrough
+  lineWidth
   padding
   rowSpacing
   rows
   shape
   stroke
-  strokeWidth
 HStack
   background
   clipsContent
   ignoresInput
   letsInputThrough
+  lineWidth
   padding
   shape
   spacing
   stroke
-  strokeWidth
 Image
   aspect
   source
@@ -95,31 +95,31 @@ ItemsView
   selectedItemsChanged()
 Line
   aspect
+  dash
+  dashPhase
   fill
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
   x1
   x2
   y1
   y2
 Path
   aspect
+  dash
+  dashPhase
   data
   fill
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 Picker
   fontAttributes
   fontFamily
@@ -130,30 +130,30 @@ Picker
   selectedIndexChanged()
 Polygon
   aspect
+  dash
+  dashPhase
   fill
   fillRule
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   points
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 Polyline
   aspect
+  dash
+  dashPhase
   fill
   fillRule
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   points
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 ProgressBar
   progress
   tint
@@ -170,24 +170,24 @@ RadioButton
 Rectangle
   aspect
   cornerRadius
+  dash
+  dashPhase
   fill
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 ScrollView
   background
   horizontalScrollBarVisibility
+  lineWidth
   orientation
   padding
   scrollOffset
   shape
   stroke
-  strokeWidth
   verticalScrollBarVisibility
   scrollStopped()
   scrollXChanged()
@@ -298,11 +298,11 @@ VStack
   clipsContent
   ignoresInput
   letsInputThrough
+  lineWidth
   padding
   shape
   spacing
   stroke
-  strokeWidth
 WebView
   source
   userAgent
@@ -316,10 +316,10 @@ ZStack
   clipsContent
   ignoresInput
   letsInputThrough
+  lineWidth
   padding
   shape
   stroke
-  strokeWidth
 (every element)
   accessibilityHeadingLevel
   accessibilityHint

@@ -16,12 +16,12 @@
                 filled(element), outlined(element), placedByItsAspect(element), movedByItsTransform(element),
                 Aspects.holds(ShapeContract.fill, on: element, .solidColor(.red), then: .solidColor(.blue), with: figure(element)),
                 Aspects.holds(ShapeContract.stroke, on: element, .solidColor(.red), then: .solidColor(.blue), with: figure(element)),
-                Aspects.holds(ShapeContract.strokeWidth, on: element, 2, then: 6, with: figure(element)),
-                Aspects.holds(ShapeContract.strokeDashPattern, on: element, [3, 2], then: [1, 1], with: figure(element)),
-                Aspects.holds(ShapeContract.strokeDashOffset, on: element, 0, then: 2.5, with: figure(element)),
-                Aspects.holds(ShapeContract.strokeLineCap, on: element, .flat, then: .round, with: figure(element)),
-                Aspects.holds(ShapeContract.strokeLineJoin, on: element, .miter, then: .bevel, with: figure(element)),
-                Aspects.holds(ShapeContract.strokeMiterLimit, on: element, 10, then: 4, with: figure(element)),
+                Aspects.holds(ShapeContract.lineWidth, on: element, 2, then: 6, with: figure(element)),
+                Aspects.holds(ShapeContract.dash, on: element, [3, 2], then: [1, 1], with: figure(element)),
+                Aspects.holds(ShapeContract.dashPhase, on: element, 0, then: 2.5, with: figure(element)),
+                Aspects.holds(ShapeContract.lineCap, on: element, .flat, then: .round, with: figure(element)),
+                Aspects.holds(ShapeContract.lineJoin, on: element, .miter, then: .bevel, with: figure(element)),
+                Aspects.holds(ShapeContract.miterLimit, on: element, 10, then: 4, with: figure(element)),
                 Aspects.holds(ShapeContract.aspect, on: element, .fit, then: .stretch, with: figure(element)),
                 Aspects.holds(ShapeContract.renderTransform, on: element, .identity, then: .rotate(45), with: figure(element)),
             ]
@@ -59,11 +59,11 @@
     /// A shape's outline is drawn in its colour, as wide as the tree says.
     static func outlined(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isOutlinedInItsColourAndWidth", proves: [
-            Covered(ShapeContract.stroke, on: element), Covered(ShapeContract.strokeWidth, on: element),
+            Covered(ShapeContract.stroke, on: element), Covered(ShapeContract.lineWidth, on: element),
         ]) { s in
             s.start {
                 Specimens.page(element, figure(element) + [
-                    Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.strokeWidth, 8),
+                    Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 8),
                     Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
                 ])
             }
@@ -82,7 +82,7 @@
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let stretched = State(wrappedValue: false)
             let paint: [any Worn] = element == "Line" || element == "Polyline"
-                ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.strokeWidth, 4)]
+                ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 4)]
                 : [Write(ShapeContract.fill, Brush.solidColor(.red))]
             s.start {
                 Specimens.page(element, small(element) + paint + [
@@ -115,7 +115,7 @@
             let moved = State(wrappedValue: false)
             let line = element == "Line"
             let paint: [any Worn] = line
-                ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.strokeWidth, 4)]
+                ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 4)]
                 : [Write(ShapeContract.fill, Brush.solidColor(.red))]
             s.start {
                 Specimens.page(element, figure(element) + paint + [

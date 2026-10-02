@@ -201,7 +201,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             ZStack().style("Card")
                 .background(Palette.raised)
                 .stroke(Palette.outline)
-                .strokeWidth(2)
+                .lineWidth(2)
                 .shape(.roundedRectangle(110))
                 .width(220)
                 .height(220)

@@ -30,8 +30,8 @@ final class AndroidDriver: HostDriver {
                 "Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it"
         }
         let shapePaint = [
-            "aspect", "renderTransform", "fill", "stroke", "strokeWidth", "strokeDashOffset", "strokeDashPattern",
-            "strokeLineCap", "strokeLineJoin", "strokeMiterLimit",
+            "aspect", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
             for member in shapePaint {
@@ -40,7 +40,7 @@ final class AndroidDriver: HostDriver {
             }
         }
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
-            for member in ["stroke", "strokeWidth", "shape"] {
+            for member in ["stroke", "lineWidth", "shape"] {
                 none["read \(member) of \(layout)"] =
                     "StateUI draws a layout's box in a drawable of its own, which holds none of its \(member); its drawing proves it"
             }

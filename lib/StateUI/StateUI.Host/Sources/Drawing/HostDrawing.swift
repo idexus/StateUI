@@ -26,7 +26,7 @@
     /// The numbers the kinds cross as, which a relay switches on.
     private enum Kind {
         static let fillColor: Int32 = 0, strokeColor: Int32 = 1, textColor: Int32 = 2
-        static let strokeWidth: Int32 = 3, fontSize: Int32 = 4, opacity: Int32 = 5
+        static let lineWidth: Int32 = 3, fontSize: Int32 = 4, opacity: Int32 = 5
         static let strokeLine: Int32 = 6, strokeRectangle: Int32 = 7, strokeRoundedRectangle: Int32 = 8
         static let strokeEllipse: Int32 = 9, strokePath: Int32 = 11
         static let fillRectangle: Int32 = 12, fillRoundedRectangle: Int32 = 13, fillEllipse: Int32 = 14
@@ -40,7 +40,7 @@
         case .fillColor(let color): colour(Kind.fillColor, color)
         case .strokeColor(let color): colour(Kind.strokeColor, color)
         case .textColor(let color): colour(Kind.textColor, color)
-        case .strokeWidth(let width): record(Kind.strokeWidth, [width])
+        case .lineWidth(let width): record(Kind.lineWidth, [width])
         case .fontSize(let size): record(Kind.fontSize, [size])
         case .opacity(let alpha): record(Kind.opacity, [alpha])
         case .strokeLine(let from, let to): record(Kind.strokeLine, [from.x, from.y, to.x, to.y])

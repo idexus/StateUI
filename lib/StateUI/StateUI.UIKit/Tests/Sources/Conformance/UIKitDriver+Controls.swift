@@ -54,7 +54,7 @@ extension UIKitDriver {
             let fill = layers.first { $0.zPosition == -2 && !($0 is CAGradientLayer) }
             return fill?.backgroundColor.map { Background.color(color(UIColor(cgColor: $0))).propValue }
         case .stroke: return outline?.strokeColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
-        case .strokeWidth: return Double(outline?.lineWidth ?? 0).propValue
+        case .lineWidth: return Double(outline?.lineWidth ?? 0).propValue
         default: return nil
         }
     }
@@ -66,26 +66,26 @@ extension UIKitDriver {
         let stroke = painted.first { ($0.mask as? CAShapeLayer)?.strokeColor != nil }
         let line = stroke?.mask as? CAShapeLayer
         let outlines: Set<Prop> = [
-            .strokeWidth, .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin, .strokeMiterLimit,
+            .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin, .miterLimit,
         ]
         if line == nil, outlines.contains(property) { throw DriverCannot("read the line of a shape drawing no outline") }
         let width = Double(line?.lineWidth ?? 0)
         switch property {
         case .fill: return fill?.backgroundColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
         case .stroke: return stroke?.backgroundColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
-        case .strokeWidth: return width.propValue
-        case .strokeDashPattern:
+        case .lineWidth: return width.propValue
+        case .dash:
             // Lengths in points on UIKit: back in the outline's widths.
             let lengths = line?.lineDashPattern?.map(\.doubleValue) ?? []
             return lengths.map { width > 0 ? $0 / width : 0 }.propValue
-        case .strokeDashOffset: return (width > 0 ? Double(line?.lineDashPhase ?? 0) / width : 0).propValue
-        case .strokeLineCap:
+        case .dashPhase: return (width > 0 ? Double(line?.lineDashPhase ?? 0) / width : 0).propValue
+        case .lineCap:
             let caps: [CAShapeLayerLineCap: LineCap] = [.butt: .flat, .round: .round, .square: .square]
             return line.flatMap { caps[$0.lineCap] }?.propValue
-        case .strokeLineJoin:
+        case .lineJoin:
             let joins: [CAShapeLayerLineJoin: LineJoin] = [.miter: .miter, .round: .round, .bevel: .bevel]
             return line.flatMap { joins[$0.lineJoin] }?.propValue
-        case .strokeMiterLimit: return line.map { Double($0.miterLimit).propValue }
+        case .miterLimit: return line.map { Double($0.miterLimit).propValue }
         default: return nil
         }
     }
@@ -97,7 +97,7 @@ extension UIKitDriver {
         switch property {
         case .background: return box.backgroundColor.map { Background.color(color($0)).propValue }
         case .stroke: return box.strokeColor.map { Brush.solidColor(color($0)).propValue }
-        case .strokeWidth: return Double(box.strokeWidth).propValue
+        case .lineWidth: return Double(box.lineWidth).propValue
         case .shape:
             if configuration.cornerStyle == .capsule { return ContainerShape.ellipse.propValue }
             let radius = Double(box.cornerRadius)

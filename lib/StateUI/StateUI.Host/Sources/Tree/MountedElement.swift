@@ -544,11 +544,11 @@
             return .numbers([0, 0, 0, 0])
         case .spacing, .rowSpacing, .columnSpacing:
             return .number(0)
-        case .strokeWidth:
+        case .lineWidth:
             return .number(1)
-        case .strokeDashOffset, .x1, .y1, .x2, .y2:
+        case .dashPhase, .x1, .y1, .x2, .y2:
             return .number(0)
-        case .strokeMiterLimit:
+        case .miterLimit:
             return .number(10)
         case .cornerRadius:
             if target?.number != nil {

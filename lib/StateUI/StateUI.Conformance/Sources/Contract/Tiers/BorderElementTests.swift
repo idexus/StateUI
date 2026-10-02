@@ -15,8 +15,8 @@
                 Aspects.holds(BorderElementContract.shape, on: element, .rectangle, then: .roundedRectangle(12),
                               with: Words.on(element) + outlined),
                 Aspects.holds(BorderElementContract.stroke, on: element, .solidColor(.red), then: .solidColor(.blue),
-                              with: Words.on(element) + [Write(BorderElementContract.strokeWidth, 2)]),
-                Aspects.holds(BorderElementContract.strokeWidth, on: element, 2, then: 4,
+                              with: Words.on(element) + [Write(BorderElementContract.lineWidth, 2)]),
+                Aspects.holds(BorderElementContract.lineWidth, on: element, 2, then: 4,
                               with: Words.on(element) + [Write(BorderElementContract.stroke, Brush.solidColor(.red))]),
             ]
         }
@@ -24,6 +24,6 @@
 
     /// An outline to show the shape in: an element that draws nothing shows no shape.
     static var outlined: [any Worn] {
-        [Write(BorderElementContract.stroke, Brush.solidColor(.red)), Write(BorderElementContract.strokeWidth, 2)]
+        [Write(BorderElementContract.stroke, Brush.solidColor(.red)), Write(BorderElementContract.lineWidth, 2)]
     }
 }

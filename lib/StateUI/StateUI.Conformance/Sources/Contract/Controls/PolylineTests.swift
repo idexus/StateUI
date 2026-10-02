@@ -19,7 +19,7 @@
                 s.start {
                     VStack {
                         Polyline(moved.wrappedValue ? [Point(0, 30), Point(40, 30)] : [Point(0, 10), Point(40, 10)])
-                            .stroke(.red).strokeWidth(4).aspect(.center).width(40).height(40).id("shape")
+                            .stroke(.red).lineWidth(4).aspect(.center).width(40).height(40).id("shape")
                         Button("Move").onClicked { moved.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)

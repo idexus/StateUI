@@ -15,7 +15,7 @@ final class AppKitCanvasViewTests: XCTestCase {
             Draw.fillColor(.red)
             Draw.strokeColor(.blue)
             Draw.textColor(.white)
-            Draw.strokeWidth(2)
+            Draw.lineWidth(2)
             Draw.fontSize(14)
             Draw.opacity(0.8)
             Draw.strokeLine(x1: 0, y1: 0, x2: 10, y2: 10)

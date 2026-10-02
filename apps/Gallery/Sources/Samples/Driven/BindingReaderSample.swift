@@ -136,7 +136,7 @@ private struct Knob: View {
 
                 Button("Empty")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))

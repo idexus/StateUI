@@ -48,13 +48,13 @@ final class AndroidShapeView: AndroidView {
 
     /// Everything the shape draws, from what the tree says.
     func draw(
-        _ geometry: Geometry, fill: HostValue?, stroke: HostValue?, strokeWidth: Double, dashes: [Double],
+        _ geometry: Geometry, fill: HostValue?, stroke: HostValue?, lineWidth: Double, dashes: [Double],
         dashOffset: Double, cap: Int32, join: Int32, miterLimit: Double, aspect: Int32, transform: [Double]?
     ) {
         let (kind, commands, evenOdd) = Self.flattened(geometry, density: density)
         if case .rectangle(let radius) = geometry { corners = BoxArithmetic.clockwise(radius) } else { corners = [] }
         // Dashes are counted in the outline's own width, as StateUI's are.
-        let width = ShapeArithmetic.strokeWidth(strokeWidth)
+        let width = ShapeArithmetic.lineWidth(lineWidth)
         let argb = HostBrush(stroke).firstColor.flatMap(AndroidView.argb)
         strokePixels = argb == nil ? 0 : width * density
         Java.frame {
@@ -64,7 +64,7 @@ final class AndroidShapeView: AndroidView {
             self.fill = fill
             tellFill()
 
-            let dashes = ShapeArithmetic.dashLengths(dashes, strokeWidth: width).map { Float($0 * density) }
+            let dashes = ShapeArithmetic.dashLengths(dashes, lineWidth: width).map { Float($0 * density) }
             Java.call(
                 reference, JavaAPI.setShapeStroke, .int(argb ?? 0), .float(Float(strokePixels)),
                 .object(Java.floats(dashes)), .float(Float(dashOffset * width * density)), .int(cap), .int(join),

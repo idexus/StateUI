@@ -77,7 +77,7 @@ struct SwipeSample: SampleContent, ExampleContent {
             }
             .style("Card")
             .stroke(Palette.accent)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(10))
             .onSwiped { direction in
                 swipe = Self.name(of: direction)
@@ -95,7 +95,7 @@ struct SwipeSample: SampleContent, ExampleContent {
             }
             .style("Card")
             .stroke(Palette.accent)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(10))
             // Narrowed: two of the four ways, and a finger that must travel
             // 150 device units before anything fires.

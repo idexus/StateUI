@@ -6,7 +6,7 @@
 ///
 ///     Button("Save")
 ///         .stroke(.cornflowerBlue)
-///         .strokeWidth(1)
+///         .lineWidth(1)
 ///         .shape(.roundedRectangle(8))
 public protocol BorderElement: PropertyContainer {}
 
@@ -27,15 +27,15 @@ extension BorderElement {
     }
 
     /// How wide the outline is, in device units; one where none is said.
-    public func strokeWidth(_ value: Double) -> Modified {
-        setValue(BorderElementContract.strokeWidth, value)
+    public func lineWidth(_ value: Double) -> Modified {
+        setValue(BorderElementContract.lineWidth, value)
     }
 }
 
 extension BorderElement where Self: VisualElement {
-    /// `strokeWidth` from a state, `$x`: the host animates the outline to each new width, and no view is
+    /// `lineWidth` from a state, `$x`: the host animates the outline to each new width, and no view is
     /// rebuilt for it.
-    public func strokeWidth(_ state: Binding<Double>) -> Modified {
-        journey(BorderElementContract.strokeWidth, by: state)
+    public func lineWidth(_ state: Binding<Double>) -> Modified {
+        journey(BorderElementContract.lineWidth, by: state)
     }
 }

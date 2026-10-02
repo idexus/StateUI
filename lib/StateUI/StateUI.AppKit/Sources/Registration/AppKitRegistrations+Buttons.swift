@@ -29,7 +29,7 @@ extension AppKitRegistrations {
                 ImageElementContract.aspect, ButtonContract.lineBreak,
                 TextStyleElementContract.textColor, VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke,
-                BorderElementContract.strokeWidth, VisualElementContract.isEnabled,
+                BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
                 FontElementContract.fontAttributes,
             ]) { view, values in
@@ -50,9 +50,9 @@ extension AppKitRegistrations {
                 let background: NSColor? = values[VisualElementContract.background]
                     .flatMap { nsColor($0.propValue) }
                 let stroke = values[BorderElementContract.stroke]?.propValue
-                let strokeWidth = BoxArithmetic.outlineWidth(
-                    stroke: stroke, width: values[BorderElementContract.strokeWidth])
-                let strokeColor = strokeWidth > 0 ? AppKitBrush(stroke).lineColor : nil
+                let lineWidth = BoxArithmetic.outlineWidth(
+                    stroke: stroke, width: values[BorderElementContract.lineWidth])
+                let strokeColor = lineWidth > 0 ? AppKitBrush(stroke).lineColor : nil
                 let breaking = NSLineBreakMode(values[ButtonContract.lineBreak] ?? .wordWrap)
 
                 view.apply(
@@ -64,7 +64,7 @@ extension AppKitRegistrations {
                     textColor: textColor,
                     backgroundColor: background,
                     strokeColor: strokeColor,
-                    strokeWidth: strokeWidth,
+                    lineWidth: lineWidth,
                     shape: BoxArithmetic.outline(values[BorderElementContract.shape]?.propValue),
                     lineBreakMode: breaking,
                     enabled: values[VisualElementContract.isEnabled] ?? true)

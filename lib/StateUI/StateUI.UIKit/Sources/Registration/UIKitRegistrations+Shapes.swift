@@ -74,9 +74,9 @@ extension UIKitRegistrations {
 
     /// What every shape takes whole.
     private static let shapeMembers: [any ContractMember] = [
-        ShapeContract.fill, ShapeContract.stroke, ShapeContract.strokeWidth,
-        ShapeContract.strokeDashPattern, ShapeContract.strokeDashOffset,
-        ShapeContract.strokeLineCap, ShapeContract.strokeLineJoin, ShapeContract.strokeMiterLimit,
+        ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
+        ShapeContract.dash, ShapeContract.dashPhase,
+        ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
         ShapeContract.aspect, ShapeContract.renderTransform,
     ]
 
@@ -85,12 +85,12 @@ extension UIKitRegistrations {
             fill: UIKitBrush(values[ShapeContract.fill]?.propValue),
             stroke: UIKitBrush(values[ShapeContract.stroke]?.propValue),
             outline: UIKitShapeView.Outline(
-                width: values[ShapeContract.strokeWidth] ?? 1,
-                dashes: values[ShapeContract.strokeDashPattern] ?? [],
-                dashOffset: values[ShapeContract.strokeDashOffset] ?? 0,
-                cap: values[ShapeContract.strokeLineCap] ?? .flat,
-                join: values[ShapeContract.strokeLineJoin] ?? .miter,
-                miter: values[ShapeContract.strokeMiterLimit] ?? 10))
+                width: values[ShapeContract.lineWidth] ?? 1,
+                dashes: values[ShapeContract.dash] ?? [],
+                dashOffset: values[ShapeContract.dashPhase] ?? 0,
+                cap: values[ShapeContract.lineCap] ?? .flat,
+                join: values[ShapeContract.lineJoin] ?? .miter,
+                miter: values[ShapeContract.miterLimit] ?? 10))
     }
 
     /// A geometry of the shape's own, placed by its aspect and moved by its transform.

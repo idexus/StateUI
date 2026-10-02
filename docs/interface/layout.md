@@ -419,7 +419,7 @@ VStack {
 .background(Color("#F4F4F4"))
 .shape(.roundedRectangle(8))
 .stroke(Color("#D0D0D0"))
-.strokeWidth(1)
+.lineWidth(1)
 .clipsContent(true)
 ```
 

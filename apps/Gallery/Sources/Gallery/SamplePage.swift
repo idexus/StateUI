@@ -138,7 +138,7 @@ struct SamplePage: View {
         }
         .style("Card")
         .stroke(Palette.outline)
-        .strokeWidth(1)
+        .lineWidth(1)
         .shape(.roundedRectangle(10))
     }
 }

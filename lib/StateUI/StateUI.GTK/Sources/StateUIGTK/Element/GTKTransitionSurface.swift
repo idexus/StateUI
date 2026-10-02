@@ -18,7 +18,7 @@ enum GTKTransitionSurface {
     /// frame - and a window's place and size, which the desktop keeps.
     static let atRest: [NodeType: Set<Prop>] = [
         .text: [.padding, .background],
-        .button: [.padding, .background, .stroke, .strokeWidth, .shape],
+        .button: [.padding, .background, .stroke, .lineWidth, .shape],
         .radioButton: [.padding],
         .textField: [.fontSize, .textColor, .placeholderColor],
         .searchField: [.fontSize, .textColor, .placeholderColor],

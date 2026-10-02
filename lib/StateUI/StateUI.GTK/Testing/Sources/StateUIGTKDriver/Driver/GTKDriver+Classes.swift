@@ -30,7 +30,7 @@ extension GTKDriver {
             return Insets(sides[3], sides[0], sides[1], sides[2]).propValue
         case (.background, is GTKTextualView):
             return .some(named("stateui-fill-").flatMap(Self.color).map { Background.color($0).propValue })
-        case (.background, is GTKButtonView), (.stroke, is GTKButtonView), (.strokeWidth, is GTKButtonView),
+        case (.background, is GTKButtonView), (.stroke, is GTKButtonView), (.lineWidth, is GTKButtonView),
              (.shape, is GTKButtonView):
             return .some(named("stateui-box").flatMap { Self.box(property, of: $0) })
         case (.placeholderColor, _):
@@ -49,7 +49,7 @@ extension GTKDriver {
         switch property {
         case .background: return part("f").flatMap(color).map { Background.color($0).propValue }
         case .stroke: return part("s").flatMap(color).map { Brush.solidColor($0).propValue }
-        case .strokeWidth: return part("w").flatMap { number(Substring($0)) }.map(\.propValue)
+        case .lineWidth: return part("w").flatMap { number(Substring($0)) }.map(\.propValue)
         default:
             guard let radius = part("r").flatMap({ number(Substring($0)) }) else { return nil }
             let shape: ContainerShape = radius >= 9999 ? .ellipse : radius == 0 ? .rectangle : .roundedRectangle(radius)

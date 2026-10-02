@@ -121,7 +121,7 @@
     private static let stackProperties: Set<Prop> = [.padding, .spacing]
 
     /// What a layout draws of its own box.
-    private static let layoutBoxProperties: Set<Prop> = [.background, .stroke, .strokeWidth, .shape]
+    private static let layoutBoxProperties: Set<Prop> = [.background, .stroke, .lineWidth, .shape]
 
     private static let gridProperties: Set<Prop> = [
         .padding, .rowSpacing, .columnSpacing, .rows, .columns,
@@ -138,7 +138,7 @@
     private static let textControlProperties: Set<Prop> = [.fontSize, .textColor]
 
     private static let buttonProperties: Set<Prop> = [
-        .padding, .fontSize, .textColor, .stroke, .strokeWidth, .shape,
+        .padding, .fontSize, .textColor, .stroke, .lineWidth, .shape,
     ]
 
 
@@ -157,7 +157,7 @@
     private static let barProperties: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
 
     private static let shapeProperties: Set<Prop> = [
-        .fill, .stroke, .strokeWidth, .strokeDashOffset, .strokeMiterLimit,
+        .fill, .stroke, .lineWidth, .dashPhase, .miterLimit,
         .renderTransform,
     ]
 

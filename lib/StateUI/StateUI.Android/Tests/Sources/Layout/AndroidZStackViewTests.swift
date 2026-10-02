@@ -164,7 +164,7 @@ final class AndroidZStackViewTests: XCTestCase {
                         .padding(10)
                         .background(Color("#00FF00"))
                         .stroke(Color("#0000FF"))
-                        .strokeWidth(2)
+                        .lineWidth(2)
                         .shape(.roundedRectangle(20))
                         .clipsContent(true)
                         .width(100)

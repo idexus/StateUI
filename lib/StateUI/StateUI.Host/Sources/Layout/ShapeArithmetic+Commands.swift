@@ -15,12 +15,12 @@ extension ShapeArithmetic {
     }
 
     /// A stroke's width, never below nothing, nothing where it is no number.
-    public static func strokeWidth(_ width: Double) -> Double {
+    public static func lineWidth(_ width: Double) -> Double {
         width.isFinite ? max(0, width) : 0
     }
 
     /// Dashes and gaps as lengths: StateUI measures them in stroke widths.
-    public static func dashLengths(_ dashes: [Double], strokeWidth: Double) -> [Double] {
-        dashes.map { max(0, $0) * strokeWidth }
+    public static func dashLengths(_ dashes: [Double], lineWidth: Double) -> [Double] {
+        dashes.map { max(0, $0) * lineWidth }
     }
 }

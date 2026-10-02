@@ -514,7 +514,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 |
 | [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
-| [Shape](controls/tiers/Shape.md) | `aspect`, `fill`, `renderTransform`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` | 10 |
+| [Shape](controls/tiers/Shape.md) | `aspect`, `fill`, `renderTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineJoin`, `miterLimit`, `lineWidth` | 10 |
 | [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 2 |
 | [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` | 2 |
 | [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `isFontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |
@@ -522,7 +522,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | 1 |
 | [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | 1 |
 | [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | 1 |
-| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` | 3 |
+| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `lineWidth` | 3 |
 | [ImageElement](controls/tiers/ImageElement.md) | `aspect` | 1 |
 | [TintElement](controls/tiers/TintElement.md) | `tint` | 1 |
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle` | 5 |
@@ -607,10 +607,10 @@ realizes the element and each of its members.
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
 `background`, `barBackgroundColor`, `barForegroundColor`, `barIcon`,
 `barSubtitle`, `barTitle`, `canDrag`, `characterSpacing`, `clipsContent`,
-`color`, `columns`, `columnSpacing`, `cornerRadius`, `cursorPosition`, `data`,
-`date`, `dragText`, `drawing`, `endReachedWithin`, `fill`, `fillRule`,
-`floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`, `format`, `frame`,
-`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `groupName`,
+`color`, `columns`, `columnSpacing`, `cornerRadius`, `cursorPosition`, `dash`,
+`dashPhase`, `data`, `date`, `dragText`, `drawing`, `endReachedWithin`, `fill`,
+`fillRule`, `floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`, `format`,
+`frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `groupName`,
 `growsWithText`, `height`, `hidesWhenInactive`, `horizontalAlignment`,
 `horizontalScrollBarVisibility`, `horizontalTextAlignment`, `icon`,
 `iconPosition`, `iconSpacing`, `ignoresInput`, `inputPurpose`,
@@ -619,24 +619,23 @@ realizes the element and each of its members.
 `isPassword`, `isReadOnly`, `isScrollEnabled`, `isSpellCheckEnabled`,
 `isTextPredictionEnabled`, `isTranslucent`, `isVisible`, `isZoomEnabled`,
 `items`, `itemsLayout`, `label`, `layoutDirection`, `letsInputThrough`,
-`lineBreak`, `lineHeight`, `location`, `mapType`, `margin`, `maximum`,
-`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
-`minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`, `opacity`, `options`,
-`order`, `orientation`, `padding`, `panTouchCount`, `panXChannel`,
-`panYChannel`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`,
-`placement`, `points`, `progress`, `region`, `renderTransform`, `returnKey`,
-`rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`,
-`scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
-`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
-`showsClearButton`, `showsNavigationBar`, `showsSidebar`, `showsText`,
-`showsTraffic`, `showsUserLocation`, `side`, `source`, `spacing`, `step`,
-`stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`,
-`strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`, `swipeDirection`,
-`swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
-`textDecorations`, `time`, `tint`, `title`, `translationX`, `translationY`,
-`type`, `userAgent`, `value`, `verticalAlignment`,
-`verticalScrollBarVisibility`, `verticalTextAlignment`, `width`, `windowType`,
-`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
+`lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`,
+`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
+`maximumLines`, `maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`,
+`minimumWidth`, `miterLimit`, `opacity`, `options`, `order`, `orientation`,
+`padding`, `panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
+`placeholder`, `placeholderColor`, `placement`, `points`, `progress`, `region`,
+`renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
+`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`,
+`selectedItems`, `selectedTab`, `selectionLength`, `selectionMode`, `shape`,
+`showsBackButton`, `showsClearButton`, `showsNavigationBar`, `showsSidebar`,
+`showsText`, `showsTraffic`, `showsUserLocation`, `side`, `source`, `spacing`,
+`step`, `stroke`, `style`, `swipeDirection`, `swipeThreshold`, `tapCount`,
+`text`, `textCase`, `textColor`, `textDecorations`, `time`, `tint`, `title`,
+`translationX`, `translationY`, `type`, `userAgent`, `value`,
+`verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
+`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
+`zIndex`.
 
 ### Events
 

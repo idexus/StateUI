@@ -124,7 +124,7 @@ final class WinUICanvasViewTests: XCTestCase {
 
         let outline = try drawn(width: 40, height: 40, at: [(20, 1), (20, 20)]) {
             Draw.strokeColor(Color("#0000FF"))
-            Draw.strokeWidth(4)
+            Draw.lineWidth(4)
             Draw.strokeEllipse(x: 0, y: 0, width: 40, height: 40)
         }
         XCTAssertEqual(outline, [Self.blue, 0])

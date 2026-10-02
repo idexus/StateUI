@@ -37,8 +37,8 @@ public enum Draw {
     }
 
     /// How wide that outline is, in device units.
-    public static func strokeWidth(_ value: Double) -> DrawCommand {
-        DrawCommand(.strokeWidth, [.number(value)])
+    public static func lineWidth(_ value: Double) -> DrawCommand {
+        DrawCommand(.lineWidth, [.number(value)])
     }
 
     /// How big it writes.

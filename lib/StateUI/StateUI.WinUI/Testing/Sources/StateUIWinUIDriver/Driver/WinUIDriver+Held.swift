@@ -217,7 +217,7 @@ extension WinUIDriver {
             switch name {
             case "background": return try Self.color(read(view, "box.fill")).map { Background.color($0).propValue }
             case "stroke": return try Self.color(read(view, "box.stroke")).map { Brush.solidColor($0).propValue }
-            case "strokeWidth": return Double(try read(view, "box.strokeThickness"))?.propValue
+            case "lineWidth": return Double(try read(view, "box.strokeThickness"))?.propValue
             case "shape":
                 if try read(view, "box.ellipse") == "1" { return ContainerShape.ellipse.propValue }
                 let radius = Double(try read(view, "box.radius")) ?? 0
@@ -230,7 +230,7 @@ extension WinUIDriver {
         case "background": return try Self.color(read(view, "background")).map { Background.color($0).propValue }
         case "stroke" where view is WinUIButtonView:
             return try Self.color(read(view, "borderBrush")).map { Brush.solidColor($0).propValue }
-        case "strokeWidth" where view is WinUIButtonView:
+        case "lineWidth" where view is WinUIButtonView:
             return try Self.insets(read(view, "borderThickness"))?.left.propValue
         case "shape" where view is WinUIButtonView:
             let radius = try Self.insets(read(view, "cornerRadius"))?.left ?? 0
@@ -245,16 +245,16 @@ extension WinUIDriver {
         switch name {
         case "fill": return try Self.color(read(view, "fill")).map { Brush.solidColor($0).propValue }
         case "stroke": return try Self.color(read(view, "stroke")).map { Brush.solidColor($0).propValue }
-        case "strokeWidth": return Double(try read(view, "strokeThickness"))?.propValue
-        case "strokeDashPattern":
+        case "lineWidth": return Double(try read(view, "strokeThickness"))?.propValue
+        case "dash":
             let dashes = try read(view, "dashes")
             return (dashes.isEmpty ? [] : dashes.split(separator: ";").compactMap { Double($0) }).propValue
-        case "strokeDashOffset": return Double(try read(view, "dashOffset"))?.propValue
-        case "strokeLineCap":
+        case "dashPhase": return Double(try read(view, "dashOffset"))?.propValue
+        case "lineCap":
             let cap = Int(try read(view, "cap")) ?? 0
             return (cap == 2 ? LineCap.round : cap == 1 ? .square : .flat).propValue
-        case "strokeLineJoin": return LineJoin(rawValue: Int32(try read(view, "join")) ?? 0)?.propValue
-        case "strokeMiterLimit": return ((Double(try read(view, "miter")) ?? 0) / 2).propValue
+        case "lineJoin": return LineJoin(rawValue: Int32(try read(view, "join")) ?? 0)?.propValue
+        case "miterLimit": return ((Double(try read(view, "miter")) ?? 0) / 2).propValue
         default: return nil
         }
     }

@@ -10,9 +10,9 @@ Button
   iconPosition
   isEnabled
   lineBreak
+  lineWidth
   shape
   stroke
-  strokeWidth
   text
   textCase
   textColor
@@ -45,15 +45,15 @@ DatePicker
   dateChanged()
 Ellipse
   aspect
+  dash
+  dashPhase
   fill
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 Grid
   columnSpacing
   columns
@@ -79,15 +79,15 @@ ItemsView
   selectedItemsChanged()
 Line
   aspect
+  dash
+  dashPhase
   fill
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
   x1
   x2
   y1
@@ -104,16 +104,16 @@ Page
   padding
 Path
   aspect
+  dash
+  dashPhase
   data
   fill
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 Picker
   fontAttributes
   fontFamily
@@ -138,30 +138,30 @@ Pin
   pinDetailsClicked()
 Polygon
   aspect
+  dash
+  dashPhase
   fill
   fillRule
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   points
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 Polyline
   aspect
+  dash
+  dashPhase
   fill
   fillRule
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   points
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 ProgressBar
   progress
 RadioButton
@@ -177,23 +177,23 @@ RadioButton
 Rectangle
   aspect
   cornerRadius
+  dash
+  dashPhase
   fill
+  lineCap
+  lineJoin
+  lineWidth
+  miterLimit
   renderTransform
   stroke
-  strokeDashOffset
-  strokeDashPattern
-  strokeLineCap
-  strokeLineJoin
-  strokeMiterLimit
-  strokeWidth
 ScrollView
   horizontalScrollBarVisibility
+  lineWidth
   orientation
   padding
   scrollOffset
   shape
   stroke
-  strokeWidth
   verticalScrollBarVisibility
 SearchField
   background

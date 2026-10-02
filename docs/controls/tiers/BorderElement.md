@@ -12,7 +12,7 @@ VStack {
 .padding(14)
 .shape(.roundedRectangle(8))
 .stroke(.lightGray)
-.strokeWidth(1)
+.lineWidth(1)
 ```
 
 Wears: [PropertyContainer](PropertyContainer.md)
@@ -27,4 +27,4 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `shape` | property | `ContainerShape` | stateUI |
 | `stroke` | property | `Brush` | stateUI |
-| `strokeWidth` | property | `Double` | stateUI |
+| `lineWidth` | property | `Double` | stateUI |

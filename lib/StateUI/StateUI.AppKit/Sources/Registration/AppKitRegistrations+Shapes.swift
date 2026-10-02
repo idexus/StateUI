@@ -73,9 +73,9 @@ extension AppKitRegistrations {
 
     /// What every shape wears, whatever shape it is.
     private static let shapeMembers: [any ContractMember] = [
-        ShapeContract.fill, ShapeContract.stroke, ShapeContract.strokeWidth,
-        ShapeContract.strokeDashPattern, ShapeContract.strokeDashOffset,
-        ShapeContract.strokeLineCap, ShapeContract.strokeLineJoin, ShapeContract.strokeMiterLimit,
+        ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
+        ShapeContract.dash, ShapeContract.dashPhase,
+        ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
         ShapeContract.aspect, ShapeContract.renderTransform,
     ]
 
@@ -89,12 +89,12 @@ extension AppKitRegistrations {
         view.apply(
             fill: values[ShapeContract.fill]?.propValue,
             stroke: values[ShapeContract.stroke]?.propValue,
-            strokeWidth: values[ShapeContract.strokeWidth],
-            dash: values[ShapeContract.strokeDashPattern] ?? [],
-            dashOffset: values[ShapeContract.strokeDashOffset] ?? 0,
-            lineCap: values[ShapeContract.strokeLineCap]?.rawValue ?? 0,
-            lineJoin: values[ShapeContract.strokeLineJoin]?.rawValue ?? 0,
-            miterLimit: values[ShapeContract.strokeMiterLimit] ?? 10,
+            lineWidth: values[ShapeContract.lineWidth],
+            dash: values[ShapeContract.dash] ?? [],
+            dashOffset: values[ShapeContract.dashPhase] ?? 0,
+            lineCap: values[ShapeContract.lineCap]?.rawValue ?? 0,
+            lineJoin: values[ShapeContract.lineJoin]?.rawValue ?? 0,
+            miterLimit: values[ShapeContract.miterLimit] ?? 10,
             aspect: values[ShapeContract.aspect] ?? .fit,
             renderTransform: Self.transform(values),
             geometry: geometry)

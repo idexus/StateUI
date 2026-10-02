@@ -53,7 +53,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     .padding(16, 10)
             }
             .style("Card")
-            .strokeWidth(4)
+            .lineWidth(4)
             .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
@@ -120,7 +120,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     .padding(16, 10)
             }
             .style("Card")
-            .strokeWidth(4)
+            .lineWidth(4)
             .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 

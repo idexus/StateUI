@@ -75,13 +75,13 @@ extern "C" StateUIObjectRef stateui_winui_shape_make(StateUIOutline outline) {
 }
 
 extern "C" void stateui_winui_shape_set(
-    StateUIObjectRef handle, double radius, StateUIBrush fill, StateUIBrush stroke, double strokeWidth
+    StateUIObjectRef handle, double radius, StateUIBrush fill, StateUIBrush stroke, double lineWidth
 ) {
     try {
         auto shape = as<shapes::Shape>(handle);
         shape.Fill(brush(fill));
         shape.Stroke(brush(stroke));
-        shape.StrokeThickness(strokeWidth);
+        shape.StrokeThickness(lineWidth);
         if (auto rectangle = shape.try_as<shapes::Rectangle>()) {
             rectangle.RadiusX(radius);
             rectangle.RadiusY(radius);

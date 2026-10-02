@@ -33,8 +33,8 @@ final class AppKitDriver: HostDriver {
                 "AppKit's field keeps no bound: the host cuts what is typed, and typing proves it"
         }
         let shapePaint = [
-            "aspect", "renderTransform", "fill", "stroke", "strokeWidth", "strokeDashOffset", "strokeDashPattern",
-            "strokeLineCap", "strokeLineJoin", "strokeMiterLimit",
+            "aspect", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
             for member in shapePaint {
@@ -43,7 +43,7 @@ final class AppKitDriver: HostDriver {
             }
         }
         for layout in ["Grid", "HStack", "VStack", "ZStack"] {
-            for member in ["stroke", "strokeWidth", "shape"] {
+            for member in ["stroke", "lineWidth", "shape"] {
                 none["read \(member) of \(layout)"] =
                     "StateUI draws a layout's box in its view's draw(_:), which holds none of its \(member); its drawing proves it"
             }

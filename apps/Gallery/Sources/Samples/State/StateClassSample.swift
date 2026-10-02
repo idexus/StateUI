@@ -136,7 +136,7 @@ struct StateClassSample: SampleContent, ExampleContent {
 
                 Button("Remove")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
@@ -151,7 +151,7 @@ struct StateClassSample: SampleContent, ExampleContent {
 
             Button("Tap a plain property (\(basket.plainTaps))")
                 .stroke(Palette.outline)
-                .strokeWidth(1)
+                .lineWidth(1)
                 .background(.transparent)
                 .textColor(Palette.subtle)
                 .shape(.roundedRectangle(8))

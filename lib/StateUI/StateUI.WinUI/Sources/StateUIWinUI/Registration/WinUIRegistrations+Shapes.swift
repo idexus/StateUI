@@ -57,9 +57,9 @@ extension WinUIRegistrations {
 
     /// What every shape takes whole.
     private static let shapeMembers: [any ContractMember] = [
-        ShapeContract.fill, ShapeContract.stroke, ShapeContract.strokeWidth,
-        ShapeContract.strokeDashPattern, ShapeContract.strokeDashOffset,
-        ShapeContract.strokeLineCap, ShapeContract.strokeLineJoin, ShapeContract.strokeMiterLimit,
+        ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
+        ShapeContract.dash, ShapeContract.dashPhase,
+        ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
         ShapeContract.aspect, ShapeContract.renderTransform,
     ]
 
@@ -67,14 +67,14 @@ extension WinUIRegistrations {
         view.paint(
             fill: WinUIBrush(values[ShapeContract.fill]?.propValue),
             stroke: WinUIBrush(values[ShapeContract.stroke]?.propValue),
-            width: values[ShapeContract.strokeWidth] ?? 1,
+            width: values[ShapeContract.lineWidth] ?? 1,
             outline: BoxArithmetic.outlineWidth(
-                stroke: values[ShapeContract.stroke]?.propValue, width: values[ShapeContract.strokeWidth]),
-            dashes: values[ShapeContract.strokeDashPattern] ?? [],
-            dashOffset: values[ShapeContract.strokeDashOffset] ?? 0,
-            cap: values[ShapeContract.strokeLineCap] ?? .flat,
-            join: values[ShapeContract.strokeLineJoin] ?? .miter,
-            miter: values[ShapeContract.strokeMiterLimit] ?? 10)
+                stroke: values[ShapeContract.stroke]?.propValue, width: values[ShapeContract.lineWidth]),
+            dashes: values[ShapeContract.dash] ?? [],
+            dashOffset: values[ShapeContract.dashPhase] ?? 0,
+            cap: values[ShapeContract.lineCap] ?? .flat,
+            join: values[ShapeContract.lineJoin] ?? .miter,
+            miter: values[ShapeContract.miterLimit] ?? 10)
     }
 
     /// A geometry of the shape's own, placed by its aspect and moved by its transform.

@@ -18,7 +18,7 @@ struct OutlineSample: SampleContent, ExampleContent {
             }
             .padding(16)
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(12))
 
             HStack {
@@ -28,7 +28,7 @@ struct OutlineSample: SampleContent, ExampleContent {
             .spacing(6)
             .padding(16)
             .stroke(Palette.accent)
-            .strokeWidth(3)
+            .lineWidth(3)
             .shape(.rectangle)
 
             ZStack {
@@ -63,7 +63,7 @@ struct OutlineSample: SampleContent, ExampleContent {
             .spacing(2)
             .padding(16)
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(12))
 
             HStack {
@@ -75,7 +75,7 @@ struct OutlineSample: SampleContent, ExampleContent {
             .spacing(6)
             .padding(16)
             .stroke(Palette.accent)
-            .strokeWidth(3)
+            .lineWidth(3)
             .shape(.rectangle)
 
             ZStack {

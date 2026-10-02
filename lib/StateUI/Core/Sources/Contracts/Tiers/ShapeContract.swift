@@ -23,28 +23,28 @@ public enum ShapeContract: Contract {
     public static let stroke = ElementProperty<Self, Brush>("stroke", layer: .stateUI)
 
     /// How far into the dash pattern the outline starts.
-    public static let strokeDashOffset = ElementProperty<Self, Double>("strokeDashOffset", layer: .stateUI)
+    public static let dashPhase = ElementProperty<Self, Double>("dashPhase", layer: .stateUI)
 
     /// The outline's dashes and gaps, in turn, in stroke widths.
-    public static let strokeDashPattern = ElementProperty<Self, [Double]>(
-        "strokeDashPattern", layer: .stateUI, travels: false)
+    public static let dash = ElementProperty<Self, [Double]>(
+        "dash", layer: .stateUI, travels: false)
 
     /// How the ends of an open outline are drawn.
-    public static let strokeLineCap = ElementProperty<Self, LineCap>("strokeLineCap", layer: .stateUI)
+    public static let lineCap = ElementProperty<Self, LineCap>("lineCap", layer: .stateUI)
 
     /// How two segments of the outline meet.
-    public static let strokeLineJoin = ElementProperty<Self, LineJoin>("strokeLineJoin", layer: .stateUI)
+    public static let lineJoin = ElementProperty<Self, LineJoin>("lineJoin", layer: .stateUI)
 
     /// How far out a sharp corner may reach before it is cut off.
-    public static let strokeMiterLimit = ElementProperty<Self, Double>("strokeMiterLimit", layer: .stateUI)
+    public static let miterLimit = ElementProperty<Self, Double>("miterLimit", layer: .stateUI)
 
     /// How thick the outline is.
-    public static let strokeWidth = ElementProperty<Self, Double>(
-        "strokeWidth", layer: .stateUI, moves: .size)
+    public static let lineWidth = ElementProperty<Self, Double>(
+        "lineWidth", layer: .stateUI, moves: .size)
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        aspect, fill, renderTransform, stroke, strokeDashOffset, strokeDashPattern,
-        strokeLineCap, strokeLineJoin, strokeMiterLimit, strokeWidth,
+        aspect, fill, renderTransform, stroke, dashPhase, dash,
+        lineCap, lineJoin, miterLimit, lineWidth,
     ]
 }

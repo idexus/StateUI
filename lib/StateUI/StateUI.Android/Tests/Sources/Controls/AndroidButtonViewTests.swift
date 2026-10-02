@@ -101,7 +101,7 @@ final class AndroidButtonViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Button("Quiet").background(.transparent).stroke(.navy).strokeWidth(1.5)
+                    Button("Quiet").background(.transparent).stroke(.navy).lineWidth(1.5)
                         .shape(.roundedRectangle(10))
                     Button("Outlined").stroke(.navy)
                     Button("Drawn").background(.firebrick).shape(.roundedRectangle(8))

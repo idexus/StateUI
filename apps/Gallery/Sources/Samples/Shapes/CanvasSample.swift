@@ -114,7 +114,7 @@ private struct FollowsAFinger: ExampleContent {
 
                     Canvas {
                         Draw.strokeColor(Palette.outline)
-                        Draw.strokeWidth(1)
+                        Draw.lineWidth(1)
                         Draw.strokeRoundedRectangle(
                             x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
 
@@ -142,7 +142,7 @@ private struct FollowsAFinger: ExampleContent {
 
             Canvas {
                 Draw.strokeColor(Palette.outline)
-                Draw.strokeWidth(1)
+                Draw.lineWidth(1)
                 Draw.strokeRoundedRectangle(x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
 
                 Draw.fillColor(Palette.accent)

@@ -24,11 +24,11 @@ extension AndroidRegistrations {
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.aspect] ?? .fit)
             }
             button.applies([
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 view.setOutline(
                     stroke: values[BorderElementContract.stroke]?.propValue,
-                    width: values[BorderElementContract.strokeWidth],
+                    width: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.property(ButtonContract.lineBreak) { view, breaking in

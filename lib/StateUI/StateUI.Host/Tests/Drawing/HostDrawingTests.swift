@@ -15,7 +15,7 @@ final class HostDrawingTests: XCTestCase {
             in: Rect(x: 0, y: 0, width: 10, height: 20), start: 90, end: 0, clockwise: false, closed: true, wedge: true)
         let drawing = HostDrawing([
             Draw.fillColor(Color(red: 255, green: 0, blue: 0)),
-            Draw.strokeWidth(2),
+            Draw.lineWidth(2),
             Draw.fillRoundedRectangle(x: 1, y: 2, width: 30, height: 40, cornerRadius: 5),
             Draw.strokeArc(x: 0, y: 0, width: 10, height: 20, startAngle: 0, endAngle: 90, clockwise: true, closed: false),
             Draw.fillArc(x: 0, y: 0, width: 10, height: 20, startAngle: 90, endAngle: 0, clockwise: false),

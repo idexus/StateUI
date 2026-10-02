@@ -22,7 +22,7 @@ final class GTKShapeView: GTKPanelView {
     private var geometry = Geometry.rectangle([0, 0, 0, 0], transform: nil)
     private var fill = GTKBrush.none
     private var stroke = GTKBrush.none
-    private var strokeWidth = 1.0
+    private var lineWidth = 1.0
     private var dashes: [Double] = []
     private var dashOffset = 0.0
     private var cap = LineCap.flat
@@ -34,7 +34,7 @@ final class GTKShapeView: GTKPanelView {
         fill: GTKBrush, stroke: GTKBrush, width: Double, dashes: [Double], dashOffset: Double, cap: LineCap,
         join: LineJoin, miter: Double
     ) {
-        (self.fill, self.stroke, strokeWidth) = (fill, stroke, ShapeArithmetic.strokeWidth(width))
+        (self.fill, self.stroke, lineWidth) = (fill, stroke, ShapeArithmetic.lineWidth(width))
         (self.dashes, self.dashOffset, self.cap, self.join, self.miter) = (dashes, dashOffset, cap, join, miter)
         gtk_widget_queue_draw(widget)
     }
@@ -52,7 +52,7 @@ final class GTKShapeView: GTKPanelView {
     }
 
     override func draw(_ snapshot: OpaquePointer, width: Double, height: Double) {
-        let outlined = stroke != .none && strokeWidth > 0
+        let outlined = stroke != .none && lineWidth > 0
         guard width > 0 || height > 0, let (path, evenOdd) = path(width: width, height: height, outlined: outlined)
         else { return }
         defer { gsk_path_unref(path) }
@@ -72,23 +72,23 @@ final class GTKShapeView: GTKPanelView {
 
         if fill != .none {
             gtk_snapshot_push_fill(snapshot, path, evenOdd ? GSK_FILL_RULE_EVEN_ODD : GSK_FILL_RULE_WINDING)
-            fill.paint(snapshot, Self.rect(-strokeWidth, -strokeWidth, width + strokeWidth * 2, height + strokeWidth * 2))
+            fill.paint(snapshot, Self.rect(-lineWidth, -lineWidth, width + lineWidth * 2, height + lineWidth * 2))
             gtk_snapshot_pop(snapshot)
         }
         guard outlined else { return }
 
-        let outline = gsk_stroke_new(Float(strokeWidth))
+        let outline = gsk_stroke_new(Float(lineWidth))
         defer { gsk_stroke_free(outline) }
         gsk_stroke_set_line_cap(outline, cap == .round ? GSK_LINE_CAP_ROUND : cap == .square ? GSK_LINE_CAP_SQUARE : GSK_LINE_CAP_BUTT)
         gsk_stroke_set_line_join(outline, join == .round ? GSK_LINE_JOIN_ROUND : join == .bevel ? GSK_LINE_JOIN_BEVEL : GSK_LINE_JOIN_MITER)
         gsk_stroke_set_miter_limit(outline, Float(miter))
-        let lengths = ShapeArithmetic.dashLengths(dashes, strokeWidth: strokeWidth).map(Float.init)
+        let lengths = ShapeArithmetic.dashLengths(dashes, lineWidth: lineWidth).map(Float.init)
         if lengths.contains(where: { $0 > 0 }) {
             gsk_stroke_set_dash(outline, lengths, gsize(lengths.count))
-            gsk_stroke_set_dash_offset(outline, Float(dashOffset * strokeWidth))
+            gsk_stroke_set_dash_offset(outline, Float(dashOffset * lineWidth))
         }
         gtk_snapshot_push_stroke(snapshot, path, outline)
-        stroke.paint(snapshot, Self.rect(-strokeWidth, -strokeWidth, width + strokeWidth * 2, height + strokeWidth * 2))
+        stroke.paint(snapshot, Self.rect(-lineWidth, -lineWidth, width + lineWidth * 2, height + lineWidth * 2))
         gtk_snapshot_pop(snapshot)
     }
 
@@ -96,7 +96,7 @@ final class GTKShapeView: GTKPanelView {
     /// edges; a geometry of the shape's own is placed in it. Whether it fills by the even-odd rule.
     private func path(width: Double, height: Double, outlined: Bool) -> (OpaquePointer, Bool)? {
         let builder = gsk_path_builder_new()!
-        let inset = outlined ? strokeWidth / 2 : 0
+        let inset = outlined ? lineWidth / 2 : 0
         let room = Self.rect(inset, inset, max(0, width - inset * 2), max(0, height - inset * 2))
         switch geometry {
         case .rectangle(let radii, _):

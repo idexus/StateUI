@@ -19,7 +19,7 @@ final class WinUIPathView: WinUIView {
     }
 
     private var geometry = Geometry.rectangle([0, 0, 0, 0], transform: nil)
-    private var strokeWidth = 1.0
+    private var lineWidth = 1.0
 
     /// The outline drawn, which the figure is inset by half of; none without a colour.
     private var outlineWidth = 0.0
@@ -45,8 +45,8 @@ final class WinUIPathView: WinUIView {
         fill: WinUIBrush, stroke: WinUIBrush, width: Double, outline: Double, dashes: [Double], dashOffset: Double,
         cap: LineCap, join: LineJoin, miter: Double
     ) {
-        strokeWidth = ShapeArithmetic.strokeWidth(width)
-        outlineWidth = ShapeArithmetic.strokeWidth(outline)
+        lineWidth = ShapeArithmetic.lineWidth(width)
+        outlineWidth = ShapeArithmetic.lineWidth(outline)
         painting = (fill, stroke, dashes, dashOffset, cap, join, miter)
         sendPainting()
         if let placed { draw(in: placed) }
@@ -59,7 +59,7 @@ final class WinUIPathView: WinUIView {
         painting.fill.withRelayBrush(over: figure) { fill in
             painting.stroke.withRelayBrush(over: figure) { stroke in
                 stateui_winui_path_paint(
-                    handle, fill, stroke, strokeWidth, painting.dashes, Int32(painting.dashes.count),
+                    handle, fill, stroke, lineWidth, painting.dashes, Int32(painting.dashes.count),
                     painting.dashOffset, painting.cap.rawValue, painting.join.rawValue, painting.miter)
             }
         }

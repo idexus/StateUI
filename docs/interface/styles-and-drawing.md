@@ -235,7 +235,7 @@ Rectangle()
         startPoint: Point(0, 0),
         endPoint: Point(1, 0)))
     .stroke(.solidColor(.white))
-    .strokeWidth(2)
+    .lineWidth(2)
     .height(80)
 ```
 

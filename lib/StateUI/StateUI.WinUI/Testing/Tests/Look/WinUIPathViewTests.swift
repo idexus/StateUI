@@ -58,7 +58,7 @@ final class WinUIPathViewTests: XCTestCase {
         XCTAssertEqual(polygon, [Self.blue])
 
         let line = try drawn(width: 40, height: 10, at: [(20, 5), (20, 0.5)]) {
-            Line().x1(0).y1(0).x2(40).y2(0).stroke(Color("#FF0000")).strokeWidth(4).width(40).height(10)
+            Line().x1(0).y1(0).x2(40).y2(0).stroke(Color("#FF0000")).lineWidth(4).width(40).height(10)
         }
         XCTAssertEqual(line, [Self.red, 0])
     }
@@ -108,14 +108,14 @@ final class WinUIPathViewTests: XCTestCase {
     /// Dashes and gaps are outline widths, and an offset of half the pattern puts dashes where the gaps were.
     func testDashesAreOutlineWidths() throws {
         let plain = try drawn(width: 200, height: 8, at: [(6, 4), (16, 4), (26, 4)]) {
-            Line().x1(0).y1(4).x2(200).y2(4).stroke(Color("#FF0000")).strokeWidth(4)
-                .strokeDashPattern([3, 2]).width(200).height(8)
+            Line().x1(0).y1(4).x2(200).y2(4).stroke(Color("#FF0000")).lineWidth(4)
+                .dash([3, 2]).width(200).height(8)
         }
         XCTAssertEqual(plain, [Self.red, 0, Self.red], "a dash of 12, a gap of 8")
 
         let shifted = try drawn(width: 200, height: 8, at: [(6, 4), (16, 4)]) {
-            Line().x1(0).y1(4).x2(200).y2(4).stroke(Color("#FF0000")).strokeWidth(4)
-                .strokeDashPattern([3, 2]).strokeDashOffset(2.5).width(200).height(8)
+            Line().x1(0).y1(4).x2(200).y2(4).stroke(Color("#FF0000")).lineWidth(4)
+                .dash([3, 2]).dashPhase(2.5).width(200).height(8)
         }
         XCTAssertEqual(shifted, [0, Self.red], "half a pattern on")
     }

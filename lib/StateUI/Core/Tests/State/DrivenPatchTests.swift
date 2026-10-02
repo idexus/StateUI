@@ -163,17 +163,17 @@ final class DrivenPatchTests: XCTestCase {
         .pivotY(number.projectedValue)
         .margin(inset.projectedValue)
         .padding(inset.projectedValue)
-        .strokeWidth(number.projectedValue)
+        .lineWidth(number.projectedValue)
 
         let shape = Rectangle()
-            .strokeWidth(number.projectedValue)
-            .strokeDashOffset(number.projectedValue)
-            .strokeMiterLimit(number.projectedValue)
+            .lineWidth(number.projectedValue)
+            .dashPhase(number.projectedValue)
+            .miterLimit(number.projectedValue)
 
         // A Button for the outline the mixin is about, and a TextField for the
         // placeholder - neither of them a layout's.
         let button = Button("press")
-            .strokeWidth(number.projectedValue)
+            .lineWidth(number.projectedValue)
 
         let entry = TextField("").placeholderColor(colour.projectedValue)
 
@@ -189,7 +189,7 @@ final class DrivenPatchTests: XCTestCase {
             tied([
                 "height", "maximumHeight", "maximumWidth", "minimumHeight", "minimumWidth", "opacity",
                 "pivotX", "pivotY", "rotation", "rotationX", "rotationY", "scale", "scaleX", "scaleY",
-                "strokeWidth", "translationX", "translationY", "width",
+                "lineWidth", "translationX", "translationY", "width",
             ], to: 1, .inOut, .property)
                 .merging(tied(["background"], to: 2, .inOut, .property)) { $1 }
                 .merging(tied(["margin", "padding"], to: 3, .inOut, .property)) { $1 })
@@ -199,10 +199,10 @@ final class DrivenPatchTests: XCTestCase {
                 .merging(tied(["textColor"], to: 2, .inOut, .property)) { $1 })
         XCTAssertEqual(
             ties(page, .auto(3), .auto(6)),
-            tied(["strokeDashOffset", "strokeMiterLimit", "strokeWidth"], to: 1, .inOut, .property))
+            tied(["dashPhase", "miterLimit", "lineWidth"], to: 1, .inOut, .property))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(7)),
-            tied(["strokeWidth"], to: 1, .inOut, .property))
+            tied(["lineWidth"], to: 1, .inOut, .property))
         XCTAssertEqual(ties(page, .auto(3), .auto(8)), tied(["placeholderColor"], to: 2, .inOut, .property))
         XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["color"], to: 2, .inOut, .property))
     }

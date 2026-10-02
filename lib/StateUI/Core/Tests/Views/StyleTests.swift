@@ -66,11 +66,11 @@ final class StyleTests: XCTestCase {
     /// values too: a name, a group and what they set.
     func testAStyleCarriesValuesAndStatesOnly() {
         let style = Style<Button>()
-            .strokeWidth(2)
+            .lineWidth(2)
             .visualState(.disabled) { $0.textColor(.gray) }
             .erased
 
-        XCTAssertEqual(style.props["strokeWidth"], .number(2))
+        XCTAssertEqual(style.props["lineWidth"], .number(2))
         XCTAssertEqual(style.states, [
             DeclaredState(name: "Disabled", setters: ["textColor": Color("#808080").propValue]),
         ])
@@ -688,7 +688,7 @@ final class StyleTests: XCTestCase {
 
             Style<ZStack>()
                 .stroke(Color("#C8C8C8"))
-                .strokeWidth(1)
+                .lineWidth(1)
                 .shape(.roundedRectangle(12))
         }
 
@@ -734,7 +734,7 @@ final class StyleTests: XCTestCase {
         XCTAssertTrue(button.children.isEmpty)
 
         // A card's style, and the default label's inside it.
-        XCTAssertEqual(stack.at(.auto(7))?.props["strokeWidth"], .number(1))
+        XCTAssertEqual(stack.at(.auto(7))?.props["lineWidth"], .number(1))
         XCTAssertEqual(stack.at(.auto(7), .auto(8))?.props["fontSize"], .number(14))
 
         XCTAssertFalse(

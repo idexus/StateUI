@@ -136,7 +136,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
                 Button("Start over")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
@@ -164,7 +164,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
                 Button(shade == .quiet ? "quiet" : "bold")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))

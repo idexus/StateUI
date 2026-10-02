@@ -54,7 +54,7 @@ struct TapSample: SampleContent, ExampleContent {
             }
             .style("Card")
             .stroke(Palette.accent)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }
 
@@ -66,7 +66,7 @@ struct TapSample: SampleContent, ExampleContent {
             }
             .style("Card")
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(10))
             .onTapped(count: 2) { taps = 0 }
 

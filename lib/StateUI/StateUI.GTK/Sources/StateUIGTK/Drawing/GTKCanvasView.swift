@@ -124,8 +124,8 @@ final class GTKCanvasView: GTKPanelView {
 
     private func stroke(_ path: OpaquePointer, _ pen: CanvasPen, on snapshot: OpaquePointer) {
         defer { gsk_path_unref(path) }
-        guard pen.strokeWidth > 0, var color = Self.color(pen.stroke, pen) else { return }
-        let outline = gsk_stroke_new(Float(pen.strokeWidth))
+        guard pen.lineWidth > 0, var color = Self.color(pen.stroke, pen) else { return }
+        let outline = gsk_stroke_new(Float(pen.lineWidth))
         defer { gsk_stroke_free(outline) }
         gtk_snapshot_append_stroke(snapshot, path, outline, &color)
     }

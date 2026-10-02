@@ -42,7 +42,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         textColor: NSColor,
         backgroundColor: NSColor?,
         strokeColor: NSColor?,
-        strokeWidth: Double,
+        lineWidth: Double,
         shape: ContainerShape,
         lineBreakMode: NSLineBreakMode,
         enabled: Bool
@@ -63,7 +63,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         wantsLayer = backgroundColor != nil || strokeColor != nil || shape != .rectangle
         paintFill()
         layer?.borderColor = strokeColor?.cgColor
-        layer?.borderWidth = strokeColor == nil ? 0 : strokeWidth
+        layer?.borderWidth = strokeColor == nil ? 0 : lineWidth
         if let layer { shape.round(layer) }
         isBordered = backgroundColor == nil && strokeColor == nil
     }

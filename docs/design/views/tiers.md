@@ -118,7 +118,7 @@ per shape. `renderTransform` transforms the path each shape makes, so one
 modifier means one thing on all of them and the stroke follows the transformed
 path; `.transform` moves what was drawn, after layout.
 
-A layout's outline, `BorderElement`'s `stroke` and `strokeWidth`, carries the
+A layout's outline, `BorderElement`'s `stroke` and `lineWidth`, carries the
 same properties as a shape's rather than wearing the shape tier, because that
 tier also carries `fill`, `renderTransform`, `aspect` and the dash pattern, a
 drawn figure's properties and none of them a layout's. In the patch they are the
@@ -128,7 +128,7 @@ same properties.
 
 `BorderElement` is what an element draws of its own box: `shape` - a
 rectangle, a rounded rectangle or an ellipse - which its background fills,
-and `stroke` and `strokeWidth`, its outline on it, one wide where no width is
+and `stroke` and `lineWidth`, its outline on it, one wide where no width is
 said. A stack, a grid and a ZStack wear it through the layout tier, their
 `clipsContent` cutting what they hold to the shape; a scroller wears it and
 always cuts what it shows to it; a Button and a RadioButton wear it for the

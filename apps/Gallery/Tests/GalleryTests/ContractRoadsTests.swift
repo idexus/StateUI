@@ -154,7 +154,7 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "a button's withdrawn borderWidth",
             removed: #"_ = Button("Save").borderWidth(1)"#,
-            contract: #"_ = Button("Save").strokeWidth(1)"#),
+            contract: #"_ = Button("Save").lineWidth(1)"#),
         Road(
             name: "a button's withdrawn cornerRadius",
             removed: #"_ = Button("Save").cornerRadius(8)"#,
@@ -439,6 +439,34 @@ final class ContractRoadsTests: XCTestCase {
             name: "a drawing turned with no label",
             removed: "_ = Draw.rotate(45)",
             contract: "_ = Draw.rotate(by: 45)"),
+        Road(
+            name: "an outline's width as strokeWidth",
+            removed: "_ = Rectangle().strokeWidth(2)",
+            contract: "_ = Rectangle().lineWidth(2)"),
+        Road(
+            name: "an outline's ends as strokeLineCap",
+            removed: "_ = Line().strokeLineCap(.round)",
+            contract: "_ = Line().lineCap(.round)"),
+        Road(
+            name: "an outline's corners as strokeLineJoin",
+            removed: "_ = Rectangle().strokeLineJoin(.bevel)",
+            contract: "_ = Rectangle().lineJoin(.bevel)"),
+        Road(
+            name: "an outline's mitre as strokeMiterLimit",
+            removed: "_ = Rectangle().strokeMiterLimit(4)",
+            contract: "_ = Rectangle().miterLimit(4)"),
+        Road(
+            name: "an outline's dashes as strokeDashPattern",
+            removed: "_ = Rectangle().strokeDashPattern([4, 2])",
+            contract: "_ = Rectangle().dash([4, 2])"),
+        Road(
+            name: "a dash's start as strokeDashOffset",
+            removed: "_ = Rectangle().strokeDashOffset(2)",
+            contract: "_ = Rectangle().dashPhase(2)"),
+        Road(
+            name: "a drawing's line width as strokeWidth",
+            removed: "_ = Draw.strokeWidth(2)",
+            contract: "_ = Draw.lineWidth(2)"),
         Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,

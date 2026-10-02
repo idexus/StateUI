@@ -14,7 +14,7 @@
     /// The colour text is drawn in from here.
     case textColor(HostValue)
     /// An outline's width from here.
-    case strokeWidth(Double)
+    case lineWidth(Double)
     /// The text's size in points from here.
     case fontSize(Double)
     /// How opaque everything is drawn from here, from nothing to whole.
@@ -77,7 +77,7 @@
         case 0: guard let color = values.first, color.color != nil else { return nil }; self = .fillColor(color)
         case 1: guard let color = values.first, color.color != nil else { return nil }; self = .strokeColor(color)
         case 2: guard let color = values.first, color.color != nil else { return nil }; self = .textColor(color)
-        case 3: guard let n = numbers(1) else { return nil }; self = .strokeWidth(n[0])
+        case 3: guard let n = numbers(1) else { return nil }; self = .lineWidth(n[0])
         case 4: guard let n = numbers(1) else { return nil }; self = .fontSize(n[0])
         case 5: guard let n = numbers(1) else { return nil }; self = .opacity(n[0])
         case 6:

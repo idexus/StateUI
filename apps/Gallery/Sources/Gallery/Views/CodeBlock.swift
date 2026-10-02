@@ -33,7 +33,7 @@ struct CodeBlock: View {
         .verticalScrollBarVisibility(.never)
         .background(Palette.raised)
         .stroke(Palette.outline)
-        .strokeWidth(1)
+        .lineWidth(1)
         .shape(.roundedRectangle(8))
         // Code reads left to right in every language, from its first column.
         .layoutDirection(.leftToRight)

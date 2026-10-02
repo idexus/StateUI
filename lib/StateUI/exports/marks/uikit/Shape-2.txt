@@ -1,31 +1,31 @@
 # revision 1.1
+Ellipse.dash: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Ellipse.fill: ✅
+Ellipse.lineJoin: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Ellipse.lineWidth: ✅
 Ellipse.renderTransform: cannot read renderTransform of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no renderTransform; its drawing proves it
 Ellipse.stroke: ✅
-Ellipse.strokeDashPattern: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Ellipse.strokeLineJoin: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Ellipse.strokeWidth: ✅
 Line.aspect: ✅
+Line.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Line.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Line.stroke: ✅
-Line.strokeDashOffset: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Line.strokeMiterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Path.aspect: cannot read aspect of Path - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
 Path.fill: ✅
+Path.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Path.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Path.renderTransform: ✅
-Path.strokeLineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Path.strokeWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polygon.dash: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Polygon.fill: ✅
+Polygon.lineJoin: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polygon.lineWidth: ✅
 Polygon.renderTransform: cannot read renderTransform of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no renderTransform; its drawing proves it
 Polygon.stroke: ✅
-Polygon.strokeDashPattern: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Polygon.strokeLineJoin: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Polygon.strokeWidth: ✅
 Polyline.aspect: ✅
+Polyline.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polyline.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Polyline.stroke: ✅
-Polyline.strokeDashOffset: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Polyline.strokeMiterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Rectangle.aspect: cannot read aspect of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no aspect; its drawing proves it
 Rectangle.fill: ✅
+Rectangle.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Rectangle.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
 Rectangle.renderTransform: ✅
-Rectangle.strokeLineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Rectangle.strokeWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line

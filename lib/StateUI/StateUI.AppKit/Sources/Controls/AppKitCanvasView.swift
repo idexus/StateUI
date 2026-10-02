@@ -140,9 +140,9 @@ final class AppKitCanvasView: AppKitHitTestView {
     }
 
     private func stroke(_ path: NSBezierPath, _ pen: CanvasPen) {
-        guard pen.strokeWidth > 0, let color = Self.color(pen.stroke, pen) else { return }
+        guard pen.lineWidth > 0, let color = Self.color(pen.stroke, pen) else { return }
         color.setStroke()
-        path.lineWidth = pen.strokeWidth
+        path.lineWidth = pen.lineWidth
         path.stroke()
     }
 

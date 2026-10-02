@@ -8,8 +8,8 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 Rectangle()
     .fill(.gold)
     .stroke(.black)
-    .strokeWidth(2)
-    .strokeDashPattern([4, 2])
+    .lineWidth(2)
+    .dash([4, 2])
     .height(40)
 ```
 
@@ -27,9 +27,9 @@ How each of them realizes these members is on its own page.
 | `fill` | property | `Brush` | stateUI |
 | `renderTransform` | property | `ViewTransform` | native |
 | `stroke` | property | `Brush` | stateUI |
-| `strokeDashOffset` | property | `Double` | stateUI |
-| `strokeDashPattern` | property | `[Double]` | stateUI |
-| `strokeLineCap` | property | `LineCap` | stateUI |
-| `strokeLineJoin` | property | `LineJoin` | stateUI |
-| `strokeMiterLimit` | property | `Double` | stateUI |
-| `strokeWidth` | property | `Double` | stateUI |
+| `dashPhase` | property | `Double` | stateUI |
+| `dash` | property | `[Double]` | stateUI |
+| `lineCap` | property | `LineCap` | stateUI |
+| `lineJoin` | property | `LineJoin` | stateUI |
+| `miterLimit` | property | `Double` | stateUI |
+| `lineWidth` | property | `Double` | stateUI |

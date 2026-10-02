@@ -173,7 +173,7 @@ final class AndroidScrollViewTests: XCTestCase {
                 .padding(10)
                 .shape(.roundedRectangle(20))
                 .stroke(Color("#0000FF"))
-                .strokeWidth(2)
+                .lineWidth(2)
                 .width(100)
                 .height(80)
                 .horizontalAlignment(.start)

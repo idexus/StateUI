@@ -68,7 +68,7 @@ final class AndroidButtonView: AndroidTextualView {
     /// rectangle and no fill keep the theme's look.
     func setOutline(stroke: HostValue?, width: Double?, shape: HostValue?) {
         look.stroke = stroke
-        look.strokeWidth = width
+        look.lineWidth = width
         look.shape = AndroidShapeDrawable.Shape(container: shape)
         drawLook()
     }
@@ -87,7 +87,7 @@ final class AndroidButtonView: AndroidTextualView {
 
         let corners = look.shape
         let shape = AndroidShapeDrawable()
-        shape.setStroke(look.stroke, width: look.strokeWidth, density: density)
+        shape.setStroke(look.stroke, width: look.lineWidth, density: density)
         shape.setShape(corners, density: density)
         shape.setFill(look.fill)
         let mask = AndroidShapeDrawable()
@@ -211,7 +211,7 @@ final class AndroidButtonView: AndroidTextualView {
     private struct Look {
         var fill: HostValue?
         var stroke: HostValue?
-        var strokeWidth: Double?
+        var lineWidth: Double?
         var shape = AndroidShapeDrawable.Shape.rectangle
     }
 

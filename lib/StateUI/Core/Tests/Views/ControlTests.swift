@@ -116,7 +116,7 @@ final class ControlTests: XCTestCase {
             ControlCase("Button", source: "Button.swift",
                 Button("Increment")
                     .stroke(.gray)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .shape(.roundedRectangle(8))
                     .lineBreak(.noWrap)
                     .icon("tab_list.png")
@@ -199,7 +199,7 @@ final class ControlTests: XCTestCase {
                     .groupName("size")
                     .textCase(.uppercase)
                     .stroke(.gray)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .shape(.roundedRectangle(8))
                     .onToggled { _ in }),
 
@@ -276,7 +276,7 @@ final class ControlTests: XCTestCase {
                         .verticalAlignment(.end)
                 }
                 .stroke(.lightGray)
-                .strokeWidth(1)
+                .lineWidth(1)
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)),
 
@@ -382,7 +382,7 @@ final class ControlTests: XCTestCase {
                 Canvas {
                     Draw.fillColor(.cornflowerBlue)
                     Draw.strokeColor(Color(light: .black, dark: .white))
-                    Draw.strokeWidth(2)
+                    Draw.lineWidth(2)
                     Draw.textColor(.white)
                     Draw.fontSize(14)
                     Draw.opacity(0.9)
@@ -439,12 +439,12 @@ final class ControlTests: XCTestCase {
                             GradientStop(.gold, 0),
                             GradientStop(.tomato, 1),
                         ], startPoint: Point(0, 0), endPoint: Point(1, 1)))
-                        .strokeWidth(2)
-                        .strokeDashPattern([4, 2])
-                        .strokeDashOffset(1)
-                        .strokeLineCap(.round)
-                        .strokeLineJoin(.bevel)
-                        .strokeMiterLimit(4)
+                        .lineWidth(2)
+                        .dash([4, 2])
+                        .dashPhase(1)
+                        .lineCap(.round)
+                        .lineJoin(.bevel)
+                        .miterLimit(4)
                         .aspect(.fill)
                         // The one transform, on the geometry: a matrix with a
                         // lean in it exercises the part only a geometry draws.
@@ -656,7 +656,7 @@ final class ControlTests: XCTestCase {
 
             read += declared.count
 
-            // A test writes `.strokeWidth(`, or reads what a message carried,
+            // A test writes `.lineWidth(`, or reads what a message carried,
             // `props["side"]`; the anchors keep `text` from being answered by
             // `textColor`.
             for key in declared.sorted()
@@ -700,7 +700,7 @@ final class ControlTests: XCTestCase {
             // A value the host cannot be handed whole.
             "background", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
-            "minimumDate", "strokeDashPattern", "points", "options", "columns",
+            "minimumDate", "dash", "points", "options", "columns",
             "rows", "shape", "renderTransform", "transform", "motion", "id",
             "assign", "area",
             // Tiers no view wears.

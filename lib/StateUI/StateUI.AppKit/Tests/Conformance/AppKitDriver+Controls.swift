@@ -146,7 +146,7 @@ extension AppKitDriver {
             guard let outline = layer?.borderColor, (layer?.borderWidth ?? 0) > 0, let color = NSColor(cgColor: outline)
             else { return nil }
             return Brush.solidColor(Self.color(color)).propValue
-        case .strokeWidth: return Double(layer?.borderWidth ?? 0).propValue
+        case .lineWidth: return Double(layer?.borderWidth ?? 0).propValue
         case .shape:
             if layer?.mask != nil { return ContainerShape.ellipse.propValue }
             let radius = Double(layer?.cornerRadius ?? 0)

@@ -87,7 +87,7 @@ struct StateSample: SampleContent, ExampleContent {
 
                     Button("Reset")
                         .stroke(Palette.outline)
-                        .strokeWidth(1)
+                        .lineWidth(1)
                         .background(.transparent)
                         .textColor(Palette.subtle)
                         .shape(.roundedRectangle(8))
@@ -121,7 +121,7 @@ struct StateSample: SampleContent, ExampleContent {
                 .style("Card")
                 .padding(14)
                 .stroke(Palette.accent)
-                .strokeWidth(1)
+                .lineWidth(1)
                 .shape(.roundedRectangle(10))
             }
             .spacing(14)
@@ -129,7 +129,7 @@ struct StateSample: SampleContent, ExampleContent {
         .style("Card")
         .padding(14)
         .stroke(Palette.accent)
-        .strokeWidth(1)
+        .lineWidth(1)
         .shape(.roundedRectangle(12))
     }
 

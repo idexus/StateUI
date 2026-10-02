@@ -27,7 +27,7 @@ struct InspectorPanel: View {
         }
         .background(Look.ground)
         .stroke(Look.edge)
-        .strokeWidth(1)
+        .lineWidth(1)
         .shape(.roundedRectangle(14))
         .clipsContent(true)
         .margin(8)

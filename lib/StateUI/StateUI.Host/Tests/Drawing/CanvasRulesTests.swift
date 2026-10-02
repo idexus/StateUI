@@ -13,7 +13,7 @@ final class CanvasRulesTests: XCTestCase {
     func testAnInstructionReadsAsDrawWroteIt() throws {
         let broken = try XCTUnwrap(DrawCommand(propValue: .values([.enumeration(6), .number(1)])))
         let drawing = [
-            Draw.fillColor(.red), Draw.strokeWidth(3),
+            Draw.fillColor(.red), Draw.lineWidth(3),
             Draw.fillRoundedRectangle(x: 1, y: 2, width: 30, height: 40, cornerRadius: 5),
             Draw.text("Go", x: 0, y: 0, width: 90, height: 30, horizontalAlignment: .center),
             Draw.strokeArc(x: 0, y: 0, width: 10, height: 10, startAngle: 0, endAngle: 90, clockwise: true, closed: false),
@@ -21,7 +21,7 @@ final class CanvasRulesTests: XCTestCase {
         ]
 
         XCTAssertEqual(CanvasInstruction.instructions(drawing), [
-            .fillColor(Color.red.propValue), .strokeWidth(3),
+            .fillColor(Color.red.propValue), .lineWidth(3),
             .fillRoundedRectangle(Rect(x: 1, y: 2, width: 30, height: 40), radius: 5),
             .text("Go", in: Rect(x: 0, y: 0, width: 90, height: 30), horizontal: .center, vertical: .start),
             .strokeArc(Rect(x: 0, y: 0, width: 10, height: 10), start: 0, end: 90, clockwise: true, closed: false),
@@ -33,8 +33,8 @@ final class CanvasRulesTests: XCTestCase {
     func testASettingHoldsTillChangedAndASavedStateComesBack() {
         var pen = CanvasPen()
         XCTAssertTrue(pen.take(.fillColor(Color.red.propValue)))
-        XCTAssertTrue(pen.take(.strokeWidth(-2)))
-        XCTAssertEqual(pen.strokeWidth, 0, "never below nothing")
+        XCTAssertTrue(pen.take(.lineWidth(-2)))
+        XCTAssertEqual(pen.lineWidth, 0, "never below nothing")
         XCTAssertTrue(pen.take(.saveState))
         XCTAssertTrue(pen.take(.opacity(2)))
         XCTAssertTrue(pen.take(.fillColor(Color.blue.propValue)))

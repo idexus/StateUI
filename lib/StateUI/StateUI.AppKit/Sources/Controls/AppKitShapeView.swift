@@ -35,7 +35,7 @@ final class AppKitShapeView: AppKitHitTestView {
 
     private var fill = AppKitBrush()
     private var stroke = AppKitBrush()
-    private var strokeWidth: CGFloat = 1
+    private var lineWidth: CGFloat = 1
     private var dash: [Double] = []
     private var dashOffset: CGFloat = 0
     private var lineCap: Int32 = 0
@@ -68,7 +68,7 @@ final class AppKitShapeView: AppKitHitTestView {
     func apply(
         fill: HostValue?,
         stroke: HostValue?,
-        strokeWidth: Double?,
+        lineWidth: Double?,
         dash: [Double],
         dashOffset: Double,
         lineCap: Int32,
@@ -80,7 +80,7 @@ final class AppKitShapeView: AppKitHitTestView {
     ) {
         self.fill = AppKitBrush(fill)
         self.stroke = AppKitBrush(stroke)
-        self.strokeWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth))
+        self.lineWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth))
         self.dash = dash
         self.dashOffset = dashOffset.isFinite ? CGFloat(dashOffset) : 0
         self.lineCap = lineCap
@@ -96,7 +96,7 @@ final class AppKitShapeView: AppKitHitTestView {
         super.draw(dirtyRect)
         let path = pathForTesting(in: bounds)
         fill.draw(in: path, bounds: bounds)
-        stroke.stroke(path, width: strokeWidth)
+        stroke.stroke(path, width: lineWidth)
     }
 
     func pathForTesting(in bounds: NSRect) -> NSBezierPath {
@@ -105,12 +105,12 @@ final class AppKitShapeView: AppKitHitTestView {
 
         switch geometry {
         case .rectangle(let radii):
-            let rect = bounds.insetBy(dx: strokeWidth / 2, dy: strokeWidth / 2)
+            let rect = bounds.insetBy(dx: lineWidth / 2, dy: lineWidth / 2)
             path = NSBezierPath(cgPath: AppKitCorners.path(in: rect, clockwise: radii))
             stretchesAuthoredGeometry = false
 
         case .ellipse:
-            path = NSBezierPath(ovalIn: bounds.insetBy(dx: strokeWidth / 2, dy: strokeWidth / 2))
+            path = NSBezierPath(ovalIn: bounds.insetBy(dx: lineWidth / 2, dy: lineWidth / 2))
             stretchesAuthoredGeometry = false
 
         case .line(let x1, let y1, let x2, let y2):
@@ -155,12 +155,12 @@ final class AppKitShapeView: AppKitHitTestView {
     }
 
     var dashPatternForTesting: [CGFloat] {
-        ShapeArithmetic.dashLengths(dash, strokeWidth: Double(strokeWidth)).map { CGFloat($0) }
+        ShapeArithmetic.dashLengths(dash, lineWidth: Double(lineWidth)).map { CGFloat($0) }
     }
-    var dashPhaseForTesting: CGFloat { dashOffset * strokeWidth }
+    var dashPhaseForTesting: CGFloat { dashOffset * lineWidth }
 
     private func configureStroke(on path: NSBezierPath) {
-        path.lineWidth = strokeWidth
+        path.lineWidth = lineWidth
         path.lineCapStyle = switch lineCap {
         case 1: .round
         case 2: .square

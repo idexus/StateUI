@@ -111,7 +111,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                         .width(64)
                         .height(64)
                         .stroke(Palette.outline)
-                        .strokeWidth(1)
+                        .lineWidth(1)
                         .shape(.roundedRectangle(12))
                         .onClicked { taps += 1 }
 
@@ -250,7 +250,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .width(64)
             .height(64)
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(12))
             .onClicked { taps += 1 }
 

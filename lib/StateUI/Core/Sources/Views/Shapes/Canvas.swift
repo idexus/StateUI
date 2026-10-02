@@ -9,7 +9,7 @@ extension CanvasProperties {
     ///
     ///     .drawing {
     ///         Draw.strokeColor(.firebrick)
-    ///         Draw.strokeWidth(2)
+    ///         Draw.lineWidth(2)
     ///         Draw.strokeLine(x1: 0, y1: 0, x2: 120, y2: 0)
     ///     }
     ///

@@ -52,11 +52,11 @@ extension AppKitRegistrations {
                     offset: offset)
             }
             scroll.applies([
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 view.setBox(
                     stroke: values[BorderElementContract.stroke]?.propValue,
-                    strokeWidth: values[BorderElementContract.strokeWidth],
+                    lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
         }

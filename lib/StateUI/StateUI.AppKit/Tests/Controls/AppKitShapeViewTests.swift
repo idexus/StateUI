@@ -16,7 +16,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: nil,
             stroke: brush(.cornflowerBlue),
-            strokeWidth: 4,
+            lineWidth: 4,
             dash: [3, 2],
             dashOffset: 2.5,
             lineCap: LineCap.round.rawValue,
@@ -44,7 +44,7 @@ final class AppKitShapeViewTests: XCTestCase {
         for (kind, width) in [(AppKitShapeKind.rectangle, 60.0), (.ellipse, 40 * (1.25).squareRoot())] {
             let view = AppKitShapeView(kind: kind)
             view.apply(
-                fill: brush(.red), stroke: nil, strokeWidth: 0, dash: [], dashOffset: 0, lineCap: 0, lineJoin: 0,
+                fill: brush(.red), stroke: nil, lineWidth: 0, dash: [], dashOffset: 0, lineCap: 0, lineJoin: 0,
                 miterLimit: 10, aspect: .fit, renderTransform: skew,
                 geometry: kind == .rectangle ? .rectangle([0, 0, 0, 0]) : .ellipse)
 
@@ -60,7 +60,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: brush(.red),
             stroke: nil,
-            strokeWidth: 1,
+            lineWidth: 1,
             dash: [],
             dashOffset: 0,
             lineCap: 0,
@@ -84,7 +84,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: nil,
             stroke: brush(.black),
-            strokeWidth: 1,
+            lineWidth: 1,
             dash: [],
             dashOffset: 0,
             lineCap: 0,
@@ -106,7 +106,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: brush(.gold),
             stroke: nil,
-            strokeWidth: 1,
+            lineWidth: 1,
             dash: [],
             dashOffset: 0,
             lineCap: 0,
@@ -130,7 +130,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: nil,
             stroke: brush(.black),
-            strokeWidth: 1,
+            lineWidth: 1,
             dash: [],
             dashOffset: 0,
             lineCap: 0,
@@ -161,8 +161,8 @@ final class AppKitShapeViewTests: XCTestCase {
         line.properties[.x2] = .number(41)
         line.properties[.y2] = .number(22)
         line.properties[.stroke] = brush(.black)
-        line.properties[.strokeWidth] = .number(3)
-        line.properties[.strokeDashPattern] = .numbers([2, 1])
+        line.properties[.lineWidth] = .number(3)
+        line.properties[.dash] = .numbers([2, 1])
         line.properties[.aspect] = .enumeration(Aspect.center.rawValue)
         renderer.applyForTesting(tree(line))
 
@@ -211,12 +211,12 @@ final class AppKitShapeViewTests: XCTestCase {
             var shape = HostPatch(id: .manual("shape"), type: type)
             shape.properties = geometry.merging([
                 .stroke: brush(.black),
-                .strokeWidth: .number(2),
-                .strokeDashPattern: .numbers([3, 1]),
-                .strokeDashOffset: .number(0.5),
-                .strokeLineCap: .enumeration(LineCap.square.rawValue),
-                .strokeLineJoin: .enumeration(LineJoin.round.rawValue),
-                .strokeMiterLimit: .number(4),
+                .lineWidth: .number(2),
+                .dash: .numbers([3, 1]),
+                .dashPhase: .number(0.5),
+                .lineCap: .enumeration(LineCap.square.rawValue),
+                .lineJoin: .enumeration(LineJoin.round.rawValue),
+                .miterLimit: .number(4),
             ]) { $1 }
             renderer.applyForTesting(tree(shape))
 
@@ -243,7 +243,7 @@ final class AppKitShapeViewTests: XCTestCase {
             shape.properties = geometry.merging([
                 .fill: brush(.red),
                 .stroke: brush(.blue),
-                .strokeWidth: .number(4),
+                .lineWidth: .number(4),
             ]) { $1 }
             renderer.applyForTesting(tree(shape))
 

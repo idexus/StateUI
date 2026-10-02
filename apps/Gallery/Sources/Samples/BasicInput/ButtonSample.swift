@@ -24,7 +24,7 @@ struct ButtonSample: SampleContent, ExampleContent {
             Button("Outlined")
                 .background(.transparent)
                 .stroke(Palette.accent)
-                .strokeWidth(1)
+                .lineWidth(1)
                 .onClicked { counter += 1 }
 
             Button("Disabled")
@@ -52,7 +52,7 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .background(.transparent)
                 .textColor(Palette.accent)
                 .stroke(Palette.accent)
-                .strokeWidth(1)
+                .lineWidth(1)
                 .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .horizontalAlignment(.center)

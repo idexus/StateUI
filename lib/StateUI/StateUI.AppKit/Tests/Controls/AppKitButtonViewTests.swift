@@ -23,7 +23,7 @@ final class AppKitButtonViewTests: XCTestCase {
             textColor: .systemPurple,
             backgroundColor: .systemYellow,
             strokeColor: .systemBlue,
-            strokeWidth: 2,
+            lineWidth: 2,
             shape: .roundedRectangle(6),
             lineBreakMode: .byTruncatingTail,
             enabled: false)
@@ -50,7 +50,7 @@ final class AppKitButtonViewTests: XCTestCase {
             textColor: .controlTextColor,
             backgroundColor: nil,
             strokeColor: nil,
-            strokeWidth: 1,
+            lineWidth: 1,
             shape: .rectangle,
             lineBreakMode: .byClipping,
             enabled: true)
@@ -80,7 +80,7 @@ final class AppKitButtonViewTests: XCTestCase {
         button.apply(
             text: "Save", image: nil, imagePosition: .noImage, imageScaling: .scaleNone,
             font: .systemFont(ofSize: 13), textColor: .labelColor, backgroundColor: .systemBlue, strokeColor: nil,
-            strokeWidth: 0, shape: .rectangle, lineBreakMode: .byTruncatingTail, enabled: true)
+            lineWidth: 0, shape: .rectangle, lineBreakMode: .byTruncatingTail, enabled: true)
         let alpha = { Double(button.layer?.backgroundColor?.alpha ?? 0) }
         let crossing = { (type: NSEvent.EventType) in
             try XCTUnwrap(NSEvent.enterExitEvent(
@@ -160,7 +160,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 .text: .string("Save"),
                 .padding: .numbers([20, 10, 20, 10]),
                 .stroke: Brush.solidColor(Color("#FF0000")).propValue,
-                .strokeWidth: .number(2),
+                .lineWidth: .number(2),
                 .shape: ContainerShape.roundedRectangle(6).propValue,
             ]),
             button("stretched", icon(.stretch)),

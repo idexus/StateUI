@@ -160,7 +160,7 @@ struct HomePage: View {
                 .style("Card")
                 .background(Palette.identity)
                 .stroke(.transparent)
-                .strokeWidth(0)
+                .lineWidth(0)
                 .shape(.roundedRectangle(18))
 
                 SectionTitle("\(catalog.sampleCount(on: device.formFactor)) SAMPLES "
@@ -549,7 +549,7 @@ private struct Steps: View {
             .textColor(Palette.subtle)
             .background(.transparent)
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(8))
             .padding(18, 2)
             .isEnabled(to >= 0 && to < count)
@@ -600,7 +600,7 @@ private struct GroupFace: View {
         .accessibilityIdentifier(handle("group", title))
         .accessibilityLabel(title)
         .accessibilityHint(summary)
-        .strokeWidth(0)
+        .lineWidth(0)
         .shape(.roundedRectangle(16))
     }
 }

@@ -17,12 +17,12 @@ extension GTKRegistrations {
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
             button.applies([
                 VisualElementContract.background,
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 view.setBox(
                     fill: values[VisualElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
-                    strokeWidth: values[BorderElementContract.strokeWidth],
+                    lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.applies([

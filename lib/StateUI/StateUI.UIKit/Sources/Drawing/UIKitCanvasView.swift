@@ -95,10 +95,10 @@ final class UIKitCanvasView: UIView {
     }
 
     private func stroke(_ path: CGPath, _ pen: CanvasPen, _ context: CGContext) {
-        guard pen.strokeWidth > 0, let color = Self.color(pen.stroke, pen) else { return }
+        guard pen.lineWidth > 0, let color = Self.color(pen.stroke, pen) else { return }
         context.addPath(path)
         context.setStrokeColor(color.cgColor)
-        context.setLineWidth(pen.strokeWidth)
+        context.setLineWidth(pen.lineWidth)
         context.strokePath()
     }
 

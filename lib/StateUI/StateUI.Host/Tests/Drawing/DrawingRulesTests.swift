@@ -87,8 +87,8 @@ final class DrawingRulesTests: XCTestCase {
             ShapeArithmetic.curves(through: points, closed: true),
             [.move(Point(x: 0, y: 0)), .line(Point(x: 10, y: 5)), .close])
         XCTAssertEqual(ShapeArithmetic.curves(through: [], closed: false), [])
-        XCTAssertEqual(ShapeArithmetic.dashLengths([2, -1], strokeWidth: 3), [6, 0])
-        XCTAssertEqual(ShapeArithmetic.strokeWidth(.infinity), 0)
+        XCTAssertEqual(ShapeArithmetic.dashLengths([2, -1], lineWidth: 3), [6, 0])
+        XCTAssertEqual(ShapeArithmetic.lineWidth(.infinity), 0)
     }
 
     /// Words on a dark band are light, on a light band dark; a value that is no colour decides nothing.

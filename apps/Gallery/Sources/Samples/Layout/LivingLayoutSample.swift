@@ -94,7 +94,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                     .style("Card")
                     .padding(Insets(12, 8, 12, 8))
                     .background(Palette.raised)
-                    .strokeWidth(0)
+                    .lineWidth(0)
                     .height(40)
                 }
             }
@@ -149,7 +149,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
         .style("Card")
         .background(colour)
         .opacity(faded ? 0.55 : 1)
-        .strokeWidth(0)
+        .lineWidth(0)
         .gridColumn(column)
     }
 

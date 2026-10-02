@@ -14,13 +14,13 @@ import QuartzCore
 final class AppKitDecoration {
     private var fill = AppKitBrush()
     private var stroke = AppKitBrush()
-    private var strokeWidth: CGFloat = 0
+    private var lineWidth: CGFloat = 0
     private var shape = ContainerShape.rectangle
     private var clips = false
 
     /// Whether the box is drawn: an outline, a shape or a gradient; otherwise the layer paints its colour.
     var draws: Bool {
-        strokeWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.isGradient
+        lineWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.isGradient
     }
 
     /// The colour the layer paints where nothing is drawn.
@@ -31,12 +31,12 @@ final class AppKitDecoration {
     /// Takes the element's values - its background a colour or a brush, its outline by the host layer's rule
     /// (`BoxArithmetic`); the view draws again.
     func apply(
-        background: HostValue?, stroke: HostValue?, strokeWidth: Double?, shape: HostValue?, clips: Bool,
+        background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool,
         to view: NSView
     ) {
         fill = AppKitBrush(background)
         self.stroke = AppKitBrush(stroke)
-        self.strokeWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth))
+        self.lineWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth))
         self.shape = BoxArithmetic.outline(shape)
         self.clips = clips
         clip(view)
@@ -55,10 +55,10 @@ final class AppKitDecoration {
 
     /// Paints the background and strokes the outline on the shape within `bounds`.
     func draw(in bounds: NSRect) {
-        let inset = strokeWidth / 2
+        let inset = lineWidth / 2
         let path = shape.path(in: bounds.insetBy(dx: inset, dy: inset))
         fill.draw(in: path, bounds: bounds)
-        stroke.stroke(path, width: strokeWidth)
+        stroke.stroke(path, width: lineWidth)
     }
 }
 

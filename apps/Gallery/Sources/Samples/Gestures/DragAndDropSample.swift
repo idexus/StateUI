@@ -64,7 +64,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)
-            .strokeWidth(over ? 2 : 1)
+            .lineWidth(over ? 2 : 1)
             .shape(.roundedRectangle(10))
             .background(over ? Palette.selected : Palette.raised)
             .onDragOver { over = true }
@@ -96,7 +96,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                     }
                     .style("Card")
                     .stroke(Palette.accent)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .shape(.roundedRectangle(8))
                     .draggable(text: item)
                     // The view that was DRAGGED hears when its own drag ends,
@@ -136,7 +136,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)
-            .strokeWidth(over ? 2 : 1)
+            .lineWidth(over ? 2 : 1)
             .shape(.roundedRectangle(10))
             .background(over ? Palette.selected : Palette.raised)
             .onDragOver { over = true }

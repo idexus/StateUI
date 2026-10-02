@@ -36,8 +36,8 @@ extension ShapeProperties {
 
     /// How thick the outline is, in device units - 1 unless said. A thickness
     /// with no `.stroke` draws nothing.
-    public func strokeWidth(_ value: Double) -> Modified {
-        setValue(ShapeContract.strokeWidth, value)
+    public func lineWidth(_ value: Double) -> Modified {
+        setValue(ShapeContract.lineWidth, value)
     }
 
     /// The dashes and the gaps between them, in multiples of the stroke
@@ -45,31 +45,31 @@ extension ShapeProperties {
     ///
     ///     Line().x2(240)
     ///         .stroke(.lightGray)
-    ///         .strokeWidth(2)
-    ///         .strokeDashPattern([4, 2])   // 8 units of dash, 4 of gap
-    public func strokeDashPattern(_ value: [Double]) -> Modified {
-        setValue(ShapeContract.strokeDashPattern, value)
+    ///         .lineWidth(2)
+    ///         .dash([4, 2])   // 8 units of dash, 4 of gap
+    public func dash(_ value: [Double]) -> Modified {
+        setValue(ShapeContract.dash, value)
     }
 
     /// How far into the dash pattern the line starts.
-    public func strokeDashOffset(_ value: Double) -> Modified {
-        setValue(ShapeContract.strokeDashOffset, value)
+    public func dashPhase(_ value: Double) -> Modified {
+        setValue(ShapeContract.dashPhase, value)
     }
 
     /// How the ends of an open line are drawn.
-    public func strokeLineCap(_ value: LineCap) -> Modified {
-        setValue(ShapeContract.strokeLineCap, value)
+    public func lineCap(_ value: LineCap) -> Modified {
+        setValue(ShapeContract.lineCap, value)
     }
 
     /// How two segments meet at a corner.
-    public func strokeLineJoin(_ value: LineJoin) -> Modified {
-        setValue(ShapeContract.strokeLineJoin, value)
+    public func lineJoin(_ value: LineJoin) -> Modified {
+        setValue(ShapeContract.lineJoin, value)
     }
 
     /// How far a sharp corner may reach before it is cut off, in multiples of
     /// the stroke thickness.
-    public func strokeMiterLimit(_ value: Double) -> Modified {
-        setValue(ShapeContract.strokeMiterLimit, value)
+    public func miterLimit(_ value: Double) -> Modified {
+        setValue(ShapeContract.miterLimit, value)
     }
 
     /// What the shape does with the room it is given - the `Aspect` an Image
@@ -85,33 +85,33 @@ extension Shape {
         plain(ShapeContract.aspect, by: state)
     }
 
-    /// `strokeDashOffset` from a state, `$x`: the host animates the property to
+    /// `dashPhase` from a state, `$x`: the host animates the property to
     /// each new value, and no view is rebuilt for it.
-    public func strokeDashOffset(_ state: Binding<Double>) -> Modified {
-        journey(ShapeContract.strokeDashOffset, by: state)
+    public func dashPhase(_ state: Binding<Double>) -> Modified {
+        journey(ShapeContract.dashPhase, by: state)
     }
 
-    /// `strokeLineCap` from a state, `$x`: the host sets each new value as it
+    /// `lineCap` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
-    public func strokeLineCap(_ state: Binding<LineCap>) -> Modified {
-        plain(ShapeContract.strokeLineCap, by: state)
+    public func lineCap(_ state: Binding<LineCap>) -> Modified {
+        plain(ShapeContract.lineCap, by: state)
     }
 
-    /// `strokeLineJoin` from a state, `$x`: the host sets each new value as it
+    /// `lineJoin` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
-    public func strokeLineJoin(_ state: Binding<LineJoin>) -> Modified {
-        plain(ShapeContract.strokeLineJoin, by: state)
+    public func lineJoin(_ state: Binding<LineJoin>) -> Modified {
+        plain(ShapeContract.lineJoin, by: state)
     }
 
-    /// `strokeMiterLimit` from a state, `$x`: the host animates the property to
+    /// `miterLimit` from a state, `$x`: the host animates the property to
     /// each new value, and no view is rebuilt for it.
-    public func strokeMiterLimit(_ state: Binding<Double>) -> Modified {
-        journey(ShapeContract.strokeMiterLimit, by: state)
+    public func miterLimit(_ state: Binding<Double>) -> Modified {
+        journey(ShapeContract.miterLimit, by: state)
     }
 
-    /// `strokeWidth` from a state, `$x`: the host animates the property to each
+    /// `lineWidth` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
-    public func strokeWidth(_ state: Binding<Double>) -> Modified {
-        journey(ShapeContract.strokeWidth, by: state)
+    public func lineWidth(_ state: Binding<Double>) -> Modified {
+        journey(ShapeContract.lineWidth, by: state)
     }
 }

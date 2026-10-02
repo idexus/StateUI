@@ -32,8 +32,8 @@ final class GTKDriver: HostDriver {
         ]
         let shapes = ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
-            "aspect", "renderTransform", "fill", "stroke", "strokeWidth", "strokeDashOffset", "strokeDashPattern",
-            "strokeLineCap", "strokeLineJoin", "strokeMiterLimit",
+            "aspect", "renderTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in shapes {
             for member in shapePaint {
@@ -44,7 +44,7 @@ final class GTKDriver: HostDriver {
         none["read background of Page"] =
             "StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it"
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
-            for member in ["background", "stroke", "strokeWidth", "shape"] {
+            for member in ["background", "stroke", "lineWidth", "shape"] {
                 none["read \(member) of \(layout)"] =
                     "StateUI draws a layout's box on GTK's snapshot, which holds none of its \(member); its drawing proves it"
             }
@@ -75,7 +75,7 @@ final class GTKDriver: HostDriver {
     }
 
     /// The members read from the classes of the host's style sheet a widget wears.
-    private static let recordedMembers = ["padding", "background", "stroke", "strokeWidth", "shape", "placeholderColor"]
+    private static let recordedMembers = ["padding", "background", "stroke", "lineWidth", "shape", "placeholderColor"]
 
     private static let byHostReasons = [
         "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",

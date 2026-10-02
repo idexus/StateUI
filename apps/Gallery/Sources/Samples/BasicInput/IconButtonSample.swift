@@ -34,7 +34,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .width(64)
                     .height(64)
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .shape(.roundedRectangle(12))
                     .onClicked { taps += 1 }
                     .onPressed { pressed = true }
@@ -81,7 +81,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .height(64)
                     .padding(12)
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .shape(.roundedRectangle(12))
                     .onClicked { taps += 1 }
                     .onPressed { pressed = true }

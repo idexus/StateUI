@@ -17,7 +17,7 @@
     public var text: HostValue = .color(red: 0, green: 0, blue: 0, alpha: 255)
 
     /// An outline's width, never below nothing: one until set.
-    public var strokeWidth = 1.0
+    public var lineWidth = 1.0
 
     /// The text's size in points; the platform's own until set.
     public var fontSize: Double?
@@ -36,7 +36,7 @@
         case .fillColor(let color): fill = color
         case .strokeColor(let color): stroke = color
         case .textColor(let color): text = color
-        case .strokeWidth(let width): strokeWidth = max(0, width)
+        case .lineWidth(let width): lineWidth = max(0, width)
         case .fontSize(let size): fontSize = max(0, size)
         case .opacity(let value): alpha = min(max(value, 0), 1)
         case .saveState: saved.append(self)

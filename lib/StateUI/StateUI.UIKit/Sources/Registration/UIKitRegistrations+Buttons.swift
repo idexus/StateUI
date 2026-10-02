@@ -40,13 +40,13 @@ extension UIKitRegistrations {
                     spacing: values[ButtonContract.iconSpacing])
             }
             button.applies([
-                VisualElementContract.background, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+                VisualElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
                 BorderElementContract.shape,
             ]) { view, values in
                 view.setBox(
                     background: values[VisualElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
-                    width: values[BorderElementContract.strokeWidth],
+                    width: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.property(ButtonContract.lineBreak) { view, breaking in view.setLineBreak(breaking ?? .wordWrap) }

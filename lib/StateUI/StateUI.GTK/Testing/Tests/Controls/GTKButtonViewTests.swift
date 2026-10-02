@@ -21,7 +21,7 @@ final class GTKButtonViewTests: XCTestCase {
                         .textColor(Color("#FFFFFF"))
                         .background(Color("#0000FF"))
                         .stroke(Color("#FF0000"))
-                        .strokeWidth(2)
+                        .lineWidth(2)
                         .shape(.roundedRectangle(10))
                         .padding(16, 11)
                 }
@@ -50,7 +50,7 @@ final class GTKButtonViewTests: XCTestCase {
                     Button("Quiet")
                         .background(Color(red: 0, green: 0, blue: 0, alpha: 0))
                         .stroke(Color("#FFFFFF"))
-                        .strokeWidth(2)
+                        .lineWidth(2)
                         .shape(.roundedRectangle(8))
                         .padding(16, 11)
                 }

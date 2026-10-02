@@ -111,7 +111,7 @@ struct AimSample: SampleContent, ExampleContent {
 
                 Button("Let go")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))

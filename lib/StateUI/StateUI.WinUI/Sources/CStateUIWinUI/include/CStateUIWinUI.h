@@ -387,10 +387,10 @@ StateUIObjectRef stateui_winui_button_make(int64_t view);
 void stateui_winui_set_caption(StateUIObjectRef control, char const *utf8);
 
 /// A button's look: what fills it - the platform's for none, kept `underPointer` and `pressed` of its opacity under
-/// the pointer and pressed - its outline `strokeWidth` DIPs wide, and its corners' radius, less than 0 for the
+/// the pointer and pressed - its outline `lineWidth` DIPs wide, and its corners' radius, less than 0 for the
 /// platform's.
 void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush background, StateUIBrush stroke,
-                                   double strokeWidth, double cornerRadius, double underPointer, double pressed);
+                                   double lineWidth, double cornerRadius, double underPointer, double pressed);
 
 /// What a button shows: its words - wrapped onto more lines or cut short with an ellipsis where they do not fit,
 /// else on one line - and the picture the first of the files `icons` names that the pictures hold (each ended by
@@ -610,7 +610,7 @@ void stateui_winui_search_submit_as_user(StateUIObjectRef search);
 /// A shape drawn behind a layout's children: a rectangle, rounded or not, or an ellipse, filled and outlined.
 StateUIObjectRef stateui_winui_shape_make(StateUIOutline outline);
 void stateui_winui_shape_set(StateUIObjectRef shape, double radius, StateUIBrush fill, StateUIBrush stroke,
-                             double strokeWidth);
+                             double lineWidth);
 
 /// A shape: one WinUI Path, drawn by `stateui_winui_path_draw` and painted by `stateui_winui_path_paint`.
 StateUIObjectRef stateui_winui_path_make(int64_t view);

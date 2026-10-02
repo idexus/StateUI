@@ -47,9 +47,9 @@ extension AndroidRegistrations {
 
     /// What every shape takes whole.
     private static let shapeMembers: [any ContractMember] = [
-        ShapeContract.fill, ShapeContract.stroke, ShapeContract.strokeWidth,
-        ShapeContract.strokeDashPattern, ShapeContract.strokeDashOffset,
-        ShapeContract.strokeLineCap, ShapeContract.strokeLineJoin, ShapeContract.strokeMiterLimit,
+        ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
+        ShapeContract.dash, ShapeContract.dashPhase,
+        ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
         ShapeContract.aspect, ShapeContract.renderTransform,
     ]
 
@@ -61,12 +61,12 @@ extension AndroidRegistrations {
             geometry,
             fill: values[ShapeContract.fill]?.propValue,
             stroke: values[ShapeContract.stroke]?.propValue,
-            strokeWidth: values[ShapeContract.strokeWidth] ?? 1,
-            dashes: values[ShapeContract.strokeDashPattern] ?? [],
-            dashOffset: values[ShapeContract.strokeDashOffset] ?? 0,
-            cap: values[ShapeContract.strokeLineCap]?.rawValue ?? 0,
-            join: values[ShapeContract.strokeLineJoin]?.rawValue ?? 0,
-            miterLimit: values[ShapeContract.strokeMiterLimit] ?? 10,
+            lineWidth: values[ShapeContract.lineWidth] ?? 1,
+            dashes: values[ShapeContract.dash] ?? [],
+            dashOffset: values[ShapeContract.dashPhase] ?? 0,
+            cap: values[ShapeContract.lineCap]?.rawValue ?? 0,
+            join: values[ShapeContract.lineJoin]?.rawValue ?? 0,
+            miterLimit: values[ShapeContract.miterLimit] ?? 10,
             aspect: values[ShapeContract.aspect]?.rawValue ?? 0,
             transform: transform.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil })
     }

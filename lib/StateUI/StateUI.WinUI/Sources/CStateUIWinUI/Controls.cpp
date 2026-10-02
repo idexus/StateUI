@@ -116,7 +116,7 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
 }
 
 extern "C" void stateui_winui_button_set_look(
-    StateUIObjectRef handle, StateUIBrush background, StateUIBrush stroke, double strokeWidth, double cornerRadius,
+    StateUIObjectRef handle, StateUIBrush background, StateUIBrush stroke, double lineWidth, double cornerRadius,
     double underPointer, double pressed
 ) {
     try {
@@ -140,10 +140,10 @@ extern "C" void stateui_winui_button_set_look(
         keep(L"ButtonBackgroundPointerOver", faded(underPointer));
         keep(L"ButtonBackgroundPressed", faded(pressed));
 
-        auto outline = strokeWidth > 0 ? brush(stroke) : xaml::Media::Brush{nullptr};
+        auto outline = lineWidth > 0 ? brush(stroke) : xaml::Media::Brush{nullptr};
         if (outline) {
             button.BorderBrush(outline);
-            button.BorderThickness({strokeWidth, strokeWidth, strokeWidth, strokeWidth});
+            button.BorderThickness({lineWidth, lineWidth, lineWidth, lineWidth});
         } else {
             button.ClearValue(controls::Control::BorderBrushProperty());
             button.ClearValue(controls::Control::BorderThicknessProperty());

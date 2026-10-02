@@ -8,7 +8,7 @@
 ///         .width(48)
 ///         .height(48)
 ///
-/// An outline needs a `.stroke`, 1 unit wide unless `.strokeWidth` says
+/// An outline needs a `.stroke`, 1 unit wide unless `.lineWidth` says
 /// otherwise.
 ///
 /// A round avatar or a status dot is this control sized square. For a rounded

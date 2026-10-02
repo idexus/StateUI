@@ -83,8 +83,8 @@ final class PlacesRulesTests: XCTestCase {
         let drawn: Set<Prop> = [
             .opacity, .background, .textColor, .placeholderColor, .tint, .color, .isEnabled,
             .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
-            .stroke, .fill, .strokeWidth, .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
-            .strokeMiterLimit, .shape, .cornerRadius, .renderTransform, .barBackgroundColor, .barForegroundColor,
+            .stroke, .fill, .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin,
+            .miterLimit, .shape, .cornerRadius, .renderTransform, .barBackgroundColor, .barForegroundColor,
             .drawing, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough,
         ]
         XCTAssertEqual(drawn.subtracting(MountedElement.unmeasuredProperties), [])

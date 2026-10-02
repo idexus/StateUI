@@ -212,7 +212,7 @@ private struct LayerCost: ExampleContent {
                 Button("Views: \(leaves)")
                     .fontSize(13)
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))

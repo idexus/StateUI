@@ -72,7 +72,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .height(28)
             .background(.solidColor(Palette.accent))
             .shape(.roundedRectangle(8))
-            .strokeWidth(0)
+            .lineWidth(0)
             .horizontalAlignment(.start)
 
             Text()
@@ -96,7 +96,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .height(10)
             .background(.solidColor(Palette.subtle))
             .shape(.roundedRectangle(5))
-            .strokeWidth(0)
+            .lineWidth(0)
             .horizontalAlignment(.start)
 
             HStack {
@@ -118,7 +118,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
                 Button("Stop")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))

@@ -46,7 +46,7 @@ enum GTKStyleSheet {
     /// The class drawing a button's box: its fill - a little fainter under the pointer and fainter again pressed,
     /// which the theme's own states would otherwise lose under it - its outline and its corners' radius; nil where
     /// nothing is given.
-    static func box(fill: GdkRGBA?, stroke: GdkRGBA?, strokeWidth: Double?, radius: Double?) -> String? {
+    static func box(fill: GdkRGBA?, stroke: GdkRGBA?, lineWidth: Double?, radius: Double?) -> String? {
         guard fill != nil || stroke != nil || radius != nil else { return nil }
         var name = "stateui-box"
         var body = ""
@@ -55,9 +55,9 @@ enum GTKStyleSheet {
             name += "-f" + hex(fill)
             body += "background: \(css(fill)); box-shadow: none; "
         }
-        if let stroke, let strokeWidth {
-            name += "-s" + hex(stroke) + "-w" + css(strokeWidth).replacing(".", with: "_")
-            body += "border: \(css(strokeWidth))px solid \(css(stroke)); "
+        if let stroke, let lineWidth {
+            name += "-s" + hex(stroke) + "-w" + css(lineWidth).replacing(".", with: "_")
+            body += "border: \(css(lineWidth))px solid \(css(stroke)); "
         }
         if let radius {
             name += "-r" + css(radius).replacing(".", with: "_")

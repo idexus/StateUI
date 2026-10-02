@@ -35,7 +35,7 @@ struct FontsPage: View {
                     .textColor(chosen ? .white : Palette.text)
                     .background(chosen ? style.accent.color : .transparent)
                     .stroke(Palette.subtle)
-                    .strokeWidth(chosen ? 0 : 1)
+                    .lineWidth(chosen ? 0 : 1)
                     .shape(.roundedRectangle(8))
                     .padding(14, 8)
                     .onClicked { style.font = family }

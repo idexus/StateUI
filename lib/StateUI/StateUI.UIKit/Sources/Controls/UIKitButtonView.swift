@@ -58,7 +58,7 @@ final class UIKitButtonView: UIButton {
     func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?) {
         configuration?.background.backgroundColor = background.flatMap(UIColor.init(stateUI:))
         let outline = BoxArithmetic.outlineWidth(stroke: stroke, width: width)
-        configuration?.background.strokeWidth = outline
+        configuration?.background.lineWidth = outline
         configuration?.background.strokeColor = outline > 0 ? UIKitBrush(stroke).lineColor : nil
         switch BoxArithmetic.outline(shape) {
         case .rectangle:

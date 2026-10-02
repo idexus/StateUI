@@ -217,9 +217,9 @@ enum PatchDump {
             return spelled(member, as: ToolbarItemPlacement.self)
 
         // The shapes and the map.
-        case Prop.strokeLineCap.name:
+        case Prop.lineCap.name:
             return spelled(member, as: LineCap.self)
-        case Prop.strokeLineJoin.name:
+        case Prop.lineJoin.name:
             return spelled(member, as: LineJoin.self)
         case Prop.fillRule.name:
             return spelled(member, as: FillRule.self)

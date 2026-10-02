@@ -62,7 +62,7 @@ final class AndroidShapeDrawable {
     private var size: (width: Int32, height: Int32)?
 
     /// The outline's width in pixels, which the shape stands inside of.
-    private var strokeWidth = 0.0
+    private var lineWidth = 0.0
 
     /// The radii last told the Java side.
     private var told: (kind: Int32, radii: [Float])?
@@ -87,7 +87,7 @@ final class AndroidShapeDrawable {
 
     /// Tells the Java side the shape, its corners fitted within the outline where the drawable's size is known.
     private func tellShape() {
-        let room = size.map { (Double($0.width) - strokeWidth, Double($0.height) - strokeWidth) }
+        let room = size.map { (Double($0.width) - lineWidth, Double($0.height) - lineWidth) }
         let drawn = shape.drawn(density: density, in: room)
         guard told.map({ $0.kind != drawn.kind || $0.radii != drawn.radii }) ?? true else { return }
         told = drawn
@@ -145,8 +145,8 @@ final class AndroidShapeDrawable {
     /// none without a colour - at `density`.
     func setStroke(_ value: HostValue?, width: Double?, density: Double) {
         let argb = HostBrush(value).firstColor.flatMap(AndroidView.argb)
-        strokeWidth = argb == nil ? 0 : BoxArithmetic.outlineWidth(stroke: value, width: width) * density
-        Java.call(reference, JavaAPI.setStroke, .int(argb ?? 0), .float(Float(strokeWidth)))
+        lineWidth = argb == nil ? 0 : BoxArithmetic.outlineWidth(stroke: value, width: width) * density
+        Java.call(reference, JavaAPI.setStroke, .int(argb ?? 0), .float(Float(lineWidth)))
         tellShape()
     }
 }

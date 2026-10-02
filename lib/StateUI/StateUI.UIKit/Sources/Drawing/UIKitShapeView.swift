@@ -50,7 +50,7 @@ final class UIKitShapeView: UIView {
     /// How the shape is filled and outlined.
     func paint(fill: UIKitBrush, stroke: UIKitBrush, outline: Outline) {
         var outline = outline
-        outline.width = ShapeArithmetic.strokeWidth(outline.width)
+        outline.width = ShapeArithmetic.lineWidth(outline.width)
         guard fill != self.fill || stroke != self.stroke || outline != self.outline else { return }
         (self.fill, self.stroke, self.outline) = (fill, stroke, outline)
         setNeedsLayout()
@@ -106,7 +106,7 @@ final class UIKitShapeView: UIView {
             case .bevel: .bevel
             }
             cut.miterLimit = outline.miter
-            let lengths = ShapeArithmetic.dashLengths(outline.dashes, strokeWidth: outline.width)
+            let lengths = ShapeArithmetic.dashLengths(outline.dashes, lineWidth: outline.width)
             cut.lineDashPattern = lengths.contains { $0 > 0 } ? lengths.map { NSNumber(value: $0) } : nil
             cut.lineDashPhase = outline.dashOffset * outline.width
         } else {

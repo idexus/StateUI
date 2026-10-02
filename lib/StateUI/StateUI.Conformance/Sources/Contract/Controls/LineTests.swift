@@ -18,7 +18,7 @@
             ]) { s in
                 s.start {
                     VStack {
-                        Line().x1(10).y1(20).x2(90).y2(20).stroke(.red).strokeWidth(4).aspect(.center)
+                        Line().x1(10).y1(20).x2(90).y2(20).stroke(.red).lineWidth(4).aspect(.center)
                             .width(100).height(40).id("shape")
                     }
                     .horizontalAlignment(.start)
@@ -39,7 +39,7 @@
                 s.start {
                     VStack {
                         Line().x1(10).y1(down.wrappedValue ? 2 : 20).x2(90).y2(down.wrappedValue ? 38 : 20)
-                            .stroke(.red).strokeWidth(4).aspect(.center).width(100).height(40).id("shape")
+                            .stroke(.red).lineWidth(4).aspect(.center).width(100).height(40).id("shape")
                         Button("Down").onClicked { down.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)

@@ -289,7 +289,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             .clipsContent(true)
         }
         .style("Card")
-        .strokeWidth(0)
+        .lineWidth(0)
         .shape(.roundedRectangle(16))
     }
 

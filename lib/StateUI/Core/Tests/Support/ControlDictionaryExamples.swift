@@ -142,7 +142,7 @@ extension ControlDictionary {
                 .x1(0).y1(0)
                 .x2(240).y2(0)
                 .stroke(.lightGray)
-                .strokeWidth(1)
+                .lineWidth(1)
             """#),
 
         (MapContract.self, #"""
@@ -289,7 +289,7 @@ extension ControlDictionary {
         (PolylineContract.self, #"""
             Polyline([Point(0, 30), Point(20, 5), Point(40, 25), Point(60, 0)])
                 .stroke(.cornflowerBlue)
-                .strokeWidth(2)
+                .lineWidth(2)
             """#),
 
         (ProgressBarContract.self, #"""
@@ -612,8 +612,8 @@ extension ControlDictionary {
             Rectangle()
                 .fill(.gold)
                 .stroke(.black)
-                .strokeWidth(2)
-                .strokeDashPattern([4, 2])
+                .lineWidth(2)
+                .dash([4, 2])
                 .height(40)
             """#),
 
@@ -664,7 +664,7 @@ extension ControlDictionary {
             .padding(14)
             .shape(.roundedRectangle(8))
             .stroke(.lightGray)
-            .strokeWidth(1)
+            .lineWidth(1)
             """#),
 
         (ImageElementContract.self, #"""

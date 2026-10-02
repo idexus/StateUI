@@ -58,12 +58,12 @@ extension AndroidRegistrations {
                     offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
             }
             scroll.applies([
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 // A scroller always cuts what it shows to its bounds; a shape cuts it to the shape.
                 view.setOutline(AndroidLayoutView.Outline(
                     stroke: values[BorderElementContract.stroke]?.propValue,
-                    width: values[BorderElementContract.strokeWidth],
+                    width: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: values[BorderElementContract.shape] != nil))
             }
@@ -75,14 +75,14 @@ extension AndroidRegistrations {
 
     /// What every layout takes of its own box: its outline, its shape and its cut.
     private static let boxMembers: [any ContractMember] = [
-        BorderElementContract.stroke, BorderElementContract.strokeWidth, BorderElementContract.shape,
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
         LayoutContract.clipsContent,
     ]
 
     private static func applyBox<Realized: ElementContract>(_ view: AndroidLayoutView, _ values: ElementValues<Realized>) {
         view.setOutline(AndroidLayoutView.Outline(
             stroke: values[BorderElementContract.stroke]?.propValue,
-            width: values[BorderElementContract.strokeWidth],
+            width: values[BorderElementContract.lineWidth],
             shape: values[BorderElementContract.shape]?.propValue,
             clips: values[LayoutContract.clipsContent] ?? false))
     }

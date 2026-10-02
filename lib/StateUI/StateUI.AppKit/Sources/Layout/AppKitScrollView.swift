@@ -143,9 +143,9 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     /// The scroller's own box: its outline and the shape it cuts what it shows to, on its layer - a colour's
     /// outline on a rectangle or a rounded one; an oval cuts and draws none.
     /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
-    func setBox(stroke: HostValue?, strokeWidth: Double?, shape: HostValue?) {
+    func setBox(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
         boxShape = BoxArithmetic.outline(shape)
-        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth)
+        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
         boxOutline = AppKitBrush(stroke).lineColor.flatMap { width > 0 ? ($0.cgColor, CGFloat(width)) : nil }
         paintBox()
     }

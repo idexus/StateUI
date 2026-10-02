@@ -45,7 +45,7 @@
             HearThree(ViewContract.panUpdated) { _, _, _ in },
         ]
         let border: [any Worn] = [
-            Write(BorderElementContract.stroke, Brush.solidColor(.red)), Write(BorderElementContract.strokeWidth, 2),
+            Write(BorderElementContract.stroke, Brush.solidColor(.red)), Write(BorderElementContract.lineWidth, 2),
             Write(BorderElementContract.shape, .roundedRectangle(12)),
         ]
         return on(VisualElementContract.self, visual) + on(ViewContract.self, gestures)
