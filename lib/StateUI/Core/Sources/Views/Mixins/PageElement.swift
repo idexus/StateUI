@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The title and icon of an arrangement - a `NavigationStack`, a `TabbedView`
+/// The title and icon of an arrangement - a `NavigationStack`, a `TabView`
 /// or a `SplitView` - read where it is shown as an item of something else,
 /// such as a tab:
 ///
-///     TabbedView(Tab.allCases) { tab in
+///     TabView(Tab.allCases) { tab in
 ///         switch tab {
 ///         case .home:
 ///             NavigationStack($homePath) {

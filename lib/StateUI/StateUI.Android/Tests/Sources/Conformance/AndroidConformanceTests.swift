@@ -60,7 +60,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testSpan", testSpan),
             ("testSpans", testSpans),
             ("testSplitView", testSplitView),
-            ("testTabbedView", testTabbedView),
+            ("testTabView", testTabView),
             ("testTitleView", testTitleView),
             ("testToolbarItem", testToolbarItem),
             ("testToolbarItems", testToolbarItems),
@@ -136,7 +136,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testSpan() throws { try conform(SpanTests.self) }
     func testSpans() throws { try conform(SpansTests.self) }
     func testSplitView() throws { try conform(SplitViewTests.self) }
-    func testTabbedView() throws { try conform(TabbedViewTests.self) }
+    func testTabView() throws { try conform(TabViewTests.self) }
     func testTitleView() throws { try conform(TitleViewTests.self) }
     func testToolbarItem() throws { try conform(ToolbarItemTests.self) }
     func testToolbarItems() throws { try conform(ToolbarItemsTests.self) }

@@ -13,7 +13,7 @@ import AppKit
 extension AppKitElement {
     /// The tab the user chose on a tabbed view, which the host layer shows.
     var chosenTab: Int? {
-        (view as? AppKitTabbedView)?.choice.chosen
+        (view as? AppKitTabView)?.choice.chosen
     }
 
     /// Whether a split view's sidebar shows on screen.
@@ -34,7 +34,7 @@ extension AppKitElement {
 
     /// The tabs of a tabbed view: its pages, each under its title and its picture, the tab the tree asks for, and
     /// whether they stand in the window's row.
-    func arrangeTabs(_ tabs: AppKitTabbedView) {
+    func arrangeTabs(_ tabs: AppKitTabView) {
         tabs.tabsShownByWindow = element.tabsStandInWindow
         tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         tabs.setItems(

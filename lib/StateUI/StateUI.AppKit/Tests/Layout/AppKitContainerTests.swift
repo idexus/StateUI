@@ -49,7 +49,7 @@ final class AppKitContainerTests: XCTestCase {
         let detail = NSView()
         containers.append(("split view", split, { split.setItems([item(sidebar), item(detail)]) }))
 
-        let tabs = AppKitTabbedView(frame: room)
+        let tabs = AppKitTabView(frame: room)
         let tab = NSView()
         containers.append(("tabbed view", tabs, {
             tabs.setItems(

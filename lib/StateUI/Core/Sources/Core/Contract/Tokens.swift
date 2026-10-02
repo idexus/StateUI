@@ -65,7 +65,7 @@ extension NodeType {
     static let span = SpanContract.nodeType
     static let stepper = StepperContract.nodeType
     static let `switch` = SwitchContract.nodeType
-    static let tabbedView = TabbedViewContract.nodeType
+    static let tabView = TabViewContract.nodeType
     static let timePicker = TimePickerContract.nodeType
     static let toolbarItem = ToolbarItemContract.nodeType
     static let toolbarItems = ToolbarItemsContract.nodeType
@@ -113,7 +113,7 @@ extension NodeType {
     static let iconPosition = ButtonContract.iconPosition.token
     static let iconSpacing = ButtonContract.iconSpacing.token
     static let cornerRadius = ColorBoxContract.cornerRadius.token
-    static let selectedTab = TabbedViewContract.selectedTab.token
+    static let selectedTab = TabViewContract.selectedTab.token
     static let cursorPosition = InputViewContract.cursorPosition.token
     static let data = PathContract.data.token
     static let date = DatePickerContract.date.token
@@ -266,7 +266,7 @@ extension NodeType {
     static let selectedItemsChanged = ItemsViewContract.selectedItemsChanged.token
     static let submitted = SearchFieldContract.submitted.token
     static let created = WindowContract.created.token
-    static let selectedTabChanged = TabbedViewContract.selectedTabChanged.token
+    static let selectedTabChanged = TabViewContract.selectedTabChanged.token
     static let deactivated = SceneContract.deactivated.token
     static let destroying = SceneContract.destroying.token
     static let disappearing = PageContract.disappearing.token

@@ -79,15 +79,15 @@ final class WinUIPagesTests: XCTestCase {
             let tabs = State(wrappedValue: [0, 1, 2])
             let tab = State(wrappedValue: 2)
             let host = WinUIRenderer.running {
-                TabbedView(tabs.wrappedValue) { number in Text("Tab \(number)") }.selection(tab.projectedValue)
+                TabView(tabs.wrappedValue) { number in Text("Tab \(number)") }.selection(tab.projectedValue)
             }
-            let tabbed = try XCTUnwrap(host.views(WinUITabbedView.self).first)
+            let tabbed = try XCTUnwrap(host.views(WinUITabView.self).first)
             let row: WinUIView = tabbed.tabsShownByWindow ? try XCTUnwrap(host.window).tabRow : tabbed.row
             XCTAssertEqual(Self.selected(row), 2)
 
             tabs.wrappedValue = [0, 1]
             host.runtime.pump.turn()
-            let now = try XCTUnwrap(host.views(WinUITabbedView.self).first)
+            let now = try XCTUnwrap(host.views(WinUITabView.self).first)
             XCTAssertEqual(now.tabs.count, 2)
             XCTAssertEqual(Self.selected(row), now.shownIndex, "the row marks the tab shown")
             XCTAssertEqual(tab.wrappedValue, 2, "and no choice of the user's heard")
@@ -99,7 +99,7 @@ final class WinUIPagesTests: XCTestCase {
     func testATabsPictureStandsAsTallAsTheThemesTabIcons() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                TabbedView([0, 1]) { tab in
+                TabView([0, 1]) { tab in
                     if tab == 0 {
                         SessionPage { page, _ in page.title = "Wide"; page.icon = "test_wide.png" }
                     } else {
@@ -107,7 +107,7 @@ final class WinUIPagesTests: XCTestCase {
                     }
                 }
             }
-            let tabbed = try XCTUnwrap(host.views(WinUITabbedView.self).first)
+            let tabbed = try XCTUnwrap(host.views(WinUITabView.self).first)
             let row: WinUIView = tabbed.tabsShownByWindow ? try XCTUnwrap(host.window).tabRow : tabbed.row
             host.settle { Self.words(row, "tabIconSizes") == "32x16;" }
             XCTAssertEqual(Self.words(row, "tabIconSizes"), "32x16;", "40 by 20 drawn 16 tall; no picture beside it")
@@ -123,16 +123,16 @@ final class WinUIPagesTests: XCTestCase {
                 NavigationStack(path.projectedValue) {
                     TitledPage(title: "Items and Cards")
                 } destination: { _ in
-                    TabbedView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                    TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
                 }
             }
             let window = try XCTUnwrap(host.window)
             host.settle { Self.words(window.titleBar, "title") == "Items and Cards" }
 
             path.wrappedValue = [1]
-            host.settle { host.views(WinUITabbedView.self).first?.tabs.map(\.title) == ["Example 1", "Example 2"] }
+            host.settle { host.views(WinUITabView.self).first?.tabs.map(\.title) == ["Example 1", "Example 2"] }
             XCTAssertEqual(
-                host.views(WinUITabbedView.self).first?.tabs.map(\.title), ["Example 1", "Example 2"], "pushed")
+                host.views(WinUITabView.self).first?.tabs.map(\.title), ["Example 1", "Example 2"], "pushed")
             XCTAssertEqual(Self.words(window.titleBar, "title"), "ItemsView", "the chrome's title")
             var bytes = [CChar](repeating: 0, count: 64)
             let length = stateui_winui_window_system_title(window.handle, &bytes, Int32(bytes.count))
@@ -355,7 +355,7 @@ final class WinUIPagesTests: XCTestCase {
                 SplitView(State(wrappedValue: true).projectedValue) {
                     TitledPage(title: "Menu")
                 } detail: {
-                    TabbedView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
+                    TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
                 }
             }
             let window = try XCTUnwrap(host.window)

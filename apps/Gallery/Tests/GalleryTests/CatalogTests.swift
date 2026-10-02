@@ -1055,7 +1055,7 @@ final class CatalogTests: XCTestCase {
         let held = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" }?.samples.first)
         let scrolling = try XCTUnwrap(catalog().groups.flatMap(\.samples).first { $0.scrolls })
 
-        XCTAssertTrue(SamplePage.shown(held, nav: Place().nav, bar: AppColors.violet) is TabbedView)
+        XCTAssertTrue(SamplePage.shown(held, nav: Place().nav, bar: AppColors.violet) is TabView)
         XCTAssertTrue(SamplePage.shown(scrolling, nav: Place().nav, bar: AppColors.violet) is SamplePage)
         XCTAssertEqual(held.tabs, [.example(0), .code])
         XCTAssertEqual(held.tabs.map(held.caption(of:)), ["Example", "In Code"])
@@ -1305,13 +1305,13 @@ final class CatalogTests: XCTestCase {
     ///
     /// The first tab holds a whole navigation stack, and its caption and picture
     /// are the STACK's.
-    func testTheTabsSectionIsATabbedViewWithAStackInsideIt() throws {
+    func testTheTabsSectionIsATabViewWithAStackInsideIt() throws {
         let place = Place()
         place.section.wrappedValue = .tabs
 
         let detail = window(place.nav).detail().node
 
-        XCTAssertEqual(detail.type, "TabbedView")
+        XCTAssertEqual(detail.type, "TabView")
         XCTAssertEqual(detail.props["selectedTab"], .number(0))
         XCTAssertNotNil(detail.events["selectedTabChanged"],
                         "a tab tapped - or swiped, on Android - would not reach the binding")
@@ -1326,10 +1326,10 @@ final class CatalogTests: XCTestCase {
         // A written page's caption and picture are its SESSION's, written as
         // it comes in - so they are read off the message that brings it.
         let shown = firstPatch(window(place.nav))
-        let tabbed = try XCTUnwrap(shown.children.first?.children.first?.children.first { $0.type == "TabbedView" })
+        let tabbed = try XCTUnwrap(shown.children.first?.children.first?.children.first { $0.type == "TabView" })
         let second = try XCTUnwrap(tabbed.children.last)
 
-        XCTAssertEqual(tabbed.type, "TabbedView")
+        XCTAssertEqual(tabbed.type, "TabView")
         XCTAssertEqual(prop(second, .title), .string("Second"))
         XCTAssertNotNil(prop(second, .icon))
     }

@@ -78,8 +78,8 @@ extension AppKitWindowController {
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view
     /// whose detail they stand across, if any.
     private func windowTabs(_ arrangement: MountedElement?) -> AppKitTabsPlacement? {
-        guard let tabbed = arrangement?.visibleTabbedView, tabbed.tabsStandInWindow,
-              let tabs = tabbed.appKit.view as? AppKitTabbedView
+        guard let tabbed = arrangement?.visibleTabView, tabbed.tabsStandInWindow,
+              let tabs = tabbed.appKit.view as? AppKitTabView
         else { return nil }
 
         let segments = tabs.segments

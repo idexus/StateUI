@@ -18,7 +18,7 @@ final class AndroidTabsView: AndroidView {
     }
 
     /// Shows `row`'s tabs, `chosen` in its own colour.
-    func show(_ row: AndroidTabbedView.Row, chosen: Int) {
+    func show(_ row: AndroidTabView.Row, chosen: Int) {
         Java.frame {
             let titles = Java.array(of: JavaAPI.string, row.tabs.map { Java.string($0.title) })
             let bitmaps = row.tabs.map { $0.picture.flatMap(AndroidPictures.bitmap(named:)) }

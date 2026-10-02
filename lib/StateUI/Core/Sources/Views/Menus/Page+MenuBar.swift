@@ -15,7 +15,7 @@ extension PropertyContainer where Self: Page {
     ///         }
     ///
     /// The menus are built with the body declaring them, so an entry follows
-    /// the state it reads. Declared on a `NavigationStack`, a `TabbedView`, a
+    /// the state it reads. Declared on a `NavigationStack`, a `TabView`, a
     /// `SplitView` or a window's page, they stand on every page shown in it.
     /// A menu with the `.id()` of a menu declared around it joins that menu:
     /// its entries stand after the others as a section of their own, and an

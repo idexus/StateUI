@@ -56,7 +56,7 @@ extension AppKitDriver {
         case (.submit, let field as AppKitTextFieldView): try submit(field.textField)
         case (.submit, let search as AppKitSearchFieldView): try submit(search)
         case (.choose(let place), let picker as AppKitPickerView): picker.chooseForTesting(index: place)
-        case (.choose(let place), let tabs as AppKitTabbedView): try choose(place, of: tabs, element)
+        case (.choose(let place), let tabs as AppKitTabView): try choose(place, of: tabs, element)
         case (.open, let picker as AppKitPickerView): picker.menuWillOpen(NSMenu())
         case (.close, let picker as AppKitPickerView): picker.menuDidClose(NSMenu())
         case (.pickDate(let day), let picker as AppKitDatePickerView): picker.chooseForTesting(day)
@@ -177,7 +177,7 @@ extension AppKitDriver {
 
     /// Chooses the tab at `place`: in the row beneath the window's toolbar where the window shows the tabs, else in
     /// the tab view's own.
-    private func choose(_ place: Int, of tabs: AppKitTabbedView, _ element: MountedElement) throws {
+    private func choose(_ place: Int, of tabs: AppKitTabView, _ element: MountedElement) throws {
         if tabs.tabsShownByWindow {
             try controller(of: element).tabRowForTesting.chooseForTesting(place)
         } else {

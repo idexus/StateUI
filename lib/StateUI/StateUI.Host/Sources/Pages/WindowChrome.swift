@@ -76,5 +76,5 @@
         followed.contains(type)
     }
 
-    private static let followed: Set<NodeType> = [.window, .navigationStack, .tabbedView, .splitView, .modalStack]
+    private static let followed: Set<NodeType> = [.window, .navigationStack, .tabView, .splitView, .modalStack]
 }

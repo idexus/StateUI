@@ -10,7 +10,7 @@
 extension AndroidElement {
     /// The tab the user chose on a tabbed view, which the host layer shows.
     var chosenTab: Int? {
-        (view as? AndroidTabbedView)?.choice.chosen
+        (view as? AndroidTabView)?.choice.chosen
     }
 
     /// Whether a split view's sidebar shows on screen.
@@ -23,7 +23,7 @@ extension AndroidElement {
         switch type {
         case .navigationStack:
             refreshBar()
-        case .tabbedView:
+        case .tabView:
             refreshTabs()
         case .splitView:
             guard let split = view as? AndroidSplitView else { return }
@@ -45,11 +45,11 @@ extension AndroidElement {
 
     /// Shows on a tabbed view's row its tabs' titles and pictures, and the tab the tree chose.
     private func refreshTabs() {
-        guard let tabs = view as? AndroidTabbedView else { return }
+        guard let tabs = view as? AndroidTabView else { return }
 
-        var row = AndroidTabbedView.Row()
+        var row = AndroidTabView.Row()
         row.tabs = children.map { tab in
-            AndroidTabbedView.Tab(
+            AndroidTabView.Tab(
                 title: tab.value(.title)?.string ?? "",
                 picture: tab.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 })
         }
@@ -90,7 +90,7 @@ extension AndroidElement {
             }
             return children.dropFirst().first?.drawerBack
         case .navigationStack: return children.last?.drawerBack
-        case .tabbedView: return element.selectedTab?.android.drawerBack
+        case .tabView: return element.selectedTab?.android.drawerBack
         default: return nil
         }
     }
@@ -170,7 +170,7 @@ extension AndroidElement {
     func refreshBars() {
         guard NodeType.pageTypes.contains(type) else { return }
 
-        if type == .tabbedView { refreshTabs() }
+        if type == .tabView { refreshTabs() }
         refreshBar()
         children.forEach { $0.refreshBars() }
     }

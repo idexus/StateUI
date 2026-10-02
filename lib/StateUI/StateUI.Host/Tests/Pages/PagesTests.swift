@@ -80,11 +80,11 @@ final class PagesTests: XCTestCase {
 
     /// A tabbed view's tabs stand in the window's row down its stacks and split view details, and nowhere else.
     func testTabsStandInTheWindowDownItsStacksAndDetails() throws {
-        let tabs = { (id: String) in self.node(id, .tabbedView, children: [self.node("\(id).page", .page)]) }
+        let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
         let runtime = runtime(node("window", .window, children: [
             node("split", .splitView, children: [
                 tabs("sidebar"),
-                node("stack", .navigationStack, children: [node("detail", .tabbedView, children: [tabs("inner")])]),
+                node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
             ]),
             node("sheets", .modalStack, children: [tabs("sheet")]),
         ])) { _ in }
@@ -104,8 +104,8 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(node("window", .window, children: [node("stack", .navigationStack, children: [
             node("page", .page),
             node("bare", .page, hidden),
-            node("pages", .tabbedView, children: [node("tab", .page)]),
-            node("stacks", .tabbedView, children: [node("inner", .navigationStack, children: [node("top", .page)])]),
+            node("pages", .tabView, children: [node("tab", .page)]),
+            node("stacks", .tabView, children: [node("inner", .navigationStack, children: [node("top", .page)])]),
         ])])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
         let shows = { (id: String) in root.first(id: .manual(id))?.showsTheStacksBar }
@@ -122,7 +122,7 @@ final class PagesTests: XCTestCase {
         let runtime = HostRuntime(
             clock: StillClock(), reducesMotion: { false },
             makeNative: { TabsReading($0) { read[$0] = $1 } }, log: { _ in })
-        let tabs = { (id: String) in self.node(id, .tabbedView, children: [self.node("\(id).page", .page)]) }
+        let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
 
         runtime.tree.apply(
             node("window", .window, children: [node("split", .splitView, children: [tabs("sidebar"), tabs("detail")])]),
@@ -379,7 +379,7 @@ final class PagesTests: XCTestCase {
     func testTheChosenTabsActionsStandWithTheTabs() throws {
         let tabs = { (chosen: Double) in
             self.node("window", .window, children: [
-                self.node("tabs", .tabbedView, [.selectedTab: .number(chosen)], children: [
+                self.node("tabs", .tabView, [.selectedTab: .number(chosen)], children: [
                     self.node("one", .page, children: [self.toolbarGroup("one.group", [self.toolbarAction("first")])]),
                     self.node("two", .page, children: [self.toolbarGroup("two.group", [self.toolbarAction("second")])]),
                     self.toolbarGroup("all", [self.toolbarAction("everywhere")]),
@@ -472,13 +472,13 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(node("window", .window, [.title: .string("Window")], children: [
             node("stack", .navigationStack, children: [
                 node("group", .page, [.title: .string("Items and Cards")]),
-                node("tabs", .tabbedView, [.selectedTab: .number(1)], children: [
+                node("tabs", .tabView, [.selectedTab: .number(1)], children: [
                     node("one", .page, [.title: .string("Example 1")]),
                     node("two", .page, [.title: .string("Example 2")]),
                 ]),
             ]),
-            node("alone", .tabbedView, children: [node("tab", .page, [.title: .string("Tab")])]),
-            node("stacked", .tabbedView, children: [
+            node("alone", .tabView, children: [node("tab", .page, [.title: .string("Tab")])]),
+            node("stacked", .tabView, children: [
                 node("inner", .navigationStack, children: [node("top", .page, [.title: .string("Top")])]),
             ]),
         ])) { _ in }
@@ -496,14 +496,14 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(node("window", .window, [.title: .string("Window")], children: [
             node("stack", .navigationStack, children: [
                 node("group", .page, [.title: .string("Items and Cards")]),
-                node("tabs", .tabbedView, [.title: .string("ItemsView")], children: [
+                node("tabs", .tabView, [.title: .string("ItemsView")], children: [
                     node("one", .page, [.title: .string("Example 1")]),
                 ]),
             ]),
-            node("alone", .tabbedView, [.title: .string("Tabs")], children: [
+            node("alone", .tabView, [.title: .string("Tabs")], children: [
                 node("tab", .page, [.title: .string("Tab")]),
             ]),
-            node("stacked", .tabbedView, [.title: .string("Tabs")], children: [
+            node("stacked", .tabView, [.title: .string("Tabs")], children: [
                 node("inner", .navigationStack, children: [node("top", .page, [.title: .string("Top")])]),
             ]),
         ])) { _ in }
@@ -691,7 +691,7 @@ private final class TabsReading: NativeElement {
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
-        guard element.type == .tabbedView, case .manual(let id) = element.id else { return }
+        guard element.type == .tabView, case .manual(let id) = element.id else { return }
         read(id, element.tabsStandInWindow)
     }
 

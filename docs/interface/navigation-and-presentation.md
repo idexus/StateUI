@@ -55,7 +55,7 @@ only its value can read where it is, but cannot navigate on its owner's behalf.
 
 ## Tabs
 
-`TabbedView` is built from a distinct collection of application values. A
+`TabView` is built from a distinct collection of application values. A
 selection binding says which one is showing:
 
 ```swift quote
@@ -65,7 +65,7 @@ enum Tab: Hashable, CaseIterable {
 
 @State private var selected = Tab.notes
 
-TabbedView(Tab.allCases) { tab in
+TabView(Tab.allCases) { tab in
     switch tab {
     case .notes: NotesPage()
     case .search: SearchPage()

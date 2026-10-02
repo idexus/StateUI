@@ -10,7 +10,7 @@
 extension WinUIElement {
     /// The tab the user chose on a tabbed view, which the host layer shows.
     var chosenTab: Int? {
-        (view as? WinUITabbedView)?.choice.chosen
+        (view as? WinUITabView)?.choice.chosen
     }
 
     /// Whether a split view's sidebar shows on screen.
@@ -21,8 +21,8 @@ extension WinUIElement {
     /// Keeps an arrangement's own parts with the tree: a tabbed view's row, a split view's sidebar.
     func arrangePages(changed: Set<Prop>) {
         switch type {
-        case .tabbedView:
-            guard let tabs = view as? WinUITabbedView else { return }
+        case .tabView:
+            guard let tabs = view as? WinUITabView else { return }
             tabs.tabsShownByWindow = element.tabsStandInWindow
             tabs.show(children.map { WinUITab(of: $0.element) }, requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }

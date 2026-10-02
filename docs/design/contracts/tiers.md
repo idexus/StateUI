@@ -44,8 +44,8 @@ Swift protocols behind them refine each other.
   InputView          SearchField, TextEditor, TextField
   Shape              Ellipse, Line, Path, Polygon, Polyline, Rectangle
   MenuItemElement    MenuItem, ToolbarItem
-  PageElement        Page, NavigationStack, TabbedView, SplitView
-  BarElement         NavigationStack, TabbedView, SplitView, ModalStack
+  PageElement        Page, NavigationStack, TabView, SplitView
+  BarElement         NavigationStack, TabView, SplitView, ModalStack
   text tiers only    Span
   no tier            Application, Scene, Window, Menu, Divider, ContextMenu,
                      Overlay, and the slots and collections

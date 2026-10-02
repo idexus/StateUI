@@ -30,7 +30,7 @@ struct SamplePage: View {
     static func shown(_ sample: Sample, nav: Navigation, bar: Color) -> any Page {
         guard !sample.scrolls else { return SamplePage(sample: sample, nav: nav) }
 
-        return TabbedView(sample.tabs) { tab in
+        return TabView(sample.tabs) { tab in
             SampleTabPage(sample: sample, tab: tab, nav: nav)
         }
         .title(sample.title)

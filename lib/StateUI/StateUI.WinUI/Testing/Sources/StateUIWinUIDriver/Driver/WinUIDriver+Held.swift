@@ -28,7 +28,7 @@ extension WinUIDriver {
         case .window:
             if let held = try windowHolds(property.name, element) { return held }
             throw cannot
-        case .page, .navigationStack, .splitView, .tabbedView, .modalStack:
+        case .page, .navigationStack, .splitView, .tabView, .modalStack:
             if let held = try pageHolds(property.name, element, view) { return held }
         case .button where property.name == "icon":
             guard let view else { throw cannot }
@@ -353,7 +353,7 @@ extension WinUIDriver {
         case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
         case ("background", let page?) where element.type == .page:
             return try Self.color(read(page, "box.fill")).map { $0.propValue }
-        case ("selectedTab", let tabs as WinUITabbedView):
+        case ("selectedTab", let tabs as WinUITabView):
             let row: WinUIView = try tabs.tabsShownByWindow ? window().tabRow : tabs
             return Int(try read(row, "selected"))?.propValue
         default: return nil
@@ -378,10 +378,10 @@ extension WinUIDriver {
     /// where no tabbed view presents it.
     private func tab(of element: MountedElement) throws -> (row: WinUIView, index: Int)? {
         var page = element
-        while let parent = page.parent, parent.type != .tabbedView, parent.type != .window { page = parent }
-        guard let tabbed = page.parent, tabbed.type == .tabbedView,
+        while let parent = page.parent, parent.type != .tabView, parent.type != .window { page = parent }
+        guard let tabbed = page.parent, tabbed.type == .tabView,
               let index = tabbed.children.firstIndex(where: { $0 === page }),
-              let tabs = (tabbed.native as? WinUIElement)?.view as? WinUITabbedView
+              let tabs = (tabbed.native as? WinUIElement)?.view as? WinUITabView
         else { return nil }
         return (try tabs.tabsShownByWindow ? window().tabRow : tabs.row, index)
     }

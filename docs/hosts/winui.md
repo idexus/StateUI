@@ -11,7 +11,7 @@ A window stands as a Windows application's does: its content under WinUI's
 title, the way back, the sidebar's toggle and the page's actions. A
 `NavigationStack` shows its top page; a `SplitView`'s sidebar stands in
 WinUI's navigation pane, beside the detail in a wide window and over it in a
-narrow one; a `TabbedView`'s tabs stand beneath the title bar.
+narrow one; a `TabView`'s tabs stand beneath the title bar.
 
 It presents StateUI's controls, arrangements and pages over the runtime every
 host shares - the [platform contract](../platform-contract.md#control-creation) says

@@ -1,5 +1,0 @@
-# revision 1.1
-TabbedView: ✅
-TabbedView.selectedTab: ✓ read selectedTab of TabbedView: the host's tab choice, not the tab view's
-TabbedView.selectedTabChanged: ✅
-Text.frameChanged: ✅

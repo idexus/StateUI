@@ -5,5 +5,5 @@ Page.icon: cannot read icon of Page - Android's driver has no path for it yet
 Page.title: cannot read title of Page - Android's driver has no path for it yet
 SplitView.icon: cannot read icon of SplitView - Android's driver has no path for it yet
 SplitView.title: cannot read title of SplitView - Android's driver has no path for it yet
-TabbedView.icon: cannot read icon of TabbedView - Android's driver has no path for it yet
-TabbedView.title: cannot read title of TabbedView - Android's driver has no path for it yet
+TabView.icon: cannot read icon of TabView - Android's driver has no path for it yet
+TabView.title: cannot read title of TabView - Android's driver has no path for it yet

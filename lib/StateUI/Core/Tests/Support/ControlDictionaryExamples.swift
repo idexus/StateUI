@@ -422,7 +422,7 @@ extension ControlDictionary {
                 .tint(.green)
             """#),
 
-        (TabbedViewContract.self, #"""
+        (TabViewContract.self, #"""
             struct Tab: View {
                 let name: String
                 @Environment private var page: PageSession
@@ -434,7 +434,7 @@ extension ControlDictionary {
 
             @State var shown = "Today"
 
-            TabbedView(["Today", "Archive"]) { name in Tab(name: name) }
+            TabView(["Today", "Archive"]) { name in Tab(name: name) }
                 .selection($shown)
             """#),
 

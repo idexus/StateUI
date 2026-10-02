@@ -2,7 +2,7 @@
 //
 // This file is the gallery's whole navigation model, and there is nothing in the
 // library like it - deliberately. A `NavigationStack` takes an ARRAY the author
-// holds; a `SplitView` takes a `Bool`; a `TabbedView` takes a value of the
+// holds; a `SplitView` takes a `Bool`; a `TabView` takes a value of the
 // author's own type. What is in those, what the moves are called and what a move
 // means are this application's business, so they are written here.
 //
@@ -29,7 +29,7 @@ enum Section: Hashable {
     case hidden
 
     /// The tabs demonstration, which is the one section arranged as a
-    /// `TabbedView` rather than as a stack. See `MainWindow.detail`.
+    /// `TabView` rather than as a stack. See `MainWindow.detail`.
     case tabs
 }
 
@@ -148,13 +148,13 @@ final class Navigation {
     @State var windowNotice = false
 
     /// The tabs the demonstration is showing, in order - the LIST a
-    /// `TabbedView` is built over, held as state so that the user can change
+    /// `TabView` is built over, held as state so that the user can change
     /// it while a tab is selected. See `TabsControls`.
     @State var tabs: [DemoTab] = DemoTab.opening
 
     /// Which of them is showing. The tabs write it when the user taps one,
     /// and the gallery writes it to move them from code - the same state both
-    /// ways, which is what `TabbedView.selection` is.
+    /// ways, which is what `TabView.selection` is.
     @State var tab: DemoTab = .stack
 
     /// What the stack tab has pushed - its own array, which is what makes each
@@ -243,7 +243,7 @@ final class Navigation {
 
     /// Adds a tab at the END, numbered past whatever is already there.
     ///
-    /// The selected tab keeps its index, so `TabbedView.selection` writes the
+    /// The selected tab keeps its index, so `TabView.selection` writes the
     /// same number as last render and the differ sends NO selection at all -
     /// which is the case a tab list has to survive.
     func addTab(showing: DemoTab) {
@@ -303,7 +303,7 @@ final class Navigation {
     }
 
     /// Writes the one line `TabsControls` prints, working out what the move put
-    /// to the host the same way `TabbedView.selection` does.
+    /// to the host the same way `TabView.selection` does.
     private func noteTabMove(_ what: String, was: [DemoTab], showing: DemoTab) {
         let before = was.firstIndex(of: showing)
         let after = tabs.firstIndex(of: showing)

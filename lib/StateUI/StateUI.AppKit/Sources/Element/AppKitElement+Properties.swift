@@ -44,8 +44,8 @@ extension AppKitElement {
         case .navigationStack:
             return AppKitNavigationView()
 
-        case .tabbedView:
-            return AppKitTabbedView()
+        case .tabView:
+            return AppKitTabView()
 
         case .splitView:
             return AppKitSplitView()

@@ -236,7 +236,7 @@ final class GTKPagesTests: XCTestCase {
     func testATabThatIsAStackShowsOneBar() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                TabbedView([0, 1]) { tab in
+                TabView([0, 1]) { tab in
                     if tab == 0 {
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                             TitledPage(title: "Inbox")
@@ -256,7 +256,7 @@ final class GTKPagesTests: XCTestCase {
             host.settle { bars().count == 1 }
 
             XCTAssertEqual(bars().count, 1, "the stack's page's bar alone")
-            let switcher = try XCTUnwrap(host.views(GTKTabbedView.self).first?.switcher)
+            let switcher = try XCTUnwrap(host.views(GTKTabView.self).first?.switcher)
             XCTAssertNotEqual(gtk_widget_get_mapped(switcher.widget), 0, "the tabs beneath it")
         }
     }

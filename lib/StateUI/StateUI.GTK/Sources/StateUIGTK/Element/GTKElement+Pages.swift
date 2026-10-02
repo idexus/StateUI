@@ -10,11 +10,11 @@
 /// Design: docs/design/platforms/gtk/pages.md
 extension GTKElement {
     /// What stands in a frame of its own, with a header bar: a page, and a tabbed view.
-    static let framedTypes: Set<NodeType> = [.page, .tabbedView]
+    static let framedTypes: Set<NodeType> = [.page, .tabView]
 
     /// The tab the user chose on a tabbed view, which the host layer shows.
     var chosenTab: Int? {
-        (view as? GTKTabbedView)?.choice.chosen
+        (view as? GTKTabView)?.choice.chosen
     }
 
     /// Whether a split view's sidebar shows on screen.
@@ -29,7 +29,7 @@ extension GTKElement {
     /// page's, named by the page that names the window (`titledPage`), its switcher beneath the bar.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     var chrome: GTKPageChrome {
-        if type == .tabbedView {
+        if type == .tabView {
             // Over a tab that is a stack the stack's page shows the bar, the tabs beneath it (`composeChrome`).
             guard element.showsTheStacksBar else {
                 var chrome = GTKPageChrome()
@@ -39,7 +39,7 @@ extension GTKElement {
             var chrome = element.selectedTab?.visiblePage?.gtk.chrome ?? GTKPageChrome()
             chrome.title = element.titledPage?.value(.title)?.string
                 ?? element.enclosing(type: .window)?.value(.title)?.string ?? ""
-            chrome.tabs = (view as? GTKTabbedView)?.switcher
+            chrome.tabs = (view as? GTKTabView)?.switcher
             chrome.showsBar = value(.showsNavigationBar)?.bool != false
             chrome.offersBack = value(.showsBackButton)?.bool != false
             (chrome.barBackground, chrome.barForeground) = element.barColors
@@ -101,10 +101,10 @@ extension GTKElement {
                     detail.composeChrome(showingSidebar: showing)
                 }
             }
-        case .tabbedView:
+        case .tabView:
             let handsDown = !element.showsTheStacksBar
             element.selectedTab?.gtk.composeChrome(
-                showingSidebar: handsDown ? sidebar : nil, tabs: handsDown ? (view as? GTKTabbedView)?.switcher : nil)
+                showingSidebar: handsDown ? sidebar : nil, tabs: handsDown ? (view as? GTKTabView)?.switcher : nil)
         default:
             break
         }
@@ -116,8 +116,8 @@ extension GTKElement {
         switch type {
         case .navigationStack:
             (view as? GTKNavigationView)?.onPopped = { [weak self] remaining in self?.userPopped(remaining: remaining) }
-        case .tabbedView:
-            guard let tabs = view as? GTKTabbedView else { return }
+        case .tabView:
+            guard let tabs = view as? GTKTabView else { return }
             tabs.show(children.map { $0.value(.title)?.string ?? "" }, requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:

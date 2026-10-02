@@ -6,7 +6,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A TabbedView: UIKit's own tab bar controller over its tabs, each named by its page's title and picture. Which tab
+/// A TabView: UIKit's own tab bar controller over its tabs, each named by its page's title and picture. Which tab
 /// shows is the host layer's rule (`TabChoice`); the user's choice is told as the tab before and the tab now.
 /// Design: docs/design/platforms/uikit/pages.md#tabs
 @MainActor

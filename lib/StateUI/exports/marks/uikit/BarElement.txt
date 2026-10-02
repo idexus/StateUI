@@ -14,8 +14,8 @@ SplitView.barForegroundColor: ✅
 SplitView.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
 SplitView.barSubtitle: ✅
 SplitView.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
-TabbedView.barBackgroundColor: ✅
-TabbedView.barForegroundColor: ✅
-TabbedView.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
-TabbedView.barSubtitle: ✅
-TabbedView.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
+TabView.barBackgroundColor: ✅
+TabView.barForegroundColor: ✅
+TabView.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
+TabView.barSubtitle: ✅
+TabView.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.

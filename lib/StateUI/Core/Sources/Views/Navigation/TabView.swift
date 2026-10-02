@@ -14,7 +14,7 @@
 ///         @State private var tab: Tab = .today
 ///
 ///         var page: any Page {
-///             TabbedView(Tab.allCases) { tab in
+///             TabView(Tab.allCases) { tab in
 ///                 switch tab {
 ///                 case .today:    TodayPage()
 ///                 case .settings: SettingsPage(tab: $tab)
@@ -48,7 +48,7 @@
 /// Each tab must be a distinct value whose values describe differently
 /// (`String(describing:)`). A page is keyed by its tab alone, so tabs can be
 /// reordered without their pages being rebuilt.
-public struct TabbedView: Page, ModifiableElement, BarElement, PageElement {
+public struct TabView: Page, ModifiableElement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
@@ -69,7 +69,7 @@ public struct TabbedView: Page, ModifiableElement, BarElement, PageElement {
         self.tabs = ordered.map { AnyHashable($0) }
 
         node = Node(
-            contract: TabbedViewContract.self,
+            contract: TabViewContract.self,
             children: ordered.map { tab in
                 Self.identified(Node.page(destination(tab)), as: String(describing: tab))
             })
@@ -78,14 +78,14 @@ public struct TabbedView: Page, ModifiableElement, BarElement, PageElement {
     /// Which tab is showing, borrowed two-way: `tab = .settings` moves to a
     /// tab, and a tab the user chooses is written here.
     ///
-    ///     TabbedView(Tab.allCases) { tab in … }
+    ///     TabView(Tab.allCases) { tab in … }
     ///         .selection($tab)
     ///
     /// A value that names no tab selects nothing, and the binding follows the
     /// tab the platform then shows.
     ///
     /// - Parameter binding: the tab that is showing, of the tabs' own type.
-    public func selection<Tab: Hashable>(_ binding: Binding<Tab>) -> TabbedView {
+    public func selection<Tab: Hashable>(_ binding: Binding<Tab>) -> TabView {
         var copy = self
         let ordered = tabs
 
@@ -93,11 +93,11 @@ public struct TabbedView: Page, ModifiableElement, BarElement, PageElement {
         // binding names no tab: the platform then reports what it shows.
         // Design: docs/design/views/pages.md#tabs-report-an-index
         if let index = ordered.firstIndex(of: AnyHashable(binding.wrappedValue)) {
-            copy.node.write(TabbedViewContract.selectedTab, index)
+            copy.node.write(TabViewContract.selectedTab, index)
         }
 
         // The user's choice, as that index, written only when it moved.
-        copy.node.addHandler(TabbedViewContract.selectedTabChanged.token) {
+        copy.node.addHandler(TabViewContract.selectedTabChanged.token) {
             guard let index = EventBuffer.current.value()?.int,
                   index >= 0, index < ordered.count,
                   // A binding of another type than the tabs names nothing.

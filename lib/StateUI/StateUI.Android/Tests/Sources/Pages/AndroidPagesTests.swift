@@ -72,7 +72,7 @@ final class AndroidPagesTests: XCTestCase {
                 NavigationStack(path.projectedValue) {
                     TitledPage(title: "Items and Cards")
                 } destination: { _ in
-                    TabbedView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                    TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
                 }
             }
             host.layOut()
@@ -242,13 +242,13 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let tab = State(wrappedValue: 0)
             let host = AndroidRenderer.running {
-                TabbedView([0, 1]) { number in
+                TabView([0, 1]) { number in
                     TitledPage(title: "Tab \(number)")
                 }
                 .selection(tab.projectedValue)
             }
             host.layOut()
-            let tabs = try XCTUnwrap(host.views(AndroidTabbedView.self).first)
+            let tabs = try XCTUnwrap(host.views(AndroidTabView.self).first)
             let pages = host.views(AndroidSingleChildView.self)
             XCTAssertTrue(tabs.heldViews().first === pages[0])
 
@@ -263,14 +263,14 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let tab = State(wrappedValue: 0)
             let host = AndroidRenderer.running {
-                TabbedView([0, 1, 2]) { number in TitledPage(title: "Tab \(number)") }
+                TabView([0, 1, 2]) { number in TitledPage(title: "Tab \(number)") }
                     .selection(tab.projectedValue)
             }
             host.layOut()
-            let tabs = try XCTUnwrap(host.views(AndroidTabbedView.self).first)
+            let tabs = try XCTUnwrap(host.views(AndroidTabView.self).first)
             let pages = host.views(AndroidSingleChildView.self)
-            var row = AndroidTabbedView.Row()
-            row.tabs = (0..<3).map { AndroidTabbedView.Tab(title: "Tab \($0)", picture: nil) }
+            var row = AndroidTabView.Row()
+            row.tabs = (0..<3).map { AndroidTabView.Tab(title: "Tab \($0)", picture: nil) }
 
             tabs.show(row, requested: 5)
             host.layOut()
@@ -436,7 +436,7 @@ extension AndroidPagesTests {
                 NavigationStack(path.projectedValue) {
                     TitledPage(title: "Root")
                 } destination: { _ in
-                    TabbedView([0, 1]) { tab -> any Page in
+                    TabView([0, 1]) { tab -> any Page in
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) { TitledPage(title: "Tab \(tab)") }
                             destination: { number in TitledPage(title: "Pushed \(number)") }
                     }
@@ -459,7 +459,7 @@ extension AndroidPagesTests {
     func testATabsAndAnActionsPicturesStandAtTheIconSize() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                TabbedView([0, 1]) { number in
+                TabView([0, 1]) { number in
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(
                             title: "Tab \(number)",
@@ -471,7 +471,7 @@ extension AndroidPagesTests {
                 }
             }
             host.layOut()
-            let row = try XCTUnwrap(host.views(AndroidTabbedView.self).first?.heldViews().last)
+            let row = try XCTUnwrap(host.views(AndroidTabView.self).first?.heldViews().last)
             let bar = try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar
             let tall = TestPictures.pixels(24)
             let icons = "\(Int((Double(tall) * 1.5).rounded()))x\(tall), \(tall * 2)x\(tall)"

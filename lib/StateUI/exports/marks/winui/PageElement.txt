@@ -5,5 +5,5 @@ Page.icon: ✅
 Page.title: ✅
 SplitView.icon: ✅
 SplitView.title: ✅
-TabbedView.icon: ✅
-TabbedView.title: ✅
+TabView.icon: ✅
+TabView.title: ✅

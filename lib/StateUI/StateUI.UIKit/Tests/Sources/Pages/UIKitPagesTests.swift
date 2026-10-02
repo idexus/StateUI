@@ -18,7 +18,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(path.projectedValue) {
                 TitledPage(title: "Items and Cards")
             } destination: { _ in
-                TabbedView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
             }
         }
         defer { host.finish() }
@@ -28,7 +28,7 @@ final class UIKitPagesTests: XCTestCase {
 
         path.wrappedValue = [1]
         let pushed: () -> UIViewController? = {
-            (host.runtime.tree.root.flatMap { Self.tabbedView(in: $0) }?.native as? UIKitElement)?.controller
+            (host.runtime.tree.root.flatMap { Self.tabView(in: $0) }?.native as? UIKitElement)?.controller
         }
         host.settle { pushed() != nil }
         host.runtime.pump.turn()
@@ -183,8 +183,8 @@ final class UIKitPagesTests: XCTestCase {
 
     /// The first tabbed view in `element`'s tree.
     @MainActor
-    private static func tabbedView(in element: MountedElement) -> MountedElement? {
-        first(.tabbedView, in: element)
+    private static func tabView(in element: MountedElement) -> MountedElement? {
+        first(.tabView, in: element)
     }
 
     /// The first element of `type` in `element`'s tree.

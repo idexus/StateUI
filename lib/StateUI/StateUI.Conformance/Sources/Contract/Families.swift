@@ -54,7 +54,7 @@
         SpanTests.self,
         SpansTests.self,
         SplitViewTests.self,
-        TabbedViewTests.self,
+        TabViewTests.self,
         TitleViewTests.self,
         ToolbarItemTests.self,
         ToolbarItemsTests.self,

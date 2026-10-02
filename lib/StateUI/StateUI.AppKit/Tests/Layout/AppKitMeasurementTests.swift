@@ -369,11 +369,11 @@ final class AppKitMeasurementTests: XCTestCase {
     /// A change in a tab reaches its tabbed view over the native tab view,
     /// because the tabbed view measures its pages.
     @MainActor
-    func testAChangeInATabReachesItsTabbedView() {
+    func testAChangeInATabReachesItsTabView() {
         let label = NSTextField(labelWithString: "12")
         let page = AppKitSingleChildView()
         page.setItem(AppKitLayoutItem(view: label))
-        let tabs = AppKitTabbedView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
+        let tabs = AppKitTabView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
         tabs.setItems(
             [AppKitTabItem(layout: AppKitLayoutItem(view: page), title: "One", image: nil)],
             requestedIndex: 0)
@@ -407,7 +407,7 @@ final class AppKitMeasurementTests: XCTestCase {
             AppKitNavigationView(),
             AppKitSingleChildView(),
             AppKitScrollView(frame: .zero),
-            AppKitTabbedView(frame: .zero),
+            AppKitTabView(frame: .zero),
         ]
 
         for container in containers {

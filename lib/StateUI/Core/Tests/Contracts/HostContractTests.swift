@@ -53,7 +53,7 @@ final class HostContractTests: XCTestCase {
         let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let barSource = try SourceTree.text(in: "BarElement.swift")
         let navigationSource = try SourceTree.text(in: "NavigationStack.swift")
-        let tabSource = try SourceTree.text(in: "TabbedView.swift")
+        let tabSource = try SourceTree.text(in: "TabView.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertFalse(properties.contains("barBackground"))
@@ -111,7 +111,7 @@ final class HostContractTests: XCTestCase {
         let formerTypes = ["NavigationPage", "TabbedPage", "FlyoutPage"]
 
         XCTAssertTrue(controls.isSuperset(of: [
-            "NavigationStack", "TabbedView", "SplitView", "TitleView",
+            "NavigationStack", "TabView", "SplitView", "TitleView",
         ]))
         XCTAssertTrue(
             controls.isDisjoint(with: Set(formerTypes + ["NavigationPageTitleView"])),
@@ -149,7 +149,7 @@ final class HostContractTests: XCTestCase {
         let sidebar = State(false)
         let arrangements: [any Page] = [
             NavigationStack(path.projectedValue) { Text("root") } destination: { _ in Text("page") },
-            TabbedView([0, 1]) { _ in Text("tab") },
+            TabView([0, 1]) { _ in Text("tab") },
             SplitView(sidebar.projectedValue) { Text("sidebar") } detail: { Text("detail") },
         ]
 

@@ -14,7 +14,7 @@ extension UIKitElement {
     func makeController() -> UIViewController? {
         switch type {
         case .navigationStack: UIKitNavigationController()
-        case .tabbedView: UIKitTabBarController()
+        case .tabView: UIKitTabBarController()
         case .splitView: UIKitSplitViewController()
         default: nil
         }
@@ -37,7 +37,7 @@ extension UIKitElement {
     /// layer names it (`titledPage`) - tabs on a stack by their own title, else by the page beneath.
     /// Design: docs/design/platforms/uikit/pages.md#the-bar
     var chrome: UIKitPageChrome {
-        if type == .tabbedView {
+        if type == .tabView {
             var chrome = element.selectedTab?.visiblePage?.uiKit.chrome ?? UIKitPageChrome()
             chrome.title = element.titledPage?.value(.title)?.string ?? ""
             return chrome
@@ -72,7 +72,7 @@ extension UIKitElement {
         switch type {
         case .page:
             if let controller { chrome.show(on: controller.navigationItem) }
-        case .tabbedView:
+        case .tabView:
             if let controller { chrome.show(on: controller.navigationItem) }
             (controller as? UIKitTabBarController)?.showsTheStacksBar = element.showsTheStacksBar
             children.forEach { $0.composeChrome() }
@@ -96,7 +96,7 @@ extension UIKitElement {
                 self?.children.first { $0.controller === shown }?.element.showsTheStacksBar ?? true
             }
             navigation.setPages(children.compactMap(\.controller), animated: !(host?.reducesMotion() ?? true))
-        case .tabbedView:
+        case .tabView:
             guard let tabs = controller as? UIKitTabBarController else { return }
             tabs.show(
                 children.compactMap { tab in

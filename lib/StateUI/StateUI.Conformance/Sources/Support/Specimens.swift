@@ -87,8 +87,8 @@
             return dressing.wear(ModalStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack { [Text("Root")] + others }
             } destination: { _ in Text("Sheet") })
-        case "TabbedView":
-            return dressing.wear(TabbedView([0, 1]) { tab in VStack { [Text("Tab \(tab)")] + (tab == 0 ? others : []) } })
+        case "TabView":
+            return dressing.wear(TabView([0, 1]) { tab in VStack { [Text("Tab \(tab)")] + (tab == 0 ? others : []) } })
         default:
             return VStack { [view(element, worn)] + others }
         }

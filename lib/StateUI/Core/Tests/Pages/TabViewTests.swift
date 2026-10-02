@@ -3,7 +3,7 @@
 
 // The tabs, as Swift describes them.
 //
-// A TabbedView puts its tabs in the patch as its ARRANGED children - one page
+// A TabView puts its tabs in the patch as its ARRANGED children - one page
 // per tab, in order - and which one is showing as an INDEX into that same list.
 // That is the whole protocol going out. Coming back there is one report - which
 // page became current - and it writes the bound selection.
@@ -36,14 +36,14 @@ private struct TabPage: View {
 private func tabs(
     _ selection: Binding<Tab>,
     _ offered: [Tab] = Tab.allCases
-) -> TabbedView {
-    TabbedView(offered) { tab in
+) -> TabView {
+    TabView(offered) { tab in
         TabPage(tab: tab)
     }
     .selection(selection.projectedValue)
 }
 
-final class TabbedViewTests: XCTestCase {
+final class TabViewTests: XCTestCase {
     // MARK: - What goes out
 
     /// The tabs ARE the children, in order, each identified by its own value -
@@ -52,7 +52,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let patch = Renders().settled(tabs(selection.projectedValue).node)
 
-        XCTAssertEqual(patch.type, "TabbedView")
+        XCTAssertEqual(patch.type, "TabView")
         XCTAssertEqual(patch.children.map { $0.id },
                        [.manual("home"), .manual("browse"), .manual("settings")])
         XCTAssertEqual(patch.children.map { $0.props["title"] },
@@ -159,7 +159,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let path = State<[Int]>([1])
 
-        let node = TabbedView([Tab.home]) { _ in
+        let node = TabView([Tab.home]) { _ in
             NavigationStack(path.projectedValue) {
                 TabPage(tab: .home)
             } destination: { _ in
@@ -202,7 +202,7 @@ final class TabbedViewTests: XCTestCase {
     /// has no control case, so this is where a modifier of its own is
     /// covered - and it reads the SOURCE, so a property added tomorrow and
     /// written nowhere names itself here.
-    func testEveryTabbedViewModifierIsExercised() throws {
+    func testEveryTabViewModifierIsExercised() throws {
         let selection = State<Tab>(.home)
 
         let sent = Set(
@@ -214,14 +214,14 @@ final class TabbedViewTests: XCTestCase {
                 .keys
                 .map(\.name))
 
-        let declared = try SourceTree.propertyKeys(in: "TabbedView.swift")
+        let declared = try SourceTree.propertyKeys(in: "TabView.swift")
 
-        XCTAssertFalse(declared.isEmpty, "the scan found nothing TabbedView.swift writes")
+        XCTAssertFalse(declared.isEmpty, "the scan found nothing TabView.swift writes")
 
         let missing = declared.subtracting(sent).sorted()
 
         XCTAssertTrue(missing.isEmpty, """
-            TabbedView.swift declares \(missing.joined(separator: ", ")), which \
+            TabView.swift declares \(missing.joined(separator: ", ")), which \
             this test does not write.
 
             A page has no control case - add the modifier here and exercise \
@@ -238,7 +238,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.settings)
         let path = State<[Int]>([])
 
-        let tree = TabbedView([Tab.home, .settings]) { tab in
+        let tree = TabView([Tab.home, .settings]) { tab in
             switch tab {
             case .home:
                 return NavigationStack(path.projectedValue) {
@@ -342,7 +342,7 @@ final class TabbedViewTests: XCTestCase {
     /// This is what `Picker` without `selectedIndex` already does: the control
     /// remains usable without reporting its current choice into state.
     func testTabsWithoutASelectionDescribeThemselvesAndReportNothing() {
-        let node = TabbedView(Tab.allCases) { TabPage(tab: $0) }.node.built
+        let node = TabView(Tab.allCases) { TabPage(tab: $0) }.node.built
 
         XCTAssertEqual(node.children.map { $0.id }, ["home", "browse", "settings"])
         XCTAssertNil(node.props["selectedTab"], "nothing says which tab is showing")
@@ -361,7 +361,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<String>("home")
         let renders = Renders()
 
-        let page = TabbedView(Tab.allCases) { TabPage(tab: $0) }
+        let page = TabView(Tab.allCases) { TabPage(tab: $0) }
             .selection(selection.projectedValue)
 
         let patch = renders.settled(page.node)

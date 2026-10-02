@@ -25,7 +25,7 @@ enum GTKTransitionSurface {
         .textEditor: [.fontSize, .textColor, .placeholderColor],
         .slider: [.tint],
         .navigationStack: [.barBackgroundColor, .barForegroundColor],
-        .tabbedView: [.barBackgroundColor, .barForegroundColor],
+        .tabView: [.barBackgroundColor, .barForegroundColor],
         .splitView: [.barBackgroundColor, .barForegroundColor],
         .modalStack: [.barBackgroundColor, .barForegroundColor],
         .window: [.x, .y, .width, .height],

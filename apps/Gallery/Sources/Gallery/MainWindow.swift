@@ -148,7 +148,7 @@ struct MainWindow: Window {
     /// Almost always a STACK - a `NavigationStack` over the path, with the
     /// section's own page underneath. The tabs demonstration is the exception,
     /// and it is the reason this is a function rather than one expression: a
-    /// `TabbedView` is a page like any other, so a section may simply be one -
+    /// `TabView` is a page like any other, so a section may simply be one -
     /// and a stack may sit inside a tab, because pages nest without a rule
     /// about which may hold which.
     @PageBuilder
@@ -223,10 +223,10 @@ struct MainWindow: Window {
         }
     }
 
-    /// The one section that is not a stack: a `TabbedView` over the author's own
+    /// The one section that is not a stack: a `TabView` over the author's own
     /// enum, with a stack inside the first tab.
     func tabs() -> any Page {
-        TabbedView(nav.tabs) { which in
+        TabView(nav.tabs) { which in
             switch which {
             case .stack:
                 NavigationStack(nav.$tabsPath) {

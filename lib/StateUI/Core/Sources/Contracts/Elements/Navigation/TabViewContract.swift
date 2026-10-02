@@ -3,9 +3,9 @@
 
 /// A page showing several pages, one at a time, with a bar to choose between
 /// them.
-public enum TabbedViewContract: ElementContract {
+public enum TabViewContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = "TabbedView"
+    public static let nodeType: NodeType = "TabView"
 
     /// Every base host presents it by its platform's conventions, keeping
     /// StateUI's state contract.

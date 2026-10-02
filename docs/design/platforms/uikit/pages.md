@@ -59,7 +59,7 @@ its top; where the application keeps its pages, the stack stays as it is.
 
 ## Tabs
 
-A TabbedView is UIKit's tab bar controller, each tab named by its page's
+A TabView is UIKit's tab bar controller, each tab named by its page's
 title and picture. Which tab shows is the host layer's rule: none chosen
 until the tree or the user chooses one, a tab the tree asks for anew chosen,
 the user's choice standing where it is a tab there is. The user's choice is

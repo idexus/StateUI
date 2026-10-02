@@ -158,7 +158,7 @@ extension GTKSplitView {
     }
 }
 
-extension GTKTabbedView {
+extension GTKTabView {
     /// Shows the tab at `place` as its switcher does: the stack's visible child.
     func choose(_ place: Int, on element: MountedElement) throws {
         guard element.children.indices.contains(place) else { throw DriverCannot(.choose(place), on: element) }

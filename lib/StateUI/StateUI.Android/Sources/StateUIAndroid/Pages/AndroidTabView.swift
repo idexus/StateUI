@@ -5,10 +5,10 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A TabbedView: the chosen tab's page over a row of tabs along the bottom, the host's `StateUITabs`.
+/// A TabView: the chosen tab's page over a row of tabs along the bottom, the host's `StateUITabs`.
 /// Design: docs/design/platforms/android/pages.md#tabs
 @MainActor
-final class AndroidTabbedView: AndroidLayoutView {
+final class AndroidTabView: AndroidLayoutView {
     /// One tab as its row shows it.
     struct Tab: Equatable {
         var title: String

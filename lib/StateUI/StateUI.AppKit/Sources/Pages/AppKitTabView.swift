@@ -22,7 +22,7 @@ struct AppKitTabItem {
 /// else its tabs stand on the top edge of its content, as a Mac tab view's do.
 /// The tab view is the system's, and nothing is painted on it.
 @MainActor
-final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
+final class AppKitTabView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     NSTabViewDelegate {
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
@@ -60,7 +60,7 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("AppKitTabbedView is created in code")
+        fatalError("AppKitTabView is created in code")
     }
 
     override var isFlipped: Bool { true }

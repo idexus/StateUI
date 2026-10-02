@@ -46,7 +46,7 @@ extension AppKitElement {
             return
         }
 
-        if let tabs = view as? AppKitTabbedView {
+        if let tabs = view as? AppKitTabView {
             arrangeTabs(tabs)
             return
         }

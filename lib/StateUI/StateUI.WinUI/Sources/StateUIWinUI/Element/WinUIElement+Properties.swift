@@ -37,7 +37,7 @@ extension WinUIElement {
         case .page, .overlay: return WinUISingleChildView()
         case .navigationStack: return WinUINavigationView()
         case .splitView: return WinUISplitView()
-        case .tabbedView: return WinUITabbedView()
+        case .tabView: return WinUITabView()
         default: return WinUIUnsupportedView(type)
         }
     }

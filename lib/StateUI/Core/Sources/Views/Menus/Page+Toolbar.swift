@@ -16,7 +16,7 @@ extension PropertyContainer where Self: Page {
     /// The group is built with the body declaring it, so an item follows the
     /// state it reads. It stands on the bar while the page it belongs to is
     /// shown: declared on a view, the page holding the view; declared on a
-    /// `NavigationStack`, a `TabbedView`, a `SplitView` or a window's page,
+    /// `NavigationStack`, a `TabView`, a `SplitView` or a window's page,
     /// every page shown in it. Groups declared further in join those declared
     /// around them, nearer the title, so an action of the window keeps its
     /// place from page to page; when a page goes, its groups go with it.

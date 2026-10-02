@@ -352,7 +352,7 @@ container puts a view on a page that owns one `PageSession` for as long as
 the same view stands on it: the same view type under the same explicit id.
 Another view in that place starts a session of its own. A write to the session
 builds the page again and carries the view on it whole. An arrangement -
-`NavigationStack`, `TabbedView`, `SplitView` - is a page already and is shown
+`NavigationStack`, `TabView`, `SplitView` - is a page already and is shown
 as it is; it is not a view, so it stands only where a page stands, and it is
 told what it is by modifier.
 

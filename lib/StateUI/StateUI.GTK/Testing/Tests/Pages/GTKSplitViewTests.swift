@@ -150,7 +150,7 @@ final class GTKSplitViewTests: XCTestCase {
     }
 }
 
-final class GTKTabbedViewTests: XCTestCase {
+final class GTKTabViewTests: XCTestCase {
     /// A tabbed view shown by the window stands in a frame whose switcher stands in a bar of its own beneath the
     /// header bar, which carries the chosen tab's title; the user's choice reaches the selection, the pages hear it,
     /// and the header bar carries the chosen tab's actions.
@@ -159,14 +159,14 @@ final class GTKTabbedViewTests: XCTestCase {
             let tab = State(wrappedValue: "one")
             let log = Received<String>()
             let host = GTKRenderer.running {
-                TabbedView(["one", "two"]) { name in
+                TabView(["one", "two"]) { name in
                     TitledPage(
                         title: name == "one" ? "One" : "Two", log: log,
                         actions: name == "two" ? [ToolbarItem("Share")] : [])
                 }
                 .selection(tab.projectedValue)
             }
-            let tabs = try XCTUnwrap(host.views(GTKTabbedView.self).first)
+            let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
             let frame = try XCTUnwrap(host.window?.pageFrame)
             XCTAssertTrue(frame.chrome.tabs === tabs.switcher)
             XCTAssertEqual(frame.chrome.title, "One", "nothing beneath: the chosen tab names the frame")
@@ -184,16 +184,16 @@ final class GTKTabbedViewTests: XCTestCase {
 
     /// A tabbed view pushed on a stack is a page of it, in a frame holding its switcher beneath the header bar, which
     /// - and the window - keeps the title of the page beneath.
-    func testATabbedViewPushedOnAStackStandsInAFrame() throws {
+    func testATabViewPushedOnAStackStandsInAFrame() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
                     TitledPage(title: "Home")
                 } destination: { _ in
-                    TabbedView(["a", "b"]) { name in TitledPage(title: name) }
+                    TabView(["a", "b"]) { name in TitledPage(title: name) }
                 }
             }
-            let tabs = try XCTUnwrap(host.views(GTKTabbedView.self).first)
+            let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
             let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
             XCTAssertTrue(navigation.frames.last?.chrome.tabs === tabs.switcher)
             XCTAssertEqual(navigation.frames.last?.chrome.title, "Home")

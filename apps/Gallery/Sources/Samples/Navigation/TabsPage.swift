@@ -2,8 +2,8 @@ import StateUI
 
 /// The first tab of the tabs demonstration - the one holding a stack of its own.
 ///
-/// It is the ROOT of a `NavigationStack` that lives inside a `TabbedView`, and
-/// that `TabbedView` is the detail of the same split view every other section
+/// It is the ROOT of a `NavigationStack` that lives inside a `TabView`, and
+/// that `TabView` is the detail of the same split view every other section
 /// is shown in. All three are pages, and pages nest - so a tab may hold a
 /// stack, and the stack it holds is its own array.
 struct TabsPage: View {
@@ -24,7 +24,7 @@ struct TabsPage: View {
             VStack {
                 SectionTitle("A section arranged as tabs")
 
-                Text("A TabbedView of two")
+                Text("A TabView of two")
                     .fontSize(26)
                     .fontAttributes(.bold)
 

@@ -108,7 +108,7 @@ final class WinUIDriver: HostDriver {
         case (.submit, let search as WinUISearchFieldView): stateui_winui_search_submit_as_user(search.handle)
         case (.choose(let place), let picker as WinUIPickerView):
             stateui_winui_picker_choose_as_user(picker.handle, Int32(place))
-        case (.choose(let place), _) where element.type == .tabbedView: try chooseTab(place, of: element)
+        case (.choose(let place), _) where element.type == .tabView: try chooseTab(place, of: element)
         case (.open, let picker as WinUIPickerView): stateui_winui_picker_open_as_user(picker.handle, true)
         case (.close, let picker as WinUIPickerView): stateui_winui_picker_open_as_user(picker.handle, false)
         case (.open, let picker as WinUIDatePickerView): stateui_winui_date_set_open(picker.handle, true)
@@ -236,7 +236,7 @@ final class WinUIDriver: HostDriver {
     /// Chooses the tab at `place` of a tabbed view: in the window's row where the window shows its tabs, else in the row
     /// the view shows.
     private func chooseTab(_ place: Int, of element: MountedElement) throws {
-        guard let tabs = (element.native as? WinUIElement)?.view as? WinUITabbedView else {
+        guard let tabs = (element.native as? WinUIElement)?.view as? WinUITabView else {
             throw DriverCannot(.choose(place), on: element)
         }
         let row: WinUIView = tabs.tabsShownByWindow ? try window().tabRow : tabs.row

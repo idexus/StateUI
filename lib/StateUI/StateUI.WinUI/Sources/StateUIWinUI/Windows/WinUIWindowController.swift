@@ -126,8 +126,8 @@ final class WinUIWindowController {
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view
     /// whose detail they stand across, if any.
     private var windowTabs: WinUIWindowTabs? {
-        guard let tabbed = presentation.arrangement?.visibleTabbedView, tabbed.tabsStandInWindow,
-              let tabs = tabbed.winUI.view as? WinUITabbedView
+        guard let tabbed = presentation.arrangement?.visibleTabView, tabbed.tabsStandInWindow,
+              let tabs = tabbed.winUI.view as? WinUITabView
         else { return nil }
 
         return WinUIWindowTabs(

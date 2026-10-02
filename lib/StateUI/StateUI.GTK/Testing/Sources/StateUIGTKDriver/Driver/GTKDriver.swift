@@ -166,7 +166,7 @@ final class GTKDriver: HostDriver {
             type(words, into: editor, keys: OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)))
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.focus, let view?): gtk_widget_grab_focus(view.widget)
-        case (.choose(let place), let tabs as GTKTabbedView): try tabs.choose(place, on: element)
+        case (.choose(let place), let tabs as GTKTabView): try tabs.choose(place, on: element)
         case (.toggle, let split as GTKSplitView): split.toggleAsUser()
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)

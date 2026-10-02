@@ -86,7 +86,7 @@ final class ContractPayloadTests: XCTestCase {
         check(SplitViewContract.showsSidebarChanged, [.bool(false)])
         check(StepperContract.valueChanged, [.number(3)])
         check(SwitchContract.toggled, [.bool(true)])
-        check(TabbedViewContract.selectedTabChanged, [.number(1)])
+        check(TabViewContract.selectedTabChanged, [.number(1)])
         check(TextFieldContract.submitted)
         check(TimePickerContract.closed)
         check(TimePickerContract.opened)

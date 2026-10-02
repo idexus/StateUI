@@ -382,7 +382,7 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "the tab shown as a current page",
             removed: "_ = TabbedViewContract.currentPage",
-            contract: "_ = TabbedViewContract.selectedTab"),
+            contract: "_ = TabViewContract.selectedTab"),
         Road(
             name: "a collection's choice reported as selectionChanged",
             removed: "_ = ItemsViewContract.selectionChanged",
@@ -519,6 +519,10 @@ final class ContractRoadsTests: XCTestCase {
             name: "a menu's line as a MenuSeparator",
             removed: "_ = MenuSeparator()",
             contract: "_ = Divider()"),
+        Road(
+            name: "tabs as a TabbedView",
+            removed: "_ = TabbedView([0, 1]) { _ in Text(\"tab\") }",
+            contract: "_ = TabView([0, 1]) { _ in Text(\"tab\") }"),
         Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,

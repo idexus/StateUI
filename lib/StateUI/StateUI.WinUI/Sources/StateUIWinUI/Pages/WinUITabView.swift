@@ -4,11 +4,11 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A TabbedView: the chosen tab's page, under a row of tabs - WinUI's `SelectorBar` - of its own, or under the
+/// A TabView: the chosen tab's page, under a row of tabs - WinUI's `SelectorBar` - of its own, or under the
 /// window's where its tabs are the window's.
 /// Design: docs/design/platforms/winui/pages.md#tabs
 @MainActor
-final class WinUITabbedView: WinUILayoutView {
+final class WinUITabView: WinUILayoutView {
     /// Which tab the view shows, by the host layer's rule.
     private(set) var choice = TabChoice()
 

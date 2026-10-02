@@ -5,11 +5,11 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// A TabbedView: a `GtkStack` of its tabs, chosen by a `GtkStackSwitcher` - its tabs' captions joined in one
+/// A TabView: a `GtkStack` of its tabs, chosen by a `GtkStackSwitcher` - its tabs' captions joined in one
 /// control - which stands beneath the header bar of the frame the tabbed view stands in.
 /// Design: docs/design/platforms/gtk/pages.md#tabs
 @MainActor
-final class GTKTabbedView: GTKLayoutView {
+final class GTKTabView: GTKLayoutView {
     /// Which tab the view shows, by the host layer's rule.
     private(set) var choice = TabChoice()
 
@@ -29,7 +29,7 @@ final class GTKTabbedView: GTKLayoutView {
         setChildren([stack])
         gtk_stack_switcher_set_stack(switcher.widget.opaque, stack.widget.opaque)
         connectNotify(UnsafeMutableRawPointer(stack.widget), "visible-child", number: number) { _, _, data in
-            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKTabbedView)?.visibleChildMoved() }
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKTabView)?.visibleChildMoved() }
         }
     }
 

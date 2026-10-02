@@ -8,7 +8,7 @@
 @_spi(Host) extension NodeType {
     /// The arrangements of pages a window shows: a page, a stack of them, tabs, a split view, a page with sheets over
     /// it.
-    public static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabbedView, .splitView, .modalStack]
+    public static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabView, .splitView, .modalStack]
 
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [

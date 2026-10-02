@@ -109,7 +109,7 @@ before in front of them. On an iPhone one scene stands, and a second window
 has none to stand in.
 
 A window's pages are UIKit's own controllers - a navigation controller for a
-`NavigationStack`, a tab bar controller for a `TabbedView`, a split view
+`NavigationStack`, a tab bar controller for a `TabView`, a split view
 controller for a `SplitView` - and its sheets are presented over it, the user's
 swipe down taking the top one away. The application's `MenuBar` is the
 iPad's main menu.

@@ -59,8 +59,8 @@
             return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
                 Text("Sidebar")
             } detail: { stack() })
-        case "TabbedView":
-            return dressing.wear(TabbedView([0, 1]) { tab in
+        case "TabView":
+            return dressing.wear(TabView([0, 1]) { tab in
                 if tab == 0 {
                     stack()
                 } else {

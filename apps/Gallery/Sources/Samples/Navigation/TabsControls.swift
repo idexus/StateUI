@@ -109,7 +109,7 @@ struct TabsControls: View {
             .onClicked(act)
     }
 
-    /// The index `TabbedView.selection` sends the host for this selection -
+    /// The index `TabView.selection` sends the host for this selection -
     /// the same line the library runs, repeated here so that the number is on
     /// screen.
     ///

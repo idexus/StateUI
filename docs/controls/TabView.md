@@ -1,6 +1,6 @@
 <!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
-# TabbedView
+# TabView
 
 A page showing several pages, one at a time, with a bar to choose between them.
 
@@ -16,7 +16,7 @@ struct Tab: View {
 
 @State var shown = "Today"
 
-TabbedView(["Today", "Archive"]) { name in Tab(name: name) }
+TabView(["Today", "Archive"]) { name in Tab(name: name) }
     .selection($shown)
 ```
 
@@ -51,16 +51,16 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
-Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/TabbedViewContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/TabViewContract.swift`.
 
-## TabbedView's own members
+## TabView's own members
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>selectedTab</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read selectedTab of TabbedView: the host's tab choice, not the tab view's<br>Android Views: cannot choose on TabbedView - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: read selectedTab of TabView: the host's tab choice, not the tab view's<br>Android Views: cannot choose on TabView - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>selectedTabChanged</code></td><td>event</td><td><code>Int</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">Android Views: cannot choose on TabbedView - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">Android Views: cannot choose on TabView - Android's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -81,9 +81,9 @@ What an arrangement declares of the bar while it stands on the visible path: its
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>barBackgroundColor</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>barForegroundColor</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read barForegroundColor of TabbedView - AppKit's driver has no path for it yet<br>Android Views: cannot read barForegroundColor of TabbedView - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: cannot read barForegroundColor of TabView - AppKit's driver has no path for it yet<br>Android Views: cannot read barForegroundColor of TabView - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>barIcon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read barIcon of TabbedView - AppKit's driver has no path for it yet<br>UIKit: A UIKit bar is each page's own: it shows that page's title, and no application's mark.<br>Android Views: An Android bar is its stack's own: it shows its page's title, and no application's mark.<br>GTK 4: A GNOME header bar is its page's own and shows no application's mark.</td></tr></tbody>
+<tr><td colspan="9">AppKit: cannot read barIcon of TabView - AppKit's driver has no path for it yet<br>UIKit: A UIKit bar is each page's own: it shows that page's title, and no application's mark.<br>Android Views: An Android bar is its stack's own: it shows its page's title, and no application's mark.<br>GTK 4: A GNOME header bar is its page's own and shows no application's mark.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>barSubtitle</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>barTitle</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
 <tr><td colspan="9">UIKit: A UIKit bar is each page's own and names that page; an application names itself in none.<br>Android Views: An Android bar is its stack's own and names its page; an application names itself in none.<br>GTK 4: A GNOME header bar is its page's own and names that page; an application names itself in none.</td></tr></tbody>
@@ -96,7 +96,7 @@ What a page shows about itself where another container presents it as an item - 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read icon of TabbedView - AppKit's driver has no path for it yet<br>Android Views: cannot read icon of TabbedView - Android's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
+<tr><td colspan="9">AppKit: cannot read icon of TabView - AppKit's driver has no path for it yet<br>Android Views: cannot read icon of TabView - Android's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read title of TabbedView - AppKit's driver has no path for it yet<br>Android Views: cannot read title of TabbedView - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: cannot read title of TabView - AppKit's driver has no path for it yet<br>Android Views: cannot read title of TabView - Android's driver has no path for it yet</td></tr></tbody>
 </table>

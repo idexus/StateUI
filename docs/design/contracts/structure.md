@@ -15,7 +15,7 @@ own.
     Scene                            one session of the application
       Window                         a window onto a page
         Page, NavigationStack,       what a window shows; the arrangements are pages too
-        TabbedView, SplitView,
+        TabView, SplitView,
         ModalStack                   a page with the pages presented over it, the last on top
   Overlay                            the views a page lays over its window, and the library's own
   MenuBar, Menu, MenuItem,           a page's menus, their entries, and the lines between them

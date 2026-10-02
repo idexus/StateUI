@@ -28,7 +28,7 @@ extension GTKElement {
             return overlay
         case .navigationStack: return GTKNavigationView()
         case .splitView: return GTKSplitView()
-        case .tabbedView: return GTKTabbedView()
+        case .tabView: return GTKTabView()
         default: return GTKUnsupportedView(type)
         }
     }

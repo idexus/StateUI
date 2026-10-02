@@ -125,7 +125,7 @@ turns the nodes into the patch.
   to the host from the application's own registration function.
   *Application.* ([Pages and windows](../design/views/pages.md);
   [applications and sessions](../interface/application-and-sessions.md))
-- **`NavigationStack`**, **`TabbedView`**, **`SplitView`** and
+- **`NavigationStack`**, **`TabView`**, **`SplitView`** and
   **`ModalStack`** (`Navigation/`) are arrangements: pages that key the pages
   they hold, whose stack, chosen tab and modal stack are state. `Menu`,
   `MenuItem`, `Divider` and `ToolbarItem` (`Menus/`) are a menu's

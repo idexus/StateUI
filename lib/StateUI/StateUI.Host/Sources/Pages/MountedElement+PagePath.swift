@@ -12,7 +12,7 @@ extension MountedElement {
         switch type {
         case .page: self
         case .navigationStack: children.last?.visiblePage
-        case .tabbedView: selectedTab?.visiblePage
+        case .tabView: selectedTab?.visiblePage
         case .splitView: children.dropFirst().first?.visiblePage
         case .modalStack: children.first?.visiblePage
         default: nil
@@ -29,7 +29,7 @@ extension MountedElement {
         case .navigationStack: return children.last?.titledPage
         case .splitView: return children.dropFirst().first?.titledPage
         case .modalStack: return children.first?.titledPage
-        case .tabbedView:
+        case .tabView:
             if let tab = selectedTab, tab.type != .page { return tab.titledPage }
             guard let stack = parent, stack.type == .navigationStack else { return selectedTab }
             if value(.title) != nil { return self }
@@ -43,7 +43,7 @@ extension MountedElement {
     public var visibleNavigationStack: MountedElement? {
         switch type {
         case .navigationStack: self
-        case .tabbedView: selectedTab?.visibleNavigationStack
+        case .tabView: selectedTab?.visibleNavigationStack
         case .splitView: children.dropFirst().first?.visibleNavigationStack
         case .modalStack: children.first?.visibleNavigationStack
         default: nil
@@ -58,11 +58,11 @@ extension MountedElement {
     }
 
     /// The first tabbed view on the visible page path.
-    public var visibleTabbedView: MountedElement? {
+    public var visibleTabView: MountedElement? {
         switch type {
-        case .tabbedView: self
-        case .navigationStack: children.last?.visibleTabbedView
-        case .splitView: children.dropFirst().first?.visibleTabbedView
+        case .tabView: self
+        case .navigationStack: children.last?.visibleTabView
+        case .splitView: children.dropFirst().first?.visibleTabView
         default: nil
         }
     }
@@ -72,7 +72,7 @@ extension MountedElement {
     public var shownChildren: [MountedElement] {
         switch type {
         case .navigationStack: children.last.map { [$0] } ?? []
-        case .tabbedView: selectedTab.map { [$0] } ?? []
+        case .tabView: selectedTab.map { [$0] } ?? []
         case .splitView:
             Array(children.dropFirst().prefix(1)) + (sidebarIsVisible ? Array(children.prefix(1)) : [])
         default: []
@@ -105,7 +105,7 @@ extension MountedElement {
     /// split view details - never one in a sidebar, in a tab of another, in a sheet or in content. A split view's
     /// sidebar is its first child as written, which holds while the children are still being made.
     public var tabsStandInWindow: Bool {
-        guard type == .tabbedView else { return false }
+        guard type == .tabView else { return false }
 
         var child = self
         while let parent = child.parent {

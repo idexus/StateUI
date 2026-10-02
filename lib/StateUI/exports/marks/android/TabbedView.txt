@@ -1,5 +1,0 @@
-# revision 1.1
-TabbedView: ✅
-TabbedView.selectedTab: cannot choose on TabbedView - Android's driver has no path for it yet
-TabbedView.selectedTabChanged: cannot choose on TabbedView - Android's driver has no path for it yet
-Text.frameChanged: ✅

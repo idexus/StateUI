@@ -65,7 +65,7 @@ public protocol Application {
 /// them in its `Windows`. What every view in a window needs is offered above
 /// it, with `.environment(_:)` on the scene or on its `Windows`.
 public protocol Window: Element, Scene {
-    /// What the window shows: a `NavigationStack`, a `TabbedView`, a
+    /// What the window shows: a `NavigationStack`, a `TabView`, a
     /// `SplitView`, or any other view - usually a `View` of the
     /// application's own. Read again when a state it read changes. An
     /// `if`/`else` or a `switch` chooses among pages, each a page of its own.
@@ -141,7 +141,7 @@ extension Node {
 /// sheet.
 ///
 /// Nobody conforms to it by hand. Every view is a page, and so is each
-/// arrangement - `NavigationStack`, `TabbedView`, `SplitView` - which is not a
+/// arrangement - `NavigationStack`, `TabView`, `SplitView` - which is not a
 /// view and so stands only where a page stands.
 ///
 /// A view shown as a page holds a `PageSession`, in the environment of
@@ -187,7 +187,7 @@ extension Node {
 
     /// The node types of the arrangements: pages this library declares.
     private static let arrangements: Set<NodeType> = [
-        NavigationStackContract.nodeType, TabbedViewContract.nodeType, SplitViewContract.nodeType,
+        NavigationStackContract.nodeType, TabViewContract.nodeType, SplitViewContract.nodeType,
         ModalStackContract.nodeType,
     ]
 

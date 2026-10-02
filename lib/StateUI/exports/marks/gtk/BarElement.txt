@@ -14,8 +14,8 @@ SplitView.barForegroundColor: ✅
 SplitView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
 SplitView.barSubtitle: ✅
 SplitView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
-TabbedView.barBackgroundColor: ✅
-TabbedView.barForegroundColor: ✅
-TabbedView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
-TabbedView.barSubtitle: ✅
-TabbedView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
+TabView.barBackgroundColor: ✅
+TabView.barForegroundColor: ✅
+TabView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
+TabView.barSubtitle: ✅
+TabView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.

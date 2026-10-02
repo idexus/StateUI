@@ -14,8 +14,8 @@ SplitView.barForegroundColor: cannot read barForegroundColor of SplitView - AppK
 SplitView.barIcon: cannot read barIcon of SplitView - AppKit's driver has no path for it yet
 SplitView.barSubtitle: ✅
 SplitView.barTitle: ✅
-TabbedView.barBackgroundColor: ✅
-TabbedView.barForegroundColor: cannot read barForegroundColor of TabbedView - AppKit's driver has no path for it yet
-TabbedView.barIcon: cannot read barIcon of TabbedView - AppKit's driver has no path for it yet
-TabbedView.barSubtitle: ✅
-TabbedView.barTitle: ✅
+TabView.barBackgroundColor: ✅
+TabView.barForegroundColor: cannot read barForegroundColor of TabView - AppKit's driver has no path for it yet
+TabView.barIcon: cannot read barIcon of TabView - AppKit's driver has no path for it yet
+TabView.barSubtitle: ✅
+TabView.barTitle: ✅

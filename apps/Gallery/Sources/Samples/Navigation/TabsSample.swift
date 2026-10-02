@@ -2,7 +2,7 @@ import StateUI
 
 /// A native tab arrangement and the selection binding that says which tab is showing.
 ///
-/// The example is not on this page, and it cannot be: a `TabbedView` is a PAGE,
+/// The example is not on this page, and it cannot be: a `TabView` is a PAGE,
 /// so the honest demonstration is for a section of the gallery to be one. What
 /// is here is the button that goes there, and the code that arranges it.
 struct TabsSample: SampleContent, ExampleContent {
@@ -33,7 +33,7 @@ struct TabsSample: SampleContent, ExampleContent {
         // The tabs are a collection of YOUR type and the selection is a
         // binding of it - not an index somebody has to keep in step. The
         // choice is a modifier, the way every other choice here is.
-        TabbedView(tabs) { which in
+        TabView(tabs) { which in
             switch which {
             case .stack:
                 // A tab may hold a whole stack of its own. Its caption and
@@ -96,7 +96,7 @@ struct TabsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("A `TabbedView` is a page, so a section of this gallery is one: the "
+            Text("A `TabView` is a page, so a section of this gallery is one: the "
                 + "button opens a section arranged as tabs rather than as a stack. The "
                 + "tabs are an array of your own type and the selection is a binding of "
                 + "it, so moving the tabs from code is an assignment.")

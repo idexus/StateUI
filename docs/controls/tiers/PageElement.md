@@ -16,7 +16,7 @@ NavigationStack($path) {
 .icon("settings.png")
 ```
 
-Worn by: [NavigationStack](../NavigationStack.md) · [Page](../Page.md) · [SplitView](../SplitView.md) · [TabbedView](../TabbedView.md)
+Worn by: [NavigationStack](../NavigationStack.md) · [Page](../Page.md) · [SplitView](../SplitView.md) · [TabView](../TabView.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/PageElementContract.swift`.
 

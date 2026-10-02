@@ -51,7 +51,7 @@ final class UIKitSplitViewTests: XCTestCase {
                     return NavigationStack(path.projectedValue) { Text("Stacked") }
                         destination: { number in Text("Pushed \(number)") }
                 }
-                return TabbedView([0, 1]) { tab in Text("Tab \(tab)") }
+                return TabView([0, 1]) { tab in Text("Tab \(tab)") }
             }
         }
         defer { host.finish() }
@@ -65,7 +65,7 @@ final class UIKitSplitViewTests: XCTestCase {
         tabbed.wrappedValue = true
         path.wrappedValue = []
         host.runtime.pump.turn()
-        let tabs = try XCTUnwrap(Self.controller(of: .tabbedView, in: host))
+        let tabs = try XCTUnwrap(Self.controller(of: .tabView, in: host))
         host.settle { tabs.view.window != nil }
 
         XCTAssertNotNil(tabs.view.window, "the tabs stand in the window")
@@ -80,7 +80,7 @@ final class UIKitSplitViewTests: XCTestCase {
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
             SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
-                TabbedView([0, 1]) { tab -> any Page in
+                TabView([0, 1]) { tab -> any Page in
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Tab \(tab)") }
                         destination: { number in Text("Pushed \(number)") }
                 }
@@ -90,7 +90,7 @@ final class UIKitSplitViewTests: XCTestCase {
         host.settle { false }
         menuOpen.wrappedValue = false
         host.runtime.pump.turn()
-        let tabs = try XCTUnwrap(Self.controller(of: .tabbedView, in: host))
+        let tabs = try XCTUnwrap(Self.controller(of: .tabView, in: host))
         host.settle { tabs.view.window != nil && tabs.navigationController?.isNavigationBarHidden != false }
 
         XCTAssertNotNil(tabs.view.window)

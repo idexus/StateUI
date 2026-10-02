@@ -37,7 +37,7 @@ An application declares types; the tree under a window is views.
   ApplicationSession   SceneSession                          WindowSession            │
                                                                                       │
           ┌───────────────────────────────────────────────────────────────────────────┤
-          │ an arrangement - NavigationStack, TabbedView, SplitView -                  │ any other view -
+          │ an arrangement - NavigationStack, TabView, SplitView -                  │ any other view -
           │ is a page itself, and keys the pages it holds                              │ usually a View -
           ▼                                                                            ▼ goes on a page element
       pages (each a view on a page element, or another arrangement)            that holds its PageSession

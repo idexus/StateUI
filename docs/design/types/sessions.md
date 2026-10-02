@@ -47,7 +47,7 @@ that goes takes its declarations with it and nothing needs restoring.
 A page's view is a value its parent builds afresh on every render, so
 nothing stored on it outlives a build. The session lives on the element the
 page is: made when the page is first built, handed back on every build after,
-and gone with it. An arrangement - a `NavigationStack`, a `TabbedView`, a
+and gone with it. An arrangement - a `NavigationStack`, a `TabView`, a
 `SplitView`, a `ModalStack` - is a page already and has no session: it is
 told what it is by modifier, from `PageElement` and `BarElement`.
 

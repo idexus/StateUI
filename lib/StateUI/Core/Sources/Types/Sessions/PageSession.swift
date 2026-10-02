@@ -23,7 +23,7 @@
 /// its menus are declared in its view instead - `.toolbar { }`,
 /// `.titleView { }`, `.menuBar { }` - built with the state they follow. See `ApplicationSession` for what a session is.
 ///
-/// An arrangement - a `NavigationStack`, a `TabbedView`, a `SplitView` - is a
+/// An arrangement - a `NavigationStack`, a `TabView`, a `SplitView` - is a
 /// page already and has none: it is told what it is by modifier, from
 /// `PageElement`.
 public final class PageSession {
@@ -41,7 +41,7 @@ public final class PageSession {
     ///
     ///     page.icon = "house.png"
     ///
-    /// A tab's icon, in practice - a `TabbedView` draws it above or beside the
+    /// A tab's icon, in practice - a `TabView` draws it above or beside the
     /// caption. A page that is not shown as an item of something else has
     /// nowhere to draw it, and platforms ignore it there.
     @State public var icon: ImageSource? = nil

@@ -5,5 +5,5 @@ Page.icon: – GTK's tab switcher shows a tab's picture in place of its caption,
 Page.title: ✅
 SplitView.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
 SplitView.title: ✅
-TabbedView.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
-TabbedView.title: ✅
+TabView.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
+TabView.title: ✅

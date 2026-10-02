@@ -352,7 +352,7 @@ final class AppKitPageTests: XCTestCase {
         ], selected: 0, changed: 9)))
 
         let tabs = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
+            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabView)
         tabs.selectForTesting(1)
 
         XCTAssertEqual(tabs.selectedIndexForTesting, 1)
@@ -364,7 +364,7 @@ final class AppKitPageTests: XCTestCase {
     /// equally, and none on its content, where nothing is painted. Choosing in
     /// the row is the user choosing.
     @MainActor
-    func testAWindowsTabbedViewSelectsFromTheRowBeneathItsToolbar() throws {
+    func testAWindowsTabViewSelectsFromTheRowBeneathItsToolbar() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -393,7 +393,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(control.selectedSegment, 0)
 
         let tabs = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
+            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabView)
         XCTAssertFalse(tabs.showsTabsForTesting)
         XCTAssertNil(tabs.layer?.backgroundColor, "the tab row and the tab view are the system's")
 
@@ -526,7 +526,7 @@ final class AppKitPageTests: XCTestCase {
             ], selected: 0, changed: 904, id: "sidebar-tabs"),
             detail: page("detail", title: "Detail", events: 400))))
         let sidebarTabs = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("sidebar-tabs")) as? AppKitTabbedView)
+            renderer.viewForTesting(id: .manual("sidebar-tabs")) as? AppKitTabView)
         XCTAssertTrue(sidebarTabs.showsTabsForTesting)
         XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
     }
@@ -535,7 +535,7 @@ final class AppKitPageTests: XCTestCase {
     /// the top edge of its content, named by its pages; a tab clicked there is
     /// the user choosing. The window's toolbar serves only the outer one.
     @MainActor
-    func testATabbedViewInsideATabShowsItsTabsOnItsContent() throws {
+    func testATabViewInsideATabShowsItsTabsOnItsContent() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -550,9 +550,9 @@ final class AppKitPageTests: XCTestCase {
         ], selected: 0)))
 
         let inner = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("inner")) as? AppKitTabbedView)
+            renderer.viewForTesting(id: .manual("inner")) as? AppKitTabView)
         let outer = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
+            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabView)
         XCTAssertTrue(inner.showsTabsForTesting)
         XCTAssertEqual(inner.tabLabelsForTesting, ["Home", "More"])
         XCTAssertFalse(outer.showsTabsForTesting)
@@ -617,7 +617,7 @@ final class AppKitPageTests: XCTestCase {
         renderer.applyForTesting(tree(tabbed([library, mail, more, home], selected: 3)))
 
         let tabs = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
+            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabView)
         XCTAssertEqual(tabs.tabLabelsForTesting, ["Library", "Mail", "More", "Home"])
         let row = try XCTUnwrap(renderer.windowsForTesting.first).tabRowForTesting.controlForTesting
         XCTAssertEqual(
@@ -1142,7 +1142,7 @@ private extension AppKitPageTests {
         changed: Int32 = 901,
         id: String = "tabs"
     ) -> HostPatch {
-        var tabs = HostPatch(id: .manual(id), type: .tabbedView)
+        var tabs = HostPatch(id: .manual(id), type: .tabView)
         tabs.properties[.selectedTab] = .number(Double(selected))
         tabs.events = .replace([.selectedTabChanged: changed])
         tabs.children = .arranged(pages)

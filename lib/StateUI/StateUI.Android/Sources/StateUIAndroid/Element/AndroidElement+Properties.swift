@@ -34,8 +34,8 @@ extension AndroidElement {
         case .splitView:
             return AndroidSplitView()
 
-        case .tabbedView:
-            return AndroidTabbedView()
+        case .tabView:
+            return AndroidTabView()
 
         default:
             return AndroidUnsupportedView(type)

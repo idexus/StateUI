@@ -770,10 +770,10 @@ enum SourceTree {
     /// of its own; the shared tier's files and ViewBuilder.swift describe no
     /// type at all.
     ///
-    /// NavigationStack.swift and TabbedView.swift are the same kind of thing: a
+    /// NavigationStack.swift and TabView.swift are the same kind of thing: a
     /// PAGE arranges other pages, so there is no control to build one on and
     /// nothing about it can be styled - what they do is a stack and a set of
-    /// tabs, and NavigationStackTests and TabbedViewTests are where those are
+    /// tabs, and NavigationStackTests and TabViewTests are where those are
     /// checked. ModalStack.swift arranges pages too, over the
     /// window rather than inside it.
     ///
@@ -792,7 +792,7 @@ enum SourceTree {
             "Style.swift", "StyleBag+Properties.swift", "StyleBuilder.swift", "StyleSheet.swift",
             "StyleTarget.swift", "VisualState.swift", "VisualStateList.swift",
             "VisualElement+VisualStates.swift",
-            "NavigationStack.swift", "TabbedView.swift", "SplitView.swift",
+            "NavigationStack.swift", "TabView.swift", "SplitView.swift",
             "ModalStack.swift",
         ]
 

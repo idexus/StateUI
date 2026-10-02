@@ -28,7 +28,7 @@ extension GTKDriver {
         case let picker as GTKPopoverPickerView: return wordsHolds(property, picker.label)
         case let stepper as GTKStepperView: return stepperHolds(property, stepper)
         case let scroll as GTKScrollView: return scrollHolds(property, scroll)
-        case let tabs as GTKTabbedView where property == .selectedTab: return Self.shownTab(of: tabs).map(\.propValue)
+        case let tabs as GTKTabView where property == .selectedTab: return Self.shownTab(of: tabs).map(\.propValue)
         case _ where property == .showsNavigationBar && element.type == .page:
             return (try? frame(of: element)).map { (adw_toolbar_view_get_reveal_top_bars($0.widget.opaque) != 0).propValue }
         case let layout as GTKLayoutView: return layoutHolds(property, layout)
@@ -233,7 +233,7 @@ extension GTKDriver {
 
     /// The title a tabbed view's tab shows for `element`'s page, as GTK's stack holds it; nil where no tab shows it.
     private func tabTitle(of element: MountedElement) -> String? {
-        guard element.parent?.type == .tabbedView, var child = (element.native as? GTKElement)?.view?.widget else {
+        guard element.parent?.type == .tabView, var child = (element.native as? GTKElement)?.view?.widget else {
             return nil
         }
         while let parent = gtk_widget_get_parent(child), !GTKTestHost.holds(parent, gtk_stack_get_type()) { child = parent }
@@ -244,7 +244,7 @@ extension GTKDriver {
     }
 
     /// The tab GTK's stack shows, by its place among the tabs.
-    private static func shownTab(of tabs: GTKTabbedView) -> Int? {
+    private static func shownTab(of tabs: GTKTabView) -> Int? {
         guard let stack = GTKTestHost.descendants(of: tabs.widget).first(where: { GTKTestHost.holds($0, gtk_stack_get_type()) }),
               let shown = gtk_stack_get_visible_child(stack.opaque)
         else { return nil }

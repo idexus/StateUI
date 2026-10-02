@@ -14,8 +14,8 @@ SplitView.barForegroundColor: ✅
 SplitView.barIcon: ✅
 SplitView.barSubtitle: ✅
 SplitView.barTitle: ✅
-TabbedView.barBackgroundColor: ✅
-TabbedView.barForegroundColor: ✅
-TabbedView.barIcon: ✅
-TabbedView.barSubtitle: ✅
-TabbedView.barTitle: ✅
+TabView.barBackgroundColor: ✅
+TabView.barForegroundColor: ✅
+TabView.barIcon: ✅
+TabView.barSubtitle: ✅
+TabView.barTitle: ✅
