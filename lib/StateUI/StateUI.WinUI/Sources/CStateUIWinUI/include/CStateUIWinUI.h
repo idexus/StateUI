@@ -284,6 +284,17 @@ void stateui_winui_set_hit_testable(StateUIObjectRef element, bool testable);
 /// Where the element is drawn among its panel's children: a higher one over a lower, equal ones in order.
 void stateui_winui_set_z_index(StateUIObjectRef element, int32_t z);
 
+/// The direction the element lays itself out and writes in, which what stands in it inherits: right to left, or
+/// left to right.
+void stateui_winui_set_flow_direction(StateUIObjectRef element, bool rightToLeft);
+
+/// Tips the element as it is drawn after its transform: `matrix` the sixteen numbers of a 4 x 4 matrix, row by
+/// row, applied to a point (x, y, 0, 1) of the element and divided by the fourth; null for no tip.
+void stateui_winui_set_projection(StateUIObjectRef element, const double *matrix);
+
+/// The tip the element is drawn with, its matrix's sixteen numbers into `matrix`; false where it has none.
+bool stateui_winui_projection(StateUIObjectRef element, double *matrix);
+
 /// Asks WinUI to arrange the element again - a place in the air lands only in a pass.
 void stateui_winui_invalidate_arrange(StateUIObjectRef element);
 

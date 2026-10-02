@@ -61,6 +61,22 @@ final class HostDrawingTransformTests: XCTestCase {
         XCTAssertLessThan(right, 60)
     }
 
+    func testTheFlatDrawingThenTheTipIsTheWholeTransform() throws {
+        let transform = HostDrawingTransform(
+            translationX: 12, translationY: -7, rotation: 25, rotationX: 30, rotationY: -40,
+            scaleX: 1.5, scaleY: 0.75, pivotX: 0.25, pivotY: 0.8)
+        let (pivotX, pivotY) = (0.25 * 100, 0.8 * 60)
+        let flat = HostMatrix.translation(-pivotX, -pivotY) * HostMatrix.scale(1.5, 0.75)
+            * HostMatrix.rotation(degrees: 25, about: .z) * HostMatrix.translation(pivotX + 12, pivotY - 7)
+        let whole = transform.matrix(width: 100, height: 60)
+        let tipped = try XCTUnwrap(transform.tip(width: 100, height: 60))
+
+        for point in [(0.0, 0.0), (100.0, 0.0), (100.0, 60.0), (0.0, 60.0), (37.0, 21.0)] {
+            assert(flat * tipped, draws: point, at: whole.applied(to: point.0, point.1))
+        }
+        XCTAssertNil(HostDrawingTransform(translationX: 5, rotation: 30).tip(width: 100, height: 60), "nothing tips")
+    }
+
     func testMatricesComposeInTheOrderTheyApply() {
         let turn = HostDrawingTransform(rotation: 90, pivotX: 0, pivotY: 0)
             .matrix(width: 100, height: 60)

@@ -76,6 +76,15 @@ final class WinUIPathViewTests: XCTestCase {
         XCTAssertEqual(colours, [Self.red, 0, Self.red])
     }
 
+    /// A figure turned about its vertical axis is seen in perspective, as the host layer's matrix draws it: its edges
+    /// come in from 0 and 100 to about 22 and 73, its middle still covered.
+    func testATippedFigureIsSeenInPerspective() throws {
+        let colours = try drawn(width: 100, height: 60, at: [(50, 30), (10, 30), (90, 30)]) {
+            Rectangle().fill(Color("#FF0000")).rotationY(60).width(100).height(60)
+        }
+        XCTAssertEqual(colours, [Self.red, 0, 0])
+    }
+
     /// A gradient runs across the shape it fills.
     func testAGradientRunsAcrossTheShape() throws {
         let colours = try drawn(width: 100, height: 20, at: [(1, 10), (99, 10)]) {

@@ -10,6 +10,8 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#on-or-off
 @MainActor
 class WinUIToggleView: WinUIView {
+    override var takesDirection: Bool { true }
+
     /// What the control does when the user turns it.
     var onToggled: ((Bool) -> Void)?
 

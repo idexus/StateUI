@@ -92,4 +92,18 @@
             * (tips ? HostMatrix.perspective(Self.perspectiveDistance) : .identity)
             * HostMatrix.translation(pivotX + translationX, pivotY + translationY)
     }
+
+    /// The tip alone - `rotationY`, then `rotationX`, seen from `perspectiveDistance` - about the pivot the
+    /// translation moved, for a toolkit that moves, turns and scales the view flat about its pivot itself: that
+    /// drawing, then this matrix, is `matrix(width:height:)`. Nil where nothing tips.
+    public func tip(width: Double, height: Double) -> HostMatrix? {
+        guard rotationX != 0 || rotationY != 0 else { return nil }
+        let x = pivotX * width + translationX
+        let y = pivotY * height + translationY
+        return HostMatrix.translation(-x, -y)
+            * HostMatrix.rotation(degrees: rotationY, about: .y)
+            * HostMatrix.rotation(degrees: rotationX, about: .x)
+            * HostMatrix.perspective(Self.perspectiveDistance)
+            * HostMatrix.translation(x, y)
+    }
 }

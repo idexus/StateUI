@@ -6,6 +6,11 @@
 
 /// Children placed: the layout item each child gives its parent.
 extension WinUIElement {
+    /// The view lays out, and its control writes, in the element's direction.
+    func directionChanged() {
+        view?.setDirection(element.layoutDirection)
+    }
+
     /// Hands a layout its children's items, in order - a page's slots furnish it and stand in none of its room - and
     /// a label the runs of its spans.
     func arrangeChildren() {

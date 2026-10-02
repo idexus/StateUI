@@ -10,6 +10,8 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#a-day-and-a-time
 @MainActor
 final class WinUIDatePickerView: WinUIView {
+    override var takesDirection: Bool { true }
+
     /// What the picker does as the user picks a day, opens the calendar and closes it.
     var onChosen: ((CalendarDate) -> Void)?
     var onOpened: (() -> Void)?

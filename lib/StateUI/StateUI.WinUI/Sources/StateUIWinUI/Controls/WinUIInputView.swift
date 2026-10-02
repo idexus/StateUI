@@ -10,6 +10,8 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
 @MainActor
 class WinUIInputView: WinUIView {
+    override var takesDirection: Bool { true }
+
     /// What the view does when the user changes its words, handed all of them.
     var onTextChanged: ((String) -> Void)?
 

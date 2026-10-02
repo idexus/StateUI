@@ -31,21 +31,13 @@ enum WinUIRegistrations {
     }()
 
     /// What `WinUIElement` puts on every view wearing each member's contract, and what the host layer's rules realize
-    /// on every element WinUI shows. A view is drawn moved, turned and scaled flat: WinUI turns it about no other
-    /// axis.
+    /// on every element WinUI shows - each view drawn moved, turned, scaled and tipped over its place.
     static func shared(_ registry: Registry<WinUIView>) {
         registry.everyElementMeetsAssistiveTechnology()
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementTakesItsPlace()
-        registry.everyElementRealizes(VisualElementContract.translationX)
-        registry.everyElementRealizes(VisualElementContract.translationY)
-        registry.everyElementRealizes(VisualElementContract.rotation)
-        registry.everyElementRealizes(VisualElementContract.scale)
-        registry.everyElementRealizes(VisualElementContract.scaleX)
-        registry.everyElementRealizes(VisualElementContract.scaleY)
-        registry.everyElementRealizes(VisualElementContract.pivotX)
-        registry.everyElementRealizes(VisualElementContract.pivotY)
+        registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()
         registry.everyElementRaises(VisualElementContract.isFocusedChanged)
     }

@@ -49,6 +49,15 @@ bitmap holds only what is drawn, from the first thing drawn, so a panel with
 no background is painted clear while it is rendered, and the bitmap then
 begins at its corner.
 
+## A tipped view
+
+A view is moved, turned and scaled flat by its render transform, about its
+pivot. A tip - `rotationX`, `rotationY`, seen from the host layer's
+perspective distance - is a `Matrix3DProjection` laid over that: the host
+layer's `HostDrawingTransform.tip`, about the pivot the translation moved, so
+the flat drawing, then the projection, is the host layer's whole matrix, as
+every host draws it. A view that tips nothing has no projection.
+
 ## The shapes
 
 Each of the six shapes is one WinUI `Path` in a figure of the relay's (see

@@ -17,7 +17,7 @@ CheckBox.pivotY: ✅
 CheckBox.unfocus: ✅
 ColorBox.accessibilityHint: ✅
 ColorBox.isVisible: ✅
-ColorBox.rotationY: not realized
+ColorBox.rotationY: ✓ read rotationY of ColorBox: the host's own tip, checked against the projection it laid on the element
 DatePicker.automationExcludedWithChildren: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
@@ -27,12 +27,12 @@ Ellipse.frame: ✅
 Ellipse.pivotX: ✅
 Ellipse.zIndex: not realized
 Grid.accessibilityLabel: ✅
-Grid.rotationX: not realized
+Grid.rotationX: ✓ read rotationX of Grid: the host's own tip, checked against the projection it laid on the element
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: not realized
 HStack.scaleX: ✅
 Image.ignoresInput: not realized
-Image.layoutDirection: not realized
+Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Image.translationY: ✅
 ItemsView.rotation: ✅
 ItemsView.style: not realized
@@ -52,7 +52,7 @@ Map.pivotY: 🧩
 Map.unfocus: 🧩
 Path.accessibilityHint: ✅
 Path.isVisible: ✅
-Path.rotationY: not realized
+Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
 Picker.automationExcludedWithChildren: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
@@ -62,51 +62,50 @@ Polygon.frame: ✅
 Polygon.pivotX: ✅
 Polygon.zIndex: not realized
 Polyline.accessibilityLabel: ✅
-Polyline.rotationX: not realized
-ProgressBar.ignoresInput: not realized
-ProgressBar.layoutDirection: not realized
-ProgressBar.translationY: ✅
-RadioButton.rotation: ✅
-RadioButton.style: ✅
-Rectangle.accessibilityHeadingLevel: ✅
-Rectangle.opacity: ✅
-Rectangle.scale: ✅
-ScrollView.background: ✅
-ScrollView.frameChanged: ✅
-ScrollView.maximumHeight: ✅
-ScrollView.maximumWidth: ✅
-ScrollView.minimumHeight: ✅
-ScrollView.minimumWidth: ✅
-ScrollView.translationX: ✅
-SearchField.focus: ✅
-SearchField.isFocusedChanged: ✅
-SearchField.pivotY: ✅
-SearchField.unfocus: ✅
-Slider.accessibilityHint: ✅
-Slider.isVisible: ✅
-Slider.rotationY: not realized
-Stepper.automationExcludedWithChildren: ✅
-Stepper.frameChanged: ✅
-Stepper.height: ✅
-Stepper.scaleY: ✅
-Stepper.width: ✅
-Switch.frame: ✅
-Switch.pivotX: ✅
-Switch.zIndex: not realized
-TextEditor.accessibilityLabel: ✅
-TextEditor.rotationX: not realized
-TextField.isAccessibilityHidden: ✅
-TextField.isEnabled: ✅
-TextField.scaleX: ✅
-TimePicker.ignoresInput: not realized
-TimePicker.layoutDirection: not realized
-TimePicker.translationY: ✅
-VStack.rotation: ✅
-VStack.style: ✅
-ZStack.background: ✅
-ZStack.frameChanged: ✅
-ZStack.maximumHeight: ✅
-ZStack.maximumWidth: ✅
-ZStack.minimumHeight: ✅
-ZStack.minimumWidth: ✅
-ZStack.translationX: ✅
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
+ProgressBar.isAccessibilityHidden: ✅
+ProgressBar.isEnabled: not realized
+ProgressBar.scaleX: ✅
+RadioButton.ignoresInput: ✅
+RadioButton.layoutDirection: ✅
+RadioButton.translationY: ✅
+Rectangle.rotation: ✅
+Rectangle.style: ✅
+ScrollView.accessibilityHeadingLevel: ✅
+ScrollView.opacity: ✅
+ScrollView.scale: ✅
+SearchField.background: not realized
+SearchField.frameChanged: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
+SearchField.translationX: ✅
+Slider.focus: ✅
+Slider.isFocusedChanged: ✅
+Slider.pivotY: ✅
+Slider.unfocus: ✅
+Stepper.accessibilityHint: ✅
+Stepper.isVisible: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
+Switch.automationExcludedWithChildren: ✅
+Switch.frameChanged: ✅
+Switch.height: ✅
+Switch.scaleY: ✅
+Switch.width: ✅
+TextEditor.frame: ✅
+TextEditor.pivotX: ✅
+TextEditor.zIndex: not realized
+TextField.accessibilityLabel: ✅
+TextField.rotationX: ✓ read rotationX of TextField: the host's own tip, checked against the projection it laid on the element
+TimePicker.isAccessibilityHidden: ✅
+TimePicker.isEnabled: ✅
+TimePicker.scaleX: ✅
+VStack.ignoresInput: ✅
+VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+VStack.translationY: ✅
+WebView.rotation: ✅
+WebView.style: ✅
+ZStack.accessibilityHeadingLevel: ✅
+ZStack.opacity: ✅
+ZStack.scale: ✅

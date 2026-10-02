@@ -36,6 +36,7 @@ extension WinUIDriver {
         default: break
         }
         guard let view else { throw cannot }
+        if property.name == "layoutDirection" { return try direction(of: view, element) }
         if let held = try viewHolds(property.name, view) { return held }
         if let held = try wordsHold(property.name, view) { return held }
         if let held = try boxHolds(property.name, view) { return held }
@@ -92,6 +93,27 @@ extension WinUIDriver {
         return String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self)
     }
 
+    /// Whether WinUI holds the tip `laid`, which it keeps at a float's precision; neither for none.
+    private static func holds(_ held: HostMatrix?, _ laid: HostMatrix?) -> Bool {
+        guard let held, let laid else { return held == nil && laid == nil }
+        let pairs = [
+            (held.m11, laid.m11), (held.m12, laid.m12), (held.m13, laid.m13), (held.m14, laid.m14),
+            (held.m21, laid.m21), (held.m22, laid.m22), (held.m23, laid.m23), (held.m24, laid.m24),
+            (held.m31, laid.m31), (held.m32, laid.m32), (held.m33, laid.m33), (held.m34, laid.m34),
+            (held.m41, laid.m41), (held.m42, laid.m42), (held.m43, laid.m43), (held.m44, laid.m44),
+        ]
+        return pairs.allSatisfy { abs($0 - $1) <= 1e-5 * max(1, abs($1)) }
+    }
+
+    /// The direction a control writes in, as WinUI holds it; a layout's and a drawing's, which stand left to right in
+    /// WinUI, as the host lays them out (`byHost`).
+    private func direction(of view: WinUIView, _ element: MountedElement) throws -> HostValue {
+        guard let holder = view.directionHolder else {
+            return ((view as? WinUILayoutView)?.direction ?? element.layoutDirection).propValue
+        }
+        return (try read(holder, "flowDirection") == "1" ? LayoutDirection.rightToLeft : .leftToRight).propValue
+    }
+
     /// Every element: shown, how opaque, taking input, what assistive technology meets, how it is moved.
     private func viewHolds(_ name: String, _ view: WinUIView) throws -> HostValue? {
         switch name {
@@ -114,6 +136,12 @@ extension WinUIDriver {
         case "translationX": return view.drawnTransform.translationX.propValue
         case "translationY": return view.drawnTransform.translationY.propValue
         case "rotation": return view.drawnTransform.rotation.propValue
+        case "rotationX", "rotationY":
+            // The host's own tip, held where WinUI draws the projection the host composed of it, else none (`byHost`).
+            let drawing = view.drawing
+            let size = view.placedFrame
+            let drawn = Self.holds(view.drawnTip, drawing.tip(width: size.width, height: size.height))
+            return (drawn ? (name == "rotationX" ? drawing.rotationX : drawing.rotationY) : 0).propValue
         case "scale":
             let drawn = view.drawnTransform
             return (drawn.scaleX == drawn.scaleY ? drawn.scaleX : 1).propValue
@@ -126,7 +154,7 @@ extension WinUIDriver {
         case "pivotY":
             let size = view.placedFrame.height
             return (size > 0 ? view.drawnTransform.centerY / size : 0.5).propValue
-        case "ignoresInput" where view is WinUILayoutView: return (try read(view, "hitTestable") == "0").propValue
+        case "ignoresInput": return (try read(view, "hitTestable") == "0").propValue
         case "clipsContent" where view is WinUILayoutView: return (try read(view, "clipped") == "1").propValue
         default: return nil
         }

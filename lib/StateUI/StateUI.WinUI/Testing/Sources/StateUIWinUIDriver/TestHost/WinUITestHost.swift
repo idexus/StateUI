@@ -185,6 +185,18 @@ extension WinUIView {
         stateui_winui_opacity(handle)
     }
 
+    /// The tip WinUI draws the element with, its projection's matrix; nil for none.
+    var drawnTip: HostMatrix? {
+        var numbers = [Double](repeating: 0, count: 16)
+        guard stateui_winui_projection(handle, &numbers) else { return nil }
+        var tip = HostMatrix.identity
+        (tip.m11, tip.m12, tip.m13, tip.m14) = (numbers[0], numbers[1], numbers[2], numbers[3])
+        (tip.m21, tip.m22, tip.m23, tip.m24) = (numbers[4], numbers[5], numbers[6], numbers[7])
+        (tip.m31, tip.m32, tip.m33, tip.m34) = (numbers[8], numbers[9], numbers[10], numbers[11])
+        (tip.m41, tip.m42, tip.m43, tip.m44) = (numbers[12], numbers[13], numbers[14], numbers[15])
+        return tip
+    }
+
     /// The transform WinUI holds: translation, rotation, scale and the centre it turns about, in DIPs and degrees.
     var drawnTransform: (translationX: Double, translationY: Double, rotation: Double,
                          scaleX: Double, scaleY: Double, centerX: Double, centerY: Double) {

@@ -3,12 +3,12 @@ ActivityIndicator.frame: ✅
 ActivityIndicator.pivotX: ✅
 ActivityIndicator.zIndex: not realized
 Button.accessibilityLabel: ✅
-Button.rotationX: not realized
+Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: not realized
 Canvas.scaleX: ✅
-CheckBox.ignoresInput: not realized
-CheckBox.layoutDirection: not realized
+CheckBox.ignoresInput: ✅
+CheckBox.layoutDirection: ✅
 CheckBox.translationY: ✅
 ColorBox.rotation: ✅
 ColorBox.style: ✅
@@ -28,7 +28,7 @@ Grid.pivotY: ✅
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.accessibilityHint: ✅
 HStack.isVisible: ✅
-HStack.rotationY: not realized
+HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked against the projection it laid on the element
 Image.automationExcludedWithChildren: ✅
 Image.frameChanged: ✅
 Image.height: ✅
@@ -38,7 +38,7 @@ ItemsView.frame: ✅
 ItemsView.pivotX: ✅
 ItemsView.zIndex: not realized
 Label.accessibilityLabel: ✅
-Label.rotationX: not realized
+Label.rotationX: ✓ read rotationX of Label: the host's own tip, checked against the projection it laid on the element
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: not realized
 Line.scaleX: ✅
@@ -61,49 +61,51 @@ Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and no
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.pivotY: ✅
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.height: ✅
-ProgressBar.scaleY: ✅
-ProgressBar.width: ✅
-RadioButton.frame: ✅
-RadioButton.pivotX: ✅
-RadioButton.zIndex: not realized
-Rectangle.accessibilityLabel: ✅
-Rectangle.rotationX: not realized
-ScrollView.isAccessibilityHidden: ✅
-ScrollView.isEnabled: not realized
-ScrollView.scaleX: ✅
-SearchField.ignoresInput: not realized
-SearchField.layoutDirection: not realized
-SearchField.translationY: ✅
-Slider.rotation: ✅
-Slider.style: ✅
-Stepper.accessibilityHeadingLevel: ✅
-Stepper.opacity: ✅
-Stepper.scale: ✅
-Switch.background: ✅
-Switch.frameChanged: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
-Switch.translationX: ✅
-TextEditor.focus: ✅
-TextEditor.isFocusedChanged: ✅
-TextEditor.pivotY: ✅
-TextEditor.unfocus: ✅
-TextField.accessibilityHint: ✅
-TextField.isVisible: ✅
-TextField.rotationY: not realized
-TimePicker.automationExcludedWithChildren: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.scaleY: ✅
-TimePicker.width: ✅
-VStack.frame: ✅
-VStack.pivotX: ✅
-VStack.zIndex: not realized
-ZStack.isAccessibilityHidden: ✅
-ZStack.isEnabled: not realized
-ZStack.scaleX: ✅
+ProgressBar.accessibilityHint: ✅
+ProgressBar.isVisible: ✅
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
+RadioButton.automationExcludedWithChildren: ✅
+RadioButton.frameChanged: ✅
+RadioButton.height: ✅
+RadioButton.scaleY: ✅
+RadioButton.width: ✅
+Rectangle.frame: ✅
+Rectangle.pivotX: ✅
+Rectangle.zIndex: not realized
+ScrollView.accessibilityLabel: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
+SearchField.isAccessibilityHidden: ✅
+SearchField.isEnabled: ✅
+SearchField.scaleX: ✅
+Slider.ignoresInput: ✅
+Slider.layoutDirection: ✅
+Slider.translationY: ✅
+Stepper.rotation: ✅
+Stepper.style: ✅
+Switch.accessibilityHeadingLevel: ✅
+Switch.opacity: ✅
+Switch.scale: ✅
+TextEditor.background: not realized
+TextEditor.frameChanged: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextEditor.translationX: ✅
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.pivotY: ✅
+TextField.unfocus: ✅
+TimePicker.accessibilityHint: ✅
+TimePicker.isVisible: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.automationExcludedWithChildren: ✅
+VStack.frameChanged: ✅
+VStack.height: ✅
+VStack.scaleY: ✅
+VStack.width: ✅
+WebView.frame: ✅
+WebView.pivotX: ✅
+WebView.zIndex: not realized
+ZStack.accessibilityLabel: ✅
+ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element

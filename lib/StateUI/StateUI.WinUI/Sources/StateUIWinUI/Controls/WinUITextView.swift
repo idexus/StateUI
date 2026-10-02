@@ -9,6 +9,8 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#words
 @MainActor
 class WinUITextView: WinUIView {
+    override var takesDirection: Bool { true }
+
     /// The font's size, the space between the letters and the height of a line - what the spacing is measured
     /// against, and what it is.
     private(set) var look = TextLook()

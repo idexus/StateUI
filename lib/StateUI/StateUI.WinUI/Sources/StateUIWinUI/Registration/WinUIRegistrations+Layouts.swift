@@ -11,13 +11,11 @@ extension WinUIRegistrations {
         registry.add(VStackContract.self, create: { _ in WinUIStackView(axis: .vertical) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
-            stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         registry.add(HStackContract.self, create: { _ in WinUIStackView(axis: .horizontal) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
-            stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         registry.add(GridContract.self, create: { _ in WinUIGridView() }) { grid in
@@ -33,13 +31,11 @@ extension WinUIRegistrations {
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
             grid.applies(boxMembers) { view, values in applyBox(view, values) }
-            grid.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         registry.add(ZStackContract.self, create: { _ in WinUIZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
             layout.applies(boxMembers) { view, values in applyBox(view, values) }
-            layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         // Where the user moves it is reported by the element, on the display's frames.

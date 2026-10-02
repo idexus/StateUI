@@ -9,6 +9,8 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#a-picker
 @MainActor
 final class WinUIPickerView: WinUIView {
+    override var takesDirection: Bool { true }
+
     /// What the picker does as the user chooses, opens its list and closes it.
     var onChosen: ((Int) -> Void)?
     var onOpened: (() -> Void)?

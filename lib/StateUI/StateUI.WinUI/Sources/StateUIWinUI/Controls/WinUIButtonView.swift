@@ -9,6 +9,8 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#a-button
 @MainActor
 final class WinUIButtonView: WinUIView {
+    override var takesDirection: Bool { true }
+
     /// What the button does when the user clicks it, holds it down and lets it go.
     var onClicked: (() -> Void)?
     var onPressed: (() -> Void)?

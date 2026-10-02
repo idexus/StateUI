@@ -38,9 +38,13 @@ class WinUIView {
     private var placedDrawing: HostDrawingTransform?
     private var placedOpacity = 1.0
 
-    /// The opacity and the drawing order last written.
+    /// The tip last laid on the element; nil for none.
+    private var writtenTip: HostMatrix?
+
+    /// The opacity, the drawing order and the direction last written.
     private var writtenOpacity = 1.0
     private var writtenZIndex: Int32 = 0
+    private var writtenRightToLeft = false
 
     /// What the view paints with brushes that follow its size, by what they paint.
     private var paintsBySize: [String: (LayoutSize) -> Void] = [:]
@@ -80,6 +84,8 @@ class WinUIView {
         stateui_winui_set_shown(handle, isShown)
         stateui_winui_set_opacity(handle, writtenOpacity)
         stateui_winui_set_z_index(handle, writtenZIndex)
+        stateui_winui_set_flow_direction(handle, writtenRightToLeft)
+        writtenTip = nil
         writeTransform()
         let frame = placedFrame
         for what in paintsBySize.keys.sorted() { paintsBySize[what]?(LayoutSize(width: frame.width, height: frame.height)) }
@@ -128,6 +134,21 @@ class WinUIView {
         stateui_winui_set_hit_testable(handle, !ignores)
     }
 
+    /// Whether the view lays itself out and writes in its element's direction: a control does; a layout, whose
+    /// places the host layer's arithmetic mirrors, and a drawing, which no direction turns, stand left to right.
+    /// Design: docs/design/platforms/winui/layout.md#right-to-left
+    var takesDirection: Bool { false }
+
+    /// The view WinUI holds the element's direction in: this one where it takes it; nil where it stands left to right.
+    var directionHolder: WinUIView? { takesDirection ? self : nil }
+
+    /// Lays the view out in `direction` where it takes one, else left to right: written either way, as WinUI hands
+    /// an element's direction down to what stands in it.
+    func setDirection(_ direction: LayoutDirection) {
+        writtenRightToLeft = takesDirection && direction == .rightToLeft
+        stateui_winui_set_flow_direction(handle, writtenRightToLeft)
+    }
+
     /// Where the view is drawn among its layout's children, written only where it differs.
     func setZIndex(_ z: Int32) {
         guard z != writtenZIndex else { return }
@@ -141,14 +162,30 @@ class WinUIView {
         writeTransform()
     }
 
-    /// Writes the view's own transform, with a placing layout's over it (`HostDrawingTransform.under`), about its
-    /// pivot in the size the view was last placed at.
+    /// How the view is drawn over its place: its own transform with a placing layout's over it
+    /// (`HostDrawingTransform.under`).
+    var drawing: HostDrawingTransform {
+        transform.under(placedDrawing)
+    }
+
+    /// Writes how the view is drawn about its pivot in the size it was last placed at: moved, turned and scaled flat
+    /// by its render transform, then tipped by a projection where it tips (`HostDrawingTransform.tip`).
+    /// Design: docs/design/platforms/winui/drawing.md#a-tipped-view
     private func writeTransform() {
-        let drawn = transform.under(placedDrawing)
+        let drawn = drawing
         let size = placed ?? Rect(x: 0, y: 0, width: 0, height: 0)
         stateui_winui_set_transform(
             handle, drawn.translationX, drawn.translationY, drawn.rotation,
             drawn.scaleX, drawn.scaleY, drawn.pivotX * size.width, drawn.pivotY * size.height)
+        let tip = drawn.tip(width: size.width, height: size.height)
+        guard tip != writtenTip else { return }
+        writtenTip = tip
+        guard let tip else { return stateui_winui_set_projection(handle, nil) }
+        let numbers = [
+            tip.m11, tip.m12, tip.m13, tip.m14, tip.m21, tip.m22, tip.m23, tip.m24,
+            tip.m31, tip.m32, tip.m33, tip.m34, tip.m41, tip.m42, tip.m43, tip.m44,
+        ]
+        stateui_winui_set_projection(handle, numbers)
     }
 
     /// Asks WinUI to measure this element again, and every panel above it.

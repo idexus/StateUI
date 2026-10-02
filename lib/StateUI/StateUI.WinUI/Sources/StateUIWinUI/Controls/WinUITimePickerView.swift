@@ -9,6 +9,8 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#a-day-and-a-time
 @MainActor
 final class WinUITimePickerView: WinUIView {
+    override var takesDirection: Bool { true }
+
     /// What the picker does as the user picks a time.
     var onChosen: ((ClockTime) -> Void)?
 

@@ -15,7 +15,7 @@ Canvas.pivotY: ✅
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.accessibilityHint: ✅
 CheckBox.isVisible: ✅
-CheckBox.rotationY: not realized
+CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own tip, checked against the projection it laid on the element
 ColorBox.automationExcludedWithChildren: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
@@ -25,12 +25,12 @@ DatePicker.frame: ✅
 DatePicker.pivotX: ✅
 DatePicker.zIndex: not realized
 Ellipse.accessibilityLabel: ✅
-Ellipse.rotationX: not realized
+Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own tip, checked against the projection it laid on the element
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: not realized
 Grid.scaleX: ✅
 HStack.ignoresInput: ✅
-HStack.layoutDirection: not realized
+HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 HStack.translationY: ✅
 Image.rotation: ✅
 Image.style: ✅
@@ -60,51 +60,57 @@ Picker.frame: ✅
 Picker.pivotX: ✅
 Picker.zIndex: not realized
 Polygon.accessibilityLabel: ✅
-Polygon.rotationX: not realized
+Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: not realized
 Polyline.scaleX: ✅
-ProgressBar.rotation: ✅
-ProgressBar.style: ✅
-RadioButton.accessibilityHeadingLevel: ✅
-RadioButton.opacity: ✅
-RadioButton.scale: ✅
-Rectangle.background: not realized
-Rectangle.frameChanged: ✅
-Rectangle.maximumHeight: ✅
-Rectangle.maximumWidth: ✅
-Rectangle.minimumHeight: ✅
-Rectangle.minimumWidth: ✅
-Rectangle.translationX: ✅
-ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.pivotY: ✅
-ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-SearchField.accessibilityHint: ✅
-SearchField.isVisible: ✅
-SearchField.rotationY: not realized
-Slider.automationExcludedWithChildren: ✅
-Slider.frameChanged: ✅
-Slider.height: ✅
-Slider.scaleY: ✅
-Slider.width: ✅
-Stepper.frame: ✅
-Stepper.pivotX: ✅
-Stepper.zIndex: not realized
-Switch.accessibilityLabel: ✅
-Switch.rotationX: not realized
-TextEditor.isAccessibilityHidden: ✅
-TextEditor.isEnabled: ✅
-TextEditor.scaleX: ✅
-TextField.ignoresInput: not realized
-TextField.layoutDirection: not realized
-TextField.translationY: ✅
-TimePicker.rotation: ✅
-TimePicker.style: ✅
-VStack.accessibilityHeadingLevel: ✅
-VStack.opacity: ✅
-VStack.scale: ✅
-ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.pivotY: ✅
-ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.ignoresInput: ✅
+ProgressBar.layoutDirection: ✅
+ProgressBar.translationY: ✅
+RadioButton.rotation: ✅
+RadioButton.style: ✅
+Rectangle.accessibilityHeadingLevel: ✅
+Rectangle.opacity: ✅
+Rectangle.scale: ✅
+ScrollView.background: ✅
+ScrollView.frameChanged: ✅
+ScrollView.maximumHeight: ✅
+ScrollView.maximumWidth: ✅
+ScrollView.minimumHeight: ✅
+ScrollView.minimumWidth: ✅
+ScrollView.translationX: ✅
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.pivotY: ✅
+SearchField.unfocus: ✅
+Slider.accessibilityHint: ✅
+Slider.isVisible: ✅
+Slider.rotationY: ✓ read rotationY of Slider: the host's own tip, checked against the projection it laid on the element
+Stepper.automationExcludedWithChildren: ✅
+Stepper.frameChanged: ✅
+Stepper.height: ✅
+Stepper.scaleY: ✅
+Stepper.width: ✅
+Switch.frame: ✅
+Switch.pivotX: ✅
+Switch.zIndex: not realized
+TextEditor.accessibilityLabel: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.isAccessibilityHidden: ✅
+TextField.isEnabled: ✅
+TextField.scaleX: ✅
+TimePicker.ignoresInput: ✅
+TimePicker.layoutDirection: ✅
+TimePicker.translationY: ✅
+VStack.rotation: ✅
+VStack.style: ✅
+WebView.accessibilityHeadingLevel: ✅
+WebView.opacity: ✅
+WebView.scale: ✅
+ZStack.background: ✅
+ZStack.frameChanged: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.translationX: ✅

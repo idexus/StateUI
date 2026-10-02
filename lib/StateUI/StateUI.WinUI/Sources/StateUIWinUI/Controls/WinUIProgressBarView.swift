@@ -8,6 +8,8 @@ import CStateUIWinUI
 /// A ProgressBar: WinUI's `ProgressBar`, how far along from 0 to 1.
 @MainActor
 final class WinUIProgressBarView: WinUIView {
+    override var takesDirection: Bool { true }
+
     init() {
         super.init { _ in stateui_winui_progress_bar_make() }
     }

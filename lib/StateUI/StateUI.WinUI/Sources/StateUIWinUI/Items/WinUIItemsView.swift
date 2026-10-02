@@ -92,6 +92,16 @@ final class WinUIItemsView: WinUILayoutView {
         cells.childrenChanged()
     }
 
+    /// WinUI's list places the items, so it takes the element's direction; this layout stands left to right.
+    /// Design: docs/design/platforms/winui/layout.md#right-to-left
+    override func setDirection(_ direction: LayoutDirection) {
+        super.setDirection(direction)
+        self.direction = direction
+        list.setDirection(direction)
+    }
+
+    override var directionHolder: WinUIView? { list }
+
     /// An entry's size would change: the cell holding it is measured again.
     func remeasure(_ item: MountedElement) {
         guard let identity = cells.identity(of: item) else { return }
@@ -218,6 +228,8 @@ final class WinUIItemsView: WinUILayoutView {
 @MainActor
 final class WinUIItemsList: WinUIView {
     weak var owner: WinUIItemsView?
+
+    override var takesDirection: Bool { true }
 
     init() {
         super.init { number in stateui_winui_items_make(number) }

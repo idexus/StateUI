@@ -7,6 +7,8 @@ import CStateUIWinUI
 /// through the relay.
 @MainActor
 class WinUIValueView: WinUIView {
+    override var takesDirection: Bool { true }
+
     /// What the control does when its value moves, handed the value it stands at.
     var onValueChanged: ((Double) -> Void)?
 
