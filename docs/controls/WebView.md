@@ -41,15 +41,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr>
-<tr><td rowspan="2">AppKit</td><td align="center"></td><td></td><td><code>WKWebView</code></td></tr>
-<tr><td colspan="3">not realized</td></tr>
-<tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 26 ✓</td><td><code>WKWebView</code></td></tr>
-<tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 3 –</td><td><code>WebView</code></td></tr>
-<tr><td>WinUI 3</td><td align="center">✅</td><td>20 ✅ · 15 –</td><td><code>WebView2</code>, a backend</td></tr>
-<tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 12 ✓ · 1 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr>
-<tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;iframe&gt;</code> (?)</td></tr>
-<tr><td colspan="3">no host yet</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center"></td><td></td><td><code>WKWebView</code></td></tr>
+<tr><td colspan="3">not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 26 ✓</td><td><code>WKWebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 3 –</td><td><code>WebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>20 ✅ · 15 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 12 ✓ · 1 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;iframe&gt;</code> (?)</td></tr>
+<tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContract.swift`.
@@ -57,29 +57,29 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContrac
 ## WebView's own members
 
 <table>
-<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
-<tr><td rowspan="2"><code>canGoBackChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>canGoForwardChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>evaluateJavaScript</code></td><td>act</td><td><code>(String) -&gt; String?</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>goBack</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>goForward</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>onNavigated</code> (<code>navigated</code>)</td><td>event</td><td><code>(WebNavigationResult, WebNavigationEvent, String)</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>Android Views: cannot read a document written in place - Android's web view gives back no address for it</td></tr>
-<tr><td rowspan="2"><code>onNavigating</code> (<code>navigating</code>)</td><td>event</td><td><code>(WebNavigationEvent, String)</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>onProcessTerminated</code> (<code>processTerminated</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: endContent on WebView: the navigation delegate told, no web process ended</td></tr>
-<tr><td rowspan="2"><code>reload</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>source</code></td><td>property</td><td><code>WebViewSource</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>Android Views: cannot read a document written in place - Android's web view gives back no address for it<br>GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written</td></tr>
-<tr><td rowspan="2"><code>userAgent</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>canGoBackChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>canGoForwardChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>evaluateJavaScript</code></td><td>act</td><td><code>(String) -&gt; String?</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>goBack</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>goForward</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onNavigated</code> (<code>navigated</code>)</td><td>event</td><td><code>(WebNavigationResult, WebNavigationEvent, String)</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>Android Views: cannot read a document written in place - Android's web view gives back no address for it</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onNavigating</code> (<code>navigating</code>)</td><td>event</td><td><code>(WebNavigationEvent, String)</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onProcessTerminated</code> (<code>processTerminated</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: endContent on WebView: the navigation delegate told, no web process ended</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>reload</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>source</code></td><td>property</td><td><code>WebViewSource</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>Android Views: cannot read a document written in place - Android's web view gives back no address for it<br>GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>userAgent</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -87,9 +87,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContrac
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
 <table>
-<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
-<tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr></tbody>
 </table>
 
 ## From [VisualElement](tiers/VisualElement.md)
@@ -97,73 +97,73 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 
 <table>
-<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
-<tr><td rowspan="2"><code>accessibilityHeadingLevel</code></td><td>property</td><td><code>HeadingLevel</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read a heading's level - UIKit marks a heading, not its level<br>Android Views: cannot read a heading's level - Android marks a heading, not its level</td></tr>
-<tr><td rowspan="2"><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>automationExcludedWithChildren</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Background</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>Android Views: WebView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr>
-<tr><td rowspan="2"><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, Android Views, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>isAccessibilityHidden</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views: not realized</td></tr>
-<tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>Android Views: WebView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr>
-<tr><td rowspan="2"><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>minimumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>minimumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>opacity</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>pivotX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read pivotX of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read pivotX of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>pivotY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read pivotY of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read pivotY of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>rotation</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read rotation of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read rotation of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>rotationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read rotationX of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read rotationX of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>rotationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read rotationY of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read rotationY of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>scale</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read scale of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scale of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>scaleX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read scaleX of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleX of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read scaleY of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read translationX of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read translationY of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationY of WebView: the host's own transform: GTK reads back no part of one</td></tr>
-<tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>Android Views: WebView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr>
-<tr><td rowspan="2"><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>zIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, GTK 4: not realized</td></tr>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityHeadingLevel</code></td><td>property</td><td><code>HeadingLevel</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read a heading's level - UIKit marks a heading, not its level<br>Android Views: cannot read a heading's level - Android marks a heading, not its level</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>automationExcludedWithChildren</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Background</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>Android Views: WebView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, Android Views, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isAccessibilityHidden</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>Android Views: WebView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>minimumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>minimumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>opacity</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>pivotX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read pivotX of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read pivotX of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>pivotY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read pivotY of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read pivotY of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>rotation</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read rotation of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read rotation of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>rotationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read rotationX of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read rotationX of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>rotationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read rotationY of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read rotationY of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>scale</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read scale of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scale of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>scaleX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read scaleX of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleX of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read scaleY of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read translationX of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: read translationY of WebView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationY of WebView: the host's own transform: GTK reads back no part of one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>Android Views: WebView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>zIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, GTK 4: not realized</td></tr></tbody>
 </table>
 
 ## From [View](tiers/View.md)
@@ -171,69 +171,69 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 
 <table>
-<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
-<tr><td rowspan="2"><code>allowDrop</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>area</code></td><td>property</td><td><code>Area</code></td><td>structure</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>canDrag</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>onDragLeave</code> (<code>dragLeave</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>onDragOver</code> (<code>dragOver</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>dragStarting</code></td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>dragText</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>onDrop</code> (<code>drop</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>onDropCompleted</code> (<code>dropCompleted</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
-<tr><td rowspan="2"><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>gridColumn</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>gridColumnSpan</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>gridRow</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>gridRowSpan</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>horizontalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>margin</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
-<tr><td rowspan="2"><code>panTouchCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">☑️</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>Android Views: The host layer hears a one-finger pan only; any other <code>panTouchCount</code> turns the pan off.<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>onPanUpdated</code> (<code>panUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>panXChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>panYChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>onPinchUpdated</code> (<code>pinchUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Point)</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✓</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pinch on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).<br>GTK 4: only through the host's own: pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr>
-<tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>onPointerMoved</code> (<code>pointerMoved</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>onPointerPressed</code> (<code>pointerPressed</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>swipeDirection</code></td><td>property</td><td><code>SwipeDirection</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>onSwiped</code> (<code>swiped</code>)</td><td>event</td><td><code>SwipeDirection</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>tapCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr>
-<tr><td rowspan="2"><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>allowDrop</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>area</code></td><td>property</td><td><code>Area</code></td><td>structure</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>canDrag</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDragLeave</code> (<code>dragLeave</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDragOver</code> (<code>dragOver</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>dragStarting</code></td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>dragText</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDrop</code> (<code>drop</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDropCompleted</code> (<code>dropCompleted</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>gridColumn</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>gridColumnSpan</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>gridRow</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>gridRowSpan</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>horizontalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>margin</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>panTouchCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">☑️</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>Android Views: The host layer hears a one-finger pan only; any other <code>panTouchCount</code> turns the pan off.<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPanUpdated</code> (<code>panUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>panXChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>panYChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPinchUpdated</code> (<code>pinchUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Point)</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pinch on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).<br>GTK 4: only through the host's own: pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerMoved</code> (<code>pointerMoved</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerPressed</code> (<code>pointerPressed</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>swipeDirection</code></td><td>property</td><td><code>SwipeDirection</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onSwiped</code> (<code>swiped</code>)</td><td>event</td><td><code>SwipeDirection</code></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>tapCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
 </table>

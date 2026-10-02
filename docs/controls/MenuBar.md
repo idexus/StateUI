@@ -37,14 +37,14 @@ Inherits nothing: every member below is its own.
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<tr><th>Host</th><th>Created</th><th>Members (1)</th><th>Realization</th></tr>
-<tr><td>AppKit</td><td align="center">✅</td><td>1 ✓</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr>
-<tr><td>UIKit</td><td align="center">✅</td><td>1 ✓</td><td><code>UIMenu</code> / <code>UIAction</code></td></tr>
-<tr><td>Android Views</td><td align="center">✅</td><td>1 ✅</td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr>
-<tr><td>WinUI 3</td><td align="center">✅</td><td>1 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr>
-<tr><td>GTK 4</td><td align="center">✅</td><td>1 ✅</td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr>
-<tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
-<tr><td colspan="3">no host yet</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (1)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>1 ✓</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>1 ✓</td><td><code>UIMenu</code> / <code>UIAction</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>1 ✅</td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>1 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>1 ✅</td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
+<tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuBarContract.swift`.
@@ -52,7 +52,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuBarContract.s
 ## MenuBar's own members
 
 <table>
-<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
-<tr><td rowspan="2"><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu<br>UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu</td></tr>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu<br>UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu</td></tr></tbody>
 </table>

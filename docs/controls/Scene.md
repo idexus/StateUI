@@ -46,14 +46,14 @@ Inherits nothing: every member below is its own.
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<tr><th>Host</th><th>Created</th><th>Members (6)</th><th>Realization</th></tr>
-<tr><td>AppKit</td><td align="center">✅</td><td>6 ✅</td><td><code>NSApplication</code> / structure</td></tr>
-<tr><td>UIKit</td><td align="center">✅</td><td>4 ✅</td><td><code>UIApplication</code> / <code>UIWindowScene</code></td></tr>
-<tr><td>Android Views</td><td align="center">✅</td><td>4 ✅</td><td><code>Application</code> / structure</td></tr>
-<tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅</td><td><code>Application</code> / structure</td></tr>
-<tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅</td><td><code>GtkApplication</code> / structure</td></tr>
-<tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>document</code> / structure</td></tr>
-<tr><td colspan="3">no host yet</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (6)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>6 ✅</td><td><code>NSApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>4 ✅</td><td><code>UIApplication</code> / <code>UIWindowScene</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>4 ✅</td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅</td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅</td><td><code>GtkApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>document</code> / structure</td></tr>
+<tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/SceneContract.swift`.
@@ -61,13 +61,13 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/SceneContract
 ## Scene's own members
 
 <table>
-<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
-<tr><td><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td><code>destroying</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td rowspan="2"><code>windowClosed</code></td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⏸</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">UIKit: waits on Window.windowType, not realized yet<br>Android Views: not realized</td></tr>
-<tr><td rowspan="2"><code>windowRestored</code></td><td>event</td><td><code>(String, String?)</code></td><td>adaptive</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">UIKit, Android Views: not realized</td></tr>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>destroying</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>windowClosed</code></td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⏸</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit: waits on Window.windowType, not realized yet<br>Android Views: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>windowRestored</code></td><td>event</td><td><code>(String, String?)</code></td><td>adaptive</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit, Android Views: not realized</td></tr></tbody>
 </table>

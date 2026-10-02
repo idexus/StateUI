@@ -222,12 +222,9 @@ struct ControlDictionary {
         var marks: [String: Marks] = [:]
 
         // A table of HTML, as a Markdown table spans no cell: a member's notes stand in a row beneath it, across
-        // every cell but its name, which spans both rows.
+        // every cell but its name, which spans both rows (`group`).
         func table(of contract: any Contract.Type, tier: String?) -> [String] {
-            var lines = [
-                "<table>",
-                "<tr>" + (["Member", "Kind", "Value", "Layer"] + Self.platforms).map { "<th>\($0)</th>" }.joined() + "</tr>",
-            ]
+            var lines = ["<table>", Self.head(["Member", "Kind", "Value", "Layer"] + Self.platforms)]
 
             for member in contract.members {
                 var cells = describe(member).map { "<td>\(Self.html($0))</td>" }
@@ -251,12 +248,7 @@ struct ControlDictionary {
                 }
 
                 let noted = Self.notes(notes)
-                if !noted.isEmpty { cells[0] = #"<td rowspan="2">"# + cells[0].dropFirst("<td>".count) }
-                lines.append("<tr>" + cells.joined() + "</tr>")
-                if !noted.isEmpty {
-                    lines.append(#"<tr><td colspan=""# + "\(3 + Self.platforms.count)" + #"">"#
-                        + noted.map(Self.html).joined(separator: "<br>") + "</td></tr>")
-                }
+                lines += Self.group(cells, notes: noted.map(Self.html).joined(separator: "<br>"))
                 members += 1
             }
 
@@ -294,10 +286,7 @@ struct ControlDictionary {
     /// Where an element stands on each host: whether its test proved the host makes it, how many of its `members`
     /// the host meets by mark, what it is there, and why a mark is empty.
     func hosts(of element: String, members: Int, marks: [String: Marks]) -> [String] {
-        var lines = [
-            "<table>",
-            "<tr>" + ["Host", "Created", "Members (\(members))", "Realization"].map { "<th>\($0)</th>" }.joined() + "</tr>",
-        ]
+        var lines = ["<table>", Self.head(["Host", "Created", "Members (\(members))", "Realization"])]
 
         for platform in Self.platforms {
             let counted = Self.counted(marks[platform] ?? Marks())
@@ -311,12 +300,10 @@ struct ControlDictionary {
                 created = ("", "no host yet")
             }
 
-            let host = created.note.isEmpty ? "<td>" : #"<td rowspan="2">"#
-            lines.append("<tr>" + host + platform + "</td>" + #"<td align="center">"# + created.mark + "</td>"
-                + "<td>\(Self.html(counted))</td><td>\(Self.html(realization(of: element, on: platform)))</td></tr>")
-            if !created.note.isEmpty {
-                lines.append(#"<tr><td colspan="3">"# + Self.html(created.note) + "</td></tr>")
-            }
+            lines += Self.group([
+                "<td>\(platform)</td>", #"<td align="center">"# + created.mark + "</td>",
+                "<td>\(Self.html(counted))</td>", "<td>\(Self.html(realization(of: element, on: platform)))</td>",
+            ], notes: Self.html(created.note))
         }
 
         return lines + ["</table>"]
@@ -990,6 +977,24 @@ struct ControlDictionary {
             }
         }
         return said.map { "\($0.hosts.joined(separator: ", ")): \($0.note)" }
+    }
+
+    /// An HTML table's head row.
+    static func head(_ names: [String]) -> String {
+        "<thead><tr>" + names.map { "<th>\($0)</th>" }.joined() + "</tr></thead>"
+    }
+
+    /// One subject's rows of an HTML table: its `cells`, and beneath them its `notes` across every cell but the
+    /// first, which spans both. A body of its own, opened by an empty row: a viewer shading every second row of a
+    /// body shades every subject's cells and leaves its notes clear.
+    static func group(_ cells: [String], notes: String) -> [String] {
+        guard !notes.isEmpty else { return ["<tbody><tr></tr><tr>" + cells.joined() + "</tr></tbody>"] }
+
+        let spanned = [#"<td rowspan="2">"# + cells[0].dropFirst("<td>".count)] + cells.dropFirst()
+        return [
+            "<tbody><tr></tr><tr>" + spanned.joined() + "</tr>",
+            #"<tr><td colspan=""# + "\(cells.count - 1)" + #"">"# + notes + "</td></tr></tbody>",
+        ]
     }
 
     /// Markdown of a cell as HTML: its characters escaped, its backticked names as code and its links as links.
