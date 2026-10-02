@@ -89,6 +89,19 @@ extension UIKitInputView where Self: UITextField {
         textAlignment = self.alignment(alignment)
     }
 
+    /// What the keyboard's return key says; a keyboard already up takes it at once.
+    func setReturnKey(_ key: ReturnKey) {
+        returnKeyType = switch key {
+        case .default: .default
+        case .go: .go
+        case .search: .search
+        case .send: .send
+        case .next: .next
+        case .done: .done
+        }
+        if isFirstResponder { reloadInputViews() }
+    }
+
     /// Hears the user's words as they change.
     func hearTyping() {
         delegate = typing

@@ -47,4 +47,12 @@ final class InputTraitsTests: XCTestCase {
         XCTAssertFalse(traits.checksSpelling || traits.corrects || traits.predicts)
         XCTAssertEqual(traits.capitals, .sentences)
     }
+
+    /// A field's return key is the tree's, else a search's for a search field and the platform's own for another.
+    func testAReturnKeyUnwrittenIsTheFieldsOwn() {
+        XCTAssertEqual(InputTraits.returnKey(nil, searching: true), .search)
+        XCTAssertEqual(InputTraits.returnKey(nil, searching: false), .default)
+        XCTAssertEqual(InputTraits.returnKey(.go, searching: true), .go)
+        XCTAssertEqual(InputTraits.returnKey(.done, searching: false), .done)
+    }
 }

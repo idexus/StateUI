@@ -331,6 +331,18 @@ final class UIKitDriver: HostDriver {
             return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
+        case (.returnKey, let field as UITextField):
+            let key: ReturnKey? = switch field.returnKeyType {
+            case .go: .go
+            case .search: .search
+            case .send: .send
+            case .next: .next
+            case .done: .done
+            case .default: .default
+            default: nil
+            }
+            return key?.propValue
+        case (.showsClearButton, let field as UITextField): return (field.clearButtonMode != .never).propValue
         // Ignoring input: UIKit passes over the view and all in it as it finds what a touch lands on.
         case (.ignoresInput, let view?): return (!view.isUserInteractionEnabled).propValue
         case (.isEnabled, let label as UILabel): return label.isEnabled.propValue

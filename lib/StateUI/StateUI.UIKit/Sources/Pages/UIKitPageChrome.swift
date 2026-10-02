@@ -16,6 +16,8 @@ struct UIKitPageChrome {
     var titleView: UIView?
     var showsBar = true
     var offersBack = true
+    /// What the way back from the page above this one says; nil for UIKit's own.
+    var backButtonTitle: String?
     var barBackground: HostValue?
     var barForeground: HostValue?
     var leadingActions: [[UIKitBarAction]] = []
@@ -34,6 +36,7 @@ struct UIKitPageChrome {
         }
         if item.titleView !== titleView { item.titleView = titleView }
         item.hidesBackButton = !offersBack
+        if item.backButtonTitle != backButtonTitle { item.backButtonTitle = backButtonTitle }
         // Each group its own background; the leading ones beside the way back.
         // Design: docs/design/platforms/uikit/pages.md#the-bar
         item.leftItemsSupplementBackButton = true

@@ -3,7 +3,7 @@ Label.text: ✅
 TextField: ✅
 TextField.frameChanged: ✅
 TextField.isPassword: ✅
-TextField.returnKey: not realized
-TextField.showsClearButton: not realized
+TextField.returnKey: ✅
+TextField.showsClearButton: ✅
 TextField.submitted: ✅
 TextField.text: ✅

@@ -53,6 +53,7 @@ enum UIKitRealization {
         .complete("MenuItem", "isDestructive"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
+        .complete("Page", "backButtonTitle"),
         .complete("Page", "background"),
         .complete("Page", "disappearing"),
         .complete("Page", "hasBackButton"),

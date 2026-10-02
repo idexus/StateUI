@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (89) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 41 ✅ · 1 – · 26 🔌 | `NSSearchField` |  |
-| UIKit | ✅ | 46 ✅ · 25 🔌 | `UISearchBar` |  |
+| UIKit | ✅ | 47 ✅ · 25 🔌 | `UISearchBar` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | `SearchView` |  |
 | WinUI 3 | ✅ | 64 ✅ · 1 ☑️ | `AutoSuggestBox` |  |
 | GTK 4 | ✅ | 59 ✅ · 1 – · 12 🔌 | `GtkSearchEntry` |  |
@@ -49,7 +49,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `returnKey` | property | `ReturnKey` | adaptive |  |  | · |  |  |  | not realized; UIKit: not realized; Android Views: cannot read returnKey of SearchField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `returnKey` | property | `ReturnKey` | adaptive |  | ✅ | · |  |  |  | not realized; Android Views: cannot read returnKey of SearchField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

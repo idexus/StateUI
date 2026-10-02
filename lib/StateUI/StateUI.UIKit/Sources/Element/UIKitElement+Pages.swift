@@ -49,6 +49,7 @@ extension UIKitElement {
         chrome.titleView = element.chromeTitleView?.uiKit.view
         chrome.showsBar = value(.hasNavigationBar)?.bool != false
         chrome.offersBack = value(.hasBackButton)?.bool != false
+        chrome.backButtonTitle = value(.backButtonTitle)?.string
         (chrome.barBackground, chrome.barForeground) = element.barColors
         let actions = element.chromeActions
         chrome.leadingActions = actions.leading.map { $0.map(Self.action) }

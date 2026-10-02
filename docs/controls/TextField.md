@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (90) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 42 ✅ · 1 ☑️ · 26 🔌 | `NSTextField` / `NSSecureTextField` |  |
-| UIKit | ✅ | 47 ✅ · 25 🔌 | `UITextField` |  |
+| UIKit | ✅ | 49 ✅ · 25 🔌 | `UITextField` |  |
 | Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
 | WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
 | GTK 4 | ✅ | 60 ✅ · 1 – · 12 🔌 | `GtkEntry` / `GtkPasswordEntry` |  |
@@ -50,8 +50,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextFieldContract.
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isPassword` | property | `Bool` | native | ✅ | ✅ | ✅ | ☑️ | ✅ |  | WinUI 3: A PasswordBox has no read-only state, alignment, case, caret or selection: a password field keeps none of these. |
-| `returnKey` | property | `ReturnKey` | adaptive |  |  | · |  |  |  | not realized; UIKit: not realized; Android Views: cannot read returnKey of TextField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
-| `showsClearButton` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `returnKey` | property | `ReturnKey` | adaptive |  | ✅ | · |  |  |  | not realized; Android Views: cannot read returnKey of TextField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `showsClearButton` | property | `Bool` | adaptive |  | ✅ |  |  |  |  | not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | · | ✅ |  | WinUI 3: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

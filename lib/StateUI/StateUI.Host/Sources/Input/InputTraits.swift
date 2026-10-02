@@ -90,4 +90,10 @@
         else { return nil }
         return InputTraits(values)
     }
+
+    /// The return key a field asks the keyboard for: the one the tree wrote, else a search's for a search field and
+    /// the platform's own for any other.
+    public static func returnKey(_ written: ReturnKey?, searching: Bool) -> ReturnKey {
+        written ?? (searching ? .search : .default)
+    }
 }
