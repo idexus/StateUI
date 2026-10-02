@@ -311,13 +311,13 @@ final class Navigation {
         let sent: String
         switch (before, after) {
         case (_, nil):
-            sent = "currentPage: not sent - the selection names no tab"
+            sent = "selectedTab: not sent - the selection names no tab"
         case (let from?, let to?) where from == to:
-            sent = "index \(from) → \(to) · currentPage: NOT SENT"
+            sent = "index \(from) → \(to) · selectedTab: NOT SENT"
         case (let from?, let to?):
-            sent = "index \(from) → \(to) · currentPage: \(to)"
+            sent = "index \(from) → \(to) · selectedTab: \(to)"
         default:
-            sent = "currentPage: \(after ?? 0)"
+            sent = "selectedTab: \(after ?? 0)"
         }
 
         tabsNote = "\(what) · \(sent)"

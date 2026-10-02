@@ -11,9 +11,9 @@ Canvas.gridRowSpan: ✅
 CheckBox.area: ✅
 CheckBox.frameChanged: ✅
 ColorBox.canDrag: not realized
+ColorBox.dragEnded: not realized
 ColorBox.dragStarting: not realized
 ColorBox.dragText: not realized
-ColorBox.dropCompleted: not realized
 ColorBox.frameChanged: ✅
 ColorBox.margin: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: the view's listening handed the recognizer's states, no touch sent
@@ -44,9 +44,9 @@ Map.gridRowSpan: ✅
 Path.area: ✅
 Path.frameChanged: ✅
 Picker.canDrag: not realized
+Picker.dragEnded: not realized
 Picker.dragStarting: not realized
 Picker.dragText: not realized
-Picker.dropCompleted: not realized
 Picker.frameChanged: ✅
 Picker.margin: ✅
 Polygon.pinchUpdated: ✓ pinch on Polygon: the view's listening handed the recognizer's states, no touch sent
@@ -83,9 +83,9 @@ Text.swipeDirection: ✓ pan on Text: the view's listening handed the recognizer
 Text.swipeThreshold: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
 Text.swiped: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.canDrag: not realized
+TextEditor.dragEnded: not realized
 TextEditor.dragStarting: not realized
 TextEditor.dragText: not realized
-TextEditor.dropCompleted: not realized
 TextEditor.frameChanged: ✅
 TextEditor.margin: ✅
 TextField.pinchUpdated: ✓ pinch on TextField: the view's listening handed the recognizer's states, no touch sent

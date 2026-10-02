@@ -1,5 +1,5 @@
 # revision 1.1
 TabbedView: ✅
-TabbedView.currentPage: ✅
-TabbedView.currentPageChanged: ✅
+TabbedView.selectedTab: ✅
+TabbedView.selectedTabChanged: ✅
 Text.frameChanged: ✅

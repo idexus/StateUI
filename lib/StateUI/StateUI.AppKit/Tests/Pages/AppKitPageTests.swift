@@ -419,7 +419,7 @@ final class AppKitPageTests: XCTestCase {
             page("browse", title: "Browse", events: 200),
         ], selected: 0)
         unbound.events = .replace([:])
-        unbound.properties[.currentPage] = nil
+        unbound.properties[.selectedTab] = nil
         renderer.applyForTesting(tree(unbound))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
@@ -1143,8 +1143,8 @@ private extension AppKitPageTests {
         id: String = "tabs"
     ) -> HostPatch {
         var tabs = HostPatch(id: .manual(id), type: .tabbedView)
-        tabs.properties[.currentPage] = .number(Double(selected))
-        tabs.events = .replace([.currentPageChanged: changed])
+        tabs.properties[.selectedTab] = .number(Double(selected))
+        tabs.events = .replace([.selectedTabChanged: changed])
         tabs.children = .arranged(pages)
         return tabs
     }

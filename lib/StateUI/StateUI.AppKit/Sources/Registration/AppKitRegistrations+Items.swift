@@ -20,7 +20,7 @@ extension AppKitRegistrations {
                     layout: values[ItemsViewContract.itemsLayout] ?? .list(),
                     mode: values[ItemsViewContract.selectionMode] ?? .none)
             }
-            list.raises(ItemsViewContract.selectionChanged)
+            list.raises(ItemsViewContract.selectedItemsChanged)
             list.raises(ItemsViewContract.itemActivated)
             list.raises(ItemsViewContract.endReached)
             list.raises(ItemsViewContract.realizedChanged)

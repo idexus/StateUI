@@ -379,7 +379,7 @@ final class PagesTests: XCTestCase {
     func testTheChosenTabsActionsStandWithTheTabs() throws {
         let tabs = { (chosen: Double) in
             self.node("window", .window, children: [
-                self.node("tabs", .tabbedView, [.currentPage: .number(chosen)], children: [
+                self.node("tabs", .tabbedView, [.selectedTab: .number(chosen)], children: [
                     self.node("one", .page, children: [self.toolbarGroup("one.group", [self.toolbarAction("first")])]),
                     self.node("two", .page, children: [self.toolbarGroup("two.group", [self.toolbarAction("second")])]),
                     self.toolbarGroup("all", [self.toolbarAction("everywhere")]),
@@ -472,7 +472,7 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(node("window", .window, [.title: .string("Window")], children: [
             node("stack", .navigationStack, children: [
                 node("group", .page, [.title: .string("Items and Cards")]),
-                node("tabs", .tabbedView, [.currentPage: .number(1)], children: [
+                node("tabs", .tabbedView, [.selectedTab: .number(1)], children: [
                     node("one", .page, [.title: .string("Example 1")]),
                     node("two", .page, [.title: .string("Example 2")]),
                 ]),

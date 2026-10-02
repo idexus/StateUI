@@ -31,7 +31,7 @@ How each of them realizes these members is on its own page.
 | `dragStarting` | event |  | native |
 | `dragText` | property | `String` | native |
 | `onDrop` (`drop`) | event | `String` | native |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |
+| `onDragEnded` (`dragEnded`) | event |  | native |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |
 | `gridColumn` | property | `Int` | stateUI |
 | `gridColumnSpan` | property | `Int` | stateUI |

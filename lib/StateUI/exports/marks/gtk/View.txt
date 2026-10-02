@@ -2,12 +2,12 @@
 ActivityIndicator.allowsDrop: not realized
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: not realized
+ActivityIndicator.dragEnded: not realized
 ActivityIndicator.dragLeave: not realized
 ActivityIndicator.dragOver: not realized
 ActivityIndicator.dragStarting: not realized
 ActivityIndicator.dragText: not realized
 ActivityIndicator.drop: not realized
-ActivityIndicator.dropCompleted: not realized
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridColumnSpan: ✅
@@ -34,12 +34,12 @@ ActivityIndicator.verticalAlignment: ✅
 Button.allowsDrop: not realized
 Button.area: ✅
 Button.canDrag: not realized
+Button.dragEnded: not realized
 Button.dragLeave: not realized
 Button.dragOver: not realized
 Button.dragStarting: not realized
 Button.dragText: not realized
 Button.drop: not realized
-Button.dropCompleted: not realized
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
@@ -66,12 +66,12 @@ Button.verticalAlignment: ✅
 Canvas.allowsDrop: not realized
 Canvas.area: ✅
 Canvas.canDrag: not realized
+Canvas.dragEnded: not realized
 Canvas.dragLeave: not realized
 Canvas.dragOver: not realized
 Canvas.dragStarting: not realized
 Canvas.dragText: not realized
 Canvas.drop: not realized
-Canvas.dropCompleted: not realized
 Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
@@ -98,12 +98,12 @@ Canvas.verticalAlignment: ✅
 CheckBox.allowsDrop: not realized
 CheckBox.area: ✅
 CheckBox.canDrag: not realized
+CheckBox.dragEnded: not realized
 CheckBox.dragLeave: not realized
 CheckBox.dragOver: not realized
 CheckBox.dragStarting: not realized
 CheckBox.dragText: not realized
 CheckBox.drop: not realized
-CheckBox.dropCompleted: not realized
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
@@ -130,12 +130,12 @@ CheckBox.verticalAlignment: ✅
 ColorBox.allowsDrop: not realized
 ColorBox.area: ✅
 ColorBox.canDrag: not realized
+ColorBox.dragEnded: not realized
 ColorBox.dragLeave: not realized
 ColorBox.dragOver: not realized
 ColorBox.dragStarting: not realized
 ColorBox.dragText: not realized
 ColorBox.drop: not realized
-ColorBox.dropCompleted: not realized
 ColorBox.frameChanged: ✅
 ColorBox.gridColumn: ✅
 ColorBox.gridColumnSpan: ✅
@@ -162,12 +162,12 @@ ColorBox.verticalAlignment: ✅
 DatePicker.allowsDrop: not realized
 DatePicker.area: ✅
 DatePicker.canDrag: not realized
+DatePicker.dragEnded: not realized
 DatePicker.dragLeave: not realized
 DatePicker.dragOver: not realized
 DatePicker.dragStarting: not realized
 DatePicker.dragText: not realized
 DatePicker.drop: not realized
-DatePicker.dropCompleted: not realized
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
@@ -194,12 +194,12 @@ DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: not realized
 Ellipse.area: ✅
 Ellipse.canDrag: not realized
+Ellipse.dragEnded: not realized
 Ellipse.dragLeave: not realized
 Ellipse.dragOver: not realized
 Ellipse.dragStarting: not realized
 Ellipse.dragText: not realized
 Ellipse.drop: not realized
-Ellipse.dropCompleted: not realized
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
@@ -226,12 +226,12 @@ Ellipse.verticalAlignment: ✅
 Grid.allowsDrop: not realized
 Grid.area: ✅
 Grid.canDrag: not realized
+Grid.dragEnded: not realized
 Grid.dragLeave: not realized
 Grid.dragOver: not realized
 Grid.dragStarting: not realized
 Grid.dragText: not realized
 Grid.drop: not realized
-Grid.dropCompleted: not realized
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
@@ -258,12 +258,12 @@ Grid.verticalAlignment: ✅
 HStack.allowsDrop: not realized
 HStack.area: ✅
 HStack.canDrag: not realized
+HStack.dragEnded: not realized
 HStack.dragLeave: not realized
 HStack.dragOver: not realized
 HStack.dragStarting: not realized
 HStack.dragText: not realized
 HStack.drop: not realized
-HStack.dropCompleted: not realized
 HStack.frameChanged: ✅
 HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
@@ -290,12 +290,12 @@ HStack.verticalAlignment: ✅
 Image.allowsDrop: not realized
 Image.area: ✅
 Image.canDrag: not realized
+Image.dragEnded: not realized
 Image.dragLeave: not realized
 Image.dragOver: not realized
 Image.dragStarting: not realized
 Image.dragText: not realized
 Image.drop: not realized
-Image.dropCompleted: not realized
 Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
@@ -322,12 +322,12 @@ Image.verticalAlignment: ✅
 ItemsView.allowsDrop: not realized
 ItemsView.area: ✅
 ItemsView.canDrag: not realized
+ItemsView.dragEnded: not realized
 ItemsView.dragLeave: not realized
 ItemsView.dragOver: not realized
 ItemsView.dragStarting: not realized
 ItemsView.dragText: not realized
 ItemsView.drop: not realized
-ItemsView.dropCompleted: not realized
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridColumnSpan: ✅
@@ -354,12 +354,12 @@ ItemsView.verticalAlignment: ✅
 Line.allowsDrop: not realized
 Line.area: ✅
 Line.canDrag: not realized
+Line.dragEnded: not realized
 Line.dragLeave: not realized
 Line.dragOver: not realized
 Line.dragStarting: not realized
 Line.dragText: not realized
 Line.drop: not realized
-Line.dropCompleted: not realized
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
@@ -386,12 +386,12 @@ Line.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.canDrag: 🧩
+Map.dragEnded: 🧩
 Map.dragLeave: 🧩
 Map.dragOver: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
 Map.drop: 🧩
-Map.dropCompleted: 🧩
 Map.frameChanged: 🧩
 Map.gridColumn: 🧩
 Map.gridColumnSpan: 🧩
@@ -418,12 +418,12 @@ Map.verticalAlignment: 🧩
 Path.allowsDrop: not realized
 Path.area: ✅
 Path.canDrag: not realized
+Path.dragEnded: not realized
 Path.dragLeave: not realized
 Path.dragOver: not realized
 Path.dragStarting: not realized
 Path.dragText: not realized
 Path.drop: not realized
-Path.dropCompleted: not realized
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
@@ -450,12 +450,12 @@ Path.verticalAlignment: ✅
 Picker.allowsDrop: not realized
 Picker.area: ✅
 Picker.canDrag: not realized
+Picker.dragEnded: not realized
 Picker.dragLeave: not realized
 Picker.dragOver: not realized
 Picker.dragStarting: not realized
 Picker.dragText: not realized
 Picker.drop: not realized
-Picker.dropCompleted: not realized
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
@@ -482,12 +482,12 @@ Picker.verticalAlignment: ✅
 Polygon.allowsDrop: not realized
 Polygon.area: ✅
 Polygon.canDrag: not realized
+Polygon.dragEnded: not realized
 Polygon.dragLeave: not realized
 Polygon.dragOver: not realized
 Polygon.dragStarting: not realized
 Polygon.dragText: not realized
 Polygon.drop: not realized
-Polygon.dropCompleted: not realized
 Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
@@ -514,12 +514,12 @@ Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: not realized
 Polyline.area: ✅
 Polyline.canDrag: not realized
+Polyline.dragEnded: not realized
 Polyline.dragLeave: not realized
 Polyline.dragOver: not realized
 Polyline.dragStarting: not realized
 Polyline.dragText: not realized
 Polyline.drop: not realized
-Polyline.dropCompleted: not realized
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
@@ -546,12 +546,12 @@ Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: not realized
 ProgressBar.area: ✅
 ProgressBar.canDrag: not realized
+ProgressBar.dragEnded: not realized
 ProgressBar.dragLeave: not realized
 ProgressBar.dragOver: not realized
 ProgressBar.dragStarting: not realized
 ProgressBar.dragText: not realized
 ProgressBar.drop: not realized
-ProgressBar.dropCompleted: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumn: ✅
 ProgressBar.gridColumnSpan: ✅
@@ -578,12 +578,12 @@ ProgressBar.verticalAlignment: ✅
 RadioButton.allowsDrop: not realized
 RadioButton.area: ✅
 RadioButton.canDrag: not realized
+RadioButton.dragEnded: not realized
 RadioButton.dragLeave: not realized
 RadioButton.dragOver: not realized
 RadioButton.dragStarting: not realized
 RadioButton.dragText: not realized
 RadioButton.drop: not realized
-RadioButton.dropCompleted: not realized
 RadioButton.frameChanged: ✅
 RadioButton.gridColumn: ✅
 RadioButton.gridColumnSpan: ✅
@@ -610,12 +610,12 @@ RadioButton.verticalAlignment: ✅
 Rectangle.allowsDrop: not realized
 Rectangle.area: ✅
 Rectangle.canDrag: not realized
+Rectangle.dragEnded: not realized
 Rectangle.dragLeave: not realized
 Rectangle.dragOver: not realized
 Rectangle.dragStarting: not realized
 Rectangle.dragText: not realized
 Rectangle.drop: not realized
-Rectangle.dropCompleted: not realized
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
@@ -642,12 +642,12 @@ Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: not realized
 ScrollView.area: ✅
 ScrollView.canDrag: not realized
+ScrollView.dragEnded: not realized
 ScrollView.dragLeave: not realized
 ScrollView.dragOver: not realized
 ScrollView.dragStarting: not realized
 ScrollView.dragText: not realized
 ScrollView.drop: not realized
-ScrollView.dropCompleted: not realized
 ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
@@ -674,12 +674,12 @@ ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: not realized
 SearchField.area: ✅
 SearchField.canDrag: not realized
+SearchField.dragEnded: not realized
 SearchField.dragLeave: not realized
 SearchField.dragOver: not realized
 SearchField.dragStarting: not realized
 SearchField.dragText: not realized
 SearchField.drop: not realized
-SearchField.dropCompleted: not realized
 SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
@@ -706,12 +706,12 @@ SearchField.verticalAlignment: ✅
 Slider.allowsDrop: not realized
 Slider.area: ✅
 Slider.canDrag: not realized
+Slider.dragEnded: not realized
 Slider.dragLeave: not realized
 Slider.dragOver: not realized
 Slider.dragStarting: not realized
 Slider.dragText: not realized
 Slider.drop: not realized
-Slider.dropCompleted: not realized
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridColumnSpan: ✅
@@ -738,12 +738,12 @@ Slider.verticalAlignment: ✅
 Stepper.allowsDrop: not realized
 Stepper.area: ✅
 Stepper.canDrag: not realized
+Stepper.dragEnded: not realized
 Stepper.dragLeave: not realized
 Stepper.dragOver: not realized
 Stepper.dragStarting: not realized
 Stepper.dragText: not realized
 Stepper.drop: not realized
-Stepper.dropCompleted: not realized
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
@@ -770,12 +770,12 @@ Stepper.verticalAlignment: ✅
 Switch.allowsDrop: not realized
 Switch.area: ✅
 Switch.canDrag: not realized
+Switch.dragEnded: not realized
 Switch.dragLeave: not realized
 Switch.dragOver: not realized
 Switch.dragStarting: not realized
 Switch.dragText: not realized
 Switch.drop: not realized
-Switch.dropCompleted: not realized
 Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
@@ -802,12 +802,12 @@ Switch.verticalAlignment: ✅
 Text.allowsDrop: not realized
 Text.area: ✅
 Text.canDrag: not realized
+Text.dragEnded: not realized
 Text.dragLeave: not realized
 Text.dragOver: not realized
 Text.dragStarting: not realized
 Text.dragText: not realized
 Text.drop: not realized
-Text.dropCompleted: not realized
 Text.frameChanged: ✅
 Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
@@ -834,12 +834,12 @@ Text.verticalAlignment: ✅
 TextEditor.allowsDrop: not realized
 TextEditor.area: ✅
 TextEditor.canDrag: not realized
+TextEditor.dragEnded: not realized
 TextEditor.dragLeave: not realized
 TextEditor.dragOver: not realized
 TextEditor.dragStarting: not realized
 TextEditor.dragText: not realized
 TextEditor.drop: not realized
-TextEditor.dropCompleted: not realized
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridColumnSpan: ✅
@@ -866,12 +866,12 @@ TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: not realized
 TextField.area: ✅
 TextField.canDrag: not realized
+TextField.dragEnded: not realized
 TextField.dragLeave: not realized
 TextField.dragOver: not realized
 TextField.dragStarting: not realized
 TextField.dragText: not realized
 TextField.drop: not realized
-TextField.dropCompleted: not realized
 TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
@@ -898,12 +898,12 @@ TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: not realized
 TimePicker.area: ✅
 TimePicker.canDrag: not realized
+TimePicker.dragEnded: not realized
 TimePicker.dragLeave: not realized
 TimePicker.dragOver: not realized
 TimePicker.dragStarting: not realized
 TimePicker.dragText: not realized
 TimePicker.drop: not realized
-TimePicker.dropCompleted: not realized
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
@@ -930,12 +930,12 @@ TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: not realized
 VStack.area: ✅
 VStack.canDrag: not realized
+VStack.dragEnded: not realized
 VStack.dragLeave: not realized
 VStack.dragOver: not realized
 VStack.dragStarting: not realized
 VStack.dragText: not realized
 VStack.drop: not realized
-VStack.dropCompleted: not realized
 VStack.frameChanged: ✅
 VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
@@ -962,12 +962,12 @@ VStack.verticalAlignment: ✅
 WebView.allowsDrop: not realized
 WebView.area: ✅
 WebView.canDrag: not realized
+WebView.dragEnded: not realized
 WebView.dragLeave: not realized
 WebView.dragOver: not realized
 WebView.dragStarting: not realized
 WebView.dragText: not realized
 WebView.drop: not realized
-WebView.dropCompleted: not realized
 WebView.frameChanged: ✅
 WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
@@ -994,12 +994,12 @@ WebView.verticalAlignment: ✅
 ZStack.allowsDrop: not realized
 ZStack.area: ✅
 ZStack.canDrag: not realized
+ZStack.dragEnded: not realized
 ZStack.dragLeave: not realized
 ZStack.dragOver: not realized
 ZStack.dragStarting: not realized
 ZStack.dragText: not realized
 ZStack.drop: not realized
-ZStack.dropCompleted: not realized
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅

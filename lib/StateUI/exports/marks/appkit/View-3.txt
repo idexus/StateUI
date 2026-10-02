@@ -2,9 +2,9 @@
 ActivityIndicator.area: ✅
 ActivityIndicator.frameChanged: ✅
 Button.canDrag: not realized
+Button.dragEnded: not realized
 Button.dragStarting: not realized
 Button.dragText: not realized
-Button.dropCompleted: not realized
 Button.frameChanged: ✅
 Button.margin: ✅
 Canvas.pinchUpdated: ✓ pinch on Canvas: handed to the host's recognizer or handler, no NSEvent sent
@@ -36,9 +36,9 @@ ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
 Line.canDrag: not realized
+Line.dragEnded: not realized
 Line.dragStarting: not realized
 Line.dragText: not realized
-Line.dropCompleted: not realized
 Line.frameChanged: ✅
 Line.margin: ✅
 Map.pinchUpdated: ✓ pinch on Map: handed to the host's recognizer or handler, no NSEvent sent
@@ -72,9 +72,9 @@ ScrollView.gridRowSpan: ✅
 SearchField.area: ✅
 SearchField.frameChanged: ✅
 Slider.canDrag: not realized
+Slider.dragEnded: not realized
 Slider.dragStarting: not realized
 Slider.dragText: not realized
-Slider.dropCompleted: not realized
 Slider.frameChanged: ✅
 Slider.margin: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: handed to the host's recognizer or handler, no NSEvent sent

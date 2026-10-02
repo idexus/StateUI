@@ -209,8 +209,8 @@ final class ControlTests: XCTestCase {
                     .maximum(100)
                     .tint(.cornflowerBlue)
                     .onValueChanged { _ in }
-                    .onDragStarted {}
-                    .onDragCompleted {}),
+                    .onPressed {}
+                    .onReleased {}),
 
             ControlCase("Stepper", source: "Stepper.swift",
                 Stepper(4)
@@ -546,7 +546,7 @@ final class ControlTests: XCTestCase {
                 .onPointerPressed { _ in }
                 .onPointerReleased { _ in }
                 .draggable(text: "Alpha", canDrag: true) {}
-                .onDropCompleted {}
+                .onDragEnded {}
                 .onDrop { _ in }
                 .onDragOver {}
                 .onDragLeave {}),

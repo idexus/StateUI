@@ -92,9 +92,9 @@ enum GTKRealization {
         .complete("Scene", "stopped"),
         .complete("Scene", "windowClosed"),
         .complete("Scene", "windowRestored"),
-        .notPlanned("Slider", "dragCompleted", reason: "GTK's scale tells no one it is held: its range claims the "
+        .notPlanned("Slider", "released", reason: "GTK's scale tells no one it is held: its range claims the "
             + "press, and GTK denies every other gesture on it."),
-        .notPlanned("Slider", "dragStarted", reason: "GTK's scale tells no one it is held: its range claims the "
+        .notPlanned("Slider", "pressed", reason: "GTK's scale tells no one it is held: its range claims the "
             + "press, and GTK denies every other gesture on it."),
         .complete("Span", "background"),
         .complete("Span", "characterSpacing"),
@@ -107,8 +107,8 @@ enum GTKRealization {
         .complete("Span", "textDecorations"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
-        .complete("TabbedView", "currentPage"),
-        .complete("TabbedView", "currentPageChanged"),
+        .complete("TabbedView", "selectedTab"),
+        .complete("TabbedView", "selectedTabChanged"),
         .partial("TextEditor", "layoutDirection",
                  missing: "Its placeholder stands at the left edge whichever way the words are written."),
         .partial("TimePicker", "format",

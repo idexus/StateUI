@@ -16,9 +16,9 @@ CheckBox.gridRowSpan: ✅
 ColorBox.area: ✅
 ColorBox.frameChanged: ✅
 DatePicker.canDrag: not realized
+DatePicker.dragEnded: not realized
 DatePicker.dragStarting: not realized
 DatePicker.dragText: not realized
-DatePicker.dropCompleted: not realized
 DatePicker.frameChanged: ✅
 DatePicker.margin: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -47,9 +47,9 @@ Path.gridRowSpan: ✅
 Picker.area: ✅
 Picker.frameChanged: ✅
 Polygon.canDrag: not realized
+Polygon.dragEnded: not realized
 Polygon.dragStarting: not realized
 Polygon.dragText: not realized
-Polygon.dropCompleted: not realized
 Polygon.frameChanged: ✅
 Polygon.margin: ✅
 Polyline.pinchUpdated: ✓ pinch on Polyline: the view's listening handed the recognizer's states, no touch sent
@@ -88,9 +88,9 @@ Text.pointerReleased: ✓ hover on Text: the view's listening handed the recogni
 TextEditor.area: ✅
 TextEditor.frameChanged: ✅
 TextField.canDrag: not realized
+TextField.dragEnded: not realized
 TextField.dragStarting: not realized
 TextField.dragText: not realized
-TextField.dropCompleted: not realized
 TextField.frameChanged: ✅
 TextField.margin: ✅
 TimePicker.pinchUpdated: ✓ pinch on TimePicker: the view's listening handed the recognizer's states, no touch sent

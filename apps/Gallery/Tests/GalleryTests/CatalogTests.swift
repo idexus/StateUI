@@ -1312,8 +1312,8 @@ final class CatalogTests: XCTestCase {
         let detail = window(place.nav).detail().node
 
         XCTAssertEqual(detail.type, "TabbedView")
-        XCTAssertEqual(detail.props["currentPage"], .number(0))
-        XCTAssertNotNil(detail.events["currentPageChanged"],
+        XCTAssertEqual(detail.props["selectedTab"], .number(0))
+        XCTAssertNotNil(detail.events["selectedTabChanged"],
                         "a tab tapped - or swiped, on Android - would not reach the binding")
         XCTAssertEqual(detail.children.count, DemoTab.opening.count)
 
@@ -1336,7 +1336,7 @@ final class CatalogTests: XCTestCase {
 
     /// Each tab keeps its own place because the ARRAYS are separate - which is
     /// Reversing the tabs from the MIDDLE of three describes the same
-    /// `currentPage` as before it - which is the whole point of the move.
+    /// `selectedTab` as before it - which is the whole point of the move.
     ///
     /// A property is sent only when its value changed, so this message carries
     /// no selection at all while the children are rearranged underneath it. The
@@ -1348,11 +1348,11 @@ final class CatalogTests: XCTestCase {
         place.tabs.wrappedValue = [.stack, .second, .extra(1)]
         place.tab.wrappedValue = .second
 
-        let before = window(place.nav).detail().node.props["currentPage"]
+        let before = window(place.nav).detail().node.props["selectedTab"]
 
         place.nav.reverseTabs(showing: .second)
 
-        let after = window(place.nav).detail().node.props["currentPage"]
+        let after = window(place.nav).detail().node.props["selectedTab"]
 
         XCTAssertEqual(place.tabs.wrappedValue, [.extra(1), .second, .stack])
         XCTAssertEqual(before, .number(1))
@@ -1360,7 +1360,7 @@ final class CatalogTests: XCTestCase {
     }
 
     /// Closing the tab being LOOKED AT leaves the selection naming no tab, so
-    /// the message carries no `currentPage` and the platform has to choose.
+    /// the message carries no `selectedTab` and the platform has to choose.
     func testClosingTheShowingTabLeavesTheSelectionNamingNothing() throws {
         let place = Place()
         place.section.wrappedValue = .tabs
@@ -1370,7 +1370,7 @@ final class CatalogTests: XCTestCase {
         place.nav.closeTab(.second, showing: .second)
 
         XCTAssertEqual(place.tabs.wrappedValue, [.stack])
-        XCTAssertNil(window(place.nav).detail().node.props["currentPage"],
+        XCTAssertNil(window(place.nav).detail().node.props["selectedTab"],
                      "a selection naming no tab must describe no index")
     }
 
@@ -1652,7 +1652,7 @@ final class CatalogTests: XCTestCase {
             "tapped", "swiped", "panUpdated", "pinchUpdated",
             "pointerEntered", "pointerExited", "pointerMoved",
             "pointerPressed", "pointerReleased",
-            "dragStarting", "dropCompleted", "drop", "dragOver", "dragLeave",
+            "dragStarting", "dragEnded", "drop", "dragOver", "dragLeave",
         ]
 
         for sample in group.samples {

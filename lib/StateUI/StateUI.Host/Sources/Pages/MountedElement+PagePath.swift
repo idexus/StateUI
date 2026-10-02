@@ -83,7 +83,7 @@ extension MountedElement {
     public var selectedTab: MountedElement? {
         guard !children.isEmpty else { return nil }
 
-        let chosen = native.chosenTab ?? Int(value(.currentPage)?.number ?? 0)
+        let chosen = native.chosenTab ?? Int(value(.selectedTab)?.number ?? 0)
         return children[min(max(chosen, 0), children.count - 1)]
     }
 

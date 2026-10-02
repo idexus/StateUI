@@ -26,7 +26,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "dragStarted")))
+            HostRealizedMember(element: "Slider", owner: "Slider", member: "pressed")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Slider", owner: "TintElement", member: "tint")))
         XCTAssertTrue(realization.members.contains(

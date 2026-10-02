@@ -82,9 +82,9 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
         if let choice {
             element.node.write(ItemsViewContract.selectionMode, choice.mode)
             element.node.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen))
-            element.node.addHandler(ItemsViewContract.selectionChanged.token) {
+            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token) {
                 guard let identities = MemberValues.carried(
-                    EventBuffer.current, by: ItemsViewContract.selectionChanged.name, as: [String].self)
+                    EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
                 else { return }
 
                 var ids: [ID] = []

@@ -1,10 +1,10 @@
 # revision 1.1
 Slider: ✅
-Slider.dragCompleted: not realized
-Slider.dragStarted: not realized
 Slider.frameChanged: ✅
 Slider.maximum: ✅
 Slider.minimum: ✅
+Slider.pressed: not realized
+Slider.released: not realized
 Slider.value: ✅
 Slider.valueChanged: ✅
 Text.text: ✅

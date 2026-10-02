@@ -204,8 +204,8 @@ extension View {
     }
 
     /// Runs when a drag that started here ends, wherever it ended.
-    public func onDropCompleted(_ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dropCompleted, handler)
+    public func onDragEnded(_ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragEnded, handler)
     }
 
     /// Accepts what is dropped on the view, with the text it carried.

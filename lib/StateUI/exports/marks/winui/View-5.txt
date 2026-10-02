@@ -4,9 +4,9 @@ ActivityIndicator.gridColumnSpan: ✅
 ActivityIndicator.gridRowSpan: ✅
 ActivityIndicator.pinchUpdated: ✅
 Button.canDrag: not realized
+Button.dragEnded: not realized
 Button.dragStarting: not realized
 Button.dragText: not realized
-Button.dropCompleted: not realized
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
 Button.panTouchCount: ✅
@@ -40,9 +40,9 @@ DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
 DatePicker.pinchUpdated: ✅
 Ellipse.canDrag: not realized
+Ellipse.dragEnded: not realized
 Ellipse.dragStarting: not realized
 Ellipse.dragText: not realized
-Ellipse.dropCompleted: not realized
 Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.panTouchCount: ✅
@@ -102,9 +102,9 @@ Picker.gridColumnSpan: ✅
 Picker.gridRowSpan: ✅
 Picker.pinchUpdated: ✅
 Polygon.canDrag: not realized
+Polygon.dragEnded: not realized
 Polygon.dragStarting: not realized
 Polygon.dragText: not realized
-Polygon.dropCompleted: not realized
 Polygon.frameChanged: ✅
 Polygon.horizontalAlignment: ✅
 Polygon.panTouchCount: ✅
@@ -138,9 +138,9 @@ Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
 Rectangle.pinchUpdated: ✅
 ScrollView.canDrag: not realized
+ScrollView.dragEnded: not realized
 ScrollView.dragStarting: not realized
 ScrollView.dragText: not realized
-ScrollView.dropCompleted: not realized
 ScrollView.frameChanged: ✅
 ScrollView.horizontalAlignment: ✅
 ScrollView.panTouchCount: ✅
@@ -174,9 +174,9 @@ Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
 Switch.pinchUpdated: ✅
 Text.canDrag: not realized
+Text.dragEnded: not realized
 Text.dragStarting: not realized
 Text.dragText: not realized
-Text.dropCompleted: not realized
 Text.frameChanged: ✅
 Text.horizontalAlignment: ✅
 Text.panTouchCount: ✅
@@ -184,9 +184,9 @@ Text.panUpdated: ✅
 Text.panXChannel: ✅
 Text.verticalAlignment: ✅
 TextEditor.canDrag: not realized
+TextEditor.dragEnded: not realized
 TextEditor.dragStarting: not realized
 TextEditor.dragText: not realized
-TextEditor.dropCompleted: not realized
 TextEditor.frameChanged: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.panTouchCount: ✅
@@ -220,9 +220,9 @@ WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅
 WebView.pinchUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.canDrag: not realized
+ZStack.dragEnded: not realized
 ZStack.dragStarting: not realized
 ZStack.dragText: not realized
-ZStack.dropCompleted: not realized
 ZStack.frameChanged: ✅
 ZStack.horizontalAlignment: ✅
 ZStack.panTouchCount: ✅

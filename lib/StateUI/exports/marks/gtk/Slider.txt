@@ -1,10 +1,10 @@
 # revision 1.1
 Slider: ✅
-Slider.dragCompleted: – GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.
-Slider.dragStarted: – GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.
 Slider.frameChanged: ✅
 Slider.maximum: ✅
 Slider.minimum: ✅
+Slider.pressed: – GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.
+Slider.released: – GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.
 Slider.value: ✅
 Slider.valueChanged: ✅
 Text.text: ✅

@@ -30,9 +30,9 @@ HStack.gridRowSpan: ✅
 Image.area: ✅
 Image.frameChanged: ✅
 ItemsView.canDrag: not realized
+ItemsView.dragEnded: not realized
 ItemsView.dragStarting: not realized
 ItemsView.dragText: not realized
-ItemsView.dropCompleted: not realized
 ItemsView.frameChanged: ✅
 ItemsView.margin: ✅
 Line.panYChannel: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
@@ -65,9 +65,9 @@ RadioButton.gridRowSpan: ✅
 Rectangle.area: ✅
 Rectangle.frameChanged: ✅
 ScrollView.canDrag: not realized
+ScrollView.dragEnded: not realized
 ScrollView.dragStarting: not realized
 ScrollView.dragText: not realized
-ScrollView.dropCompleted: not realized
 ScrollView.frameChanged: ✅
 ScrollView.margin: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the view's listening handed the recognizer's states, no touch sent

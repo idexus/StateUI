@@ -236,7 +236,7 @@ final class AppKitDriver: HostDriver {
         case (.minimumDate, let picker as AppKitDatePickerView): return picker.earliestForTesting?.propValue
         case (.maximumDate, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
         case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
-        case (.currentPage, let tabs as AppKitTabbedView): return tabs.selectedIndexForTesting.propValue
+        case (.selectedTab, let tabs as AppKitTabbedView): return tabs.selectedIndexForTesting.propValue
         case (.showsSidebar, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.
         case (.isVisible, let view?): return (view.window != nil && !view.isHiddenOrHasHiddenAncestor).propValue

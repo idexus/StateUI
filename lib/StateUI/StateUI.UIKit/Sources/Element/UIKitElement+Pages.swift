@@ -102,7 +102,7 @@ extension UIKitElement {
                 children.compactMap { tab in
                     tab.controller.map { ($0, tab.value(.title)?.string ?? "", tab.value(.icon)?.string) }
                 },
-                requested: value(.currentPage)?.number.map { Int($0) })
+                requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
             tabs.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
         case .splitView:

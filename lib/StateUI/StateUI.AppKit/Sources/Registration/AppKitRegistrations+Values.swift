@@ -15,8 +15,8 @@ extension AppKitRegistrations {
             slider.onValueChanged = { moved in
                 reports.report(SliderContract.value, moved, as: SliderContract.valueChanged)
             }
-            slider.onDragStarted = { reports.raise(SliderContract.dragStarted) }
-            slider.onDragCompleted = { reports.raise(SliderContract.dragCompleted) }
+            slider.onPressed = { reports.raise(SliderContract.pressed) }
+            slider.onReleased = { reports.raise(SliderContract.released) }
             return slider
         }, members: { slider in
             slider.applies([
@@ -33,8 +33,8 @@ extension AppKitRegistrations {
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
             slider.raises(SliderContract.valueChanged)
-            slider.raises(SliderContract.dragStarted)
-            slider.raises(SliderContract.dragCompleted)
+            slider.raises(SliderContract.pressed)
+            slider.raises(SliderContract.released)
         })
 
         registry.add(StepperContract.self, create: { reports in

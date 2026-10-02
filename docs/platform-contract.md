@@ -389,7 +389,7 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 | `dragStarting` | [View](controls/tiers/View.md) | event |
 | `dragText` | [View](controls/tiers/View.md) | property |
 | `onDrop` (`drop`) | [View](controls/tiers/View.md) | event |
-| `onDropCompleted` (`dropCompleted`) | [View](controls/tiers/View.md) | event |
+| `onDragEnded` (`dragEnded`) | [View](controls/tiers/View.md) | event |
 | `onFrameChanged` (`frameChanged`) | [View](controls/tiers/View.md) | event |
 | `gridColumn` | [View](controls/tiers/View.md) | property |
 | `gridColumnSpan` | [View](controls/tiers/View.md) | property |
@@ -510,7 +510,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | --- | --- | --- |
 | [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` | 1 |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isFocusedChanged`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `translationX`, `translationY`, `width`, `zIndex` | 31 |
-| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 32 |
+| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDragEnded` (`dragEnded`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 32 |
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 |
 | [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
@@ -541,7 +541,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ |  |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ |  |
-| [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ |  |
+| [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 |  |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ |  |
@@ -560,12 +560,12 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 2 ✅ | 7 ✅ | 7 ✅ |  |
 | [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 1 ✅ | 1 ✅ |  |
-| [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 4 ✅ | 4 ✅ | 4 ✅ · 2 – |  |
+| [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 4 ✅ | 4 ✅ | 4 ✅ · 2 – |  |
 | [Span](controls/Span.md) | `background` | 1 |  |  |  | 1 ✅ | 1 ✅ |  |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged` | 2 | 2 ✅ | 2 ✅ | 2 ✓ | 2 ✅ | 2 ✅ |  |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 2 ✅ | 2 ✅ |  | 5 ✅ | 5 ✅ |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
-| [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ |  | 2 ✅ | 2 ✅ |  |
+| [TabbedView](controls/TabbedView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ |  | 2 ✅ | 2 ✅ |  |
 | [Text](controls/Text.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 2 – | 4 ✅ | 3 ✅ · 1 – | 1 ☑️ | 2 ✅ |  |
@@ -607,27 +607,27 @@ realizes the element and each of its members.
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
 `background`, `barBackgroundColor`, `barForegroundColor`, `barIcon`,
 `barSubtitle`, `barTitle`, `canDrag`, `characterSpacing`, `clipsContent`,
-`color`, `columns`, `columnSpacing`, `cornerRadius`, `currentPage`,
-`cursorPosition`, `data`, `date`, `dragText`, `drawable`, `endReachedWithin`,
-`fill`, `fillRule`, `floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`,
-`format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
-`groupName`, `growsWithText`, `height`, `hidesWhenInactive`,
-`horizontalAlignment`, `horizontalScrollBarVisibility`,
-`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
-`ignoresInput`, `inputPurpose`, `isAccessibilityHidden`, `isAnimating`,
-`isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
-`isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
-`isScrollEnabled`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
-`isTranslucent`, `isVisible`, `isZoomEnabled`, `items`, `itemsLayout`, `label`,
-`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineHeight`, `location`,
-`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
-`maximumLines`, `maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`,
-`minimumWidth`, `opacity`, `options`, `order`, `orientation`, `padding`,
-`panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
-`placeholder`, `placeholderColor`, `placement`, `points`, `progress`, `region`,
-`renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
-`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`,
-`selectedItems`, `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`color`, `columns`, `columnSpacing`, `cornerRadius`, `cursorPosition`, `data`,
+`date`, `dragText`, `drawable`, `endReachedWithin`, `fill`, `fillRule`,
+`floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`, `format`, `frame`,
+`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `groupName`,
+`growsWithText`, `height`, `hidesWhenInactive`, `horizontalAlignment`,
+`horizontalScrollBarVisibility`, `horizontalTextAlignment`, `icon`,
+`iconPosition`, `iconSpacing`, `ignoresInput`, `inputPurpose`,
+`isAccessibilityHidden`, `isAnimating`, `isDestructive`, `isEnabled`,
+`isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`,
+`isPassword`, `isReadOnly`, `isScrollEnabled`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isTranslucent`, `isVisible`, `isZoomEnabled`,
+`items`, `itemsLayout`, `label`, `layoutDirection`, `letsInputThrough`,
+`lineBreak`, `lineHeight`, `location`, `mapType`, `margin`, `maximum`,
+`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
+`minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`, `opacity`, `options`,
+`order`, `orientation`, `padding`, `panTouchCount`, `panXChannel`,
+`panYChannel`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`,
+`placement`, `points`, `progress`, `region`, `renderTransform`, `returnKey`,
+`rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`,
+`scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
+`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsNavigationBar`, `showsSidebar`, `showsText`,
 `showsTraffic`, `showsUserLocation`, `side`, `source`, `spacing`, `step`,
 `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`,
@@ -641,18 +641,18 @@ realizes the element and each of its members.
 ### Events
 
 `activated`, `appearing`, `canGoBackChanged`, `canGoForwardChanged`, `clicked`,
-`closed`, `created`, `currentPageChanged`, `dateChanged`, `deactivated`,
-`destroying`, `disappearing`, `dragCompleted`, `dragged`, `dragLeave`,
-`dragOver`, `dragStarted`, `dragStarting`, `drop`, `dropCompleted`,
+`closed`, `created`, `dateChanged`, `deactivated`, `destroying`, `disappearing`,
+`dragEnded`, `dragged`, `dragLeave`, `dragOver`, `dragStarting`, `drop`,
 `endReached`, `frameChanged`, `isFocusedChanged`, `itemActivated`, `mapClicked`,
 `navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
 `opened`, `panUpdated`, `pinchUpdated`, `pinClicked`, `pinDetailsClicked`,
 `pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
 `pointerReleased`, `popped`, `pressed`, `processTerminated`, `realizedChanged`,
 `released`, `resumed`, `scrollStopped`, `scrollXChanged`, `scrollYChanged`,
-`selectedIndexChanged`, `selectionChanged`, `showsSidebarChanged`, `stopped`,
-`submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`, `toggled`,
-`valueChanged`, `windowClosed`, `windowRestored`.
+`selectedIndexChanged`, `selectedItemsChanged`, `selectedTabChanged`,
+`showsSidebarChanged`, `stopped`, `submitted`, `swiped`, `tapped`,
+`textChanged`, `timeChanged`, `toggled`, `valueChanged`, `windowClosed`,
+`windowRestored`.
 
 ### Acts
 

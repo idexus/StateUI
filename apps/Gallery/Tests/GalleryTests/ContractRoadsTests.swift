@@ -376,6 +376,22 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = ViewContract.allowDrop",
             contract: "_ = ViewContract.allowsDrop"),
         Road(
+            name: "a slider's thumb held as a drag",
+            removed: "_ = SliderContract.dragStarted",
+            contract: "_ = SliderContract.pressed"),
+        Road(
+            name: "the tab shown as a current page",
+            removed: "_ = TabbedViewContract.currentPage",
+            contract: "_ = TabbedViewContract.selectedTab"),
+        Road(
+            name: "a collection's choice reported as selectionChanged",
+            removed: "_ = ItemsViewContract.selectionChanged",
+            contract: "_ = ItemsViewContract.selectedItemsChanged"),
+        Road(
+            name: "a drag's end reported as a completed drop",
+            removed: "_ = ViewContract.dropCompleted",
+            contract: "_ = ViewContract.dragEnded"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

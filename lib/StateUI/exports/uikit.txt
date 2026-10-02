@@ -84,7 +84,7 @@ ItemsView
   endReached()
   itemActivated()
   realizedChanged()
-  selectionChanged()
+  selectedItemsChanged()
 Line
   aspect
   fill
@@ -227,8 +227,8 @@ Slider
   minimum
   tint
   value
-  dragCompleted()
-  dragStarted()
+  pressed()
+  released()
   valueChanged()
 Stepper
   isEnabled

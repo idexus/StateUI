@@ -84,8 +84,8 @@ final class AndroidSliderViewTests: XCTestCase {
                 VStack {
                     Slider(level.projectedValue)
                         .onValueChanged { moves.values.append($0) }
-                        .onDragStarted { drags.values.append("started") }
-                        .onDragCompleted { drags.values.append("completed") }
+                        .onPressed { drags.values.append("started") }
+                        .onReleased { drags.values.append("completed") }
                 }
             }
             host.layOut()

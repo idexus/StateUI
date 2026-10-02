@@ -170,7 +170,7 @@
             if tabs.indices.contains(previous) { tabs[previous].setPagePresented(false, reason: .appearance) }
             tabs[selected].setPagePresented(true, reason: .appearance)
         }
-        tabbed.reportUserChange(.currentPage, .currentPageChanged, .number(Double(selected)), in: self) { _ in }
+        tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self) { _ in }
     }
 
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.

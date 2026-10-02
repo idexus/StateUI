@@ -9,5 +9,5 @@ ItemsView.itemsLayout: ✅
 ItemsView.realizedChanged: ✅
 ItemsView.scrollTo: ✅
 ItemsView.selectedItems: ✓ choose on ItemsView: the collection's delegate told, no click
-ItemsView.selectionChanged: ✓ choose on ItemsView: the collection's delegate told, no click
+ItemsView.selectedItemsChanged: ✓ choose on ItemsView: the collection's delegate told, no click
 ItemsView.selectionMode: ✓ choose on ItemsView: the collection's delegate told, no click

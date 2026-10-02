@@ -106,7 +106,7 @@ Text is the portable drag payload:
 ```swift quote
 Text(item.title)
     .draggable(text: item.id)
-    .onDropCompleted { dragging = nil }
+    .onDragEnded { dragging = nil }
 
 ZStack { Text("Drop here") }
     .onDrop { text in receive(text) }

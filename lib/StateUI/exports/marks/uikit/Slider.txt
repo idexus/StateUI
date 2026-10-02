@@ -1,10 +1,10 @@
 # revision 1.1
 Slider: ✅
-Slider.dragCompleted: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
-Slider.dragStarted: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.frameChanged: ✅
 Slider.maximum: ✅
 Slider.minimum: ✅
+Slider.pressed: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
+Slider.released: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.value: ✅
 Slider.valueChanged: ✅
 Text.text: ✅

@@ -28,7 +28,7 @@ extension GTKDriver {
         case let picker as GTKPopoverPickerView: return wordsHolds(property, picker.label)
         case let stepper as GTKStepperView: return stepperHolds(property, stepper)
         case let scroll as GTKScrollView: return scrollHolds(property, scroll)
-        case let tabs as GTKTabbedView where property == .currentPage: return Self.shownTab(of: tabs).map(\.propValue)
+        case let tabs as GTKTabbedView where property == .selectedTab: return Self.shownTab(of: tabs).map(\.propValue)
         case _ where property == .showsNavigationBar && element.type == .page:
             return (try? frame(of: element)).map { (adw_toolbar_view_get_reveal_top_bars($0.widget.opaque) != 0).propValue }
         case let layout as GTKLayoutView: return layoutHolds(property, layout)

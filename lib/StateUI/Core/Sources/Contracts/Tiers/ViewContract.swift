@@ -35,7 +35,7 @@ public enum ViewContract: Contract {
     public static let drop = ElementEvent<Self, String>("drop", layer: .native)
 
     /// A drag that started on the view ended, wherever it ended.
-    public static let dropCompleted = ElementEvent<Self, Void>("dropCompleted", layer: .native)
+    public static let dragEnded = ElementEvent<Self, Void>("dragEnded", layer: .native)
 
     /// The view settled on a frame: eight numbers - x, y, width, height, the
     /// window's x and y, and the safe area's x and y.
@@ -123,7 +123,7 @@ public enum ViewContract: Contract {
     /// The tier's own members.
     public static let members: [any ContractMember] = [
         allowsDrop, area, canDrag, dragLeave,
-        dragOver, dragStarting, dragText, drop, dropCompleted, frameChanged, gridColumn,
+        dragOver, dragStarting, dragText, drop, dragEnded, frameChanged, gridColumn,
         gridColumnSpan, gridRow, gridRowSpan, horizontalAlignment, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, pinchUpdated, pointerEntered, pointerExited,
         pointerMoved, pointerPressed, pointerReleased, swipeDirection, swipeThreshold, swiped,

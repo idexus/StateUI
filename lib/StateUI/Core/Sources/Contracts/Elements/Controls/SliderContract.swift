@@ -13,10 +13,10 @@ public enum SliderContract: ElementContract {
     public static let tiers: [any Contract.Type] = [ViewContract.self, TintElementContract.self]
 
     /// The thumb was let go.
-    public static let dragCompleted = ElementEvent<Self, Void>("dragCompleted", layer: .native)
+    public static let released = ElementEvent<Self, Void>("released", layer: .native)
 
     /// The thumb was grabbed.
-    public static let dragStarted = ElementEvent<Self, Void>("dragStarted", layer: .native)
+    public static let pressed = ElementEvent<Self, Void>("pressed", layer: .native)
 
     /// The value at the far end of the track.
     public static let maximum = ElementProperty<Self, Double>("maximum", layer: .native, travels: false)
@@ -32,6 +32,6 @@ public enum SliderContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        dragCompleted, dragStarted, maximum, minimum, value, valueChanged,
+        released, pressed, maximum, minimum, value, valueChanged,
     ]
 }

@@ -79,8 +79,8 @@ final class AppKitSliderViewTests: XCTestCase {
     func testDragBoundariesAreReportedExactlyOnce() {
         let view = AppKitSliderView()
         var events: [String] = []
-        view.onDragStarted = { events.append("start") }
-        view.onDragCompleted = { events.append("complete") }
+        view.onPressed = { events.append("start") }
+        view.onReleased = { events.append("complete") }
 
         view.beginDrag()
         view.endDrag()
@@ -95,8 +95,8 @@ final class AppKitSliderViewTests: XCTestCase {
         let moments = Received<String>()
         let renderer = AppKitRenderer.running {
             Slider(0.5)
-                .onDragStarted { moments.values.append("started") }
-                .onDragCompleted { moments.values.append("completed") }
+                .onPressed { moments.values.append("started") }
+                .onReleased { moments.values.append("completed") }
         }
         defer { renderer.closeForTesting() }
         let slider = try XCTUnwrap(renderer.nativeViews(AppKitSliderView.self).first)

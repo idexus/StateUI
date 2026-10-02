@@ -24,7 +24,7 @@
                 s.expect(Aspects.laidOut(frames), true, "its first tab's page laid out in the window")
             },
             ConformanceCase("theTabTheBindingNamesShows", proves: [
-                Covered(TabbedViewContract.currentPage),
+                Covered(TabbedViewContract.selectedTab),
             ]) { s in
                 s.start {
                     TabbedView([0, 1]) { tab in Text("Tab \(tab)").id("tab\(tab)") }
@@ -32,12 +32,12 @@
                 }
                 let tabs = try s.element(ofType: TabbedViewContract.nodeType)
 
-                try s.settle { try s.held(TabbedViewContract.currentPage, on: tabs) == 1 }
-                s.expect(try s.held(TabbedViewContract.currentPage, on: tabs), 1)
+                try s.settle { try s.held(TabbedViewContract.selectedTab, on: tabs) == 1 }
+                s.expect(try s.held(TabbedViewContract.selectedTab, on: tabs), 1)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("tab1")), true, "its page shown")
             },
             ConformanceCase("theUsersChoiceLandsOnTheBinding", proves: [
-                Covered(TabbedViewContract.currentPage), Covered(TabbedViewContract.currentPageChanged),
+                Covered(TabbedViewContract.selectedTab), Covered(TabbedViewContract.selectedTabChanged),
             ]) { s in
                 let tab = State(wrappedValue: 0)
                 s.start { TabbedView([0, 1]) { tab in Text("Tab \(tab)") }.selection(tab.projectedValue) }
@@ -46,10 +46,10 @@
                 try s.perform(.choose(1), on: tabs)
                 s.settle { tab.wrappedValue == 1 }
                 s.expect(tab.wrappedValue, 1)
-                s.expect(try s.held(TabbedViewContract.currentPage, on: tabs), 1)
+                s.expect(try s.held(TabbedViewContract.selectedTab, on: tabs), 1)
             },
             ConformanceCase("theProgramsChoiceIsShown", proves: [
-                Covered(TabbedViewContract.currentPage),
+                Covered(TabbedViewContract.selectedTab),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let tab = State(wrappedValue: 0)
                 s.start {
@@ -61,8 +61,8 @@
                 let tabs = try s.element(ofType: TabbedViewContract.nodeType)
 
                 try s.perform(.activate, on: s.element("next0"))
-                try s.settle { try s.held(TabbedViewContract.currentPage, on: tabs) == 1 }
-                s.expect(try s.held(TabbedViewContract.currentPage, on: tabs), 1)
+                try s.settle { try s.held(TabbedViewContract.selectedTab, on: tabs) == 1 }
+                s.expect(try s.held(TabbedViewContract.selectedTab, on: tabs), 1)
             },
         ]
     }

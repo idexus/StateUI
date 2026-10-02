@@ -28,9 +28,9 @@ Ellipse.gridRowSpan: ✅
 Grid.area: ✅
 Grid.frameChanged: ✅
 HStack.canDrag: not realized
+HStack.dragEnded: not realized
 HStack.dragStarting: not realized
 HStack.dragText: not realized
-HStack.dropCompleted: not realized
 HStack.frameChanged: ✅
 HStack.margin: ✅
 Image.pinchUpdated: ✓ pinch on Image: the view's listening handed the recognizer's states, no touch sent
@@ -62,9 +62,9 @@ Polyline.gridRowSpan: ✅
 ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
 RadioButton.canDrag: not realized
+RadioButton.dragEnded: not realized
 RadioButton.dragStarting: not realized
 RadioButton.dragText: not realized
-RadioButton.dropCompleted: not realized
 RadioButton.frameChanged: ✅
 RadioButton.margin: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: the view's listening handed the recognizer's states, no touch sent
@@ -100,9 +100,9 @@ TimePicker.gridRowSpan: ✅
 VStack.area: ✅
 VStack.frameChanged: ✅
 WebView.canDrag: not realized
+WebView.dragEnded: not realized
 WebView.dragStarting: not realized
 WebView.dragText: not realized
-WebView.dropCompleted: not realized
 WebView.frameChanged: ✅
 WebView.margin: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: the view's listening handed the recognizer's states, no touch sent

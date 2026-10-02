@@ -9,5 +9,5 @@ ItemsView.itemsLayout: ✅
 ItemsView.realizedChanged: ✅
 ItemsView.scrollTo: ✅
 ItemsView.selectedItems: ✅
-ItemsView.selectionChanged: ✅
+ItemsView.selectedItemsChanged: ✅
 ItemsView.selectionMode: ✅

@@ -11,8 +11,8 @@ import UIKit
 @MainActor
 final class UIKitSliderView: UISlider {
     var onValueChanged: ((Double) -> Void)?
-    var onDragStarted: (() -> Void)?
-    var onDragCompleted: (() -> Void)?
+    var onPressed: (() -> Void)?
+    var onReleased: (() -> Void)?
 
     init() {
         super.init(frame: .zero)
@@ -20,8 +20,8 @@ final class UIKitSliderView: UISlider {
             guard let self else { return }
             onValueChanged?(Double(value))
         }, for: .valueChanged)
-        addAction(UIAction { [weak self] _ in self?.onDragStarted?() }, for: .touchDown)
-        addAction(UIAction { [weak self] _ in self?.onDragCompleted?() }, for: [.touchUpInside, .touchUpOutside])
+        addAction(UIAction { [weak self] _ in self?.onPressed?() }, for: .touchDown)
+        addAction(UIAction { [weak self] _ in self?.onReleased?() }, for: [.touchUpInside, .touchUpOutside])
     }
 
     @available(*, unavailable)

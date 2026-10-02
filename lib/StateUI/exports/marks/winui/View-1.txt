@@ -20,9 +20,9 @@ Canvas.gridColumnSpan: ✅
 Canvas.gridRowSpan: ✅
 Canvas.pinchUpdated: ✅
 CheckBox.canDrag: not realized
+CheckBox.dragEnded: not realized
 CheckBox.dragStarting: not realized
 CheckBox.dragText: not realized
-CheckBox.dropCompleted: not realized
 CheckBox.frameChanged: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.panTouchCount: ✅
@@ -56,9 +56,9 @@ Grid.gridColumnSpan: ✅
 Grid.gridRowSpan: ✅
 Grid.pinchUpdated: ✅
 HStack.canDrag: not realized
+HStack.dragEnded: not realized
 HStack.dragStarting: not realized
 HStack.dragText: not realized
-HStack.dropCompleted: not realized
 HStack.frameChanged: ✅
 HStack.horizontalAlignment: ✅
 HStack.panTouchCount: ✅
@@ -85,9 +85,9 @@ Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
 Line.pinchUpdated: ✅
 Map.canDrag: 🧩
+Map.dragEnded: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
-Map.dropCompleted: 🧩
 Map.frameChanged: 🧩
 Map.horizontalAlignment: 🧩
 Map.panTouchCount: 🧩
@@ -121,9 +121,9 @@ Polyline.gridColumnSpan: ✅
 Polyline.gridRowSpan: ✅
 Polyline.pinchUpdated: ✅
 ProgressBar.canDrag: not realized
+ProgressBar.dragEnded: not realized
 ProgressBar.dragStarting: not realized
 ProgressBar.dragText: not realized
-ProgressBar.dropCompleted: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.panTouchCount: ✅
@@ -157,9 +157,9 @@ SearchField.gridColumnSpan: ✅
 SearchField.gridRowSpan: ✅
 SearchField.pinchUpdated: ✅
 Slider.canDrag: not realized
+Slider.dragEnded: not realized
 Slider.dragStarting: not realized
 Slider.dragText: not realized
-Slider.dropCompleted: not realized
 Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.panTouchCount: ✅
@@ -200,9 +200,9 @@ TextField.gridColumnSpan: ✅
 TextField.gridRowSpan: ✅
 TextField.pinchUpdated: ✅
 TimePicker.canDrag: not realized
+TimePicker.dragEnded: not realized
 TimePicker.dragStarting: not realized
 TimePicker.dragText: not realized
-TimePicker.dropCompleted: not realized
 TimePicker.frameChanged: ✅
 TimePicker.horizontalAlignment: ✅
 TimePicker.panTouchCount: ✅

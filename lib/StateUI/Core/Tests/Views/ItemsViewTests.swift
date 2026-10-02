@@ -138,10 +138,10 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(list.props[.selectionMode], SelectionMode.single.propValue)
         XCTAssertEqual(list.props[.selectedItems], .strings(["5"]))
 
-        renders.fire(try XCTUnwrap(list.events?[.selectionChanged]), with: [.strings(["7"])])
+        renders.fire(try XCTUnwrap(list.events?[.selectedItemsChanged]), with: [.strings(["7"])])
         XCTAssertEqual(chosen.wrappedValue, 7)
 
-        renders.fire(try XCTUnwrap(list.events?[.selectionChanged]), with: [.strings([])])
+        renders.fire(try XCTUnwrap(list.events?[.selectedItemsChanged]), with: [.strings([])])
         XCTAssertNil(chosen.wrappedValue, "letting the item go clears the choice")
     }
 
@@ -155,7 +155,7 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(list.props[.selectionMode], SelectionMode.multiple.propValue)
         XCTAssertEqual(list.props[.selectedItems], .strings(["2", "8"]))
 
-        renders.fire(try XCTUnwrap(list.events?[.selectionChanged]), with: [.strings(["1", "2", "8"])])
+        renders.fire(try XCTUnwrap(list.events?[.selectedItemsChanged]), with: [.strings(["1", "2", "8"])])
         XCTAssertEqual(chosen.wrappedValue, [1, 2, 8])
     }
 

@@ -132,12 +132,12 @@ enum JavaNatives {
         }
         let dragStarted: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidSliderView)?.onDragStarted?()
+                (AndroidView.find(number) as? AndroidSliderView)?.onPressed?()
             }
         }
         let dragCompleted: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidSliderView)?.onDragCompleted?()
+                (AndroidView.find(number) as? AndroidSliderView)?.onReleased?()
             }
         }
         let textChanged: @convention(c) (Environment, jclass?, jlong, jstring?) -> Void = { _, _, number, text in

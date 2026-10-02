@@ -1,8 +1,8 @@
 # revision 1.1
 ActivityIndicator.canDrag: not realized
+ActivityIndicator.dragEnded: not realized
 ActivityIndicator.dragStarting: not realized
 ActivityIndicator.dragText: not realized
-ActivityIndicator.dropCompleted: not realized
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.horizontalAlignment: ✅
 ActivityIndicator.panTouchCount: ✅
@@ -36,9 +36,9 @@ ColorBox.gridColumnSpan: ✅
 ColorBox.gridRowSpan: ✅
 ColorBox.pinchUpdated: ✅
 DatePicker.canDrag: not realized
+DatePicker.dragEnded: not realized
 DatePicker.dragStarting: not realized
 DatePicker.dragText: not realized
-DatePicker.dropCompleted: not realized
 DatePicker.frameChanged: ✅
 DatePicker.horizontalAlignment: ✅
 DatePicker.panTouchCount: ✅
@@ -72,9 +72,9 @@ Image.gridColumnSpan: ✅
 Image.gridRowSpan: ✅
 Image.pinchUpdated: ✅
 ItemsView.canDrag: not realized
+ItemsView.dragEnded: not realized
 ItemsView.dragStarting: not realized
 ItemsView.dragText: not realized
-ItemsView.dropCompleted: not realized
 ItemsView.frameChanged: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.panTouchCount: ✅
@@ -102,9 +102,9 @@ Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
 Path.pinchUpdated: ✅
 Picker.canDrag: not realized
+Picker.dragEnded: not realized
 Picker.dragStarting: not realized
 Picker.dragText: not realized
-Picker.dropCompleted: not realized
 Picker.frameChanged: ✅
 Picker.horizontalAlignment: ✅
 Picker.panTouchCount: ✅
@@ -138,9 +138,9 @@ RadioButton.gridColumnSpan: ✅
 RadioButton.gridRowSpan: ✅
 RadioButton.pinchUpdated: ✅
 Rectangle.canDrag: not realized
+Rectangle.dragEnded: not realized
 Rectangle.dragStarting: not realized
 Rectangle.dragText: not realized
-Rectangle.dropCompleted: not realized
 Rectangle.frameChanged: ✅
 Rectangle.horizontalAlignment: ✅
 Rectangle.panTouchCount: ✅
@@ -174,9 +174,9 @@ Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅
 Stepper.pinchUpdated: ✅
 Switch.canDrag: not realized
+Switch.dragEnded: not realized
 Switch.dragStarting: not realized
 Switch.dragText: not realized
-Switch.dropCompleted: not realized
 Switch.frameChanged: ✅
 Switch.horizontalAlignment: ✅
 Switch.panTouchCount: ✅
@@ -216,9 +216,9 @@ VStack.gridColumnSpan: ✅
 VStack.gridRowSpan: ✅
 VStack.pinchUpdated: ✅
 WebView.canDrag: not realized
+WebView.dragEnded: not realized
 WebView.dragStarting: not realized
 WebView.dragText: not realized
-WebView.dropCompleted: not realized
 WebView.frameChanged: ✅
 WebView.horizontalAlignment: ✅
 WebView.panTouchCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).

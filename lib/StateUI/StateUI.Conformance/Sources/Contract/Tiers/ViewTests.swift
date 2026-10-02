@@ -321,7 +321,7 @@
     static func dragged(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDragFromItCarriesItsWords", proves: [
             Covered(ViewContract.canDrag, on: element), Covered(ViewContract.dragText, on: element),
-            Covered(ViewContract.dragStarting, on: element), Covered(ViewContract.dropCompleted, on: element),
+            Covered(ViewContract.dragStarting, on: element), Covered(ViewContract.dragEnded, on: element),
         ]) { s in
             let heard = Received<String>()
             s.start {
@@ -330,7 +330,7 @@
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
                         Write(ViewContract.canDrag, true), Write(ViewContract.dragText, "words"),
                         HearDone(ViewContract.dragStarting) { heard.values.append("starting") },
-                        HearDone(ViewContract.dropCompleted) { heard.values.append("completed") },
+                        HearDone(ViewContract.dragEnded) { heard.values.append("completed") },
                     ])
                     ColorBox(.red).width(80).height(40).setValue(ViewContract.allowsDrop, true)
                         .onEvent(ViewContract.drop) { heard.values.append("drop \($0)") }.id("target")

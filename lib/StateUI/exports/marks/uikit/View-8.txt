@@ -29,9 +29,9 @@ Grid.gridRowSpan: ✅
 HStack.area: ✅
 HStack.frameChanged: ✅
 Image.canDrag: not realized
+Image.dragEnded: not realized
 Image.dragStarting: not realized
 Image.dragText: not realized
-Image.dropCompleted: not realized
 Image.frameChanged: ✅
 Image.margin: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: the view's listening handed the recognizer's states, no touch sent
@@ -64,9 +64,9 @@ ProgressBar.gridRowSpan: ✅
 RadioButton.area: ✅
 RadioButton.frameChanged: ✅
 Rectangle.canDrag: not realized
+Rectangle.dragEnded: not realized
 Rectangle.dragStarting: not realized
 Rectangle.dragText: not realized
-Rectangle.dropCompleted: not realized
 Rectangle.frameChanged: ✅
 Rectangle.margin: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: the view's listening handed the recognizer's states, no touch sent
@@ -101,8 +101,8 @@ VStack.gridRowSpan: ✅
 WebView.area: ✅
 WebView.frameChanged: ✅
 ZStack.canDrag: not realized
+ZStack.dragEnded: not realized
 ZStack.dragStarting: not realized
 ZStack.dragText: not realized
-ZStack.dropCompleted: not realized
 ZStack.frameChanged: ✅
 ZStack.margin: ✅

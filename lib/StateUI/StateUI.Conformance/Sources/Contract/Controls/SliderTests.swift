@@ -146,14 +146,14 @@
                          "the render left the thumb where the hand put it")
             },
             ConformanceCase("aDragIsHeardAsItStartsAndAsItEnds", proves: [
-                Covered(SliderContract.dragStarted), Covered(SliderContract.dragCompleted),
+                Covered(SliderContract.pressed), Covered(SliderContract.released),
             ]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {
                         Slider(0.5)
-                            .onEvent(SliderContract.dragStarted) { heard.values.append("started") }
-                            .onEvent(SliderContract.dragCompleted) { heard.values.append("completed") }
+                            .onEvent(SliderContract.pressed) { heard.values.append("started") }
+                            .onEvent(SliderContract.released) { heard.values.append("completed") }
                             .width(200).id("slider")
                     }
                     .horizontalAlignment(.start)

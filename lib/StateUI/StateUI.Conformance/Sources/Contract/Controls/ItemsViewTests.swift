@@ -60,7 +60,7 @@
             },
             ConformanceCase("aChoiceTheUserMakesLandsOnTheState", proves: [
                 Covered(ItemsViewContract.selectionMode), Covered(ItemsViewContract.selectedItems),
-                Covered(ItemsViewContract.selectionChanged),
+                Covered(ItemsViewContract.selectedItemsChanged),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let chosen = State<Int?>(wrappedValue: nil)
                 let heard = Received<[String]>()
@@ -68,7 +68,7 @@
                     VStack {
                         Button("Five").onClicked { chosen.wrappedValue = 5 }.id("five")
                         numbers().selection(chosen.projectedValue)
-                            .onEvent(ItemsViewContract.selectionChanged) { heard.values.append($0) }
+                            .onEvent(ItemsViewContract.selectedItemsChanged) { heard.values.append($0) }
                             .width(300).height(400).id("list")
                     }
                 }
@@ -88,7 +88,7 @@
             },
             ConformanceCase("manyChoicesLandOnTheState", proves: [
                 Covered(ItemsViewContract.selectionMode), Covered(ItemsViewContract.selectedItems),
-                Covered(ItemsViewContract.selectionChanged),
+                Covered(ItemsViewContract.selectedItemsChanged),
             ]) { s in
                 let chosen = State<Set<Int>>(wrappedValue: [])
                 s.start { VStack { numbers().selection(chosen.projectedValue).width(300).height(400).id("list") } }

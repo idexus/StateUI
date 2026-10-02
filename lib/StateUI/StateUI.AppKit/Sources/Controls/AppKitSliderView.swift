@@ -10,8 +10,8 @@ import AppKit
 @MainActor
 final class AppKitSliderView: NSSlider {
     var onValueChanged: ((Double) -> Void)?
-    var onDragStarted: (() -> Void)?
-    var onDragCompleted: (() -> Void)?
+    var onPressed: (() -> Void)?
+    var onReleased: (() -> Void)?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -50,11 +50,11 @@ final class AppKitSliderView: NSSlider {
     }
 
     func beginDrag() {
-        onDragStarted?()
+        onPressed?()
     }
 
     func endDrag() {
-        onDragCompleted?()
+        onReleased?()
     }
 }
 

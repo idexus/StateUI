@@ -9,5 +9,5 @@ ItemsView.itemsLayout: ✅
 ItemsView.realizedChanged: ✅
 ItemsView.scrollTo: ✅
 ItemsView.selectedItems: ✅
-ItemsView.selectionChanged: ✅
+ItemsView.selectedItemsChanged: ✅
 ItemsView.selectionMode: ✓ read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack

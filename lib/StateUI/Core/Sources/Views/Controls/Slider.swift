@@ -82,21 +82,21 @@ public struct Slider: ElementView, TintElement, SliderProperties {
     // MARK: Events
 
     /// Fires on every step of a drag, with the value dragged to, after a
-    /// binding's write. Heavy work belongs in `.onDragCompleted`.
+    /// binding's write. Heavy work belongs in `.onReleased`.
     public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
         onEvent(SliderContract.valueChanged, handler)
     }
 
     /// Runs when the thumb is grabbed - the start of a drag whose every step
     /// is an `onValueChanged`.
-    public func onDragStarted(_ handler: @escaping EventHandler) -> Self {
-        onEvent(SliderContract.dragStarted, handler)
+    public func onPressed(_ handler: @escaping EventHandler) -> Self {
+        onEvent(SliderContract.pressed, handler)
     }
 
     /// Runs when the thumb is let go - where work too heavy for every step of
     /// the drag belongs.
-    public func onDragCompleted(_ handler: @escaping EventHandler) -> Self {
-        onEvent(SliderContract.dragCompleted, handler)
+    public func onReleased(_ handler: @escaping EventHandler) -> Self {
+        onEvent(SliderContract.released, handler)
     }
 }
 

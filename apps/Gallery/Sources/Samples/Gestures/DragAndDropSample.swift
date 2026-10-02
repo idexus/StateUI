@@ -41,7 +41,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                     .draggable(text: item)
                     // The view that was DRAGGED hears when its own drag ends,
                     // wherever it ended.
-                    .onDropCompleted { finished = "\\(item): drop finished" }
+                    .onDragEnded { finished = "\\(item): drop finished" }
                     .id(item)
                 }
             }
@@ -101,7 +101,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                     .draggable(text: item)
                     // The view that was DRAGGED hears when its own drag ends,
                     // wherever it ended.
-                    .onDropCompleted { finished = "\(item): drop finished" }
+                    .onDragEnded { finished = "\(item): drop finished" }
                     .id(item)
                 }
             }
@@ -180,7 +180,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             Text("Both of those belong to a view that ACCEPTS a drop, and `onDrop` is "
                 + "what makes a view one - written without it, neither ever runs. "
-                + "`onDropCompleted` is the other end: it belongs to the view that was "
+                + "`onDragEnded` is the other end: it belongs to the view that was "
                 + "dragged, so it needs `draggable(text:)` beside it, and it runs when "
                 + "that drag ends wherever it ended - over the basket, or over nothing "
                 + "at all.")

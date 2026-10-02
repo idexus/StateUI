@@ -26,8 +26,8 @@ struct SliderSample: SampleContent, ExampleContent {
                 .minimum(0)
                 .maximum(100)
                 .isEnabled(soundOn)
-                .onDragStarted { dragging = true }
-                .onDragCompleted { dragging = false }
+                .onPressed { dragging = true }
+                .onReleased { dragging = false }
 
             Text(dragging ? "Dragging..." : "At rest")
 
@@ -55,8 +55,8 @@ struct SliderSample: SampleContent, ExampleContent {
                 .maximum(100)
                 .isEnabled(soundOn)
                 .tint(Palette.accent)
-                .onDragStarted { dragging = true }
-                .onDragCompleted { dragging = false }
+                .onPressed { dragging = true }
+                .onReleased { dragging = false }
 
             Text(dragging ? "Dragging..." : "At rest")
                 .fontSize(13)
@@ -80,8 +80,8 @@ struct SliderSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The drag's two ends are events of their own - `.onDragStarted` as the "
-                + "thumb is grabbed, `.onDragCompleted` as it is let go - and every step "
+            Text("The drag's two ends are events of their own - `.onPressed` as the "
+                + "thumb is grabbed, `.onReleased` as it is let go - and every step "
                 + "between them is an `.onValueChanged`. Work too heavy for every step "
                 + "belongs in the completed end.")
                 .fontSize(12)

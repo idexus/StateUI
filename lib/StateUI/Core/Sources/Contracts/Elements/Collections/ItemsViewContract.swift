@@ -31,7 +31,7 @@ public enum ItemsViewContract: ElementContract {
 
     /// The user chose items or let them go: every chosen identity, in the order
     /// they show.
-    public static let selectionChanged = ElementEvent<Self, [String]>("selectionChanged", layer: .native)
+    public static let selectedItemsChanged = ElementEvent<Self, [String]>("selectedItemsChanged", layer: .native)
 
     /// The user opened an item - a tap on a phone, a double-click or Return on a
     /// desktop - naming its identity.
@@ -55,7 +55,7 @@ public enum ItemsViewContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        items, itemsLayout, selectionMode, selectedItems, selectionChanged, itemActivated, endReachedWithin,
+        items, itemsLayout, selectionMode, selectedItems, selectedItemsChanged, itemActivated, endReachedWithin,
         endReached, realizedChanged, scrollTo,
     ]
 }

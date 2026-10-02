@@ -353,7 +353,7 @@ extension WinUIDriver {
         case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
         case ("background", let page?) where element.type == .page:
             return try Self.color(read(page, "box.fill")).map { $0.propValue }
-        case ("currentPage", let tabs as WinUITabbedView):
+        case ("selectedTab", let tabs as WinUITabbedView):
             let row: WinUIView = try tabs.tabsShownByWindow ? window().tabRow : tabs
             return Int(try read(row, "selected"))?.propValue
         default: return nil

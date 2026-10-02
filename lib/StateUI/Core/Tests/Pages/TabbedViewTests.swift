@@ -77,7 +77,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.settings)
         let node = tabs(selection.projectedValue).node.built
 
-        XCTAssertEqual(node.props["currentPage"], .number(2))
+        XCTAssertEqual(node.props["selectedTab"], .number(2))
     }
 
     /// A selection naming no tab at all says NOTHING, deliberately: the
@@ -88,7 +88,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.settings)
         let node = tabs(selection.projectedValue, [.home, .browse]).node.built
 
-        XCTAssertNil(node.props["currentPage"])
+        XCTAssertNil(node.props["selectedTab"])
         XCTAssertEqual(node.children.count, 2)
     }
 
@@ -123,7 +123,7 @@ final class TabbedViewTests: XCTestCase {
         selection.wrappedValue = .browse
         let patch = renders.settled(tabs(selection.projectedValue).node)
 
-        XCTAssertEqual(patch.props["currentPage"], .number(1))
+        XCTAssertEqual(patch.props["selectedTab"], .number(1))
         XCTAssertFalse(patch.arranged, "the tabs themselves did not move")
         XCTAssertTrue(patch.children.isEmpty, "and none of the pages changed")
     }
@@ -149,7 +149,7 @@ final class TabbedViewTests: XCTestCase {
         let node = tabs(selection.projectedValue, []).node.built
 
         XCTAssertEqual(node.children.count, 0)
-        XCTAssertNil(node.props["currentPage"])
+        XCTAssertNil(node.props["selectedTab"])
     }
 
     /// The ordinary shape of a tabbed application: every tab holds a stack of
@@ -262,9 +262,9 @@ final class TabbedViewTests: XCTestCase {
         let tabs = Renders().settled(tree)
 
         XCTAssertEqual(tabs.props, [
-            "barBackgroundColor": Color("#512BD4").propValue, "currentPage": .number(1),
+            "barBackgroundColor": Color("#512BD4").propValue, "selectedTab": .number(1),
         ])
-        XCTAssertEqual(tabs.eventNames, ["currentPageChanged"])
+        XCTAssertEqual(tabs.eventNames, ["selectedTabChanged"])
         XCTAssertEqual(tabs.arrangement, [.manual("home"), .manual("settings")])
 
         let home = try XCTUnwrap(tabs.child("home"))
@@ -283,7 +283,7 @@ final class TabbedViewTests: XCTestCase {
 
         let patch = renders.settled(tabs(selection.projectedValue).node)
 
-        XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1, with: [.number(2)]))
+        XCTAssertTrue(renders.fire(patch.events?["selectedTabChanged"] ?? -1, with: [.number(2)]))
         XCTAssertEqual(selection.wrappedValue, .settings)
     }
 
@@ -298,7 +298,7 @@ final class TabbedViewTests: XCTestCase {
         let before = renders.settled(tabs(selection.projectedValue).node)
 
         XCTAssertTrue(before.isEmpty, "nothing to say before the report either")
-        XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1, with: [.number(1)]))
+        XCTAssertTrue(renders.fire(patch.events?["selectedTabChanged"] ?? -1, with: [.number(1)]))
 
         XCTAssertEqual(selection.wrappedValue, .browse)
         XCTAssertTrue(renders.settled(tabs(selection.projectedValue).node).isEmpty,
@@ -313,7 +313,7 @@ final class TabbedViewTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.settled(tabs(selection.projectedValue, [.home, .browse]).node)
-        let reported = patch.events?["currentPageChanged"] ?? -1
+        let reported = patch.events?["selectedTabChanged"] ?? -1
 
         XCTAssertTrue(renders.fire(reported, with: [.number(7)]))
         XCTAssertEqual(selection.wrappedValue, .home)
@@ -329,7 +329,7 @@ final class TabbedViewTests: XCTestCase {
 
         let patch = renders.settled(tabs(selection.projectedValue).node)
 
-        XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1,
+        XCTAssertTrue(renders.fire(patch.events?["selectedTabChanged"] ?? -1,
                                    with: [.string("settings")]))
         XCTAssertEqual(selection.wrappedValue, .home)
     }
@@ -345,7 +345,7 @@ final class TabbedViewTests: XCTestCase {
         let node = TabbedView(Tab.allCases) { TabPage(tab: $0) }.node.built
 
         XCTAssertEqual(node.children.map { $0.id }, ["home", "browse", "settings"])
-        XCTAssertNil(node.props["currentPage"], "nothing says which tab is showing")
+        XCTAssertNil(node.props["selectedTab"], "nothing says which tab is showing")
         XCTAssertTrue(node.events.isEmpty, "and nothing is listening for one")
     }
 
@@ -366,10 +366,10 @@ final class TabbedViewTests: XCTestCase {
 
         let patch = renders.settled(page.node)
 
-        XCTAssertNil(page.node.built.props["currentPage"],
+        XCTAssertNil(page.node.built.props["selectedTab"],
                      "a String is not one of these tabs, whatever it spells")
 
-        XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1, with: [.number(2)]))
+        XCTAssertTrue(renders.fire(patch.events?["selectedTabChanged"] ?? -1, with: [.number(2)]))
         XCTAssertEqual(selection.wrappedValue, "home", "and the report writes nothing")
     }
 }

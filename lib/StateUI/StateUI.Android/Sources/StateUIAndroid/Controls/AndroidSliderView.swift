@@ -16,8 +16,8 @@ final class AndroidSliderView: AndroidView {
     var onValueChanged: ((Double) -> Void)?
 
     /// What the slider does when the user takes its thumb, and lets it go.
-    var onDragStarted: (() -> Void)?
-    var onDragCompleted: (() -> Void)?
+    var onPressed: (() -> Void)?
+    var onReleased: (() -> Void)?
 
     /// The range's ends, the lower first.
     private(set) var minimum = 0.0
@@ -73,7 +73,7 @@ final class AndroidSliderView: AndroidView {
     override func detach() {
         super.detach()
         onValueChanged = nil
-        onDragStarted = nil
-        onDragCompleted = nil
+        onPressed = nil
+        onReleased = nil
     }
 }

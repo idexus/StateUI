@@ -11,9 +11,9 @@ Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Button.pinchUpdated: ✅
 Canvas.canDrag: not realized
+Canvas.dragEnded: not realized
 Canvas.dragStarting: not realized
 Canvas.dragText: not realized
-Canvas.dropCompleted: not realized
 Canvas.frameChanged: ✅
 Canvas.horizontalAlignment: ✅
 Canvas.panTouchCount: ✅
@@ -47,9 +47,9 @@ Ellipse.gridColumnSpan: ✅
 Ellipse.gridRowSpan: ✅
 Ellipse.pinchUpdated: ✅
 Grid.canDrag: not realized
+Grid.dragEnded: not realized
 Grid.dragStarting: not realized
 Grid.dragText: not realized
-Grid.dropCompleted: not realized
 Grid.frameChanged: ✅
 Grid.horizontalAlignment: ✅
 Grid.panTouchCount: ✅
@@ -79,9 +79,9 @@ ItemsView.drop: not realized
 ItemsView.frameChanged: ✅
 ItemsView.panYChannel: ✅
 Line.canDrag: not realized
+Line.dragEnded: not realized
 Line.dragStarting: not realized
 Line.dragText: not realized
-Line.dropCompleted: not realized
 Line.frameChanged: ✅
 Line.horizontalAlignment: ✅
 Line.panTouchCount: ✅
@@ -115,9 +115,9 @@ Polygon.gridColumnSpan: ✅
 Polygon.gridRowSpan: ✅
 Polygon.pinchUpdated: ✅
 Polyline.canDrag: not realized
+Polyline.dragEnded: not realized
 Polyline.dragStarting: not realized
 Polyline.dragText: not realized
-Polyline.dropCompleted: not realized
 Polyline.frameChanged: ✅
 Polyline.horizontalAlignment: ✅
 Polyline.panTouchCount: ✅
@@ -151,9 +151,9 @@ ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
 ScrollView.pinchUpdated: ✅
 SearchField.canDrag: not realized
+SearchField.dragEnded: not realized
 SearchField.dragStarting: not realized
 SearchField.dragText: not realized
-SearchField.dropCompleted: not realized
 SearchField.frameChanged: ✅
 SearchField.horizontalAlignment: ✅
 SearchField.panTouchCount: ✅
@@ -191,9 +191,9 @@ TextEditor.gridColumnSpan: ✅
 TextEditor.gridRowSpan: ✅
 TextEditor.pinchUpdated: ✅
 TextField.canDrag: not realized
+TextField.dragEnded: not realized
 TextField.dragStarting: not realized
 TextField.dragText: not realized
-TextField.dropCompleted: not realized
 TextField.frameChanged: ✅
 TextField.horizontalAlignment: ✅
 TextField.panTouchCount: ✅

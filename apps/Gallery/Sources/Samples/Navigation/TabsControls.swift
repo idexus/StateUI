@@ -26,7 +26,7 @@ struct TabsControls: View {
             }
             .spacing(4)
 
-            Text("currentPage sent to the host · \(sentToTheHost)")
+            Text("selectedTab sent to the host · \(sentToTheHost)")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)

@@ -26,9 +26,9 @@ CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅
 CheckBox.pinchUpdated: ✅
 ColorBox.canDrag: not realized
+ColorBox.dragEnded: not realized
 ColorBox.dragStarting: not realized
 ColorBox.dragText: not realized
-ColorBox.dropCompleted: not realized
 ColorBox.frameChanged: ✅
 ColorBox.horizontalAlignment: ✅
 ColorBox.panTouchCount: ✅
@@ -62,9 +62,9 @@ HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
 HStack.pinchUpdated: ✅
 Image.canDrag: not realized
+Image.dragEnded: not realized
 Image.dragStarting: not realized
 Image.dragText: not realized
-Image.dropCompleted: not realized
 Image.frameChanged: ✅
 Image.horizontalAlignment: ✅
 Image.panTouchCount: ✅
@@ -89,9 +89,9 @@ Map.gridColumnSpan: 🧩
 Map.gridRowSpan: 🧩
 Map.pinchUpdated: 🧩
 Path.canDrag: not realized
+Path.dragEnded: not realized
 Path.dragStarting: not realized
 Path.dragText: not realized
-Path.dropCompleted: not realized
 Path.frameChanged: ✅
 Path.horizontalAlignment: ✅
 Path.panTouchCount: ✅
@@ -125,9 +125,9 @@ ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRowSpan: ✅
 ProgressBar.pinchUpdated: ✅
 RadioButton.canDrag: not realized
+RadioButton.dragEnded: not realized
 RadioButton.dragStarting: not realized
 RadioButton.dragText: not realized
-RadioButton.dropCompleted: not realized
 RadioButton.frameChanged: ✅
 RadioButton.horizontalAlignment: ✅
 RadioButton.panTouchCount: ✅
@@ -161,9 +161,9 @@ Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
 Slider.pinchUpdated: ✅
 Stepper.canDrag: not realized
+Stepper.dragEnded: not realized
 Stepper.dragStarting: not realized
 Stepper.dragText: not realized
-Stepper.dropCompleted: not realized
 Stepper.frameChanged: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.panTouchCount: ✅
@@ -206,9 +206,9 @@ TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
 TimePicker.pinchUpdated: ✅
 VStack.canDrag: not realized
+VStack.dragEnded: not realized
 VStack.dragStarting: not realized
 VStack.dragText: not realized
-VStack.dropCompleted: not realized
 VStack.frameChanged: ✅
 VStack.horizontalAlignment: ✅
 VStack.panTouchCount: ✅

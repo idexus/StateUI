@@ -187,7 +187,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit, UIKit: not realized<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDrop</code> (<code>drop</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit: not realized<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onDropCompleted</code> (<code>dropCompleted</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDragEnded</code> (<code>dragEnded</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit: not realized<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>

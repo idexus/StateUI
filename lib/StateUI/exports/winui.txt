@@ -92,7 +92,7 @@ ItemsView
   endReached()
   itemActivated()
   realizedChanged()
-  selectionChanged()
+  selectedItemsChanged()
 Line
   aspect
   fill

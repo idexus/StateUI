@@ -8,9 +8,9 @@ Button.gridRowSpan: ✅
 Canvas.area: ✅
 Canvas.frameChanged: ✅
 CheckBox.canDrag: not realized
+CheckBox.dragEnded: not realized
 CheckBox.dragStarting: not realized
 CheckBox.dragText: not realized
-CheckBox.dropCompleted: not realized
 CheckBox.frameChanged: ✅
 CheckBox.margin: ✅
 ColorBox.pinchUpdated: ✓ pinch on ColorBox: the view's listening handed the recognizer's states, no touch sent
@@ -41,9 +41,9 @@ Line.gridRowSpan: ✅
 Map.area: ✅
 Map.frameChanged: ✅
 Path.canDrag: not realized
+Path.dragEnded: not realized
 Path.dragStarting: not realized
 Path.dragText: not realized
-Path.dropCompleted: not realized
 Path.frameChanged: ✅
 Path.margin: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: the view's listening handed the recognizer's states, no touch sent
@@ -77,9 +77,9 @@ Slider.gridRowSpan: ✅
 Stepper.area: ✅
 Stepper.frameChanged: ✅
 Switch.canDrag: not realized
+Switch.dragEnded: not realized
 Switch.dragStarting: not realized
 Switch.dragText: not realized
-Switch.dropCompleted: not realized
 Switch.frameChanged: ✅
 Switch.margin: ✅
 Text.panTouchCount: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent

@@ -50,7 +50,7 @@ extension UIKitDriver {
         case .showsNavigationBar:
             guard let navigation = controller.navigationController else { return nil }
             return (!navigation.isNavigationBarHidden).propValue
-        case .currentPage:
+        case .selectedTab:
             guard let tabs = controller as? UIKitTabBarController else { return nil }
             return tabs.selectedIndex.propValue
         case .showsSidebar:

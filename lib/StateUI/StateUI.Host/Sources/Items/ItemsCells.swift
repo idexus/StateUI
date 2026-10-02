@@ -164,7 +164,7 @@
         guard !ProgramWrite.isWriting else { return }
         let ordered = Set(chosen).filter(isItem).sorted { positions[$0, default: 0] < positions[$1, default: 0] }
         guard ordered != selected, let element, let runtime else { return }
-        element.send(.selectionChanged, [.strings(ordered)], in: runtime)
+        element.send(.selectedItemsChanged, [.strings(ordered)], in: runtime)
     }
 
     /// The user tapped the item of `identity`, where the toolkit's collection decides nothing of a tap (`ItemsTap`).

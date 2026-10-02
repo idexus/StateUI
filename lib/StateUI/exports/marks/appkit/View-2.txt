@@ -23,9 +23,9 @@ ColorBox.gridRowSpan: ✅
 DatePicker.area: ✅
 DatePicker.frameChanged: ✅
 Ellipse.canDrag: not realized
+Ellipse.dragEnded: not realized
 Ellipse.dragStarting: not realized
 Ellipse.dragText: not realized
-Ellipse.dropCompleted: not realized
 Ellipse.frameChanged: ✅
 Ellipse.margin: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: handed to the host's recognizer or handler, no NSEvent sent
@@ -52,9 +52,9 @@ Picker.gridRowSpan: ✅
 Polygon.area: ✅
 Polygon.frameChanged: ✅
 Polyline.canDrag: not realized
+Polyline.dragEnded: not realized
 Polyline.dragStarting: not realized
 Polyline.dragText: not realized
-Polyline.dropCompleted: not realized
 Polyline.frameChanged: ✅
 Polyline.margin: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
@@ -95,9 +95,9 @@ TextEditor.gridRowSpan: ✅
 TextField.area: ✅
 TextField.frameChanged: ✅
 TimePicker.canDrag: not realized
+TimePicker.dragEnded: not realized
 TimePicker.dragStarting: not realized
 TimePicker.dragText: not realized
-TimePicker.dropCompleted: not realized
 TimePicker.frameChanged: ✅
 TimePicker.margin: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: handed to the host's recognizer or handler, no NSEvent sent

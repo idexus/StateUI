@@ -43,7 +43,7 @@ extension AppKitElement {
                     AppKitTabItem(layout: $0, title: child.string(.title), image: child.image(.icon))
                 }
             },
-            requestedIndex: whole(.currentPage))
+            requestedIndex: whole(.selectedTab))
     }
 
     /// The user chose another tab: the host layer tells the pages and the state, and the window's chrome follows what

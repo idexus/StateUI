@@ -93,11 +93,11 @@ public struct TabbedView: Page, ModifiableElement, BarElement, PageElement {
         // binding names no tab: the platform then reports what it shows.
         // Design: docs/design/views/pages.md#tabs-report-an-index
         if let index = ordered.firstIndex(of: AnyHashable(binding.wrappedValue)) {
-            copy.node.write(TabbedViewContract.currentPage, index)
+            copy.node.write(TabbedViewContract.selectedTab, index)
         }
 
         // The user's choice, as that index, written only when it moved.
-        copy.node.addHandler(TabbedViewContract.currentPageChanged.token) {
+        copy.node.addHandler(TabbedViewContract.selectedTabChanged.token) {
             guard let index = EventBuffer.current.value()?.int,
                   index >= 0, index < ordered.count,
                   // A binding of another type than the tabs names nothing.

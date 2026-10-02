@@ -1,8 +1,8 @@
 # revision 1.1
 ActivityIndicator.canDrag: not realized
+ActivityIndicator.dragEnded: not realized
 ActivityIndicator.dragStarting: not realized
 ActivityIndicator.dragText: not realized
-ActivityIndicator.dropCompleted: not realized
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.margin: ✅
 Button.pinchUpdated: ✓ pinch on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -66,9 +66,9 @@ Rectangle.gridRowSpan: ✅
 ScrollView.area: ✅
 ScrollView.frameChanged: ✅
 SearchField.canDrag: not realized
+SearchField.dragEnded: not realized
 SearchField.dragStarting: not realized
 SearchField.dragText: not realized
-SearchField.dropCompleted: not realized
 SearchField.frameChanged: ✅
 SearchField.margin: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: handed to the host's recognizer or handler, no NSEvent sent
@@ -76,9 +76,9 @@ Stepper.panYChannel: ✓ pan on Stepper: handed to the host's recognizer or hand
 Switch.tapCount: ✓ tap on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.tapped: ✓ tap on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Text.canDrag: not realized
+Text.dragEnded: not realized
 Text.dragStarting: not realized
 Text.dragText: not realized
-Text.dropCompleted: not realized
 Text.frameChanged: ✅
 Text.margin: ✅
 TextEditor.frameChanged: ✅

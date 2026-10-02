@@ -5,9 +5,9 @@ ActivityIndicator.gridRowSpan: ✅
 Button.area: ✅
 Button.frameChanged: ✅
 Canvas.canDrag: not realized
+Canvas.dragEnded: not realized
 Canvas.dragStarting: not realized
 Canvas.dragText: not realized
-Canvas.dropCompleted: not realized
 Canvas.frameChanged: ✅
 Canvas.margin: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: the view's listening handed the recognizer's states, no touch sent
@@ -38,9 +38,9 @@ ItemsView.panXChannel: ✓ pan on ItemsView: the view's listening handed the rec
 Line.area: ✅
 Line.frameChanged: ✅
 Map.canDrag: not realized
+Map.dragEnded: not realized
 Map.dragStarting: not realized
 Map.dragText: not realized
-Map.dropCompleted: not realized
 Map.frameChanged: ✅
 Map.margin: ✅
 Path.pinchUpdated: ✓ pinch on Path: the view's listening handed the recognizer's states, no touch sent
@@ -74,9 +74,9 @@ SearchField.gridRowSpan: ✅
 Slider.area: ✅
 Slider.frameChanged: ✅
 Stepper.canDrag: not realized
+Stepper.dragEnded: not realized
 Stepper.dragStarting: not realized
 Stepper.dragText: not realized
-Stepper.dropCompleted: not realized
 Stepper.frameChanged: ✅
 Stepper.margin: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: the view's listening handed the recognizer's states, no touch sent

@@ -118,7 +118,7 @@ extension GTKElement {
             (view as? GTKNavigationView)?.onPopped = { [weak self] remaining in self?.userPopped(remaining: remaining) }
         case .tabbedView:
             guard let tabs = view as? GTKTabbedView else { return }
-            tabs.show(children.map { $0.value(.title)?.string ?? "" }, requested: value(.currentPage)?.number.map { Int($0) })
+            tabs.show(children.map { $0.value(.title)?.string ?? "" }, requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:
             guard let split = view as? GTKSplitView else { return }

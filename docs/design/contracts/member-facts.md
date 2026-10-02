@@ -22,7 +22,7 @@ StateUI knows are meaningless out of the patch.
 
 ```text
   a place or a count       gridRow, gridColumn and their spans, tapCount, panTouchCount,
-                           selectedIndex, currentPage, cursorPosition, selectionLength,
+                           selectedIndex, selectedTab, cursorPosition, selectionLength,
                            maximumLength, maximumLines, zIndex
   a range or a region      a slider's and a stepper's minimum and maximum, a stepper's step,
                            a map's region, a pin's location
@@ -51,7 +51,7 @@ again instead:
                                  swipeDirection, swipeThreshold: they belong to the recognizer
   a list's items                 a picker's options, which are data
   where the host puts an item    a toolbar item's placement and priority, a swipe's side
-  a choice                       selectedIndex, currentPage: clearing would move it
+  a choice                       selectedIndex, selectedTab: clearing would move it
   what keeps a platform window   windowType, windowValue, floatsOnTop, hidesWhenInactive
   where a map opens              region
 ```

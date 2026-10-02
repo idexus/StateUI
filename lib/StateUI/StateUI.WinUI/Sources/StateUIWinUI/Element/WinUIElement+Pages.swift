@@ -24,7 +24,7 @@ extension WinUIElement {
         case .tabbedView:
             guard let tabs = view as? WinUITabbedView else { return }
             tabs.tabsShownByWindow = element.tabsStandInWindow
-            tabs.show(children.map { WinUITab(of: $0.element) }, requested: value(.currentPage)?.number.map { Int($0) })
+            tabs.show(children.map { WinUITab(of: $0.element) }, requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:
             guard let split = view as? WinUISplitView else { return }
