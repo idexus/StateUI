@@ -12,6 +12,13 @@ import Foundation
 import XCTest
 
 final class WinUIDeclarationExportTests: XCTestCase {
+    /// The exports and the revisions their verdicts stand at are the library's files: a run reading another place
+    /// stops at its first family.
+    func testTheExportsAndTheirRevisionsAreTheLibrarys() {
+        XCTAssertTrue(FileManager.default.fileExists(atPath: WinUIExports.folder.appendingPathComponent("winui.txt").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: WinUIExports.revisionFile.path), WinUIExports.revisionFile.path)
+    }
+
     /// The export is what the registry says, to the line.
     @MainActor
     func testWhatThisHostDeclaresIsWhatItExports() throws {

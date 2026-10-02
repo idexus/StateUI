@@ -9,8 +9,8 @@ import XCTest
 /// tests proved - held to the file, or written into it on a run with STATEUI_UPDATE_EXPORTS=1, then read in the
 /// diff.
 enum WinUIExports {
-    /// `lib/StateUI/exports`.
-    static let folder = URL(fileURLWithPath: #filePath)
+    /// The repository, seven folders above this file's.
+    static let repository = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent()    // Exports
         .deletingLastPathComponent()    // StateUIWinUIDriver
         .deletingLastPathComponent()    // Sources
@@ -19,7 +19,12 @@ enum WinUIExports {
         .deletingLastPathComponent()    // StateUI
         .deletingLastPathComponent()    // lib
         .deletingLastPathComponent()    // the repository
-        .appendingPathComponent("lib/StateUI/exports")
+
+    /// The folder the files stand in: `lib/StateUI/exports`.
+    static let folder = repository.appendingPathComponent("lib/StateUI/exports")
+
+    /// The revisions the families' verdicts stand at.
+    static let revisionFile = repository.appendingPathComponent("lib/StateUI/StateUI.Conformance/revisions.txt")
 
     /// The revision `family`'s verdicts on this host stand at, as `lib/StateUI/StateUI.Conformance/revisions.txt` says.
     /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
@@ -35,11 +40,12 @@ enum WinUIExports {
         return !HostVerdict.isStale(held, family: family, on: "winui", in: revisions)
     }
 
-    /// `lib/StateUI/StateUI.Conformance/revisions.txt`, in the conformance package.
+    /// The revision file's lines.
     private static var revisions: String {
-        let url = folder.deletingLastPathComponent().appendingPathComponent("lib/StateUI/StateUI.Conformance/revisions.txt")
         // No file is no revision: every family would read as standing at 1, whatever was raised.
-        guard let text = try? String(contentsOf: url, encoding: .utf8) else { preconditionFailure("no \(url.path)") }
+        guard let text = try? String(contentsOf: revisionFile, encoding: .utf8) else {
+            preconditionFailure("no \(revisionFile.path)")
+        }
         return text
     }
 
