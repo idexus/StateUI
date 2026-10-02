@@ -359,7 +359,7 @@ final class HostContractTests: XCTestCase {
             "a text control keeps its former name")
         XCTAssertTrue(properties.isSuperset(of: [
             "maximumLines", "maximumLength", "lineBreak", "textCase", "inputPurpose",
-            "returnKey", "showsClearButton", "growsWithText",
+            "submitLabel", "showsClearButton", "growsWithText",
         ]))
         XCTAssertTrue(
             properties.isDisjoint(with: former),

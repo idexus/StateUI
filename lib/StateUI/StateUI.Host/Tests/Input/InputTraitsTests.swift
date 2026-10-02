@@ -50,9 +50,9 @@ final class InputTraitsTests: XCTestCase {
 
     /// A field's return key is the tree's, else a search's for a search field and the platform's own for another.
     func testAReturnKeyUnwrittenIsTheFieldsOwn() {
-        XCTAssertEqual(InputTraits.returnKey(nil, searching: true), .search)
-        XCTAssertEqual(InputTraits.returnKey(nil, searching: false), .default)
-        XCTAssertEqual(InputTraits.returnKey(.go, searching: true), .go)
-        XCTAssertEqual(InputTraits.returnKey(.done, searching: false), .done)
+        XCTAssertEqual(InputTraits.submitLabel(nil, searching: true), .search)
+        XCTAssertEqual(InputTraits.submitLabel(nil, searching: false), .default)
+        XCTAssertEqual(InputTraits.submitLabel(.go, searching: true), .go)
+        XCTAssertEqual(InputTraits.submitLabel(.done, searching: false), .done)
     }
 }

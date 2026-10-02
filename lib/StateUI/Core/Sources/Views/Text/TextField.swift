@@ -15,8 +15,8 @@ extension TextFieldProperties {
     /// The caption only; what the key does is `.onSubmitted`, which it raises
     /// whatever it says. A host with a hardware keyboard may have no caption
     /// to change and still reports the submission.
-    public func returnKey(_ value: ReturnKey) -> Modified {
-        setValue(TextFieldContract.returnKey, value)
+    public func submitLabel(_ value: SubmitLabel) -> Modified {
+        setValue(TextFieldContract.submitLabel, value)
     }
 
     /// Whether the field shows the native button that empties it - while
@@ -106,9 +106,9 @@ extension TextField {
         plain(.isPassword, by: state)
     }
 
-    /// `returnKey` from a state, `$x`: the host sets each new value as it
+    /// `submitLabel` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
-    public func returnKey(_ state: Binding<ReturnKey>) -> Modified {
-        plain(TextFieldContract.returnKey.token, by: state)
+    public func submitLabel(_ state: Binding<SubmitLabel>) -> Modified {
+        plain(TextFieldContract.submitLabel.token, by: state)
     }
 }

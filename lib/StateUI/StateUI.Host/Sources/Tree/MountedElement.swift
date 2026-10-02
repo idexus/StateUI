@@ -620,7 +620,7 @@
         .contentMode, .layoutDirection, .fontAttributes,
         .horizontalAlignment, .horizontalScrollBarVisibility,
         .horizontalTextAlignment, .inputPurpose,
-        .lineBreak, .orientation, .returnKey, .textDecorations, .textCase,
+        .lineBreak, .orientation, .submitLabel, .textDecorations, .textCase,
         .verticalAlignment, .verticalScrollBarVisibility, .verticalTextAlignment,
     ]
 }

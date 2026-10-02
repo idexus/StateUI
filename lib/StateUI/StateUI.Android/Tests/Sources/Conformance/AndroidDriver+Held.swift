@@ -33,9 +33,9 @@ extension AndroidDriver {
             return (Java.callInt(spinner.reference, JavaAPI.getVisibility) == 0).propValue
         case (.text, let text as AndroidTextualView): return text.text.propValue
         // The return key as the field asks the keyboard for it: EditorInfo's actions, as the host writes them.
-        case (.returnKey, let field as AndroidTextFieldView):
+        case (.submitLabel, let field as AndroidTextFieldView):
             let action = Java.callInt(field.reference, Self.getImeOptions) & 0xff
-            let key: ReturnKey = switch action {
+            let key: SubmitLabel = switch action {
             case 2: .go
             case 3: .search
             case 4: .send

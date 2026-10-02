@@ -19,8 +19,8 @@ extension UIKitRegistrations {
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.isSecureTextEntry = hidden ?? false }
-            field.property(TextFieldContract.returnKey) { view, key in
-                view.setReturnKey(InputTraits.returnKey(key, searching: false))
+            field.property(TextFieldContract.submitLabel) { view, key in
+                view.setReturnKey(InputTraits.submitLabel(key, searching: false))
             }
             field.property(TextFieldContract.showsClearButton) { view, shows in
                 view.clearButtonMode = shows == true ? .whileEditing : .never
@@ -44,8 +44,8 @@ extension UIKitRegistrations {
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
-            search.property(SearchFieldContract.returnKey) { view, key in
-                view.setReturnKey(InputTraits.returnKey(key, searching: true))
+            search.property(SearchFieldContract.submitLabel) { view, key in
+                view.setReturnKey(InputTraits.submitLabel(key, searching: true))
             }
             search.raises(InputViewContract.textChanged)
             search.raises(SearchFieldContract.submitted)

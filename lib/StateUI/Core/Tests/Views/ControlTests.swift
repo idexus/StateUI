@@ -134,7 +134,7 @@ final class ControlTests: XCTestCase {
             ControlCase("TextField", source: "TextField.swift",
                 TextField("Ada")
                     .isPassword(false)
-                    .returnKey(.done)
+                    .submitLabel(.done)
                     .showsClearButton(true)
                     .onTextChanged { _ in }
                     .onSubmitted {}),
@@ -222,7 +222,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("SearchField", source: "SearchField.swift",
                 SearchField("al")
-                    .returnKey(.search)
+                    .submitLabel(.search)
                     .tint(.gray)
                     .onTextChanged { _ in }
                     .onSubmitted {}),

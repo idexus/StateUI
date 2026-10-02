@@ -94,9 +94,9 @@ final class AndroidTextFieldView: AndroidTextualView {
     }
 
     /// What the keyboard's return key does; nil for the kind's own - the platform's, or a search.
-    func setReturnKey(_ key: ReturnKey?) {
+    func setReturnKey(_ key: SubmitLabel?) {
         // EditorInfo.IME_ACTION_UNSPECIFIED, _GO, _SEARCH, _SEND, _NEXT and _DONE.
-        let action: Int32 = switch InputTraits.returnKey(key, searching: kind == .search) {
+        let action: Int32 = switch InputTraits.submitLabel(key, searching: kind == .search) {
         case .default: 0
         case .go: 2
         case .search: 3

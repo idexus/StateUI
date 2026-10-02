@@ -67,7 +67,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
             TextField()
                 .placeholder("a password")
                 .isPassword(hidden)
-                .returnKey(.done)
+                .submitLabel(.done)
 
             HStack {
                 Text("Hidden")
@@ -146,7 +146,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Password")
                 .placeholder("a password")
                 .isPassword(hidden)
-                .returnKey(.done)
+                .submitLabel(.done)
 
             HStack {
                 Text("Hidden")

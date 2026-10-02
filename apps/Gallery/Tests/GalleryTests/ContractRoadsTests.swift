@@ -476,6 +476,14 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = Aspect.fill",
             contract: "_ = ContentMode.fill"),
         Road(
+            name: "the return key's label as returnKey",
+            removed: "_ = TextFieldContract.returnKey",
+            contract: "_ = TextFieldContract.submitLabel"),
+        Road(
+            name: "the return key's labels as ReturnKey",
+            removed: "_ = ReturnKey.search",
+            contract: "_ = SubmitLabel.search"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

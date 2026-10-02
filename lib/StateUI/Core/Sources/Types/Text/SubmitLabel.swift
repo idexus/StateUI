@@ -5,7 +5,7 @@
 // Design: docs/design/types/vocabularies.md#written-out-and-appended
 
 /// The label on the keyboard's return key.
-public enum ReturnKey: Int32, Sendable {
+public enum SubmitLabel: Int32, Sendable {
     /// Whatever the platform calls it.
     case `default` = 0
 
@@ -25,5 +25,5 @@ public enum ReturnKey: Int32, Sendable {
     case send = 5
 }
 
-extension ReturnKey: HostRepresentable {}
-extension ReturnKey: StateChoice {}
+extension SubmitLabel: HostRepresentable {}
+extension SubmitLabel: StateChoice {}

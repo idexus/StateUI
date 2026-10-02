@@ -346,8 +346,8 @@ final class UIKitDriver: HostDriver {
             return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
-        case (.returnKey, let field as UITextField):
-            let key: ReturnKey? = switch field.returnKeyType {
+        case (.submitLabel, let field as UITextField):
+            let key: SubmitLabel? = switch field.returnKeyType {
             case .go: .go
             case .search: .search
             case .send: .send

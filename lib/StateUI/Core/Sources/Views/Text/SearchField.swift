@@ -8,8 +8,8 @@ public protocol SearchFieldProperties: PropertyContainer {}
 extension SearchFieldProperties {
     /// What the keyboard's return key is captioned, `.search` unless said. What
     /// the key does is `.onSubmitted`.
-    public func returnKey(_ value: ReturnKey) -> Modified {
-        setValue(SearchFieldContract.returnKey, value)
+    public func submitLabel(_ value: SubmitLabel) -> Modified {
+        setValue(SearchFieldContract.submitLabel, value)
     }
 }
 

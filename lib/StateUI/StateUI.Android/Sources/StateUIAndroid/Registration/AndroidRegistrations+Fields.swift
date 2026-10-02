@@ -18,7 +18,7 @@ extension AndroidRegistrations {
             return field
         }, members: { field in
             field.applies(inputMembers + [TextFieldContract.isPassword]) { view, values in applyField(view, values) }
-            field.property(TextFieldContract.returnKey) { view, key in view.setReturnKey(key) }
+            field.property(TextFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
             field.raises(InputViewContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
@@ -32,7 +32,7 @@ extension AndroidRegistrations {
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyField(view, values) }
-            search.property(SearchFieldContract.returnKey) { view, key in view.setReturnKey(key) }
+            search.property(SearchFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
             search.raises(InputViewContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })

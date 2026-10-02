@@ -210,8 +210,8 @@ SearchField
   maximumLength
   placeholder
   placeholderColor
-  returnKey
   selectionLength
+  submitLabel
   text
   textCase
   textColor
@@ -285,8 +285,8 @@ TextField
   maximumLength
   placeholder
   placeholderColor
-  returnKey
   selectionLength
+  submitLabel
   text
   textCase
   textColor

@@ -196,7 +196,7 @@ extension NodeType {
     static let progress = ProgressBarContract.progress.token
     static let region = MapContract.region.token
     static let renderTransform = ShapeContract.renderTransform.token
-    static let returnKey = SearchFieldContract.returnKey.token
+    static let submitLabel = SearchFieldContract.submitLabel.token
     static let rotation = VisualElementContract.rotation.token
     static let rotationX = VisualElementContract.rotationX.token
     static let rotationY = VisualElementContract.rotationY.token

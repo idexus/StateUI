@@ -17,7 +17,7 @@ final class UIKitSearchFieldView: UISearchTextField, UIKitInputView {
     init() {
         super.init(frame: .zero)
         font = madeFont
-        setReturnKey(InputTraits.returnKey(nil, searching: true))
+        setReturnKey(InputTraits.submitLabel(nil, searching: true))
         hearTyping()
     }
 

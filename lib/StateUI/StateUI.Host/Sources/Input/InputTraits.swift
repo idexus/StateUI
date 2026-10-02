@@ -93,7 +93,7 @@
 
     /// The return key a field asks the keyboard for: the one the tree wrote, else a search's for a search field and
     /// the platform's own for any other.
-    public static func returnKey(_ written: ReturnKey?, searching: Bool) -> ReturnKey {
+    public static func submitLabel(_ written: SubmitLabel?, searching: Bool) -> SubmitLabel {
         written ?? (searching ? .search : .default)
     }
 }

@@ -559,7 +559,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 2 ✅ | 7 ✅ | 7 ✅ |  |
-| [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 1 ✅ | 1 ✅ |  |
+| [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 1 ✅ | 1 ✅ |  |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 4 ✅ | 4 ✅ | 4 ✅ · 2 – |  |
 | [Span](controls/Span.md) | `background` | 1 |  |  |  | 1 ✅ | 1 ✅ |  |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged` | 2 | 2 ✅ | 2 ✅ | 2 ✓ | 2 ✅ | 2 ✅ |  |
@@ -568,7 +568,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TabbedView](controls/TabbedView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ |  | 2 ✅ | 2 ✅ |  |
 | [Text](controls/Text.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
-| [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 2 – | 4 ✅ | 3 ✅ · 1 – | 1 ☑️ | 2 ✅ |  |
+| [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 2 – | 4 ✅ | 3 ✅ · 1 – | 1 ☑️ | 2 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
@@ -626,14 +626,14 @@ realizes the element and each of its members.
 `opacity`, `options`, `order`, `orientation`, `padding`, `panTouchCount`,
 `panXChannel`, `panYChannel`, `pivotX`, `pivotY`, `placeholder`,
 `placeholderColor`, `placement`, `points`, `progress`, `region`,
-`renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
-`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`,
-`selectedItems`, `selectedTab`, `selectionLength`, `selectionMode`, `shape`,
-`showsBackButton`, `showsClearButton`, `showsNavigationBar`, `showsSidebar`,
-`showsText`, `showsTraffic`, `showsUserLocation`, `side`, `source`, `spacing`,
-`step`, `stroke`, `style`, `swipeDirection`, `swipeThreshold`, `tapCount`,
-`text`, `textCase`, `textColor`, `textDecorations`, `time`, `tint`, `title`,
-`translationX`, `translationY`, `type`, `userAgent`, `value`,
+`renderTransform`, `rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`,
+`scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`,
+`selectedTab`, `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`showsClearButton`, `showsNavigationBar`, `showsSidebar`, `showsText`,
+`showsTraffic`, `showsUserLocation`, `side`, `source`, `spacing`, `step`,
+`stroke`, `style`, `submitLabel`, `swipeDirection`, `swipeThreshold`,
+`tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `time`, `tint`,
+`title`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
 `verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
 `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
 `zIndex`.

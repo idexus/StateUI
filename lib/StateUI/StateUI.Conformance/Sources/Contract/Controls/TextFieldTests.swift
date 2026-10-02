@@ -56,7 +56,7 @@
                 s.expect(secret.wrappedValue, "hunter2", "a password's words reach the state as any field's")
             },
             Aspects.holds(TextFieldContract.isPassword, on: "TextField", false, then: true),
-            Aspects.holds(TextFieldContract.returnKey, on: "TextField", .done, then: .send),
+            Aspects.holds(TextFieldContract.submitLabel, on: "TextField", .done, then: .send),
             Aspects.holds(TextFieldContract.showsClearButton, on: "TextField", true, then: false),
         ]
     }

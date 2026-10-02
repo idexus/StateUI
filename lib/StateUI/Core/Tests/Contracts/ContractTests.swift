@@ -176,7 +176,7 @@ final class ContractTests: XCTestCase {
             FontAttributes([.bold, .italic]), TextDecorations(rawValue: 1),
             Area.absolute(0, 0, 120, 40), Area.proportional(0.5, 0, 0.5, 1), SwipeDirection.all,
             Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
-            InputPurpose(rawValue: 1)!, ReturnKey(rawValue: 1)!, ScrollOrientation(rawValue: 1)!,
+            InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollOrientation(rawValue: 1)!,
             PinType(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
             HeadingLevel(rawValue: 1)!, ScrollBarVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,

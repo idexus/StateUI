@@ -20,7 +20,7 @@ public enum TextFieldContract: ElementContract {
     public static let isPassword = ElementProperty<Self, Bool>("isPassword", layer: .native)
 
     /// What the keyboard's return key is captioned.
-    public static let returnKey = ElementProperty<Self, ReturnKey>("returnKey", layer: .adaptive)
+    public static let submitLabel = ElementProperty<Self, SubmitLabel>("submitLabel", layer: .adaptive)
 
     /// Whether the field shows the native button that empties it.
     public static let showsClearButton = ElementProperty<Self, Bool>("showsClearButton", layer: .adaptive)
@@ -29,5 +29,5 @@ public enum TextFieldContract: ElementContract {
     public static let submitted = ElementEvent<Self, Void>("submitted", layer: .native)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [isPassword, returnKey, showsClearButton, submitted]
+    public static let members: [any ContractMember] = [isPassword, submitLabel, showsClearButton, submitted]
 }

@@ -51,7 +51,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContrac
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>returnKey</code></td><td>property</td><td><code>ReturnKey</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>submitLabel</code></td><td>property</td><td><code>SubmitLabel</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
 <tr><td colspan="9">AppKit: A Mac has no keyboard on the screen whose return key says anything.<br>WinUI 3, GTK 4: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onSubmitted</code> (<code>submitted</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 </table>

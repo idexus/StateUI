@@ -194,7 +194,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeArea`, `SafeAreaEdges`, `Placement`, `PlacedRun` | [placement](../design/types/placement.md) |
 | `Colour/` | `Color`, `GradientStop`, `Brush`, `Background` | [colour and theme](../design/types/colour-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
 | `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
-| `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `ReturnKey`, `HeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
+| `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `HeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
 | `Time/` | `CalendarDate`, `ClockTime`, `TimeZoneInfo`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
 | `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |

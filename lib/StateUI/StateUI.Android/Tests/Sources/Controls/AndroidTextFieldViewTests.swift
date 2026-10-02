@@ -205,7 +205,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             let host = AndroidRenderer.running {
                 VStack {
                     TextField("")
-                    TextField("").returnKey(.next)
+                    TextField("").submitLabel(.next)
                     SearchField("")
                 }
             }

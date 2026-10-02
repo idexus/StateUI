@@ -205,8 +205,8 @@ enum PatchDump {
         // The inputs.
         case Prop.inputPurpose.name:
             return spelled(member, as: InputPurpose.self)
-        case Prop.returnKey.name:
-            return spelled(member, as: ReturnKey.self)
+        case Prop.submitLabel.name:
+            return spelled(member, as: SubmitLabel.self)
 
         // Scrolling, and the pages.
         case Prop.orientation.name:

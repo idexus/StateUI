@@ -3,7 +3,7 @@ Text.text: ✅
 TextField: ✅
 TextField.frameChanged: ✅
 TextField.isPassword: ☑️ A PasswordBox has no read-only state, alignment, case, caret or selection: a password field keeps none of these.
-TextField.returnKey: not realized
 TextField.showsClearButton: not realized
+TextField.submitLabel: not realized
 TextField.submitted: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field
 TextField.text: ✅
