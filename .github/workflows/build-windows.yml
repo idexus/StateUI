@@ -1,4 +1,6 @@
-# The core's suites on Windows; the WinUI host's stands in winui.yml.
+# The core's suites on Windows - the library, the host layer and the
+# conformance runner - and the Gallery's, with the starter application built,
+# since no suite compiles it. The WinUI host's stands in winui.yml.
 #
 # Windows is the second machine this library is built on, which is what makes
 # the suite worth running here: it is the other machine whose file separators,
@@ -114,3 +116,11 @@ jobs:
       # pure Swift: no host runs here, so no verdict is read or written.
       - name: Conformance runner tests
         run: swift test --package-path lib/StateUI/StateUI.Conformance
+
+      # In this job rather than one of their own, as on macOS and Linux: here a
+      # job sets Swift and Visual Studio up first, at the steps above.
+      - name: Gallery tests
+        run: swift test --package-path apps/Gallery
+
+      - name: HelloWorld tests
+        run: swift test --package-path apps/HelloWorld
