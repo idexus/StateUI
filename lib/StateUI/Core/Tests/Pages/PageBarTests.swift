@@ -45,7 +45,7 @@ private struct BarredPage: View {
                         .isDestructive(false)
                         .isEnabled(true)
                         .onClicked {}
-                    MenuSeparator().id("sep")
+                    Divider().id("sep")
                     Menu("Recent") {
                         MenuItem("a.txt").id("a")
                     }
@@ -95,7 +95,7 @@ final class PageBarTests: XCTestCase {
 
         XCTAssertEqual(file.type, "Menu")
         XCTAssertEqual(file.children.map { $0.type },
-                       ["MenuItem", "MenuSeparator", "Menu"])
+                       ["MenuItem", "Divider", "Menu"])
         XCTAssertEqual(file.children[2].children[0].props["text"], .string("a.txt"))
     }
 

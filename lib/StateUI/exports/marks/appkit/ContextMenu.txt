@@ -1,6 +1,6 @@
 # revision 1.1
 ContextMenu: ✅
+Divider: ✅
 Menu.text: ✅
 MenuItem.isEnabled: ✅
 MenuItem.text: ✅
-MenuSeparator: ✅

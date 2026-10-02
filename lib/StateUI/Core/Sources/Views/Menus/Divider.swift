@@ -6,19 +6,19 @@
 ///
 ///     Menu("File") {
 ///         MenuItem("New").onClicked { create() }
-///         MenuSeparator()
+///         Divider()
 ///         MenuItem("Close").onClicked { close() }
 ///     }
 ///
 /// It has no caption and nothing to click; the platform draws whatever a
 /// separator looks like there.
-public struct MenuSeparator: Element {
+public struct Divider: Element {
     /// The node this separator describes.
     public var node: Node
 
     /// A line.
     public init() {
-        node = Node(contract: MenuSeparatorContract.self)
+        node = Node(contract: DividerContract.self)
     }
 
     /// Who this separator is, among the menu's others - worth giving one when

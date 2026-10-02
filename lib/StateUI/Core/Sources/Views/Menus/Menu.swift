@@ -12,7 +12,7 @@
 ///                     MenuItem(file).onClicked { open(file) }
 ///                 }
 ///             }
-///             MenuSeparator()
+///             Divider()
 ///             MenuItem("Close").onClicked { close() }
 ///         }
 ///         .id(StandardMenu.file)
@@ -26,7 +26,7 @@ public struct Menu: Element {
 
     /// A menu captioned `text`, holding whatever the closure lists.
     ///
-    /// What goes inside is a `MenuItem`, a `Menu` or a `MenuSeparator`, with an
+    /// What goes inside is a `MenuItem`, a `Menu` or a `Divider`, with an
     /// `if` or a `ForEach` among them.
     ///
     /// - Parameter text: the caption - "File", "Edit", "View" on the bar, or the

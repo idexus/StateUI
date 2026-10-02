@@ -190,12 +190,12 @@ extension ControlDictionary {
                 }
             """#),
 
-        (MenuSeparatorContract.self, #"""
+        (DividerContract.self, #"""
             Text("Report.pdf")
                 .contextMenu {
                     MenuItem("Open")
                     MenuItem("Rename")
-                    MenuSeparator()
+                    Divider()
                     MenuItem("Delete").isDestructive(true)
                 }
             """#),

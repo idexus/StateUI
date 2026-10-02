@@ -84,12 +84,12 @@ extension View {
     ///     Text(item.name)
     ///         .contextMenu {
     ///             MenuItem("Rename").onClicked { rename(item) }
-    ///             MenuSeparator()
+    ///             Divider()
     ///             MenuItem("Delete").isDestructive(true).onClicked { remove(item) }
     ///         }
     ///
     /// The same entries a menu bar takes - `MenuItem`, `Menu`
-    /// and `MenuSeparator` - attached to a view instead of to a page.
+    /// and `Divider` - attached to a view instead of to a page.
     ///
     /// Context menus are a desktop interaction. A host with no native context
     /// menu interaction leaves this modifier inert, so do not put the only way

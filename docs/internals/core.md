@@ -128,7 +128,7 @@ turns the nodes into the patch.
 - **`NavigationStack`**, **`TabbedView`**, **`SplitView`** and
   **`ModalStack`** (`Navigation/`) are arrangements: pages that key the pages
   they hold, whose stack, chosen tab and modal stack are state. `Menu`,
-  `MenuItem`, `MenuSeparator` and `ToolbarItem` (`Menus/`) are a menu's
+  `MenuItem`, `Divider` and `ToolbarItem` (`Menus/`) are a menu's
   entries and a page's actions, collected without keys. *Application.*
   ([Arrangements are pages](../design/views/pages.md#arrangements-are-pages),
   [menus](../design/views/builders.md#menus-collect-without-keys);

@@ -55,7 +55,7 @@
         container.children.compactMap { entry in
             switch entry.type {
             case .menuItem: MenuEntry(entry, kind: .item, entries: [])
-            case .menuSeparator: .separator
+            case .divider: .separator
             case .menu: MenuEntry(entry, kind: .submenu, entries: entries(of: entry))
             default: nil
             }

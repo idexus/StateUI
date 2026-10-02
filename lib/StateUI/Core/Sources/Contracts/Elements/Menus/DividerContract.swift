@@ -3,9 +3,9 @@
 
 /// A line between entries, grouping the ones above it apart from the ones
 /// below.
-public enum MenuSeparatorContract: ElementContract {
+public enum DividerContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = "MenuSeparator"
+    public static let nodeType: NodeType = "Divider"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

@@ -394,7 +394,7 @@ final class HostContractTests: XCTestCase {
 
     /// Every control speaks in plain words: a box of colour is a `ColorBox`, a
     /// drawing surface a `Canvas`, and a menu is a `Menu` at any depth - on the
-    /// bar or inside another - holding `MenuItem`s and `MenuSeparator`s.
+    /// bar or inside another - holding `MenuItem`s and `Divider`s.
     func testControlsSpeakInPlainWords() throws {
         let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
@@ -407,7 +407,7 @@ final class HostContractTests: XCTestCase {
 
         XCTAssertTrue(controls.isSuperset(of: [
             "ColorBox", "Canvas",
-            "Menu", "MenuBar", "MenuItem", "MenuSeparator",
+            "Menu", "MenuBar", "MenuItem", "Divider",
         ]))
         XCTAssertTrue(controls.isDisjoint(with: former), "a control keeps its former name")
         XCTAssertTrue(events.contains("dragged"))

@@ -52,7 +52,7 @@ final class GTKConformanceTests: XCTestCase {
     func testMenu() { conform(MenuTests.self) }
     func testMenuBar() { conform(MenuBarTests.self) }
     func testMenuItem() { conform(MenuItemTests.self) }
-    func testMenuSeparator() { conform(MenuSeparatorTests.self) }
+    func testDivider() { conform(DividerTests.self) }
     func testModalStack() { conform(ModalStackTests.self) }
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }

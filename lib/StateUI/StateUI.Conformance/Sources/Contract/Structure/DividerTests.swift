@@ -4,22 +4,22 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `MenuSeparatorContract` on a host: a separator stands between the entries it parts, and goes where the tree takes
+/// `DividerContract` on a host: a separator stands between the entries it parts, and goes where the tree takes
 /// it away.
-@_spi(Host) public enum MenuSeparatorTests: ConformanceFamily {
-    public static let name = "MenuSeparator"
+@_spi(Host) public enum DividerTests: ConformanceFamily {
+    public static let name = "Divider"
 
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aSeparatorPartsItsEntries", proves: [
-                Covered(MenuSeparatorContract.self),
+                Covered(DividerContract.self),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let parted = State(wrappedValue: true)
                 s.start {
                     VStack {
                         Text("Row").contextMenu {
                             MenuItem("Cut")
-                            if parted.wrappedValue { MenuSeparator() }
+                            if parted.wrappedValue { Divider() }
                             MenuItem("Delete")
                         }.id("row")
                         Button("Join").onClicked { parted.wrappedValue = false }.id("join")

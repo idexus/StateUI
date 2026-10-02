@@ -1,6 +1,6 @@
 <!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
-# MenuSeparator
+# Divider
 
 A line between entries, grouping the ones above it apart from the ones below.
 
@@ -9,7 +9,7 @@ Text("Report.pdf")
     .contextMenu {
         MenuItem("Open")
         MenuItem("Rename")
-        MenuSeparator()
+        Divider()
         MenuItem("Delete").isDestructive(true)
     }
 ```
@@ -45,8 +45,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
-Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuSeparatorContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/DividerContract.swift`.
 
-## MenuSeparator's own members
+## Divider's own members
 
-MenuSeparator declares no members of its own.
+Divider declares no members of its own.

@@ -33,7 +33,7 @@ final class ContextMenuTests: XCTestCase {
         }
         .contextMenu {
             MenuItem("Rename")
-            MenuSeparator()
+            Divider()
             Menu("Move") { MenuItem("Up") }
         }
         .node.built
@@ -46,7 +46,7 @@ final class ContextMenuTests: XCTestCase {
         let flyout = try XCTUnwrap(node.children.last)
 
         XCTAssertEqual(flyout.children.map { $0.type },
-                       ["MenuItem", "MenuSeparator", "Menu"])
+                       ["MenuItem", "Divider", "Menu"])
         XCTAssertEqual(flyout.children.first?.props["text"], .string("Rename"))
         XCTAssertEqual(flyout.children.last?.children.first?.props["text"], .string("Up"))
     }

@@ -516,6 +516,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = Rectangle().renderTransform(.rotate(45))",
             contract: "_ = Rectangle().geometryTransform(.rotate(45))"),
         Road(
+            name: "a menu's line as a MenuSeparator",
+            removed: "_ = MenuSeparator()",
+            contract: "_ = Divider()"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

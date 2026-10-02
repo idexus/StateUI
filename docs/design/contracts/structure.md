@@ -19,7 +19,7 @@ own.
         ModalStack                   a page with the pages presented over it, the last on top
   Overlay                            the views a page lays over its window, and the library's own
   MenuBar, Menu, MenuItem,           a page's menus, their entries, and the lines between them
-  MenuSeparator
+  Divider
   ContextMenu                        the menu a view offers where the user asks for one
   ToolbarItems, ToolbarItem          a page's actions in its bar or toolbar
   TitleView                          the view a page shows in its bar in place of its title

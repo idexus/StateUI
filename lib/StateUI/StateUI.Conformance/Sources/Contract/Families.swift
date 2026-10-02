@@ -44,7 +44,7 @@
         MenuTests.self,
         MenuBarTests.self,
         MenuItemTests.self,
-        MenuSeparatorTests.self,
+        DividerTests.self,
         ModalStackTests.self,
         NavigationStackTests.self,
         OverlayTests.self,

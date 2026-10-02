@@ -12,7 +12,7 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aViewOffersItsMenuAsTheTreeSaysIt", proves: [
-                Covered(ContextMenuContract.self), Covered(MenuContract.text), Covered(MenuSeparatorContract.self),
+                Covered(ContextMenuContract.self), Covered(MenuContract.text), Covered(DividerContract.self),
                 Covered(MenuItemElementContract.text, on: "MenuItem"), Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }
@@ -68,7 +68,7 @@ struct MenuPage: View {
         return VStack {
             Text("Row").contextMenu {
                 MenuItem("Copy").onClicked { heard.values.append("copy") }.id("copy")
-                MenuSeparator().id("separator")
+                Divider().id("separator")
                 MenuItem("Paste").isEnabled(canPaste.wrappedValue).onClicked { heard.values.append("paste") }.id("paste")
                 Menu("Share") {
                     shares.wrappedValue.map { share in

@@ -403,7 +403,7 @@ own, whatever the menu is called, so "Plik" joins it too. On WinUI and GTK it
 is an ordinary menu of the application's. Android keeps no menu bar: a page's
 menus stand behind its stack's bar's overflow, each a submenu after the
 actions. An iPhone shows no menu bar. `Menu`
-holds only `MenuItem`, `Menu` and `MenuSeparator`, and a menu bar only `Menu`:
+holds only `MenuItem`, `Menu` and `Divider`, and a menu bar only `Menu`:
 anything else does not compile.
 
 A menu bar stands only while something declares a menu. On WinUI and GTK a

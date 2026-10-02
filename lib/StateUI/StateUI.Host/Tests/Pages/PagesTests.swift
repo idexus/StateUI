@@ -521,7 +521,7 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(node("page", .page, children: [node("bar", .menuBar, children: [
             node("file", .menu, [.text: .string("File")], children: [
                 node("open", .menuItem, [.text: .string("Open"), .icon: .string("folder")]),
-                node("line", .menuSeparator),
+                node("line", .divider),
                 node("erase", .menuItem, [.text: .string("Erase"), .isDestructive: .bool(true), .icon: .string("")]),
                 node("recent", .menu, [.text: .string("Recent")], children: [
                     node("one", .menuItem, [.text: .string("One"), .isEnabled: .bool(false)]),

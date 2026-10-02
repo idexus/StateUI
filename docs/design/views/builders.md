@@ -132,7 +132,7 @@ so its views are built no earlier than before.
 ## Menus collect without keys
 
 `MenuBuilder` collects `[Element]`, and its expressions are a menu's entries
-alone - a `MenuItem`, a `Menu`, a `MenuSeparator`, a list of items - so a view
+alone - a `MenuItem`, a `Menu`, a `Divider`, a list of items - so a view
 in a menu does not compile. `if` and `if/else` work in a menu, and a plain `for`
 does not. It records no path. An entry is matched by its `.id()` and otherwise
 by its position, so an `if` whose entry comes and goes re-matches every entry

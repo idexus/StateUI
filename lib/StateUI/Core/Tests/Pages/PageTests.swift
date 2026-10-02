@@ -61,7 +61,7 @@ private struct EveryPropertyPage: View {
                     }
                     .isEnabled(true)
 
-                    MenuSeparator()
+                    Divider()
                 }
                 .isEnabled(true)
             }
@@ -658,7 +658,7 @@ final class PageTests: XCTestCase {
         // A menu at any depth: the bar's File holds an entry, a menu of its
         // own and a line.
         let file = try XCTUnwrap(content.children.last?.children.first)
-        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menu, .menuSeparator])
+        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menu, .divider])
         XCTAssertEqual(file.children[1].children.first?.props, ["text": .string("Notes.txt")])
     }
 

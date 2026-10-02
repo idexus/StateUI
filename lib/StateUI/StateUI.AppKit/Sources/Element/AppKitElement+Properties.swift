@@ -38,7 +38,7 @@ extension AppKitElement {
 
         case .modalStack, .titleView, .toolbarItems, .menuBar, .contextMenu,
              .menu, .menuItem,
-             .menuSeparator, .spans, .span:
+             .divider, .spans, .span:
             return nil
 
         case .navigationStack:

@@ -29,5 +29,5 @@ extension GTKElement {
 
 extension NodeType {
     /// The elements a menu is made of.
-    static let menuTypes: Set<NodeType> = [.contextMenu, .menu, .menuItem, .menuSeparator]
+    static let menuTypes: Set<NodeType> = [.contextMenu, .menu, .menuItem, .divider]
 }

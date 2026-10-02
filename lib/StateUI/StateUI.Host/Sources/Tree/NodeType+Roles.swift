@@ -13,7 +13,7 @@
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [
         .application, .scene, .window, .modalStack, .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu,
-        .menu, .menuItem, .menuSeparator, .spans, .span,
+        .menu, .menuItem, .divider, .spans, .span,
     ]
 
     /// What is declared on an element to furnish the chrome or the window rather than stand in its room.

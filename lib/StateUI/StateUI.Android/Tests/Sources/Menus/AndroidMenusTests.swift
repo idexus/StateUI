@@ -27,7 +27,7 @@ final class AndroidMenusTests: XCTestCase {
                     Menu("Move") {
                         MenuItem("To the top").isEnabled(false).onClicked { heard.values.append("top") }
                     }
-                    MenuSeparator()
+                    Divider()
                     MenuItem("Remove").isDestructive(true).onClicked { heard.values.append("remove") }
                     MenuItem("Erase").isDestructive(true).isEnabled(false).onClicked { heard.values.append("erase") }
                 }
