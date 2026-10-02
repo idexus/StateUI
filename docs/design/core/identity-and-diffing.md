@@ -42,7 +42,7 @@ the control, focus and caret of the one that left. Hand-written nodes, such as
 a page's appended title view, are matched by position among themselves, so a
 conditional beside them does not shift them.
 
-`ElementId` has two cases that are two namespaces: `.auto` is a number the
+`ElementID` has two cases that are two namespaces: `.auto` is a number the
 differ assigns and `.manual` is the author's text. One is a number and the
 other a string, so they can never collide.
 

@@ -509,7 +509,7 @@ final class InspectionTests: XCTestCase {
 
     /// A scene's history is the renders that reached it.
     func testASceneHistoryIsTheRendersThatReachedIt() {
-        func pass(_ number: Int, in scene: ElementId) -> InspectedPass {
+        func pass(_ number: Int, in scene: ElementID) -> InspectedPass {
             var pass = InspectedPass(at: 0, road: .walk, causes: [])
             pass.number = number
             pass.entries = [InspectedEntry(depth: 0, view: "Scene", scene: scene, outcome: .walked)]

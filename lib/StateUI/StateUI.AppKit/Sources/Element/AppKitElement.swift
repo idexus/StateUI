@@ -71,7 +71,7 @@ final class AppKitElement: NSObject, NativeElement {
 
     // MARK: - The element's tree, read through its mounted element
 
-    var id: ElementId { element.id }
+    var id: ElementID { element.id }
     var type: NodeType { element.type }
     var mount: UInt64 { element.mount }
     var parent: AppKitElement? { element.parent?.appKit }

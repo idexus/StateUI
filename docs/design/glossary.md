@@ -54,7 +54,7 @@ and this table maps the two.
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
-| identity, `.id()`, `ElementId` | key | what keeps an element the same element across renders: an explicit `.id()`, then the builder path, then the position |
+| identity, `.id()`, `ElementID` | key | what keeps an element the same element across renders: an explicit `.id()`, then the builder path, then the position |
 | render | reconcile | build the patch between the tree the host holds and the tree the state describes |
 | patch (`HostPatch`) | diff | the sparse change from one tree to the next |
 | road (walk, build, complete) | render mode | how a render reaches the elements it describes |

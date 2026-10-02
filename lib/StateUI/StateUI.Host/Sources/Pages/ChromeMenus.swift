@@ -19,7 +19,7 @@
         // A menu joins the one of its id declared further out; the outermost heads it.
         // Design: docs/design/host/pages.md#the-menus-of-a-path
         var joined: [[Placed]] = []
-        var byId: [ElementId: Int] = [:]
+        var byId: [ElementID: Int] = [:]
         for (index, declaration) in declared.enumerated() {
             let order = Int(declaration.element.value(.order)?.number ?? 0)
             for (position, menu) in declaration.element.children.filter({ $0.type == .menu }).enumerated() {
@@ -46,8 +46,8 @@
     /// outermost of that id, which the others leave; an entry of no id stands in its own.
     private static func standing(_ members: [Placed]) -> [[MenuEntry]] {
         let sections = members.map { (member: $0, entries: MenuEntry.entries(of: $0.menu)) }
-        var outermost: [ElementId: (Int, Int)] = [:]
-        var innermost: [ElementId: (depth: (Int, Int), entry: MenuEntry)] = [:]
+        var outermost: [ElementID: (Int, Int)] = [:]
+        var innermost: [ElementID: (depth: (Int, Int), entry: MenuEntry)] = [:]
         for (member, entries) in sections {
             for entry in entries {
                 guard let id = entry.element?.id, id.isManual else { continue }

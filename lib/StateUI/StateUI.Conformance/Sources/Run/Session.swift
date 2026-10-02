@@ -72,7 +72,7 @@
     /// The element the page gave the id `id`.
     /// - Throws: where the page holds none.
     public func element(_ id: some Hashable) throws -> MountedElement {
-        let key = ElementId.manual(String(describing: id))
+        let key = ElementID.manual(String(describing: id))
         guard let element = tree?.root?.first(id: key) else { throw Missing(id: String(describing: id)) }
         return element
     }

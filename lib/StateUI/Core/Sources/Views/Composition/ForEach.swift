@@ -51,9 +51,9 @@ public struct ForEach: Views {
     ///
     /// - Parameter id: which part of an item is its identity - distinct
     ///   across the items, stable while the item means the same row.
-    public init<Items: RandomAccessCollection, Id: Hashable, Content: View>(
+    public init<Items: RandomAccessCollection, ID: Hashable, Content: View>(
         _ items: Items,
-        id: KeyPath<Items.Element, Id>,
+        id: KeyPath<Items.Element, ID>,
         @ViewBuilder content: (Items.Element) -> Content
     ) {
         // The item's identity, unless the author wrote an `.id()` of their own.

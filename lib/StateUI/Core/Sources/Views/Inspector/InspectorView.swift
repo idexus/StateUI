@@ -23,7 +23,7 @@ struct InspectorView: View {
         // scene opening its inspector's window by itself.
         model.record()
 
-        let element = ElementId.manual(scene)
+        let element = ElementID.manual(scene)
         let index = Scenes.shared.index(of: scene)
         let all = Array(Inspection.passes.reversed())
         let passes = InspectorView.history(of: element, in: all)
@@ -70,7 +70,7 @@ struct InspectorView: View {
     /// - Parameters:
     ///   - scene: the scene's element.
     ///   - passes: the renders.
-    static func history(of scene: ElementId, in passes: [InspectedPass]) -> [InspectedPass] {
+    static func history(of scene: ElementID, in passes: [InspectedPass]) -> [InspectedPass] {
         passes.filter { pass in pass.entries.contains { $0.scene == scene } }
     }
 
@@ -179,7 +179,7 @@ struct InspectorView: View {
     }
 
     /// The scene's renders, newest first.
-    private func list(_ passes: [InspectedPass], scene: ElementId, at index: Int?) -> some View {
+    private func list(_ passes: [InspectedPass], scene: ElementID, at index: Int?) -> some View {
         let model = InspectorModel.shared
 
         return ScrollView {
@@ -198,7 +198,7 @@ struct InspectorView: View {
 
     /// The render chosen: its numbers, then its tree in this scene.
     @ViewBuilder
-    private func detail(_ chosen: InspectedPass?, scene: ElementId, at index: Int?) -> some View {
+    private func detail(_ chosen: InspectedPass?, scene: ElementID, at index: Int?) -> some View {
         if let pass = chosen {
             let entries = pass.entries.filter { $0.scene == scene }
             let whole = entries.first { $0.depth == 0 }

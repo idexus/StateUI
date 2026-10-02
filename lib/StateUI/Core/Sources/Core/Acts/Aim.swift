@@ -118,7 +118,7 @@ final class AimBox: @unchecked Sendable, Hashable {
     private static let guarded = Lock()
 
     /// The identity of the element this was last put on.
-    private var identity: ElementId?
+    private var identity: ElementID?
 
     /// Which walk last attached it, so a second view in one walk is a conflict.
     private var walk = 0
@@ -129,7 +129,7 @@ final class AimBox: @unchecked Sendable, Hashable {
 
     /// Attaches the element's key: the first attachment of a walk takes it, a second
     /// in the same walk is a conflict.
-    func attach(_ id: ElementId, walk: Int) {
+    func attach(_ id: ElementID, walk: Int) {
         Self.guarded.withLock {
             if self.walk != walk {
                 self.walk = walk

@@ -11,7 +11,7 @@ struct RenderTally {
     var made = 0
 
     /// Each scene's part, by the scene's key.
-    var scenes: [ElementId: Duration] = [:]
+    var scenes: [ElementID: Duration] = [:]
 
     static func micros(_ duration: Duration) -> Double {
         let (seconds, attoseconds) = duration.components

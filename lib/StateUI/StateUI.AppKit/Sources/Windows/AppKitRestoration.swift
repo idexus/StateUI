@@ -11,7 +11,7 @@ import Foundation
 ///
 /// A main window has no owner and keeps its scene values. Every other window
 /// names the main window it belongs to, plus its StateUI group and value. The
-/// platform identity is intentionally separate from `ElementId`: StateUI ids
+/// platform identity is intentionally separate from `ElementID`: StateUI ids
 /// are deterministic inside one process, while AppKit ids survive relaunch.
 struct AppKitRestorationRecord: Equatable, Sendable {
     let windowIdentifier: String

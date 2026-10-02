@@ -46,7 +46,7 @@ final class DrivenPatchTests: XCTestCase {
     }
 
     /// The registrations of the element at `path` below `page`.
-    private func ties(_ page: HostPatch, _ path: ElementId...) -> [Prop: HostStateBinding] {
+    private func ties(_ page: HostPatch, _ path: ElementID...) -> [Prop: HostStateBinding] {
         page.at(path)?.driven?.bindings ?? [:]
     }
 
@@ -231,7 +231,7 @@ final class DrivenPatchTests: XCTestCase {
             SearchField(name.projectedValue)
         }.node)
 
-        for field in [ElementId.auto(4), .auto(5), .auto(6)] {
+        for field in [ElementID.auto(4), .auto(5), .auto(6)] {
             XCTAssertEqual(ties(page, .auto(3), field), tied(["text"], to: 1, .inOut, .text))
         }
         XCTAssertEqual(page.at(.auto(3), .auto(4))?.eventNames, ["textChanged"])

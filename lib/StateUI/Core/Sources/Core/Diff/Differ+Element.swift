@@ -50,7 +50,7 @@ extension Differ {
     ///
     /// `sizesArrive` says the layout it stands in is measured.
     func element(
-        id: ElementId,
+        id: ElementID,
         rendered: RenderedNode?,
         node: Node,
         forced: Bool = false,

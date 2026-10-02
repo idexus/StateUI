@@ -36,8 +36,8 @@ extension Differ {
 
         var children: [RenderedNode] = []
         var patches: [HostPatch] = []
-        var claimed: Set<ElementId> = []
-        var used: Set<ElementId> = []
+        var claimed: Set<ElementID> = []
+        var used: Set<ElementID> = []
         var unkeyedSoFar = 0
         var manualSeen: [String: Int] = [:]
 
@@ -110,7 +110,7 @@ extension Differ {
         rendered: [RenderedNode],
         byManualId: [String: RenderedNode],
         byKey: [String: RenderedNode],
-        claimed: Set<ElementId>
+        claimed: Set<ElementID>
     ) -> RenderedNode? {
         if let id = node.id {
             let match = byManualId[id]

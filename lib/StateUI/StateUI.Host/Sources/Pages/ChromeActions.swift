@@ -30,7 +30,7 @@
         // A group joins the one of its id declared further out; the outermost heads it.
         // Design: docs/design/host/pages.md#the-actions-of-a-path
         var groups: [[Declaration]] = []
-        var byId: [ElementId: Int] = [:]
+        var byId: [ElementID: Int] = [:]
         for declaration in declarations {
             let id = declaration.group.id
             if id.isManual, let at = byId[id] {
@@ -66,8 +66,8 @@
     /// The item standing in each place: an item of an id declared further in stands in the place of the outermost
     /// of that id, which the others leave; an item of no id stands in its own.
     private static func standing(_ items: [Placed]) -> [ObjectIdentifier: MountedElement] {
-        var outermost: [ElementId: Placed] = [:]
-        var innermost: [ElementId: Placed] = [:]
+        var outermost: [ElementID: Placed] = [:]
+        var innermost: [ElementID: Placed] = [:]
         for placed in items where placed.item.id.isManual {
             let id = placed.item.id
             if outermost[id].map({ placed.depth < $0.depth }) ?? true { outermost[id] = placed }

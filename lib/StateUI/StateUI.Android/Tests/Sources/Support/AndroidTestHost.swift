@@ -215,7 +215,7 @@ extension AndroidRenderer {
     }
 
     /// The view of the element keyed `id`.
-    func view(id: ElementId) -> AndroidView? {
+    func view(id: ElementID) -> AndroidView? {
         (runtime.tree.root?.first(id: id)?.native as? AndroidElement)?.view
     }
 

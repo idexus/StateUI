@@ -13,7 +13,7 @@ struct InspectorStrip: View {
         // Built again as renders land, the way the whole inspector is.
         _ = model.revision
 
-        let element = ElementId.manual(scene)
+        let element = ElementID.manual(scene)
         let all = Inspection.passes
         let last = all.last { pass in pass.entries.contains { $0.scene == element } }
 

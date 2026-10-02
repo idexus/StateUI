@@ -48,7 +48,7 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     var inherited: Motion = .inherited
 
     /// Which element resolved that law, so a second answering differently is heard.
-    var inheritedBy: ElementId?
+    var inheritedBy: ElementID?
 
     /// What runs after the host wrote this value, handed the lanes it wrote - the
     /// state's own ask for a render.

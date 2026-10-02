@@ -470,8 +470,8 @@ final class MountedTreeTests: XCTestCase {
         func peers(_ id: String) -> [String] {
             (tree.root?.first(id: .manual(id))?.radioPeers ?? []).map { "\($0.id)" }
         }
-        XCTAssertEqual(peers("s"), ["\(ElementId.manual("m"))"])
-        XCTAssertEqual(peers("x"), ["\(ElementId.manual("s"))", "\(ElementId.manual("y"))"], "every radio beside it")
+        XCTAssertEqual(peers("s"), ["\(ElementID.manual("m"))"])
+        XCTAssertEqual(peers("x"), ["\(ElementID.manual("s"))", "\(ElementID.manual("y"))"], "every radio beside it")
         XCTAssertEqual(peers("red"), [])
     }
 
@@ -711,7 +711,7 @@ private final class RecordingNative: NativeElement {
 
     private var name: String { Self.name(element.id) }
 
-    private static func name(_ id: ElementId) -> String {
+    private static func name(_ id: ElementID) -> String {
         if case .manual(let name) = id { return name }
         return "\(id)"
     }

@@ -7,7 +7,7 @@
 /// Design: docs/design/host/tree.md#the-mounted-tree
 @_spi(Host) @MainActor public final class MountedElement {
     /// The element's key.
-    public let id: ElementId
+    public let id: ElementID
 
     /// The element's node type.
     public let type: NodeType
@@ -28,7 +28,7 @@
     public private(set) var slots: [MountedElement] = []
 
     /// Each child's place in the order the last arrangement wrote them - known before the children are made.
-    private(set) var writingOrder: [ElementId: Int] = [:]
+    private(set) var writingOrder: [ElementID: Int] = [:]
 
     /// The properties the patches described.
     public private(set) var properties: [Prop: HostValue] = [:]
@@ -329,7 +329,7 @@
     }
 
     /// The first element with key `sought` in this subtree, this one first.
-    public func first(id sought: ElementId) -> MountedElement? {
+    public func first(id sought: ElementID) -> MountedElement? {
         if id == sought { return self }
 
         for child in held {
@@ -340,7 +340,7 @@
     }
 
     /// Every element with key `sought` in this subtree.
-    public func all(id sought: ElementId) -> [MountedElement] {
+    public func all(id sought: ElementID) -> [MountedElement] {
         var found = id == sought ? [self] : []
         for child in held {
             found.append(contentsOf: child.all(id: sought))

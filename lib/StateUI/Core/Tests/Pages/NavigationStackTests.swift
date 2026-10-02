@@ -239,7 +239,7 @@ final class NavigationStackTests: XCTestCase {
         // As the message that brings the pages carries them - with what each
         // wrote into its session on the way in.
         let stack = Renders().settled(tree)
-        let dressed = ElementId.manual("1/level(2)")
+        let dressed = ElementID.manual("1/level(2)")
 
         XCTAssertEqual(stack.props, [
             "barBackgroundColor": Color("#512BD4").propValue, "barForegroundColor": Color.white.propValue,

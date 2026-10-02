@@ -38,7 +38,7 @@
 /// an axis nothing constrains - inside a scroller - keep the answer bounded:
 /// placements that grow with the room grow the room, and the layout never
 /// settles.
-public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: View {
+public struct PlacedLayout<Items: RandomAccessCollection, ID: Hashable>: View {
     /// One view being placed: its identity, its index and its item.
     private struct Slot {
         let identity: String
@@ -70,7 +70,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: View {
     ///   - content: the view for one item.
     public init<Content: View>(
         _ items: Items,
-        id: KeyPath<Items.Element, Id>,
+        id: KeyPath<Items.Element, ID>,
         @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
         self.source = Source(items: items, path: id, view: { content($0).node })
@@ -167,7 +167,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: View {
         let items: Items
 
         /// Which part of an item is its identity.
-        let path: KeyPath<Items.Element, Id>
+        let path: KeyPath<Items.Element, ID>
 
         /// The view for one item, as a node.
         let view: (Items.Element) -> Node
@@ -175,7 +175,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: View {
         /// What the initializer was handed.
         init(
             items: Items,
-            path: KeyPath<Items.Element, Id>,
+            path: KeyPath<Items.Element, ID>,
             view: @escaping (Items.Element) -> Node
         ) {
             self.items = items

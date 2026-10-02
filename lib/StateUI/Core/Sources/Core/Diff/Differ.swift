@@ -79,7 +79,7 @@ final class Differ {
         seedScope()
 
         // The root keeps whatever key it was given until the author states another.
-        let id = tree.id.map(ElementId.manual) ?? rendered?.id ?? identity(for: tree)
+        let id = tree.id.map(ElementID.manual) ?? rendered?.id ?? identity(for: tree)
         let previous = rendered?.id == id ? rendered : nil
 
         if let rendered = rendered, previous == nil {
@@ -202,8 +202,8 @@ final class Differ {
     // MARK: - Identity
 
     /// A new element's key: the author's, or a fresh number.
-    func identity(for node: Node) -> ElementId {
-        node.id.map(ElementId.manual) ?? .auto(allocateElementId())
+    func identity(for node: Node) -> ElementID {
+        node.id.map(ElementID.manual) ?? .auto(allocateElementId())
     }
 
     /// The next element id. Never reused.

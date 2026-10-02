@@ -154,7 +154,7 @@ final class WindowTests: XCTestCase {
     }
 
     /// The identity of the first TextField a patch mentions, at any depth.
-    private func entry(in patch: HostPatch) -> ElementId? {
+    private func entry(in patch: HostPatch) -> ElementID? {
         if patch.type == "TextField" { return patch.id }
 
         for child in patch.children {

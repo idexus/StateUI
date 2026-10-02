@@ -89,7 +89,7 @@ enum PatchDump {
         }
     }
 
-    private static func spelled(_ id: ElementId) -> String {
+    private static func spelled(_ id: ElementID) -> String {
         switch id {
         case .auto(let value): String(value)
         case .manual(let value): "\"\(value)\""

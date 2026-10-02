@@ -26,7 +26,7 @@ struct HostRender {
 }
 
 struct HostPatch {
-    let id: ElementId
+    let id: ElementID
     let type: NodeType
 
     var replace = false
@@ -86,7 +86,7 @@ native objects.
 A host applies one generation as one transaction:
 
 1. validate the generation before changing the mounted tree;
-2. find the mounted element by `ElementId`, or create the native object for
+2. find the mounted element by `ElementID`, or create the native object for
    a new complete patch;
 3. replace an element only when `replace` says so;
 4. clear `clearedProperties`, then apply changed `properties` and their

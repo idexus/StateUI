@@ -22,11 +22,11 @@ extension AppKitRenderer {
     /// The AppKit half of the mounted root.
     var rootElementForTesting: AppKitElement? { (runtime.tree.root?.native as? AppKitElement) }
 
-    func viewForTesting(id: ElementId) -> NSView? {
+    func viewForTesting(id: ElementID) -> NSView? {
         (runtime.tree.root?.first(id: id)?.native as? AppKitElement)?.view
     }
 
-    func viewsForTesting(id: ElementId) -> [NSView] {
+    func viewsForTesting(id: ElementID) -> [NSView] {
         runtime.tree.root?.all(id: id).compactMap { ($0.native as? AppKitElement)?.view } ?? []
     }
 

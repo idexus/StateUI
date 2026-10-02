@@ -13,7 +13,7 @@ private final class Toolkit: ActToolkit {
     var windowToAsk = true
     var shown: [(question: HostQuestion, answered: (Bool, String?) -> Void)] = []
     var announced: [String] = []
-    var focusable: Set<ElementId> = []
+    var focusable: Set<ElementID> = []
     var kept: [Act] = []
     var own: Set<Act> = []
     var registered: Set<Act> = []

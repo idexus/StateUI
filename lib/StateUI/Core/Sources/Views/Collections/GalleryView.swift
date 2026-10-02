@@ -24,7 +24,7 @@
 /// A swipe settles on a card, and `.position($:)` says which; assigning it
 /// moves the run. A tap opens the middle card, handed to `.onItemTapped`. No
 /// view is rebuilt while the run moves: the one render is the card changing.
-public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: View {
+public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     // State first: boxes are adopted by path, and the card faces stored below
     // may carry boxes of their own.
     // Design: docs/design/views/composition.md#state-declared-first
@@ -50,7 +50,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: View {
 
     /// Which card is held down, by its identity: the scroller over the cards
     /// takes every touch, so the gallery shows the press itself.
-    @State private var dipping: Id?
+    @State private var dipping: ID?
 
     /// Whether a pointer drag has to move the run: a finger drags a scroller
     /// itself, a mouse does not.
@@ -118,7 +118,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: View {
     public init<Content: View>(
         _ items: Items,
         @ViewBuilder content: @escaping (Items.Element) -> Content
-    ) where Items.Element: Hashable, Id == Items.Element {
+    ) where Items.Element: Hashable, ID == Items.Element {
         self.init(items, id: \.self, content: content)
     }
 
@@ -136,7 +136,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: View {
     ///   - content: The card's face, run for every item.
     public init<Content: View>(
         _ items: Items,
-        id: KeyPath<Items.Element, Id>,
+        id: KeyPath<Items.Element, ID>,
         @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
         source = Source(items: items, path: id, card: { content($0).node })
@@ -693,7 +693,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: View {
         let items: Items
 
         /// Which part of an item is its identity.
-        let path: KeyPath<Items.Element, Id>
+        let path: KeyPath<Items.Element, ID>
 
         /// The card's face, as a node.
         let card: (Items.Element) -> Node
@@ -701,7 +701,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: View {
         /// What the initializers were handed.
         init(
             items: Items,
-            path: KeyPath<Items.Element, Id>,
+            path: KeyPath<Items.Element, ID>,
             card: @escaping (Items.Element) -> Node
         ) {
             self.items = items

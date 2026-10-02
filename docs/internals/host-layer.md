@@ -246,7 +246,7 @@ toolkit's calls:
 - **`LiveViews`** holds a host's views weakly by the number each was made
   under: a callback crossing C names a view by its number and finds nothing
   once it has gone. ([Views by number](../design/host/tree.md#views-by-number))
-- **`ElementId.hostValue`** is a key as an event carries it: an author's name
+- **`ElementID.hostValue`** is a key as an event carries it: an author's name
   as its text, a counted key as its number.
 
 ## Windows

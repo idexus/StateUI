@@ -906,8 +906,8 @@ final class SceneTests: XCTestCase {
         let differ = Differ()
 
         let opened = differ.reconcile(nil, with: tree(), describeAll: true)
-        let main = ElementId.manual(SceneElement.mainKey)
-        let fonts = ElementId.manual("fonts 1")
+        let main = ElementID.manual(SceneElement.mainKey)
+        let fonts = ElementID.manual("fonts 1")
         let sceneEvents = ["activated", "deactivated", "destroying", "stopped", "windowClosed", "windowRestored"]
         let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
 
@@ -924,7 +924,7 @@ final class SceneTests: XCTestCase {
             "title": .string("Fonts"), "windowType": .name("fonts"),
             "floatsOnTop": .bool(true), "hidesWhenInactive": .bool(true),
         ])
-        for path in [[.manual("1"), main], [.manual("1"), fonts], [.manual("2"), main]] as [[ElementId]] {
+        for path in [[.manual("1"), main], [.manual("1"), fonts], [.manual("2"), main]] as [[ElementID]] {
             XCTAssertEqual(opened.patch.at(path)?.eventNames, windowEvents)
         }
 

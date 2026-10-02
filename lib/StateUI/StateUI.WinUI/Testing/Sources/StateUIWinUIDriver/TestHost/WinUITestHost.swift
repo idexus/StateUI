@@ -121,7 +121,7 @@ extension WinUIRenderer {
     }
 
     /// The view of the element keyed `id`.
-    func view(id: ElementId) -> WinUIView? {
+    func view(id: ElementID) -> WinUIView? {
         (runtime.tree.root?.first(id: id)?.native as? WinUIElement)?.view
     }
 

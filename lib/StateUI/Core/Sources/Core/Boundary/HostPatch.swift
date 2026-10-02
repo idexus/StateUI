@@ -11,7 +11,7 @@
 /// accept in place.
 @_spi(Host) public struct HostPatch: Sendable {
     /// Stable identity used to find or retain the native control.
-    public let id: ElementId
+    public let id: ElementID
 
     /// The kind of native control or structural element this patch describes.
     public let type: NodeType

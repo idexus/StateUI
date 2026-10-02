@@ -11,7 +11,7 @@
 /// while the element is written in the same place in the source, or stands at
 /// the same position when put in by hand. A manual one survives anywhere, which
 /// is what a collection needs.
-public enum ElementId: Hashable, Sendable {
+public enum ElementID: Hashable, Sendable {
     /// Assigned by the differ, from a counter, never reused. Written as a
     /// number.
     case auto(Int)
@@ -33,7 +33,7 @@ public enum ElementId: Hashable, Sendable {
 /// tree are shared into the next.
 final class RenderedNode {
     /// Who this element is. Fixed for as long as it stays in the tree.
-    let id: ElementId
+    let id: ElementID
 
     /// The kind of control the host made; a change of it replaces the element.
     var type: NodeType
@@ -123,7 +123,7 @@ final class RenderedNode {
 
     /// One element as the host has it. Made by the differ.
     init(
-        id: ElementId,
+        id: ElementID,
         type: NodeType,
         props: [Prop: PropValue],
         events: [Event: Int],

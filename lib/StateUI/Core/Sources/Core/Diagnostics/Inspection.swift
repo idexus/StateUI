@@ -73,7 +73,7 @@ struct InspectedEntry {
 
     /// The scene it is in - the element of the depth-0 entry above it, which an
     /// inspector files it under.
-    let scene: ElementId?
+    let scene: ElementID?
 
     /// What the render did with it.
     let outcome: Outcome
@@ -141,7 +141,7 @@ enum Inspection {
     private struct Frame {
         let view: String
         let outcome: InspectedEntry.Outcome
-        let element: ElementId?
+        let element: ElementID?
         let began: ContinuousClock.Instant
         let mutedBefore: Double
         let muted: Bool
@@ -153,7 +153,7 @@ enum Inspection {
     nonisolated(unsafe) private static var pass: InspectedPass?
     nonisolated(unsafe) private static var mutedMicros = 0.0
     nonisolated(unsafe) private static var muting = 0
-    nonisolated(unsafe) private static var scene: ElementId?
+    nonisolated(unsafe) private static var scene: ElementID?
     nonisolated(unsafe) private static var origin = ContinuousClock.now
     nonisolated(unsafe) private static var numbered = 0
     nonisolated(unsafe) private static var waiting: (generation: Int32, scenes: [Double])?
@@ -229,7 +229,7 @@ enum Inspection {
     static func enter(
         _ type: String,
         _ outcome: InspectedEntry.Outcome,
-        element: ElementId? = nil
+        element: ElementID? = nil
     ) -> Bool {
         guard pass != nil else { return false }
 
@@ -299,7 +299,7 @@ enum Inspection {
     private static func append(
         _ view: String,
         _ outcome: InspectedEntry.Outcome,
-        element: ElementId?
+        element: ElementID?
     ) -> Int? {
         guard let count = pass?.entries.count else { return nil }
 

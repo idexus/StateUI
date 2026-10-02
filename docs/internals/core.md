@@ -336,10 +336,10 @@ type's extensions in its folder as `Type+Responsibility.swift`
 
 ### Diffing and identity
 
-- **`Node`**, **`Element`**, **`PropValue`** and **`ElementId`** are one
+- **`Node`**, **`Element`**, **`PropValue`** and **`ElementID`** are one
   element as written this render, anything that describes itself as one, a
   value in the tree and at the boundary, and an element's key. *Application*;
-  a host reads `PropValue` as `HostValue` and `ElementId` in every patch.
+  a host reads `PropValue` as `HostValue` and `ElementID` in every patch.
   ([Keys](../design/core/identity-and-diffing.md#keys),
   [how a value crosses](../design/types/values.md))
 - **`Differ`** and **`RenderedNode`** walk the tree a render built against the

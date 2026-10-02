@@ -19,9 +19,9 @@
 ///
 /// An item names itself by `String(describing:)` of its identity, so two items
 /// must describe differently.
-public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: View {
+public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// The items, their identities and their views - one source a build.
-    private let source: ItemsSource<Items, Id>
+    private let source: ItemsSource<Items, ID>
 
     /// The identities the host holds in its cells, as it last said.
     @State private var realized: [String] = []
@@ -31,26 +31,26 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: View {
     private var footerView: (any View)?
     private var empty: (any View)?
     private var choice: Choice?
-    private var activated: ValueEventHandler<Id>?
+    private var activated: ValueEventHandler<ID>?
     private var endReached: (within: Int, handler: EventHandler)?
     private var aimed: Aim<ItemsViewContract>?
 
     /// A list of `items`, each its own identity, each looking as `content` says.
     public init<Content: View>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content)
-    where Items.Element: Hashable, Id == Items.Element {
+    where Items.Element: Hashable, ID == Items.Element {
         source = ItemsSource(groups: [ItemsGroup(items, content: content)], grouped: false)
     }
 
     /// A list of `items`, each named by the property `id`, each looking as
     /// `content` says.
     public init<Content: View>(
-        _ items: Items, id: KeyPath<Items.Element, Id>, @ViewBuilder content: @escaping (Items.Element) -> Content
+        _ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
         source = ItemsSource(groups: [ItemsGroup(items, id: id, content: content)], grouped: false)
     }
 
     /// A list of groups, each under its header and over its footer.
-    public init(groups: [ItemsGroup<Items, Id>]) {
+    public init(groups: [ItemsGroup<Items, ID>]) {
         source = ItemsSource(groups: groups, grouped: true)
     }
 
@@ -87,7 +87,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: View {
                     EventBuffer.current, by: ItemsViewContract.selectionChanged.name, as: [String].self)
                 else { return }
 
-                var ids: [Id] = []
+                var ids: [ID] = []
                 for id in identities.compactMap({ source.id(for: $0) }) where !ids.contains(id) {
                     ids.append(id)
                 }
@@ -120,8 +120,8 @@ extension ItemsView {
     /// holds now, and how the user's choice is written back.
     struct Choice {
         let mode: SelectionMode
-        let chosen: [Id]
-        let write: ([Id]) -> Void
+        let chosen: [ID]
+        let write: ([ID]) -> Void
     }
 
     /// Down, across, or in columns; a list with nothing between its items
@@ -136,7 +136,7 @@ extension ItemsView {
 
     /// One item chosen at a time, borrowed two-way: the user's choice is
     /// written here, nil where they let it go, and assigning it chooses.
-    public func selection(_ binding: Binding<Id?>) -> Self {
+    public func selection(_ binding: Binding<ID?>) -> Self {
         var copy = self
         copy.choice = Choice(
             mode: .single,
@@ -146,7 +146,7 @@ extension ItemsView {
     }
 
     /// As many items chosen as the user likes, borrowed two-way.
-    public func selection(_ binding: Binding<Set<Id>>) -> Self {
+    public func selection(_ binding: Binding<Set<ID>>) -> Self {
         var copy = self
         copy.choice = Choice(
             mode: .multiple,
@@ -157,7 +157,7 @@ extension ItemsView {
 
     /// Hears the user open an item - a tap on a phone, a double-click or Return
     /// on a desktop - handed its identity.
-    public func onItemActivated(_ handler: @escaping ValueEventHandler<Id>) -> Self {
+    public func onItemActivated(_ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
         copy.activated = handler
         return copy

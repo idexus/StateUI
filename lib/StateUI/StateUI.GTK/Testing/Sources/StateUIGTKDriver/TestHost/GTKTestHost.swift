@@ -180,7 +180,7 @@ extension GTKRenderer {
     }
 
     /// The view of the element keyed `id`.
-    func view(id: ElementId) -> GTKView? {
+    func view(id: ElementID) -> GTKView? {
         (runtime.tree.root?.first(id: id)?.native as? GTKElement)?.view
     }
 

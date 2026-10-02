@@ -4,7 +4,7 @@
 /// One render in the list.
 struct Row: View {
     let pass: InspectedPass
-    let scene: ElementId
+    let scene: ElementID
     let index: Int?
     let chosen: Bool
 

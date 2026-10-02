@@ -22,16 +22,16 @@ extension HostPatch {
 
     /// The patch at a path of identities below this one, or nil where the
     /// message says nothing about one of them.
-    func at(_ path: ElementId...) -> HostPatch? { at(path) }
+    func at(_ path: ElementID...) -> HostPatch? { at(path) }
 
     /// The same, for a path held in a list.
-    func at(_ path: some Sequence<ElementId>) -> HostPatch? {
+    func at(_ path: some Sequence<ElementID>) -> HostPatch? {
         path.reduce(Optional(self)) { patch, id in patch?.child(id) }
     }
 
     /// The identities of a complete arrangement, in order, or nil where the
     /// children's order did not change.
-    var arrangement: [ElementId]? {
+    var arrangement: [ElementID]? {
         if case .arranged(let patches) = children { return patches.map(\.id) }
         return nil
     }
@@ -880,7 +880,7 @@ extension String {
 extension HostPatch {
     /// The child patch for an identity, or nil when the message says nothing
     /// about it - which is the usual answer and the one worth asserting.
-    func child(_ id: ElementId) -> HostPatch? {
+    func child(_ id: ElementID) -> HostPatch? {
         children.first { $0.id == id }
     }
 
@@ -889,7 +889,7 @@ extension HostPatch {
     var propNames: [Prop] { props.keys.sorted() }
 }
 
-extension ElementId: CustomStringConvertible {
+extension ElementID: CustomStringConvertible {
     public var description: String {
         switch self {
         case .auto(let value): return "\(value)"

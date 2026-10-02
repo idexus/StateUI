@@ -12,12 +12,12 @@
 ///
 /// Each group names itself with `.id`, so two groups may hold equal items; a
 /// group given none is named by its place.
-public struct ItemsGroup<Items: RandomAccessCollection, Id: Hashable> {
+public struct ItemsGroup<Items: RandomAccessCollection, ID: Hashable> {
     /// The items.
     let items: Items
 
     /// How an item names itself.
-    let identify: (Items.Element) -> Id
+    let identify: (Items.Element) -> ID
 
     /// How an item looks.
     let content: (Items.Element) -> any View
@@ -33,7 +33,7 @@ public struct ItemsGroup<Items: RandomAccessCollection, Id: Hashable> {
 
     /// A group of `items`, each its own identity, each looking as `content` says.
     public init<Content: View>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content)
-    where Items.Element: Hashable, Id == Items.Element {
+    where Items.Element: Hashable, ID == Items.Element {
         self.items = items
         identify = { $0 }
         self.content = { content($0) }
@@ -42,7 +42,7 @@ public struct ItemsGroup<Items: RandomAccessCollection, Id: Hashable> {
     /// A group of `items`, each named by the property `id`, each looking as
     /// `content` says.
     public init<Content: View>(
-        _ items: Items, id: KeyPath<Items.Element, Id>, @ViewBuilder content: @escaping (Items.Element) -> Content
+        _ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
         self.items = items
         identify = { $0[keyPath: id] }

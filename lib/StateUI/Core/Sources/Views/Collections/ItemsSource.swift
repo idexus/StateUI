@@ -12,7 +12,7 @@ protocol ItemsViews: AnyObject {
 /// makes; the same one while only the host's cells change, so an entry built
 /// from it is carried whole.
 /// Design: docs/design/views/items.md#a-source-a-build
-final class ItemsSource<Items: RandomAccessCollection, Id: Hashable>: ItemsViews {
+final class ItemsSource<Items: RandomAccessCollection, ID: Hashable>: ItemsViews {
     /// Where an identity stands.
     private enum Place {
         case header
@@ -22,7 +22,7 @@ final class ItemsSource<Items: RandomAccessCollection, Id: Hashable>: ItemsViews
         case item(Int, Items.Index)
     }
 
-    private let groups: [ItemsGroup<Items, Id>]
+    private let groups: [ItemsGroup<Items, ID>]
     private let grouped: Bool
     private var header: (any View)?
     private var footer: (any View)?
@@ -33,10 +33,10 @@ final class ItemsSource<Items: RandomAccessCollection, Id: Hashable>: ItemsViews
 
     private var places: [String: Place] = [:]
     private var order: [String: Int] = [:]
-    private var identities: [Id: [String]] = [:]
+    private var identities: [ID: [String]] = [:]
 
     /// The source of `groups`; a list with no groups is one group standing for none.
-    init(groups: [ItemsGroup<Items, Id>], grouped: Bool) {
+    init(groups: [ItemsGroup<Items, ID>], grouped: Bool) {
         self.groups = groups
         self.grouped = grouped
     }
@@ -106,13 +106,13 @@ final class ItemsSource<Items: RandomAccessCollection, Id: Hashable>: ItemsViews
     }
 
     /// The item an identity names; nil for a header, a footer or none.
-    func id(for identity: String) -> Id? {
+    func id(for identity: String) -> ID? {
         guard case .item(let group, let index) = places[identity] else { return nil }
         return groups[group].identify(groups[group].items[index])
     }
 
     /// Every identity holding one of `ids`, in the order they show.
-    func identities(of ids: some Sequence<Id>) -> [String] {
+    func identities(of ids: some Sequence<ID>) -> [String] {
         ids.flatMap { identities[$0] ?? [] }.sorted { (order[$0] ?? 0) < (order[$1] ?? 0) }
     }
 

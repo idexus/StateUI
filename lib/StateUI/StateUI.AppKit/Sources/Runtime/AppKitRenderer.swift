@@ -40,7 +40,7 @@ final class AppKitRenderer: @unchecked Sendable {
     let roster = WindowRoster<AppKitWindowController>()
 
     /// What each scene keeps for the system's window restoration, by the scene's identity.
-    var sessions: [ElementId: AppKitSceneSession] = [:]
+    var sessions: [ElementID: AppKitSceneSession] = [:]
     var doorbellStarted = false
     var connectedInitialScene = false
     var started = false
@@ -155,7 +155,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     /// The native view of the element with `id`, as the tree stands.
-    func presentedView(id: ElementId) -> NSView? {
+    func presentedView(id: ElementID) -> NSView? {
         runtime.tree.root?.first(id: id)?.appKit.view
     }
 

@@ -312,6 +312,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = LabelContract.maximumLines",
             contract: "_ = TextContract.maximumLines"),
         Road(
+            name: "an identity spelled Id",
+            removed: #"_ = ElementId.manual("total")"#,
+            contract: #"_ = ElementID.manual("total")"#),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

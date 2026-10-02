@@ -40,7 +40,7 @@ extension MountedTree {
     /// The element an act is aimed at, which its first argument names: an element's own id, or its number.
     /// - Throws: `ActFailure` where the act names none, or none such is on screen.
     public func aimed(_ call: HostActCall) throws(ActFailure) -> MountedElement {
-        let target: ElementId? = switch call.arguments.first {
+        let target: ElementID? = switch call.arguments.first {
         case .string(let name)?: .manual(name)
         case .number(let number)?: .auto(Int(number))
         default: nil

@@ -41,6 +41,6 @@ final class UserChangeTests: XCTestCase {
         XCTAssertEqual(turnedOff, [], "the program's write reports nothing")
 
         b.reportUserChange(.isOn, .toggled, .bool(true), in: runtime) { turnedOff.append("\($0.id)") }
-        XCTAssertEqual(turnedOff, ["\(ElementId.manual("a"))"], "the checked peer, and only it")
+        XCTAssertEqual(turnedOff, ["\(ElementID.manual("a"))"], "the checked peer, and only it")
     }
 }

@@ -68,7 +68,7 @@ final class PatchShapeTests: XCTestCase {
 
         // The page's counter, button and list, below the application: its
         // scene, its main window, the page and the stack.
-        let stack: [ElementId] = [.manual("1"), .manual(SceneElement.mainKey), .auto(2), .auto(3)]
+        let stack: [ElementID] = [.manual("1"), .manual(SceneElement.mainKey), .auto(2), .auto(3)]
         let counter = stack + [.auto(4)]
         let button = stack + [.auto(5)]
         let list = stack + [.auto(6)]
@@ -163,7 +163,7 @@ final class PatchShapeTests: XCTestCase {
     /// The elements a patch has anything to say about - a property, a cleared
     /// property, a handler, a replacement - by identity; the rest carry only
     /// the path down.
-    private static func speaking(_ patch: HostPatch) -> [ElementId] {
+    private static func speaking(_ patch: HostPatch) -> [ElementID] {
         patch.subtree.filter { !$0.props.isEmpty || !$0.cleared.isEmpty || $0.events != nil || $0.replace }
             .map(\.id)
     }

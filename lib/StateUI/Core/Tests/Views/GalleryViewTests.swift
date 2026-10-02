@@ -638,7 +638,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// One element of a message, by the identity it was given.
-    private func node(_ id: ElementId, in patch: HostPatch) -> HostPatch? {
+    private func node(_ id: ElementID, in patch: HostPatch) -> HostPatch? {
         if patch.id == id { return patch }
 
         for child in patch.children {
