@@ -32,6 +32,8 @@ extension AppKitDriver {
             return "the host's toolbar entry called, no toolbar item touched"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore":
             return "the notification AppKit would post, posted by the driver; the window does not move"
+        case "endContent":
+            return "the navigation delegate told, no web process ended"
         default: break
         }
         switch ability {

@@ -8,7 +8,7 @@ WebView.goBack: ✅
 WebView.goForward: ✅
 WebView.navigated: ✅
 WebView.navigating: ✅
-WebView.processTerminated: ✅
+WebView.processTerminated: ✓ endContent on WebView: the navigation delegate told, no web process ended
 WebView.reload: ✅
 WebView.source: ✅
 WebView.userAgent: ✅

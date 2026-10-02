@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>40 ✅ · 1 ☑️ · 25 ✓</td><td><code>WKWebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 1 ☑️ · 26 ✓</td><td><code>WKWebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 26 ✓</td><td><code>WKWebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 3 –</td><td><code>WebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>44 ✅ · 3 ✓ · 18 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
@@ -65,8 +65,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContrac
 <tbody><tr></tr><tr><td rowspan="2"><code>onNavigated</code> (<code>navigated</code>)</td><td>event</td><td><code>(WebNavigationResult, WebNavigationEvent, String)</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">Android Views: cannot read a document written in place - Android's web view gives back no address for it</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onNavigating</code> (<code>navigating</code>)</td><td>event</td><td><code>(WebNavigationEvent, String)</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onProcessTerminated</code> (<code>processTerminated</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">UIKit: only through the host's own: endContent on WebView: the navigation delegate told, no web process ended</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onProcessTerminated</code> (<code>processTerminated</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit, UIKit: only through the host's own: endContent on WebView: the navigation delegate told, no web process ended</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>reload</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>source</code></td><td>property</td><td><code>WebViewSource</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
 <tr><td colspan="9">Android Views: cannot read a document written in place - Android's web view gives back no address for it<br>GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written</td></tr></tbody>
