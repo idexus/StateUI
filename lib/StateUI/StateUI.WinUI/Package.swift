@@ -16,15 +16,15 @@ let package = Package(
     dependencies: [
         .package(name: "StateUIRoot", path: "../../.."),
         .package(name: "StateUIHost", path: "../StateUI.Host"),
-        .package(name: "StateUIConformance", path: "../StateUI.Conformance"),
     ],
     targets: [
         // The relay: WinUI's subclasses, its events, the doorbell's post and the
-        // frame clock, behind the C functions its header declares.
+        // frame clock, behind the C functions its header declares - exported from
+        // the host's library, which the tests (Testing) call them in.
         .target(
             name: "CStateUIWinUI",
             path: "Sources/CStateUIWinUI",
-            cxxSettings: [.headerSearchPath("../../.projection")],
+            cxxSettings: [.headerSearchPath("../../.projection"), .define("STATEUI_WINUI_RELAY")],
             // An SVG is handed to WinUI from memory; a zone's offset is ICU's, and the kept values stand in the
             // user's local data; a canvas draws with Direct2D and DirectWrite on a Direct3D device.
             linkerSettings: [
@@ -37,18 +37,6 @@ let package = Package(
             dependencies: ["CStateUIWinUI", .product(name: "StateUI", package: "StateUIRoot"),
                 .product(name: "StateUIHost", package: "StateUIHost")],
             path: "Sources/StateUIWinUI",
-            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
-        ),
-        .testTarget(
-            name: "StateUIWinUITests",
-            dependencies: [
-                "StateUIWinUI", "CStateUIWinUI", .product(name: "StateUI", package: "StateUIRoot"),
-                .product(name: "StateUIHost", package: "StateUIHost"),
-                .product(name: "StateUIConformance", package: "StateUIConformance"),
-            ],
-            path: "Tests",
-            // The pictures a test shows, read from where they stand rather than bundled.
-            exclude: ["Resources"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ],

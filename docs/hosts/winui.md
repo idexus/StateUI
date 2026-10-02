@@ -28,7 +28,8 @@ its name in red where it belongs, so a gap is visible rather than silent.
 lib/StateUI/StateUI.WinUI/
   Sources/StateUIWinUI/      the host: its runtime, elements, registrations, layout and window
   Sources/CStateUIWinUI/     the relay: C++/WinRT behind the C functions its header declares
-  Tests/                     the host's suite, run by swift test
+  Testing/                   a package of its own: the host's suite, run by swift test, in Tests/,
+                             and the driver every conformance run on WinUI goes through
 .scripts/WinUI/
   tools.ps1                  the Windows App SDK's versions, the projection, a directory made self-contained
   run-app.ps1                builds an application's WinUI head and starts it
@@ -218,7 +219,7 @@ Windows fails with "the filename or extension is too long" under a deep path.
 .scripts\WinUI\test-winui.ps1
 ```
 
-The suite is XCTest, run by `swift test` in `lib\StateUI\StateUI.WinUI`. WinUI's
-controls stand on the test thread with no loop of WinUI's running, and a test
-lets the thread's messages run where WinUI lays out. The test runner is given
+The suite is XCTest, run by `swift test` in `lib\StateUI\StateUI.WinUI\Testing`.
+WinUI's controls stand on the test thread with no loop of WinUI's running, and
+a test lets the thread's messages run where WinUI lays out. The test runner is given
 the Windows App SDK as an application is, before the run.

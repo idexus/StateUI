@@ -107,7 +107,8 @@ its first launch: the driver forgets what the host's stores keep, and a
 start after it in the same case is the next launch, which finds them.
 
 A host's driver and its suite are a package of their own inside the host's
-folder, `Testing` - the GTK host's `StateUIGTKDriver` and its tests. They
+folder, `Testing` - the WinUI host's `StateUIWinUIDriver`, the GTK host's
+`StateUIGTKDriver`, and their tests. They
 register the host's backends, which depend on the host, so they stand beside
 the host's package rather than in it, and everything there links the host's
 one dynamic library. The driver reads the host's own views, so it is built

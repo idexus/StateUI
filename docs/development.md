@@ -12,7 +12,8 @@ lib/StateUI/exports/               what each host's runs declare and prove, the 
 lib/StateUI/StateUI.AppKit/        independent AppKit host package and tests
 lib/StateUI/StateUI.UIKit/         UIKit host package, its tests an application of their own
 lib/StateUI/StateUI.Android/       Android Views host package, its Java layer and tests
-lib/StateUI/StateUI.WinUI/         WinUI host package, its C++/WinRT relay and tests
+lib/StateUI/StateUI.WinUI/         WinUI host package and its C++/WinRT relay
+lib/StateUI/StateUI.WinUI/Testing/ its tests, and the driver its conformance runs go through
 lib/StateUI/StateUI.GTK/           GTK host package, Swift over GTK's C API
 lib/StateUI/StateUI.GTK/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the package that brings each application's head its host

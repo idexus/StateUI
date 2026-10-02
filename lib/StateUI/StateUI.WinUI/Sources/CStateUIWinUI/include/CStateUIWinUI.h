@@ -15,6 +15,11 @@
 extern "C" {
 #endif
 
+// Compiled in the relay, every function is exported from the host's library, where the host's tests call it too.
+#ifdef STATEUI_WINUI_RELAY
+#pragma clang attribute push(__attribute__((dllexport)), apply_to = function)
+#endif
+
 typedef struct StateUIObject *StateUIObjectRef;
 
 /// A brush as the host hands it: its kind - 0 none, 1 solid, 2 linear, 3 radial - its geometry in fractions of
@@ -885,6 +890,10 @@ int32_t stateui_winui_question(StateUIObjectRef element, char *utf8, int32_t cap
 /// What the screen reader was told since the relay started, in UTF-8, each ended by the unit separator (0x1F) but
 /// the last, as far as `capacity` goes; its whole length. What a test reads.
 int32_t stateui_winui_announced(char *utf8, int32_t capacity);
+
+#ifdef STATEUI_WINUI_RELAY
+#pragma clang attribute pop
+#endif
 
 #ifdef __cplusplus
 }
