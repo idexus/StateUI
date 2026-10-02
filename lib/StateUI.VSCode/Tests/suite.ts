@@ -27,8 +27,8 @@ import { cloneCommand, groupNameProblem, listReleases, releaseDirectory, release
 import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
 import {
-    atLeast, checkToolchain, debuggerFinding, developmentIdentityIn, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report, svgLoaderIn,
-    lldbDapFailure, svgLoaderInGlycin, xcodeVersion,
+    atLeast, checkedPythonIn, checkToolchain, debuggerFinding, developmentIdentityIn, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report,
+    svgLoaderIn, lldbDapFailure, lldbDapFinding, svgLoaderInGlycin, xcodeVersion,
 } from "../Sources/toolchain";
 
 const started = Date.now();
@@ -683,6 +683,9 @@ export async function run(): Promise<void> {
                 && lldbDapFailure(".../usr/bin/lldb-dap: error while loading shared libraries: libpython3.9.so.1.0: cannot open"
                     + " shared object file: No such file or directory\n") === "libpython3.9.so.1.0 is missing"
                 && lldbDapFailure(undefined) === "it did not run"
+                && checkedPythonIn("C:\\Swift\\Python-3.10.1\\usr\\bin\\python310.dll\r\n") === "C:\\Swift\\Python-3.10.1\\usr\\bin\\python310.dll"
+                && checkedPythonIn("error: unable to find 'python310.dll'.\r\nEnsure Python 3.10 (arm64) is installed and available"
+                    + " in your Path.\r\n") === undefined
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
                 && ndkRevisionIn("Pkg.Desc = Android NDK\nPkg.Revision = 30.0.16248370\n") === "30.0.16248370"
                 && developmentIdentityIn('  1) 0A1B "Apple Development: Ann Doe (AB12CD34EF)"\n     1 valid identities found\n')
@@ -690,16 +693,19 @@ export async function run(): Promise<void> {
                 && developmentIdentityIn("     0 valid identities found\n") === undefined
                 && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]
                     === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it.");
-            const findings = await checkToolchain();
+            // As the command asks: the components, then whether the lldb-dap a launch takes starts (Linux, Windows).
+            const starts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
+            const findings = [...await checkToolchain(), ...(starts ? [starts] : [])];
             report(findings).forEach((line) => say(`     ${line}`));
             const own: Record<string, string> = { linux: "GTK 4.14 or newer, with its headers", darwin: "Xcode 27 or newer",
                 win32: "Visual Studio 2026 with the C++ tools for this machine" };
             const missing = findings.filter((each) => each.found === undefined).map((each) => each.component);
-            check(`Check Toolchain looks for Swift, this platform's own and lldb-dap, and finds them all here${
+            check(`Check Toolchain looks for Swift, this platform's own, lldb-dap - one that starts, off the Mac - and Git, and finds them all here${
                 missing.length > 0 ? ` - not ${missing.join(", ")}` : ""}`,
                 findings[0]?.component === "Swift 6.4 or newer" && findings.some((each) => each.component === own[process.platform])
-                && findings.some((each) => each.component === "lldb-dap") && missing.length === 0
-                && findings.every((each) => each.advice.length > 0));
+                && findings.some((each) => each.component === "lldb-dap") && findings.some((each) => each.component === "Git")
+                && (process.platform === "darwin" || starts?.component === "an lldb-dap that starts")
+                && missing.length === 0 && findings.every((each) => each.advice.length > 0));
         }
         // 8. The package holds what the sources build today and nothing an
         //    older build left in out/.

@@ -189,8 +189,9 @@ the hosts it runs, as [Requirements](#requirements) and the handbook's host page
 say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
 JDK and Swift SDK on macOS; Visual Studio's C++ tools, the Windows SDK and the
 WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
-loader and a desktop session on Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch; and Node.js
-for this extension's own build. The **StateUI Toolchain** output lists each
+loader and a desktop session on Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
+and Windows an `lldb-dap` that starts with the Python its LLDB loads; Git for a project group's
+releases; and Node.js for this extension's own build. The **StateUI Toolchain** output lists each
 with what was found - a version older than the one required marked as too old - and
 for each not found what to install. It looks where the build scripts look
 (the NDK as `build-swift.sh` finds it); it installs nothing.
@@ -231,8 +232,11 @@ launch file at all:
 - For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds the
   head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the Windows
   SDK; the WebView2 runtime for the web view's backend (Windows 11 has it);
-  and the `lldb-dap` extension. The scripts fetch C++/WinRT and the Windows
-  App SDK themselves.
+  and the `lldb-dap` extension, with the toolchain's `lldb-dap`, which loads
+  the Python the Swift installer lays beside the toolchain (Check Toolchain
+  asks it, `lldb-dap --check-python`). The scripts fetch C++/WinRT and the
+  Windows App SDK themselves.
+- For a project group's releases: Git, which lists and clones them.
 - For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
   Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
   headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); WebKitGTK 6.0 with

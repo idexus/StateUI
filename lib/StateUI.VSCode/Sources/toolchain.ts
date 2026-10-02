@@ -197,6 +197,16 @@ const lldbDap: Check = {
     },
 };
 
+/** Git, which New Project Group lists StateUI's releases with and clones one by. */
+const git: Check = {
+    component: "Git", neededBy: "New Project Group's releases",
+    advice: "Install Git from https://git-scm.com.",
+    look: async () => {
+        const version = versionIn((await run("git", ["--version"])) ?? "");
+        return version && `${version} (${onPath("git")})`;
+    },
+};
+
 /** Node.js 20 or newer and npm, which build this extension from a checkout. */
 const node: Check = {
     component: "Node.js 20 or newer, with npm", neededBy: "the extension's own build",
@@ -430,7 +440,7 @@ function windowsChecks(): Check[] {
 /** Every component this machine needs, in the order the check reads them. */
 function checks(platform: NodeJS.Platform): Check[] {
     const own = platform === "darwin" ? macChecks() : platform === "win32" ? windowsChecks() : platform === "linux" ? linuxChecks() : [];
-    return [swift, ...own, lldbDap, node];
+    return [swift, ...own, lldbDap, git, node];
 }
 
 /** What this machine has of everything it needs, component by component. */
@@ -471,10 +481,19 @@ export function lldbDapFailure(output: string | undefined): string | undefined {
     return /LLVM version/.test(output) ? undefined : output.split(/\r?\n/)[0].trim();
 }
 
-/** On Linux, whether the lldb-dap a Debug launch starts - the one LLDB DAP's `lldb-dap.executable-path` names, else the
- *  search path's - starts at all: a swift.org toolchain's LLDB is linked with the Python of the distribution it was
- *  built for, which another distribution may not have. Undefined elsewhere, where the toolchain matches its system. */
+/** The Python library `lldb-dap --check-python` printed as the one it resolved, or undefined where it found none. */
+export function checkedPythonIn(output: string | undefined): string | undefined {
+    return output?.split(/\r?\n/).map((line) => line.trim()).find((line) => /^[A-Za-z]:\\.*\.dll$/i.test(line));
+}
+
+/** On Linux and Windows, whether the lldb-dap a Debug launch starts - the one LLDB DAP's `lldb-dap.executable-path`
+ *  names, else the search path's - starts with the Python its LLDB loads: on Linux the distribution's a swift.org
+ *  toolchain was built for, which another may not have; on Windows the one the Swift installer lays beside the
+ *  toolchain. Undefined on macOS, where Xcode's matches its system. */
 export async function lldbDapFinding(configured?: string): Promise<Finding | undefined> {
+    if (process.platform === "win32") {
+        return windowsLldbDapFinding(configured || onPath("lldb-dap"));
+    }
     if (process.platform !== "linux") {
         return undefined;
     }
@@ -487,6 +506,20 @@ export async function lldbDapFinding(configured?: string): Promise<Finding | und
         advice: `${executable ?? "lldb-dap"}: ${failure}. A swift.org toolchain's LLDB takes the Python library of the`
             + " distribution it was built for: install that library - libpython3.9 is python39 from the AUR on Arch - or"
             + " set lldb-dap.executable-path to an lldb-dap that starts.",
+    };
+}
+
+/** Windows' lldb-dap asked which Python library it loads (`--check-python`): `--version` answers before it looks. */
+async function windowsLldbDapFinding(executable: string | undefined): Promise<Finding> {
+    const output = executable ? await run(executable, ["--check-python"]) : undefined;
+    const python = checkedPythonIn(output);
+    const failure = !executable ? "none is on the search path" : output?.split(/\r?\n/)[0].trim() || "it did not run";
+    return {
+        component: "an lldb-dap that starts", neededBy: "Debug",
+        found: python && `its Python ${python} (${executable})`,
+        advice: `${executable ?? "lldb-dap"}: ${failure}. A swift.org toolchain's LLDB loads the Python its installer lays`
+            + " beside the toolchain (Programs\\Swift\\Python-<version>): repair the Swift installation, or set"
+            + " lldb-dap.executable-path to an lldb-dap that starts.",
     };
 }
 
