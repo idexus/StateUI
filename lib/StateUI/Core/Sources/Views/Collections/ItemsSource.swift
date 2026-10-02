@@ -22,7 +22,7 @@ final class ItemsSource<Items: RandomAccessCollection, ID: Hashable>: ItemsViews
         case item(Int, Items.Index)
     }
 
-    private let groups: [ItemsGroup<Items, ID>]
+    private let groups: [Section<Items, ID>]
     private let grouped: Bool
     private var header: (any View)?
     private var footer: (any View)?
@@ -36,7 +36,7 @@ final class ItemsSource<Items: RandomAccessCollection, ID: Hashable>: ItemsViews
     private var identities: [ID: [String]] = [:]
 
     /// The source of `groups`; a list with no groups is one group standing for none.
-    init(groups: [ItemsGroup<Items, ID>], grouped: Bool) {
+    init(groups: [Section<Items, ID>], grouped: Bool) {
         self.groups = groups
         self.grouped = grouped
     }

@@ -548,6 +548,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = FrameReader { frame in Text("\\(frame.width)") }"#,
             contract: #"_ = GeometryReader { frame in Text("\\(frame.width)") }"#),
         Road(
+            name: "a group of items as ItemsGroup",
+            removed: #"_ = ItemsGroup(["a", "b"]) { Text($0) }"#,
+            contract: #"_ = Section(["a", "b"]) { Text($0) }"#),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

@@ -5,14 +5,14 @@
 /// it has them.
 ///
 ///     ItemsView(groups: shelves.map { shelf in
-///         ItemsGroup(shelf.items) { Text($0) }
+///         Section(shelf.items) { Text($0) }
 ///             .id(shelf.name)
 ///             .header(Text(shelf.name).fontAttributes(.bold))
 ///     })
 ///
 /// Each group names itself with `.id`, so two groups may hold equal items; a
 /// group given none is named by its place.
-public struct ItemsGroup<Items: RandomAccessCollection, ID: Hashable> {
+public struct Section<Items: RandomAccessCollection, ID: Hashable> {
     /// The items.
     let items: Items
 

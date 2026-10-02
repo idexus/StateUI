@@ -181,8 +181,8 @@ final class ItemsViewTests: XCTestCase {
     func testGroupsNameTheirItemsApart() throws {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(groups: [
-            ItemsGroup(["Apple", "Pear"]) { Text($0) }.id("Fruit").header(Text("Fruit")),
-            ItemsGroup(["Apple"]) { Text($0) }.id("Cider").footer(Text("1 item")),
+            Section(["Apple", "Pear"]) { Text($0) }.id("Fruit").header(Text("Fruit")),
+            Section(["Apple"]) { Text($0) }.id("Cider").footer(Text("1 item")),
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))

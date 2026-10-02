@@ -43,7 +43,7 @@ private extension HostEventUpdate {
 private struct Place {
     let nav = Navigation()
 
-    var section: Binding<Section> { nav.$section }
+    var section: Binding<GallerySection> { nav.$section }
     var path: Binding<[Route]> { nav.$path }
     var menu: Binding<Bool> { nav.$menuOpen }
     var sheets: Binding<[Sheet]> { nav.$sheets }

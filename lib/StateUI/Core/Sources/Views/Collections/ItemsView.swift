@@ -38,7 +38,7 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// A list of `items`, each its own identity, each looking as `content` says.
     public init<Content: View>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content)
     where Items.Element: Hashable, ID == Items.Element {
-        source = ItemsSource(groups: [ItemsGroup(items, content: content)], grouped: false)
+        source = ItemsSource(groups: [Section(items, content: content)], grouped: false)
     }
 
     /// A list of `items`, each named by the property `id`, each looking as
@@ -46,11 +46,11 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
     public init<Content: View>(
         _ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
-        source = ItemsSource(groups: [ItemsGroup(items, id: id, content: content)], grouped: false)
+        source = ItemsSource(groups: [Section(items, id: id, content: content)], grouped: false)
     }
 
     /// A list of groups, each under its header and over its footer.
-    public init(groups: [ItemsGroup<Items, ID>]) {
+    public init(groups: [Section<Items, ID>]) {
         source = ItemsSource(groups: groups, grouped: true)
     }
 

@@ -19,7 +19,7 @@ import StateUI
 /// render, and a menu row asks `nav.showing(.home)` to know whether it is the
 /// row the user is on - a question this application answers, because this
 /// application is what holds the section.
-enum Section: Hashable {
+enum GallerySection: Hashable {
     /// What the gallery opens with, and the ROOT of the main stack - a group is
     /// pushed on top of it rather than replacing it, because choosing a group
     /// promises a page on the stack and a back button then honours that move.
@@ -118,7 +118,7 @@ enum Sheet: Hashable {
 /// native surface.
 final class Navigation {
     /// Which section the menu has chosen.
-    @State var section: Section = .home
+    @State var section: GallerySection = .home
 
     /// What is pushed on top of it, deepest last. A platform back gesture
     /// truncates this by itself: the host reports the depth that SURVIVED and
@@ -172,7 +172,7 @@ final class Navigation {
     /// it again, so "go home" is one move and lands where the user expects.
     /// An app that would rather each section KEPT its stack holds one array per
     /// section instead - the tabs do exactly that, in `tabsPath`.
-    func open(_ wanted: Section) {
+    func open(_ wanted: GallerySection) {
         section = wanted
         path = []
         if menuOverlays { menuOpen = false }
@@ -214,7 +214,7 @@ final class Navigation {
     /// Home answers this only when nothing is pushed over it: with a group on
     /// the stack the user is IN that group, and the menu says so on the
     /// group's own row.
-    func showing(_ wanted: Section) -> Bool {
+    func showing(_ wanted: GallerySection) -> Bool {
         wanted == .home ? section == .home && path.isEmpty : section == wanted
     }
 
