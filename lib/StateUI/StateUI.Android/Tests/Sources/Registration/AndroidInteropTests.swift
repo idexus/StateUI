@@ -208,8 +208,7 @@ final class AndroidInteropTests: XCTestCase {
     /// An act the application registered is performed and answers the values its contract declares.
     func testAnActTheApplicationRegisteredIsPerformedAndAnswers() throws {
         try onMainActor {
-            AndroidInterop.acts.forget()
-            defer { AndroidInterop.acts.forget() }
+            defer { AndroidInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
             let host = AndroidRenderer.running { Calling() }
 
@@ -223,7 +222,6 @@ final class AndroidInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onMainActor {
-            AndroidInterop.acts.forget()
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()

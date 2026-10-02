@@ -93,8 +93,7 @@ final class AppKitInteropTests: XCTestCase {
     /// its contract declares.
     @MainActor
     func testAnActTheApplicationRegisteredIsPerformedAndAnswers() throws {
-        AppKitInterop.acts.forget()
-        defer { AppKitInterop.acts.forget() }
+        defer { AppKitInterop.acts.forget(InteropTestContract.doubled.token) }
 
         StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
 
@@ -113,8 +112,6 @@ final class AppKitInteropTests: XCTestCase {
     /// throws rather than waiting for an answer nobody will send.
     @MainActor
     func testAnActNobodyRegisteredIsRefusedByName() throws {
-        AppKitInterop.acts.forget()
-        defer { AppKitInterop.acts.forget() }
 
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }
@@ -132,8 +129,6 @@ final class AppKitInteropTests: XCTestCase {
     /// values the contract declares.
     @MainActor
     func testAnEventTheHostRaisesReachesItsSubscriptions() throws {
-        AppKitInterop.acts.forget()
-        defer { AppKitInterop.acts.forget() }
 
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }

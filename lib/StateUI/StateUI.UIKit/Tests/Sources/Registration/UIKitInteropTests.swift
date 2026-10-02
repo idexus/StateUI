@@ -158,8 +158,7 @@ final class UIKitInteropTests: XCTestCase {
     /// An act the application registered is performed and answers the values its contract declares.
     @MainActor
     func testAnActTheApplicationRegisteredIsPerformedAndAnswers() throws {
-        UIKitInterop.acts.forget()
-        defer { UIKitInterop.acts.forget() }
+        defer { UIKitInterop.acts.forget(InteropTestContract.doubled.token) }
         let host = running()
         defer { host.finish() }
         StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
@@ -172,8 +171,6 @@ final class UIKitInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so its caller throws rather than waits.
     @MainActor
     func testAnActNobodyRegisteredIsRefusedByName() throws {
-        UIKitInterop.acts.forget()
-        defer { UIKitInterop.acts.forget() }
         let host = running()
         defer { host.finish() }
 
@@ -214,8 +211,6 @@ final class UIKitInteropTests: XCTestCase {
     /// An act aimed at the application's own element is handed that element's view.
     @MainActor
     func testAnAimedActIsHandedTheApplicationsOwnView() throws {
-        UIKitInterop.acts.forget()
-        defer { UIKitInterop.acts.forget() }
         let host = running()
         defer { host.finish() }
         let lamp = try XCTUnwrap(host.views(LampView.self).first)

@@ -178,8 +178,7 @@ final class GTKInteropTests: XCTestCase {
     /// An act the application registered is performed and answers the values its contract declares.
     func testAnActTheApplicationRegisteredIsPerformedAndAnswers() throws {
         try onUIThread {
-            GTKInterop.acts.forget()
-            defer { GTKInterop.acts.forget() }
+            defer { GTKInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
             let host = GTKRenderer.running { Calling() }
 
@@ -194,8 +193,7 @@ final class GTKInteropTests: XCTestCase {
     /// returns.
     func testAPerformerThatAwaitsAnswersOnceItReturns() throws {
         try onUIThread {
-            GTKInterop.acts.forget()
-            defer { GTKInterop.acts.forget() }
+            defer { GTKInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in
                 try await Task.sleep(nanoseconds: 20_000_000)
                 return number * 2
@@ -212,7 +210,6 @@ final class GTKInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onUIThread {
-            GTKInterop.acts.forget()
             let host = GTKRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(GTKButtonView.self).last).click()

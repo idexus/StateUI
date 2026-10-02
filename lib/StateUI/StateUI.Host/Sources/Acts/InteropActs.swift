@@ -24,11 +24,6 @@
     /// No act registered.
     public init() {}
 
-    /// Forgets every performer: a test registers its own and leaves none standing for the next.
-    public func forget() {
-        performers = [:]
-    }
-
     /// Forgets the performer of `act`: a test takes away what it registered and leaves the others standing.
     public func forget(_ act: Act) {
         performers[act] = nil
