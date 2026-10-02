@@ -85,6 +85,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testBarElement", testBarElement),
             ("testMenuItemElement", testMenuItemElement),
             ("testPageElement", testPageElement),
+            ("testAWindowsPhaseIsTheHostsOwnOnAWindowAlone", testAWindowsPhaseIsTheHostsOwnOnAWindowAlone),
         ]
     }
 
@@ -160,6 +161,16 @@ final class AndroidConformanceTests: XCTestCase {
     func testBarElement() throws { try conform(BarElementTests.self) }
     func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
     func testPageElement() throws { try conform(PageElementTests.self) }
+
+    /// The host tells a window its activity's phase: closing or minimizing anything else is Android's own.
+    func testAWindowsPhaseIsTheHostsOwnOnAWindowAlone() throws {
+        try onMainActor {
+            let driver = AndroidDriver()
+            XCTAssertNotNil(driver.byHost("close on Window"))
+            XCTAssertNil(driver.byHost("close on Picker"))
+            XCTAssertNil(driver.byHost("switchAway on Page"))
+        }
+    }
 
     /// The verdicts of a family run in parts, gathered until its last part writes them.
     nonisolated(unsafe) private static var gathered: [String: [HostVerdict]] = [:]

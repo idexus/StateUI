@@ -9,9 +9,8 @@
 extension AndroidDriver {
     func byHost(_ ability: String) -> String? {
         switch Ability(ability).act {
-        case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close"
-        where Ability(ability).element == "Window":
-            return "the host told the activity's phase, no activity moved"
+        case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
+            if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
         case "toggle" where Ability(ability).element == "SplitView":
             return "the host's own entry the scrim's tap and the bar's button call"
         default: break
