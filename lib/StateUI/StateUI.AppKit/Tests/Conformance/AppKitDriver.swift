@@ -186,6 +186,10 @@ final class AppKitDriver: HostDriver {
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
         if property == .barBackgroundColor { return try barHolds(element) }
+        // Whether a page offers the way back: the window's toolbar holds its back item while the page shows.
+        if property == .hasBackButton, element.type == .page {
+            return (try controller(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.back) != nil).propValue
+        }
         let view = (element.native as? AppKitElement)?.view
         switch (property, view) {
         case (.selectedItems, let items as AppKitItemsView): return .strings(items.selectedForTesting)

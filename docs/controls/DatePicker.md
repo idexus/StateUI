@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (80) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 36 ✅ · 1 ☑️ · 26 🔌 | `NSDatePicker` |  |
+| AppKit | ✅ | 36 ✅ · 1 ☑️ · 1 – · 26 🔌 | `NSDatePicker` |  |
 | UIKit | ✅ | 30 ✅ · 3 – · 25 🔌 | `UIDatePicker` |  |
 | Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – · 3 🔌 | `DatePickerDialog` |  |
 | WinUI 3 | ✅ | 63 ✅ · 1 ☑️ | `CalendarDatePicker` |  |
@@ -159,6 +159,6 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `fontAttributes` | property | `FontAttributes` | native | ✅ |  | ✅ | ✅ | ✅ |  | UIKit: not realized |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | – |  |  |  |  |  | macOS gives an application no text size of the user's to follow.; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `fontFamily` | property | `Name` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read a family - Android's typeface keeps no family's name |
 | `fontSize` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  | UIKit: not realized |

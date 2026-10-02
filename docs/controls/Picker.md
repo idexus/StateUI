@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (82) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 38 ✅ · 1 ☑️ · 26 🔌 | `NSPopUpButton` |  |
+| AppKit | ✅ | 38 ✅ · 1 ☑️ · 1 – · 26 🔌 | `NSPopUpButton` |  |
 | UIKit | ✅ | 26 ✅ · 3 – · 29 🔌 | pop-up `UIButton` menu |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – · 2 🔌 | `Spinner` |  |
 | WinUI 3 | ✅ | 65 ✅ | `ComboBox` |  |
@@ -158,7 +158,7 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `fontAttributes` | property | `FontAttributes` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read fontAttributes of Picker - Android's driver has no path for it yet |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | – |  |  |  |  |  | macOS gives an application no text size of the user's to follow.; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `fontFamily` | property | `Name` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read fontFamily of Picker - Android's driver has no path for it yet |
 | `fontSize` | property | `Double` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read fontSize of Picker - Android's driver has no path for it yet |
 

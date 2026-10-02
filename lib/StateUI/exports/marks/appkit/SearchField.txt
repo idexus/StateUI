@@ -1,7 +1,7 @@
 # revision 1.1
 SearchField: ✅
 SearchField.frameChanged: ✅
-SearchField.returnKey: not realized
+SearchField.returnKey: – A Mac has no keyboard on the screen whose return key says anything.
 SearchField.submitted: ✅
 SearchField.text: ✅
 SearchField.textChanged: ✅

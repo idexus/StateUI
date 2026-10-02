@@ -42,8 +42,13 @@ enum AppKitRealization {
         .partial("VisualElement", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by a layout."),
         .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("VisualElement", "style"),
+        .notPlanned("FontElement", "fontAutoScalingEnabled",
+                    reason: "macOS gives an application no text size of the user's to follow."),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
+        .notPlanned("TextField", "returnKey", reason: "A Mac has no keyboard on the screen whose return key says anything."),
+        .notPlanned("SearchField", "returnKey", reason: "A Mac has no keyboard on the screen whose return key says anything."),
+        .notPlanned("TextField", "showsClearButton", reason: "AppKit's text field has no button of its own that empties it."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Button", "aspect", missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),

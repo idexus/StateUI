@@ -3,7 +3,7 @@ Label.text: ✅
 TextField: ✅
 TextField.frameChanged: ✅
 TextField.isPassword: ✅
-TextField.returnKey: not realized
-TextField.showsClearButton: not realized
+TextField.returnKey: – A Mac has no keyboard on the screen whose return key says anything.
+TextField.showsClearButton: – AppKit's text field has no button of its own that empties it.
 TextField.submitted: ✅
 TextField.text: ✅

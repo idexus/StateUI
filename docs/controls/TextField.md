@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (90) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 42 ✅ · 1 ☑️ · 26 🔌 | `NSTextField` / `NSSecureTextField` |  |
+| AppKit | ✅ | 42 ✅ · 1 ☑️ · 3 – · 26 🔌 | `NSTextField` / `NSSecureTextField` |  |
 | UIKit | ✅ | 49 ✅ · 25 🔌 | `UITextField` |  |
 | Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
 | WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
@@ -50,8 +50,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextFieldContract.
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isPassword` | property | `Bool` | native | ✅ | ✅ | ✅ | ☑️ | ✅ |  | WinUI 3: A PasswordBox has no read-only state, alignment, case, caret or selection: a password field keeps none of these. |
-| `returnKey` | property | `ReturnKey` | adaptive |  | ✅ | · |  |  |  | not realized; Android Views: cannot read returnKey of TextField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
-| `showsClearButton` | property | `Bool` | adaptive |  | ✅ |  |  |  |  | not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `returnKey` | property | `ReturnKey` | adaptive | – | ✅ | · |  |  |  | A Mac has no keyboard on the screen whose return key says anything.; Android Views: cannot read returnKey of TextField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `showsClearButton` | property | `Bool` | adaptive | – | ✅ |  |  |  |  | AppKit's text field has no button of its own that empties it.; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | · | ✅ |  | WinUI 3: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -183,7 +183,7 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | – |  |  |  |  |  | macOS gives an application no text size of the user's to follow.; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `fontFamily` | property | `Name` | native | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read a family - Android's typeface keeps no family's name |
 | `fontSize` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 

@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (12) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 7 ✅ | custom `NSView` |  |
+| AppKit | ✅ | 8 ✅ | custom `NSView` |  |
 | UIKit | ✅ | 12 ✅ | `UIViewController` |  |
 | Android Views | ✅ | 7 ✅ | custom `ViewGroup` |  |
 | WinUI 3 | ✅ | 10 ✅ | `Page` |  |
@@ -57,7 +57,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.
 | `backButtonTitle` | property | `String` | adaptive | · | ✅ |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `background` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it |
 | `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `hasBackButton` | property | `Bool` | adaptive | · | ✅ | · |  |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `hasBackButton` | property | `Bool` | adaptive | ✅ | ✅ | · |  |  |  | Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
 | `hasNavigationBar` | property | `Bool` | adaptive | · | ✅ | · | ✅ | ✅ |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet |
 | `navigatedFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `navigatedTo` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

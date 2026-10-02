@@ -1,26 +1,26 @@
 # revision 1.1
 Button.fontAttributes: ✅
-Button.fontAutoScalingEnabled: not realized
+Button.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 Button.fontFamily: ✅
 Button.fontSize: ✅
 DatePicker.fontAttributes: ✅
-DatePicker.fontAutoScalingEnabled: not realized
+DatePicker.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 DatePicker.fontFamily: ✅
 DatePicker.fontSize: ✅
 Label.fontAttributes: ✅
-Label.fontAutoScalingEnabled: not realized
+Label.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 Label.fontFamily: ✅
 Label.fontSize: ✅
 Picker.fontAttributes: ✅
-Picker.fontAutoScalingEnabled: not realized
+Picker.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 Picker.fontFamily: ✅
 Picker.fontSize: ✅
 RadioButton.fontAttributes: ✅
-RadioButton.fontAutoScalingEnabled: not realized
+RadioButton.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 RadioButton.fontFamily: ✅
 RadioButton.fontSize: ✅
 SearchField.fontAttributes: ✅
-SearchField.fontAutoScalingEnabled: not realized
+SearchField.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
 Span.fontAttributes: cannot read fontAttributes of Span - AppKit's driver has no path for it yet
@@ -28,14 +28,14 @@ Span.fontAutoScalingEnabled: not realized
 Span.fontFamily: not realized
 Span.fontSize: not realized
 TextEditor.fontAttributes: ✅
-TextEditor.fontAutoScalingEnabled: not realized
+TextEditor.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 TextEditor.fontFamily: ✅
 TextEditor.fontSize: ✅
 TextField.fontAttributes: ✅
-TextField.fontAutoScalingEnabled: not realized
+TextField.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 TextField.fontFamily: ✅
 TextField.fontSize: ✅
 TimePicker.fontAttributes: ✅
-TimePicker.fontAutoScalingEnabled: not realized
+TimePicker.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 TimePicker.fontFamily: ✅
 TimePicker.fontSize: ✅
