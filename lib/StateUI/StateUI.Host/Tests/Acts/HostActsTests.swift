@@ -77,6 +77,19 @@ final class HostActsTests: XCTestCase {
         XCTAssertFalse(acts.perform(unknown, in: runtime.tree, core: runtime.core, view: { _ in nil }, log: { _ in }))
     }
 
+    /// An act forgotten is not performed, and every other registration stands - a backend's acts, which a host's
+    /// tests register once for the whole run, among them.
+    func testAnActForgottenLeavesTheOthersStanding() {
+        let acts = InteropActs<String>()
+        acts.add(InteropTestActs.greet) { name in "Hello, (name)" }
+        acts.add(InteropTestActs.shake, control: { _ in 7 }) { control in "\(control)" }
+
+        acts.forget(InteropTestActs.greet.token)
+
+        XCTAssertNil(acts.performers[InteropTestActs.greet.token])
+        XCTAssertNotNil(acts.performers[InteropTestActs.shake.token])
+    }
+
     /// A host's log writes one line a message, begun by the host's name.
     func testALogLineNamesItsHost() {
         let written = Written()

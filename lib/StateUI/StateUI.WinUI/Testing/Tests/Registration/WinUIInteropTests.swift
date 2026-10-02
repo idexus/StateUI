@@ -183,8 +183,7 @@ final class WinUIInteropTests: XCTestCase {
     /// An act the application registered is performed and answers the values its contract declares.
     func testAnActTheApplicationRegisteredIsPerformedAndAnswers() throws {
         try onUIThread {
-            WinUIInterop.acts.forget()
-            defer { WinUIInterop.acts.forget() }
+            defer { WinUIInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
             let host = WinUIRenderer.running { Calling() }
 
@@ -198,8 +197,7 @@ final class WinUIInteropTests: XCTestCase {
     /// A performer may await before it answers, and the call is answered once it returns.
     func testAPerformerThatAwaitsAnswersOnceItReturns() throws {
         try onUIThread {
-            WinUIInterop.acts.forget()
-            defer { WinUIInterop.acts.forget() }
+            defer { WinUIInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in
                 try await Task.sleep(nanoseconds: 20_000_000)
                 return number * 2
@@ -216,7 +214,6 @@ final class WinUIInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onUIThread {
-            WinUIInterop.acts.forget()
             let host = WinUIRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(WinUIButtonView.self).last).invoke()

@@ -29,6 +29,11 @@
         performers = [:]
     }
 
+    /// Forgets the performer of `act`: a test takes away what it registered and leaves the others standing.
+    public func forget(_ act: Act) {
+        performers[act] = nil
+    }
+
     /// Performs an act of the application's own with `perform`, handed the values its contract declares; a second
     /// registration replaces the first.
     public func add<Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable>(
