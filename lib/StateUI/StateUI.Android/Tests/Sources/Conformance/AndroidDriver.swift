@@ -198,9 +198,6 @@ final class AndroidDriver: HostDriver {
         Java.findClass("android/app/Activity"), "setContentView", "(Landroid/view/View;)V")
     static let looper = Java.findClass("stateui/android/test/TestLooper")
     static let runLooperFor = Java.staticMethod(looper, "run", "(J)V")
-    static let editable = Java.findClass("android/text/Editable")
-    static let replace = Java.method(
-        editable, "replace", "(IILjava/lang/CharSequence;)Landroid/text/Editable;")
     static let length = Java.method(Java.findClass("java/lang/CharSequence"), "length", "()I")
     static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
     static let getAlpha = Java.method(JavaAPI.view, "getAlpha", "()F")

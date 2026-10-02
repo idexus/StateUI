@@ -1019,6 +1019,40 @@ VStack.translationY: ✅
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 VStack.zIndex: not realized
+WebView.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
+WebView.accessibilityHint: ✅
+WebView.accessibilityLabel: ✅
+WebView.automationExcludedWithChildren: ✅
+WebView.background: ✅
+WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.frame: ✅
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.ignoresInput: not realized
+WebView.isAccessibilityHidden: ✅
+WebView.isEnabled: not realized
+WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.isVisible: ✅
+WebView.layoutDirection: not realized
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+WebView.opacity: ✅
+WebView.pivotX: ✅
+WebView.pivotY: ✅
+WebView.rotation: ✅
+WebView.rotationX: ✅
+WebView.rotationY: ✅
+WebView.scale: ✅
+WebView.scaleX: ✅
+WebView.scaleY: ✅
+WebView.style: ✅
+WebView.translationX: ✅
+WebView.translationY: ✅
+WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.width: ✅
+WebView.zIndex: not realized
 ZStack.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅

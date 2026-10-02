@@ -122,6 +122,8 @@ enum JavaAPI {
     static let setHintTextColors = Java.method(
         textView, "setHintTextColor", "(Landroid/content/res/ColorStateList;)V")
     static let setInputType = Java.method(textView, "setInputType", "(I)V")
+    static let setKeyListener = Java.method(textView, "setKeyListener", "(Landroid/text/method/KeyListener;)V")
+    static let setShowSoftInputOnFocus = Java.method(textView, "setShowSoftInputOnFocus", "(Z)V")
     static let setImeOptions = Java.method(textView, "setImeOptions", "(I)V")
     static let getSelectionStart = Java.method(textView, "getSelectionStart", "()I")
     static let getSelectionEnd = Java.method(textView, "getSelectionEnd", "()I")

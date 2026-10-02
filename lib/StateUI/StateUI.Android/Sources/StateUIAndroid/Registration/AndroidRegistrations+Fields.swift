@@ -58,7 +58,7 @@ extension AndroidRegistrations {
         InputViewContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
         InputViewContract.inputPurpose, InputViewContract.isTextPredictionEnabled,
         InputViewContract.maximumLength, InputViewContract.cursorPosition, InputViewContract.selectionLength,
-        VisualElementContract.isEnabled,
+        InputViewContract.isReadOnly, VisualElementContract.isEnabled,
     ]
 
     private static func applyField<Realized: ElementContract>(
@@ -90,6 +90,7 @@ extension AndroidRegistrations {
         if values.changed(VisualElementContract.isEnabled) {
             view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
         }
+        if values.changed(InputViewContract.isReadOnly) { view.setReadOnly(values[InputViewContract.isReadOnly] ?? false) }
         view.maximumLength = values[InputViewContract.maximumLength].map { max(0, $0) }
 
         if values.changed(InputViewContract.cursorPosition) || values.changed(InputViewContract.selectionLength) {

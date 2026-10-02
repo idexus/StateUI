@@ -32,6 +32,21 @@ extension AndroidDriver {
             // A spinner that runs is visible; one that stopped is invisible, and the host keeps no other trace.
             return (Java.callInt(spinner.reference, JavaAPI.getVisibility) == 0).propValue
         case (.text, let text as AndroidTextView): return text.text.propValue
+        // The return key as the field asks the keyboard for it: EditorInfo's actions, as the host writes them.
+        case (.returnKey, let field as AndroidTextFieldView):
+            let action = Java.callInt(field.reference, Self.getImeOptions) & 0xff
+            let key: ReturnKey = switch action {
+            case 2: .go
+            case 3: .search
+            case 4: .send
+            case 5: .next
+            case 6: .done
+            default: .default
+            }
+            return key.propValue
+        // Read only: the field offers a keyboard nothing to edit.
+        case (.isReadOnly, let field as AndroidTextFieldView):
+            return (!Java.callBool(field.reference, Self.onCheckIsTextEditor)).propValue
         case (.fontSize, let text as AndroidTextView):
             return Double(Java.callStaticFloat(Self.testText, Self.points, .object(text.reference))).rounded().propValue
         case (.fontAttributes, let text as AndroidTextView):
@@ -100,6 +115,8 @@ extension AndroidDriver {
 
 
     static let isShown = Java.method(JavaAPI.view, "isShown", "()Z")
+    static let onCheckIsTextEditor = Java.method(JavaAPI.view, "onCheckIsTextEditor", "()Z")
+    static let getImeOptions = Java.method(JavaAPI.textView, "getImeOptions", "()I")
     static let getTranslationX = Java.method(JavaAPI.view, "getTranslationX", "()F")
     static let getTranslationY = Java.method(JavaAPI.view, "getTranslationY", "()F")
     static let getRotation = Java.method(JavaAPI.view, "getRotation", "()F")

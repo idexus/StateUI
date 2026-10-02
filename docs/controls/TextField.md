@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 43 ✅ · 1 ☑️ · 26 ✓ · 3 – | `NSTextField` / `NSSecureTextField` |  |
 | UIKit | ✅ | 49 ✅ · 25 ✓ | `UITextField` |  |
-| Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
+| Android Views | ✅ | 70 ✅ · 1 ☑️ · 2 – | `EditText` |  |
 | WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
 | GTK 4 | ✅ | 60 ✅ · 12 ✓ · 1 – | `GtkEntry` / `GtkPasswordEntry` |  |
 | Web |  |  | `<input>` | no host yet |
@@ -50,8 +50,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextFieldContract.
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isPassword` | property | `Bool` | native | ✅ | ✅ | ✅ | ☑️ | ✅ |  | WinUI 3: A PasswordBox has no read-only state, alignment, case, caret or selection: a password field keeps none of these. |
-| `returnKey` | property | `ReturnKey` | adaptive | – | ✅ | · |  |  |  | A Mac has no keyboard on the screen whose return key says anything.; Android Views: cannot read returnKey of TextField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
-| `showsClearButton` | property | `Bool` | adaptive | – | ✅ |  |  |  |  | AppKit's text field has no button of its own that empties it.; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `returnKey` | property | `ReturnKey` | adaptive | – | ✅ | ✅ |  |  |  | A Mac has no keyboard on the screen whose return key says anything.; WinUI 3: not realized; GTK 4: not realized |
+| `showsClearButton` | property | `Bool` | adaptive | – | ✅ | – |  |  |  | AppKit's text field has no button of its own that empties it.; Android Views: Android's text field has no button of its own that empties it.; WinUI 3: not realized; GTK 4: not realized |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | · | ✅ |  | WinUI 3: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -78,7 +78,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextField.isReadOnly |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
@@ -149,7 +149,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cursorPosition` | property | `Int` | native | · | ✅ | ✅ | ✅ | ✅ |  | cannot read cursorPosition of TextField - AppKit's driver has no path for it yet |
 | `inputPurpose` | property | `InputPurpose` | adaptive | ✓ | ✅ | ✅ | ✅ | ✅ |  | only through the host's own: read inputPurpose of TextField: the traits the host keeps; a Mac shows no keys a purpose picks |
-| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  | Android Views: not realized |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ | – | ✅ | ✅ |  | cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet; Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off. |
 | `isTextPredictionEnabled` | property | `Bool` | native | · | ✅ | ✅ | ✅ | ✅ |  | cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet |
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of TextField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
@@ -164,7 +164,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextField.isReadOnly |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)

@@ -113,15 +113,27 @@ extension AndroidDriver {
     private static let (down, up, move) = (Int32(0), Int32(1), Int32(2))
     private static let (hoverMove, hoverEnter, hoverExit) = (Int32(7), Int32(9), Int32(10))
 
-    /// Types `words` as the whole of a field's words, as the keyboard edits them: the field's own words replaced in
-    /// its editable text, which its watcher hears as it hears a key.
+    /// Types `words` as the whole of a field's words, as a keyboard does: through the input connection the field
+    /// gives a keyboard - none where it is read only - its words selected and the new ones committed over them,
+    /// which its watcher hears as it hears a key.
     private static func type(_ words: String, into field: AndroidTextFieldView) {
-        let editable = Java.callObject(field.reference, JavaAPI.getText)!
-        let text = Java.string(words)
-        let length = Java.callInt(editable, length)
-        Java.release(local: Java.callObject(editable, replace, .int(0), .int(length), .object(text)))
-        Java.release(local: text)
-        Java.release(local: editable)
+        Java.frame {
+            let info = Java.new(editorInfo, newEditorInfo)
+            guard let connection = Java.callObject(field.reference, onCreateInputConnection, .object(info.reference)),
+                  let editable = Java.callObject(field.reference, JavaAPI.getText)
+            else { return }
+            _ = Java.callBool(connection, setSelection, .int(0), .int(Java.callInt(editable, length)))
+            _ = Java.callBool(connection, commitText, .object(Java.string(words)), .int(1))
+        }
     }
+
+    static let editorInfo = Java.findClass("android/view/inputmethod/EditorInfo")
+    static let newEditorInfo = Java.method(editorInfo, "<init>", "()V")
+    static let onCreateInputConnection = Java.method(
+        JavaAPI.view, "onCreateInputConnection",
+        "(Landroid/view/inputmethod/EditorInfo;)Landroid/view/inputmethod/InputConnection;")
+    static let inputConnection = Java.findClass("android/view/inputmethod/InputConnection")
+    static let setSelection = Java.method(inputConnection, "setSelection", "(II)Z")
+    static let commitText = Java.method(inputConnection, "commitText", "(Ljava/lang/CharSequence;I)Z")
 
 }

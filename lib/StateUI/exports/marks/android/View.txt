@@ -959,6 +959,38 @@ VStack.swiped: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
 VStack.verticalAlignment: ✅
+WebView.allowDrop: not realized
+WebView.area: ✅
+WebView.canDrag: not realized
+WebView.dragLeave: not realized
+WebView.dragOver: not realized
+WebView.dragStarting: not realized
+WebView.dragText: not realized
+WebView.drop: not realized
+WebView.dropCompleted: not realized
+WebView.frameChanged: ✅
+WebView.gridColumn: ✅
+WebView.gridColumnSpan: ✅
+WebView.gridRow: ✅
+WebView.gridRowSpan: ✅
+WebView.horizontalAlignment: ✅
+WebView.margin: ✅
+WebView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+WebView.panUpdated: ✅
+WebView.panXChannel: ✅
+WebView.panYChannel: ✅
+WebView.pinchUpdated: ✅
+WebView.pointerEntered: ✅
+WebView.pointerExited: ✅
+WebView.pointerMoved: ✅
+WebView.pointerPressed: ✅
+WebView.pointerReleased: ✅
+WebView.swipeDirection: ✅
+WebView.swipeThreshold: ✅
+WebView.swiped: ✅
+WebView.tapCount: ✅
+WebView.tapped: ✅
+WebView.verticalAlignment: ✅
 ZStack.allowDrop: not realized
 ZStack.area: ✅
 ZStack.canDrag: not realized

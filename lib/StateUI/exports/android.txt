@@ -220,6 +220,7 @@ SearchField
   horizontalTextAlignment
   inputPurpose
   isEnabled
+  isReadOnly
   isTextPredictionEnabled
   maximumLength
   placeholder
@@ -260,6 +261,7 @@ TextEditor
   horizontalTextAlignment
   inputPurpose
   isEnabled
+  isReadOnly
   isTextPredictionEnabled
   maximumLength
   placeholder
@@ -278,6 +280,7 @@ TextField
   inputPurpose
   isEnabled
   isPassword
+  isReadOnly
   isTextPredictionEnabled
   maximumLength
   placeholder

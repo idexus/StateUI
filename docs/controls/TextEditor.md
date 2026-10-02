@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 47 ✅ · 1 ☑️ · 26 ✓ · 1 – | `NSTextView` in an `NSScrollView` |  |
 | UIKit | ✅ | 47 ✅ · 25 ✓ | `UITextView` |  |
-| Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | multi-line `EditText` |  |
+| Android Views | ✅ | 68 ✅ · 1 ☑️ · 1 – | multi-line `EditText` |  |
 | WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
 | GTK 4 | ✅ | 59 ✅ · 12 ✓ · 1 – | `GtkTextView` |  |
 | Web |  |  | `<textarea>` | no host yet |
@@ -73,7 +73,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextEditor.isReadOnly |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
@@ -144,7 +144,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cursorPosition` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `inputPurpose` | property | `InputPurpose` | adaptive | ✓ | ✅ | ✅ | ✅ | ✅ |  | only through the host's own: read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks |
-| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  | Android Views: not realized |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isSpellCheckEnabled` | property | `Bool` | native | ✅ | ✅ | – | ✅ | ✅ |  | Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off. |
 | `isTextPredictionEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of TextEditor - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
@@ -159,7 +159,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextEditor.isReadOnly |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)

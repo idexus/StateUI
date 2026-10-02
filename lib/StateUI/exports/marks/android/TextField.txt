@@ -3,7 +3,7 @@ Label.text: ✅
 TextField: ✅
 TextField.frameChanged: ✅
 TextField.isPassword: ✅
-TextField.returnKey: cannot read returnKey of TextField - Android's driver has no path for it yet
-TextField.showsClearButton: not realized
+TextField.returnKey: ✅
+TextField.showsClearButton: – Android's text field has no button of its own that empties it.
 TextField.submitted: ✅
 TextField.text: ✅

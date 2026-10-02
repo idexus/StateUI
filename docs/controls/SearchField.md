@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 42 ✅ · 26 ✓ · 3 – | `NSSearchField` |  |
 | UIKit | ✅ | 47 ✅ · 25 ✓ | `UISearchBar` |  |
-| Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | `SearchView` |  |
+| Android Views | ✅ | 69 ✅ · 1 ☑️ · 1 – | `SearchView` |  |
 | WinUI 3 | ✅ | 64 ✅ · 1 ☑️ | `AutoSuggestBox` |  |
 | GTK 4 | ✅ | 59 ✅ · 12 ✓ · 1 – | `GtkSearchEntry` |  |
 | Web |  |  | `<input type=search>` | no host yet |
@@ -49,7 +49,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `returnKey` | property | `ReturnKey` | adaptive | – | ✅ | · |  |  |  | A Mac has no keyboard on the screen whose return key says anything.; Android Views: cannot read returnKey of SearchField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `returnKey` | property | `ReturnKey` | adaptive | – | ✅ | ✅ |  |  |  | A Mac has no keyboard on the screen whose return key says anything.; WinUI 3: not realized; GTK 4: not realized |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -76,7 +76,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on SearchField.isReadOnly |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
@@ -147,7 +147,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cursorPosition` | property | `Int` | native | · | ✅ | ✅ |  | ✅ |  | cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet; WinUI 3: not realized |
 | `inputPurpose` | property | `InputPurpose` | adaptive | ✓ | ✅ | ✅ |  | ✅ |  | only through the host's own: read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks; WinUI 3: not realized |
-| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  | Android Views: not realized |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ | – |  | ✅ |  | cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet; Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off.; WinUI 3: not realized |
 | `isTextPredictionEnabled` | property | `Bool` | native | · | ✅ | ✅ |  | ✅ |  | cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet; WinUI 3: not realized |
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of SearchField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
@@ -162,7 +162,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on SearchField.isReadOnly |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)

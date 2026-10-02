@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 8 ✅ | custom `NSView` |  |
 | UIKit | ✅ | 12 ✅ | `UIViewController` |  |
-| Android Views | ✅ | 7 ✅ | custom `ViewGroup` |  |
+| Android Views | ✅ | 7 ✅ · 1 – | custom `ViewGroup` |  |
 | WinUI 3 | ✅ | 10 ✅ | `Page` |  |
 | GTK 4 | ✅ | 8 ✅ · 1 – | custom `GtkWidget` |  |
 | Web |  |  | `<section>` | no host yet |
@@ -54,7 +54,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `appearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `backButtonTitle` | property | `String` | adaptive | · | ✅ |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `backButtonTitle` | property | `String` | adaptive | · | ✅ | – |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; Android Views: Android's way back in the bar is an arrow, with no words.; WinUI 3: not realized; GTK 4: not realized |
 | `background` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it |
 | `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `hasBackButton` | property | `Bool` | adaptive | ✅ | ✅ | · |  |  |  | Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
