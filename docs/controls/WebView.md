@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `WKWebView` | not realized |
 | UIKit | ⌛ |  | `WKWebView` |  |
-| Android Views | ⌛ |  | `WebView` |  |
+| Android Views | ✅ | 6 ✅ | `WebView` |  |
 | WinUI 3 | ✅ | 20 ✅ · 15 – | `WebView2`, a backend |  |
 | GTK 4 | ✅ | 52 ✅ · 1 – | WebKitGTK `WebKitWebView`, a backend |  |
 | Web |  |  | `<iframe>` (?) | no host yet |
@@ -55,17 +55,17 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `canGoBackChanged` | event | `Bool` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `canGoForwardChanged` | event | `Bool` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `evaluateJavaScript` | act | `(String) -> String?` |  |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `goBack` | act | `() -> Void` |  |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `goForward` | act | `() -> Void` |  |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `onNavigated` (`navigated`) | event | `(WebNavigationResult, WebNavigationEvent, String)` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `onNavigating` (`navigating`) | event | `(WebNavigationEvent, String)` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `onProcessTerminated` (`processTerminated`) | event |  | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `reload` | act | `() -> Void` |  |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
-| `source` | property | `WebViewSource` | native |  | ⌛ | ⌛ | ✅ | 🔌 |  | not realized; GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written |
-| `userAgent` | property | `String` | adaptive |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `canGoBackChanged` | event | `Bool` | native |  | ⌛ | ✅ | ✅ | ✅ |  | not realized |
+| `canGoForwardChanged` | event | `Bool` | native |  | ⌛ | ✅ | ✅ | ✅ |  | not realized |
+| `evaluateJavaScript` | act | `(String) -> String?` |  |  | ⌛ | ◐ | ✅ | ✅ |  | not realized; Android Views: cannot read userAgent of WebView - Android's driver has no path for it yet |
+| `goBack` | act | `() -> Void` |  |  | ⌛ | ✅ | ✅ | ✅ |  | not realized |
+| `goForward` | act | `() -> Void` |  |  | ⌛ | ✅ | ✅ | ✅ |  | not realized |
+| `onNavigated` (`navigated`) | event | `(WebNavigationResult, WebNavigationEvent, String)` | native |  | ⌛ | · | ✅ | ✅ |  | not realized; Android Views: cannot read source of WebView - Android's driver has no path for it yet |
+| `onNavigating` (`navigating`) | event | `(WebNavigationEvent, String)` | native |  | ⌛ | ◐ | ✅ | ✅ |  | not realized; Android Views: cannot read source of WebView - Android's driver has no path for it yet |
+| `onProcessTerminated` (`processTerminated`) | event |  | native |  | ⌛ | · | ✅ | ✅ |  | not realized; Android Views: cannot endContent on WebView - Android's driver has no path for it yet |
+| `reload` | act | `() -> Void` |  |  | ⌛ | ✅ | ✅ | ✅ |  | not realized |
+| `source` | property | `WebViewSource` | native |  | ⌛ | · | ✅ | 🔌 |  | not realized; Android Views: cannot read source of WebView - Android's driver has no path for it yet; GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written |
+| `userAgent` | property | `String` | adaptive |  | ⌛ | · | ✅ | ✅ |  | not realized; Android Views: cannot read userAgent of WebView - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -130,7 +130,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  | ⌛ | ✅ | ✅ | ✅ |  | not realized |
 | `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
 | `gridRow` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
