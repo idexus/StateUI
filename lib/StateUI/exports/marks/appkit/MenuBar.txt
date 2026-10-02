@@ -1,6 +1,6 @@
 # revision 2.1
-Menu.text: 🔌 read the menu of Window: menu items built from the tree at the read, not the main menu
+Menu.text: ✓ read the menu of Window: menu items built from the tree at the read, not the main menu
 MenuBar: ✅
-MenuBar.order: 🔌 read the menu of Window: menu items built from the tree at the read, not the main menu
+MenuBar.order: ✓ read the menu of Window: menu items built from the tree at the read, not the main menu
 MenuItem.clicked: ✅
-MenuItem.isEnabled: 🔌 read the menu of Window: menu items built from the tree at the read, not the main menu
+MenuItem.isEnabled: ✓ read the menu of Window: menu items built from the tree at the read, not the main menu

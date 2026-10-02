@@ -19,7 +19,7 @@ struct GTKBackendDriving {
     /// Performs an act on the view; false for an act it is not.
     let perform: @MainActor (UserAct, GTKView) throws -> Bool
 
-    /// What it reaches past GTK, by ability, and why - 🔌.
+    /// What it reaches past GTK, by ability, and why - ✓.
     let byHost: [String: String]
 }
 

@@ -5,5 +5,5 @@ TimePicker.format: cannot read format of TimePicker - GTK's clock holds no forma
 TimePicker.frameChanged: ✅
 TimePicker.isOpen: ✅
 TimePicker.opened: ✅
-TimePicker.time: 🔌 pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each
-TimePicker.timeChanged: 🔌 pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each
+TimePicker.time: ✓ pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each
+TimePicker.timeChanged: ✓ pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each

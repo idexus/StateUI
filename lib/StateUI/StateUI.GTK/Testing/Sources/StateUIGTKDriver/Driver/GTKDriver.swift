@@ -63,7 +63,7 @@ final class GTKDriver: HostDriver {
         cannot[ability] ?? "GTK's driver has no path for it yet"
     }
 
-    /// What the driver reaches past GTK, through the host's own entry or record - 🔌.
+    /// What the driver reaches past GTK, through the host's own entry or record - ✓.
     func byHost(_ ability: String) -> String? {
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
         // A span's look is its run's Pango attributes, which GTK reads back.

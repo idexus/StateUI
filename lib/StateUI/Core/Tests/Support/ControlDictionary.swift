@@ -52,11 +52,11 @@ struct ControlDictionary {
     static let legend: [(mark: String, meaning: String)] = [
         ("✅", "Proven by every test of it that ran on that host."),
         ("☑️", "Proven, the host recording what is missing."),
+        ("✓", "Proven only through the host's own entry or record, not the toolkit's; it counts as met."),
         ("–", "Never on that host's family, which meets the contract there."),
         ("🧩", "Left to the application, which registers its own control for it with that host."),
         ("❌", "A test of it failed."),
         ("◐", "Some of its tests proved it, another could not run or read."),
-        ("🔌", "Proven only through the host's own entry or record, not the toolkit's."),
         ("·", "The driver cannot yet do or read what its test needs."),
         ("⏸", "Its test waits on a member the host does not realize."),
         ("⌛", "Said at another revision of its family than it stands at."),
@@ -114,7 +114,7 @@ struct ControlDictionary {
             case .notPlanned(let reason)?: ("–", reason)
             case .failed(let message)?: ("❌", message)
             case .partly(let why)?: ("◐", why)
-            case .byHost(let why)?: ("🔌", "only through the host's own: \(why)")
+            case .byHost(let why)?: ("✓", "only through the host's own: \(why)")
             case .byApplication?: ("🧩", "the application registers its own control")
             case .cannot(let why)?: ("·", "cannot \(why)")
             case .waiting(let gap)?: ("⏸", "waits on \(gap), not realized yet")
@@ -245,7 +245,7 @@ struct ControlDictionary {
                     if mark == "☑️" { marks[platform, default: Marks()].partial += 1 }
                     if mark == "–" { marks[platform, default: Marks()].notPlanned += 1 }
                     if mark == "🧩" { marks[platform, default: Marks()].byApplication += 1 }
-                    if mark == "🔌" { marks[platform, default: Marks()].byHost += 1 }
+                    if mark == "✓" { marks[platform, default: Marks()].byHost += 1 }
                 }
 
                 lines.append("| " + (cells + [Self.notes(notes)]).joined(separator: " | ") + " |")
@@ -546,7 +546,7 @@ struct ControlDictionary {
             if mark == "☑️" { counts.partial += 1 }
             if mark == "–" { counts.notPlanned += 1 }
             if mark == "🧩" { counts.byApplication += 1 }
-            if mark == "🔌" { counts.byHost += 1 }
+            if mark == "✓" { counts.byHost += 1 }
         }
         return Self.counted(counts)
     }
@@ -642,7 +642,7 @@ struct ControlDictionary {
         // The sums: a row each mark that counts as met, met itself, then what is left to the application, shown and
         // not counted. A host with no mark at all shows none.
         let counted: [(label: String, count: (Marks) -> Int, members: String)] = [
-            ("✅", \.done, ""), ("–", \.notPlanned, ""), ("🔌", \.byHost, ""), ("**Met**", \.met, "\(total)"),
+            ("✅", \.done, ""), ("✓", \.byHost, ""), ("–", \.notPlanned, ""), ("**Met**", \.met, "\(total)"),
             ("🧩", \.byApplication, ""),
         ]
         for row in counted {
@@ -659,7 +659,7 @@ struct ControlDictionary {
 
     /// One host's marks on one element, counted: each kind it has, in the legend's order.
     static func counted(_ marks: Marks) -> String {
-        [(marks.done, "✅"), (marks.partial, "☑️"), (marks.notPlanned, "–"), (marks.byApplication, "🧩"), (marks.byHost, "🔌")]
+        [(marks.done, "✅"), (marks.partial, "☑️"), (marks.byHost, "✓"), (marks.notPlanned, "–"), (marks.byApplication, "🧩")]
             .filter { $0.0 > 0 }
             .map { "\($0.0) \($0.1)" }
             .joined(separator: " · ")

@@ -28,7 +28,7 @@
 
     /// Why `ability` - an act, "tap on Label"; a read, "read isOn of CheckBox" - reaches past the toolkit, where it
     /// does: an act handed to the host's own entry rather than the toolkit's input, a read of what the host keeps
-    /// rather than what the toolkit holds. A member a case proves only that way is proven by the host's own - 🔌,
+    /// rather than what the toolkit holds. A member a case proves only that way is proven by the host's own - ✓,
     /// not ✅. Nil where the toolkit's own input or state serves it.
     func byHost(_ ability: String) -> String?
 

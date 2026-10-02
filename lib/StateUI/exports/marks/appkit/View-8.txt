@@ -1,7 +1,7 @@
 # revision 1.1
-ActivityIndicator.panYChannel: 🔌 pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-Button.tapCount: 🔌 tap on Button: handed to the host's recognizer or handler, no NSEvent sent
-Button.tapped: 🔌 tap on Button: handed to the host's recognizer or handler, no NSEvent sent
+ActivityIndicator.panYChannel: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
+Button.tapCount: ✓ tap on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.tapped: ✓ tap on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridRow: ✅
@@ -12,17 +12,17 @@ CheckBox.drop: not realized
 CheckBox.frameChanged: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.verticalAlignment: ✅
-ColorBox.pointerEntered: 🔌 hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
-ColorBox.pointerExited: 🔌 hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
-ColorBox.pointerMoved: 🔌 hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
-ColorBox.pointerPressed: 🔌 hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
-ColorBox.pointerReleased: 🔌 hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
-DatePicker.swipeDirection: 🔌 pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-DatePicker.swipeThreshold: 🔌 pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-DatePicker.swiped: 🔌 pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-Ellipse.panTouchCount: 🔌 pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
-Ellipse.panUpdated: 🔌 pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
-Ellipse.panXChannel: 🔌 pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
+ColorBox.pointerEntered: ✓ hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
+ColorBox.pointerExited: ✓ hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
+ColorBox.pointerMoved: ✓ hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
+ColorBox.pointerPressed: ✓ hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
+ColorBox.pointerReleased: ✓ hover on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
+DatePicker.swipeDirection: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
+DatePicker.swipeThreshold: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
+DatePicker.swiped: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.panTouchCount: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.panUpdated: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.panXChannel: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Grid.frameChanged: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRowSpan: ✅
@@ -34,10 +34,10 @@ Image.dragText: not realized
 Image.dropCompleted: not realized
 Image.frameChanged: ✅
 Image.margin: ✅
-ItemsView.pinchUpdated: 🔌 pinch on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-Label.panYChannel: 🔌 pan on Label: handed to the host's recognizer or handler, no NSEvent sent
-Line.tapCount: 🔌 tap on Line: handed to the host's recognizer or handler, no NSEvent sent
-Line.tapped: 🔌 tap on Line: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.pinchUpdated: ✓ pinch on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+Label.panYChannel: ✓ pan on Label: handed to the host's recognizer or handler, no NSEvent sent
+Line.tapCount: ✓ tap on Line: handed to the host's recognizer or handler, no NSEvent sent
+Line.tapped: ✓ tap on Line: handed to the host's recognizer or handler, no NSEvent sent
 Map.frameChanged: not realized
 Map.gridColumn: not realized
 Map.gridRow: not realized
@@ -48,17 +48,17 @@ Path.drop: not realized
 Path.frameChanged: ✅
 Path.horizontalAlignment: ✅
 Path.verticalAlignment: ✅
-Picker.pointerEntered: 🔌 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.pointerExited: 🔌 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.pointerMoved: 🔌 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.pointerPressed: 🔌 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.pointerReleased: 🔌 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.swipeDirection: 🔌 pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.swipeThreshold: 🔌 pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.swiped: 🔌 pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.panTouchCount: 🔌 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.panUpdated: 🔌 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.panXChannel: 🔌 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerEntered: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerExited: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerMoved: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerPressed: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerReleased: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.swipeDirection: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.swipeThreshold: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.swiped: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.panTouchCount: ✓ pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.panUpdated: ✓ pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.panXChannel: ✓ pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
 RadioButton.canDrag: not realized
@@ -67,10 +67,10 @@ RadioButton.dragText: not realized
 RadioButton.dropCompleted: not realized
 RadioButton.frameChanged: ✅
 RadioButton.margin: ✅
-Rectangle.pinchUpdated: 🔌 pinch on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
-ScrollView.panYChannel: 🔌 pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.tapCount: 🔌 tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.tapped: 🔌 tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.pinchUpdated: ✓ pinch on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.panYChannel: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.tapCount: ✓ tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.tapped: ✓ tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridRow: ✅
@@ -81,20 +81,20 @@ Stepper.drop: not realized
 Stepper.frameChanged: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.verticalAlignment: ✅
-Switch.pointerEntered: 🔌 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.pointerExited: 🔌 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.pointerMoved: 🔌 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.pointerPressed: 🔌 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.pointerReleased: 🔌 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.swipeDirection: 🔌 pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.swipeThreshold: 🔌 pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.swiped: 🔌 pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextField.panTouchCount: 🔌 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
-TextField.panUpdated: 🔌 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
-TextField.panXChannel: 🔌 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerEntered: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerExited: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerMoved: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerPressed: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerReleased: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.swipeDirection: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.swipeThreshold: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.swiped: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextField.panTouchCount: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TextField.panUpdated: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TextField.panXChannel: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.frameChanged: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
 VStack.area: ✅
 VStack.frameChanged: ✅
-ZStack.pinchUpdated: 🔌 pinch on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.pinchUpdated: ✓ pinch on ZStack: handed to the host's recognizer or handler, no NSEvent sent

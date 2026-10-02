@@ -7,7 +7,7 @@ SearchField.isSpellCheckEnabled: ✅
 SearchField.isTextPredictionEnabled: ✅
 SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
-SearchField.placeholderColor: 🔌 read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+SearchField.placeholderColor: ✓ read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
 SearchField.selectionLength: ✅
 SearchField.text: ✅
 SearchField.textChanged: ✅
@@ -19,7 +19,7 @@ TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
 TextEditor.maximumLength: ✅
 TextEditor.placeholder: ✅
-TextEditor.placeholderColor: 🔌 read placeholderColor of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+TextEditor.placeholderColor: ✓ read placeholderColor of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
 TextEditor.selectionLength: ✅
 TextEditor.text: ✅
 TextEditor.textChanged: ✅
@@ -31,7 +31,7 @@ TextField.isSpellCheckEnabled: ✅
 TextField.isTextPredictionEnabled: ✅
 TextField.maximumLength: ✅
 TextField.placeholder: ✅
-TextField.placeholderColor: 🔌 read placeholderColor of TextField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+TextField.placeholderColor: ✓ read placeholderColor of TextField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
 TextField.selectionLength: ✅
 TextField.text: ✅
 TextField.textChanged: ✅

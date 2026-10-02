@@ -2,11 +2,11 @@
 Window: ✅
 Window.activated: ✅
 Window.created: ✅
-Window.deactivated: 🔌 switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
+Window.deactivated: ✓ switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.destroying: ✅
 Window.floatsOnTop: – GTK 4 keeps no window above the others: the desktop stacks them.
 Window.height: ✅
-Window.hidesWhenInactive: 🔌 bringToFront on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
+Window.hidesWhenInactive: ✓ bringToFront on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.isMaximizable: – The desktop fills the screen with any GTK 4 window it can resize: none forbids that alone.
 Window.isMinimizable: – GTK 4 asks the desktop to keep no window from being put away.
 Window.isTranslucent: – GNOME draws its windows opaque: no material shows through one.
@@ -14,11 +14,11 @@ Window.maximumHeight: – GTK 4 bounds no window from above.
 Window.maximumWidth: – GTK 4 bounds no window from above.
 Window.minimumHeight: ✅
 Window.minimumWidth: ✅
-Window.resumed: 🔌 minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
-Window.stopped: 🔌 minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
+Window.resumed: ✓ minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
+Window.stopped: ✓ minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.title: ✅
 Window.width: ✅
-Window.windowType: 🔌 read windowType of Window: the scenes the host keeps for the next start
-Window.windowValue: 🔌 read windowValue of Window: the scenes the host keeps for the next start
+Window.windowType: ✓ read windowType of Window: the scenes the host keeps for the next start
+Window.windowValue: ✓ read windowValue of Window: the scenes the host keeps for the next start
 Window.x: – GNOME places its windows itself: GTK 4 asks no place of the desktop.
 Window.y: – GNOME places its windows itself: GTK 4 asks no place of the desktop.

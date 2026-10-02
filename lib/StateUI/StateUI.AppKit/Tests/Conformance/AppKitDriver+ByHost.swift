@@ -4,7 +4,7 @@
 @_spi(Host) import StateUIConformance
 
 /// What the AppKit driver reaches past AppKit: the acts it hands to the host's own entry, as no event reaches a window
-/// never ordered in, and the reads of what the host keeps. A member proven only that way is the host's own - 🔌.
+/// never ordered in, and the reads of what the host keeps. A member proven only that way is the host's own - ✓.
 /// Design: docs/design/platforms/appkit/conformance.md#what-goes-past-appkit
 extension AppKitDriver {
     func byHost(_ ability: String) -> String? {

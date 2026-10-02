@@ -9,7 +9,7 @@ import CStateUIGTK
 
 /// What the host's own record of a view says, where GTK reads nothing back: the classes of the host's style sheet a
 /// widget wears - its padding, its box, its fill, its placeholder's colour - its transform, a window's place among
-/// the scenes kept - each 🔌.
+/// the scenes kept - each ✓.
 /// Design: docs/design/host/conformance.md#the-driver
 extension GTKDriver {
     /// What the host's record of `element` says of `property`; nil for a member this does not read.

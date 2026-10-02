@@ -33,7 +33,7 @@ extension GTKDriver {
             GTKTestHost.emit(drag, "drag-update", [offset.x, offset.y])
             GTKTestHost.emit(drag, "drag-end", [offset.x, offset.y])
         // GTK takes no touch a driver could put down, so the fingers' place reaches the host's recognizer as GTK's
-        // zoom would hand it - 🔌.
+        // zoom would hand it - ✓.
         case .pinch(let scale, let at):
             guard view.hearing.contains(.pinches) else { return false }
             view.heard(.pinch(.started, scale: 1, at: at))

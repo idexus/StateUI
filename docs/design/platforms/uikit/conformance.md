@@ -74,4 +74,4 @@ to its delegate. A few reads are the host's own too: a check's and a picker's
 state, the split view's flag, the menu bar's entries, a question's captions,
 what it announced, and a transform checked against the layer it composed. The
 driver names each (`byHost`), and a member a case proves only through them is
-the host's own - 🔌 - never ✅.
+the host's own - ✓ - never ✅.

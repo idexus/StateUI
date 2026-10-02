@@ -28,11 +28,11 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/
 | :---: | --- |
 | ✅ | Proven by every test of it that ran on that host. |
 | ☑️ | Proven, the host recording what is missing. |
+| ✓ | Proven only through the host's own entry or record, not the toolkit's; it counts as met. |
 | – | Never on that host's family, which meets the contract there. |
 | 🧩 | Left to the application, which registers its own control for it with that host. |
 | ❌ | A test of it failed. |
 | ◐ | Some of its tests proved it, another could not run or read. |
-| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
 | · | The driver cannot yet do or read what its test needs. |
 | ⏸ | Its test waits on a member the host does not realize. |
 | ⌛ | Said at another revision of its family than it stands at. |
@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (10) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 5 ✅ · 1 🔌 | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
+| AppKit | ✅ | 5 ✅ · 1 ✓ | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
 | UIKit | ✅ | 8 ✅ · 2 – | `UITabBarController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `LinearLayout` tab row |  |
 | WinUI 3 | ✅ | 10 ✅ | `NavigationView` with a top pane |  |
@@ -55,7 +55,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/TabbedViewCo
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure | 🔌 | ✅ | · | ✅ | ✅ |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
+| `currentPage` | property | `Int` | structure | ✓ | ✅ | · | ✅ | ✅ |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
 | `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

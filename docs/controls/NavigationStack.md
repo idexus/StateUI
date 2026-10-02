@@ -26,11 +26,11 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/
 | :---: | --- |
 | ✅ | Proven by every test of it that ran on that host. |
 | ☑️ | Proven, the host recording what is missing. |
+| ✓ | Proven only through the host's own entry or record, not the toolkit's; it counts as met. |
 | – | Never on that host's family, which meets the contract there. |
 | 🧩 | Left to the application, which registers its own control for it with that host. |
 | ❌ | A test of it failed. |
 | ◐ | Some of its tests proved it, another could not run or read. |
-| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
 | · | The driver cannot yet do or read what its test needs. |
 | ⏸ | Its test waits on a member the host does not realize. |
 | ⌛ | Said at another revision of its family than it stands at. |
@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (9) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 4 ✅ · 1 🔌 | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
+| AppKit | ✅ | 4 ✅ · 1 ✓ | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
 | UIKit | ✅ | 7 ✅ · 2 – | `UINavigationController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `ViewGroup` stack + `Toolbar` |  |
 | WinUI 3 | ✅ | 9 ✅ | `Frame` |  |
@@ -53,7 +53,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/NavigationSt
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `popped` | event | `Int` | adaptive | 🔌 | ✅ | · | ✅ | ✅ |  | only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
+| `popped` | event | `Int` | adaptive | ✓ | ✅ | · | ✅ | ✅ |  | only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

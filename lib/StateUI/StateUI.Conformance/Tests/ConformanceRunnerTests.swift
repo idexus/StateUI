@@ -101,7 +101,7 @@ final class ConformanceRunnerTests: XCTestCase {
     }
 
     /// A member a passing case reached only through the host's own entry or record is proven by the host's own,
-    /// 🔌 with which and why - the member of the read alone, every member of the element acted on - and one the toolkit
+    /// ✓ with which and why - the member of the read alone, every member of the element acted on - and one the toolkit
     /// served is ✅.
     func testWhatACaseReachedOnlyThroughTheHostIsTheHostsOwn() {
         let driver = RegisterOnly(realizing: [
@@ -119,8 +119,8 @@ final class ConformanceRunnerTests: XCTestCase {
         ], on: driver)
 
         XCTAssertEqual(HostVerdict.text(verdicts), """
-            Label: 🔌 tap on Label: handed to the recognizer
-            Switch.isOn: 🔌 read isOn of Switch: a copy the host keeps
+            Label: ✓ tap on Label: handed to the recognizer
+            Switch.isOn: ✓ read isOn of Switch: a copy the host keeps
             Switch.toggled: ✅
 
             """)

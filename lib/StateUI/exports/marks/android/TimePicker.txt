@@ -1,7 +1,7 @@
 # revision 2.1
 TimePicker: ✅
 TimePicker.closed: ✅
-TimePicker.format: 🔌 read format of TimePicker: the pattern the relay writes the field in
+TimePicker.format: ✓ read format of TimePicker: the pattern the relay writes the field in
 TimePicker.frameChanged: ✅
 TimePicker.isOpen: ✅
 TimePicker.opened: ✅

@@ -107,7 +107,7 @@ the register calls never is marked – without the case running, and one of an
 element the register leaves to the application (`byApplication`) - a map on
 a platform with none of its own - is marked 🧩 so. A – counts as met: the
 host has done all it will, and the contract is kept there by the family's
-nature. A member proven only through the host's own entry or record, 🔌,
+nature. A member proven only through the host's own entry or record, ✓,
 counts as met too - it works and its effect is proven, by weaker evidence.
 A 🧩 is shown and not counted: what the user gets there is the
 application's. Every total gives each mark a row of its own, so the evidence

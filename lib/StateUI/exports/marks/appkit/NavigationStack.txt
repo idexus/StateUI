@@ -1,5 +1,5 @@
 # revision 2.1
 Label.frameChanged: ✅
 NavigationStack: ✅
-NavigationStack.popped: 🔌 goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched
+NavigationStack.popped: ✓ goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched
 Page.title: ✅

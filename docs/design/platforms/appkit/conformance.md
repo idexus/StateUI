@@ -90,4 +90,4 @@ host's own too: the tab it chose, a spinner's flag, a transform checked
 against the layer it composed, the restoration record, the menu bar's items as
 built at the read, the captions of a question and what it announced. The driver
 names each (`byHost`), and a member a case proves only through them is the
-host's own - 🔌 - never ✅.
+host's own - ✓ - never ✅.

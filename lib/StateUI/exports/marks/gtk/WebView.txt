@@ -10,5 +10,5 @@ WebView.navigated: ✅
 WebView.navigating: ✅
 WebView.processTerminated: ✅
 WebView.reload: ✅
-WebView.source: 🔌 read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written
+WebView.source: ✓ read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written
 WebView.userAgent: ✅

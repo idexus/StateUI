@@ -28,11 +28,11 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](t
 | :---: | --- |
 | ✅ | Proven by every test of it that ran on that host. |
 | ☑️ | Proven, the host recording what is missing. |
+| ✓ | Proven only through the host's own entry or record, not the toolkit's; it counts as met. |
 | – | Never on that host's family, which meets the contract there. |
 | 🧩 | Left to the application, which registers its own control for it with that host. |
 | ❌ | A test of it failed. |
 | ◐ | Some of its tests proved it, another could not run or read. |
-| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
 | · | The driver cannot yet do or read what its test needs. |
 | ⏸ | Its test waits on a member the host does not realize. |
 | ⌛ | Said at another revision of its family than it stands at. |
@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (8) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | 🔌 | 2 ✅ · 1 🔌 | `NSToolbarItem`; `NSMenuToolbarItem` overflow | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
+| AppKit | ✓ | 2 ✅ · 1 ✓ | `NSToolbarItem`; `NSMenuToolbarItem` overflow | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
 | UIKit | ✅ | 6 ✅ | `UIBarButtonItem` |  |
 | Android Views | ✅ | 4 ✅ · 1 – | `Toolbar` `MenuItem` |  |
 | WinUI 3 | ✅ | 8 ✅ | `CommandBar` `AppBarButton` |  |
@@ -72,7 +72,7 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | 🔌 | ✅ | ✅ | ✅ | ✅ |  | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
+| `onClicked` (`clicked`) | event |  | native | ✓ | ✅ | ✅ | ✅ | ✅ |  | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
 | `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ | ✅ |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read a picture's name - Android's item keeps its picture, not its name |
 | `isDestructive` | property | `Bool` | adaptive |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

@@ -1,6 +1,6 @@
 # revision 1.1
-ActivityIndicator.rotationX: 🔌 read rotationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
-Button.pivotX: 🔌 read pivotX of Button: the host's own transform, checked against the layer it composed itself
+ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+Button.pivotX: ✓ read pivotX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.automationExcludedWithChildren: ✅
 CheckBox.accessibilityHint: ✅
 ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
@@ -12,10 +12,10 @@ DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
 DatePicker.minimumWidth: ✅
 Ellipse.opacity: ✅
-Ellipse.translationY: 🔌 read translationY of Ellipse: the host's own transform, checked against the layer it composed itself
-Grid.scaleX: 🔌 read scaleX of Grid: the host's own transform, checked against the layer it composed itself
-HStack.rotationX: 🔌 read rotationX of HStack: the host's own transform, checked against the layer it composed itself
-Image.pivotX: 🔌 read pivotX of Image: the host's own transform, checked against the layer it composed itself
+Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.scaleX: ✓ read scaleX of Grid: the host's own transform, checked against the layer it composed itself
+HStack.rotationX: ✓ read rotationX of HStack: the host's own transform, checked against the layer it composed itself
+Image.pivotX: ✓ read pivotX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.automationExcludedWithChildren: ✅
 Label.accessibilityHint: ✅
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
@@ -27,10 +27,10 @@ Map.maximumWidth: not realized
 Map.minimumHeight: not realized
 Map.minimumWidth: not realized
 Path.opacity: ✅
-Path.translationY: 🔌 read translationY of Path: the host's own transform, checked against the layer it composed itself
-Picker.scaleX: 🔌 read scaleX of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.rotationX: 🔌 read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.pivotX: 🔌 read pivotX of Polyline: the host's own transform, checked against the layer it composed itself
+Path.translationY: ✓ read translationY of Path: the host's own transform, checked against the layer it composed itself
+Picker.scaleX: ✓ read scaleX of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.pivotX: ✓ read pivotX of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.automationExcludedWithChildren: ✅
 RadioButton.accessibilityHint: ✅
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
@@ -42,10 +42,10 @@ ScrollView.maximumWidth: ✅
 ScrollView.minimumHeight: ✅
 ScrollView.minimumWidth: ✅
 SearchField.opacity: ✅
-SearchField.translationY: 🔌 read translationY of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.scaleX: 🔌 read scaleX of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.rotationX: 🔌 read rotationX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.pivotX: 🔌 read pivotX of Switch: the host's own transform, checked against the layer it composed itself
+SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.scaleX: ✓ read scaleX of Slider: the host's own transform, checked against the layer it composed itself
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotX: ✓ read pivotX of Switch: the host's own transform, checked against the layer it composed itself
 TextEditor.automationExcludedWithChildren: ✅
 TextField.accessibilityHint: ✅
 TimePicker.focus: ✅
@@ -57,5 +57,5 @@ VStack.maximumWidth: ✅
 VStack.minimumHeight: ✅
 VStack.minimumWidth: ✅
 WebView.opacity: ✅
-WebView.translationY: 🔌 read translationY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.scaleX: 🔌 read scaleX of ZStack: the host's own transform, checked against the layer it composed itself
+WebView.translationY: ✓ read translationY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform, checked against the layer it composed itself

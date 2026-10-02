@@ -4,7 +4,7 @@
 @_spi(Host) import StateUIConformance
 
 /// What the Android driver reaches past Android: the activity's lifecycle handed to the host's own entry, and the
-/// reads of what the host or its relay keeps. A member proven only that way is the host's own - 🔌.
+/// reads of what the host or its relay keeps. A member proven only that way is the host's own - ✓.
 /// Design: docs/design/platforms/android/conformance.md#what-goes-past-android
 extension AndroidDriver {
     func byHost(_ ability: String) -> String? {

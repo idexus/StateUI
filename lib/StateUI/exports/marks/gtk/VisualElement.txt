@@ -19,17 +19,17 @@ ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
 ActivityIndicator.minimumWidth: ✅
 ActivityIndicator.opacity: ✅
-ActivityIndicator.pivotX: 🔌 read pivotX of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.pivotY: 🔌 read pivotY of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.rotation: 🔌 read rotation of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.rotationX: 🔌 read rotationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.rotationY: 🔌 read rotationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.scale: 🔌 read scale of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.scaleX: 🔌 read scaleX of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.scaleY: 🔌 read scaleY of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.pivotY: ✓ read pivotY of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.rotation: ✓ read rotation of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.scaleX: ✓ read scaleX of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.style: ✅
-ActivityIndicator.translationX: 🔌 read translationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.translationY: 🔌 read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: not realized
@@ -37,7 +37,7 @@ Button.accessibilityHeadingLevel: ✅
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
-Button.background: 🔌 read background of Button: the class of the host's style sheet the widget wears: GTK reads back no background
+Button.background: ✓ read background of Button: the class of the host's style sheet the widget wears: GTK reads back no background
 Button.focus: ✅
 Button.frame: ✅
 Button.frameChanged: ✅
@@ -53,17 +53,17 @@ Button.maximumWidth: ✅
 Button.minimumHeight: ✅
 Button.minimumWidth: ✅
 Button.opacity: ✅
-Button.pivotX: 🔌 read pivotX of Button: the host's own transform: GTK reads back no part of one
-Button.pivotY: 🔌 read pivotY of Button: the host's own transform: GTK reads back no part of one
-Button.rotation: 🔌 read rotation of Button: the host's own transform: GTK reads back no part of one
-Button.rotationX: 🔌 read rotationX of Button: the host's own transform: GTK reads back no part of one
-Button.rotationY: 🔌 read rotationY of Button: the host's own transform: GTK reads back no part of one
-Button.scale: 🔌 read scale of Button: the host's own transform: GTK reads back no part of one
-Button.scaleX: 🔌 read scaleX of Button: the host's own transform: GTK reads back no part of one
-Button.scaleY: 🔌 read scaleY of Button: the host's own transform: GTK reads back no part of one
+Button.pivotX: ✓ read pivotX of Button: the host's own transform: GTK reads back no part of one
+Button.pivotY: ✓ read pivotY of Button: the host's own transform: GTK reads back no part of one
+Button.rotation: ✓ read rotation of Button: the host's own transform: GTK reads back no part of one
+Button.rotationX: ✓ read rotationX of Button: the host's own transform: GTK reads back no part of one
+Button.rotationY: ✓ read rotationY of Button: the host's own transform: GTK reads back no part of one
+Button.scale: ✓ read scale of Button: the host's own transform: GTK reads back no part of one
+Button.scaleX: ✓ read scaleX of Button: the host's own transform: GTK reads back no part of one
+Button.scaleY: ✓ read scaleY of Button: the host's own transform: GTK reads back no part of one
 Button.style: ✅
-Button.translationX: 🔌 read translationX of Button: the host's own transform: GTK reads back no part of one
-Button.translationY: 🔌 read translationY of Button: the host's own transform: GTK reads back no part of one
+Button.translationX: ✓ read translationX of Button: the host's own transform: GTK reads back no part of one
+Button.translationY: ✓ read translationY of Button: the host's own transform: GTK reads back no part of one
 Button.unfocus: ✅
 Button.width: ✅
 Button.zIndex: not realized
@@ -87,17 +87,17 @@ Canvas.maximumWidth: ✅
 Canvas.minimumHeight: ✅
 Canvas.minimumWidth: ✅
 Canvas.opacity: ✅
-Canvas.pivotX: 🔌 read pivotX of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.pivotY: 🔌 read pivotY of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.rotation: 🔌 read rotation of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.rotationX: 🔌 read rotationX of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.rotationY: 🔌 read rotationY of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.scale: 🔌 read scale of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.scaleX: 🔌 read scaleX of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.scaleY: 🔌 read scaleY of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.pivotX: ✓ read pivotX of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.pivotY: ✓ read pivotY of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.rotation: ✓ read rotation of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.rotationX: ✓ read rotationX of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.scale: ✓ read scale of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.style: ✅
-Canvas.translationX: 🔌 read translationX of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.translationY: 🔌 read translationY of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
 Canvas.zIndex: not realized
@@ -121,17 +121,17 @@ CheckBox.maximumWidth: ✅
 CheckBox.minimumHeight: ✅
 CheckBox.minimumWidth: ✅
 CheckBox.opacity: ✅
-CheckBox.pivotX: 🔌 read pivotX of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.pivotY: 🔌 read pivotY of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.rotation: 🔌 read rotation of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.rotationX: 🔌 read rotationX of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.rotationY: 🔌 read rotationY of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.scale: 🔌 read scale of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.scaleX: 🔌 read scaleX of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.scaleY: 🔌 read scaleY of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.pivotX: ✓ read pivotX of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.pivotY: ✓ read pivotY of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.rotation: ✓ read rotation of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.scale: ✓ read scale of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.scaleX: ✓ read scaleX of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.style: ✅
-CheckBox.translationX: 🔌 read translationX of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.translationY: 🔌 read translationY of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.unfocus: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: not realized
@@ -155,17 +155,17 @@ ColorBox.maximumWidth: ✅
 ColorBox.minimumHeight: ✅
 ColorBox.minimumWidth: ✅
 ColorBox.opacity: ✅
-ColorBox.pivotX: 🔌 read pivotX of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.pivotY: 🔌 read pivotY of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.rotation: 🔌 read rotation of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.rotationX: 🔌 read rotationX of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.rotationY: 🔌 read rotationY of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.scale: 🔌 read scale of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.scaleX: 🔌 read scaleX of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.scaleY: 🔌 read scaleY of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.pivotX: ✓ read pivotX of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.pivotY: ✓ read pivotY of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.rotation: ✓ read rotation of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.rotationX: ✓ read rotationX of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.rotationY: ✓ read rotationY of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.scale: ✓ read scale of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.scaleX: ✓ read scaleX of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.style: ✅
-ColorBox.translationX: 🔌 read translationX of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.translationY: 🔌 read translationY of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
 ColorBox.zIndex: not realized
@@ -189,17 +189,17 @@ DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
 DatePicker.minimumWidth: ✅
 DatePicker.opacity: ✅
-DatePicker.pivotX: 🔌 read pivotX of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.pivotY: 🔌 read pivotY of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.rotation: 🔌 read rotation of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.rotationX: 🔌 read rotationX of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.rotationY: 🔌 read rotationY of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.scale: 🔌 read scale of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.scaleX: 🔌 read scaleX of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.scaleY: 🔌 read scaleY of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.pivotX: ✓ read pivotX of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.rotation: ✓ read rotation of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.scale: ✓ read scale of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.style: ✅
-DatePicker.translationX: 🔌 read translationX of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.translationY: 🔌 read translationY of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.unfocus: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: not realized
@@ -223,17 +223,17 @@ Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.opacity: ✅
-Ellipse.pivotX: 🔌 read pivotX of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.pivotY: 🔌 read pivotY of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.rotation: 🔌 read rotation of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.rotationX: 🔌 read rotationX of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.rotationY: 🔌 read rotationY of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.scale: 🔌 read scale of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.scaleX: 🔌 read scaleX of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.scaleY: 🔌 read scaleY of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.pivotX: ✓ read pivotX of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.pivotY: ✓ read pivotY of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.rotation: ✓ read rotation of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.scale: ✓ read scale of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.style: ✅
-Ellipse.translationX: 🔌 read translationX of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.translationY: 🔌 read translationY of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
 Ellipse.zIndex: not realized
@@ -257,17 +257,17 @@ Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
 Grid.minimumWidth: ✅
 Grid.opacity: ✅
-Grid.pivotX: 🔌 read pivotX of Grid: the host's own transform: GTK reads back no part of one
-Grid.pivotY: 🔌 read pivotY of Grid: the host's own transform: GTK reads back no part of one
-Grid.rotation: 🔌 read rotation of Grid: the host's own transform: GTK reads back no part of one
-Grid.rotationX: 🔌 read rotationX of Grid: the host's own transform: GTK reads back no part of one
-Grid.rotationY: 🔌 read rotationY of Grid: the host's own transform: GTK reads back no part of one
-Grid.scale: 🔌 read scale of Grid: the host's own transform: GTK reads back no part of one
-Grid.scaleX: 🔌 read scaleX of Grid: the host's own transform: GTK reads back no part of one
-Grid.scaleY: 🔌 read scaleY of Grid: the host's own transform: GTK reads back no part of one
+Grid.pivotX: ✓ read pivotX of Grid: the host's own transform: GTK reads back no part of one
+Grid.pivotY: ✓ read pivotY of Grid: the host's own transform: GTK reads back no part of one
+Grid.rotation: ✓ read rotation of Grid: the host's own transform: GTK reads back no part of one
+Grid.rotationX: ✓ read rotationX of Grid: the host's own transform: GTK reads back no part of one
+Grid.rotationY: ✓ read rotationY of Grid: the host's own transform: GTK reads back no part of one
+Grid.scale: ✓ read scale of Grid: the host's own transform: GTK reads back no part of one
+Grid.scaleX: ✓ read scaleX of Grid: the host's own transform: GTK reads back no part of one
+Grid.scaleY: ✓ read scaleY of Grid: the host's own transform: GTK reads back no part of one
 Grid.style: ✅
-Grid.translationX: 🔌 read translationX of Grid: the host's own transform: GTK reads back no part of one
-Grid.translationY: 🔌 read translationY of Grid: the host's own transform: GTK reads back no part of one
+Grid.translationX: ✓ read translationX of Grid: the host's own transform: GTK reads back no part of one
+Grid.translationY: ✓ read translationY of Grid: the host's own transform: GTK reads back no part of one
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
 Grid.zIndex: not realized
@@ -291,17 +291,17 @@ HStack.maximumWidth: ✅
 HStack.minimumHeight: ✅
 HStack.minimumWidth: ✅
 HStack.opacity: ✅
-HStack.pivotX: 🔌 read pivotX of HStack: the host's own transform: GTK reads back no part of one
-HStack.pivotY: 🔌 read pivotY of HStack: the host's own transform: GTK reads back no part of one
-HStack.rotation: 🔌 read rotation of HStack: the host's own transform: GTK reads back no part of one
-HStack.rotationX: 🔌 read rotationX of HStack: the host's own transform: GTK reads back no part of one
-HStack.rotationY: 🔌 read rotationY of HStack: the host's own transform: GTK reads back no part of one
-HStack.scale: 🔌 read scale of HStack: the host's own transform: GTK reads back no part of one
-HStack.scaleX: 🔌 read scaleX of HStack: the host's own transform: GTK reads back no part of one
-HStack.scaleY: 🔌 read scaleY of HStack: the host's own transform: GTK reads back no part of one
+HStack.pivotX: ✓ read pivotX of HStack: the host's own transform: GTK reads back no part of one
+HStack.pivotY: ✓ read pivotY of HStack: the host's own transform: GTK reads back no part of one
+HStack.rotation: ✓ read rotation of HStack: the host's own transform: GTK reads back no part of one
+HStack.rotationX: ✓ read rotationX of HStack: the host's own transform: GTK reads back no part of one
+HStack.rotationY: ✓ read rotationY of HStack: the host's own transform: GTK reads back no part of one
+HStack.scale: ✓ read scale of HStack: the host's own transform: GTK reads back no part of one
+HStack.scaleX: ✓ read scaleX of HStack: the host's own transform: GTK reads back no part of one
+HStack.scaleY: ✓ read scaleY of HStack: the host's own transform: GTK reads back no part of one
 HStack.style: ✅
-HStack.translationX: 🔌 read translationX of HStack: the host's own transform: GTK reads back no part of one
-HStack.translationY: 🔌 read translationY of HStack: the host's own transform: GTK reads back no part of one
+HStack.translationX: ✓ read translationX of HStack: the host's own transform: GTK reads back no part of one
+HStack.translationY: ✓ read translationY of HStack: the host's own transform: GTK reads back no part of one
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
 HStack.zIndex: not realized
@@ -325,17 +325,17 @@ Image.maximumWidth: ✅
 Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 Image.opacity: ✅
-Image.pivotX: 🔌 read pivotX of Image: the host's own transform: GTK reads back no part of one
-Image.pivotY: 🔌 read pivotY of Image: the host's own transform: GTK reads back no part of one
-Image.rotation: 🔌 read rotation of Image: the host's own transform: GTK reads back no part of one
-Image.rotationX: 🔌 read rotationX of Image: the host's own transform: GTK reads back no part of one
-Image.rotationY: 🔌 read rotationY of Image: the host's own transform: GTK reads back no part of one
-Image.scale: 🔌 read scale of Image: the host's own transform: GTK reads back no part of one
-Image.scaleX: 🔌 read scaleX of Image: the host's own transform: GTK reads back no part of one
-Image.scaleY: 🔌 read scaleY of Image: the host's own transform: GTK reads back no part of one
+Image.pivotX: ✓ read pivotX of Image: the host's own transform: GTK reads back no part of one
+Image.pivotY: ✓ read pivotY of Image: the host's own transform: GTK reads back no part of one
+Image.rotation: ✓ read rotation of Image: the host's own transform: GTK reads back no part of one
+Image.rotationX: ✓ read rotationX of Image: the host's own transform: GTK reads back no part of one
+Image.rotationY: ✓ read rotationY of Image: the host's own transform: GTK reads back no part of one
+Image.scale: ✓ read scale of Image: the host's own transform: GTK reads back no part of one
+Image.scaleX: ✓ read scaleX of Image: the host's own transform: GTK reads back no part of one
+Image.scaleY: ✓ read scaleY of Image: the host's own transform: GTK reads back no part of one
 Image.style: ✅
-Image.translationX: 🔌 read translationX of Image: the host's own transform: GTK reads back no part of one
-Image.translationY: 🔌 read translationY of Image: the host's own transform: GTK reads back no part of one
+Image.translationX: ✓ read translationX of Image: the host's own transform: GTK reads back no part of one
+Image.translationY: ✓ read translationY of Image: the host's own transform: GTK reads back no part of one
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
 Image.zIndex: not realized
@@ -359,17 +359,17 @@ ItemsView.maximumWidth: ✅
 ItemsView.minimumHeight: ✅
 ItemsView.minimumWidth: ✅
 ItemsView.opacity: ✅
-ItemsView.pivotX: 🔌 read pivotX of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.pivotY: 🔌 read pivotY of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.rotation: 🔌 read rotation of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.rotationX: 🔌 read rotationX of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.rotationY: 🔌 read rotationY of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.scale: 🔌 read scale of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.scaleX: 🔌 read scaleX of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.scaleY: 🔌 read scaleY of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.pivotX: ✓ read pivotX of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.pivotY: ✓ read pivotY of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.rotation: ✓ read rotation of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.scale: ✓ read scale of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.style: not realized
-ItemsView.translationX: 🔌 read translationX of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.translationY: 🔌 read translationY of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.unfocus: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: not realized
@@ -377,7 +377,7 @@ Label.accessibilityHeadingLevel: ✅
 Label.accessibilityHint: ✅
 Label.accessibilityLabel: ✅
 Label.automationExcludedWithChildren: ✅
-Label.background: 🔌 read background of Label: the class of the host's style sheet the widget wears: GTK reads back no background
+Label.background: ✓ read background of Label: the class of the host's style sheet the widget wears: GTK reads back no background
 Label.focus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.frame: ✅
 Label.frameChanged: ✅
@@ -393,17 +393,17 @@ Label.maximumWidth: ✅
 Label.minimumHeight: ✅
 Label.minimumWidth: ✅
 Label.opacity: ✅
-Label.pivotX: 🔌 read pivotX of Label: the host's own transform: GTK reads back no part of one
-Label.pivotY: 🔌 read pivotY of Label: the host's own transform: GTK reads back no part of one
-Label.rotation: 🔌 read rotation of Label: the host's own transform: GTK reads back no part of one
-Label.rotationX: 🔌 read rotationX of Label: the host's own transform: GTK reads back no part of one
-Label.rotationY: 🔌 read rotationY of Label: the host's own transform: GTK reads back no part of one
-Label.scale: 🔌 read scale of Label: the host's own transform: GTK reads back no part of one
-Label.scaleX: 🔌 read scaleX of Label: the host's own transform: GTK reads back no part of one
-Label.scaleY: 🔌 read scaleY of Label: the host's own transform: GTK reads back no part of one
+Label.pivotX: ✓ read pivotX of Label: the host's own transform: GTK reads back no part of one
+Label.pivotY: ✓ read pivotY of Label: the host's own transform: GTK reads back no part of one
+Label.rotation: ✓ read rotation of Label: the host's own transform: GTK reads back no part of one
+Label.rotationX: ✓ read rotationX of Label: the host's own transform: GTK reads back no part of one
+Label.rotationY: ✓ read rotationY of Label: the host's own transform: GTK reads back no part of one
+Label.scale: ✓ read scale of Label: the host's own transform: GTK reads back no part of one
+Label.scaleX: ✓ read scaleX of Label: the host's own transform: GTK reads back no part of one
+Label.scaleY: ✓ read scaleY of Label: the host's own transform: GTK reads back no part of one
 Label.style: ✅
-Label.translationX: 🔌 read translationX of Label: the host's own transform: GTK reads back no part of one
-Label.translationY: 🔌 read translationY of Label: the host's own transform: GTK reads back no part of one
+Label.translationX: ✓ read translationX of Label: the host's own transform: GTK reads back no part of one
+Label.translationY: ✓ read translationY of Label: the host's own transform: GTK reads back no part of one
 Label.unfocus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.width: ✅
 Label.zIndex: not realized
@@ -427,17 +427,17 @@ Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
 Line.opacity: ✅
-Line.pivotX: 🔌 read pivotX of Line: the host's own transform: GTK reads back no part of one
-Line.pivotY: 🔌 read pivotY of Line: the host's own transform: GTK reads back no part of one
-Line.rotation: 🔌 read rotation of Line: the host's own transform: GTK reads back no part of one
-Line.rotationX: 🔌 read rotationX of Line: the host's own transform: GTK reads back no part of one
-Line.rotationY: 🔌 read rotationY of Line: the host's own transform: GTK reads back no part of one
-Line.scale: 🔌 read scale of Line: the host's own transform: GTK reads back no part of one
-Line.scaleX: 🔌 read scaleX of Line: the host's own transform: GTK reads back no part of one
-Line.scaleY: 🔌 read scaleY of Line: the host's own transform: GTK reads back no part of one
+Line.pivotX: ✓ read pivotX of Line: the host's own transform: GTK reads back no part of one
+Line.pivotY: ✓ read pivotY of Line: the host's own transform: GTK reads back no part of one
+Line.rotation: ✓ read rotation of Line: the host's own transform: GTK reads back no part of one
+Line.rotationX: ✓ read rotationX of Line: the host's own transform: GTK reads back no part of one
+Line.rotationY: ✓ read rotationY of Line: the host's own transform: GTK reads back no part of one
+Line.scale: ✓ read scale of Line: the host's own transform: GTK reads back no part of one
+Line.scaleX: ✓ read scaleX of Line: the host's own transform: GTK reads back no part of one
+Line.scaleY: ✓ read scaleY of Line: the host's own transform: GTK reads back no part of one
 Line.style: ✅
-Line.translationX: 🔌 read translationX of Line: the host's own transform: GTK reads back no part of one
-Line.translationY: 🔌 read translationY of Line: the host's own transform: GTK reads back no part of one
+Line.translationX: ✓ read translationX of Line: the host's own transform: GTK reads back no part of one
+Line.translationY: ✓ read translationY of Line: the host's own transform: GTK reads back no part of one
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.width: ✅
 Line.zIndex: not realized
@@ -495,17 +495,17 @@ Path.maximumWidth: ✅
 Path.minimumHeight: ✅
 Path.minimumWidth: ✅
 Path.opacity: ✅
-Path.pivotX: 🔌 read pivotX of Path: the host's own transform: GTK reads back no part of one
-Path.pivotY: 🔌 read pivotY of Path: the host's own transform: GTK reads back no part of one
-Path.rotation: 🔌 read rotation of Path: the host's own transform: GTK reads back no part of one
-Path.rotationX: 🔌 read rotationX of Path: the host's own transform: GTK reads back no part of one
-Path.rotationY: 🔌 read rotationY of Path: the host's own transform: GTK reads back no part of one
-Path.scale: 🔌 read scale of Path: the host's own transform: GTK reads back no part of one
-Path.scaleX: 🔌 read scaleX of Path: the host's own transform: GTK reads back no part of one
-Path.scaleY: 🔌 read scaleY of Path: the host's own transform: GTK reads back no part of one
+Path.pivotX: ✓ read pivotX of Path: the host's own transform: GTK reads back no part of one
+Path.pivotY: ✓ read pivotY of Path: the host's own transform: GTK reads back no part of one
+Path.rotation: ✓ read rotation of Path: the host's own transform: GTK reads back no part of one
+Path.rotationX: ✓ read rotationX of Path: the host's own transform: GTK reads back no part of one
+Path.rotationY: ✓ read rotationY of Path: the host's own transform: GTK reads back no part of one
+Path.scale: ✓ read scale of Path: the host's own transform: GTK reads back no part of one
+Path.scaleX: ✓ read scaleX of Path: the host's own transform: GTK reads back no part of one
+Path.scaleY: ✓ read scaleY of Path: the host's own transform: GTK reads back no part of one
 Path.style: ✅
-Path.translationX: 🔌 read translationX of Path: the host's own transform: GTK reads back no part of one
-Path.translationY: 🔌 read translationY of Path: the host's own transform: GTK reads back no part of one
+Path.translationX: ✓ read translationX of Path: the host's own transform: GTK reads back no part of one
+Path.translationY: ✓ read translationY of Path: the host's own transform: GTK reads back no part of one
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
 Path.zIndex: not realized
@@ -529,17 +529,17 @@ Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅
 Picker.minimumWidth: ✅
 Picker.opacity: ✅
-Picker.pivotX: 🔌 read pivotX of Picker: the host's own transform: GTK reads back no part of one
-Picker.pivotY: 🔌 read pivotY of Picker: the host's own transform: GTK reads back no part of one
-Picker.rotation: 🔌 read rotation of Picker: the host's own transform: GTK reads back no part of one
-Picker.rotationX: 🔌 read rotationX of Picker: the host's own transform: GTK reads back no part of one
-Picker.rotationY: 🔌 read rotationY of Picker: the host's own transform: GTK reads back no part of one
-Picker.scale: 🔌 read scale of Picker: the host's own transform: GTK reads back no part of one
-Picker.scaleX: 🔌 read scaleX of Picker: the host's own transform: GTK reads back no part of one
-Picker.scaleY: 🔌 read scaleY of Picker: the host's own transform: GTK reads back no part of one
+Picker.pivotX: ✓ read pivotX of Picker: the host's own transform: GTK reads back no part of one
+Picker.pivotY: ✓ read pivotY of Picker: the host's own transform: GTK reads back no part of one
+Picker.rotation: ✓ read rotation of Picker: the host's own transform: GTK reads back no part of one
+Picker.rotationX: ✓ read rotationX of Picker: the host's own transform: GTK reads back no part of one
+Picker.rotationY: ✓ read rotationY of Picker: the host's own transform: GTK reads back no part of one
+Picker.scale: ✓ read scale of Picker: the host's own transform: GTK reads back no part of one
+Picker.scaleX: ✓ read scaleX of Picker: the host's own transform: GTK reads back no part of one
+Picker.scaleY: ✓ read scaleY of Picker: the host's own transform: GTK reads back no part of one
 Picker.style: ✅
-Picker.translationX: 🔌 read translationX of Picker: the host's own transform: GTK reads back no part of one
-Picker.translationY: 🔌 read translationY of Picker: the host's own transform: GTK reads back no part of one
+Picker.translationX: ✓ read translationX of Picker: the host's own transform: GTK reads back no part of one
+Picker.translationY: ✓ read translationY of Picker: the host's own transform: GTK reads back no part of one
 Picker.unfocus: ✅
 Picker.width: ✅
 Picker.zIndex: not realized
@@ -563,17 +563,17 @@ Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
 Polygon.minimumWidth: ✅
 Polygon.opacity: ✅
-Polygon.pivotX: 🔌 read pivotX of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.pivotY: 🔌 read pivotY of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.rotation: 🔌 read rotation of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.rotationX: 🔌 read rotationX of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.rotationY: 🔌 read rotationY of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.scale: 🔌 read scale of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.scaleX: 🔌 read scaleX of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.scaleY: 🔌 read scaleY of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.pivotX: ✓ read pivotX of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.rotation: ✓ read rotation of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.scale: ✓ read scale of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.style: ✅
-Polygon.translationX: 🔌 read translationX of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.translationY: 🔌 read translationY of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.translationX: ✓ read translationX of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
 Polygon.zIndex: not realized
@@ -597,17 +597,17 @@ Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
 Polyline.opacity: ✅
-Polyline.pivotX: 🔌 read pivotX of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.pivotY: 🔌 read pivotY of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.rotation: 🔌 read rotation of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.rotationX: 🔌 read rotationX of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.rotationY: 🔌 read rotationY of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.scale: 🔌 read scale of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.scaleX: 🔌 read scaleX of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.scaleY: 🔌 read scaleY of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.pivotX: ✓ read pivotX of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.pivotY: ✓ read pivotY of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.rotation: ✓ read rotation of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.scale: ✓ read scale of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.style: ✅
-Polyline.translationX: 🔌 read translationX of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.translationY: 🔌 read translationY of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.translationX: ✓ read translationX of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
 Polyline.zIndex: not realized
@@ -631,17 +631,17 @@ ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
 ProgressBar.minimumWidth: ✅
 ProgressBar.opacity: ✅
-ProgressBar.pivotX: 🔌 read pivotX of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.pivotY: 🔌 read pivotY of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.rotation: 🔌 read rotation of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.rotationX: 🔌 read rotationX of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.rotationY: 🔌 read rotationY of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.scale: 🔌 read scale of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.scaleX: 🔌 read scaleX of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.scaleY: 🔌 read scaleY of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.pivotX: ✓ read pivotX of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.pivotY: ✓ read pivotY of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.style: ✅
-ProgressBar.translationX: 🔌 read translationX of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.translationY: 🔌 read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
 ProgressBar.zIndex: not realized
@@ -665,17 +665,17 @@ RadioButton.maximumWidth: ✅
 RadioButton.minimumHeight: ✅
 RadioButton.minimumWidth: ✅
 RadioButton.opacity: ✅
-RadioButton.pivotX: 🔌 read pivotX of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.pivotY: 🔌 read pivotY of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.rotation: 🔌 read rotation of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.rotationX: 🔌 read rotationX of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.rotationY: 🔌 read rotationY of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.scale: 🔌 read scale of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.scaleX: 🔌 read scaleX of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.scaleY: 🔌 read scaleY of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.pivotX: ✓ read pivotX of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.pivotY: ✓ read pivotY of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.rotation: ✓ read rotation of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.scale: ✓ read scale of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.scaleX: ✓ read scaleX of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.style: ✅
-RadioButton.translationX: 🔌 read translationX of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.translationY: 🔌 read translationY of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.unfocus: ✅
 RadioButton.width: ✅
 RadioButton.zIndex: not realized
@@ -699,17 +699,17 @@ Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅
 Rectangle.minimumWidth: ✅
 Rectangle.opacity: ✅
-Rectangle.pivotX: 🔌 read pivotX of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.pivotY: 🔌 read pivotY of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.rotation: 🔌 read rotation of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.rotationX: 🔌 read rotationX of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.rotationY: 🔌 read rotationY of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.scale: 🔌 read scale of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.scaleX: 🔌 read scaleX of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.scaleY: 🔌 read scaleY of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.pivotX: ✓ read pivotX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.scale: ✓ read scale of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.style: ✅
-Rectangle.translationX: 🔌 read translationX of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.translationY: 🔌 read translationY of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
 Rectangle.zIndex: not realized
@@ -733,17 +733,17 @@ ScrollView.maximumWidth: ✅
 ScrollView.minimumHeight: ✅
 ScrollView.minimumWidth: ✅
 ScrollView.opacity: ✅
-ScrollView.pivotX: 🔌 read pivotX of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.pivotY: 🔌 read pivotY of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.rotation: 🔌 read rotation of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.rotationX: 🔌 read rotationX of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.rotationY: 🔌 read rotationY of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.scale: 🔌 read scale of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.scaleX: 🔌 read scaleX of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.scaleY: 🔌 read scaleY of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.pivotX: ✓ read pivotX of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.pivotY: ✓ read pivotY of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.scale: ✓ read scale of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.style: ✅
-ScrollView.translationX: 🔌 read translationX of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.translationY: 🔌 read translationY of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.unfocus: ✅
 ScrollView.width: ✅
 ScrollView.zIndex: not realized
@@ -767,17 +767,17 @@ SearchField.maximumWidth: ✅
 SearchField.minimumHeight: ✅
 SearchField.minimumWidth: ✅
 SearchField.opacity: ✅
-SearchField.pivotX: 🔌 read pivotX of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.pivotY: 🔌 read pivotY of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.rotation: 🔌 read rotation of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.rotationX: 🔌 read rotationX of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.rotationY: 🔌 read rotationY of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.scale: 🔌 read scale of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.scaleX: 🔌 read scaleX of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.scaleY: 🔌 read scaleY of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.pivotX: ✓ read pivotX of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.rotation: ✓ read rotation of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.rotationX: ✓ read rotationX of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.scale: ✓ read scale of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.style: ✅
-SearchField.translationX: 🔌 read translationX of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.translationY: 🔌 read translationY of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.translationX: ✓ read translationX of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.unfocus: ✅
 SearchField.width: ✅
 SearchField.zIndex: not realized
@@ -801,17 +801,17 @@ Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
 Slider.minimumWidth: ✅
 Slider.opacity: ✅
-Slider.pivotX: 🔌 read pivotX of Slider: the host's own transform: GTK reads back no part of one
-Slider.pivotY: 🔌 read pivotY of Slider: the host's own transform: GTK reads back no part of one
-Slider.rotation: 🔌 read rotation of Slider: the host's own transform: GTK reads back no part of one
-Slider.rotationX: 🔌 read rotationX of Slider: the host's own transform: GTK reads back no part of one
-Slider.rotationY: 🔌 read rotationY of Slider: the host's own transform: GTK reads back no part of one
-Slider.scale: 🔌 read scale of Slider: the host's own transform: GTK reads back no part of one
-Slider.scaleX: 🔌 read scaleX of Slider: the host's own transform: GTK reads back no part of one
-Slider.scaleY: 🔌 read scaleY of Slider: the host's own transform: GTK reads back no part of one
+Slider.pivotX: ✓ read pivotX of Slider: the host's own transform: GTK reads back no part of one
+Slider.pivotY: ✓ read pivotY of Slider: the host's own transform: GTK reads back no part of one
+Slider.rotation: ✓ read rotation of Slider: the host's own transform: GTK reads back no part of one
+Slider.rotationX: ✓ read rotationX of Slider: the host's own transform: GTK reads back no part of one
+Slider.rotationY: ✓ read rotationY of Slider: the host's own transform: GTK reads back no part of one
+Slider.scale: ✓ read scale of Slider: the host's own transform: GTK reads back no part of one
+Slider.scaleX: ✓ read scaleX of Slider: the host's own transform: GTK reads back no part of one
+Slider.scaleY: ✓ read scaleY of Slider: the host's own transform: GTK reads back no part of one
 Slider.style: ✅
-Slider.translationX: 🔌 read translationX of Slider: the host's own transform: GTK reads back no part of one
-Slider.translationY: 🔌 read translationY of Slider: the host's own transform: GTK reads back no part of one
+Slider.translationX: ✓ read translationX of Slider: the host's own transform: GTK reads back no part of one
+Slider.translationY: ✓ read translationY of Slider: the host's own transform: GTK reads back no part of one
 Slider.unfocus: ✅
 Slider.width: ✅
 Slider.zIndex: not realized
@@ -835,17 +835,17 @@ Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅
 Stepper.minimumWidth: ✅
 Stepper.opacity: ✅
-Stepper.pivotX: 🔌 read pivotX of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.pivotY: 🔌 read pivotY of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.rotation: 🔌 read rotation of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.rotationX: 🔌 read rotationX of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.rotationY: 🔌 read rotationY of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.scale: 🔌 read scale of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.scaleX: 🔌 read scaleX of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.scaleY: 🔌 read scaleY of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.pivotX: ✓ read pivotX of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.rotation: ✓ read rotation of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.scale: ✓ read scale of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.style: ✅
-Stepper.translationX: 🔌 read translationX of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.translationY: 🔌 read translationY of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.translationX: ✓ read translationX of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.unfocus: ✅
 Stepper.width: ✅
 Stepper.zIndex: not realized
@@ -869,17 +869,17 @@ Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
 Switch.minimumWidth: ✅
 Switch.opacity: ✅
-Switch.pivotX: 🔌 read pivotX of Switch: the host's own transform: GTK reads back no part of one
-Switch.pivotY: 🔌 read pivotY of Switch: the host's own transform: GTK reads back no part of one
-Switch.rotation: 🔌 read rotation of Switch: the host's own transform: GTK reads back no part of one
-Switch.rotationX: 🔌 read rotationX of Switch: the host's own transform: GTK reads back no part of one
-Switch.rotationY: 🔌 read rotationY of Switch: the host's own transform: GTK reads back no part of one
-Switch.scale: 🔌 read scale of Switch: the host's own transform: GTK reads back no part of one
-Switch.scaleX: 🔌 read scaleX of Switch: the host's own transform: GTK reads back no part of one
-Switch.scaleY: 🔌 read scaleY of Switch: the host's own transform: GTK reads back no part of one
+Switch.pivotX: ✓ read pivotX of Switch: the host's own transform: GTK reads back no part of one
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform: GTK reads back no part of one
+Switch.rotation: ✓ read rotation of Switch: the host's own transform: GTK reads back no part of one
+Switch.rotationX: ✓ read rotationX of Switch: the host's own transform: GTK reads back no part of one
+Switch.rotationY: ✓ read rotationY of Switch: the host's own transform: GTK reads back no part of one
+Switch.scale: ✓ read scale of Switch: the host's own transform: GTK reads back no part of one
+Switch.scaleX: ✓ read scaleX of Switch: the host's own transform: GTK reads back no part of one
+Switch.scaleY: ✓ read scaleY of Switch: the host's own transform: GTK reads back no part of one
 Switch.style: ✅
-Switch.translationX: 🔌 read translationX of Switch: the host's own transform: GTK reads back no part of one
-Switch.translationY: 🔌 read translationY of Switch: the host's own transform: GTK reads back no part of one
+Switch.translationX: ✓ read translationX of Switch: the host's own transform: GTK reads back no part of one
+Switch.translationY: ✓ read translationY of Switch: the host's own transform: GTK reads back no part of one
 Switch.unfocus: ✅
 Switch.width: ✅
 Switch.zIndex: not realized
@@ -903,17 +903,17 @@ TextEditor.maximumWidth: ✅
 TextEditor.minimumHeight: ✅
 TextEditor.minimumWidth: ✅
 TextEditor.opacity: ✅
-TextEditor.pivotX: 🔌 read pivotX of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.pivotY: 🔌 read pivotY of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.rotation: 🔌 read rotation of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.rotationX: 🔌 read rotationX of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.rotationY: 🔌 read rotationY of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.scale: 🔌 read scale of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.scaleX: 🔌 read scaleX of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.scaleY: 🔌 read scaleY of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.pivotX: ✓ read pivotX of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.pivotY: ✓ read pivotY of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.rotation: ✓ read rotation of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.scale: ✓ read scale of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.style: ✅
-TextEditor.translationX: 🔌 read translationX of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.translationY: 🔌 read translationY of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.unfocus: ✅
 TextEditor.width: ✅
 TextEditor.zIndex: not realized
@@ -937,17 +937,17 @@ TextField.maximumWidth: ✅
 TextField.minimumHeight: ✅
 TextField.minimumWidth: ✅
 TextField.opacity: ✅
-TextField.pivotX: 🔌 read pivotX of TextField: the host's own transform: GTK reads back no part of one
-TextField.pivotY: 🔌 read pivotY of TextField: the host's own transform: GTK reads back no part of one
-TextField.rotation: 🔌 read rotation of TextField: the host's own transform: GTK reads back no part of one
-TextField.rotationX: 🔌 read rotationX of TextField: the host's own transform: GTK reads back no part of one
-TextField.rotationY: 🔌 read rotationY of TextField: the host's own transform: GTK reads back no part of one
-TextField.scale: 🔌 read scale of TextField: the host's own transform: GTK reads back no part of one
-TextField.scaleX: 🔌 read scaleX of TextField: the host's own transform: GTK reads back no part of one
-TextField.scaleY: 🔌 read scaleY of TextField: the host's own transform: GTK reads back no part of one
+TextField.pivotX: ✓ read pivotX of TextField: the host's own transform: GTK reads back no part of one
+TextField.pivotY: ✓ read pivotY of TextField: the host's own transform: GTK reads back no part of one
+TextField.rotation: ✓ read rotation of TextField: the host's own transform: GTK reads back no part of one
+TextField.rotationX: ✓ read rotationX of TextField: the host's own transform: GTK reads back no part of one
+TextField.rotationY: ✓ read rotationY of TextField: the host's own transform: GTK reads back no part of one
+TextField.scale: ✓ read scale of TextField: the host's own transform: GTK reads back no part of one
+TextField.scaleX: ✓ read scaleX of TextField: the host's own transform: GTK reads back no part of one
+TextField.scaleY: ✓ read scaleY of TextField: the host's own transform: GTK reads back no part of one
 TextField.style: ✅
-TextField.translationX: 🔌 read translationX of TextField: the host's own transform: GTK reads back no part of one
-TextField.translationY: 🔌 read translationY of TextField: the host's own transform: GTK reads back no part of one
+TextField.translationX: ✓ read translationX of TextField: the host's own transform: GTK reads back no part of one
+TextField.translationY: ✓ read translationY of TextField: the host's own transform: GTK reads back no part of one
 TextField.unfocus: ✅
 TextField.width: ✅
 TextField.zIndex: not realized
@@ -971,17 +971,17 @@ TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
 TimePicker.minimumWidth: ✅
 TimePicker.opacity: ✅
-TimePicker.pivotX: 🔌 read pivotX of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.pivotY: 🔌 read pivotY of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.rotation: 🔌 read rotation of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.rotationX: 🔌 read rotationX of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.rotationY: 🔌 read rotationY of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.scale: 🔌 read scale of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.scaleX: 🔌 read scaleX of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.scaleY: 🔌 read scaleY of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.pivotX: ✓ read pivotX of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.pivotY: ✓ read pivotY of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.scale: ✓ read scale of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.style: ✅
-TimePicker.translationX: 🔌 read translationX of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.translationY: 🔌 read translationY of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.unfocus: ✅
 TimePicker.width: ✅
 TimePicker.zIndex: not realized
@@ -1005,17 +1005,17 @@ VStack.maximumWidth: ✅
 VStack.minimumHeight: ✅
 VStack.minimumWidth: ✅
 VStack.opacity: ✅
-VStack.pivotX: 🔌 read pivotX of VStack: the host's own transform: GTK reads back no part of one
-VStack.pivotY: 🔌 read pivotY of VStack: the host's own transform: GTK reads back no part of one
-VStack.rotation: 🔌 read rotation of VStack: the host's own transform: GTK reads back no part of one
-VStack.rotationX: 🔌 read rotationX of VStack: the host's own transform: GTK reads back no part of one
-VStack.rotationY: 🔌 read rotationY of VStack: the host's own transform: GTK reads back no part of one
-VStack.scale: 🔌 read scale of VStack: the host's own transform: GTK reads back no part of one
-VStack.scaleX: 🔌 read scaleX of VStack: the host's own transform: GTK reads back no part of one
-VStack.scaleY: 🔌 read scaleY of VStack: the host's own transform: GTK reads back no part of one
+VStack.pivotX: ✓ read pivotX of VStack: the host's own transform: GTK reads back no part of one
+VStack.pivotY: ✓ read pivotY of VStack: the host's own transform: GTK reads back no part of one
+VStack.rotation: ✓ read rotation of VStack: the host's own transform: GTK reads back no part of one
+VStack.rotationX: ✓ read rotationX of VStack: the host's own transform: GTK reads back no part of one
+VStack.rotationY: ✓ read rotationY of VStack: the host's own transform: GTK reads back no part of one
+VStack.scale: ✓ read scale of VStack: the host's own transform: GTK reads back no part of one
+VStack.scaleX: ✓ read scaleX of VStack: the host's own transform: GTK reads back no part of one
+VStack.scaleY: ✓ read scaleY of VStack: the host's own transform: GTK reads back no part of one
 VStack.style: ✅
-VStack.translationX: 🔌 read translationX of VStack: the host's own transform: GTK reads back no part of one
-VStack.translationY: 🔌 read translationY of VStack: the host's own transform: GTK reads back no part of one
+VStack.translationX: ✓ read translationX of VStack: the host's own transform: GTK reads back no part of one
+VStack.translationY: ✓ read translationY of VStack: the host's own transform: GTK reads back no part of one
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 VStack.zIndex: not realized
@@ -1039,17 +1039,17 @@ WebView.maximumWidth: ✅
 WebView.minimumHeight: ✅
 WebView.minimumWidth: ✅
 WebView.opacity: ✅
-WebView.pivotX: 🔌 read pivotX of WebView: the host's own transform: GTK reads back no part of one
-WebView.pivotY: 🔌 read pivotY of WebView: the host's own transform: GTK reads back no part of one
-WebView.rotation: 🔌 read rotation of WebView: the host's own transform: GTK reads back no part of one
-WebView.rotationX: 🔌 read rotationX of WebView: the host's own transform: GTK reads back no part of one
-WebView.rotationY: 🔌 read rotationY of WebView: the host's own transform: GTK reads back no part of one
-WebView.scale: 🔌 read scale of WebView: the host's own transform: GTK reads back no part of one
-WebView.scaleX: 🔌 read scaleX of WebView: the host's own transform: GTK reads back no part of one
-WebView.scaleY: 🔌 read scaleY of WebView: the host's own transform: GTK reads back no part of one
+WebView.pivotX: ✓ read pivotX of WebView: the host's own transform: GTK reads back no part of one
+WebView.pivotY: ✓ read pivotY of WebView: the host's own transform: GTK reads back no part of one
+WebView.rotation: ✓ read rotation of WebView: the host's own transform: GTK reads back no part of one
+WebView.rotationX: ✓ read rotationX of WebView: the host's own transform: GTK reads back no part of one
+WebView.rotationY: ✓ read rotationY of WebView: the host's own transform: GTK reads back no part of one
+WebView.scale: ✓ read scale of WebView: the host's own transform: GTK reads back no part of one
+WebView.scaleX: ✓ read scaleX of WebView: the host's own transform: GTK reads back no part of one
+WebView.scaleY: ✓ read scaleY of WebView: the host's own transform: GTK reads back no part of one
 WebView.style: ✅
-WebView.translationX: 🔌 read translationX of WebView: the host's own transform: GTK reads back no part of one
-WebView.translationY: 🔌 read translationY of WebView: the host's own transform: GTK reads back no part of one
+WebView.translationX: ✓ read translationX of WebView: the host's own transform: GTK reads back no part of one
+WebView.translationY: ✓ read translationY of WebView: the host's own transform: GTK reads back no part of one
 WebView.unfocus: ✅
 WebView.width: ✅
 WebView.zIndex: not realized
@@ -1073,17 +1073,17 @@ ZStack.maximumWidth: ✅
 ZStack.minimumHeight: ✅
 ZStack.minimumWidth: ✅
 ZStack.opacity: ✅
-ZStack.pivotX: 🔌 read pivotX of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.pivotY: 🔌 read pivotY of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.rotation: 🔌 read rotation of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.rotationX: 🔌 read rotationX of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.rotationY: 🔌 read rotationY of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.scale: 🔌 read scale of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.scaleX: 🔌 read scaleX of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.scaleY: 🔌 read scaleY of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.pivotY: ✓ read pivotY of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.rotation: ✓ read rotation of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.rotationX: ✓ read rotationX of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.scale: ✓ read scale of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.style: ✅
-ZStack.translationX: 🔌 read translationX of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.translationY: 🔌 read translationY of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.width: ✅
 ZStack.zIndex: not realized

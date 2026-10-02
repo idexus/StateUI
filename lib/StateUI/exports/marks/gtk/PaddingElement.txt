@@ -1,9 +1,9 @@
 # revision 1.1
-Button.padding: 🔌 read padding of Button: the class of the host's style sheet the widget wears: GTK reads back no padding
+Button.padding: ✓ read padding of Button: the class of the host's style sheet the widget wears: GTK reads back no padding
 Grid.padding: ✅
 HStack.padding: ✅
-Label.padding: 🔌 read padding of Label: the class of the host's style sheet the widget wears: GTK reads back no padding
-RadioButton.padding: 🔌 read padding of RadioButton: the class of the host's style sheet the widget wears: GTK reads back no padding
+Label.padding: ✓ read padding of Label: the class of the host's style sheet the widget wears: GTK reads back no padding
+RadioButton.padding: ✓ read padding of RadioButton: the class of the host's style sheet the widget wears: GTK reads back no padding
 ScrollView.padding: ✅
 VStack.padding: ✅
 ZStack.padding: ✅

@@ -6,4 +6,4 @@ TimePicker.frameChanged: ✅
 TimePicker.isOpen: not realized
 TimePicker.opened: not realized
 TimePicker.time: ✅
-TimePicker.timeChanged: 🔌 pickTime on TimePicker: the host's change handler called, not the picker's action
+TimePicker.timeChanged: ✓ pickTime on TimePicker: the host's change handler called, not the picker's action

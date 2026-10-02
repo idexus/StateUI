@@ -6,6 +6,6 @@ Button.icon: cannot read icon of Button - AppKit's driver has no path for it yet
 Button.iconPosition: ✅
 Button.iconSpacing: not realized
 Button.lineBreak: ✅
-Button.pressed: 🔌 pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
-Button.released: 🔌 pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.pressed: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.released: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Label.text: ✅
