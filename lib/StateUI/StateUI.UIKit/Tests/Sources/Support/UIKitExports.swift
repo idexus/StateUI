@@ -36,7 +36,7 @@ enum UIKitExports {
 
     /// `lib/StateUI/StateUI.Conformance/revisions.txt`, in the conformance package.
     private static var revisions: String {
-        let url = folder.deletingLastPathComponent().appendingPathComponent("lib/StateUI/StateUI.Conformance/revisions.txt")
+        let url = folder.deletingLastPathComponent().appendingPathComponent("StateUI.Conformance/revisions.txt")
         // No file is no revision: every family would read as standing at 1, whatever was raised.
         guard let text = try? String(contentsOf: url, encoding: .utf8) else { preconditionFailure("no \(url.path)") }
         return text

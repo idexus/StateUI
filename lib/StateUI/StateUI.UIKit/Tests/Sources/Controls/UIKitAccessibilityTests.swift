@@ -22,7 +22,7 @@ final class UIKitAccessibilityTests: XCTestCase {
             }
         }
         defer { host.finish() }
-        let picker = try XCTUnwrap(host.views(UIKitDateTimePickerView.self).first)
+        let picker = try XCTUnwrap(host.views(UIKitDatePickerView.self).first)
         let spinner = try XCTUnwrap(host.views(UIKitActivityIndicatorView.self).first)
         XCTAssertTrue(picker.accessibilityElementsHidden, "the picker's parts")
         XCTAssertTrue(spinner.accessibilityElementsHidden, "the spinner's")

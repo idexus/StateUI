@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (80) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 36 ✅ · 1 ☑️ | `NSDatePicker` |  |
-| UIKit | ⌛ | 24 ✅ · 3 – | `UIDatePicker` |  |
+| UIKit | ✅ | 29 ✅ · 3 – | `UIDatePicker` |  |
 | Android Views | ⌛ | 52 ✅ · 1 ☑️ · 3 – | `DatePickerDialog` |  |
 | WinUI 3 | ✅ | 63 ✅ · 1 ☑️ | `CalendarDatePicker` |  |
 | GTK 4 | ⌛ | 45 ✅ · 1 – | `GtkCalendar` in a `GtkPopover` |  |
@@ -47,14 +47,14 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/DatePickerCont
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClosed` (`closed`) | event |  | native |  | ⌛ | ⌛ | ✅ | ⌛ |  | not realized |
-| `date` | property | `CalendarDate` | native | ✅ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
-| `onDateChanged` (`dateChanged`) | event | `CalendarDate` | native | 🔌 | ⌛ | ⌛ | ✅ | ⌛ |  | only through the host's own: pickDate on DatePicker: the host's change handler called, not the picker's action |
-| `format` | property | `String` | native |  | ⌛ | ⌛ | ☑️ | ⌛ |  | not realized; WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d". |
-| `isOpen` | property | `Bool` | native |  | ⌛ | ⌛ | ✅ | ⌛ |  | not realized |
-| `maximumDate` | property | `CalendarDate` | native | ✅ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
-| `minimumDate` | property | `CalendarDate` | native | ✅ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
-| `onOpened` (`opened`) | event |  | native |  | ⌛ | ⌛ | ✅ | ⌛ |  | not realized |
+| `onClosed` (`closed`) | event |  | native |  |  | ⌛ | ✅ | ⌛ |  | not realized; UIKit: not realized |
+| `date` | property | `CalendarDate` | native | ✅ | ✅ | ⌛ | ✅ | ⌛ |  |  |
+| `onDateChanged` (`dateChanged`) | event | `CalendarDate` | native | 🔌 | ✅ | ⌛ | ✅ | ⌛ |  | only through the host's own: pickDate on DatePicker: the host's change handler called, not the picker's action |
+| `format` | property | `String` | native |  |  | ⌛ | ☑️ | ⌛ |  | not realized; UIKit: not realized; WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d". |
+| `isOpen` | property | `Bool` | native |  |  | ⌛ | ✅ | ⌛ |  | not realized; UIKit: not realized |
+| `maximumDate` | property | `CalendarDate` | native | ✅ | ✅ | ⌛ | ✅ | ⌛ |  |  |
+| `minimumDate` | property | `CalendarDate` | native | ✅ | ✅ | ⌛ | ✅ | ⌛ |  |  |
+| `onOpened` (`opened`) | event |  | native |  |  | ⌛ | ✅ | ⌛ |  | not realized; UIKit: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -119,7 +119,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ⌛ | ✅ | ⌛ |  |  |
 | `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

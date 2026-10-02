@@ -31,37 +31,26 @@ extension UIKitRegistrations {
         })
 
         registry.add(DatePickerContract.self, create: { reports in
-            let picker = UIKitDateTimePickerView(mode: .date)
-            picker.onValueChanged = { lanes in
-                guard let picked = CalendarDate(propValue: .numbers(lanes)) else { return }
-                reports.report(DatePickerContract.date, picked, as: DatePickerContract.dateChanged)
-            }
+            let picker = UIKitDatePickerView()
+            picker.onChosen = { day in reports.report(DatePickerContract.date, day, as: DatePickerContract.dateChanged) }
             return picker
         }, members: { picker in
             picker.applies([
                 DatePickerContract.date, DatePickerContract.minimumDate, DatePickerContract.maximumDate,
             ]) { view, values in
-                view.apply(
-                    value: values.changed(DatePickerContract.date)
-                        ? values[DatePickerContract.date]?.propValue.numbers : nil,
-                    minimum: values[DatePickerContract.minimumDate]?.propValue.numbers,
-                    maximum: values[DatePickerContract.maximumDate]?.propValue.numbers)
+                view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
+                if values.changed(DatePickerContract.date) { view.setDay(values[DatePickerContract.date]) }
             }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             picker.raises(DatePickerContract.dateChanged)
         })
 
         registry.add(TimePickerContract.self, create: { reports in
-            let picker = UIKitDateTimePickerView(mode: .time)
-            picker.onValueChanged = { lanes in
-                guard let picked = ClockTime(propValue: .numbers(lanes)) else { return }
-                reports.report(TimePickerContract.time, picked, as: TimePickerContract.timeChanged)
-            }
+            let picker = UIKitTimePickerView()
+            picker.onChosen = { time in reports.report(TimePickerContract.time, time, as: TimePickerContract.timeChanged) }
             return picker
         }, members: { picker in
-            picker.property(TimePickerContract.time) { view, time in
-                view.apply(value: time?.propValue.numbers, minimum: nil, maximum: nil)
-            }
+            picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             picker.raises(TimePickerContract.timeChanged)
         })

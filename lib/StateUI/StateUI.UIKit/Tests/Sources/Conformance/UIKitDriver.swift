@@ -245,22 +245,14 @@ final class UIKitDriver: HostDriver {
         case (.lift(let point), _): try touch(element) { listening, _ in lift(listening, at: point) }
         case (.hover(let point), _): try touch(element) { listening, view in Self.hover(listening, on: view, at: point) }
         case (.leave, _): try touch(element) { listening, view in Self.leave(listening, on: view) }
-        case (.pickDate(let day), let picker as UIKitDateTimePickerView):
-            picker.apply(value: day.propValue.numbers, minimum: nil, maximum: nil)
+        case (.pickDate(let day), let picker as UIKitDatePickerView):
+            picker.setDay(day)
             picker.sendActions(for: .valueChanged)
-        case (.pickTime(let time), let picker as UIKitDateTimePickerView):
-            picker.apply(value: time.propValue.numbers, minimum: nil, maximum: nil)
+        case (.pickTime(let time), let picker as UIKitTimePickerView):
+            picker.setTime(time)
             picker.sendActions(for: .valueChanged)
         default: throw DriverCannot(act, on: element)
         }
-    }
-
-    /// A day a date picker holds, as the tree says one.
-    private static func day(_ date: Date) -> HostValue {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "UTC")!
-        let parts = calendar.dateComponents([.year, .month, .day], from: date)
-        return CalendarDate(year: parts.year ?? 0, month: parts.month ?? 1, day: parts.day ?? 1).propValue
     }
 
     /// Where the element's view stands in its window, as UIKit placed it.
@@ -312,12 +304,10 @@ final class UIKitDriver: HostDriver {
         case (.selectedIndex, let picker as UIKitPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as UIKitPickerView): return picker.choices.propValue
         case (.title, let picker as UIKitPickerView): return picker.title.propValue
-        case (.date, let picker as UIKitDateTimePickerView):
-            return CalendarDate(propValue: .numbers(picker.lanes))?.propValue
-        case (.time, let picker as UIKitDateTimePickerView):
-            return ClockTime(propValue: .numbers(picker.lanes))?.propValue
-        case (.minimumDate, let picker as UIKitDateTimePickerView): return picker.minimumDate.map(Self.day)
-        case (.maximumDate, let picker as UIKitDateTimePickerView): return picker.maximumDate.map(Self.day)
+        case (.date, let picker as UIKitDatePickerView): return picker.day.propValue
+        case (.time, let picker as UIKitTimePickerView): return picker.time.propValue
+        case (.minimumDate, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue
+        case (.maximumDate, let picker as UIKitDatePickerView): return picker.maximumDate.map(UIDatePicker.day(of:))?.propValue
         case (.scrollOffset, let scroll as UIKitScrollView):
             return Point(x: scroll.scroller.contentOffset.x, y: scroll.scroller.contentOffset.y).propValue
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
