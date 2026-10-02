@@ -37,13 +37,13 @@ namespace {
         grid.KeyboardAcceleratorPlacementMode(xaml::Input::KeyboardAcceleratorPlacementMode::Hidden);
         grid.AddHandler(
             xaml::UIElement::PointerPressedEvent(),
-            winrt::box_value(xaml::Input::PointerEventHandler(
+            winrt::box_value(xaml::Input::PointerEventHandler(guarded("handling PointerPressed",
                 [chrome](IInspectable const &sender, xaml::Input::PointerRoutedEventArgs const &args) {
                     auto point = args.GetCurrentPoint(sender.as<xaml::UIElement>());
                     if (!point.Properties().IsXButton1Pressed()) return;
                     callbacks.chosen(chrome, -1);
                     args.Handled(true);
-                })),
+                }))),
             true);
         auto accelerate = [&](VirtualKey key, VirtualKeyModifiers modifiers) {
             xaml::Input::KeyboardAccelerator accelerator;

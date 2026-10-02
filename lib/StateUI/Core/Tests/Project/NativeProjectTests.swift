@@ -239,7 +239,7 @@ final class NativeProjectTests: XCTestCase {
     /// it is stowed and ends the process (a window's activation read as UI Automation closed it, 0xc000027b). Every
     /// handler goes through `guarded`.
     func testNoCppExceptionLeavesARelaysHandler() throws {
-        let bare = try NSRegularExpression(pattern: #"\.[A-Z]\w*\(\s*(winrt::auto_revoke,\s*)?\["#)
+        let bare = try NSRegularExpression(pattern: #"(\.[A-Z]\w*|::\w*Handler)\(\s*(winrt::auto_revoke,\s*)?\["#)
         var open: [String] = []
         for folder in ["lib/StateUI/StateUI.WinUI/Sources/CStateUIWinUI", "lib/Backends/WebView.WinUI/Relay"] {
             let root = SourceTree.repository.appendingPathComponent(folder)
