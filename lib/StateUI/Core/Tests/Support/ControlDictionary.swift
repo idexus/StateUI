@@ -221,24 +221,26 @@ struct ControlDictionary {
         var members = 0
         var marks: [String: Marks] = [:]
 
+        // A table of HTML, as a Markdown table spans no cell: a member's notes stand in a row beneath it, across
+        // every cell but its name.
         func table(of contract: any Contract.Type, tier: String?) -> [String] {
             var lines = [
-                "| Member | Kind | Value | Layer | " + Self.platforms.joined(separator: " | ") + " | Notes |",
-                "| --- | --- | --- | --- | " + Self.platforms.map { _ in ":---:" }.joined(separator: " | ") + " | --- |",
+                "<table>",
+                "<tr>" + (["Member", "Kind", "Value", "Layer"] + Self.platforms).map { "<th>\($0)</th>" }.joined() + "</tr>",
             ]
 
             for member in contract.members {
-                var cells = describe(member)
+                var cells = describe(member).map { "<td>\(Self.html($0))</td>" }
                 var notes: [String: String] = [:]
 
                 for platform in Self.platforms {
                     guard let column = column(of: platform) else {
-                        cells.append("")
+                        cells.append("<td></td>")
                         continue
                     }
 
                     let (mark, note) = column.mark(of: member.name, on: name)
-                    cells.append(mark)
+                    cells.append(#"<td align="center">"# + mark + "</td>")
                     notes[platform] = note
 
                     if mark == "✅" { marks[platform, default: Marks()].done += 1 }
@@ -248,11 +250,16 @@ struct ControlDictionary {
                     if mark == "✓" { marks[platform, default: Marks()].byHost += 1 }
                 }
 
-                lines.append("| " + (cells + [Self.notes(notes)]).joined(separator: " | ") + " |")
+                lines.append("<tr>" + cells.joined() + "</tr>")
+                let noted = Self.notes(notes)
+                if !noted.isEmpty {
+                    lines.append(#"<tr><td></td><td colspan=""# + "\(3 + Self.platforms.count)" + #"">"#
+                        + noted.map(Self.html).joined(separator: "<br>") + "</td></tr>")
+                }
                 members += 1
             }
 
-            return lines
+            return lines + ["</table>"]
         }
 
         var tables = ["## \(name)'s own members", ""]
@@ -287,7 +294,8 @@ struct ControlDictionary {
     /// the host meets by mark, what it is there, and why a mark is empty.
     func hosts(of element: String, members: Int, marks: [String: Marks]) -> [String] {
         var lines = [
-            Self.row(["Host", "Created", "Members (\(members))", "Realization", "Notes"]), "| --- | :---: | --- | --- | --- |",
+            "<table>",
+            "<tr>" + ["Host", "Created", "Members (\(members))", "Realization"].map { "<th>\($0)</th>" }.joined() + "</tr>",
         ]
 
         for platform in Self.platforms {
@@ -302,13 +310,14 @@ struct ControlDictionary {
                 created = ("", "no host yet")
             }
 
-            lines.append(Self.row([
-                platform, created.mark, counted,
-                realization(of: element, on: platform), created.note,
-            ]))
+            lines.append("<tr><td>\(platform)</td>" + #"<td align="center">"# + created.mark + "</td>"
+                + "<td>\(Self.html(counted))</td><td>\(Self.html(realization(of: element, on: platform)))</td></tr>")
+            if !created.note.isEmpty {
+                lines.append(#"<tr><td></td><td colspan="3">"# + Self.html(created.note) + "</td></tr>")
+            }
         }
 
-        return lines
+        return lines + ["</table>"]
     }
 
     /// One tier's page: its doc, what it wears, who wears it, and its members.
@@ -966,15 +975,30 @@ struct ControlDictionary {
         return items
     }
 
-    /// A row's one Notes cell: AppKit's note as written, then each other
-    /// host's as "<host>: <note>", in the columns' order, joined by "; ".
-    static func notes(_ notes: [String: String]) -> String {
-        (["AppKit"] + platforms.filter { $0 != "AppKit" })
-            .compactMap { host in
-                guard let note = notes[host], !note.isEmpty else { return nil }
-                return host == "AppKit" ? note : "\(host): \(note)"
+    /// A member's notes, a line for each thing noted: "<hosts>: <note>", the hosts noting the same named together,
+    /// in the columns' order.
+    static func notes(_ notes: [String: String]) -> [String] {
+        var said: [(hosts: [String], note: String)] = []
+        for host in platforms {
+            guard let note = notes[host], !note.isEmpty else { continue }
+            if let index = said.firstIndex(where: { $0.note == note }) {
+                said[index].hosts.append(host)
+            } else {
+                said.append((hosts: [host], note: note))
             }
-            .joined(separator: "; ")
+        }
+        return said.map { "\($0.hosts.joined(separator: ", ")): \($0.note)" }
+    }
+
+    /// Markdown of a cell as HTML: its characters escaped, its backticked names as code and its links as links.
+    static func html(_ markdown: String) -> String {
+        var text = markdown.replacingOccurrences(of: "&", with: "&amp;")
+            .replacingOccurrences(of: "<", with: "&lt;").replacingOccurrences(of: ">", with: "&gt;")
+        text = text.components(separatedBy: "`").enumerated()
+            .map { $0.offset % 2 == 1 ? "<code>\($0.element)</code>" : $0.element }.joined()
+        let link = try? NSRegularExpression(pattern: #"\[([^\]]+)\]\(([^)]+)\)"#)
+        return link?.stringByReplacingMatches(
+            in: text, range: NSRange(text.startIndex..., in: text), withTemplate: #"<a href="$2">$1</a>"#) ?? text
     }
 
     /// A text up to the end of its first sentence.

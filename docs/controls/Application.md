@@ -37,30 +37,41 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (12) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 7 ✅ · 5 ✓ | `NSApplication` / structure |  |
-| UIKit | ✅ | 6 ✅ · 5 ✓ | `UIApplication` / `UIWindowScene` |  |
-| Android Views | ✅ | 4 ✅ · 4 ✓ | `Application` / structure |  |
-| WinUI 3 | ✅ | 12 ✅ | `Application` / structure |  |
-| GTK 4 | ✅ | 11 ✅ · 1 ✓ | `GtkApplication` / structure |  |
-| Web |  |  | `document` / structure | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 5 ✓</td><td><code>NSApplication</code> / structure</td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 5 ✓</td><td><code>UIApplication</code> / <code>UIWindowScene</code></td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td>4 ✅ · 4 ✓</td><td><code>Application</code> / structure</td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td>12 ✅</td><td><code>Application</code> / structure</td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td>11 ✅ · 1 ✓</td><td><code>GtkApplication</code> / structure</td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td><code>document</code> / structure</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.
 
 ## Application's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  | ✓ | ✓ | ✓ | ✅ | ✅ |  | only through the host's own: read a question: the captions the host keeps, not the alert's buttons; UIKit: only through the host's own: read a question: the buttons' captions the host keeps; Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed |
-| `announce` | act | `(String) -> Void` |  | ✓ | ✓ | · | ✅ | ✓ |  | only through the host's own: read what the screen reader said: the host's own list of what it announced; UIKit: only through the host's own: read what the screen reader said: the host's own list of what it announced; Android Views: cannot read what the screen reader said - Android's driver has no path for it yet; GTK 4: only through the host's own: read what the screen reader said: the host's own list of what it asked GTK to announce |
-| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  | ✓ | ✓ | ✓ | ✅ | ✅ |  | only through the host's own: read a question: the captions the host keeps, not the alert's buttons; UIKit: only through the host's own: read a question: the buttons' captions the host keeps; Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  | ✓ | ✓ | ✓ | ✅ | ✅ |  | only through the host's own: read a question: the captions the host keeps, not the alert's buttons; UIKit: only through the host's own: read a question: the buttons' captions the host keeps; Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed |
-| `currentTime` | act | `() -> [Double]` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `currentTimeZone` | act | `() -> String` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `handlerFailed` | act | `(String) -> Void` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot focus on TextField - Android's driver has no path for it yet |
-| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ✅ |  |  | ✅ | ✅ |  | UIKit: not realized; Android Views: not realized |
-| `persistValue` | act | `(Name, PropValue) -> Void` |  | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read what is kept - Android's driver has no path for it yet |
-| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  | ✓ | ✓ | ✓ | ✅ | ✅ |  | only through the host's own: read a question: the captions the host keeps, not the alert's buttons; UIKit: only through the host's own: read a question: the buttons' captions the host keeps; Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed |
-| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>alert</code></td><td>act</td><td><code>(String, String, String) -&gt; Void</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr>
+<tr><td><code>announce</code></td><td>act</td><td><code>(String) -&gt; Void</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read what the screen reader said: the host's own list of what it announced<br>Android Views: cannot read what the screen reader said - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read what the screen reader said: the host's own list of what it asked GTK to announce</td></tr>
+<tr><td><code>chooseAction</code></td><td>act</td><td><code>(String, String?, String?, [String]) -&gt; String?</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr>
+<tr><td><code>confirm</code></td><td>act</td><td><code>(String, String, String, String) -&gt; Bool</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr>
+<tr><td><code>currentTime</code></td><td>act</td><td><code>() -&gt; [Double]</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>currentTimeZone</code></td><td>act</td><td><code>() -&gt; String</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>handlerFailed</code></td><td>act</td><td><code>(String) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>hideOnScreenKeyboard</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views: cannot focus on TextField - Android's driver has no path for it yet</td></tr>
+<tr><td><code>persistSceneValue</code></td><td>act</td><td><code>(Name, Name, PropValue) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit, Android Views: not realized</td></tr>
+<tr><td><code>persistValue</code></td><td>act</td><td><code>(Name, PropValue) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views: cannot read what is kept - Android's driver has no path for it yet</td></tr>
+<tr><td><code>prompt</code></td><td>act</td><td><code>(String, String, String, String, String?, Int?, InputPurpose, String) -&gt; String?</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr>
+<tr><td><code>utcOffset</code></td><td>act</td><td><code>(String?, CalendarDate?) -&gt; Int</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+</table>

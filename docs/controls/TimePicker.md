@@ -31,131 +31,192 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (78) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 35 ✅ · 1 ☑️ · 26 ✓ · 1 – | `NSDatePicker` in time mode |  |
-| UIKit | ✅ | 32 ✅ · 25 ✓ | `UIDatePicker` in time mode |  |
-| Android Views | ✅ | 59 ✅ · 1 ☑️ · 1 ✓ · 3 – | `TimePickerDialog` |  |
-| WinUI 3 | ✅ | 58 ✅ | `TimePicker` |  |
-| GTK 4 | ⌛ | 45 ✅ · 11 ✓ · 1 – | an hour's and a minute's `GtkSpinButton` in a `GtkPopover` |  |
-| Web |  |  | `<input type=time>` | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (78)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td>35 ✅ · 1 ☑️ · 26 ✓ · 1 –</td><td><code>NSDatePicker</code> in time mode</td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td>32 ✅ · 25 ✓</td><td><code>UIDatePicker</code> in time mode</td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 1 ✓ · 3 –</td><td><code>TimePickerDialog</code></td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td>58 ✅</td><td><code>TimePicker</code></td></tr>
+<tr><td>GTK 4</td><td align="center">⌛</td><td>45 ✅ · 11 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkPopover</code></td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td><code>&lt;input type=time&gt;</code></td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
 
 ## TimePicker's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClosed` (`closed`) | event |  | native |  |  | ✅ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
-| `format` | property | `String` | native |  |  | ✓ | · | ⌛ |  | not realized; UIKit: not realized; Android Views: only through the host's own: read format of TimePicker: the pattern the relay writes the field in; WinUI 3: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock |
-| `isOpen` | property | `Bool` | native |  |  | ✅ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
-| `onOpened` (`opened`) | event |  | native |  |  | ✅ |  | ⌛ |  | not realized; UIKit: not realized; WinUI 3: not realized |
-| `time` | property | `ClockTime` | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |  |
-| `onTimeChanged` (`timeChanged`) | event | `ClockTime` | native | ✓ | ✅ | ✅ | ✅ | ⌛ |  | only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">⌛</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, WinUI 3: not realized</td></tr>
+<tr><td><code>format</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✓</td><td align="center">·</td><td align="center">⌛</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: not realized<br>Android Views: only through the host's own: read format of TimePicker: the pattern the relay writes the field in<br>WinUI 3: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock</td></tr>
+<tr><td><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">⌛</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, WinUI 3: not realized</td></tr>
+<tr><td><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">⌛</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, WinUI 3: not realized</td></tr>
+<tr><td><code>time</code></td><td>property</td><td><code>ClockTime</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
+<tr><td><code>onTimeChanged</code> (<code>timeChanged</code>)</td><td>event</td><td><code>ClockTime</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action</td></tr>
+</table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | – |  | GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td></td><td colspan="9">GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr>
+</table>
 
 ## From [VisualElement](tiers/VisualElement.md)
 
 What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ | ✅ |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level |
-| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  | ✅ | ✅ | – | ✅ | ✅ |  | Android Views: TimePicker takes no keyboard focus here: it refuses it, and nothing is heard |
-| `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | – | ✅ | ✅ |  | Android Views: TimePicker takes no keyboard focus here: it refuses it, and nothing is heard |
-| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ | ✅ |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotX of TimePicker: the host's own transform: GTK reads back no part of one |
-| `pivotY` | property | `Double` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotY of TimePicker: the host's own transform: GTK reads back no part of one |
-| `rotation` | property | `Double` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: read rotation of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of TimePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotation of TimePicker: the host's own transform: GTK reads back no part of one |
-| `rotationX` | property | `Double` | native | ✓ | ✓ | ✅ |  | ✓ |  | only through the host's own: read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: only through the host's own: read rotationX of TimePicker: the host's own transform: GTK reads back no part of one |
-| `rotationY` | property | `Double` | native | ✓ | ✓ | ✅ |  | ✓ |  | only through the host's own: read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: only through the host's own: read rotationY of TimePicker: the host's own transform: GTK reads back no part of one |
-| `scale` | property | `Double` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: read scale of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of TimePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scale of TimePicker: the host's own transform: GTK reads back no part of one |
-| `scaleX` | property | `Double` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleX of TimePicker: the host's own transform: GTK reads back no part of one |
-| `scaleY` | property | `Double` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleY of TimePicker: the host's own transform: GTK reads back no part of one |
-| `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `translationX` | property | `Double` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: read translationX of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of TimePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of TimePicker: the host's own transform: GTK reads back no part of one |
-| `translationY` | property | `Double` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: read translationY of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of TimePicker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of TimePicker: the host's own transform: GTK reads back no part of one |
-| `unfocus` | act | `() -> Void` |  | ✅ | ✅ | – | ✅ | ✅ |  | Android Views: TimePicker takes no keyboard focus here: it refuses it, and nothing is heard |
-| `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>accessibilityHeadingLevel</code></td><td>property</td><td><code>HeadingLevel</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read a heading's level - AppKit marks a heading, not its level<br>UIKit: cannot read a heading's level - UIKit marks a heading, not its level<br>Android Views: cannot read a heading's level - Android marks a heading, not its level</td></tr>
+<tr><td><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>automationExcludedWithChildren</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>background</code></td><td>property</td><td><code>Background</code></td><td>native</td><td align="center">☑️</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: AppKit paints a colour on this view; a brush is drawn only by a layout.<br>UIKit, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views: TimePicker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr>
+<tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>isAccessibilityHidden</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views: TimePicker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr>
+<tr><td><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>minimumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>minimumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>opacity</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>pivotX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read pivotX of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>pivotY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read pivotY of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>rotation</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read rotation of TimePicker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read rotation of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>rotationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself<br>WinUI 3: not realized<br>GTK 4: only through the host's own: read rotationX of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>rotationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself<br>WinUI 3: not realized<br>GTK 4: only through the host's own: read rotationY of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>scale</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read scale of TimePicker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scale of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>scaleX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleX of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of TimePicker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit: only through the host's own: read translationY of TimePicker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationY of TimePicker: the host's own transform: GTK reads back no part of one</td></tr>
+<tr><td><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views: TimePicker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr>
+<tr><td><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>zIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+</table>
 
 ## From [View](tiers/View.md)
 
 What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `area` | property | `Area` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |  |
-| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `margin` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure | ✓ | ✓ | ☑️ | ✅ | ✅ |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent; Android Views: The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off. |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `panXChannel` | property | `Int` | structure | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `panYChannel` | property | `Int` | structure | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✓ | ✓ | ✅ | ✅ | ✓ |  | only through the host's own: pinch on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pinch on TimePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: only through the host's own: pinch on TimePicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerExited` (`pointerExited`) | event |  | native | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `swipeDirection` | property | `SwipeDirection` | structure | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `swipeThreshold` | property | `Double` | structure | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `tapCount` | property | `Int` | structure | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: tap on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `onTapped` (`tapped`) | event |  | native | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: tap on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on TimePicker: the view's listening handed the recognizer's states, no touch sent |
-| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>allowDrop</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>area</code></td><td>property</td><td><code>Area</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>canDrag</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>onDragLeave</code> (<code>dragLeave</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>onDragOver</code> (<code>dragOver</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>dragStarting</code></td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>dragText</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>onDrop</code> (<code>drop</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>onDropCompleted</code> (<code>dropCompleted</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td></td></tr>
+<tr><td><code>gridColumn</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>gridColumnSpan</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>gridRow</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>gridRowSpan</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>horizontalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>margin</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>panTouchCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: The host layer hears a one-finger pan only; any other <code>panTouchCount</code> turns the pan off.</td></tr>
+<tr><td><code>onPanUpdated</code> (<code>panUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>panXChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>panYChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>onPinchUpdated</code> (<code>pinchUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Point)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pinch on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pinch on TimePicker: the view's listening handed the recognizer's states, no touch sent<br>GTK 4: only through the host's own: pinch on TimePicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr>
+<tr><td><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>onPointerMoved</code> (<code>pointerMoved</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>onPointerPressed</code> (<code>pointerPressed</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>swipeDirection</code></td><td>property</td><td><code>SwipeDirection</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>onSwiped</code> (<code>swiped</code>)</td><td>event</td><td><code>SwipeDirection</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>tapCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: tap on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: tap on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on TimePicker: the view's listening handed the recognizer's states, no touch sent</td></tr>
+<tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+</table>
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
 How text looks wherever it is drawn: its colour and the space between its letters.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `textColor` | property | `Color` | native | ✅ |  | ✅ | ✅ | ✅ |  | UIKit: not realized |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>characterSpacing</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>textColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit: not realized</td></tr>
+</table>
 
 ## From [FontElement](tiers/FontElement.md)
 
 The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ |  | ✅ | ✅ | ✅ |  | UIKit: not realized |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive | – |  |  |  |  |  | macOS gives an application no text size of the user's to follow.; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `fontFamily` | property | `Name` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read a family - Android's typeface keeps no family's name |
-| `fontSize` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  | UIKit: not realized |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit: not realized</td></tr>
+<tr><td><code>fontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: macOS gives an application no text size of the user's to follow.<br>UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit: not realized<br>Android Views: cannot read a family - Android's typeface keeps no family's name</td></tr>
+<tr><td><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit: not realized</td></tr>
+</table>

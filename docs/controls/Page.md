@@ -38,37 +38,47 @@ Inherits: [PageElement](tiers/PageElement.md)
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (12) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 8 ✅ | custom `NSView` |  |
-| UIKit | ✅ | 12 ✅ | `UIViewController` |  |
-| Android Views | ✅ | 7 ✅ · 1 – | custom `ViewGroup` |  |
-| WinUI 3 | ✅ | 10 ✅ | `Page` |  |
-| GTK 4 | ✅ | 8 ✅ · 1 – | custom `GtkWidget` |  |
-| Web |  |  | `<section>` | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td>8 ✅</td><td>custom <code>NSView</code></td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td>12 ✅</td><td><code>UIViewController</code></td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td>7 ✅ · 1 –</td><td>custom <code>ViewGroup</code></td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅</td><td><code>Page</code></td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 1 –</td><td>custom <code>GtkWidget</code></td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td><code>&lt;section&gt;</code></td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.swift`.
 
 ## Page's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `backButtonTitle` | property | `String` | adaptive | · | ✅ | – |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; Android Views: Android's way back in the bar is an arrow, with no words.; WinUI 3: not realized; GTK 4: not realized |
-| `background` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it |
-| `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `hasBackButton` | property | `Bool` | adaptive | ✅ | ✅ | · |  |  |  | Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
-| `hasNavigationBar` | property | `Bool` | adaptive | · | ✅ | · | ✅ | ✅ |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet |
-| `navigatedFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `navigatedTo` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `navigatingFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `padding` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>appearing</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>backButtonTitle</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read backButtonTitle of Page - AppKit's driver has no path for it yet<br>Android Views: Android's way back in the bar is an arrow, with no words.<br>WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>background</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td></td></tr>
+<tr><td></td><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr>
+<tr><td><code>disappearing</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>hasBackButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet<br>WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>hasNavigationBar</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet<br>Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet</td></tr>
+<tr><td><code>navigatedFrom</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>navigatedTo</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>navigatingFrom</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>padding</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+</table>
 
 ## From [PageElement](tiers/PageElement.md)
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ | – |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet; GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions. |
-| `title` | property | `String` | native | ◐ | ✅ | · | ✅ | ✅ |  | cannot read title of Page - AppKit's driver has no path for it yet; Android Views: cannot read title of Page - Android's driver has no path for it yet |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read icon of Page - AppKit's driver has no path for it yet<br>Android Views: cannot read icon of Page - Android's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr>
+<tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">◐</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read title of Page - AppKit's driver has no path for it yet<br>Android Views: cannot read title of Page - Android's driver has no path for it yet</td></tr>
+</table>

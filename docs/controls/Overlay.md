@@ -37,14 +37,17 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (0) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ |  | pass-through `NSView` above the page |  |
-| UIKit | ✅ |  | pass-through `UIView` above the page |  |
-| Android Views | ◐ |  | top child of a `FrameLayout` | cannot read what reaches Label - Android's driver has no path for it yet |
-| WinUI 3 | ✅ |  | top layer of a root `Grid` |  |
-| GTK 4 | ✅ |  | `GtkOverlay` |  |
-| Web |  |  | positioned element above the page | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (0)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td></td><td>pass-through <code>NSView</code> above the page</td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td></td><td>pass-through <code>UIView</code> above the page</td></tr>
+<tr><td>Android Views</td><td align="center">◐</td><td></td><td>top child of a <code>FrameLayout</code></td></tr>
+<tr><td></td><td colspan="3">cannot read what reaches Label - Android's driver has no path for it yet</td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td></td><td>top layer of a root <code>Grid</code></td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GtkOverlay</code></td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td>positioned element above the page</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/OverlayContract.swift`.
 

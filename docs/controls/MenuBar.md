@@ -36,19 +36,23 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (1) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 1 ✓ | `NSMenu` / `NSMenuItem` |  |
-| UIKit | ✅ | 1 ✓ | `UIMenu` / `UIAction` |  |
-| Android Views | ✅ | 1 ✅ | `PopupMenu` / `MenuItem`; no menu bar |  |
-| WinUI 3 | ✅ | 1 ✅ | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 | ✅ | 1 ✅ | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
-| Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (1)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td>1 ✓</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td>1 ✓</td><td><code>UIMenu</code> / <code>UIAction</code></td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td>1 ✅</td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td>1 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td>1 ✅</td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuBarContract.swift`.
 
 ## MenuBar's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `order` | property | `Int` | stateUI | ✓ | ✓ | ✅ | ✅ | ✅ |  | only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu; UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu<br>UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu</td></tr>
+</table>

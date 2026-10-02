@@ -34,14 +34,16 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (0) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ |  | `NSMenu` / `NSMenuItem` |  |
-| UIKit | ✅ |  | `UIMenu` / `UIAction` |  |
-| Android Views | ✅ |  | `PopupMenu` / `MenuItem`; no menu bar |  |
-| WinUI 3 | ✅ |  | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 | ✅ |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
-| Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (0)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td></td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td></td><td><code>UIMenu</code> / <code>UIAction</code></td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td></td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td></td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuSeparatorContract.swift`.
 

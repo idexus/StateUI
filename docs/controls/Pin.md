@@ -36,24 +36,36 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (6) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 6 ✅ | `MKMapView` / `MKAnnotation` |  |
-| UIKit | ✅ | 4 ✅ · 2 ✓ | `MKMapView` / `MKAnnotation` |  |
-| Android Views | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
-| WinUI 3 | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
-| GTK 4 | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
-| Web |  |  | no honest native counterpart | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (6)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td>6 ✅</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td>4 ✅ · 2 ✓</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr>
+<tr><td>Android Views</td><td align="center">🧩</td><td>6 🧩</td><td>the application's own, registered</td></tr>
+<tr><td></td><td colspan="3">the application registers its own control</td></tr>
+<tr><td>WinUI 3</td><td align="center">🧩</td><td>6 🧩</td><td>the application's own, registered</td></tr>
+<tr><td></td><td colspan="3">the application registers its own control</td></tr>
+<tr><td>GTK 4</td><td align="center">🧩</td><td>6 🧩</td><td>the application's own, registered</td></tr>
+<tr><td></td><td colspan="3">the application registers its own control</td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td>no honest native counterpart</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PinContract.swift`.
 
 ## Pin's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `address` | property | `String` | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  | Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `label` | property | `String` | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  | Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `location` | property | `Location` | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  | Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `onPinClicked` (`pinClicked`) | event |  | provider | ✅ | ✓ | 🧩 | 🧩 | 🧩 |  | UIKit: only through the host's own: open on Pin: the map's delegate told of the callout's button, no touch; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider | ✅ | ✓ | 🧩 | 🧩 | 🧩 |  | UIKit: only through the host's own: open on Pin: the map's delegate told of the callout's button, no touch; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
-| `type` | property | `PinType` | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  | Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>address</code></td><td>property</td><td><code>String</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr>
+<tr><td><code>label</code></td><td>property</td><td><code>String</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr>
+<tr><td><code>location</code></td><td>property</td><td><code>Location</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr>
+<tr><td><code>onPinClicked</code> (<code>pinClicked</code>)</td><td>event</td><td></td><td>provider</td><td align="center">✅</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit: only through the host's own: open on Pin: the map's delegate told of the callout's button, no touch<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr>
+<tr><td><code>onPinDetailsClicked</code> (<code>pinDetailsClicked</code>)</td><td>event</td><td></td><td>provider</td><td align="center">✅</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit: only through the host's own: open on Pin: the map's delegate told of the callout's button, no touch<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr>
+<tr><td><code>type</code></td><td>property</td><td><code>PinType</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td></td><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr>
+</table>

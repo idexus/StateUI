@@ -35,14 +35,16 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](t
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (6) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 3 ✅ · 1 ☑️ | `NSMenu` / `NSMenuItem` |  |
-| UIKit | ✅ | 6 ✅ | `UIMenu` / `UIAction` |  |
-| Android Views | ✅ | 4 ✅ · 2 – | `PopupMenu` / `MenuItem`; no menu bar |  |
-| WinUI 3 | ✅ | 6 ✅ | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 | ✅ | 3 ✅ · 3 – | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
-| Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (6)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td>6 ✅</td><td><code>UIMenu</code> / <code>UIAction</code></td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td>4 ✅ · 2 –</td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td>3 ✅ · 3 –</td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuItemContract.swift`.
 
@@ -54,18 +56,23 @@ MenuItem declares no members of its own.
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ☑️ | ✅ | – | ✅ | – |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.; Android Views: An Android menu entry holds no identifier: automation finds it by its title.; GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code. |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">☑️</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.<br>Android Views: An Android menu entry holds no identifier: automation finds it by its title.<br>GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr>
+</table>
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
 What every item a user chooses from has - a menu's entry, a toolbar's item: a caption, a picture, and something to run.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | – | ✅ | – |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet; Android Views: Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.; GTK 4: GNOME's menus show words alone, no picture beside them. |
-| `isDestructive` | property | `Bool` | adaptive | · | ✅ | ✅ | ✅ | – |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; GTK 4: GNOME's menus mark no entry as destroying something. |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read icon of MenuItem - AppKit's driver has no path for it yet<br>Android Views: Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.<br>GTK 4: GNOME's menus show words alone, no picture beside them.</td></tr>
+<tr><td><code>isDestructive</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet<br>GTK 4: GNOME's menus mark no entry as destroying something.</td></tr>
+<tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+</table>

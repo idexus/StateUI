@@ -34,72 +34,93 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [TextElement](tiers
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (12) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ |  | `NSTextField` label; `NSAttributedString` runs |  |
-| UIKit | ✅ |  | `UILabel`; `NSAttributedString` runs |  |
-| Android Views | ✅ |  | `TextView`; `SpannableString` spans |  |
-| WinUI 3 | ✅ | 9 ✅ | `TextBlock`; `Run` inlines |  |
-| GTK 4 | ✅ | 9 ✅ | `GtkLabel`; `PangoAttrList` runs |  |
-| Web |  |  | text element; `<span>` runs | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td></td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td></td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td></td><td><code>TextView</code>; <code>SpannableString</code> spans</td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td>9 ✅</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td>text element; <code>&lt;span&gt;</code> runs</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SpanContract.swift`.
 
 ## Span's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `background` | property | `Color` | native |  | · | · | ✅ | ✅ |  | not realized; UIKit: cannot read background of Span - UIKit's driver has no path for it yet; Android Views: cannot read background of Span - Android's driver has no path for it yet |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>background</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: not realized<br>UIKit: cannot read background of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read background of Span - Android's driver has no path for it yet</td></tr>
+</table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+</table>
 
 ## From [TextElement](tiers/TextElement.md)
 
 What every element showing words has: the words, and the case they are drawn in.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ◐ | ◐ | ◐ | ✅ | ✅ |  | cannot read text of Span - AppKit's driver has no path for it yet; UIKit: cannot read text of Span - UIKit's driver has no path for it yet; Android Views: cannot read text of Span - Android's driver has no path for it yet |
-| `textCase` | property | `TextCase` | native | · | · | · | ✅ | ✅ |  | cannot read text of Span - AppKit's driver has no path for it yet; UIKit: cannot read text of Span - UIKit's driver has no path for it yet; Android Views: cannot read text of Span - Android's driver has no path for it yet |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read text of Span - AppKit's driver has no path for it yet<br>UIKit: cannot read text of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read text of Span - Android's driver has no path for it yet</td></tr>
+<tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read text of Span - AppKit's driver has no path for it yet<br>UIKit: cannot read text of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read text of Span - Android's driver has no path for it yet</td></tr>
+</table>
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
 How text looks wherever it is drawn: its colour and the space between its letters.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native |  |  |  | ✅ | ✅ |  | not realized; UIKit: not realized; Android Views: not realized |
-| `textColor` | property | `Color` | native |  | · | · | ✅ | ✅ |  | not realized; UIKit: cannot read textColor of Span - UIKit's driver has no path for it yet; Android Views: cannot read textColor of Span - Android's driver has no path for it yet |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>characterSpacing</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views: not realized</td></tr>
+<tr><td><code>textColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: not realized<br>UIKit: cannot read textColor of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read textColor of Span - Android's driver has no path for it yet</td></tr>
+</table>
 
 ## From [FontElement](tiers/FontElement.md)
 
 The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | · | · | · | ✅ | ✅ |  | cannot read fontAttributes of Span - AppKit's driver has no path for it yet; UIKit: cannot read fontAttributes of Span - UIKit's driver has no path for it yet; Android Views: cannot read fontAttributes of Span - Android's driver has no path for it yet |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `fontFamily` | property | `Name` | native |  | · |  | ✅ | ✅ |  | not realized; UIKit: cannot read fontFamily of Span - UIKit's driver has no path for it yet; Android Views: not realized |
-| `fontSize` | property | `Double` | native |  | · | · | ✅ | ✅ |  | not realized; UIKit: cannot read fontSize of Span - UIKit's driver has no path for it yet; Android Views: cannot read fontSize of Span - Android's driver has no path for it yet |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: cannot read fontAttributes of Span - AppKit's driver has no path for it yet<br>UIKit: cannot read fontAttributes of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read fontAttributes of Span - Android's driver has no path for it yet</td></tr>
+<tr><td><code>fontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+<tr><td><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, Android Views: not realized<br>UIKit: cannot read fontFamily of Span - UIKit's driver has no path for it yet</td></tr>
+<tr><td><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: not realized<br>UIKit: cannot read fontSize of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read fontSize of Span - Android's driver has no path for it yet</td></tr>
+</table>
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 
 How far apart the lines of text are.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `lineHeight` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>lineHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr>
+</table>
 
 ## From [DecorableTextElement](tiers/DecorableTextElement.md)
 
 The lines drawn through or under text.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `textDecorations` | property | `TextDecorations` | native |  | · | · | ✅ | ✅ |  | not realized; UIKit: cannot read textDecorations of Span - UIKit's driver has no path for it yet; Android Views: cannot read textDecorations of Span - Android's driver has no path for it yet |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>textDecorations</code></td><td>property</td><td><code>TextDecorations</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">AppKit: not realized<br>UIKit: cannot read textDecorations of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read textDecorations of Span - Android's driver has no path for it yet</td></tr>
+</table>

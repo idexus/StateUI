@@ -33,14 +33,16 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (0) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ |  | `NSTextField` label; `NSAttributedString` runs |  |
-| UIKit | ✅ |  | `UILabel`; `NSAttributedString` runs |  |
-| Android Views | ✅ |  | `TextView`; `SpannableString` spans |  |
-| WinUI 3 | ✅ |  | `TextBlock`; `Run` inlines |  |
-| GTK 4 | ✅ |  | `GtkLabel`; `PangoAttrList` runs |  |
-| Web |  |  | text element; `<span>` runs | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (0)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td></td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td></td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td></td><td><code>TextView</code>; <code>SpannableString</code> spans</td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td></td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td>text element; <code>&lt;span&gt;</code> runs</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SpansContract.swift`.
 

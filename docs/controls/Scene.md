@@ -45,24 +45,29 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (6) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 6 ✅ | `NSApplication` / structure |  |
-| UIKit | ✅ | 4 ✅ | `UIApplication` / `UIWindowScene` |  |
-| Android Views | ✅ | 4 ✅ | `Application` / structure |  |
-| WinUI 3 | ✅ | 6 ✅ | `Application` / structure |  |
-| GTK 4 | ✅ | 6 ✅ | `GtkApplication` / structure |  |
-| Web |  |  | `document` / structure | no host yet |
+<table>
+<tr><th>Host</th><th>Created</th><th>Members (6)</th><th>Realization</th></tr>
+<tr><td>AppKit</td><td align="center">✅</td><td>6 ✅</td><td><code>NSApplication</code> / structure</td></tr>
+<tr><td>UIKit</td><td align="center">✅</td><td>4 ✅</td><td><code>UIApplication</code> / <code>UIWindowScene</code></td></tr>
+<tr><td>Android Views</td><td align="center">✅</td><td>4 ✅</td><td><code>Application</code> / structure</td></tr>
+<tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅</td><td><code>Application</code> / structure</td></tr>
+<tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅</td><td><code>GtkApplication</code> / structure</td></tr>
+<tr><td>Web</td><td align="center"></td><td></td><td><code>document</code> / structure</td></tr>
+<tr><td></td><td colspan="3">no host yet</td></tr>
+</table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/SceneContract.swift`.
 
 ## Scene's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `deactivated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `destroying` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `stopped` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `windowClosed` | event | `String` | adaptive | ✅ | ⏸ |  | ✅ | ✅ |  | UIKit: waits on Window.windowType, not realized yet; Android Views: not realized |
-| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ✅ | ✅ |  | UIKit: not realized; Android Views: not realized |
+<table>
+<tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
+<tr><td><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>destroying</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td><code>windowClosed</code></td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⏸</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit: waits on Window.windowType, not realized yet<br>Android Views: not realized</td></tr>
+<tr><td><code>windowRestored</code></td><td>event</td><td><code>(String, String?)</code></td><td>adaptive</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td></td><td colspan="9">UIKit, Android Views: not realized</td></tr>
+</table>
