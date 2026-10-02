@@ -222,7 +222,7 @@ struct ControlDictionary {
         var marks: [String: Marks] = [:]
 
         // A table of HTML, as a Markdown table spans no cell: a member's notes stand in a row beneath it, across
-        // every cell but its name.
+        // every cell but its name, which spans both rows.
         func table(of contract: any Contract.Type, tier: String?) -> [String] {
             var lines = [
                 "<table>",
@@ -250,10 +250,11 @@ struct ControlDictionary {
                     if mark == "✓" { marks[platform, default: Marks()].byHost += 1 }
                 }
 
-                lines.append("<tr>" + cells.joined() + "</tr>")
                 let noted = Self.notes(notes)
+                if !noted.isEmpty { cells[0] = #"<td rowspan="2">"# + cells[0].dropFirst("<td>".count) }
+                lines.append("<tr>" + cells.joined() + "</tr>")
                 if !noted.isEmpty {
-                    lines.append(#"<tr><td></td><td colspan=""# + "\(3 + Self.platforms.count)" + #"">"#
+                    lines.append(#"<tr><td colspan=""# + "\(3 + Self.platforms.count)" + #"">"#
                         + noted.map(Self.html).joined(separator: "<br>") + "</td></tr>")
                 }
                 members += 1
@@ -310,10 +311,11 @@ struct ControlDictionary {
                 created = ("", "no host yet")
             }
 
-            lines.append("<tr><td>\(platform)</td>" + #"<td align="center">"# + created.mark + "</td>"
+            let host = created.note.isEmpty ? "<td>" : #"<td rowspan="2">"#
+            lines.append("<tr>" + host + platform + "</td>" + #"<td align="center">"# + created.mark + "</td>"
                 + "<td>\(Self.html(counted))</td><td>\(Self.html(realization(of: element, on: platform)))</td></tr>")
             if !created.note.isEmpty {
-                lines.append(#"<tr><td></td><td colspan="3">"# + Self.html(created.note) + "</td></tr>")
+                lines.append(#"<tr><td colspan="3">"# + Self.html(created.note) + "</td></tr>")
             }
         }
 

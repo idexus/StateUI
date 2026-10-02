@@ -40,8 +40,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td>Android Views</td><td align="center">✅</td><td></td><td>structure</td></tr>
 <tr><td>WinUI 3</td><td align="center">✅</td><td></td><td>structure</td></tr>
 <tr><td>GTK 4</td><td align="center">✅</td><td></td><td>structure</td></tr>
-<tr><td>Web</td><td align="center"></td><td></td><td>structure</td></tr>
-<tr><td></td><td colspan="3">no host yet</td></tr>
+<tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>structure</td></tr>
+<tr><td colspan="3">no host yet</td></tr>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/TitleViewContract.swift`.

@@ -45,8 +45,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td>Android Views</td><td align="center">✅</td><td>2 ✅</td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr>
 <tr><td>WinUI 3</td><td align="center">✅</td><td>2 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr>
 <tr><td>GTK 4</td><td align="center">✅</td><td>2 ✅</td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr>
-<tr><td>Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
-<tr><td></td><td colspan="3">no host yet</td></tr>
+<tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
+<tr><td colspan="3">no host yet</td></tr>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuContract.swift`.
@@ -55,7 +55,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuContract.swif
 
 <table>
 <tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr>
-<tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td></td><td colspan="9">UIKit: UIKit holds no menu out of reach itself: each of its entries is.</td></tr>
+<tr><td rowspan="2"><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit: UIKit holds no menu out of reach itself: each of its entries is.</td></tr>
 <tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 </table>

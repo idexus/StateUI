@@ -52,8 +52,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td>Android Views</td><td align="center">✅</td><td>4 ✅</td><td><code>Application</code> / structure</td></tr>
 <tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅</td><td><code>Application</code> / structure</td></tr>
 <tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅</td><td><code>GtkApplication</code> / structure</td></tr>
-<tr><td>Web</td><td align="center"></td><td></td><td><code>document</code> / structure</td></tr>
-<tr><td></td><td colspan="3">no host yet</td></tr>
+<tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>document</code> / structure</td></tr>
+<tr><td colspan="3">no host yet</td></tr>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/SceneContract.swift`.
@@ -66,8 +66,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/SceneContract
 <tr><td><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td><code>destroying</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td><code>windowClosed</code></td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⏸</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td></td><td colspan="9">UIKit: waits on Window.windowType, not realized yet<br>Android Views: not realized</td></tr>
-<tr><td><code>windowRestored</code></td><td>event</td><td><code>(String, String?)</code></td><td>adaptive</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td></td><td colspan="9">UIKit, Android Views: not realized</td></tr>
+<tr><td rowspan="2"><code>windowClosed</code></td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⏸</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit: waits on Window.windowType, not realized yet<br>Android Views: not realized</td></tr>
+<tr><td rowspan="2"><code>windowRestored</code></td><td>event</td><td><code>(String, String?)</code></td><td>adaptive</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit, Android Views: not realized</td></tr>
 </table>

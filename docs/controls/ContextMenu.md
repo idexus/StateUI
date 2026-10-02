@@ -43,8 +43,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td>Android Views</td><td align="center">✅</td><td></td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr>
 <tr><td>WinUI 3</td><td align="center">✅</td><td></td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr>
 <tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr>
-<tr><td>Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
-<tr><td></td><td colspan="3">no host yet</td></tr>
+<tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
+<tr><td colspan="3">no host yet</td></tr>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ContextMenuContract.swift`.
