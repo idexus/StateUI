@@ -98,6 +98,9 @@
     /// What the host's store keeps under `key` - one every scene shares, or one of the scene the case's page is
     /// in - as the next launch reads it; nil where it keeps nothing.
     func kept(_ key: String, inScene: Bool) throws -> HostValue?
+
+    /// How many of its own views the host holds alive - the count its tally writes; nil where it counts none.
+    var liveViews: Int? { get }
 }
 
 extension HostDriver {
@@ -114,6 +117,10 @@ extension HostDriver {
     }
 
     public func forgetWhatIsKept() {}
+
+    public var liveViews: Int? {
+        nil
+    }
 
     public func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
         throw DriverCannot("start an application")

@@ -128,6 +128,10 @@ extension AppKitDriver {
         written.lines
     }
 
+    var liveViews: Int? {
+        AppKitElement.liveViewCount
+    }
+
     /// The colour the view draws at `point` of its own, as AppKit displays it into a bitmap; nil where it draws
     /// nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {

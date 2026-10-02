@@ -165,3 +165,21 @@ driver cannot do and why. A member of a failing case gets no verdict from it.
 Those files are every mark a host's column shows: nothing a host implements
 or declares by hand is marked until its own run says so. A test of a host's
 look proves no member; it proves how the host draws.
+
+## Nothing left behind
+
+A view that outlives its element is no effect a case can see: the page shows
+the same, and the host only grows. Every host's own suite runs one shared
+walk instead (`Leaving.outlived(on:)`): each element that is drawn stands on
+a page alone, and a click takes it away, shows it and takes it away again.
+Taken away the second time, the host holds as many of its views alive as the
+first time - the count its tally writes (`HostDriver.liveViews`). The first
+time is the measure, not the page before it: a toolkit may make a view of
+its own the first time a control is drawn, and keep it.
+
+Each element walks twice: bare, then dressed - a look from every tier it
+wears and an ear for every gesture. A host answers a font, a colour or a
+gesture with a closure of its own, and a closure that holds its view keeps
+it: a bare control never builds one. The walk marks nothing; an element a
+toolkit itself never lets go stands outside it in that host's test, with its
+reason.

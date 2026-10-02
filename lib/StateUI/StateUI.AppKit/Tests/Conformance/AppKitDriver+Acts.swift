@@ -12,7 +12,12 @@ import AppKit
 /// action, the field editor, a recognizer's report, a menu's item, the window's notifications.
 /// Design: docs/design/platforms/appkit/conformance.md#what-the-driver-does
 extension AppKitDriver {
+    /// Does `act`, what AppKit autoreleases on the way let go as it ends.
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        try autoreleasepool { try performing(act, on: element) }
+    }
+
+    private func performing(_ act: UserAct, on element: MountedElement) throws {
         layOutWindows()
         let native = element.native as? AppKitElement
         let view = native?.view

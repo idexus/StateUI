@@ -6,6 +6,7 @@ import CStateUIGTK
 @_spi(Host) import StateUIHost
 @testable import StateUIGTK
 @testable import StateUIGTKDriver
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// A page whose note a click takes away.
@@ -39,6 +40,13 @@ final class GTKLeaveTests: XCTestCase {
             XCTAssertEqual(host.views(GTKLabelView.self).count, 0)
             XCTAssertEqual(GTKView.liveCount, before - 1, "the label's view outlived its element")
             XCTAssertEqual(Self.children(of: stack.widget), 1, "the panel still holds the label's widget")
+        }
+    }
+
+    /// Every element shown and taken away twice leaves the host holding as many views as the first time.
+    func testEveryElementsViewIsLetGoOfEachTimeItLeaves() throws {
+        try onUIThread {
+            XCTAssertEqual(try Leaving.outlived(on: GTKDriver()), [])
         }
     }
 

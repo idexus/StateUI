@@ -108,6 +108,10 @@ final class AndroidDriver: HostDriver {
         written.lines
     }
 
+    var liveViews: Int? {
+        AndroidView.liveCount
+    }
+
     /// Lets the last host's tree go - the questions it put over the window, the keyboard and the focus with it - as
     /// an activity's end does: each case starts in a window as a new activity's.
     func finish() {

@@ -146,13 +146,16 @@ final class AppKitDriver: HostDriver {
         let frame: NSRect
     }
 
+    /// One pass of the main loop, what AppKit autoreleases in it let go as it ends.
     func step() {
         guard let renderer else { return }
-        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
-        _ = renderer.runtime.core.runJobs()
-        renderer.runtime.pump.turn()
-        if renderer.frameClock.held { renderer.displayFrameForTesting() }
-        layOutWindows()
+        autoreleasepool {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+            _ = renderer.runtime.core.runJobs()
+            renderer.runtime.pump.turn()
+            if renderer.frameClock.held { renderer.displayFrameForTesting() }
+            layOutWindows()
+        }
     }
 
     /// Lays each window out as the display cycle does: the windows stand off the screen, where none runs. A user

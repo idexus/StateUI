@@ -72,6 +72,10 @@ extension GTKDriver {
         written.lines
     }
 
+    var liveViews: Int? {
+        GTKView.liveCount
+    }
+
     func kept(_ key: String, inScene: Bool) throws -> HostValue? {
         if inScene { return GTKKeptValues.readScenes(applicationID: "").scenes.first?.values[key] }
         let kept = GTKKeptValues.read(GTKKeptValues.file(for: ""))

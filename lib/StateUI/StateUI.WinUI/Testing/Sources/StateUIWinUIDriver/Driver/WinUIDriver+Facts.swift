@@ -68,6 +68,10 @@ extension WinUIDriver {
         written.lines
     }
 
+    var liveViews: Int? {
+        WinUIView.liveCount
+    }
+
     func kept(_ key: String, inScene: Bool) throws -> HostValue? {
         if inScene { return WinUIPersistence.readScenes().scenes.first?.values[key] }
         let kept = WinUIPersistence.read()

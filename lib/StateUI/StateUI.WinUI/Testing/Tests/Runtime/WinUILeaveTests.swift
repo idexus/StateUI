@@ -5,6 +5,7 @@
 @_spi(Host) import StateUIHost
 @testable import StateUIWinUI
 @testable import StateUIWinUIDriver
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// A page whose note a click takes away.
@@ -36,6 +37,13 @@ final class WinUILeaveTests: XCTestCase {
 
             XCTAssertEqual(host.views(WinUILabelView.self).count, 0)
             XCTAssertEqual(WinUIView.liveCount, before - 1, "the label's view outlived its element")
+        }
+    }
+
+    /// Every element shown and taken away twice leaves the host holding as many views as the first time.
+    func testEveryElementsViewIsLetGoOfEachTimeItLeaves() throws {
+        try onUIThread {
+            XCTAssertEqual(try Leaving.outlived(on: WinUIDriver()), [])
         }
     }
 

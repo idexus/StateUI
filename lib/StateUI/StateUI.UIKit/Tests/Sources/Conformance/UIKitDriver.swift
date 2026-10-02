@@ -105,6 +105,10 @@ final class UIKitDriver: HostDriver {
         written.lines
     }
 
+    var liveViews: Int? {
+        UIKitElement.liveViewCount
+    }
+
     /// Whether the element's view, or a view in it, holds the focus.
     func focused(_ element: MountedElement) throws -> Bool {
         guard let view = (element.native as? UIKitElement)?.view else {
@@ -127,14 +131,16 @@ final class UIKitDriver: HostDriver {
     }
 
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a
-    /// process of its own takes on a busy Mac.
+    /// process of its own takes on a busy Mac. What UIKit autoreleases in it is let go as it ends.
     func step() {
         guard let renderer else { return }
-        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02))
-        _ = renderer.runtime.core.runJobs()
-        renderer.runtime.pump.turn()
-        renderer.layOut()
-        if renderer.frameClock.held { renderer.frame() }
+        autoreleasepool {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02))
+            _ = renderer.runtime.core.runJobs()
+            renderer.runtime.pump.turn()
+            renderer.layOut()
+            if renderer.frameClock.held { renderer.frame() }
+        }
     }
 
     func turn() {
@@ -146,7 +152,12 @@ final class UIKitDriver: HostDriver {
         renderer?.frame()
     }
 
+    /// Does `act`, what UIKit autoreleases on the way let go as it ends.
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        try autoreleasepool { try performing(act, on: element) }
+    }
+
+    private func performing(_ act: UserAct, on element: MountedElement) throws {
         let view = (element.native as? UIKitElement)?.view
         switch (act, view) {
         case (.activate, _) where element.parent?.type == .itemsView:

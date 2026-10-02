@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// A page whose second button goes when the first is clicked.
@@ -25,6 +26,7 @@ final class AndroidLeaveTests: XCTestCase {
     static var allTests: [(String, (AndroidLeaveTests) -> () throws -> Void)] {
         [
             ("testAViewThatLeavesIsLetGoAndItsGroupNoLongerHoldsIt", testAViewThatLeavesIsLetGoAndItsGroupNoLongerHoldsIt),
+            ("testEveryElementsViewIsLetGoOfEachTimeItLeaves", testEveryElementsViewIsLetGoOfEachTimeItLeaves),
         ]
     }
 
@@ -42,6 +44,15 @@ final class AndroidLeaveTests: XCTestCase {
             XCTAssertEqual(host.views(AndroidButtonView.self).map(\.text), ["Hide"])
             XCTAssertEqual(Java.callInt(stack.reference, TestJava.getChildCount), 1)
             XCTAssertNil(AndroidView.find(leaving))
+        }
+    }
+
+    /// Every element shown and taken away twice leaves the host holding as many views as the first time.
+    func testEveryElementsViewIsLetGoOfEachTimeItLeaves() throws {
+        try onMainActor {
+            let driver = AndroidDriver()
+            defer { driver.finish() }
+            XCTAssertEqual(try Leaving.outlived(on: driver), [])
         }
     }
 }

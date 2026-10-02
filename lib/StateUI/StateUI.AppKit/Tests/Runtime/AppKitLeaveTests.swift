@@ -6,6 +6,7 @@ import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// A page whose note a click takes away.
@@ -41,6 +42,14 @@ final class AppKitLeaveTests: XCTestCase {
         }
 
         XCTAssertEqual(AppKitElement.liveViewCount, before - 1, "the label's view outlived its element")
+    }
+
+    /// Every element shown and taken away twice leaves the host holding as many views as the first time.
+    @MainActor
+    func testEveryElementsViewIsLetGoOfEachTimeItLeaves() throws {
+        let driver = AppKitDriver()
+        defer { driver.renderer?.closeForTesting() }
+        XCTAssertEqual(try Leaving.outlived(on: driver), [])
     }
 }
 
