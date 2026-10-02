@@ -235,7 +235,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     /// - Parameter view: what stands in for the cards.
     /// - Returns: the gallery, showing that instead of nothing.
-    public func emptyView(_ view: any View) -> Self {
+    public func emptyView(_ view: some View) -> Self {
         var copy = self
         copy.empty = view
         return copy
@@ -256,7 +256,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     ///   - amount: how dark the furthest card goes, from 0 (not at all) to 1
     ///     (as far as the shape says). The whole of it, unless said.
     /// - Returns: the gallery, darkening its far cards.
-    public func shade(_ view: any View, amount: Double = 1) -> Self {
+    public func shade(_ view: some View, amount: Double = 1) -> Self {
         var copy = self
         copy.mask = view
         copy.shades = Self.fraction(amount, "shade(_:amount:)")

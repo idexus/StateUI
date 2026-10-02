@@ -57,14 +57,14 @@ public struct Section<Items: RandomAccessCollection, ID: Hashable> {
     }
 
     /// A view standing before the group's items.
-    public func header(_ view: any View) -> Self {
+    public func header(_ view: some View) -> Self {
         var copy = self
         copy.header = view
         return copy
     }
 
     /// A view standing after the group's items.
-    public func footer(_ view: any View) -> Self {
+    public func footer(_ view: some View) -> Self {
         var copy = self
         copy.footer = view
         return copy

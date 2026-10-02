@@ -192,6 +192,22 @@ final class BuilderTests: XCTestCase {
         XCTAssertTrue(type(of: Field(editing: true).body) == Either<TextField, TextField>.self)
     }
 
+    /// A view handed to the library keeps its type: no public declaration takes or gives one as `any View`.
+    func testThePublicInterfaceTakesSomeViewNeverAnyView() throws {
+        var found: [String] = []
+
+        for (path, text) in try SourceTree.allSources() {
+            for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
+                let code = line.trimmingCharacters(in: .whitespaces)
+                guard !code.hasPrefix("//"), code.contains("public "), code.contains("any View") else { continue }
+
+                found.append("\(path):\(number + 1)")
+            }
+        }
+
+        XCTAssertEqual(found, [], "a public declaration takes a view as `any View`")
+    }
+
     /// Going back to a branch that was shown before starts it afresh rather
     /// than digging up what it left behind - which is what "deterministic"
     /// means here: the same tree describes the same controls however it was

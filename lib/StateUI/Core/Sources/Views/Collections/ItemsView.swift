@@ -173,21 +173,21 @@ extension ItemsView {
     }
 
     /// A view standing before every item, scrolled with them.
-    public func header(_ view: any View) -> Self {
+    public func header(_ view: some View) -> Self {
         var copy = self
         copy.headerView = view
         return copy
     }
 
     /// A view standing after every item, scrolled with them.
-    public func footer(_ view: any View) -> Self {
+    public func footer(_ view: some View) -> Self {
         var copy = self
         copy.footerView = view
         return copy
     }
 
     /// A view shown in the list's place while it has no items.
-    public func emptyView(_ view: any View) -> Self {
+    public func emptyView(_ view: some View) -> Self {
         var copy = self
         copy.empty = view
         return copy
