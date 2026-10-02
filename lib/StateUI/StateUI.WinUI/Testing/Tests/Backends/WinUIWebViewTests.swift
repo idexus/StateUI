@@ -1,14 +1,21 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import CStateUIWinUI
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIWinUI
+@testable import StateUIWinUIDriver
+@testable import StateUIWebViewWinUI
 import StateUIConformance
 import XCTest
 
+/// The web view's backend on WinUI, registered as an application registers it: what WebView2 does that no family
+/// asks.
 final class WinUIWebViewTests: XCTestCase {
+    override func setUp() {
+        onUIThread { WinUIBackends.registered }
+    }
+
     /// A document written in place with an address of its own stands at that address, which its relative links
     /// resolve against; nothing is fetched from it.
     func testADocumentWrittenInPlaceStandsAtItsOwnAddress() throws {
@@ -62,8 +69,8 @@ final class WinUIWebViewTests: XCTestCase {
                     (named.wrappedValue.map { web.userAgent($0) } ?? web).height(200)
                 }
             }
-            let web = try XCTUnwrap(host.views(WinUIWebView.self).first)
-            let agent = { WinUIStrings.read { stateui_winui_web_read(web.handle, web.number, "agent", $0, $1) } }
+            let web = try XCTUnwrap(host.views(WinUIHostedView<WinUIWebView>.self).first?.control)
+            let agent = { web.read("agent") }
             Self.wait(host) { !arrived.values.isEmpty }
             XCTAssertEqual(agent(), "StateUI host")
 

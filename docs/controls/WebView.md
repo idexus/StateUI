@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit |  |  | `WKWebView` | not realized |
 | UIKit | ⌛ |  | `WKWebView` |  |
 | Android Views | ⌛ |  | `WebView` |  |
-| WinUI 3 | ⌛ |  | `WebView2`, a backend |  |
+| WinUI 3 | ✅ | 20 ✅ · 15 – | `WebView2`, a backend |  |
 | GTK 4 | ✅ | 52 ✅ · 1 – | WebKitGTK `WebKitWebView`, a backend |  |
 | Web |  |  | `<iframe>` (?) | no host yet |
 
@@ -55,17 +55,17 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `canGoBackChanged` | event | `Bool` | native |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `canGoForwardChanged` | event | `Bool` | native |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `evaluateJavaScript` | act | `(String) -> String?` |  |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `goBack` | act | `() -> Void` |  |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `goForward` | act | `() -> Void` |  |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `onNavigated` (`navigated`) | event | `(WebNavigationResult, WebNavigationEvent, String)` | native |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `onNavigating` (`navigating`) | event | `(WebNavigationEvent, String)` | native |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `onProcessTerminated` (`processTerminated`) | event |  | native |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `reload` | act | `() -> Void` |  |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `source` | property | `WebViewSource` | native |  | ⌛ | ⌛ | ⌛ | 🔌 |  | not realized; GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written |
-| `userAgent` | property | `String` | adaptive |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
+| `canGoBackChanged` | event | `Bool` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `canGoForwardChanged` | event | `Bool` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `evaluateJavaScript` | act | `(String) -> String?` |  |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `goBack` | act | `() -> Void` |  |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `goForward` | act | `() -> Void` |  |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `onNavigated` (`navigated`) | event | `(WebNavigationResult, WebNavigationEvent, String)` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `onNavigating` (`navigating`) | event | `(WebNavigationEvent, String)` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `onProcessTerminated` (`processTerminated`) | event |  | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `reload` | act | `() -> Void` |  |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `source` | property | `WebViewSource` | native |  | ⌛ | ⌛ | ✅ | 🔌 |  | not realized; GTK 4: only through the host's own: read source of WebView: the page the backend last asked for: WebKit gives back an address, never the document written |
+| `userAgent` | property | `String` | adaptive |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -121,35 +121,35 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | GTK 4: not realized |
-| `area` | property | `Area` | structure |  |  |  |  | ✅ |  |  |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | GTK 4: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | GTK 4: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | GTK 4: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | GTK 4: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | GTK 4: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | GTK 4: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  | ⌛ | ⌛ | ⌛ | ✅ |  | not realized |
-| `gridColumn` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  |  |  |  | ✅ |  |  |
-| `margin` | property | `Insets` | native |  |  |  |  | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  |  |
-| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  |  |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  |  |
-| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `verticalAlignment` | property | `Alignment` | native |  |  |  |  | ✅ |  |  |
+| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `area` | property | `Area` | structure |  |  |  | ✅ | ✅ |  |  |
+| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `dragStarting` | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  | ⌛ | ⌛ | ✅ | ✅ |  | not realized |
+| `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `horizontalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
+| `margin` | property | `Insets` | native |  |  |  | ✅ | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `panXChannel` | property | `Int` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `panYChannel` | property | `Int` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  | – | 🔌 |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).; GTK 4: only through the host's own: pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `swipeThreshold` | property | `Double` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `tapCount` | property | `Int` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onTapped` (`tapped`) | event |  | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `verticalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |

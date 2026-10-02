@@ -12,6 +12,10 @@ import XCTest
 /// The conformance suite on WinUI: a family a contract, each one test, its verdicts WinUI's column of the
 /// control dictionary.
 final class WinUIConformanceTests: XCTestCase {
+    override func setUp() {
+        onUIThread { WinUIBackends.registered }
+    }
+
     func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
     func testButton() { conform(ButtonTests.self) }
     func testCanvas() { conform(CanvasTests.self) }

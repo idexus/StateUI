@@ -56,7 +56,7 @@ final class WinUIDriver: HostDriver {
     /// What the host wrote to its log since the driver started it.
     let written = WinUILogLines()
 
-    var register: HostRegister { WinUIRealization.register }
+    var register: HostRegister { WinUIRealization.register.and(backendRecords) }
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
         written.listen()
@@ -83,6 +83,7 @@ final class WinUIDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        if try backendPerforms(act, on: element) { return }
         let view = (element.native as? WinUIElement)?.view
         switch (act, view) {
         case (.activate, _) where element.parent?.type == .itemsView:

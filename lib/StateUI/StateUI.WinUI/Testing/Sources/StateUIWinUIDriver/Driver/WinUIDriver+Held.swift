@@ -12,6 +12,7 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/conformance.md#what-the-driver-reads
 extension WinUIDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
+        if let value = backendHolds(property, on: element) { return value }
         let view = (element.native as? WinUIElement)?.view
         let cannot = DriverCannot(reading: property, of: element)
         switch element.type {

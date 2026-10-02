@@ -12,6 +12,11 @@ import Foundation
 import XCTest
 
 final class WinUIDeclarationExportTests: XCTestCase {
+    /// The host with its backends, as an application registering them runs it.
+    override func setUp() {
+        onUIThread { WinUIBackends.registered }
+    }
+
     /// The exports and the revisions their verdicts stand at are the library's files: a run reading another place
     /// stops at its first family.
     func testTheExportsAndTheirRevisionsAreTheLibrarys() {
@@ -60,5 +65,22 @@ final class WinUIDeclarationExportTests: XCTestCase {
     @MainActor
     func testTheRegisterThisHostWroteIsTrueOfTheContracts() {
         XCTAssertEqual(WinUIRealization.register.problems, [])
+    }
+
+    /// A web view hears none of the user's hand on WinUI - WebView2 gives it to its page, and listened to by WinUI it
+    /// ends the process - so every gesture of the View tier is never there, and no family makes a case of it.
+    @MainActor
+    func testAWebViewsGesturesAreNeverOnWinUI() {
+        let register = WinUIDriver().register
+        let gestures = [
+            "panTouchCount", "panUpdated", "panXChannel", "panYChannel", "pinchUpdated", "pointerEntered",
+            "pointerExited", "pointerMoved", "pointerPressed", "pointerReleased", "swipeDirection", "swipeThreshold",
+            "swiped", "tapCount", "tapped",
+        ]
+        for gesture in gestures {
+            let judgement = register.judgement(of: gesture, on: "WebView", from: "View")
+            if case .notPlanned? = judgement { continue }
+            XCTFail("WebView.\(gesture) is judged \(String(describing: judgement))")
+        }
     }
 }

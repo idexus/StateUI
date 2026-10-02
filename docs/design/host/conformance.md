@@ -84,7 +84,7 @@ there: its family and the families of the tiers it wears make their cases
 for it, and the verdicts stand in the host's column with the rest. What the
 driver cannot know of the backend's own widget - a member it holds, an act
 through it, what it reaches only past the toolkit - the host's tests hand the
-driver beside it (`GTKDriver.backends`).
+driver beside it (`WinUIDriver.backends`, `GTKDriver.backends`).
 
 ## The driver
 

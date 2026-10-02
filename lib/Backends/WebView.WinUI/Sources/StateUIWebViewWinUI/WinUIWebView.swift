@@ -34,6 +34,7 @@ final class WinUIWebView: WinUIControl {
     private var asked: (address: String, document: String?)?
     private var loading = false
     private var pending: WebViewSource?
+    private var loaded: WebViewSource?
 
     init() {
         WinUIWebViewRelay.listen()
@@ -66,6 +67,7 @@ final class WinUIWebView: WinUIControl {
     private func loadPending() {
         guard let source = pending else { return }
         pending = nil
+        loaded = source
         switch source {
         case .url(let address): go((address, nil))
         case .html(let document, let base?): go((base, document))
@@ -105,6 +107,31 @@ final class WinUIWebView: WinUIControl {
         try await withCheckedThrowingContinuation { answer in
             stateui_webview_winui_evaluate(element, script, WinUIWebViewRelay.wait(answer))
         }
+    }
+
+    // MARK: - What a test reads
+
+    /// What WebView2 holds of the view - "address" the page's, "document" the one written in place it shows there,
+    /// "agent" what it calls itself.
+    func read(_ what: String) -> String {
+        let length = Int(stateui_webview_winui_read(element, number, what, nil, 0))
+        var bytes = [CChar](repeating: 0, count: length + 1)
+        _ = bytes.withUnsafeMutableBufferPointer {
+            stateui_webview_winui_read(element, number, what, $0.baseAddress, Int32($0.count))
+        }
+        return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+    }
+
+    /// The page the view shows: the document last written in place where WebView2 stands at the address answering
+    /// it, else the address it stands at.
+    var shownSource: WebViewSource {
+        if case .html(let document, _)? = loaded, let loaded, read("document") == document { return loaded }
+        return .url(read("address"))
+    }
+
+    /// Ends the processes drawing its pages, as the system ends a web process; whether any was ended.
+    func endContent() -> Bool {
+        stateui_webview_winui_end_content(element)
     }
 
     // MARK: - What the page does

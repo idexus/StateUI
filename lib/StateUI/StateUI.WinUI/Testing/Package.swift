@@ -17,6 +17,7 @@ let package = Package(
         .package(name: "StateUIHost", path: "../../StateUI.Host"),
         .package(name: "StateUIConformance", path: "../../StateUI.Conformance"),
         .package(name: "StateUIWinUI", path: ".."),
+        .package(name: "StateUIWebViewWinUI", path: "../../../Backends/WebView.WinUI"),
     ],
     targets: [
         .target(
@@ -34,6 +35,7 @@ let package = Package(
             name: "StateUIWinUITests",
             dependencies: [
                 "StateUIWinUIDriver", .product(name: "StateUIWinUI", package: "StateUIWinUI"),
+                .product(name: "StateUIWebViewWinUI", package: "StateUIWebViewWinUI"),
                 .product(name: "StateUI", package: "StateUIRoot"),
                 .product(name: "StateUIHost", package: "StateUIHost"),
                 .product(name: "StateUIConformance", package: "StateUIConformance"),
