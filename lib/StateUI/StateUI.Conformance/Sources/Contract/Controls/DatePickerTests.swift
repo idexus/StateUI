@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `DatePickerContract` on a host: the user's day heard once and landing on the state, the program's shown and heard by
-/// nobody; the calendar the user opens and closes heard, the one the program opens not; the range and the way the
-/// day is written.
+/// nobody; the calendar the user opens and closes heard, the one the program opens not; a day not in the calendar
+/// leaving the day shown and one past the range standing at its end; the range and the way the day is written.
 @_spi(Host) public enum DatePickerTests: ConformanceFamily {
     public static let name = "DatePicker"
 
@@ -89,6 +89,37 @@
                 try s.perform(.close, on: picker)
                 s.settle { heard.values == ["closed"] }
                 s.expect(heard.values, ["closed"], "the user closing what the program opened")
+            },
+            ConformanceCase("aDayOutsideTheCalendarOrTheRangeIsHeldByTheRule", proves: [
+                Covered(DatePickerContract.date),
+            ], needs: [Covered(DatePickerContract.maximumDate), Covered(ButtonContract.clicked)]) { s in
+                let due = State(wrappedValue: CalendarDate(year: 2026, month: 2, day: 10))
+                s.start {
+                    VStack {
+                        DatePicker(due.projectedValue).maximumDate(CalendarDate(year: 2026, month: 6, day: 30))
+                            .id("picker")
+                        Button("No such day").onClicked { due.wrappedValue = CalendarDate(year: 2026, month: 2, day: 31) }
+                            .id("impossible")
+                        Button("Christmas").onClicked { due.wrappedValue = CalendarDate(year: 2026, month: 12, day: 24) }
+                            .id("late")
+                    }
+                }
+                let picker = try s.element("picker")
+
+                try s.perform(.activate, on: s.element("impossible"))
+                s.settle { due.wrappedValue == CalendarDate(year: 2026, month: 2, day: 31) }
+                for _ in 0..<5 { s.turn() }
+                s.expect(
+                    try s.held(DatePickerContract.date, on: picker), CalendarDate(year: 2026, month: 2, day: 10),
+                    "a day not in the calendar leaves the day shown")
+
+                try s.perform(.activate, on: s.element("late"))
+                try s.settle {
+                    try s.held(DatePickerContract.date, on: picker) != CalendarDate(year: 2026, month: 2, day: 10)
+                }
+                s.expect(
+                    try s.held(DatePickerContract.date, on: picker), CalendarDate(year: 2026, month: 6, day: 30),
+                    "a day past the range stands at its end")
             },
             Aspects.holds(
                 DatePickerContract.minimumDate, on: "DatePicker", CalendarDate(year: 2026, month: 1, day: 1),

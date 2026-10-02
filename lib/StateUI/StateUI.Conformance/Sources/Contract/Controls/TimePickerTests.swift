@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `TimePickerContract` on a host: the user's time heard once and landing on the state, the program's shown and
-/// heard by nobody; the clock the user opens and closes heard, the one the program opens not; the way the time is
-/// written.
+/// heard by nobody; a time past the day added up from midnight; the clock the user opens and closes heard, the one
+/// the program opens not; the way the time is written.
 @_spi(Host) public enum TimePickerTests: ConformanceFamily {
     public static let name = "TimePicker"
 
@@ -36,6 +36,24 @@
                 try s.settle { try s.held(TimePickerContract.time, on: picker) == ClockTime(hour: 0, minute: 0) }
                 s.expect(try s.held(TimePickerContract.time, on: picker), ClockTime(hour: 0, minute: 0))
                 s.expect(heard.values.count, 1, "the program's time heard by nobody")
+            },
+            ConformanceCase("aTimePastTheDayStandsInTheNext", proves: [
+                Covered(TimePickerContract.time),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 0))
+                s.start {
+                    VStack {
+                        TimePicker(alarm.projectedValue).id("picker")
+                        Button("Late").onClicked { alarm.wrappedValue = ClockTime(hour: 25, minute: 30) }.id("late")
+                    }
+                }
+                let picker = try s.element("picker")
+
+                try s.perform(.activate, on: s.element("late"))
+                try s.settle { try s.held(TimePickerContract.time, on: picker) != ClockTime(hour: 9, minute: 0) }
+                s.expect(
+                    try s.held(TimePickerContract.time, on: picker), ClockTime(hour: 1, minute: 30),
+                    "added up from midnight")
             },
             ConformanceCase("theClockTheUserOpensAndClosesIsHeard", proves: [
                 Covered(TimePickerContract.isOpen), Covered(TimePickerContract.opened), Covered(TimePickerContract.closed),

@@ -34,11 +34,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (80) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 35 ✅ · 1 ☑️ | `NSDatePicker` |  |
-| UIKit | ✅ | 29 ✅ · 3 – | `UIDatePicker` |  |
-| Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `DatePickerDialog` |  |
+| AppKit | ⌛ | 32 ✅ · 1 ☑️ | `NSDatePicker` |  |
+| UIKit | ⌛ | 24 ✅ · 3 – | `UIDatePicker` |  |
+| Android Views | ⌛ | 52 ✅ · 1 ☑️ · 3 – | `DatePickerDialog` |  |
 | WinUI 3 | ✅ | 63 ✅ · 1 ☑️ | `CalendarDatePicker` |  |
-| GTK 4 | ✅ | 51 ✅ · 1 ☑️ · 1 – | `GtkCalendar` in a `GtkPopover` |  |
+| GTK 4 | ⌛ | 45 ✅ · 1 – | `GtkCalendar` in a `GtkPopover` |  |
 | Web |  |  | `<input type=date>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/DatePickerContract.swift`.
@@ -47,14 +47,14 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/DatePickerCont
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClosed` (`closed`) | event |  | native |  |  | · | ✅ | ✅ |  | not realized; UIKit: not realized; Android Views: cannot open on DatePicker - Android's driver has no path for it yet |
-| `date` | property | `CalendarDate` | native | 🔌 | ✅ | · | ✅ | ✅ |  | only through the host's own: pickDate on DatePicker: the host's change handler called, not the picker's action; Android Views: cannot read date of DatePicker - Android's driver has no path for it yet |
-| `onDateChanged` (`dateChanged`) | event | `CalendarDate` | native | 🔌 | ✅ | · | ✅ | ✅ |  | only through the host's own: pickDate on DatePicker: the host's change handler called, not the picker's action; Android Views: cannot read date of DatePicker - Android's driver has no path for it yet |
-| `format` | property | `String` | native |  |  | · | ☑️ | ☑️ |  | not realized; UIKit: not realized; Android Views: cannot read format of DatePicker - Android's driver has no path for it yet; WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d".; GTK 4: GTK writes "D" and "d" in the user's own way, and any other pattern as "d". |
-| `isOpen` | property | `Bool` | native |  |  | · | ✅ | ✅ |  | not realized; UIKit: not realized; Android Views: cannot open on DatePicker - Android's driver has no path for it yet |
-| `maximumDate` | property | `CalendarDate` | native | ✅ | ✅ | · | ✅ | 🔌 |  | Android Views: cannot read maximumDate of DatePicker - Android's driver has no path for it yet; GTK 4: only through the host's own: read maximumDate of DatePicker: the range the host holds the day in: GtkCalendar holds none |
-| `minimumDate` | property | `CalendarDate` | native | ✅ | ✅ | · | ✅ | 🔌 |  | Android Views: cannot read minimumDate of DatePicker - Android's driver has no path for it yet; GTK 4: only through the host's own: read minimumDate of DatePicker: the range the host holds the day in: GtkCalendar holds none |
-| `onOpened` (`opened`) | event |  | native |  |  | · | ✅ | ✅ |  | not realized; UIKit: not realized; Android Views: cannot open on DatePicker - Android's driver has no path for it yet |
+| `onClosed` (`closed`) | event |  | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `date` | property | `CalendarDate` | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `onDateChanged` (`dateChanged`) | event | `CalendarDate` | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `format` | property | `String` | native | ⌛ | ⌛ | ⌛ | ☑️ | ⌛ |  | WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d". |
+| `isOpen` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `maximumDate` | property | `CalendarDate` | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `minimumDate` | property | `CalendarDate` | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `onOpened` (`opened`) | event |  | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -119,7 +119,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
 | `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
