@@ -17,7 +17,7 @@ final class AppKitProgressViewTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var stopped = HostPatch(id: .manual("activity"), type: .activityIndicator)
-        stopped.properties[.isRunning] = .bool(false)
+        stopped.properties[.isAnimating] = .bool(false)
         renderer.applyForTesting(tree(stopped))
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("activity")) as? AppKitActivityIndicatorView)
@@ -29,7 +29,7 @@ final class AppKitProgressViewTests: XCTestCase {
         XCTAssertFalse(shows(native))
 
         var runningButInvisible = HostPatch(id: .manual("activity"), type: .activityIndicator)
-        runningButInvisible.properties[.isRunning] = .bool(true)
+        runningButInvisible.properties[.isAnimating] = .bool(true)
         runningButInvisible.properties[.isVisible] = .bool(false)
         renderer.applyForTesting(changedTree(runningButInvisible))
         XCTAssertFalse(shows(native))

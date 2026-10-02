@@ -8,8 +8,8 @@ public protocol ActivityIndicatorProperties: PropertyContainer {}
 extension ActivityIndicatorProperties {
     /// Whether it is spinning. A still indicator is invisible on most
     /// platforms, so this alone shows and hides it.
-    public func isRunning(_ value: Bool) -> Modified {
-        setValue(ActivityIndicatorContract.isRunning, value)
+    public func isAnimating(_ value: Bool) -> Modified {
+        setValue(ActivityIndicatorContract.isAnimating, value)
     }
 }
 
@@ -34,16 +34,16 @@ public struct ActivityIndicator: ElementView, TintElement, ActivityIndicatorProp
 
     /// A spinner, spinning or still - and still is invisible on most
     /// platforms, so `ActivityIndicator(loading)` shows only while work runs.
-    public init(_ isRunning: Bool) {
+    public init(_ isAnimating: Bool) {
         node = Node(contract: ActivityIndicatorContract.self)
-        node.write(ActivityIndicatorContract.isRunning, isRunning)
+        node.write(ActivityIndicatorContract.isAnimating, isAnimating)
     }
 }
 
 extension ActivityIndicator {
-    /// `isRunning` from a state, `$x`: the host sets each new value as it
+    /// `isAnimating` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
-    public func isRunning(_ state: Binding<Bool>) -> Modified {
-        plain(.isRunning, by: state)
+    public func isAnimating(_ state: Binding<Bool>) -> Modified {
+        plain(.isAnimating, by: state)
     }
 }

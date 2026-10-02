@@ -21,7 +21,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "ProgressBar", owner: "ProgressBar", member: "progress")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "ActivityIndicator", owner: "ActivityIndicator", member: "isRunning")))
+            HostRealizedMember(element: "ActivityIndicator", owner: "ActivityIndicator", member: "isAnimating")))
     }
 
     /// A progress bar is made by its registration, shows the fraction it is
@@ -53,7 +53,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var running = HostPatch(id: .manual("activity"), type: .activityIndicator)
-        running.properties[.isRunning] = .bool(true)
+        running.properties[.isAnimating] = .bool(true)
         renderer.applyForTesting(tree(running))
 
         let native = try XCTUnwrap(
@@ -61,7 +61,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
         XCTAssertTrue(native.isSpinning)
 
         var stopped = HostPatch(id: .manual("activity"), type: .activityIndicator)
-        stopped.properties[.isRunning] = .bool(false)
+        stopped.properties[.isAnimating] = .bool(false)
         renderer.applyForTesting(changedTree(stopped))
 
         XCTAssertFalse(native.isSpinning)
@@ -83,13 +83,13 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
         XCTAssertFalse(native.isSpinning, "nothing described, nothing spinning")
 
         var checking = HostPatch(id: .manual("activity"), type: .activityIndicator)
-        checking.properties[.isRunning] = .bool(true)
+        checking.properties[.isAnimating] = .bool(true)
         renderer.applyForTesting(changedTree(checking))
 
         XCTAssertTrue(native.isSpinning)
 
         var done = HostPatch(id: .manual("activity"), type: .activityIndicator)
-        done.properties[.isRunning] = .bool(false)
+        done.properties[.isAnimating] = .bool(false)
         renderer.applyForTesting(changedTree(done))
 
         XCTAssertFalse(native.isSpinning)

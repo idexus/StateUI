@@ -41,7 +41,7 @@ enum AppKitRealization {
         .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),
-        .notPlanned("FontElement", "fontAutoScalingEnabled",
+        .notPlanned("FontElement", "isFontAutoScalingEnabled",
                     reason: "macOS gives an application no text size of the user's to follow."),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
@@ -77,8 +77,8 @@ enum AppKitRealization {
         .complete("Page", "appearing"),
         .complete("Page", "backButtonTitle"),
         .complete("Page", "disappearing"),
-        .complete("Page", "hasBackButton"),
-        .complete("Page", "hasNavigationBar"),
+        .complete("Page", "showsBackButton"),
+        .complete("Page", "showsNavigationBar"),
         // A page is no `VisualElement`: it wears `PageElement` alone, so the
         // tier's record about a background does not reach it.
         .complete("Page", "background"),
@@ -102,7 +102,7 @@ enum AppKitRealization {
         .complete("Span", "fontAttributes"),
         .complete("Span", "text"),
         .complete("Span", "textCase"),
-        .complete("SplitView", "isSidebarVisibleChanged"),
+        .complete("SplitView", "showsSidebarChanged"),
         .complete("TabbedView", "accessibilityIdentifier"),
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),

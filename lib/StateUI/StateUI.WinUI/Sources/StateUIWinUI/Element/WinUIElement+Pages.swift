@@ -32,7 +32,7 @@ extension WinUIElement {
             split.onPresentationChanged = { [weak self] presented in
                 WinUIDoorbell.afterPass { [weak self] in self?.sidebarShown(presented) }
             }
-            if changed.contains(.isSidebarVisible) { split.present(value(.isSidebarVisible)?.bool == true) }
+            if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
         default:
             break
         }

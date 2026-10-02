@@ -47,8 +47,8 @@ extension UIKitElement {
         chrome.title = value(.title)?.string ?? ""
         chrome.subtitle = element.titleArea?.subtitle
         chrome.titleView = element.chromeTitleView?.uiKit.view
-        chrome.showsBar = value(.hasNavigationBar)?.bool != false
-        chrome.offersBack = value(.hasBackButton)?.bool != false
+        chrome.showsBar = value(.showsNavigationBar)?.bool != false
+        chrome.offersBack = value(.showsBackButton)?.bool != false
         chrome.backButtonTitle = value(.backButtonTitle)?.string
         (chrome.barBackground, chrome.barForeground) = element.barColors
         let actions = element.chromeActions
@@ -109,7 +109,7 @@ extension UIKitElement {
             guard let split = controller as? UIKitSplitViewController else { return }
             split.show(sidebar: children.first?.controller, detail: children.dropFirst().first?.controller)
             split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
-            if changed.contains(.isSidebarVisible) { split.present(value(.isSidebarVisible)?.bool == true) }
+            if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
         default:
             break
         }

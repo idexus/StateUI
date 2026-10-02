@@ -297,7 +297,7 @@ extension WinUIDriver {
         case ("maximum", let stepper as WinUIStepperView): return Double(try read(stepper, "maximum"))?.propValue
         case ("step", let stepper as WinUIStepperView): return Double(try read(stepper, "step"))?.propValue
         case ("progress", let bar as WinUIProgressBarView): return bar.progress.propValue
-        case ("isRunning", let spinner as WinUIActivityIndicatorView): return spinner.isRunning.propValue
+        case ("isAnimating", let spinner as WinUIActivityIndicatorView): return spinner.isAnimating.propValue
         case ("tint", _): return try Self.color(read(view, "tint")).map { $0.propValue }
         case ("selectedIndex", let picker as WinUIPickerView): return picker.chosen < 0 ? nil : picker.chosen.propValue
         case ("options", let picker as WinUIPickerView): return picker.choices.propValue
@@ -337,7 +337,7 @@ extension WinUIDriver {
         switch (name, view) {
         case ("title", _): return .string(try title(of: element))
         case ("icon", _): return try tabIcon(of: element).map { Self.picture($0, named: element) }
-        case ("hasNavigationBar", _):
+        case ("showsNavigationBar", _):
             let bar = try window().titleBar
             let back = try read(bar, "back") == "1"
             let actions = try read(bar, "actions") != "||"
@@ -350,7 +350,7 @@ extension WinUIDriver {
             let words = try read(window().titleBar, "subtitle")
             return words.isEmpty ? nil : .string(words)
         case ("barIcon", _): return Self.picture(try read(window().titleBar, "icon"), named: element, by: .barIcon)
-        case ("isSidebarVisible", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
+        case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
         case ("background", let page?) where element.type == .page:
             return try Self.color(read(page, "box.fill")).map { $0.propValue }
         case ("currentPage", let tabs as WinUITabbedView):

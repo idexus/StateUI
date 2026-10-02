@@ -8,7 +8,7 @@ ActivityIndicator.pointerPressed: ✅
 ActivityIndicator.pointerReleased: ✅
 ActivityIndicator.tapCount: ✅
 ActivityIndicator.tapped: ✅
-Button.allowDrop: not realized
+Button.allowsDrop: not realized
 Button.area: ✅
 Button.dragLeave: not realized
 Button.dragOver: not realized
@@ -44,7 +44,7 @@ DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
-Ellipse.allowDrop: not realized
+Ellipse.allowsDrop: not realized
 Ellipse.area: ✅
 Ellipse.dragLeave: not realized
 Ellipse.dragOver: not realized
@@ -109,7 +109,7 @@ Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
 Picker.tapCount: ✅
 Picker.tapped: ✅
-Polygon.allowDrop: not realized
+Polygon.allowsDrop: not realized
 Polygon.area: ✅
 Polygon.dragLeave: not realized
 Polygon.dragOver: not realized
@@ -145,7 +145,7 @@ Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
 Rectangle.tapCount: ✅
 Rectangle.tapped: ✅
-ScrollView.allowDrop: not realized
+ScrollView.allowsDrop: not realized
 ScrollView.area: ✅
 ScrollView.dragLeave: not realized
 ScrollView.dragOver: not realized
@@ -181,14 +181,14 @@ Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
-Text.allowDrop: not realized
+Text.allowsDrop: not realized
 Text.area: ✅
 Text.dragLeave: not realized
 Text.dragOver: not realized
 Text.drop: not realized
 Text.frameChanged: ✅
 Text.panYChannel: ✅
-TextEditor.allowDrop: not realized
+TextEditor.allowsDrop: not realized
 TextEditor.area: ✅
 TextEditor.dragLeave: not realized
 TextEditor.dragOver: not realized
@@ -224,7 +224,7 @@ WebView.pointerPressed: – WebView2 gives the user's hand to its page: listened
 WebView.pointerReleased: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.tapCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.tapped: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-ZStack.allowDrop: not realized
+ZStack.allowsDrop: not realized
 ZStack.area: ✅
 ZStack.dragLeave: not realized
 ZStack.dragOver: not realized

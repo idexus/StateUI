@@ -24,7 +24,7 @@
                 s.expect(Aspects.laidOut(frames), true, "its detail laid out in the window")
             },
             ConformanceCase("theSidebarStandsBesideTheDetail", proves: [
-                Covered(SplitViewContract.isSidebarVisible),
+                Covered(SplitViewContract.showsSidebar),
             ]) { s in
                 s.start {
                     SplitView(State(wrappedValue: true).projectedValue) {
@@ -33,31 +33,31 @@
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
 
-                try s.settle { try s.held(SplitViewContract.isSidebarVisible, on: split) == true }
+                try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == true }
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("detail")), true)
-                s.expect(try s.held(SplitViewContract.isSidebarVisible, on: split), true)
+                s.expect(try s.held(SplitViewContract.showsSidebar, on: split), true)
             },
             ConformanceCase("theUsersHidingIsHeardOnTheBinding", proves: [
-                Covered(SplitViewContract.isSidebarVisible), Covered(SplitViewContract.isSidebarVisibleChanged),
+                Covered(SplitViewContract.showsSidebar), Covered(SplitViewContract.showsSidebarChanged),
             ]) { s in
                 let open = State(wrappedValue: true)
                 s.start {
                     SplitView(open.projectedValue) { Text("Sidebar") } detail: { WideDetail(Text("Detail")) }
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
-                try s.settle { try s.held(SplitViewContract.isSidebarVisible, on: split) == true }
+                try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == true }
 
                 try s.perform(.toggle, on: split)
                 s.settle { !open.wrappedValue }
                 s.expect(open.wrappedValue, false, "the user hid it")
-                s.expect(try s.held(SplitViewContract.isSidebarVisible, on: split), false)
+                s.expect(try s.held(SplitViewContract.showsSidebar, on: split), false)
 
                 try s.perform(.toggle, on: split)
                 s.settle { open.wrappedValue }
                 s.expect(open.wrappedValue, true, "and showed it again")
             },
             ConformanceCase("theProgramsHidingIsShown", proves: [
-                Covered(SplitViewContract.isSidebarVisible),
+                Covered(SplitViewContract.showsSidebar),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let open = State(wrappedValue: true)
                 s.start {
@@ -68,11 +68,11 @@
                     }
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
-                try s.settle { try s.held(SplitViewContract.isSidebarVisible, on: split) == true }
+                try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == true }
 
                 try s.perform(.activate, on: s.element("hide"))
-                try s.settle { try s.held(SplitViewContract.isSidebarVisible, on: split) == false }
-                s.expect(try s.held(SplitViewContract.isSidebarVisible, on: split), false)
+                try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == false }
+                s.expect(try s.held(SplitViewContract.showsSidebar, on: split), false)
             },
         ]
     }

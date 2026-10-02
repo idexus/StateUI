@@ -2,7 +2,7 @@
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridRow: ✅
-Button.allowDrop: not realized
+Button.allowsDrop: not realized
 Button.dragLeave: not realized
 Button.dragOver: not realized
 Button.drop: not realized
@@ -35,7 +35,7 @@ HStack.pinchUpdated: ✓ pinch on HStack: handed to the host's recognizer or han
 Image.panYChannel: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.tapCount: ✓ tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.tapped: ✓ tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-Line.allowDrop: not realized
+Line.allowsDrop: not realized
 Line.dragLeave: not realized
 Line.dragOver: not realized
 Line.drop: not realized
@@ -71,7 +71,7 @@ ScrollView.tapped: ✓ tap on ScrollView: handed to the host's recognizer or han
 SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridRow: ✅
-Slider.allowDrop: not realized
+Slider.allowsDrop: not realized
 Slider.dragLeave: not realized
 Slider.dragOver: not realized
 Slider.drop: not realized

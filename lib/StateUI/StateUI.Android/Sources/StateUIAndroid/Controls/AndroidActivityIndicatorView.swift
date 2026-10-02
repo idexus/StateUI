@@ -10,7 +10,7 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#work-under-way
 @MainActor
 final class AndroidActivityIndicatorView: AndroidView {
-    private(set) var isRunning = false
+    private(set) var isAnimating = false
     private var shown = true
     private var madeTint: JavaObject??
 
@@ -21,7 +21,7 @@ final class AndroidActivityIndicatorView: AndroidView {
 
     /// Whether the work is under way: the indicator turns, or stands invisible in its room.
     func setRunning(_ running: Bool) {
-        isRunning = running
+        isAnimating = running
         showWhetherRunning()
     }
 
@@ -33,7 +33,7 @@ final class AndroidActivityIndicatorView: AndroidView {
     override var isShown: Bool { shown }
 
     private func showWhetherRunning() {
-        let visibility = !shown ? ViewConstants.gone : isRunning ? ViewConstants.visible : ViewConstants.invisible
+        let visibility = !shown ? ViewConstants.gone : isAnimating ? ViewConstants.visible : ViewConstants.invisible
         Java.call(reference, JavaAPI.setVisibility, .int(visibility))
     }
 

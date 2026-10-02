@@ -16,5 +16,5 @@ final class WinUIActivityIndicatorView: WinUIView {
     }
 
     /// Whether WinUI turns it.
-    var isRunning: Bool { stateui_winui_progress_ring_running(handle) }
+    var isAnimating: Bool { stateui_winui_progress_ring_running(handle) }
 }

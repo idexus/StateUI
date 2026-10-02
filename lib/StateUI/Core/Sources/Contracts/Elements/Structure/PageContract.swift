@@ -27,10 +27,10 @@ public enum PageContract: ElementContract {
     public static let disappearing = ElementEvent<Self, Void>("disappearing", layer: .adaptive)
 
     /// Whether the page offers a way back.
-    public static let hasBackButton = ElementProperty<Self, Bool>("hasBackButton", layer: .adaptive)
+    public static let showsBackButton = ElementProperty<Self, Bool>("showsBackButton", layer: .adaptive)
 
     /// Whether the bar shows above the page.
-    public static let hasNavigationBar = ElementProperty<Self, Bool>("hasNavigationBar", layer: .adaptive)
+    public static let showsNavigationBar = ElementProperty<Self, Bool>("showsNavigationBar", layer: .adaptive)
 
     /// The user has left the page for another.
     public static let navigatedFrom = ElementEvent<Self, Void>("navigatedFrom", layer: .adaptive)
@@ -46,7 +46,7 @@ public enum PageContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        appearing, backButtonTitle, background, disappearing, hasBackButton, hasNavigationBar, navigatedFrom,
+        appearing, backButtonTitle, background, disappearing, showsBackButton, showsNavigationBar, navigatedFrom,
         navigatedTo, navigatingFrom, padding,
     ]
 }

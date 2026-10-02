@@ -12,7 +12,7 @@ extension GTKRegistrations {
             bar.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
         }
         registry.add(ActivityIndicatorContract.self, create: { _ in GTKActivityIndicatorView() }) { activity in
-            activity.property(ActivityIndicatorContract.isRunning) { view, running in view.setRunning(running ?? false) }
+            activity.property(ActivityIndicatorContract.isAnimating) { view, running in view.setRunning(running ?? false) }
             activity.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
         }
     }

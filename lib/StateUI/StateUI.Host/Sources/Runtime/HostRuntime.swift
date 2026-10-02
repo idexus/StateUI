@@ -176,7 +176,7 @@
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
     public func sidebarShown(_ split: MountedElement, _ shown: Bool) {
         if split.isPagePresented { split.children.first?.setPagePresented(shown, reason: .appearance) }
-        split.reportUserChange(.isSidebarVisible, .isSidebarVisibleChanged, .bool(shown), in: self) { _ in }
+        split.reportUserChange(.showsSidebar, .showsSidebarChanged, .bool(shown), in: self) { _ in }
     }
 
     /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,

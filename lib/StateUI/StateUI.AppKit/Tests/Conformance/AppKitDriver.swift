@@ -197,7 +197,7 @@ final class AppKitDriver: HostDriver {
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
         if property == .barBackgroundColor { return try barHolds(element) }
         // Whether a page offers the way back: the window's toolbar holds its back item while the page shows.
-        if property == .hasBackButton, element.type == .page {
+        if property == .showsBackButton, element.type == .page {
             return (try controller(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.back) != nil).propValue
         }
         let view = (element.native as? AppKitElement)?.view
@@ -217,7 +217,7 @@ final class AppKitDriver: HostDriver {
         case (.maximum, let stepper as AppKitStepperView): return stepper.maxValue.propValue
         case (.step, let stepper as AppKitStepperView): return stepper.increment.propValue
         case (.progress, let bar as AppKitProgressView): return bar.doubleValue.propValue
-        case (.isRunning, let spinner as AppKitActivityIndicatorView): return spinner.isSpinning.propValue
+        case (.isAnimating, let spinner as AppKitActivityIndicatorView): return spinner.isSpinning.propValue
         case (.text, let label as AppKitTextView): return label.stringValue.propValue
         case (.text, let field as AppKitTextFieldView): return field.textField.stringValue.propValue
         case (.text, let search as AppKitSearchFieldView): return search.stringValue.propValue
@@ -237,7 +237,7 @@ final class AppKitDriver: HostDriver {
         case (.maximumDate, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
         case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
         case (.currentPage, let tabs as AppKitTabbedView): return tabs.selectedIndexForTesting.propValue
-        case (.isSidebarVisible, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
+        case (.showsSidebar, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.
         case (.isVisible, let view?): return (view.window != nil && !view.isHiddenOrHasHiddenAncestor).propValue
         case (.opacity, let view?): return Double(view.alphaValue).propValue

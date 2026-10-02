@@ -47,7 +47,7 @@ its member says `cleared: false`, and losing it builds the whole element
 again instead:
 
 ```text
-  a gesture's settings           allowDrop, canDrag, dragText, tapCount, panTouchCount,
+  a gesture's settings           allowsDrop, canDrag, dragText, tapCount, panTouchCount,
                                  swipeDirection, swipeThreshold: they belong to the recognizer
   a list's items                 a picker's options, which are data
   where the host puts an item    a toolbar item's placement and priority, a swipe's side

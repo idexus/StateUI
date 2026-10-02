@@ -81,7 +81,7 @@ extension NodeType {
     static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
     static let address = PinContract.address.token
-    static let allowDrop = ViewContract.allowDrop.token
+    static let allowsDrop = ViewContract.allowsDrop.token
     static let area = ViewContract.area.token
     static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
     static let barForegroundColor = BarElementContract.barForegroundColor.token
@@ -125,7 +125,7 @@ extension NodeType {
     static let layoutDirection = VisualElementContract.layoutDirection.token
     static let letsInputThrough = LayoutContract.letsInputThrough.token
     static let fontAttributes = FontElementContract.fontAttributes.token
-    static let fontAutoScalingEnabled = FontElementContract.fontAutoScalingEnabled.token
+    static let isFontAutoScalingEnabled = FontElementContract.isFontAutoScalingEnabled.token
     static let fontFamily = FontElementContract.fontFamily.token
     static let fontSize = FontElementContract.fontSize.token
     static let format = DatePickerContract.format.token
@@ -152,14 +152,13 @@ extension NodeType {
     static let isTranslucent = WindowContract.isTranslucent.token
     static let isOpen = DatePickerContract.isOpen.token
     static let isPassword = TextFieldContract.isPassword.token
-    static let isSidebarVisible = SplitViewContract.isSidebarVisible.token
+    static let showsSidebar = SplitViewContract.showsSidebar.token
     static let isReadOnly = InputViewContract.isReadOnly.token
-    static let isRunning = ActivityIndicatorContract.isRunning.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
     static let showsUserLocation = MapContract.showsUserLocation.token
     static let isSpellCheckEnabled = InputViewContract.isSpellCheckEnabled.token
     static let isTextPredictionEnabled = InputViewContract.isTextPredictionEnabled.token
-    static let isTrafficEnabled = MapContract.isTrafficEnabled.token
+    static let showsTraffic = MapContract.showsTraffic.token
     static let isVisible = VisualElementContract.isVisible.token
     static let isZoomEnabled = MapContract.isZoomEnabled.token
     static let options = PickerContract.options.token
@@ -181,8 +180,8 @@ extension NodeType {
     static let minimumHeight = VisualElementContract.minimumHeight.token
     static let minimumWidth = VisualElementContract.minimumWidth.token
     static let backButtonTitle = PageContract.backButtonTitle.token
-    static let hasBackButton = PageContract.hasBackButton.token
-    static let hasNavigationBar = PageContract.hasNavigationBar.token
+    static let showsBackButton = PageContract.showsBackButton.token
+    static let showsNavigationBar = PageContract.showsNavigationBar.token
     static let opacity = VisualElementContract.opacity.token
     static let order = ToolbarItemsContract.order.token
     static let placement = ToolbarItemContract.placement.token
@@ -281,7 +280,7 @@ extension NodeType {
     static let dropCompleted = ViewContract.dropCompleted.token
     static let frameChanged = ViewContract.frameChanged.token
     static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
-    static let isSidebarVisibleChanged = SplitViewContract.isSidebarVisibleChanged.token
+    static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let mapClicked = MapContract.mapClicked.token
     static let navigated = WebViewContract.navigated.token
     static let navigatedFrom = PageContract.navigatedFrom.token

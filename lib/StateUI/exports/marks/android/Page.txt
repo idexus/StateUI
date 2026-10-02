@@ -4,9 +4,9 @@ Page.appearing: ✅
 Page.backButtonTitle: – Android's way back in the bar is an arrow, with no words.
 Page.background: ✅
 Page.disappearing: ✅
-Page.hasBackButton: cannot read hasBackButton of Page - Android's driver has no path for it yet
-Page.hasNavigationBar: cannot read hasNavigationBar of Page - Android's driver has no path for it yet
 Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
 Page.padding: ✅
+Page.showsBackButton: cannot read showsBackButton of Page - Android's driver has no path for it yet
+Page.showsNavigationBar: cannot read showsNavigationBar of Page - Android's driver has no path for it yet

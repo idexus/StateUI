@@ -29,7 +29,7 @@ extension AndroidElement {
             guard let split = view as? AndroidSplitView else { return }
             split.onScrimTapped = { [weak self] in self?.changeSidebarVisibility(to: false) }
             split.onAdapted = { [weak self] in self?.sidebarShown(true) }
-            if changed.contains(.isSidebarVisible) { split.present(value(.isSidebarVisible)?.bool == true) }
+            if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
             // The detail's bars show the sidebar's button: they are told once the split holds both its pages.
             children.dropFirst().first?.refreshBars()
         default:

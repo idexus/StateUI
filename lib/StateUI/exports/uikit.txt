@@ -1,5 +1,5 @@
 ActivityIndicator
-  isRunning
+  isAnimating
   tint
 Button
   background
@@ -102,10 +102,10 @@ Line
   y2
 Map
   isScrollEnabled
-  isTrafficEnabled
   isZoomEnabled
   mapType
   region
+  showsTraffic
   showsUserLocation
   mapClicked()
 Path

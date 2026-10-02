@@ -18,8 +18,8 @@ extension UIKitRegistrations {
             map.property(MapContract.region) { view, region in
                 if let region { view.show(region, sliding: false) }
             }
-            map.applies([MapContract.mapType, MapContract.isTrafficEnabled]) { view, values in
-                view.style(values[MapContract.mapType] ?? .street, traffic: values[MapContract.isTrafficEnabled] ?? false)
+            map.applies([MapContract.mapType, MapContract.showsTraffic]) { view, values in
+                view.style(values[MapContract.mapType] ?? .street, traffic: values[MapContract.showsTraffic] ?? false)
             }
             map.property(MapContract.isScrollEnabled) { view, on in view.isScrollEnabled = on ?? true }
             map.property(MapContract.isZoomEnabled) { view, on in view.isZoomEnabled = on ?? true }

@@ -6,7 +6,7 @@ Canvas.tapped: ✓ tap on Canvas: handed to the host's recognizer or handler, no
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅
-ColorBox.allowDrop: not realized
+ColorBox.allowsDrop: not realized
 ColorBox.dragLeave: not realized
 ColorBox.dragOver: not realized
 ColorBox.drop: not realized
@@ -41,7 +41,7 @@ Map.tapped: ✓ tap on Map: handed to the host's recognizer or handler, no NSEve
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
-Picker.allowDrop: not realized
+Picker.allowsDrop: not realized
 Picker.dragLeave: not realized
 Picker.dragOver: not realized
 Picker.drop: not realized
@@ -78,7 +78,7 @@ Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridRow: ✅
 Text.pinchUpdated: ✓ pinch on Text: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.allowDrop: not realized
+TextEditor.allowsDrop: not realized
 TextEditor.dragLeave: not realized
 TextEditor.dragOver: not realized
 TextEditor.drop: not realized

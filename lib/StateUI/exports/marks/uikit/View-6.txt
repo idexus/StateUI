@@ -4,7 +4,7 @@ ActivityIndicator.tapped: ✓ tap on ActivityIndicator: the view's listening han
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
-Canvas.allowDrop: not realized
+Canvas.allowsDrop: not realized
 Canvas.dragLeave: not realized
 Canvas.dragOver: not realized
 Canvas.drop: not realized
@@ -38,7 +38,7 @@ ItemsView.panYChannel: ✓ pan on ItemsView: the view's listening handed the rec
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
-Map.allowDrop: not realized
+Map.allowsDrop: not realized
 Map.dragLeave: not realized
 Map.dragOver: not realized
 Map.drop: not realized
@@ -74,7 +74,7 @@ SearchField.tapped: ✓ tap on SearchField: the view's listening handed the reco
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridRow: ✅
-Stepper.allowDrop: not realized
+Stepper.allowsDrop: not realized
 Stepper.dragLeave: not realized
 Stepper.dragOver: not realized
 Stepper.drop: not realized

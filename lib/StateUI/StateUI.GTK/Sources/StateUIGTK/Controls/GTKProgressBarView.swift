@@ -33,7 +33,7 @@ final class GTKActivityIndicatorView: GTKView {
     }
 
     /// Whether the spinner turns, as GTK stands it.
-    var isRunning: Bool { gtk_spinner_get_spinning(widget.opaque) != 0 }
+    var isAnimating: Bool { gtk_spinner_get_spinning(widget.opaque) != 0 }
 
     func setRunning(_ running: Bool) {
         gtk_spinner_set_spinning(widget.opaque, running ? 1 : 0)

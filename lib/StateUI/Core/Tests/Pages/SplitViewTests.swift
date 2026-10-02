@@ -82,7 +82,7 @@ final class SplitViewTests: XCTestCase {
 
         let node = flyout(menu.projectedValue, section.projectedValue).node.built
 
-        XCTAssertEqual(node.props["isSidebarVisible"], .bool(true))
+        XCTAssertEqual(node.props["showsSidebar"], .bool(true))
     }
 
     /// Opening it from code is assigning the binding, and what goes out is one
@@ -97,7 +97,7 @@ final class SplitViewTests: XCTestCase {
         menu.wrappedValue = true
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
-        XCTAssertEqual(patch.props["isSidebarVisible"], .bool(true))
+        XCTAssertEqual(patch.props["showsSidebar"], .bool(true))
         XCTAssertTrue(patch.children.isEmpty)
     }
 
@@ -121,7 +121,7 @@ final class SplitViewTests: XCTestCase {
         // and the pane is no longer showing.
         let next = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
-        XCTAssertEqual(next.props["isSidebarVisible"], .bool(false))
+        XCTAssertEqual(next.props["showsSidebar"], .bool(false))
         XCTAssertEqual(next.child("detail")?.props["title"], .string("archive"))
     }
 
@@ -151,8 +151,8 @@ final class SplitViewTests: XCTestCase {
         // each wrote into its session on the way in.
         let split = Renders().settled(tree)
 
-        XCTAssertEqual(split.props, ["isSidebarVisible": .bool(true)])
-        XCTAssertEqual(split.eventNames, ["isSidebarVisibleChanged"])
+        XCTAssertEqual(split.props, ["showsSidebar": .bool(true)])
+        XCTAssertEqual(split.eventNames, ["showsSidebarChanged"])
         XCTAssertEqual(split.arrangement, [.manual("sidebar"), .manual("detail")])
 
         let pane = try XCTUnwrap(split.child("sidebar"))
@@ -178,7 +178,7 @@ final class SplitViewTests: XCTestCase {
 
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
-        XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1, with: [.bool(true)]))
+        XCTAssertTrue(renders.fire(patch.events?["showsSidebarChanged"] ?? -1, with: [.bool(true)]))
         XCTAssertTrue(menu.wrappedValue)
     }
 
@@ -191,7 +191,7 @@ final class SplitViewTests: XCTestCase {
 
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
-        XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1, with: [.bool(true)]))
+        XCTAssertTrue(renders.fire(patch.events?["showsSidebarChanged"] ?? -1, with: [.bool(true)]))
 
         XCTAssertTrue(menu.wrappedValue)
         XCTAssertTrue(renders.settled(flyout(menu.projectedValue, section.projectedValue).node).isEmpty,
@@ -206,7 +206,7 @@ final class SplitViewTests: XCTestCase {
 
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
-        XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1,
+        XCTAssertTrue(renders.fire(patch.events?["showsSidebarChanged"] ?? -1,
                                    with: [.string("true")]))
         XCTAssertFalse(menu.wrappedValue)
     }

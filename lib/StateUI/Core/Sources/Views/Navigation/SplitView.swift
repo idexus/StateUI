@@ -54,15 +54,15 @@ public struct SplitView: Page, ModifiableElement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
-    /// A sidebar beside `detail`, shown when `isSidebarVisible` says so.
+    /// A sidebar beside `detail`, shown when `showsSidebar` says so.
     ///
-    /// - Parameter isSidebarVisible: whether the sidebar shows, borrowed
+    /// - Parameter showsSidebar: whether the sidebar shows, borrowed
     ///   two-way. The platform's own sidebar button, a swipe or a tap outside
     ///   it write here.
     /// - Parameter sidebar: the page at the side. It must have a title.
     /// - Parameter detail: the page beside it, which is the application.
     public init(
-        _ isSidebarVisible: Binding<Bool>,
+        _ showsSidebar: Binding<Bool>,
         @PageBuilder sidebar: () -> any Page,
         @PageBuilder detail: () -> any Page
     ) {
@@ -72,14 +72,14 @@ public struct SplitView: Page, ModifiableElement, BarElement, PageElement {
                 Self.identified(Node.page(sidebar()), as: Self.sidebarIdentity),
                 Self.identified(Node.page(detail()), as: Self.detailIdentity),
             ])
-        node.write(SplitViewContract.isSidebarVisible, isSidebarVisible.wrappedValue)
+        node.write(SplitViewContract.showsSidebar, showsSidebar.wrappedValue)
 
         // The user's ways in and out, once finished, written only when moved.
-        node.addHandler(SplitViewContract.isSidebarVisibleChanged.token) {
+        node.addHandler(SplitViewContract.showsSidebarChanged.token) {
             guard let visible = EventBuffer.current.value()?.bool,
-                  visible != isSidebarVisible.wrappedValue else { return }
+                  visible != showsSidebar.wrappedValue else { return }
 
-            isSidebarVisible.wrappedValue = visible
+            showsSidebar.wrappedValue = visible
         }
     }
 

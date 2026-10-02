@@ -200,7 +200,7 @@ final class GTKDriver: HostDriver {
             return gtk_adjustment_get_upper(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue
         case (.value, let stepper as GTKStepperView): return stepper.value.propValue
         case (.progress, let bar as GTKProgressBarView): return bar.progress.propValue
-        case (.isRunning, let spinner as GTKActivityIndicatorView): return spinner.isRunning.propValue
+        case (.isAnimating, let spinner as GTKActivityIndicatorView): return spinner.isAnimating.propValue
         case (.text, let label as GTKTextualView): return label.text.propValue
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
@@ -217,7 +217,7 @@ final class GTKDriver: HostDriver {
         case (.source, let image as GTKImageView): return image.found ? ImageSource(image.file).propValue : nil
         case (.aspect, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
-        case (.isSidebarVisible, let split as GTKSplitView): return split.showsSidebar.propValue
+        case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
         case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as GTKPickerView):
             guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }

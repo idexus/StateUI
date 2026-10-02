@@ -12,7 +12,7 @@
         [
             Aspects.standsAlone("ActivityIndicator"),
             ConformanceCase("aSpinnerTurnsWhileItsWorkRuns", proves: [
-                Covered(ActivityIndicatorContract.isRunning),
+                Covered(ActivityIndicatorContract.isAnimating),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let running = State(wrappedValue: true)
                 s.start {
@@ -22,14 +22,14 @@
                     }
                 }
                 let spinner = try s.element("spinner")
-                s.expect(try s.held(ActivityIndicatorContract.isRunning, on: spinner), true)
+                s.expect(try s.held(ActivityIndicatorContract.isAnimating, on: spinner), true)
 
                 try s.perform(.activate, on: s.element("stop"))
-                try s.settle { try s.held(ActivityIndicatorContract.isRunning, on: spinner) == false }
+                try s.settle { try s.held(ActivityIndicatorContract.isAnimating, on: spinner) == false }
 
-                s.expect(try s.held(ActivityIndicatorContract.isRunning, on: spinner), false)
+                s.expect(try s.held(ActivityIndicatorContract.isAnimating, on: spinner), false)
             },
-            Aspects.holds(ActivityIndicatorContract.isRunning, on: "ActivityIndicator", false, then: true),
+            Aspects.holds(ActivityIndicatorContract.isAnimating, on: "ActivityIndicator", false, then: true),
         ]
     }
 }

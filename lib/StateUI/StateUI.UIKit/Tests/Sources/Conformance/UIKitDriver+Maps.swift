@@ -17,7 +17,7 @@ extension UIKitDriver {
         switch property {
         case .region: map.shownRegion.propValue
         case .mapType: map.shownType.propValue
-        case .isTrafficEnabled: map.showsTrafficNow.propValue
+        case .showsTraffic: map.showsTrafficNow.propValue
         case .isScrollEnabled: map.isScrollEnabled.propValue
         case .isZoomEnabled: map.isZoomEnabled.propValue
         case .showsUserLocation: map.showsUserLocation.propValue

@@ -15,12 +15,12 @@ public enum SplitViewContract: ElementContract {
     public static let tiers: [any Contract.Type] = [BarElementContract.self, PageElementContract.self]
 
     /// Whether the sidebar is showing.
-    public static let isSidebarVisible = ElementProperty<Self, Bool>("isSidebarVisible", layer: .native)
+    public static let showsSidebar = ElementProperty<Self, Bool>("showsSidebar", layer: .native)
 
     /// The user showed or hid the sidebar, to the value it carries.
-    public static let isSidebarVisibleChanged = ElementEvent<Self, Bool>(
-        "isSidebarVisibleChanged", layer: .adaptive)
+    public static let showsSidebarChanged = ElementEvent<Self, Bool>(
+        "showsSidebarChanged", layer: .adaptive)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [isSidebarVisible, isSidebarVisibleChanged]
+    public static let members: [any ContractMember] = [showsSidebar, showsSidebarChanged]
 }

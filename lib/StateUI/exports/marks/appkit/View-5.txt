@@ -17,7 +17,7 @@ DatePicker.tapped: ✓ tap on DatePicker: handed to the host's recognizer or han
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
-Grid.allowDrop: not realized
+Grid.allowsDrop: not realized
 Grid.dragLeave: not realized
 Grid.dragOver: not realized
 Grid.drop: not realized
@@ -50,7 +50,7 @@ Polygon.tapped: ✓ tap on Polygon: handed to the host's recognizer or handler, 
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridRow: ✅
-ProgressBar.allowDrop: not realized
+ProgressBar.allowsDrop: not realized
 ProgressBar.dragLeave: not realized
 ProgressBar.dragOver: not realized
 ProgressBar.drop: not realized
@@ -89,7 +89,7 @@ TextField.tapped: ✓ tap on TextField: handed to the host's recognizer or handl
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
-VStack.allowDrop: not realized
+VStack.allowsDrop: not realized
 VStack.dragLeave: not realized
 VStack.dragOver: not realized
 VStack.drop: not realized

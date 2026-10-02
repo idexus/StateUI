@@ -62,15 +62,15 @@ public final class PageSession {
 
     /// Whether the navigation bar is shown while this page is on top.
     ///
-    ///     page.hasNavigationBar = false    // a splash page
-    @State public var hasNavigationBar: Bool? = nil
+    ///     page.showsNavigationBar = false    // a splash page
+    @State public var showsNavigationBar: Bool? = nil
 
     /// Whether the way back is offered while this page is on top - false for a
     /// page the user must finish rather than leave.
     ///
     /// It controls the navigation stack's own back affordances. It is not a
     /// cross-platform lock against every system-level way of leaving a page.
-    @State public var hasBackButton: Bool? = nil
+    @State public var showsBackButton: Bool? = nil
 
     /// What the back button reads while the page ABOVE this one is on top.
     ///
@@ -92,8 +92,8 @@ public final class PageSession {
         props.describe(PageElementContract.icon, icon)
         props.describe(PageContract.padding, padding)
         props.describe(PageContract.background, background)
-        props.describe(PageContract.hasNavigationBar, hasNavigationBar)
-        props.describe(PageContract.hasBackButton, hasBackButton)
+        props.describe(PageContract.showsNavigationBar, showsNavigationBar)
+        props.describe(PageContract.showsBackButton, showsBackButton)
         props.describe(PageContract.backButtonTitle, backButtonTitle)
         return props
     }

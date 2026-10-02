@@ -65,7 +65,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/MapContract.sw
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>isScrollEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isTrafficEnabled</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsTraffic</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isZoomEnabled</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
@@ -171,7 +171,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>allowDrop</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>allowsDrop</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit: not realized<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>area</code></td><td>property</td><td><code>Area</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>

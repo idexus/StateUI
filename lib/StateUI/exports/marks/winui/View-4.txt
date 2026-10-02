@@ -14,7 +14,7 @@ Button.pointerPressed: ✅
 Button.pointerReleased: ✅
 Button.tapCount: ✅
 Button.tapped: ✅
-Canvas.allowDrop: not realized
+Canvas.allowsDrop: not realized
 Canvas.area: ✅
 Canvas.dragLeave: not realized
 Canvas.dragOver: not realized
@@ -50,7 +50,7 @@ Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
-Grid.allowDrop: not realized
+Grid.allowsDrop: not realized
 Grid.area: ✅
 Grid.dragLeave: not realized
 Grid.dragOver: not realized
@@ -77,7 +77,7 @@ ItemsView.gridRow: ✅
 ItemsView.swipeDirection: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
-Line.allowDrop: not realized
+Line.allowsDrop: not realized
 Line.area: ✅
 Line.dragLeave: not realized
 Line.dragOver: not realized
@@ -113,7 +113,7 @@ Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
 Polygon.tapCount: ✅
 Polygon.tapped: ✅
-Polyline.allowDrop: not realized
+Polyline.allowsDrop: not realized
 Polyline.area: ✅
 Polyline.dragLeave: not realized
 Polyline.dragOver: not realized
@@ -149,7 +149,7 @@ ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
 ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
-SearchField.allowDrop: not realized
+SearchField.allowsDrop: not realized
 SearchField.area: ✅
 SearchField.dragLeave: not realized
 SearchField.dragOver: not realized
@@ -194,7 +194,7 @@ TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
 TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
-TextField.allowDrop: not realized
+TextField.allowsDrop: not realized
 TextField.area: ✅
 TextField.dragLeave: not realized
 TextField.dragOver: not realized

@@ -98,8 +98,8 @@ struct LevelPage: View {
             page.backButtonTitle = "Level \(level)"
         }
         // The bar and its way back are the page's to ask for, from its session.
-        .onChanged(showsBar) { page.hasNavigationBar = showsBar }
-        .onChanged(offersBack) { page.hasBackButton = offersBack }
+        .onChanged(showsBar) { page.showsNavigationBar = showsBar }
+        .onChanged(offersBack) { page.showsBackButton = offersBack }
         // What this page sees of its own life, one count per moment. Appearing
         // and disappearing answer visibility; the other three answer a move.
         // `appearing` comes on every arrival, the first one included, which

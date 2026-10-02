@@ -105,7 +105,7 @@ final class ControlTests: XCTestCase {
                             .fontSize(13)
                             .fontFamily("Menlo")
                             .fontAttributes(.bold)
-                            .fontAutoScalingEnabled(false)
+                            .isFontAutoScalingEnabled(false)
                             .characterSpacing(0.5)
                             .lineHeight(1.2)
                             .textDecorations(.underline)
@@ -229,7 +229,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("ActivityIndicator", source: "ActivityIndicator.swift",
                 ActivityIndicator(true)
-                    .isRunning(true)
+                    .isAnimating(true)
                     .tint(.cornflowerBlue)),
 
             ControlCase("ProgressBar", source: "ProgressBar.swift",
@@ -314,7 +314,7 @@ final class ControlTests: XCTestCase {
                     .mapType(.hybrid)
                     .isScrollEnabled(true)
                     .isZoomEnabled(true)
-                    .isTrafficEnabled(false)
+                    .showsTraffic(false)
                     .showsUserLocation(false)
                     .pins {
                         Pin("Royal Castle")
@@ -460,7 +460,7 @@ final class ControlTests: XCTestCase {
                         .fontSize(20)
                         .fontFamily("OpenSansRegular")
                         .fontAttributes(.bold)
-                        .fontAutoScalingEnabled(false)
+                        .isFontAutoScalingEnabled(false)
                         .horizontalTextAlignment(.center)
                         .verticalTextAlignment(.end)
                         // What the view says about itself: a handle for a
@@ -705,7 +705,7 @@ final class ControlTests: XCTestCase {
             "assign", "area",
             // Tiers no view wears.
             "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle", "isScrollEnabled",
-            "isZoomEnabled", "isTrafficEnabled", "showsUserLocation", "isDestructive", "title",
+            "isZoomEnabled", "showsTraffic", "showsUserLocation", "isDestructive", "title",
             "mapType", "avoidsSafeArea",
         ]
         var values: Set<String> = []

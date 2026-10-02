@@ -348,6 +348,34 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = GesturePhase.started",
             contract: "_ = GesturePhase.began"),
         Road(
+            name: "a spinner said to be running",
+            removed: "_ = ActivityIndicator(true).isRunning(false)",
+            contract: "_ = ActivityIndicator(true).isAnimating(false)"),
+        Road(
+            name: "a page that has a navigation bar",
+            removed: "_ = PageContract.hasNavigationBar",
+            contract: "_ = PageContract.showsNavigationBar"),
+        Road(
+            name: "a page that has a back button",
+            removed: "_ = PageContract.hasBackButton",
+            contract: "_ = PageContract.showsBackButton"),
+        Road(
+            name: "traffic enabled on a map",
+            removed: "_ = MapContract.isTrafficEnabled",
+            contract: "_ = MapContract.showsTraffic"),
+        Road(
+            name: "font scaling enabled without is",
+            removed: #"_ = Text("Hi").fontAutoScalingEnabled(false)"#,
+            contract: #"_ = Text("Hi").isFontAutoScalingEnabled(false)"#),
+        Road(
+            name: "a sidebar said to be visible",
+            removed: "_ = SplitViewContract.isSidebarVisible",
+            contract: "_ = SplitViewContract.showsSidebar"),
+        Road(
+            name: "a drop allowed by command",
+            removed: "_ = ViewContract.allowDrop",
+            contract: "_ = ViewContract.allowsDrop"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

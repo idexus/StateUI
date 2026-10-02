@@ -249,7 +249,7 @@ extension ControlDictionary {
                     Text("Nothing written yet.")
                         .onCreated {
                             page.title = "Note"
-                            page.hasBackButton = true
+                            page.showsBackButton = true
                         }
                 }
             }

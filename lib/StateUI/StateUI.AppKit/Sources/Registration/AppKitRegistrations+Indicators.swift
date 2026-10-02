@@ -16,7 +16,7 @@ extension AppKitRegistrations {
         }
 
         registry.add(ActivityIndicatorContract.self, create: { _ in AppKitActivityIndicatorView() }) { activity in
-            activity.property(ActivityIndicatorContract.isRunning) { view, running in
+            activity.property(ActivityIndicatorContract.isAnimating) { view, running in
                 view.apply(running: running ?? false)
             }
         }

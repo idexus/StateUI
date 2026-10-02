@@ -24,7 +24,7 @@ Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
-CheckBox.allowDrop: not realized
+CheckBox.allowsDrop: not realized
 CheckBox.area: ✅
 CheckBox.dragLeave: not realized
 CheckBox.dragOver: not realized
@@ -60,7 +60,7 @@ Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
 Grid.tapCount: ✅
 Grid.tapped: ✅
-HStack.allowDrop: not realized
+HStack.allowsDrop: not realized
 HStack.area: ✅
 HStack.dragLeave: not realized
 HStack.dragOver: not realized
@@ -90,7 +90,7 @@ Line.pointerPressed: ✅
 Line.pointerReleased: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
-Map.allowDrop: 🧩
+Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.dragLeave: 🧩
 Map.dragOver: 🧩
@@ -126,7 +126,7 @@ Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
 Polyline.tapCount: ✅
 Polyline.tapped: ✅
-ProgressBar.allowDrop: not realized
+ProgressBar.allowsDrop: not realized
 ProgressBar.area: ✅
 ProgressBar.dragLeave: not realized
 ProgressBar.dragOver: not realized
@@ -162,7 +162,7 @@ SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
-Slider.allowDrop: not realized
+Slider.allowsDrop: not realized
 Slider.area: ✅
 Slider.dragLeave: not realized
 Slider.dragOver: not realized
@@ -204,7 +204,7 @@ TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
 TextField.tapCount: ✅
 TextField.tapped: ✅
-TimePicker.allowDrop: not realized
+TimePicker.allowsDrop: not realized
 TimePicker.area: ✅
 TimePicker.dragLeave: not realized
 TimePicker.dragOver: not realized

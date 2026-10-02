@@ -21,7 +21,7 @@ extension AppKitRegistrations {
         }
 
         registry.add(SplitViewContract.self, madeByHost: AppKitSplitView.self) { split in
-            split.property(SplitViewContract.isSidebarVisible) { view, visible in
+            split.property(SplitViewContract.showsSidebar) { view, visible in
                 view.apply(presented: visible ?? false)
             }
         }

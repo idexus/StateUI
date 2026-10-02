@@ -1092,8 +1092,8 @@ private struct ChromePage: View {
         Text("Pushed").toolbar { ToolbarItem("Save") }.onCreated {
             switch route {
             case .plain: break
-            case .withoutBackButton: page.hasBackButton = false
-            case .withoutNavigationBar: page.hasNavigationBar = false
+            case .withoutBackButton: page.showsBackButton = false
+            case .withoutNavigationBar: page.showsNavigationBar = false
             }
         }
     }
@@ -1156,8 +1156,8 @@ private extension AppKitPageTests {
         changed: Int32 = 902
     ) -> HostPatch {
         var flyout = HostPatch(id: .manual("flyout"), type: .splitView)
-        flyout.properties[.isSidebarVisible] = .bool(presented)
-        flyout.events = .replace([.isSidebarVisibleChanged: changed])
+        flyout.properties[.showsSidebar] = .bool(presented)
+        flyout.events = .replace([.showsSidebarChanged: changed])
         flyout.children = .arranged([menu, detail])
         return flyout
     }

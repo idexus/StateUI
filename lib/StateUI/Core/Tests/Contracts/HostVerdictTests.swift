@@ -15,7 +15,7 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "Map", member: "region", mark: .notPlanned(reason: "No map service: here.")),
             HostVerdict(element: "Line", member: "x1", mark: .notRealized),
             HostVerdict(element: "TextField", member: "submitted", mark: .cannot("submit on TextField - The keyboard's.")),
-            HostVerdict(element: "SplitView", member: nil, mark: .waiting(on: "SplitView.isSidebarVisible")),
+            HostVerdict(element: "SplitView", member: nil, mark: .waiting(on: "SplitView.showsSidebar")),
             HostVerdict(element: "Switch", member: "toggled", mark: .failed("true expected, false came")),
             HostVerdict(element: "Text", member: "text", mark: .partly("cannot read text of Text - Hidden.")),
             HostVerdict(element: "Text", member: "tapped", mark: .byHost("tap on Text: the recognizer is handed it")),
@@ -52,7 +52,7 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "Button", member: "icon", mark: .cannot("read icon of Button - Hidden.")),
             HostVerdict(element: "Button", member: "text", mark: .proven),
             HostVerdict(element: "Button", member: "text", mark: .partial(missing: "No wrap.")),
-            HostVerdict(element: "SplitView", member: nil, mark: .waiting(on: "SplitView.isSidebarVisible")),
+            HostVerdict(element: "SplitView", member: nil, mark: .waiting(on: "SplitView.showsSidebar")),
             HostVerdict(element: "SplitView", member: nil, mark: .proven),
             HostVerdict(element: "Stepper", member: nil, mark: .notRealized),
             HostVerdict(element: "Stepper", member: nil, mark: .waiting(on: "Stepper.step")),
@@ -69,7 +69,7 @@ final class HostVerdictTests: XCTestCase {
         XCTAssertEqual(text, """
             Button.icon: cannot read icon of Button - Hidden.
             Button.text: ☑️ No wrap.
-            SplitView: ◐ waits on SplitView.isSidebarVisible
+            SplitView: ◐ waits on SplitView.showsSidebar
             Stepper: waits on Stepper.step
             Switch.isOn: ◐ cannot read isOn of Switch - Hidden.
             Switch.toggled: ❌ true expected, false came

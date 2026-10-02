@@ -68,9 +68,9 @@
                 s.settle { log.values.suffix(2) == ["Root appearing", "Root navigatedTo"] }
                 s.expect(Array(log.values.suffix(2)), ["Root appearing", "Root navigatedTo"], "the page beneath comes back")
             },
-            pushedHolds(PageContract.hasBackButton, false, then: true) { $0.hasBackButton = $1 },
+            pushedHolds(PageContract.showsBackButton, false, then: true) { $0.showsBackButton = $1 },
             pushedHolds(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle = $1 },
-            pushedHolds(PageContract.hasNavigationBar, false, then: true) { $0.hasNavigationBar = $1 },
+            pushedHolds(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar = $1 },
             pushedHolds(PageContract.background, .red, then: .blue) { $0.background = $1 },
             ConformanceCase("aPagesPaddingKeepsItsContentIn", proves: [
                 Covered(PageContract.padding),

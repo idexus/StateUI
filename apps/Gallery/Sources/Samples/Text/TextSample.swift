@@ -55,7 +55,7 @@ struct TextSample: SampleContent, ExampleContent {
 
             Text("Stays at 16 whatever the system says")
                 .fontSize(16)
-                .fontAutoScalingEnabled(false)
+                .isFontAutoScalingEnabled(false)
         }
         """
 
@@ -117,7 +117,7 @@ struct TextSample: SampleContent, ExampleContent {
 
             Text("Stays at 16 whatever the system says")
                 .fontSize(16)
-                .fontAutoScalingEnabled(false)
+                .isFontAutoScalingEnabled(false)
         }
         .spacing(10)
     }

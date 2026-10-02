@@ -1,5 +1,5 @@
 ActivityIndicator
-  isRunning
+  isAnimating
   tint
 Button
   aspect

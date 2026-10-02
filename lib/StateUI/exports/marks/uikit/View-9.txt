@@ -23,7 +23,7 @@ Grid.tapped: ✓ tap on Grid: the view's listening handed the recognizer's state
 HStack.frameChanged: ✅
 HStack.gridColumn: ✅
 HStack.gridRow: ✅
-Image.allowDrop: not realized
+Image.allowsDrop: not realized
 Image.dragLeave: not realized
 Image.dragOver: not realized
 Image.drop: not realized
@@ -56,7 +56,7 @@ ProgressBar.tapped: ✓ tap on ProgressBar: the view's listening handed the reco
 RadioButton.frameChanged: ✅
 RadioButton.gridColumn: ✅
 RadioButton.gridRow: ✅
-Rectangle.allowDrop: not realized
+Rectangle.allowsDrop: not realized
 Rectangle.dragLeave: not realized
 Rectangle.dragOver: not realized
 Rectangle.drop: not realized
@@ -95,7 +95,7 @@ VStack.tapped: ✓ tap on VStack: the view's listening handed the recognizer's s
 WebView.frameChanged: ✅
 WebView.gridColumn: ✅
 WebView.gridRow: ✅
-ZStack.allowDrop: not realized
+ZStack.allowsDrop: not realized
 ZStack.dragLeave: not realized
 ZStack.dragOver: not realized
 ZStack.drop: not realized

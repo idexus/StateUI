@@ -363,8 +363,8 @@ told what it is by modifier.
 | `icon` | the page's representative image, commonly a tab icon |
 | `padding` | space between the page edge and its content |
 | `background` | flat color behind the page |
-| `hasNavigationBar` | whether a containing navigation stack shows its bar for this page |
-| `hasBackButton` | whether that bar offers its native back affordance |
+| `showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
+| `showsBackButton` | whether that bar offers its native back affordance |
 | `backButtonTitle` | short title supplied by this page for the page pushed above it |
 
 Every optional value starts as `nil`, which leaves that choice with the host.

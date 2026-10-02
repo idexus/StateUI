@@ -1,41 +1,41 @@
 # revision 1.1
 Button.fontAttributes: ✅
-Button.fontAutoScalingEnabled: not realized
 Button.fontFamily: cannot read a family - Android's typeface keeps no family's name
 Button.fontSize: ✅
+Button.isFontAutoScalingEnabled: not realized
 DatePicker.fontAttributes: ✅
-DatePicker.fontAutoScalingEnabled: not realized
 DatePicker.fontFamily: cannot read a family - Android's typeface keeps no family's name
 DatePicker.fontSize: ✅
+DatePicker.isFontAutoScalingEnabled: not realized
 Picker.fontAttributes: cannot read fontAttributes of Picker - Android's driver has no path for it yet
-Picker.fontAutoScalingEnabled: not realized
 Picker.fontFamily: cannot read fontFamily of Picker - Android's driver has no path for it yet
 Picker.fontSize: cannot read fontSize of Picker - Android's driver has no path for it yet
+Picker.isFontAutoScalingEnabled: not realized
 RadioButton.fontAttributes: ✅
-RadioButton.fontAutoScalingEnabled: not realized
 RadioButton.fontFamily: cannot read a family - Android's typeface keeps no family's name
 RadioButton.fontSize: ✅
+RadioButton.isFontAutoScalingEnabled: not realized
 SearchField.fontAttributes: ✅
-SearchField.fontAutoScalingEnabled: not realized
 SearchField.fontFamily: cannot read a family - Android's typeface keeps no family's name
 SearchField.fontSize: ✅
+SearchField.isFontAutoScalingEnabled: not realized
 Span.fontAttributes: cannot read fontAttributes of Span - Android's driver has no path for it yet
-Span.fontAutoScalingEnabled: not realized
 Span.fontFamily: not realized
 Span.fontSize: cannot read fontSize of Span - Android's driver has no path for it yet
+Span.isFontAutoScalingEnabled: not realized
 Text.fontAttributes: ✅
-Text.fontAutoScalingEnabled: not realized
 Text.fontFamily: cannot read a family - Android's typeface keeps no family's name
 Text.fontSize: ✅
+Text.isFontAutoScalingEnabled: not realized
 TextEditor.fontAttributes: ✅
-TextEditor.fontAutoScalingEnabled: not realized
 TextEditor.fontFamily: cannot read a family - Android's typeface keeps no family's name
 TextEditor.fontSize: ✅
+TextEditor.isFontAutoScalingEnabled: not realized
 TextField.fontAttributes: ✅
-TextField.fontAutoScalingEnabled: not realized
 TextField.fontFamily: cannot read a family - Android's typeface keeps no family's name
 TextField.fontSize: ✅
+TextField.isFontAutoScalingEnabled: not realized
 TimePicker.fontAttributes: ✅
-TimePicker.fontAutoScalingEnabled: not realized
 TimePicker.fontFamily: cannot read a family - Android's typeface keeps no family's name
 TimePicker.fontSize: ✅
+TimePicker.isFontAutoScalingEnabled: not realized

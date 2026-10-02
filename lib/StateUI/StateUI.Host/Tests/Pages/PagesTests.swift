@@ -100,7 +100,7 @@ final class PagesTests: XCTestCase {
     /// A stack shows its bar over a page that keeps one, and over tabs only where the chosen tab stands in no stack of
     /// its own, whose bar is the one.
     func testAStacksBarShowsOnlyWhereNoStackBelowHasOne() throws {
-        let hidden = [Prop.hasNavigationBar: HostValue.bool(false)]
+        let hidden = [Prop.showsNavigationBar: HostValue.bool(false)]
         let runtime = runtime(node("window", .window, children: [node("stack", .navigationStack, children: [
             node("page", .page),
             node("bare", .page, hidden),
@@ -289,7 +289,7 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("sheet"))).chromeActions.primary.map(\.id), [.manual("done")])
         XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("home"))).chromeActions.primary.map(\.id), [.manual("inspector")])
 
-        let bare = self.runtime(node("page", .page, [.hasNavigationBar: .bool(false)], children: [
+        let bare = self.runtime(node("page", .page, [.showsNavigationBar: .bool(false)], children: [
             toolbarGroup("mine", [toolbarAction("done")]),
         ])) { _ in }
         XCTAssertTrue(try XCTUnwrap(bare.tree.root).chromeActions.primary.isEmpty)

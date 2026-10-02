@@ -73,8 +73,8 @@ private struct EveryPropertyPage: View {
                 page.background = .whiteSmoke
 
                 // What it asks of a NavigationStack.
-                page.hasNavigationBar = false
-                page.hasBackButton = false
+                page.showsNavigationBar = false
+                page.showsBackButton = false
                 page.backButtonTitle = "Back"
             }
     }
@@ -123,8 +123,8 @@ private struct KnobPage: View {
         page.padding = Insets(on ? 8 : 4)
         page.background = on ? .red : .whiteSmoke
 
-        page.hasNavigationBar = on
-        page.hasBackButton = on
+        page.showsNavigationBar = on
+        page.showsBackButton = on
         page.backButtonTitle = on ? "Back" : "Return"
     }
 }
@@ -500,9 +500,9 @@ final class PageTests: XCTestCase {
     func testAPageCarriesWhatItAsksOfTheStack() {
         let page = Self.arrived(EveryPropertyPage())
 
-        XCTAssertEqual(page.props["hasNavigationBar"], .bool(false))
+        XCTAssertEqual(page.props["showsNavigationBar"], .bool(false))
 
-        XCTAssertEqual(page.props["hasBackButton"], .bool(false))
+        XCTAssertEqual(page.props["showsBackButton"], .bool(false))
         XCTAssertEqual(page.props["backButtonTitle"], .string("Back"))
     }
 
@@ -638,7 +638,7 @@ final class PageTests: XCTestCase {
 
         XCTAssertEqual(page.props, [
             "backButtonTitle": .string("Back"), "background": Color("#F5F5F5").propValue,
-            "hasBackButton": .bool(false), "hasNavigationBar": .bool(false), "icon": .string("tab.png"),
+            "showsBackButton": .bool(false), "showsNavigationBar": .bool(false), "icon": .string("tab.png"),
             "padding": .numbers([4, 8, 12, 16]), "title": .string("Everything"),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)

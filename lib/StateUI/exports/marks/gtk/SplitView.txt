@@ -1,5 +1,5 @@
 # revision 2.1
 SplitView: ✅
-SplitView.isSidebarVisible: ✅
-SplitView.isSidebarVisibleChanged: ✅
+SplitView.showsSidebar: ✅
+SplitView.showsSidebarChanged: ✅
 Text.frameChanged: ✅

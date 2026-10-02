@@ -489,7 +489,7 @@ private struct TitledPage: View {
             .toolbar { actions }
             .onCreated {
                 page.title = title
-                if hidesBar { page.hasNavigationBar = false }
+                if hidesBar { page.showsNavigationBar = false }
             }
             .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
     }

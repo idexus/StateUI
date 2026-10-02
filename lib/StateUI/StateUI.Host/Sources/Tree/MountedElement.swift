@@ -606,13 +606,13 @@
     ]
 
     private static let booleanProperties: Set<Prop> = [
-        .allowDrop, .hidesWhenInactive, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
+        .allowsDrop, .hidesWhenInactive, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
         .isAnimating, .clipsContent, .isDestructive,
         .isEnabled, .isMaximizable, .isMinimizable, .isTranslucent,
-        .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
-        .isRunning, .isScrollEnabled,
+        .isOpen, .isPassword, .showsSidebar, .isReadOnly,
+        .isScrollEnabled,
         .showsUserLocation, .isSpellCheckEnabled, .isTextPredictionEnabled,
-        .isOn, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,
+        .isOn, .showsTraffic, .isVisible, .isZoomEnabled, .letsInputThrough,
         .showsClearButton, .showsText,
     ]
 

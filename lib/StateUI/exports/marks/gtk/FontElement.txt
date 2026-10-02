@@ -1,41 +1,41 @@
 # revision 1.1
 Button.fontAttributes: ✅
-Button.fontAutoScalingEnabled: not realized
 Button.fontFamily: ✅
 Button.fontSize: ✅
+Button.isFontAutoScalingEnabled: not realized
 DatePicker.fontAttributes: ✅
-DatePicker.fontAutoScalingEnabled: not realized
 DatePicker.fontFamily: ✅
 DatePicker.fontSize: ✅
+DatePicker.isFontAutoScalingEnabled: not realized
 Picker.fontAttributes: ✅
-Picker.fontAutoScalingEnabled: not realized
 Picker.fontFamily: ✅
 Picker.fontSize: ✅
+Picker.isFontAutoScalingEnabled: not realized
 RadioButton.fontAttributes: ✅
-RadioButton.fontAutoScalingEnabled: not realized
 RadioButton.fontFamily: ✅
 RadioButton.fontSize: ✅
+RadioButton.isFontAutoScalingEnabled: not realized
 SearchField.fontAttributes: ✅
-SearchField.fontAutoScalingEnabled: not realized
 SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
+SearchField.isFontAutoScalingEnabled: not realized
 Span.fontAttributes: ✅
-Span.fontAutoScalingEnabled: not realized
 Span.fontFamily: ✅
 Span.fontSize: ✅
+Span.isFontAutoScalingEnabled: not realized
 Text.fontAttributes: ✅
-Text.fontAutoScalingEnabled: not realized
 Text.fontFamily: ✅
 Text.fontSize: ✅
+Text.isFontAutoScalingEnabled: not realized
 TextEditor.fontAttributes: ✅
-TextEditor.fontAutoScalingEnabled: not realized
 TextEditor.fontFamily: ✅
 TextEditor.fontSize: ✅
+TextEditor.isFontAutoScalingEnabled: not realized
 TextField.fontAttributes: ✅
-TextField.fontAutoScalingEnabled: not realized
 TextField.fontFamily: ✅
 TextField.fontSize: ✅
+TextField.isFontAutoScalingEnabled: not realized
 TimePicker.fontAttributes: ✅
-TimePicker.fontAutoScalingEnabled: not realized
 TimePicker.fontFamily: ✅
 TimePicker.fontSize: ✅
+TimePicker.isFontAutoScalingEnabled: not realized

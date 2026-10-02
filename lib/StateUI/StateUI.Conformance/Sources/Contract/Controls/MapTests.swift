@@ -60,7 +60,7 @@
             Aspects.holds(MapContract.mapType, on: "Map", .street, then: .satellite),
             Aspects.holds(MapContract.isScrollEnabled, on: "Map", true, then: false),
             Aspects.holds(MapContract.isZoomEnabled, on: "Map", true, then: false),
-            Aspects.holds(MapContract.isTrafficEnabled, on: "Map", false, then: true),
+            Aspects.holds(MapContract.showsTraffic, on: "Map", false, then: true),
             Aspects.holds(MapContract.showsUserLocation, on: "Map", false, then: true),
         ]
     }

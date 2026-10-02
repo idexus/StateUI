@@ -20,7 +20,7 @@ Ellipse.tapped: ✓ tap on Ellipse: the view's listening handed the recognizer's
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridRow: ✅
-HStack.allowDrop: not realized
+HStack.allowsDrop: not realized
 HStack.dragLeave: not realized
 HStack.dragOver: not realized
 HStack.drop: not realized
@@ -53,7 +53,7 @@ Polyline.tapped: ✓ tap on Polyline: the view's listening handed the recognizer
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumn: ✅
 ProgressBar.gridRow: ✅
-RadioButton.allowDrop: not realized
+RadioButton.allowsDrop: not realized
 RadioButton.dragLeave: not realized
 RadioButton.dragOver: not realized
 RadioButton.drop: not realized
@@ -92,7 +92,7 @@ TimePicker.tapped: ✓ tap on TimePicker: the view's listening handed the recogn
 VStack.frameChanged: ✅
 VStack.gridColumn: ✅
 VStack.gridRow: ✅
-WebView.allowDrop: not realized
+WebView.allowsDrop: not realized
 WebView.dragLeave: not realized
 WebView.dragOver: not realized
 WebView.drop: not realized

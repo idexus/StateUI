@@ -23,7 +23,7 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `allowDrop` | property | `Bool` | native |
+| `allowsDrop` | property | `Bool` | native |
 | `area` | property | `Area` | structure |
 | `canDrag` | property | `Bool` | native |
 | `onDragLeave` (`dragLeave`) | event |  | native |

@@ -16,7 +16,7 @@ public enum MapContract: ElementContract {
     public static let isScrollEnabled = ElementProperty<Self, Bool>("isScrollEnabled", layer: .native)
 
     /// Whether the roads are coloured by traffic.
-    public static let isTrafficEnabled = ElementProperty<Self, Bool>("isTrafficEnabled", layer: .provider)
+    public static let showsTraffic = ElementProperty<Self, Bool>("showsTraffic", layer: .provider)
 
     /// Whether a pinch zooms it.
     public static let isZoomEnabled = ElementProperty<Self, Bool>("isZoomEnabled", layer: .provider)
@@ -40,7 +40,7 @@ public enum MapContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        isScrollEnabled, isTrafficEnabled, isZoomEnabled, mapClicked, mapType, moveToRegion, region,
+        isScrollEnabled, showsTraffic, isZoomEnabled, mapClicked, mapType, moveToRegion, region,
         showsUserLocation,
     ]
 }

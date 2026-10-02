@@ -2,10 +2,10 @@
 Map: 🧩
 Map.frameChanged: 🧩
 Map.isScrollEnabled: 🧩
-Map.isTrafficEnabled: 🧩
 Map.isZoomEnabled: 🧩
 Map.mapClicked: 🧩
 Map.mapType: 🧩
 Map.moveToRegion: 🧩
 Map.region: 🧩
+Map.showsTraffic: 🧩
 Map.showsUserLocation: 🧩

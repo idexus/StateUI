@@ -158,7 +158,7 @@ extension Node {
 ///     }
 ///
 /// What `.onCreated` writes arrives with the page. A page asks things of the
-/// container showing it through the same session, `page.hasNavigationBar =
+/// container showing it through the same session, `page.showsNavigationBar =
 /// false`; the bar's look belongs to the arrangement drawing it. An
 /// arrangement is told its title and icon by modifier, from `PageElement`.
 public protocol Page: Element {}

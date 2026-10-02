@@ -2,7 +2,7 @@
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridRow: ✅
-Button.allowDrop: not realized
+Button.allowsDrop: not realized
 Button.dragLeave: not realized
 Button.dragOver: not realized
 Button.drop: not realized
@@ -35,7 +35,7 @@ HStack.pinchUpdated: ✓ pinch on HStack: the view's listening handed the recogn
 Image.panYChannel: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.tapCount: ✓ tap on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.tapped: ✓ tap on ItemsView: the view's listening handed the recognizer's states, no touch sent
-Line.allowDrop: not realized
+Line.allowsDrop: not realized
 Line.dragLeave: not realized
 Line.dragOver: not realized
 Line.drop: not realized
@@ -71,7 +71,7 @@ ScrollView.tapped: ✓ tap on ScrollView: the view's listening handed the recogn
 SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridRow: ✅
-Slider.allowDrop: not realized
+Slider.allowsDrop: not realized
 Slider.dragLeave: not realized
 Slider.dragOver: not realized
 Slider.drop: not realized

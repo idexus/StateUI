@@ -1,5 +1,5 @@
 ActivityIndicator
-  isRunning
+  isAnimating
 Button
   aspect
   background
@@ -94,10 +94,10 @@ Line
   y2
 Map
   isScrollEnabled
-  isTrafficEnabled
   isZoomEnabled
   mapType
   region
+  showsTraffic
   showsUserLocation
   mapClicked()
 Page
@@ -226,7 +226,7 @@ Slider
   dragStarted()
   valueChanged()
 SplitView
-  isSidebarVisible
+  showsSidebar
 Stepper
   isEnabled
   maximum

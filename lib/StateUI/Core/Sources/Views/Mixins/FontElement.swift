@@ -19,7 +19,7 @@ extension FontElement {
 
     /// Whether the text grows with the system's text-size setting. On by
     /// default.
-    public func fontAutoScalingEnabled(_ value: Bool) -> Modified { setValue(FontElementContract.fontAutoScalingEnabled, value) }
+    public func isFontAutoScalingEnabled(_ value: Bool) -> Modified { setValue(FontElementContract.isFontAutoScalingEnabled, value) }
 }
 
 extension FontElement where Self: VisualElement {
@@ -29,10 +29,10 @@ extension FontElement where Self: VisualElement {
         plain(FontElementContract.fontAttributes, by: state)
     }
 
-    /// `fontAutoScalingEnabled` from a state, `$x`: the host sets each new
+    /// `isFontAutoScalingEnabled` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
-    public func fontAutoScalingEnabled(_ state: Binding<Bool>) -> Modified {
-        plain(FontElementContract.fontAutoScalingEnabled, by: state)
+    public func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Modified {
+        plain(FontElementContract.isFontAutoScalingEnabled, by: state)
     }
 
     /// `fontSize` from a state, `$x`: the host animates the property to each

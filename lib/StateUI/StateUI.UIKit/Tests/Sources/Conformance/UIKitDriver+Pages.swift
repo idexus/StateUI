@@ -45,15 +45,15 @@ extension UIKitDriver {
         case .title where onTab: return (controller.tabBarItem.title ?? "").propValue
         case .icon where onTab: return controller.tabBarItem.image?.accessibilityIdentifier.map { .string($0) }
         case .title: return (controller.navigationItem.title ?? "").propValue
-        case .hasBackButton: return (!controller.navigationItem.hidesBackButton).propValue
+        case .showsBackButton: return (!controller.navigationItem.hidesBackButton).propValue
         case .backButtonTitle: return controller.navigationItem.backButtonTitle?.propValue
-        case .hasNavigationBar:
+        case .showsNavigationBar:
             guard let navigation = controller.navigationController else { return nil }
             return (!navigation.isNavigationBarHidden).propValue
         case .currentPage:
             guard let tabs = controller as? UIKitTabBarController else { return nil }
             return tabs.selectedIndex.propValue
-        case .isSidebarVisible:
+        case .showsSidebar:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.displayMode != .secondaryOnly).propValue
         default:

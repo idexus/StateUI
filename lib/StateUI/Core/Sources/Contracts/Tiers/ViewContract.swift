@@ -11,7 +11,7 @@ public enum ViewContract: Contract {
     public static let tiers: [any Contract.Type] = [VisualElementContract.self]
 
     /// Whether the view accepts what is dropped on it.
-    public static let allowDrop = ElementProperty<Self, Bool>("allowDrop", layer: .native, cleared: false)
+    public static let allowsDrop = ElementProperty<Self, Bool>("allowsDrop", layer: .native, cleared: false)
 
     /// The part of the enclosing ZStack's room the view stands in.
     public static let area = ElementProperty<Self, Area>("area", layer: .structure, travels: false)
@@ -122,7 +122,7 @@ public enum ViewContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        allowDrop, area, canDrag, dragLeave,
+        allowsDrop, area, canDrag, dragLeave,
         dragOver, dragStarting, dragText, drop, dropCompleted, frameChanged, gridColumn,
         gridColumnSpan, gridRow, gridRowSpan, horizontalAlignment, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, pinchUpdated, pointerEntered, pointerExited,

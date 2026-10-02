@@ -4,9 +4,9 @@ Page.appearing: ✅
 Page.backButtonTitle: ✅
 Page.background: ✅
 Page.disappearing: ✅
-Page.hasBackButton: ✅
-Page.hasNavigationBar: ✅
 Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
 Page.padding: ✅
+Page.showsBackButton: ✅
+Page.showsNavigationBar: ✅

@@ -1,5 +1,5 @@
 # revision 1.1
-ActivityIndicator.allowDrop: not realized
+ActivityIndicator.allowsDrop: not realized
 ActivityIndicator.area: ✅
 ActivityIndicator.dragLeave: not realized
 ActivityIndicator.dragOver: not realized
@@ -35,7 +35,7 @@ ColorBox.pointerPressed: ✅
 ColorBox.pointerReleased: ✅
 ColorBox.tapCount: ✅
 ColorBox.tapped: ✅
-DatePicker.allowDrop: not realized
+DatePicker.allowsDrop: not realized
 DatePicker.area: ✅
 DatePicker.dragLeave: not realized
 DatePicker.dragOver: not realized
@@ -71,7 +71,7 @@ Image.pointerPressed: ✅
 Image.pointerReleased: ✅
 Image.tapCount: ✅
 Image.tapped: ✅
-ItemsView.allowDrop: not realized
+ItemsView.allowsDrop: not realized
 ItemsView.area: ✅
 ItemsView.dragLeave: not realized
 ItemsView.dragOver: not realized
@@ -103,7 +103,7 @@ Path.pointerPressed: ✅
 Path.pointerReleased: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
-Picker.allowDrop: not realized
+Picker.allowsDrop: not realized
 Picker.area: ✅
 Picker.dragLeave: not realized
 Picker.dragOver: not realized
@@ -139,7 +139,7 @@ RadioButton.pointerPressed: ✅
 RadioButton.pointerReleased: ✅
 RadioButton.tapCount: ✅
 RadioButton.tapped: ✅
-Rectangle.allowDrop: not realized
+Rectangle.allowsDrop: not realized
 Rectangle.area: ✅
 Rectangle.dragLeave: not realized
 Rectangle.dragOver: not realized
@@ -175,7 +175,7 @@ Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
 Stepper.tapCount: ✅
 Stepper.tapped: ✅
-Switch.allowDrop: not realized
+Switch.allowsDrop: not realized
 Switch.area: ✅
 Switch.dragLeave: not realized
 Switch.dragOver: not realized
@@ -215,7 +215,7 @@ VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
-WebView.allowDrop: not realized
+WebView.allowsDrop: not realized
 WebView.area: ✅
 WebView.dragLeave: not realized
 WebView.dragOver: not realized

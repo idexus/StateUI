@@ -38,7 +38,7 @@ extension AppKitDriver {
         }
         switch ability {
         case "read currentPage of TabbedView": return "the host's tab choice, not the tab view's"
-        case "read isRunning of ActivityIndicator": return "the host's own flag; the indicator holds none to read"
+        case "read isAnimating of ActivityIndicator": return "the host's own flag; the indicator holds none to read"
         case "read inputPurpose of TextField", "read inputPurpose of SearchField", "read inputPurpose of TextEditor":
             return "the traits the host keeps; a Mac shows no keys a purpose picks"
         case "read windowType of Window", "read windowValue of Window": return "the host's restoration record"

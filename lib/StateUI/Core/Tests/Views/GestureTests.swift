@@ -232,7 +232,7 @@ final class GestureTests: XCTestCase {
         XCTAssertEqual(source?.props["canDrag"], .bool(true))
 
         let target = patch.child("target")
-        XCTAssertEqual(target?.props["allowDrop"], .bool(true),
+        XCTAssertEqual(target?.props["allowsDrop"], .bool(true),
                        "a view that handles a drop is a view that allows one")
 
         renders.fire(target?.events?["drop"] ?? -1, with: [.string("Alpha")])

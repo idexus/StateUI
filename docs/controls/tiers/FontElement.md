@@ -21,6 +21,6 @@ How each of them realizes these members is on its own page.
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
 | `fontAttributes` | property | `FontAttributes` | native |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive |
+| `isFontAutoScalingEnabled` | property | `Bool` | adaptive |
 | `fontFamily` | property | `Name` | native |
 | `fontSize` | property | `Double` | native |

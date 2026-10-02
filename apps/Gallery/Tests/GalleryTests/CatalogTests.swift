@@ -1092,10 +1092,10 @@ final class CatalogTests: XCTestCase {
         let flyout = try XCTUnwrap(modal.children.first)
 
         XCTAssertEqual(flyout.type, "SplitView")
-        XCTAssertEqual(flyout.props["isSidebarVisible"], .bool(false))
+        XCTAssertEqual(flyout.props["showsSidebar"], .bool(false))
         XCTAssertNotNil(flyout.props["barBackgroundColor"], "both panes' bars are left to the platform")
         XCTAssertNotNil(flyout.props["barForegroundColor"])
-        XCTAssertNotNil(flyout.events["isSidebarVisibleChanged"],
+        XCTAssertNotNil(flyout.events["showsSidebarChanged"],
                         "a native presentation change would not reach the binding")
 
         XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail", "gallery"],

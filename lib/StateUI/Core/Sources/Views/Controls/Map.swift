@@ -21,8 +21,8 @@ extension MapProperties {
     }
 
     /// Whether the roads are coloured by traffic.
-    public func isTrafficEnabled(_ value: Bool) -> Modified {
-        setValue(MapContract.isTrafficEnabled, value)
+    public func showsTraffic(_ value: Bool) -> Modified {
+        setValue(MapContract.showsTraffic, value)
     }
 
     /// Whether the user's own position is drawn on it. That needs the

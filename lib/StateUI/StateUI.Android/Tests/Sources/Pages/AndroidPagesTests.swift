@@ -401,7 +401,7 @@ extension AndroidPagesTests {
                 NavigationStack(path.projectedValue) {
                     FurnishedPage(title: "Root")
                 } destination: { number in
-                    FurnishedPage(title: "Page \(number)", hasBackButton: number != 1, hasNavigationBar: number != 2)
+                    FurnishedPage(title: "Page \(number)", showsBackButton: number != 1, showsNavigationBar: number != 2)
                 }
                 .barBackgroundColor(.red)
                 .barForegroundColor(.white)
@@ -611,22 +611,22 @@ extension AndroidPagesTests {
 /// A page on a blue ground with its words 8 points in, saying whether its bar shows and has a way back.
 private struct FurnishedPage: View {
     let title: String
-    var hasBackButton = true
-    var hasNavigationBar = true
+    var showsBackButton = true
+    var showsNavigationBar = true
 
     @Environment private var page: PageSession
 
     var body: some View {
         let page = self.page
         let title = self.title
-        let back = hasBackButton
-        let bar = hasNavigationBar
+        let back = showsBackButton
+        let bar = showsNavigationBar
         return Text(title).onCreated {
             page.title = title
             page.background = .blue
             page.padding = Insets(8)
-            page.hasBackButton = back
-            page.hasNavigationBar = bar
+            page.showsBackButton = back
+            page.showsNavigationBar = bar
         }
     }
 }

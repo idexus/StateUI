@@ -14,8 +14,8 @@ public enum ActivityIndicatorContract: ElementContract {
     public static let tiers: [any Contract.Type] = [ViewContract.self, TintElementContract.self]
 
     /// Whether it is spinning.
-    public static let isRunning = ElementProperty<Self, Bool>("isRunning", layer: .native)
+    public static let isAnimating = ElementProperty<Self, Bool>("isAnimating", layer: .native)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [isRunning]
+    public static let members: [any ContractMember] = [isAnimating]
 }

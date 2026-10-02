@@ -52,8 +52,8 @@ private struct DressedDestination: View {
 
                 // Non-default values prove that the host must apply the branch;
                 // an assertion agreeing with a default could pass without it.
-                page.hasNavigationBar = false
-                page.hasBackButton = false
+                page.showsNavigationBar = false
+                page.showsBackButton = false
                 page.backButtonTitle = "Up"
             }
     }
@@ -251,8 +251,8 @@ final class NavigationStackTests: XCTestCase {
 
         let page = try XCTUnwrap(stack.at(dressed))
         XCTAssertEqual(page.props["backButtonTitle"], .string("Up"))
-        XCTAssertEqual(page.props["hasBackButton"], .bool(false))
-        XCTAssertEqual(page.props["hasNavigationBar"], .bool(false))
+        XCTAssertEqual(page.props["showsBackButton"], .bool(false))
+        XCTAssertEqual(page.props["showsNavigationBar"], .bool(false))
         XCTAssertEqual(page.children.map(\.type), [.text])
         let content = try XCTUnwrap(page.children.first)
         XCTAssertEqual(content.children.map(\.type), [.titleView])

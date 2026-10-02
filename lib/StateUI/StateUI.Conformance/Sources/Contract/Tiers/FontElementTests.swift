@@ -16,7 +16,7 @@
                 Aspects.holds(FontElementContract.fontAttributes, on: element, .none, then: [.bold, .italic],
                               with: Words.on(element)),
                 Aspects.holds(FontElementContract.fontFamily, on: element, "Arial", then: "Courier New", with: Words.on(element)),
-                Aspects.holds(FontElementContract.fontAutoScalingEnabled, on: element, true, then: false,
+                Aspects.holds(FontElementContract.isFontAutoScalingEnabled, on: element, true, then: false,
                               with: Words.on(element)),
             ]
         }

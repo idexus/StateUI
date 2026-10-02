@@ -83,7 +83,7 @@ final class ContractPayloadTests: XCTestCase {
         check(SliderContract.dragCompleted)
         check(SliderContract.dragStarted)
         check(SliderContract.valueChanged, [.number(0.5)])
-        check(SplitViewContract.isSidebarVisibleChanged, [.bool(false)])
+        check(SplitViewContract.showsSidebarChanged, [.bool(false)])
         check(StepperContract.valueChanged, [.number(3)])
         check(SwitchContract.toggled, [.bool(true)])
         check(TabbedViewContract.currentPageChanged, [.number(1)])

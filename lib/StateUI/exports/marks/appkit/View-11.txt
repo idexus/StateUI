@@ -28,7 +28,7 @@ HStack.tapped: ✓ tap on HStack: handed to the host's recognizer or handler, no
 Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridRow: ✅
-ItemsView.allowDrop: not realized
+ItemsView.allowsDrop: not realized
 ItemsView.dragLeave: not realized
 ItemsView.dragOver: not realized
 ItemsView.drop: not realized
@@ -59,7 +59,7 @@ RadioButton.tapped: ✓ tap on RadioButton: handed to the host's recognizer or h
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridRow: ✅
-ScrollView.allowDrop: not realized
+ScrollView.allowsDrop: not realized
 ScrollView.dragLeave: not realized
 ScrollView.dragOver: not realized
 ScrollView.drop: not realized

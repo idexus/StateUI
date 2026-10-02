@@ -93,7 +93,7 @@ saying whether the sidebar shows:
 @State private var menuOpen = false
 
 SplitView($menuOpen, sidebar: {
-    MenuPage(isSidebarVisible: $menuOpen)
+    MenuPage(showsSidebar: $menuOpen)
 }, detail: {
     MainPage()
 })

@@ -393,8 +393,8 @@ struct TitledPage: View {
             .toolbar { actions }
             .onCreated {
                 page.title = title
-                if hidesBar { page.hasNavigationBar = false }
-                if hidesBack { page.hasBackButton = false }
+                if hidesBar { page.showsNavigationBar = false }
+                if hidesBack { page.showsBackButton = false }
             }
             .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
     }

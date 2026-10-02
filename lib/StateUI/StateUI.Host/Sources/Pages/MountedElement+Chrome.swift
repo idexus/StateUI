@@ -11,7 +11,7 @@ extension MountedElement {
     /// its bar.
     /// Design: docs/design/host/pages.md#the-actions-of-a-path
     public var chromeActions: ChromeActions {
-        guard value(.hasNavigationBar)?.bool != false else { return ChromeActions() }
+        guard value(.showsNavigationBar)?.bool != false else { return ChromeActions() }
 
         return ChromeActions(declared(.toolbarItems))
     }

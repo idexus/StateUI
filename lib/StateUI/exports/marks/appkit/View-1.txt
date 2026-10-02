@@ -12,7 +12,7 @@ CheckBox.tapped: ✓ tap on CheckBox: handed to the host's recognizer or handler
 ColorBox.frameChanged: ✅
 ColorBox.gridColumn: ✅
 ColorBox.gridRow: ✅
-DatePicker.allowDrop: not realized
+DatePicker.allowsDrop: not realized
 DatePicker.dragLeave: not realized
 DatePicker.dragOver: not realized
 DatePicker.drop: not realized
@@ -42,7 +42,7 @@ Path.tapped: ✓ tap on Path: handed to the host's recognizer or handler, no NSE
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅
-Polygon.allowDrop: not realized
+Polygon.allowsDrop: not realized
 Polygon.dragLeave: not realized
 Polygon.dragOver: not realized
 Polygon.drop: not realized
@@ -84,7 +84,7 @@ Text.margin: ✅
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅
-TextField.allowDrop: not realized
+TextField.allowsDrop: not realized
 TextField.dragLeave: not realized
 TextField.dragOver: not realized
 TextField.drop: not realized

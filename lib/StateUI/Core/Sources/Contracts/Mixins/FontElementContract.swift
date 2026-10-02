@@ -14,8 +14,8 @@ public enum FontElementContract: Contract {
     public static let fontAttributes = ElementProperty<Self, FontAttributes>("fontAttributes", layer: .native)
 
     /// Whether the text follows the user's text-size setting.
-    public static let fontAutoScalingEnabled = ElementProperty<Self, Bool>(
-        "fontAutoScalingEnabled", layer: .adaptive)
+    public static let isFontAutoScalingEnabled = ElementProperty<Self, Bool>(
+        "isFontAutoScalingEnabled", layer: .adaptive)
 
     /// The font family, by its name.
     public static let fontFamily = ElementProperty<Self, Name>("fontFamily", layer: .native)
@@ -25,6 +25,6 @@ public enum FontElementContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        fontAttributes, fontAutoScalingEnabled, fontFamily, fontSize,
+        fontAttributes, isFontAutoScalingEnabled, fontFamily, fontSize,
     ]
 }

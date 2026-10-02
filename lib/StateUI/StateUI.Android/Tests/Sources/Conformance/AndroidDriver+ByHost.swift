@@ -19,7 +19,7 @@ extension AndroidDriver {
         case "read minimum of Slider", "read maximum of Slider":
             return "the host's own range; the SeekBar holds only steps"
         case "read options of Picker", "read title of Picker": return "the rows the relay keeps, not the spinner's"
-        case "read isSidebarVisible of SplitView": return "the split's own flag; the drawer slides on it"
+        case "read showsSidebar of SplitView": return "the split's own flag; the drawer slides on it"
         case "read selectionMode of ItemsView": return "the mode the relay keeps, which its cells tell TalkBack"
         case "read a question": return "what the relay keeps of the dialog it showed"
         case "read minimumDate of DatePicker", "read maximumDate of DatePicker":

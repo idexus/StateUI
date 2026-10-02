@@ -12,7 +12,7 @@ struct NotePage: View {
         Text("Nothing written yet.")
             .onCreated {
                 page.title = "Note"
-                page.hasBackButton = true
+                page.showsBackButton = true
             }
     }
 }
@@ -61,10 +61,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.
 <tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td></td></tr>
 <tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>disappearing</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>hasBackButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet<br>WinUI 3, GTK 4: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>hasNavigationBar</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet<br>Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsBackButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">Android Views: cannot read showsBackButton of Page - Android's driver has no path for it yet<br>WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsNavigationBar</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: cannot read showsNavigationBar of Page - AppKit's driver has no path for it yet<br>Android Views: cannot read showsNavigationBar of Page - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>navigatedFrom</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>navigatedTo</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>navigatingFrom</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>

@@ -5,7 +5,7 @@ Button.tapped: ✓ tap on Button: handed to the host's recognizer or handler, no
 Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridRow: ✅
-CheckBox.allowDrop: not realized
+CheckBox.allowsDrop: not realized
 CheckBox.dragLeave: not realized
 CheckBox.dragOver: not realized
 CheckBox.drop: not realized
@@ -40,7 +40,7 @@ Line.tapped: ✓ tap on Line: handed to the host's recognizer or handler, no NSE
 Map.frameChanged: ✅
 Map.gridColumn: ✅
 Map.gridRow: ✅
-Path.allowDrop: not realized
+Path.allowsDrop: not realized
 Path.dragLeave: not realized
 Path.dragOver: not realized
 Path.drop: not realized
@@ -76,7 +76,7 @@ Slider.tapped: ✓ tap on Slider: handed to the host's recognizer or handler, no
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
-Switch.allowDrop: not realized
+Switch.allowsDrop: not realized
 Switch.dragLeave: not realized
 Switch.dragOver: not realized
 Switch.drop: not realized

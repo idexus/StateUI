@@ -1,5 +1,5 @@
 # revision 1.1
-ActivityIndicator.allowDrop: not realized
+ActivityIndicator.allowsDrop: not realized
 ActivityIndicator.dragLeave: not realized
 ActivityIndicator.dragOver: not realized
 ActivityIndicator.drop: not realized
@@ -64,7 +64,7 @@ Rectangle.tapped: ✓ tap on Rectangle: the view's listening handed the recogniz
 ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridRow: ✅
-SearchField.allowDrop: not realized
+SearchField.allowsDrop: not realized
 SearchField.dragLeave: not realized
 SearchField.dragOver: not realized
 SearchField.drop: not realized
@@ -82,7 +82,7 @@ Stepper.swiped: ✓ pan on Stepper: the view's listening handed the recognizer's
 Switch.panTouchCount: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panUpdated: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panXChannel: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
-Text.allowDrop: not realized
+Text.allowsDrop: not realized
 Text.dragLeave: not realized
 Text.dragOver: not realized
 Text.drop: not realized

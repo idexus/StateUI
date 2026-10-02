@@ -55,9 +55,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/SplitViewCon
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>isSidebarVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">Android Views: only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isSidebarVisibleChanged</code></td><td>event</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsSidebar</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">Android Views: only through the host's own: read showsSidebar of SplitView: the split's own flag; the drawer slides on it</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsSidebarChanged</code></td><td>event</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call</td></tr></tbody>
 </table>
 

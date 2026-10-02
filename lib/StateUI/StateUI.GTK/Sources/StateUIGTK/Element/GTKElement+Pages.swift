@@ -40,8 +40,8 @@ extension GTKElement {
             chrome.title = element.titledPage?.value(.title)?.string
                 ?? element.enclosing(type: .window)?.value(.title)?.string ?? ""
             chrome.tabs = (view as? GTKTabbedView)?.switcher
-            chrome.showsBar = value(.hasNavigationBar)?.bool != false
-            chrome.offersBack = value(.hasBackButton)?.bool != false
+            chrome.showsBar = value(.showsNavigationBar)?.bool != false
+            chrome.offersBack = value(.showsBackButton)?.bool != false
             (chrome.barBackground, chrome.barForeground) = element.barColors
             return chrome
         }
@@ -50,8 +50,8 @@ extension GTKElement {
         chrome.title = value(.title)?.string ?? ""
         chrome.subtitle = element.titleArea?.subtitle
         chrome.titleView = element.chromeTitleView?.gtk.view
-        chrome.showsBar = value(.hasNavigationBar)?.bool != false
-        chrome.offersBack = value(.hasBackButton)?.bool != false
+        chrome.showsBar = value(.showsNavigationBar)?.bool != false
+        chrome.offersBack = value(.showsBackButton)?.bool != false
         (chrome.barBackground, chrome.barForeground) = element.barColors
 
         let actions = element.chromeActions
@@ -123,7 +123,7 @@ extension GTKElement {
         case .splitView:
             guard let split = view as? GTKSplitView else { return }
             split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
-            if changed.contains(.isSidebarVisible) { split.present(value(.isSidebarVisible)?.bool == true) }
+            if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
         default:
             break
         }

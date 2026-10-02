@@ -1,5 +1,5 @@
 # revision 1.1
-ActivityIndicator.allowDrop: not realized
+ActivityIndicator.allowsDrop: not realized
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: not realized
 ActivityIndicator.dragLeave: not realized
@@ -31,7 +31,7 @@ ActivityIndicator.swiped: ✅
 ActivityIndicator.tapCount: ✅
 ActivityIndicator.tapped: ✅
 ActivityIndicator.verticalAlignment: ✅
-Button.allowDrop: not realized
+Button.allowsDrop: not realized
 Button.area: ✅
 Button.canDrag: not realized
 Button.dragLeave: not realized
@@ -63,7 +63,7 @@ Button.swiped: ✅
 Button.tapCount: ✅
 Button.tapped: ✅
 Button.verticalAlignment: ✅
-Canvas.allowDrop: not realized
+Canvas.allowsDrop: not realized
 Canvas.area: ✅
 Canvas.canDrag: not realized
 Canvas.dragLeave: not realized
@@ -95,7 +95,7 @@ Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
-CheckBox.allowDrop: not realized
+CheckBox.allowsDrop: not realized
 CheckBox.area: ✅
 CheckBox.canDrag: not realized
 CheckBox.dragLeave: not realized
@@ -127,7 +127,7 @@ CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
-ColorBox.allowDrop: not realized
+ColorBox.allowsDrop: not realized
 ColorBox.area: ✅
 ColorBox.canDrag: not realized
 ColorBox.dragLeave: not realized
@@ -159,7 +159,7 @@ ColorBox.swiped: ✅
 ColorBox.tapCount: ✅
 ColorBox.tapped: ✅
 ColorBox.verticalAlignment: ✅
-DatePicker.allowDrop: not realized
+DatePicker.allowsDrop: not realized
 DatePicker.area: ✅
 DatePicker.canDrag: not realized
 DatePicker.dragLeave: not realized
@@ -191,7 +191,7 @@ DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
-Ellipse.allowDrop: not realized
+Ellipse.allowsDrop: not realized
 Ellipse.area: ✅
 Ellipse.canDrag: not realized
 Ellipse.dragLeave: not realized
@@ -223,7 +223,7 @@ Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
-Grid.allowDrop: not realized
+Grid.allowsDrop: not realized
 Grid.area: ✅
 Grid.canDrag: not realized
 Grid.dragLeave: not realized
@@ -255,7 +255,7 @@ Grid.swiped: ✅
 Grid.tapCount: ✅
 Grid.tapped: ✅
 Grid.verticalAlignment: ✅
-HStack.allowDrop: not realized
+HStack.allowsDrop: not realized
 HStack.area: ✅
 HStack.canDrag: not realized
 HStack.dragLeave: not realized
@@ -287,7 +287,7 @@ HStack.swiped: ✅
 HStack.tapCount: ✅
 HStack.tapped: ✅
 HStack.verticalAlignment: ✅
-Image.allowDrop: not realized
+Image.allowsDrop: not realized
 Image.area: ✅
 Image.canDrag: not realized
 Image.dragLeave: not realized
@@ -319,7 +319,7 @@ Image.swiped: ✅
 Image.tapCount: ✅
 Image.tapped: ✅
 Image.verticalAlignment: ✅
-ItemsView.allowDrop: not realized
+ItemsView.allowsDrop: not realized
 ItemsView.area: ✅
 ItemsView.canDrag: not realized
 ItemsView.dragLeave: not realized
@@ -351,7 +351,7 @@ ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-Line.allowDrop: not realized
+Line.allowsDrop: not realized
 Line.area: ✅
 Line.canDrag: not realized
 Line.dragLeave: not realized
@@ -383,7 +383,7 @@ Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.verticalAlignment: ✅
-Map.allowDrop: 🧩
+Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.canDrag: 🧩
 Map.dragLeave: 🧩
@@ -415,7 +415,7 @@ Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 Map.verticalAlignment: 🧩
-Path.allowDrop: not realized
+Path.allowsDrop: not realized
 Path.area: ✅
 Path.canDrag: not realized
 Path.dragLeave: not realized
@@ -447,7 +447,7 @@ Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
 Path.verticalAlignment: ✅
-Picker.allowDrop: not realized
+Picker.allowsDrop: not realized
 Picker.area: ✅
 Picker.canDrag: not realized
 Picker.dragLeave: not realized
@@ -479,7 +479,7 @@ Picker.swiped: ✅
 Picker.tapCount: ✅
 Picker.tapped: ✅
 Picker.verticalAlignment: ✅
-Polygon.allowDrop: not realized
+Polygon.allowsDrop: not realized
 Polygon.area: ✅
 Polygon.canDrag: not realized
 Polygon.dragLeave: not realized
@@ -511,7 +511,7 @@ Polygon.swiped: ✅
 Polygon.tapCount: ✅
 Polygon.tapped: ✅
 Polygon.verticalAlignment: ✅
-Polyline.allowDrop: not realized
+Polyline.allowsDrop: not realized
 Polyline.area: ✅
 Polyline.canDrag: not realized
 Polyline.dragLeave: not realized
@@ -543,7 +543,7 @@ Polyline.swiped: ✅
 Polyline.tapCount: ✅
 Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
-ProgressBar.allowDrop: not realized
+ProgressBar.allowsDrop: not realized
 ProgressBar.area: ✅
 ProgressBar.canDrag: not realized
 ProgressBar.dragLeave: not realized
@@ -575,7 +575,7 @@ ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowDrop: not realized
+RadioButton.allowsDrop: not realized
 RadioButton.area: ✅
 RadioButton.canDrag: not realized
 RadioButton.dragLeave: not realized
@@ -607,7 +607,7 @@ RadioButton.swiped: ✅
 RadioButton.tapCount: ✅
 RadioButton.tapped: ✅
 RadioButton.verticalAlignment: ✅
-Rectangle.allowDrop: not realized
+Rectangle.allowsDrop: not realized
 Rectangle.area: ✅
 Rectangle.canDrag: not realized
 Rectangle.dragLeave: not realized
@@ -639,7 +639,7 @@ Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
 Rectangle.tapped: ✅
 Rectangle.verticalAlignment: ✅
-ScrollView.allowDrop: not realized
+ScrollView.allowsDrop: not realized
 ScrollView.area: ✅
 ScrollView.canDrag: not realized
 ScrollView.dragLeave: not realized
@@ -671,7 +671,7 @@ ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
-SearchField.allowDrop: not realized
+SearchField.allowsDrop: not realized
 SearchField.area: ✅
 SearchField.canDrag: not realized
 SearchField.dragLeave: not realized
@@ -703,7 +703,7 @@ SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
-Slider.allowDrop: not realized
+Slider.allowsDrop: not realized
 Slider.area: ✅
 Slider.canDrag: not realized
 Slider.dragLeave: not realized
@@ -735,7 +735,7 @@ Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.verticalAlignment: ✅
-Stepper.allowDrop: not realized
+Stepper.allowsDrop: not realized
 Stepper.area: ✅
 Stepper.canDrag: not realized
 Stepper.dragLeave: not realized
@@ -767,7 +767,7 @@ Stepper.swiped: ✅
 Stepper.tapCount: ✅
 Stepper.tapped: ✅
 Stepper.verticalAlignment: ✅
-Switch.allowDrop: not realized
+Switch.allowsDrop: not realized
 Switch.area: ✅
 Switch.canDrag: not realized
 Switch.dragLeave: not realized
@@ -799,7 +799,7 @@ Switch.swiped: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
 Switch.verticalAlignment: ✅
-Text.allowDrop: not realized
+Text.allowsDrop: not realized
 Text.area: ✅
 Text.canDrag: not realized
 Text.dragLeave: not realized
@@ -831,7 +831,7 @@ Text.swiped: ✅
 Text.tapCount: ✅
 Text.tapped: ✅
 Text.verticalAlignment: ✅
-TextEditor.allowDrop: not realized
+TextEditor.allowsDrop: not realized
 TextEditor.area: ✅
 TextEditor.canDrag: not realized
 TextEditor.dragLeave: not realized
@@ -863,7 +863,7 @@ TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
 TextEditor.verticalAlignment: ✅
-TextField.allowDrop: not realized
+TextField.allowsDrop: not realized
 TextField.area: ✅
 TextField.canDrag: not realized
 TextField.dragLeave: not realized
@@ -895,7 +895,7 @@ TextField.swiped: ✅
 TextField.tapCount: ✅
 TextField.tapped: ✅
 TextField.verticalAlignment: ✅
-TimePicker.allowDrop: not realized
+TimePicker.allowsDrop: not realized
 TimePicker.area: ✅
 TimePicker.canDrag: not realized
 TimePicker.dragLeave: not realized
@@ -927,7 +927,7 @@ TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
-VStack.allowDrop: not realized
+VStack.allowsDrop: not realized
 VStack.area: ✅
 VStack.canDrag: not realized
 VStack.dragLeave: not realized
@@ -959,7 +959,7 @@ VStack.swiped: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
 VStack.verticalAlignment: ✅
-WebView.allowDrop: not realized
+WebView.allowsDrop: not realized
 WebView.area: ✅
 WebView.canDrag: not realized
 WebView.dragLeave: not realized
@@ -991,7 +991,7 @@ WebView.swiped: ✅
 WebView.tapCount: ✅
 WebView.tapped: ✅
 WebView.verticalAlignment: ✅
-ZStack.allowDrop: not realized
+ZStack.allowsDrop: not realized
 ZStack.area: ✅
 ZStack.canDrag: not realized
 ZStack.dragLeave: not realized

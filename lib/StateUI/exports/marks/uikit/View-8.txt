@@ -5,7 +5,7 @@ Button.tapped: ✓ tap on Button: the view's listening handed the recognizer's s
 Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridRow: ✅
-CheckBox.allowDrop: not realized
+CheckBox.allowsDrop: not realized
 CheckBox.dragLeave: not realized
 CheckBox.dragOver: not realized
 CheckBox.drop: not realized
@@ -40,7 +40,7 @@ Line.tapped: ✓ tap on Line: the view's listening handed the recognizer's state
 Map.frameChanged: ✅
 Map.gridColumn: ✅
 Map.gridRow: ✅
-Path.allowDrop: not realized
+Path.allowsDrop: not realized
 Path.dragLeave: not realized
 Path.dragOver: not realized
 Path.drop: not realized
@@ -76,7 +76,7 @@ Slider.tapped: ✓ tap on Slider: the view's listening handed the recognizer's s
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
-Switch.allowDrop: not realized
+Switch.allowsDrop: not realized
 Switch.dragLeave: not realized
 Switch.dragOver: not realized
 Switch.drop: not realized

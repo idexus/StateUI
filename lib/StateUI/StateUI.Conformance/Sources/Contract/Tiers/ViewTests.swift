@@ -332,7 +332,7 @@
                         HearDone(ViewContract.dragStarting) { heard.values.append("starting") },
                         HearDone(ViewContract.dropCompleted) { heard.values.append("completed") },
                     ])
-                    ColorBox(.red).width(80).height(40).setValue(ViewContract.allowDrop, true)
+                    ColorBox(.red).width(80).height(40).setValue(ViewContract.allowsDrop, true)
                         .onEvent(ViewContract.drop) { heard.values.append("drop \($0)") }.id("target")
                 }
                 .horizontalAlignment(.start)
@@ -347,7 +347,7 @@
     /// A view that takes drops hears a drag come over it and go, and the words of one dropped on it.
     static func droppedOn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDropOnItIsHeardWithItsWords", proves: [
-            Covered(ViewContract.allowDrop, on: element), Covered(ViewContract.drop, on: element),
+            Covered(ViewContract.allowsDrop, on: element), Covered(ViewContract.drop, on: element),
             Covered(ViewContract.dragOver, on: element), Covered(ViewContract.dragLeave, on: element),
         ]) { s in
             let heard = Received<String>()
@@ -357,14 +357,14 @@
                         .setValue(ViewContract.dragText, "words").id("source")
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(ViewContract.allowDrop, true),
+                        Write(ViewContract.allowsDrop, true),
                         HearDone(ViewContract.dragOver) { heard.values.append("over") },
                         HearDone(ViewContract.dragLeave) { heard.values.append("left") },
                         Hear(ViewContract.drop) { heard.values.append("drop \($0)") },
                     ], id: "crossed")
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(ViewContract.allowDrop, true), Hear(ViewContract.drop) { heard.values.append("drop \($0)") },
+                        Write(ViewContract.allowsDrop, true), Hear(ViewContract.drop) { heard.values.append("drop \($0)") },
                     ], id: "target")
                 }
                 .horizontalAlignment(.start)

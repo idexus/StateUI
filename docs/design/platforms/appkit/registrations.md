@@ -43,7 +43,7 @@ A declaration says what the host does, not what a tier offers:
 
 - `panTouchCount` is recorded partial: the host layer hears a one-finger pan
   only, which only a record with its note can say.
-- `allowDrop`, `canDrag` and `dragText` are absent: AppKit realizes no
+- `allowsDrop`, `canDrag` and `dragText` are absent: AppKit realizes no
   dragging.
 - `clipsContent` and `avoidsSafeArea` are absent: this host reads neither.
 - `background` and `isEnabled` are taken by the registrations of the controls

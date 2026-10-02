@@ -28,7 +28,7 @@ CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
-ColorBox.allowDrop: not realized
+ColorBox.allowsDrop: not realized
 ColorBox.area: ✅
 ColorBox.dragLeave: not realized
 ColorBox.dragOver: not realized
@@ -64,7 +64,7 @@ HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
 HStack.tapCount: ✅
 HStack.tapped: ✅
-Image.allowDrop: not realized
+Image.allowsDrop: not realized
 Image.area: ✅
 Image.dragLeave: not realized
 Image.dragOver: not realized
@@ -90,7 +90,7 @@ Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
-Path.allowDrop: not realized
+Path.allowsDrop: not realized
 Path.area: ✅
 Path.dragLeave: not realized
 Path.dragOver: not realized
@@ -126,7 +126,7 @@ ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
-RadioButton.allowDrop: not realized
+RadioButton.allowsDrop: not realized
 RadioButton.area: ✅
 RadioButton.dragLeave: not realized
 RadioButton.dragOver: not realized
@@ -162,7 +162,7 @@ Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
-Stepper.allowDrop: not realized
+Stepper.allowsDrop: not realized
 Stepper.area: ✅
 Stepper.dragLeave: not realized
 Stepper.dragOver: not realized
@@ -208,7 +208,7 @@ TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
-VStack.allowDrop: not realized
+VStack.allowsDrop: not realized
 VStack.area: ✅
 VStack.dragLeave: not realized
 VStack.dragOver: not realized

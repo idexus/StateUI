@@ -14,7 +14,7 @@ ColorBox.tapped: ✓ tap on ColorBox: the view's listening handed the recognizer
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅
-Ellipse.allowDrop: not realized
+Ellipse.allowsDrop: not realized
 Ellipse.dragLeave: not realized
 Ellipse.dragOver: not realized
 Ellipse.drop: not realized
@@ -48,7 +48,7 @@ Picker.tapped: ✓ tap on Picker: the view's listening handed the recognizer's s
 Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridRow: ✅
-Polyline.allowDrop: not realized
+Polyline.allowsDrop: not realized
 Polyline.dragLeave: not realized
 Polyline.dragOver: not realized
 Polyline.drop: not realized
@@ -86,7 +86,7 @@ TextEditor.tapped: ✓ tap on TextEditor: the view's listening handed the recogn
 TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridRow: ✅
-TimePicker.allowDrop: not realized
+TimePicker.allowsDrop: not realized
 TimePicker.dragLeave: not realized
 TimePicker.dragOver: not realized
 TimePicker.drop: not realized

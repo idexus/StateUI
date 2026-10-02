@@ -214,7 +214,7 @@ extension View {
     ///         .onDrop { text in items.append(text) }
     public func onDrop(_ handler: @escaping ValueEventHandler<String>) -> Modified {
         modified {
-            $0.write(ViewContract.allowDrop, true)
+            $0.write(ViewContract.allowsDrop, true)
             $0.addHandler(ViewContract.drop.token) {
                 if let text = MemberValues.carried(
                     EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
