@@ -36,7 +36,8 @@
     /// next one's start, before it from the last one's end; no milliseconds.
     public static func clock(_ time: ClockTime) -> ClockTime {
         let day = 24 * 60 * 60
-        let seconds = ((time.hour * 60 + time.minute) * 60 + time.second) % day
+        // Each part taken within the day first, so no size overflows the sum.
+        let seconds = (time.hour % 24 * 3_600 + time.minute % 1_440 * 60 + time.second % day) % day
         let within = (seconds + day) % day
         return ClockTime(hour: within / 3_600, minute: within % 3_600 / 60, second: within % 60)
     }

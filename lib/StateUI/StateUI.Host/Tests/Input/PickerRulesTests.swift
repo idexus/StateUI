@@ -36,6 +36,16 @@ final class PickerRulesTests: XCTestCase {
         XCTAssertEqual(CalendarArithmetic.clock(ClockTime(hour: 24, minute: 0, millisecond: 500)), ClockTime(hour: 0, minute: 0))
     }
 
+    /// A time of any size stands within the day: its parts add up without overflowing.
+    func testATimeOfAnySizeStandsWithinTheDay() {
+        XCTAssertEqual(
+            CalendarArithmetic.clock(ClockTime(hour: .max, minute: .max, second: .max)),
+            ClockTime(hour: 16, minute: 37, second: 7))
+        XCTAssertEqual(
+            CalendarArithmetic.clock(ClockTime(hour: .min, minute: .min, second: .min)),
+            ClockTime(hour: 6, minute: 21, second: 52))
+    }
+
     /// What the program opens or closes is heard by nobody; what the user does is, the closing of what the program
     /// opened included.
     func testOnlyTheUsersOpeningAndClosingAreHeard() {
