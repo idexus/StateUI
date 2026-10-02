@@ -56,6 +56,18 @@ over the system's WebView2 runtime, which WinUI does not ship: an application
 showing a web view depends on it from its WinUI head and calls
 `StateUIWebViewWinUI.register()` before the host runs.
 
+## Architectures and a deployed head
+
+A head is built for the machine's own architecture. An ARM64 machine builds
+an x64 head too, which Windows runs emulated: `run-app.ps1 -Architecture x64`
+builds it beside the ARM64 one in `.build\winui`, and lays the x64 Swift
+runtime beside it from the merge module the Swift installer keeps in its
+`Redistributables`. `deploy.ps1` - **StateUI: Deploy** in the editor - builds
+a head for release and lays it in a folder of its own with StateUI, the
+Windows App SDK and the Swift and C++ runtimes of its architecture: a folder
+that runs on a Windows machine with nothing of them installed. A debugger
+here follows the machine's own architecture alone.
+
 ## The head
 
 An application's WinUI head is an executable. Its `main` names the

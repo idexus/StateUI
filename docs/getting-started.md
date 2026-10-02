@@ -93,6 +93,7 @@ The Command Palette offers the rest under **StateUI:**
 | Select Android Device | the device or emulator an Android head runs on |
 | Select Application | the application F5 runs |
 | Run Tests | the workspace's suites, run as the chosen host |
+| Deploy | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` - on WinUI per architecture - beside its `apps/` |
 | Conformance - Rebuild all / changed | the chosen host's marks run again - every family, or the stale ones - and the documents rendered |
 | New Application in apps/ | a new application in a checkout's or a project group's `apps/`, made by `.scripts/new-app.sh` |
 | New Project Group | a folder of applications outside the checkout - see [A project group](#a-project-group) |

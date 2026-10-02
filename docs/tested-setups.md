@@ -71,10 +71,15 @@ Last verified 2026-10-02.
 | Windows App SDK | 1.8: `microsoft.windowsappsdk.winui` 1.8.260528001, `foundation` 1.8.260527000, `interactiveexperiences` 1.8.260525001 |
 | C++/WinRT | 3.0.260818.1 |
 | WebView2 | the runtime 154.0.4258.48, for the web view's backend; the SDK package 1.0.3179.45 |
+| Architectures | ARM64 heads, built, run and debugged; x64 heads built here and run under Windows' emulation, unattached to a debugger |
+| A deployed head | the Swift runtime of its architecture from the Swift installer's `Redistributables\6.4.0\rtl.shared.{arm64,amd64}.msm`; Visual Studio's app-local C++ runtime 14.51.36231 (`Microsoft.VC145.CRT`) |
 
 The build scripts fetch the Windows App SDK, C++/WinRT and the WebView2 SDK
 from nuget.org at these versions, pinned in `.scripts/WinUI/tools.ps1`, and
 lay the Windows App SDK beside each executable: nothing of it is installed.
+**StateUI: Deploy** lays a head that runs with neither Swift nor Visual
+Studio installed: both deployed builds of a project group's application, ARM64
+and x64, started with no Swift on the search path.
 
 ## A Linux machine: GTK 4
 

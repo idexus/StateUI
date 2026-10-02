@@ -32,6 +32,8 @@ const ignored = (repository: string): string => `# SwiftPM's build directories: 
 .sourcekit-lsp/
 # A StateUI release cloned into the group: git clone --depth 1 --branch <release> ${repository} StateUI
 /StateUI/
+# What StateUI: Deploy lays: each application built for release, per platform.
+/artifacts/
 
 *.dSYM/
 *.pdb

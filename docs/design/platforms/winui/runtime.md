@@ -223,3 +223,17 @@ The manifest stands beside the executable as `<name>.exe.manifest`, which
 Windows reads for an executable carrying none of its own. It is not written
 into the executable: the build records what it linked, and the next build
 links an executable changed since again, even when nothing else has.
+
+## Another architecture
+
+A head is built for the toolchain's own architecture, whose Swift runtime
+stands on the search path. An ARM64 machine builds an x64 head too, by
+SwiftPM's `--arch x86_64` (its `--triple` builds the toolchain's own whatever
+it names), in the same `.build\winui`, each architecture's head in a folder of
+its own. Such a head carries the Swift runtime of its architecture beside it,
+from the merge module the Swift installer keeps in `Redistributables` - its
+`File` table and its cabinet read through `msi.dll`, unpacked by
+`expand.exe` - and the Windows App SDK and every backend's engine of its
+architecture. A deployed head carries the Swift runtime and Visual Studio's
+app-local C++ runtime of its architecture whatever it is, so its folder runs
+where neither is installed.

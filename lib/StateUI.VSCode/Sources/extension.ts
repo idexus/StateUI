@@ -23,6 +23,7 @@ import { cloneRelease, groupNameProblem, listReleases, makeProjectGroup, release
 import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
 import { Rebuild, rebuildSteps } from "./conformance";
 import { checkToolchain, debuggerFinding, lldbDapFinding, report } from "./toolchain";
+import { Architecture, deployCommand, deployDestination, winUIArchitectures } from "./deploy";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -527,6 +528,54 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 void vscode.window.showWarningMessage(
                     `StateUI: ${missing} of ${all.length} components are missing - the output says what to install.`);
             }
+        }),
+        // The answers can come as an argument - the application's folder, the architecture - as the suite gives them.
+        vscode.commands.registerCommand("stateui.deploy", async (asked?: { application?: string; architecture?: Architecture }) => {
+            const forHost = host();
+            if (!forHost) {
+                void vscode.window.showErrorMessage(`StateUI: ${noHost}`);
+                return undefined;
+            }
+            const application = asked?.application
+                ? findApplications(path.dirname(path.dirname(asked.application))).find((each) => each.directory === asked.application)
+                : chosen() ?? await askForApplication(forHost);
+            if (!application) {
+                return undefined;
+            }
+            const offered = forHost === "winui" ? winUIArchitectures() : [];
+            const architecture = asked?.architecture ?? (offered.length > 1
+                ? (await vscode.window.showQuickPick(
+                    offered.map((each, index) => ({ label: each, description: index === 0 ? "this machine's own" : "run by Windows' emulation" })),
+                    { title: `StateUI: Deploy ${application.name} for which architecture?`, ignoreFocusOut: true }))?.label as Architecture | undefined
+                : offered[0]);
+            if (forHost === "winui" && !architecture) {
+                return undefined;
+            }
+            const device = forHost === "android" && application.checkout ? await androidDevice(application.checkout)
+                : forHost === "uikit" ? await uiKitDevice() : undefined;
+            if ((forHost === "android" || forHost === "uikit") && !device) {
+                return undefined;
+            }
+
+            const destination = deployDestination(application, forHost, architecture);
+            const step = deployCommand(application, forHost, destination, architecture, device);
+            if (!step || !fs.existsSync(step.script)) {
+                void vscode.window.showErrorMessage(
+                    `StateUI: ${application.name} is deployed by a StateUI checkout's .scripts/${describe(forHost).label}/${path.basename(step?.script ?? "deploy")}, which ${step ? "it does not have" : "its Package.swift names none of by path"}.`);
+                return undefined;
+            }
+            const task = new vscode.Task(
+                { type: "stateui", application: application.name, configuration: "release", device: architecture ?? device ?? forHost },
+                vscode.TaskScope.Workspace, `Deploy ${application.name} (${describe(forHost).label}${architecture ? `, ${architecture}` : ""})`,
+                "StateUI", new vscode.ProcessExecution(step.command, step.args, { cwd: path.dirname(path.dirname(application.directory)) }), []);
+            task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+            if ((await runTask(task)) !== 0) {
+                void vscode.window.showErrorMessage(`StateUI: ${application.name} was not deployed - the terminal says why.`);
+                return undefined;
+            }
+            void vscode.window.showInformationMessage(`StateUI: ${application.name} is deployed in ${destination}.`, "Reveal")
+                .then((answer) => answer && vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(destination)));
+            return destination;
         }),
         vscode.commands.registerCommand("stateui.cleanIndex", async () => {
             await cleanIndex(roots());

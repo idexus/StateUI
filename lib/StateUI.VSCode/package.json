@@ -112,6 +112,11 @@
         "command": "stateui.checkToolchain",
         "title": "Check Toolchain",
         "category": "StateUI"
+      },
+      {
+        "command": "stateui.deploy",
+        "title": "Deploy",
+        "category": "StateUI"
       }
     ],
     "debuggers": [

@@ -8,7 +8,7 @@
 // STATEUI_HOST=appkit, and a symbol under no condition resolves in either mode -
 // which is what tells "not this host" from "not ready yet".
 
-import { execSync } from "child_process";
+import { execSync, spawn } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -20,12 +20,13 @@ import { parseDevices } from "../Sources/devices";
 import { parseDevices as parseUIKitDevices, parseSimulators } from "../Sources/uiKitDevices";
 import { otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
-import { availableHosts, environment, hosts } from "../Sources/hosts";
+import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { nameProblem, scaffolderCommand } from "../Sources/newApplication";
 import { cloneCommand, groupNameProblem, listReleases, releaseDirectory, releasesIn } from "../Sources/projectGroup";
 import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
+import { deployCommand, deployDestination, winUIArchitectures } from "../Sources/deploy";
 import {
     atLeast, checkedPythonIn, checkToolchain, debuggerFinding, developmentIdentityIn, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report,
     svgLoaderIn, lldbDapFailure, lldbDapFinding, svgLoaderInGlycin, xcodeVersion,
@@ -588,6 +589,50 @@ export async function run(): Promise<void> {
                 }
             })();
             check(`Notes' example test passes as ${testHost ?? "plain Swift"}`, passes);
+
+            // StateUI: Deploy in the group: Notes built for release and laid in the group's artifacts/Notes/<platform>,
+            // on WinUI per architecture - this machine's own, and x64 too on an ARM64 machine - and run from there.
+            const notes = findApplications(local!).find((each) => each.name === "Notes")!;
+            const winUIDeploy = deployCommand(notes, "winui", "D", "x64");
+            const androidDeploy = deployCommand(notes, "android", "D", undefined, "SERIAL");
+            check("Deploy lays an application in artifacts/<application>/<platform> beside its apps/, on WinUI per architecture, by its checkout's deploy script",
+                commands.includes("stateui.deploy")
+                && JSON.stringify(winUIArchitectures("arm64")) === JSON.stringify(["arm64", "x64"])
+                && JSON.stringify(winUIArchitectures("x64")) === JSON.stringify(["x64"])
+                && deployDestination(notes, "winui", "x64") === path.join(local!, "artifacts", "Notes", "WinUI", "x64")
+                && deployDestination(notes, "gtk") === path.join(local!, "artifacts", "Notes", "GTK")
+                && same(notes.checkout, root.uri.fsPath)
+                && winUIDeploy?.script === path.join(notes.checkout!, ".scripts", "WinUI", "deploy.ps1")
+                && winUIDeploy.args.slice(-6).join(" ") === `-App ${notes.directory} -Destination D -Architecture x64`
+                && androidDeploy?.command === "bash"
+                && androidDeploy.args.join(" ") === `${path.join(notes.checkout!, ".scripts", "Android", "deploy.sh")} ${notes.directory} D SERIAL`
+                && fs.readFileSync(path.join(local!, ".gitignore"), "utf8").includes("\n/artifacts/\n"));
+            const own: Record<string, Host> = { darwin: "appkit", win32: "winui", linux: "gtk" };
+            await api.selectHost(own[process.platform]);
+            for (const architecture of process.platform === "win32" ? winUIArchitectures() : [undefined]) {
+                const laid = await vscode.commands.executeCommand<string>("stateui.deploy", { application: notes.directory, architecture });
+                const platform = describe(own[process.platform]).label;
+                check(`Deploy lays the group's Notes in its artifacts/Notes/${platform}${architecture ? `/${architecture}` : ""}`,
+                    laid === path.join(local!, "artifacts", "Notes", platform, ...(architecture ? [architecture] : []))
+                    && fs.readdirSync(laid).length > 0);
+                if (architecture) {
+                    // Its head's architecture, from its PE header; the Swift and C++ runtimes of it beside it, and no module.
+                    const head = path.join(laid!, "NotesWinUI.exe");
+                    const bytes = fs.readFileSync(head);
+                    check(`the deployed head is ${architecture}, with StateUI, the Windows App SDK and the Swift and C++ runtimes of its architecture, and nothing only a build reads`,
+                        bytes.readUInt16LE(bytes.readUInt32LE(0x3c) + 4) === (architecture === "x64" ? 0x8664 : 0xaa64)
+                        && ["StateUI.dll", "swiftCore.dll", "Foundation.dll", "vcruntime140.dll", "Microsoft.ui.xaml.dll", "resources.pri"]
+                            .every((each) => fs.existsSync(path.join(laid!, each)))
+                        && !fs.existsSync(path.join(laid!, "StateUI.swiftmodule")) && !fs.existsSync(path.join(laid!, "plutil.exe")));
+                    // Started with no Swift on the search path, as on a machine that has none.
+                    const bare = (process.env.PATH ?? "").split(";").filter((each) => !/\\Swift\\/i.test(each)).join(";");
+                    const started = spawn(head, [], { cwd: laid, env: { ...process.env, PATH: bare }, stdio: "ignore" });
+                    await new Promise((resume) => setTimeout(resume, 8000));
+                    const runs = started.exitCode === null;
+                    started.kill();
+                    check(`the deployed ${architecture} Notes runs from there with no Swift on the search path`, runs);
+                }
+            }
 
             // A release is offered from minimumRelease on - the first whose scripts build as this extension does.
             const minimum: string = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"))

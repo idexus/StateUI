@@ -160,6 +160,25 @@ them AS THE HOST, one after another, each in a terminal of its own:
 A failure does not stop the suites after it; the summary names the ones that
 failed.
 
+## Deploy
+
+**StateUI: Deploy** builds the chosen application for release on the chosen
+host and lays it in `artifacts/<application>/<platform>` of the folder that
+keeps its `apps/` - a project group's, or a checkout's - made anew each time.
+The host's own `deploy` script of the application's checkout does it:
+
+- **WinUI**: a folder that runs on a Windows machine with nothing installed -
+  the head, StateUI, the Windows App SDK, the Swift and C++ runtimes of its
+  architecture, the pictures. Deploy asks which architecture: on an ARM64
+  machine arm64 or x64, which Windows runs emulated, into
+  `artifacts/<application>/WinUI/arm64` or `.../x64`; an x64 machine builds x64
+  without asking.
+- **GTK**: the head, the StateUI libraries it links and the pictures.
+- **AppKit**: the application bundle where the checkout bundles the
+  application, else the head and the StateUI libraries it links.
+- **UIKit**: the application bundle, for the simulator or device chosen.
+- **Android**: the APK, for the ABI of the device chosen.
+
 ## The conformance marks
 
 In a StateUI checkout, **StateUI: Conformance - Rebuild all** runs every
