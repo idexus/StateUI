@@ -21,8 +21,8 @@ final class WinUIScrollerView: WinUIView {
 
     /// The document it moves, the ways it scrolls, and its bars.
     func set(
-        content: WinUIView, orientation: ScrollOrientation, verticalBar: ScrollBarVisibility,
-        horizontalBar: ScrollBarVisibility
+        content: WinUIView, orientation: ScrollOrientation, verticalBar: ScrollIndicatorVisibility,
+        horizontalBar: ScrollIndicatorVisibility
     ) {
         let way: Int32 = switch orientation {
         case .horizontal: 1
@@ -33,9 +33,9 @@ final class WinUIScrollerView: WinUIView {
         stateui_winui_scroller_set(handle, content.handle, way, Self.bar(verticalBar), Self.bar(horizontalBar))
     }
 
-    private static func bar(_ visibility: ScrollBarVisibility) -> Int32 {
+    private static func bar(_ visibility: ScrollIndicatorVisibility) -> Int32 {
         switch visibility {
-        case .always: 1
+        case .visible: 1
         case .never: 2
         default: 0
         }

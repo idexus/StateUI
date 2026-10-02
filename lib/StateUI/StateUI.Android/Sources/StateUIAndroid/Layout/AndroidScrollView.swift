@@ -84,8 +84,8 @@ final class AndroidScrollView: AndroidLayoutView {
 
     /// The scroller's orientation, padding, bars, and an offset the tree moved it to.
     func apply(
-        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollBarVisibility,
-        horizontalBar: ScrollBarVisibility, offset: Point?
+        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollIndicatorVisibility,
+        horizontalBar: ScrollIndicatorVisibility, offset: Point?
     ) {
         if orientation != self.orientation {
             self.orientation = orientation
@@ -99,7 +99,7 @@ final class AndroidScrollView: AndroidLayoutView {
             Java.call(scroller.reference, JavaAPI.setHorizontalScrollBarEnabled, .bool(horizontalBar != .never))
             Java.call(
                 scroller.reference, JavaAPI.setScrollbarFadingEnabled,
-                .bool(verticalBar != .always && horizontalBar != .always))
+                .bool(verticalBar != .visible && horizontalBar != .visible))
         }
 
         // Design: docs/design/host/layout.md#an-offset-the-tree-writes

@@ -39,7 +39,7 @@ final class WinUIScrollView: WinUILayoutView {
     /// The offset the tree writes, kept for the first layout where it comes before it.
     private var writtenOffset = WrittenScrollOffset()
 
-    private var bars = (vertical: ScrollBarVisibility.default, horizontal: ScrollBarVisibility.default)
+    private var bars = (vertical: ScrollIndicatorVisibility.automatic, horizontal: ScrollIndicatorVisibility.automatic)
 
     override init() {
         super.init()
@@ -75,8 +75,8 @@ final class WinUIScrollView: WinUILayoutView {
 
     /// The scroller's orientation, padding, bars, and an offset the tree moved it to.
     func apply(
-        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollBarVisibility,
-        horizontalBar: ScrollBarVisibility, offset: Point?
+        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollIndicatorVisibility,
+        horizontalBar: ScrollIndicatorVisibility, offset: Point?
     ) {
         if orientation != self.orientation || verticalBar != bars.vertical || horizontalBar != bars.horizontal {
             self.orientation = orientation

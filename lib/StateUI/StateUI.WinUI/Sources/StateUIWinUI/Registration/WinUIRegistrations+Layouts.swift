@@ -42,15 +42,15 @@ extension WinUIRegistrations {
         // Design: docs/design/platforms/winui/layout.md#scrolling
         registry.add(ScrollViewContract.self, create: { _ in WinUIScrollView() }) { scroll in
             scroll.applies([
-                ScrollViewContract.orientation, ScrollViewContract.verticalScrollBarVisibility,
-                ScrollViewContract.horizontalScrollBarVisibility, ScrollViewContract.scrollOffset,
+                ScrollViewContract.orientation, ScrollViewContract.verticalScrollIndicator,
+                ScrollViewContract.horizontalScrollIndicator, ScrollViewContract.scrollOffset,
                 PaddingElementContract.padding,
             ]) { view, values in
                 view.apply(
                     orientation: values[ScrollViewContract.orientation] ?? .vertical,
                     padding: values[PaddingElementContract.padding] ?? Insets(0),
-                    verticalBar: values[ScrollViewContract.verticalScrollBarVisibility] ?? .default,
-                    horizontalBar: values[ScrollViewContract.horizontalScrollBarVisibility] ?? .default,
+                    verticalBar: values[ScrollViewContract.verticalScrollIndicator] ?? .automatic,
+                    horizontalBar: values[ScrollViewContract.horizontalScrollIndicator] ?? .automatic,
                     offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
             }
             scroll.applies([

@@ -138,8 +138,8 @@
 
                 s.expect(heard.values, [300])
             },
-            Aspects.holds(ScrollViewContract.verticalScrollBarVisibility, on: "ScrollView", .always, then: .never),
-            Aspects.holds(ScrollViewContract.horizontalScrollBarVisibility, on: "ScrollView", .always, then: .never,
+            Aspects.holds(ScrollViewContract.verticalScrollIndicator, on: "ScrollView", .visible, then: .never),
+            Aspects.holds(ScrollViewContract.horizontalScrollIndicator, on: "ScrollView", .visible, then: .never,
                           with: [Write(ScrollViewContract.orientation, ScrollOrientation.horizontal)]),
         ]
     }

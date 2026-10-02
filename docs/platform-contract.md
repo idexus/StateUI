@@ -558,7 +558,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | 3 | 3 ✅ | 2 ✅ · 1 ✓ | 3 ✅ | 3 ✅ | 3 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
-| [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 2 ✅ | 7 ✅ | 7 ✅ |  |
+| [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollIndicator` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 2 ✅ | 7 ✅ | 7 ✅ |  |
 | [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 1 ✅ | 1 ✅ |  |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 4 ✅ | 4 ✅ | 4 ✅ · 2 – |  |
 | [Span](controls/Span.md) | `background` | 1 |  |  |  | 1 ✅ | 1 ✅ |  |
@@ -612,7 +612,7 @@ realizes the element and each of its members.
 `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
 `fontFamily`, `fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`,
 `gridRow`, `gridRowSpan`, `groupName`, `growsWithText`, `height`,
-`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
+`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollIndicator`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`, `isAnimating`,
 `isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
@@ -634,7 +634,7 @@ realizes the element and each of its members.
 `stroke`, `style`, `submitLabel`, `swipeDirection`, `swipeThreshold`,
 `tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `time`, `tint`,
 `title`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
-`verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
+`verticalAlignment`, `verticalScrollIndicator`, `verticalTextAlignment`,
 `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
 `zIndex`.
 

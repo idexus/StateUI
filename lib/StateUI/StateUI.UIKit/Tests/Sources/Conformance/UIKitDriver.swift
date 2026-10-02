@@ -16,9 +16,9 @@ final class UIKitDriver: HostDriver {
     let cannot = [
         "read the line of a shape drawing no outline":
             "UIKit draws no outline for a shape given no stroke, and holds none of its line",
-        "read verticalScrollBarVisibility of ScrollView":
+        "read verticalScrollIndicator of ScrollView":
             "UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike",
-        "read horizontalScrollBarVisibility of ScrollView":
+        "read horizontalScrollIndicator of ScrollView":
             "UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike",
     ]
     let platformHasNone = UIKitDriver.none()

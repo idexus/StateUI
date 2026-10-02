@@ -263,8 +263,8 @@ public struct ScrollReader: View {
                     sideways > 0
                         ? (downward > 0 ? .both : .horizontal)
                         : .vertical)
-                .horizontalScrollBarVisibility(.never)
-                .verticalScrollBarVisibility(.never)
+                .horizontalScrollIndicator(.never)
+                .verticalScrollIndicator(.never)
                 .reporting(at: at)
                 .stopping(rest)
                 .aimed(at: aimed)

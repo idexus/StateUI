@@ -53,8 +53,8 @@ final class GTKScrollerView: GTKView {
     /// The document it moves, the ways it scrolls, and its bars: the viewport gives the document its natural size
     /// along the ways it scrolls and the viewport's size across.
     func set(
-        content: GTKView, orientation: ScrollOrientation, verticalBar: ScrollBarVisibility,
-        horizontalBar: ScrollBarVisibility
+        content: GTKView, orientation: ScrollOrientation, verticalBar: ScrollIndicatorVisibility,
+        horizontalBar: ScrollIndicatorVisibility
     ) {
         if content !== self.content {
             self.content = content
@@ -71,10 +71,10 @@ final class GTKScrollerView: GTKView {
     }
 
     /// A way the view scrolls, with its bar as asked; a way it does not scroll holds the document to the viewport.
-    private static func policy(scrolls: Bool, _ bar: ScrollBarVisibility) -> GtkPolicyType {
+    private static func policy(scrolls: Bool, _ bar: ScrollIndicatorVisibility) -> GtkPolicyType {
         guard scrolls else { return GTK_POLICY_NEVER }
         return switch bar {
-        case .always: GTK_POLICY_ALWAYS
+        case .visible: GTK_POLICY_ALWAYS
         case .never: GTK_POLICY_EXTERNAL
         default: GTK_POLICY_AUTOMATIC
         }

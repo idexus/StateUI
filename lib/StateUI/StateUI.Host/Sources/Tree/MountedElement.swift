@@ -618,9 +618,9 @@
 
     private static let enumerationProperties: Set<Prop> = [
         .contentMode, .layoutDirection, .fontAttributes,
-        .horizontalAlignment, .horizontalScrollBarVisibility,
+        .horizontalAlignment, .horizontalScrollIndicator,
         .horizontalTextAlignment, .inputPurpose,
         .lineBreak, .orientation, .submitLabel, .textDecorations, .textCase,
-        .verticalAlignment, .verticalScrollBarVisibility, .verticalTextAlignment,
+        .verticalAlignment, .verticalScrollIndicator, .verticalTextAlignment,
     ]
 }

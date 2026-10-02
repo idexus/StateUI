@@ -65,10 +65,10 @@ extension AndroidDriver {
             let points = sides.map { ($0 / view.density).rounded() }
             return Insets(points[0], points[1], points[2], points[3]).propValue
         case .clipsContent where view is AndroidLayoutView: return (read("clipToOutline") == "1").propValue
-        case .verticalScrollBarVisibility, .horizontalScrollBarVisibility:
+        case .verticalScrollIndicator, .horizontalScrollIndicator:
             guard let scroller = (view as? AndroidScrollView)?.scrollers.first else { return nil }
-            let bar = Self.read(scroller.reference, property == .verticalScrollBarVisibility ? "verticalBar" : "horizontalBar")
-            let bars: [String: ScrollBarVisibility] = ["never": .never, "always": .always, "default": .default]
+            let bar = Self.read(scroller.reference, property == .verticalScrollIndicator ? "verticalBar" : "horizontalBar")
+            let bars: [String: ScrollIndicatorVisibility] = ["never": .never, "always": .visible, "default": .automatic]
             return bar.flatMap { bars[$0] }?.propValue
         case .aspect where view is AndroidImageView:
             let aspects: [String: ContentMode] = ["FIT_CENTER": .fit, "CENTER_CROP": .fill, "FIT_XY": .stretch, "CENTER": .center]

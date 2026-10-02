@@ -30,7 +30,7 @@ struct CodeBlock: View {
             snippet
         }
         .orientation(.horizontal)
-        .verticalScrollBarVisibility(.never)
+        .verticalScrollIndicator(.never)
         .background(Palette.raised)
         .stroke(Palette.outline)
         .lineWidth(1)

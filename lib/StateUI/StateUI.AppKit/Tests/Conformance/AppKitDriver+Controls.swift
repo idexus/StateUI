@@ -22,9 +22,9 @@ extension AppKitDriver {
         case (.scrollOffset, let scroll as NSScrollView):
             let origin = scroll.contentView.bounds.origin
             return Point(x: Double(origin.x), y: Double(origin.y)).propValue
-        case (.verticalScrollBarVisibility, let scroll as NSScrollView):
+        case (.verticalScrollIndicator, let scroll as NSScrollView):
             return bar(shown: scroll.hasVerticalScroller, hides: scroll.autohidesScrollers).propValue
-        case (.horizontalScrollBarVisibility, let scroll as NSScrollView):
+        case (.horizontalScrollIndicator, let scroll as NSScrollView):
             return bar(shown: scroll.hasHorizontalScroller, hides: scroll.autohidesScrollers).propValue
         case (.isAnimating, let image as AppKitImageView): return image.animationPlaying.propValue
         case (.contentMode, let image as AppKitImageView): return aspect(of: image).propValue
@@ -182,8 +182,8 @@ extension AppKitDriver {
     }
 
     /// A scroll bar's showing: none, always, or as AppKit decides it - hidden until the user scrolls.
-    private static func bar(shown: Bool, hides: Bool) -> ScrollBarVisibility {
-        !shown ? .never : hides ? .default : .always
+    private static func bar(shown: Bool, hides: Bool) -> ScrollIndicatorVisibility {
+        !shown ? .never : hides ? .automatic : .visible
     }
 }
 

@@ -285,8 +285,8 @@ final class ControlTests: XCTestCase {
                     Text("content")
                 }
                 .orientation(.both)
-                .verticalScrollBarVisibility(.never)
-                .horizontalScrollBarVisibility(.always)
+                .verticalScrollIndicator(.never)
+                .horizontalScrollIndicator(.visible)
                 // The offset is ONE POINT - both axes on one state - written
                 // by the host on its own frames and walked by it on a write.
                 .scrollOffset(offset.projectedValue)

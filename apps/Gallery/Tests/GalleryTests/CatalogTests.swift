@@ -796,9 +796,9 @@ final class CatalogTests: XCTestCase {
             scrollers.first?.props["orientation"],
             .enumeration(ScrollOrientation.horizontal.rawValue))
         XCTAssertEqual(
-            scrollers.first?.props["verticalScrollBarVisibility"],
-            .enumeration(ScrollBarVisibility.never.rawValue))
-        XCTAssertNil(scrollers.first?.props["horizontalScrollBarVisibility"])
+            scrollers.first?.props["verticalScrollIndicator"],
+            .enumeration(ScrollIndicatorVisibility.never.rawValue))
+        XCTAssertNil(scrollers.first?.props["horizontalScrollIndicator"])
     }
 
     /// A sample with no summary or no code is half-written, and looks finished.

@@ -205,15 +205,15 @@ extension GTKDriver {
         })?.opaque else { return nil }
         var policies = (horizontal: GTK_POLICY_AUTOMATIC, vertical: GTK_POLICY_AUTOMATIC)
         gtk_scrolled_window_get_policy(scrolled, &policies.horizontal, &policies.vertical)
-        let visibility = { (policy: GtkPolicyType) -> ScrollBarVisibility in
-            policy == GTK_POLICY_ALWAYS ? .always : policy == GTK_POLICY_NEVER || policy == GTK_POLICY_EXTERNAL ? .never : .default
+        let visibility = { (policy: GtkPolicyType) -> ScrollIndicatorVisibility in
+            policy == GTK_POLICY_ALWAYS ? .visible : policy == GTK_POLICY_NEVER || policy == GTK_POLICY_EXTERNAL ? .never : .automatic
         }
         switch property {
         case .scrollOffset:
             return [gtk_adjustment_get_value(gtk_scrolled_window_get_hadjustment(scrolled)),
                     gtk_adjustment_get_value(gtk_scrolled_window_get_vadjustment(scrolled))].propValue
-        case .horizontalScrollBarVisibility: return visibility(policies.horizontal).propValue
-        case .verticalScrollBarVisibility: return visibility(policies.vertical).propValue
+        case .horizontalScrollIndicator: return visibility(policies.horizontal).propValue
+        case .verticalScrollIndicator: return visibility(policies.vertical).propValue
         default: return layoutHolds(property, scroll)
         }
     }

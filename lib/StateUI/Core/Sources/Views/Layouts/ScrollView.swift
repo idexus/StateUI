@@ -19,13 +19,13 @@ extension ScrollViewProperties {
     ///
     /// `.never` is what a scroller inside a page of cards usually wants - the
     /// bar says the same thing the content already does.
-    public func verticalScrollBarVisibility(_ value: ScrollBarVisibility) -> Modified {
-        setValue(ScrollViewContract.verticalScrollBarVisibility, value)
+    public func verticalScrollIndicator(_ value: ScrollIndicatorVisibility) -> Modified {
+        setValue(ScrollViewContract.verticalScrollIndicator, value)
     }
 
     /// The same, along the bottom.
-    public func horizontalScrollBarVisibility(_ value: ScrollBarVisibility) -> Modified {
-        setValue(ScrollViewContract.horizontalScrollBarVisibility, value)
+    public func horizontalScrollIndicator(_ value: ScrollIndicatorVisibility) -> Modified {
+        setValue(ScrollViewContract.horizontalScrollIndicator, value)
     }
 }
 
@@ -34,7 +34,7 @@ extension ScrollViewProperties {
 ///     ScrollView {
 ///         VStack { … }
 ///     }
-///     .verticalScrollBarVisibility(.never)
+///     .verticalScrollIndicator(.never)
 ///
 /// `.padding` is inside the scroller and moves with the content; `.margin` is
 /// outside it and stays put. A ScrollView describes every child it holds,
@@ -99,10 +99,10 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
 }
 
 extension ScrollView {
-    /// `horizontalScrollBarVisibility` from a state, `$x`: the host sets each
+    /// `horizontalScrollIndicator` from a state, `$x`: the host sets each
     /// new value as it stands, and no view is rebuilt for it.
-    public func horizontalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
-        plain(.horizontalScrollBarVisibility, by: state)
+    public func horizontalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> Modified {
+        plain(.horizontalScrollIndicator, by: state)
     }
 
     /// `orientation` from a state, `$x`: the host sets each new value as it
@@ -111,9 +111,9 @@ extension ScrollView {
         plain(.orientation, by: state)
     }
 
-    /// `verticalScrollBarVisibility` from a state, `$x`: the host sets each new
+    /// `verticalScrollIndicator` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
-    public func verticalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
-        plain(.verticalScrollBarVisibility, by: state)
+    public func verticalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> Modified {
+        plain(.verticalScrollIndicator, by: state)
     }
 }

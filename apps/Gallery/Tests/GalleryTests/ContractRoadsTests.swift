@@ -484,6 +484,14 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = ReturnKey.search",
             contract: "_ = SubmitLabel.search"),
         Road(
+            name: "a scroller's bars by visibility",
+            removed: #"_ = ScrollView { Text("Hi") }.verticalScrollBarVisibility(.never)"#,
+            contract: #"_ = ScrollView { Text("Hi") }.verticalScrollIndicator(.never)"#),
+        Road(
+            name: "a bar shown always",
+            removed: "_ = ScrollBarVisibility.always",
+            contract: "_ = ScrollIndicatorVisibility.visible"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

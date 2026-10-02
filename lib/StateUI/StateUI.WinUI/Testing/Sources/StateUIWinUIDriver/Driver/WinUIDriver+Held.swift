@@ -319,9 +319,9 @@ extension WinUIDriver {
             let aspect: ContentMode = stretch == 3 ? .fill : stretch == 1 ? .stretch : stretch == 0 ? .center : .fit
             return aspect.propValue
         case ("scrollOffset", let scroll as WinUIScrollView): return scroll.offset.propValue
-        case ("verticalScrollBarVisibility", let scroll as WinUIScrollView):
+        case ("verticalScrollIndicator", let scroll as WinUIScrollView):
             return Self.bar(try read(scroll.scroller, "verticalBar")).propValue
-        case ("horizontalScrollBarVisibility", let scroll as WinUIScrollView):
+        case ("horizontalScrollIndicator", let scroll as WinUIScrollView):
             return Self.bar(try read(scroll.scroller, "horizontalBar")).propValue
         case ("orientation", let scroll as WinUIScrollView):
             let down = try read(scroll.scroller, "verticalMode") != "0"
@@ -566,10 +566,10 @@ extension WinUIDriver {
     }
 
     /// A scroll bar's showing, as WinUI's ScrollBarVisibility says it: 1 as WinUI decides, 3 always, else never.
-    static func bar(_ words: String) -> ScrollBarVisibility {
+    static func bar(_ words: String) -> ScrollIndicatorVisibility {
         switch Int(words) {
-        case 1: .default
-        case 3: .always
+        case 1: .automatic
+        case 3: .visible
         default: .never
         }
     }

@@ -45,7 +45,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
         scroller.contentInsetAdjustmentBehavior = .never
         scroller.addSubview(document)
         addSubview(scroller)
-        configure(vertical: .default, horizontal: .default)
+        configure(vertical: .automatic, horizontal: .automatic)
     }
 
     /// The content: one child, or several stacked down.
@@ -69,8 +69,8 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
 
     /// The scroller's orientation, padding, bars, and an offset the tree moved it to.
     func apply(
-        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollBarVisibility,
-        horizontalBar: ScrollBarVisibility, offset: Point?
+        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollIndicatorVisibility,
+        horizontalBar: ScrollIndicatorVisibility, offset: Point?
     ) {
         if orientation != self.orientation {
             self.orientation = orientation
@@ -135,7 +135,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
         }
     }
 
-    private func configure(vertical: ScrollBarVisibility, horizontal: ScrollBarVisibility) {
+    private func configure(vertical: ScrollIndicatorVisibility, horizontal: ScrollIndicatorVisibility) {
         scroller.isScrollEnabled = orientation != .neither
         scroller.alwaysBounceVertical = orientation == .vertical || orientation == .both
         scroller.alwaysBounceHorizontal = orientation == .horizontal || orientation == .both

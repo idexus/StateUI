@@ -74,7 +74,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties[.orientation] = .enumeration(ScrollOrientation.horizontal.rawValue)
         scroll.properties[.padding] = .numbers([4, 8, 12, 16])
-        scroll.properties[.verticalScrollBarVisibility] = .enumeration(ScrollBarVisibility.never.rawValue)
+        scroll.properties[.verticalScrollIndicator] = .enumeration(ScrollIndicatorVisibility.never.rawValue)
         renderer.applyForTesting(tree(scroll))
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)

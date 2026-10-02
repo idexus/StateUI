@@ -211,8 +211,8 @@ enum PatchDump {
         // Scrolling, and the pages.
         case Prop.orientation.name:
             return spelled(member, as: ScrollOrientation.self)
-        case Prop.horizontalScrollBarVisibility.name, Prop.verticalScrollBarVisibility.name:
-            return spelled(member, as: ScrollBarVisibility.self)
+        case Prop.horizontalScrollIndicator.name, Prop.verticalScrollIndicator.name:
+            return spelled(member, as: ScrollIndicatorVisibility.self)
         case Prop.placement.name:
             return spelled(member, as: ToolbarItemPlacement.self)
 

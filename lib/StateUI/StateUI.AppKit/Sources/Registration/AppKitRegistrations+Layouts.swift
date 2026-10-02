@@ -31,8 +31,8 @@ extension AppKitRegistrations {
         registry.add(ScrollViewContract.self, madeByHost: AppKitScrollView.self) { scroll in
             scroll.applies([
                 ScrollViewContract.orientation,
-                ScrollViewContract.verticalScrollBarVisibility,
-                ScrollViewContract.horizontalScrollBarVisibility,
+                ScrollViewContract.verticalScrollIndicator,
+                ScrollViewContract.horizontalScrollIndicator,
                 ScrollViewContract.scrollOffset,
                 PaddingElementContract.padding,
             ]) { view, values in
@@ -46,9 +46,9 @@ extension AppKitRegistrations {
                     orientation: (values[ScrollViewContract.orientation] ?? .vertical).rawValue,
                     padding: Self.edgeInsets(values[PaddingElementContract.padding]),
                     verticalBarVisibility:
-                        (values[ScrollViewContract.verticalScrollBarVisibility] ?? .default).rawValue,
+                        (values[ScrollViewContract.verticalScrollIndicator] ?? .automatic).rawValue,
                     horizontalBarVisibility:
-                        (values[ScrollViewContract.horizontalScrollBarVisibility] ?? .default).rawValue,
+                        (values[ScrollViewContract.horizontalScrollIndicator] ?? .automatic).rawValue,
                     offset: offset)
             }
             scroll.applies([

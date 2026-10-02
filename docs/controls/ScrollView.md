@@ -54,8 +54,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ScrollViewContr
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>horizontalScrollBarVisibility</code></td><td>property</td><td><code>ScrollBarVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">UIKit: cannot read horizontalScrollBarVisibility of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>horizontalScrollIndicator</code></td><td>property</td><td><code>ScrollIndicatorVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit: cannot read horizontalScrollIndicator of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>orientation</code></td><td>property</td><td><code>ScrollOrientation</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>scrollOffset</code></td><td>property</td><td><code>Point</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
@@ -66,8 +66,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ScrollViewContr
 <tr><td colspan="9">AppKit: only through the host's own: scroll on ScrollView: the host's movement moved, not the clip view<br>Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>scrollYChanged</code></td><td>event</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>verticalScrollBarVisibility</code></td><td>property</td><td><code>ScrollBarVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">UIKit: cannot read verticalScrollBarVisibility of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>verticalScrollIndicator</code></td><td>property</td><td><code>ScrollIndicatorVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit: cannot read verticalScrollIndicator of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

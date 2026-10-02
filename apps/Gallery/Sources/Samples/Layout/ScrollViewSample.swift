@@ -19,7 +19,7 @@ private func tileStrip() -> ScrollView {
         .spacing(20)
     }
     .orientation(.horizontal)
-    .horizontalScrollBarVisibility(.never)
+    .horizontalScrollIndicator(.never)
 }
 
 /// Forty numbered lines - the same strip in all three columns below, so the
@@ -549,14 +549,14 @@ private struct BarStrips: ExampleContent {
         struct BarStrips: View {
             var body: some View {
                 Grid {
-                    barCase(.always).gridColumn(0)
+                    barCase(.visible).gridColumn(0)
                     barCase(.never).gridColumn(1)
                 }
                 .columns(.fill, .fill)
                 .columnSpacing(12)
             }
 
-            private func barCase(_ visibility: ScrollBarVisibility) -> ScrollView {
+            private func barCase(_ visibility: ScrollIndicatorVisibility) -> ScrollView {
                 ScrollView {
                     VStack {
                         ForEach(1...40) { line in
@@ -565,17 +565,17 @@ private struct BarStrips: ExampleContent {
                         }
                     }
                 }
-                .verticalScrollBarVisibility(visibility)
+                .verticalScrollIndicator(visibility)
             }
         }
         """
 
     var body: some View {
         Grid {
-            barCase(.always, "verticalScrollBarVisibility(.always)")
+            barCase(.visible, "verticalScrollIndicator(.visible)")
                 .gridColumn(0)
 
-            barCase(.never, "verticalScrollBarVisibility(.never)")
+            barCase(.never, "verticalScrollIndicator(.never)")
                 .gridColumn(1)
         }
         .columns(.fill, .fill)
@@ -587,7 +587,7 @@ private struct BarStrips: ExampleContent {
     ///
     /// - Parameter visibility: what this half asks for.
     /// - Parameter caption: the words under it.
-    private func barCase(_ visibility: ScrollBarVisibility, _ caption: String) -> Grid {
+    private func barCase(_ visibility: ScrollIndicatorVisibility, _ caption: String) -> Grid {
         Grid {
             ScrollView {
                 VStack {
@@ -598,7 +598,7 @@ private struct BarStrips: ExampleContent {
                     }
                 }
             }
-            .verticalScrollBarVisibility(visibility)
+            .verticalScrollIndicator(visibility)
             .gridRow(0)
 
             Text(caption)
@@ -612,7 +612,7 @@ private struct BarStrips: ExampleContent {
     }
 
     var notes: (any View)? {
-        Text("`.never` takes the bar away and nothing brings it back; `.always` asks for "
+        Text("`.never` takes the bar away and nothing brings it back; `.visible` asks for "
             + "one that stays whether or not a drag is under way. Where the platform draws "
             + "an overlay bar that fades on its own, the two look alike until the scroller "
             + "is dragged.")

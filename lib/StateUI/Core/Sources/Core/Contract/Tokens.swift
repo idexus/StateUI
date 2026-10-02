@@ -137,7 +137,7 @@ extension NodeType {
     static let groupName = RadioButtonContract.groupName.token
     static let height = VisualElementContract.height.token
     static let horizontalAlignment = ViewContract.horizontalAlignment.token
-    static let horizontalScrollBarVisibility = ScrollViewContract.horizontalScrollBarVisibility.token
+    static let horizontalScrollIndicator = ScrollViewContract.horizontalScrollIndicator.token
     static let horizontalTextAlignment = TextAlignmentElementContract.horizontalTextAlignment.token
     static let icon = MenuItemElementContract.icon.token
     static let step = StepperContract.step.token
@@ -236,7 +236,7 @@ extension NodeType {
 
     static let value = SliderContract.value.token
     static let verticalAlignment = ViewContract.verticalAlignment.token
-    static let verticalScrollBarVisibility = ScrollViewContract.verticalScrollBarVisibility.token
+    static let verticalScrollIndicator = ScrollViewContract.verticalScrollIndicator.token
     static let verticalTextAlignment = TextAlignmentElementContract.verticalTextAlignment.token
     static let width = VisualElementContract.width.token
     static let windowType = WindowContract.windowType.token

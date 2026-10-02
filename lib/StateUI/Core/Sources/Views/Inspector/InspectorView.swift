@@ -143,7 +143,7 @@ struct InspectorView: View {
             .spacing(6)
         }
         .orientation(.horizontal)
-        .horizontalScrollBarVisibility(.never)
+        .horizontalScrollIndicator(.never)
 
         // ALONG THE BOTTOM THE LAST TWO ARE PICTURES AT THE END OF THE ROW -
         // the same two the folded line ends with, this one folding it where

@@ -187,14 +187,14 @@ Rectangle
   renderTransform
   stroke
 ScrollView
-  horizontalScrollBarVisibility
+  horizontalScrollIndicator
   lineWidth
   orientation
   padding
   scrollOffset
   shape
   stroke
-  verticalScrollBarVisibility
+  verticalScrollIndicator
 SearchField
   background
   cursorPosition

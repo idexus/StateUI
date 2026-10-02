@@ -244,15 +244,15 @@ final class AppKitScrollViewTests: XCTestCase {
     }
 
     /// A vertical scroller's bar visibility reaches its native scroller:
-    /// `.never` takes the bar away, `.always` keeps it from hiding, and a
+    /// `.never` takes the bar away, `.visible` keeps it from hiding, and a
     /// scroller that says neither leaves AppKit to show and hide it.
     @MainActor
     func testAVerticalScrollersBarVisibilityReachesItsNativeScroller() throws {
         let renderer = AppKitRenderer.running {
             VStack {
                 ScrollView { Text("Default") }
-                ScrollView { Text("Never") }.verticalScrollBarVisibility(.never)
-                ScrollView { Text("Always") }.verticalScrollBarVisibility(.always)
+                ScrollView { Text("Never") }.verticalScrollIndicator(.never)
+                ScrollView { Text("Always") }.verticalScrollIndicator(.visible)
             }
         }
         defer { renderer.closeForTesting() }
@@ -272,10 +272,10 @@ final class AppKitScrollViewTests: XCTestCase {
                     .orientation(.horizontal)
                 ScrollView { Text("Never") }
                     .orientation(.horizontal)
-                    .horizontalScrollBarVisibility(.never)
+                    .horizontalScrollIndicator(.never)
                 ScrollView { Text("Always") }
                     .orientation(.horizontal)
-                    .horizontalScrollBarVisibility(.always)
+                    .horizontalScrollIndicator(.visible)
             }
         }
         defer { renderer.closeForTesting() }

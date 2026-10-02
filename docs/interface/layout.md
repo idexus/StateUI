@@ -214,7 +214,7 @@ ScrollView {
     }
 }
 .scrollOffset($offset)
-.verticalScrollBarVisibility(.default)
+.verticalScrollIndicator(.automatic)
 ```
 
 The `Point` binding is two-way. A program write moves the viewport; native

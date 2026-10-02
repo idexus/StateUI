@@ -189,14 +189,14 @@ Rectangle
   stroke
 ScrollView
   background
-  horizontalScrollBarVisibility
+  horizontalScrollIndicator
   lineWidth
   orientation
   padding
   scrollOffset
   shape
   stroke
-  verticalScrollBarVisibility
+  verticalScrollIndicator
   scrollStopped()
   scrollXChanged()
   scrollYChanged()
