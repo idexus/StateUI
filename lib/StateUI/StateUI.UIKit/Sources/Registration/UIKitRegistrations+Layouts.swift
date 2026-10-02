@@ -13,14 +13,12 @@ extension UIKitRegistrations {
         registry.add(VStackContract.self, create: { _ in UIKitStackView(axis: .vertical) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
-            stack.property(VisualElementContract.ignoresInput) { view, ignores in view.isUserInteractionEnabled = ignores != true }
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(HStackContract.self, create: { _ in UIKitStackView(axis: .horizontal) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
-            stack.property(VisualElementContract.ignoresInput) { view, ignores in view.isUserInteractionEnabled = ignores != true }
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
@@ -37,14 +35,12 @@ extension UIKitRegistrations {
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
             grid.applies(boxMembers) { view, values in applyBox(view, values) }
-            grid.property(VisualElementContract.ignoresInput) { view, ignores in view.isUserInteractionEnabled = ignores != true }
             grid.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(ZStackContract.self, create: { _ in UIKitZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
             layout.applies(boxMembers) { view, values in applyBox(view, values) }
-            layout.property(VisualElementContract.ignoresInput) { view, ignores in view.isUserInteractionEnabled = ignores != true }
             layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
     }

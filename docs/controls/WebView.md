@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (77) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `WKWebView` | not realized |
-| UIKit | ✅ | 11 ✅ · 1 🔌 | `WKWebView` |  |
+| UIKit | ✅ | 37 ✅ · 26 🔌 | `WKWebView` |  |
 | Android Views | ✅ | 10 ✅ | `WebView` |  |
 | WinUI 3 | ✅ | 20 ✅ · 15 – | `WebView2`, a backend |  |
 | GTK 4 | ✅ | 52 ✅ · 1 – · 12 🔌 | WebKitGTK `WebKitWebView`, a backend |  |
@@ -81,39 +81,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  |  |
-| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `background` | property | `Background` | native |  |  |  |  |  |  | GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  |  |
-| `frame` | property | `Rect` | structure |  |  |  |  | ✅ |  |  |
-| `height` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `isVisible` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | GTK 4: not realized |
-| `maximumHeight` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `opacity` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read pivotX of WebView: the host's own transform: GTK reads back no part of one |
-| `pivotY` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read pivotY of WebView: the host's own transform: GTK reads back no part of one |
-| `rotation` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read rotation of WebView: the host's own transform: GTK reads back no part of one |
-| `rotationX` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read rotationX of WebView: the host's own transform: GTK reads back no part of one |
-| `rotationY` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read rotationY of WebView: the host's own transform: GTK reads back no part of one |
-| `scale` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read scale of WebView: the host's own transform: GTK reads back no part of one |
-| `scaleX` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read scaleX of WebView: the host's own transform: GTK reads back no part of one |
-| `scaleY` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read scaleY of WebView: the host's own transform: GTK reads back no part of one |
-| `style` | property | `Name` | structure |  |  |  |  | ✅ |  |  |
-| `translationX` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read translationX of WebView: the host's own transform: GTK reads back no part of one |
-| `translationY` | property | `Double` | native |  |  |  |  | 🔌 |  | GTK 4: only through the host's own: read translationY of WebView: the host's own transform: GTK reads back no part of one |
-| `unfocus` | act | `() -> Void` |  |  |  |  |  | ✅ |  |  |
-| `width` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  | GTK 4: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  | · |  |  | ✅ |  | UIKit: cannot read a heading's level - UIKit marks a heading, not its level |
+| `accessibilityHint` | property | `String` | native |  | ✅ |  |  | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native |  | ✅ |  |  | ✅ |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native |  | ✅ |  |  | ✅ |  |  |
+| `background` | property | `Background` | native |  |  |  |  |  |  | UIKit: not realized; GTK 4: not realized |
+| `focus` | act | `() -> Bool` |  |  | ✅ |  |  | ✅ |  |  |
+| `frame` | property | `Rect` | structure |  | ✅ |  |  | ✅ |  |  |
+| `height` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
+| `ignoresInput` | property | `Bool` | native |  | ✅ |  |  |  |  | GTK 4: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native |  | ✅ |  |  | ✅ |  |  |
+| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | UIKit: not realized |
+| `isFocusedChanged` | event | `Bool` | native |  | ✅ |  |  | ✅ |  |  |
+| `isVisible` | property | `Bool` | native |  | ✅ |  |  | ✅ |  |  |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | UIKit: not realized; GTK 4: not realized |
+| `maximumHeight` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
+| `maximumWidth` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
+| `minimumHeight` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
+| `minimumWidth` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
+| `opacity` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
+| `pivotX` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read pivotX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotX of WebView: the host's own transform: GTK reads back no part of one |
+| `pivotY` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read pivotY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotY of WebView: the host's own transform: GTK reads back no part of one |
+| `rotation` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read rotation of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotation of WebView: the host's own transform: GTK reads back no part of one |
+| `rotationX` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read rotationX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotationX of WebView: the host's own transform: GTK reads back no part of one |
+| `rotationY` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read rotationY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotationY of WebView: the host's own transform: GTK reads back no part of one |
+| `scale` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read scale of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scale of WebView: the host's own transform: GTK reads back no part of one |
+| `scaleX` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read scaleX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleX of WebView: the host's own transform: GTK reads back no part of one |
+| `scaleY` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read scaleY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleY of WebView: the host's own transform: GTK reads back no part of one |
+| `style` | property | `Name` | structure |  | ✅ |  |  | ✅ |  |  |
+| `translationX` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read translationX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of WebView: the host's own transform: GTK reads back no part of one |
+| `translationY` | property | `Double` | native |  | 🔌 |  |  | 🔌 |  | UIKit: only through the host's own: read translationY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of WebView: the host's own transform: GTK reads back no part of one |
+| `unfocus` | act | `() -> Void` |  |  | ✅ |  |  | ✅ |  |  |
+| `width` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
+| `zIndex` | property | `Int` | native |  |  |  |  |  |  | UIKit: not realized; GTK 4: not realized |
 
 ## From [View](tiers/View.md)
 
@@ -121,35 +121,35 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `area` | property | `Area` | structure |  |  |  | ✅ | ✅ |  |  |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `area` | property | `Area` | structure |  | ✅ |  | ✅ | ✅ |  |  |
+| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `dragStarting` | event |  | native |  |  |  |  |  |  | UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `dragText` | property | `String` | native |  |  |  |  |  |  | UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
-| `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
-| `margin` | property | `Insets` | native |  |  |  | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `panXChannel` | property | `Int` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `panYChannel` | property | `Int` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  | – | 🔌 |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).; GTK 4: only through the host's own: pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `swipeThreshold` | property | `Double` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `tapCount` | property | `Int` | structure |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `onTapped` (`tapped`) | event |  | native |  |  |  | – | ✅ |  | WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
-| `verticalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI |  | ✅ |  | ✅ | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI |  | ✅ |  | ✅ | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI |  | ✅ |  | ✅ | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI |  | ✅ |  | ✅ | ✅ |  |  |
+| `horizontalAlignment` | property | `Alignment` | native |  | ✅ |  | ✅ | ✅ |  |  |
+| `margin` | property | `Insets` | native |  | ✅ |  | ✅ | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `panXChannel` | property | `Int` | structure |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `panYChannel` | property | `Int` | structure |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  | 🔌 |  | – | 🔌 |  | UIKit: only through the host's own: pinch on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).; GTK 4: only through the host's own: pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerExited` (`pointerExited`) | event |  | native |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `swipeDirection` | property | `SwipeDirection` | structure |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `swipeThreshold` | property | `Double` | structure |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: pan on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `tapCount` | property | `Int` | structure |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `onTapped` (`tapped`) | event |  | native |  | 🔌 |  | – | ✅ |  | UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent; WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls). |
+| `verticalAlignment` | property | `Alignment` | native |  | ✅ |  | ✅ | ✅ |  |  |

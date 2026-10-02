@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (76) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 33 ✅ · 1 ☑️ · 29 🔌 | `NSCollectionView` / `NSTableView` |  |
-| UIKit | ✅ | 29 ✅ · 3 – · 29 🔌 | `UICollectionView` |  |
+| UIKit | ✅ | 30 ✅ · 3 – · 29 🔌 | `UICollectionView` |  |
 | Android Views | ✅ | 60 ✅ · 1 ☑️ · 1 🔌 | AndroidX `RecyclerView` |  |
 | WinUI 3 | ✅ | 60 ✅ | `ItemsView` |  |
 | GTK 4 | ✅ | 51 ✅ · 1 – · 11 🔌 | `GtkListView` / `GtkGridView` |  |
@@ -82,7 +82,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | – | ✅ | ✅ | ✅ |  | UIKit: ItemsView takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | ✅ | ✅ | ✅ |  | UIKit: ItemsView takes no keyboard focus here: it refuses it, and nothing is heard |

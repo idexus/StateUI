@@ -53,47 +53,54 @@ Polygon.tapped: 🔌 tap on Polygon: the view's listening handed the recognizer'
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridRow: ✅
-ProgressBar.pointerEntered: 🔌 hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-ProgressBar.pointerExited: 🔌 hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-ProgressBar.pointerMoved: 🔌 hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-ProgressBar.pointerPressed: 🔌 hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-ProgressBar.pointerReleased: 🔌 hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-RadioButton.swipeDirection: 🔌 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.swipeThreshold: 🔌 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.swiped: 🔌 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-Rectangle.panTouchCount: 🔌 pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
-Rectangle.panUpdated: 🔌 pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
-Rectangle.panXChannel: 🔌 pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
-ScrollView.frameChanged: ✅
-ScrollView.gridColumnSpan: ✅
-ScrollView.gridRowSpan: ✅
-SearchField.area: ✅
+ProgressBar.allowDrop: not realized
+ProgressBar.dragLeave: not realized
+ProgressBar.dragOver: not realized
+ProgressBar.drop: not realized
+ProgressBar.frameChanged: ✅
+ProgressBar.horizontalAlignment: ✅
+ProgressBar.verticalAlignment: ✅
+RadioButton.pointerEntered: 🔌 hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
+RadioButton.pointerExited: 🔌 hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
+RadioButton.pointerMoved: 🔌 hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
+RadioButton.pointerPressed: 🔌 hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
+RadioButton.pointerReleased: 🔌 hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
+Rectangle.swipeDirection: 🔌 pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
+Rectangle.swipeThreshold: 🔌 pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
+Rectangle.swiped: 🔌 pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
+ScrollView.panTouchCount: 🔌 pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
+ScrollView.panUpdated: 🔌 pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
+ScrollView.panXChannel: 🔌 pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
 SearchField.frameChanged: ✅
-Slider.canDrag: not realized
-Slider.dragStarting: not realized
-Slider.dragText: not realized
-Slider.dropCompleted: not realized
+SearchField.gridColumnSpan: ✅
+SearchField.gridRowSpan: ✅
+Slider.area: ✅
 Slider.frameChanged: ✅
-Slider.margin: ✅
-Stepper.pinchUpdated: 🔌 pinch on Stepper: the view's listening handed the recognizer's states, no touch sent
-Switch.panYChannel: 🔌 pan on Switch: the view's listening handed the recognizer's states, no touch sent
-TextEditor.tapCount: 🔌 tap on TextEditor: the view's listening handed the recognizer's states, no touch sent
-TextEditor.tapped: 🔌 tap on TextEditor: the view's listening handed the recognizer's states, no touch sent
-TextField.frameChanged: ✅
-TextField.gridColumn: ✅
-TextField.gridRow: ✅
-TimePicker.allowDrop: not realized
-TimePicker.dragLeave: not realized
-TimePicker.dragOver: not realized
-TimePicker.drop: not realized
+Stepper.canDrag: not realized
+Stepper.dragStarting: not realized
+Stepper.dragText: not realized
+Stepper.dropCompleted: not realized
+Stepper.frameChanged: ✅
+Stepper.margin: ✅
+Switch.pinchUpdated: 🔌 pinch on Switch: the view's listening handed the recognizer's states, no touch sent
+TextEditor.panYChannel: 🔌 pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
+TextField.tapCount: 🔌 tap on TextField: the view's listening handed the recognizer's states, no touch sent
+TextField.tapped: 🔌 tap on TextField: the view's listening handed the recognizer's states, no touch sent
 TimePicker.frameChanged: ✅
-TimePicker.horizontalAlignment: ✅
-TimePicker.verticalAlignment: ✅
-VStack.pointerEntered: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.pointerExited: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.pointerMoved: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.pointerPressed: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.pointerReleased: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.panTouchCount: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.panUpdated: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.panXChannel: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+TimePicker.gridColumn: ✅
+TimePicker.gridRow: ✅
+VStack.allowDrop: not realized
+VStack.dragLeave: not realized
+VStack.dragOver: not realized
+VStack.drop: not realized
+VStack.frameChanged: ✅
+VStack.horizontalAlignment: ✅
+VStack.verticalAlignment: ✅
+WebView.pointerEntered: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerExited: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerMoved: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerPressed: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerReleased: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+ZStack.swipeDirection: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.swipeThreshold: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.swiped: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent

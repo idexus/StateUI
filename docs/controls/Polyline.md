@@ -33,7 +33,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (78) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 27 ✅ · 1 ☑️ · 3 – · 25 🔌 | `NSView` drawing `NSBezierPath` |  |
-| UIKit | ✅ | 28 ✅ · 3 – · 25 🔌 | `UIView` drawing `UIBezierPath` |  |
+| UIKit | ✅ | 29 ✅ · 3 – · 25 🔌 | `UIView` drawing `UIBezierPath` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | `View` drawing `Path` |  |
 | WinUI 3 | ✅ | 60 ✅ · 3 – | `Microsoft.UI.Xaml.Shapes` |  |
 | GTK 4 | ✅ | 46 ✅ · 4 – · 11 🔌 | `GskPath` in a snapshot |  |
@@ -70,7 +70,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | – | – | – | – | – |  | Polyline takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Polyline takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Polyline takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Polyline takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Polyline takes no keyboard focus here: it refuses it, and nothing is heard |

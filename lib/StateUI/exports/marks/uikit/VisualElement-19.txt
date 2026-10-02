@@ -23,22 +23,23 @@ Path.translationX: 🔌 read translationX of Path: the host's own transform, che
 Picker.scale: 🔌 read scale of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.rotation: 🔌 read rotation of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.layoutDirection: not realized
-ProgressBar.accessibilityLabel: ✅
-RadioButton.frame: ✅
-Rectangle.frameChanged: ✅
-Rectangle.height: ✅
-Rectangle.width: ✅
-ScrollView.isVisible: ✅
-ScrollView.translationX: 🔌 read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.scale: 🔌 read scale of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.rotation: 🔌 read rotation of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.layoutDirection: not realized
-Switch.isAccessibilityHidden: ✅
-TextEditor.accessibilityLabel: ✅
-TextField.frame: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.width: ✅
-VStack.isVisible: ✅
-VStack.translationX: 🔌 read translationX of VStack: the host's own transform, checked against the layer it composed itself
-ZStack.rotation: 🔌 read rotation of ZStack: the host's own transform, checked against the layer it composed itself
+ProgressBar.isAccessibilityHidden: ✅
+RadioButton.accessibilityLabel: ✅
+Rectangle.frame: ✅
+ScrollView.frameChanged: ✅
+ScrollView.height: ✅
+ScrollView.width: ✅
+SearchField.isVisible: ✅
+SearchField.translationX: 🔌 read translationX of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.scale: 🔌 read scale of Slider: the host's own transform, checked against the layer it composed itself
+Stepper.rotation: 🔌 read rotation of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.layoutDirection: not realized
+TextEditor.isAccessibilityHidden: ✅
+TextField.accessibilityLabel: ✅
+TimePicker.frame: ✅
+VStack.frameChanged: ✅
+VStack.height: ✅
+VStack.width: ✅
+WebView.isVisible: ✅
+WebView.translationX: 🔌 read translationX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.scale: 🔌 read scale of ZStack: the host's own transform, checked against the layer it composed itself

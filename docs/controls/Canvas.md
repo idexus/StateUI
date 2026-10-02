@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (70) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 26 ✅ · 1 ☑️ · 3 – · 28 🔌 | custom `NSView` drawing |  |
-| UIKit | ✅ | 25 ✅ · 3 – · 28 🔌 | `UIView` `draw(_:)` |  |
+| UIKit | ✅ | 26 ✅ · 3 – · 28 🔌 | `UIView` `draw(_:)` |  |
 | Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `View` `onDraw(Canvas)` |  |
 | WinUI 3 | ✅ | 52 ✅ · 3 – | Direct2D in a `SurfaceImageSource` |  |
 | GTK 4 | ✅ | 43 ✅ · 4 – · 11 🔌 | `GtkDrawingArea` |  |
@@ -77,7 +77,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | – | – | – | – | – |  | Canvas takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Canvas takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Canvas takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Canvas takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Canvas takes no keyboard focus here: it refuses it, and nothing is heard |

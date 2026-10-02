@@ -37,6 +37,7 @@ enum UIKitRealization {
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
+        .complete("VisualElement", "ignoresInput"),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own

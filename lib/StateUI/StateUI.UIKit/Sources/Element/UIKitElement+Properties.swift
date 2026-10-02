@@ -56,6 +56,8 @@ extension UIKitElement {
                 switch property {
                 case .opacity: drawing?.ownOpacity = element.number(.opacity) ?? 1
                 case .isVisible: view.isHidden = !element.standsShown
+                // Ignored, the view and all in it are passed over: a touch goes to what is under it.
+                case .ignoresInput: view.isUserInteractionEnabled = element.bool(.ignoresInput) != true
                 case .background:
                     view.backgroundColor = value(.background).flatMap(UIColor.init(stateUI:))
                     (controller as? UIKitPageController)?.showBackground()

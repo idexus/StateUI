@@ -24,20 +24,22 @@ Picker.width: ✅
 Polygon.isVisible: ✅
 Polygon.translationX: 🔌 read translationX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.scale: 🔌 read scale of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.layoutDirection: not realized
-RadioButton.isAccessibilityHidden: ✅
-Rectangle.accessibilityLabel: ✅
-ScrollView.frame: ✅
-SearchField.frameChanged: ✅
-SearchField.height: ✅
-SearchField.width: ✅
-Slider.isVisible: ✅
-Slider.translationX: 🔌 read translationX of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.scale: 🔌 read scale of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.rotation: 🔌 read rotation of Switch: the host's own transform, checked against the layer it composed itself
-TextEditor.layoutDirection: not realized
-TextField.isAccessibilityHidden: ✅
-TimePicker.accessibilityLabel: ✅
-VStack.frame: ✅
-ZStack.isVisible: ✅
-ZStack.translationX: 🔌 read translationX of ZStack: the host's own transform, checked against the layer it composed itself
+ProgressBar.rotation: 🔌 read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.layoutDirection: not realized
+Rectangle.isAccessibilityHidden: ✅
+ScrollView.accessibilityLabel: ✅
+SearchField.frame: ✅
+Slider.frameChanged: ✅
+Slider.height: ✅
+Slider.width: ✅
+Stepper.isVisible: ✅
+Stepper.translationX: 🔌 read translationX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.scale: 🔌 read scale of Switch: the host's own transform, checked against the layer it composed itself
+TextEditor.rotation: 🔌 read rotation of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.layoutDirection: not realized
+TimePicker.isAccessibilityHidden: ✅
+VStack.accessibilityLabel: ✅
+WebView.frame: ✅
+ZStack.frameChanged: ✅
+ZStack.height: ✅
+ZStack.width: ✅

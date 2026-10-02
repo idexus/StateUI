@@ -23,21 +23,23 @@ Picker.isVisible: ✅
 Picker.translationX: 🔌 read translationX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.scale: 🔌 read scale of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.rotation: 🔌 read rotation of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.isAccessibilityHidden: ✅
-RadioButton.accessibilityLabel: ✅
-Rectangle.frame: ✅
-ScrollView.frameChanged: ✅
-ScrollView.height: ✅
-ScrollView.width: ✅
-SearchField.isVisible: ✅
-SearchField.translationX: 🔌 read translationX of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.scale: 🔌 read scale of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.rotation: 🔌 read rotation of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.layoutDirection: not realized
-TextEditor.isAccessibilityHidden: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.frame: ✅
-VStack.frameChanged: ✅
-VStack.height: ✅
-VStack.width: ✅
-ZStack.scale: 🔌 read scale of ZStack: the host's own transform, checked against the layer it composed itself
+ProgressBar.layoutDirection: not realized
+RadioButton.isAccessibilityHidden: ✅
+Rectangle.accessibilityLabel: ✅
+ScrollView.frame: ✅
+SearchField.frameChanged: ✅
+SearchField.height: ✅
+SearchField.width: ✅
+Slider.isVisible: ✅
+Slider.translationX: 🔌 read translationX of Slider: the host's own transform, checked against the layer it composed itself
+Stepper.scale: 🔌 read scale of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.rotation: 🔌 read rotation of Switch: the host's own transform, checked against the layer it composed itself
+TextEditor.layoutDirection: not realized
+TextField.isAccessibilityHidden: ✅
+TimePicker.accessibilityLabel: ✅
+VStack.frame: ✅
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.width: ✅
+ZStack.isVisible: ✅
+ZStack.translationX: 🔌 read translationX of ZStack: the host's own transform, checked against the layer it composed itself

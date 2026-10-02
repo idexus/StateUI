@@ -2,7 +2,7 @@
 ActivityIndicator.background: not realized
 Button.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Canvas.style: ✅
-CheckBox.ignoresInput: not realized
+CheckBox.ignoresInput: ✅
 ColorBox.isEnabled: not realized
 ColorBox.zIndex: not realized
 DatePicker.scaleY: 🔌 read scaleY of DatePicker: the host's own transform, checked against the layer it composed itself
@@ -11,7 +11,7 @@ Grid.pivotY: 🔌 read pivotY of Grid: the host's own transform, checked against
 HStack.background: ✅
 Image.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 ItemsView.style: not realized
-Label.ignoresInput: not realized
+Label.ignoresInput: ✅
 Line.isEnabled: not realized
 Line.zIndex: not realized
 Map.scaleY: not realized
@@ -19,18 +19,19 @@ Path.rotationY: 🔌 read rotationY of Path: the host's own transform, checked a
 Picker.pivotY: 🔌 read pivotY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.background: not realized
 Polyline.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
-ProgressBar.ignoresInput: not realized
-RadioButton.isEnabled: ✅
-RadioButton.zIndex: not realized
-Rectangle.scaleY: 🔌 read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.rotationY: 🔌 read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.pivotY: 🔌 read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.background: not realized
-Stepper.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
-Switch.style: ✅
-TextEditor.ignoresInput: not realized
-TextField.isEnabled: ✅
-TextField.zIndex: not realized
-TimePicker.scaleY: 🔌 read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.rotationY: 🔌 read rotationY of VStack: the host's own transform, checked against the layer it composed itself
-ZStack.background: ✅
+ProgressBar.style: ✅
+RadioButton.ignoresInput: ✅
+Rectangle.isEnabled: not realized
+Rectangle.zIndex: not realized
+ScrollView.scaleY: 🔌 read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.rotationY: 🔌 read rotationY of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.pivotY: 🔌 read pivotY of Slider: the host's own transform, checked against the layer it composed itself
+Stepper.background: not realized
+Switch.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+TextEditor.style: ✅
+TextField.ignoresInput: ✅
+TimePicker.isEnabled: ✅
+TimePicker.zIndex: not realized
+VStack.scaleY: 🔌 read scaleY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.rotationY: 🔌 read rotationY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.pivotY: 🔌 read pivotY of ZStack: the host's own transform, checked against the layer it composed itself

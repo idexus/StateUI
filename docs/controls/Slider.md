@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (73) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 34 ✅ · 1 ☑️ · 25 🔌 | `NSSlider` |  |
-| UIKit | ✅ | 30 ✅ · 3 – · 27 🔌 | `UISlider` |  |
+| UIKit | ✅ | 31 ✅ · 3 – · 27 🔌 | `UISlider` |  |
 | Android Views | ✅ | 55 ✅ · 1 ☑️ · 3 – | `SeekBar` |  |
 | WinUI 3 | ✅ | 57 ✅ | `Slider` |  |
 | GTK 4 | ✅ | 46 ✅ · 3 – · 12 🔌 | `GtkScale` |  |
@@ -76,7 +76,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: Slider takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Slider takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: Slider takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Slider takes no keyboard focus here: it refuses it, and nothing is heard |

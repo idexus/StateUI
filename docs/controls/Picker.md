@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (82) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 38 ✅ · 1 ☑️ · 26 🔌 | `NSPopUpButton` |  |
-| UIKit | ✅ | 25 ✅ · 3 – · 29 🔌 | pop-up `UIButton` menu |  |
+| UIKit | ✅ | 26 ✅ · 3 – · 29 🔌 | pop-up `UIButton` menu |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – · 2 🔌 | `Spinner` |  |
 | WinUI 3 | ✅ | 65 ✅ | `ComboBox` |  |
 | GTK 4 | ✅ | 49 ✅ · 7 – · 11 🔌 | `GtkDropDown` |  |
@@ -77,7 +77,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: Picker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: Picker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard |

@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (89) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 41 ✅ · 1 – · 26 🔌 | `NSSearchField` |  |
-| UIKit | ✅ | 45 ✅ · 25 🔌 | `UISearchBar` |  |
+| UIKit | ✅ | 46 ✅ · 25 🔌 | `UISearchBar` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | `SearchView` |  |
 | WinUI 3 | ✅ | 64 ✅ · 1 ☑️ | `AutoSuggestBox` |  |
 | GTK 4 | ✅ | 59 ✅ · 1 – · 12 🔌 | `GtkSearchEntry` |  |
@@ -74,7 +74,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on SearchField.isReadOnly |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

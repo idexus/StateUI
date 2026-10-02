@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (78) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 34 ✅ · 1 ☑️ · 26 🔌 | `NSDatePicker` in time mode |  |
-| UIKit | ✅ | 30 ✅ · 25 🔌 | `UIDatePicker` in time mode |  |
+| UIKit | ✅ | 31 ✅ · 25 🔌 | `UIDatePicker` in time mode |  |
 | Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – · 1 🔌 | `TimePickerDialog` |  |
 | WinUI 3 | ✅ | 58 ✅ | `TimePicker` |  |
 | GTK 4 | ⌛ | 45 ✅ · 1 – · 11 🔌 | an hour's and a minute's `GtkSpinButton` in a `GtkPopover` |  |
@@ -75,7 +75,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ | – | ✅ | ✅ |  | Android Views: TimePicker takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | – | ✅ | ✅ |  | Android Views: TimePicker takes no keyboard focus here: it refuses it, and nothing is heard |

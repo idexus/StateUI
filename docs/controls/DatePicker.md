@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (80) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 36 ✅ · 1 ☑️ · 26 🔌 | `NSDatePicker` |  |
-| UIKit | ✅ | 29 ✅ · 3 – · 25 🔌 | `UIDatePicker` |  |
+| UIKit | ✅ | 30 ✅ · 3 – · 25 🔌 | `UIDatePicker` |  |
 | Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – · 3 🔌 | `DatePickerDialog` |  |
 | WinUI 3 | ✅ | 63 ✅ · 1 ☑️ | `CalendarDatePicker` |  |
 | GTK 4 | ⌛ | 45 ✅ · 1 – · 11 🔌 | `GtkCalendar` in a `GtkPopover` |  |
@@ -78,7 +78,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard |

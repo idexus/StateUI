@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (69) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 31 ✅ · 1 ☑️ · 25 🔌 | `NSSwitch` |  |
-| UIKit | ✅ | 27 ✅ · 3 – · 25 🔌 | `UISwitch` |  |
+| UIKit | ✅ | 28 ✅ · 3 – · 25 🔌 | `UISwitch` |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `Switch` |  |
 | WinUI 3 | ✅ | 56 ✅ | `ToggleSwitch` |  |
 | GTK 4 | ✅ | 44 ✅ · 1 – · 12 🔌 | `GtkSwitch` |  |
@@ -71,7 +71,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: Switch takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Switch takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: Switch takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Switch takes no keyboard focus here: it refuses it, and nothing is heard |

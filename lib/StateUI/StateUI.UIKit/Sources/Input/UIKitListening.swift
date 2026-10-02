@@ -50,7 +50,6 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             }
         }
         self.hearing = hearing
-        if !hearing.isEmpty { view.isUserInteractionEnabled = true }
     }
 
     private func recognizers(for kind: Hearing) -> [UIGestureRecognizer] {

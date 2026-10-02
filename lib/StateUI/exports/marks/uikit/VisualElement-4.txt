@@ -26,21 +26,20 @@ Polygon.height: ✅
 Polygon.width: ✅
 Polyline.isVisible: ✅
 Polyline.translationX: 🔌 read translationX of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.rotation: 🔌 read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.layoutDirection: not realized
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.accessibilityLabel: ✅
-SearchField.frame: ✅
-Slider.frameChanged: ✅
-Slider.height: ✅
-Slider.width: ✅
-Stepper.isVisible: ✅
-Stepper.translationX: 🔌 read translationX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.scale: 🔌 read scale of Switch: the host's own transform, checked against the layer it composed itself
-TextEditor.rotation: 🔌 read rotation of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.layoutDirection: not realized
-TimePicker.isAccessibilityHidden: ✅
-VStack.accessibilityLabel: ✅
-ZStack.frameChanged: ✅
-ZStack.height: ✅
-ZStack.width: ✅
+ProgressBar.scale: 🔌 read scale of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.rotation: 🔌 read rotation of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.layoutDirection: not realized
+ScrollView.isAccessibilityHidden: ✅
+SearchField.accessibilityLabel: ✅
+Slider.frame: ✅
+Stepper.frameChanged: ✅
+Stepper.height: ✅
+Stepper.width: ✅
+Switch.isVisible: ✅
+Switch.translationX: 🔌 read translationX of Switch: the host's own transform, checked against the layer it composed itself
+TextEditor.scale: 🔌 read scale of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.rotation: 🔌 read rotation of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.layoutDirection: not realized
+VStack.isAccessibilityHidden: ✅
+WebView.accessibilityLabel: ✅
+ZStack.frame: ✅

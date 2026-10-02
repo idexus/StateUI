@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (86) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 40 ✅ · 1 ☑️ · 27 🔌 | `NSButton` |  |
-| UIKit | ✅ | 41 ✅ · 3 – · 27 🔌 | `UIButton` |  |
+| UIKit | ✅ | 42 ✅ · 3 – · 27 🔌 | `UIButton` |  |
 | Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `Button` |  |
 | WinUI 3 | ✅ | 71 ✅ | `Button` |  |
 | GTK 4 | ✅ | 54 ✅ · 1 – · 18 🔌 | `GtkButton` |  |
@@ -76,7 +76,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: Button takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: Button takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard |

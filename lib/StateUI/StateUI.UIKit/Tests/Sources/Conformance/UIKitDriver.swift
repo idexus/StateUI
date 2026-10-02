@@ -331,6 +331,8 @@ final class UIKitDriver: HostDriver {
             return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
+        // Ignoring input: UIKit passes over the view and all in it as it finds what a touch lands on.
+        case (.ignoresInput, let view?): return (!view.isUserInteractionEnabled).propValue
         case (.isEnabled, let label as UILabel): return label.isEnabled.propValue
         case (.isEnabled, let editor as UITextView): return (editor.isEditable || editor.isSelectable).propValue
         case (.padding, let button as UIButton):

@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (90) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 42 ✅ · 1 ☑️ · 26 🔌 | `NSTextField` / `NSSecureTextField` |  |
-| UIKit | ✅ | 46 ✅ · 25 🔌 | `UITextField` |  |
+| UIKit | ✅ | 47 ✅ · 25 🔌 | `UITextField` |  |
 | Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
 | WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
 | GTK 4 | ✅ | 60 ✅ · 1 – · 12 🔌 | `GtkEntry` / `GtkPasswordEntry` |  |
@@ -76,7 +76,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextField.isReadOnly |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

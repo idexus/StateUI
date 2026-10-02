@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (81) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 38 ✅ · 1 ☑️ · 25 🔌 | `NSButton` radio |  |
-| UIKit | ✅ | 34 ✅ · 3 – · 26 🔌 | composed by StateUI |  |
+| UIKit | ✅ | 35 ✅ · 3 – · 26 🔌 | composed by StateUI |  |
 | Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `RadioButton` |  |
 | WinUI 3 | ✅ | 63 ✅ | `RadioButton` |  |
 | GTK 4 | ✅ | 51 ✅ · 1 – · 12 🔌 | grouped `GtkCheckButton` |  |
@@ -80,7 +80,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ✅ |  | UIKit: RadioButton takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: RadioButton takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: RadioButton takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: RadioButton takes no keyboard focus here: it refuses it, and nothing is heard |

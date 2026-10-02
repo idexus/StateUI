@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (87) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 46 ✅ · 1 ☑️ · 26 🔌 | `NSTextView` in an `NSScrollView` |  |
-| UIKit | ✅ | 46 ✅ · 25 🔌 | `UITextView` |  |
+| UIKit | ✅ | 47 ✅ · 25 🔌 | `UITextView` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | multi-line `EditText` |  |
 | WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
 | GTK 4 | ✅ | 59 ✅ · 1 – · 12 🔌 | `GtkTextView` |  |
@@ -71,7 +71,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextEditor.isReadOnly |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (68) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 26 ✅ · 1 ☑️ · 3 – · 25 🔌 | `NSProgressIndicator` bar |  |
-| UIKit | ✅ | 26 ✅ · 3 – · 25 🔌 | `UIProgressView` |  |
+| UIKit | ✅ | 27 ✅ · 3 – · 25 🔌 | `UIProgressView` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | horizontal `ProgressBar` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `ProgressBar` |  |
 | GTK 4 | ✅ | 40 ✅ · 4 – · 12 🔌 | `GtkProgressBar` |  |
@@ -70,7 +70,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | – | – | – | – | – |  | ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard |

@@ -33,7 +33,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (81) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 38 ✅ · 1 ☑️ · 3 – · 25 🔌 | `NSTextField` label; `NSAttributedString` runs |  |
-| UIKit | ✅ | 39 ✅ · 3 – · 25 🔌 | `UILabel`; `NSAttributedString` runs |  |
+| UIKit | ✅ | 40 ✅ · 3 – · 25 🔌 | `UILabel`; `NSAttributedString` runs |  |
 | Android Views | ✅ | 61 ✅ · 1 ☑️ · 3 – | `TextView`; `SpannableString` spans |  |
 | WinUI 3 | ✅ | 63 ✅ · 3 – | `TextBlock`; `Run` inlines |  |
 | GTK 4 | ✅ | 52 ✅ · 4 – · 13 🔌 | `GtkLabel`; `PangoAttrList` runs |  |
@@ -70,7 +70,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | – | – | – | – | – |  | Label takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Label takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Label takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Label takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Label takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Label takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Label takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Label takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Label takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Label takes no keyboard focus here: it refuses it, and nothing is heard |

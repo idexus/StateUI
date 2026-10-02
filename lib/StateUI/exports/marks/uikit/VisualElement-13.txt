@@ -23,22 +23,23 @@ Path.rotation: 🔌 read rotation of Path: the host's own transform, checked aga
 Picker.layoutDirection: not realized
 Polygon.isAccessibilityHidden: ✅
 Polyline.accessibilityLabel: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.height: ✅
-ProgressBar.width: ✅
-RadioButton.isVisible: ✅
-RadioButton.translationX: 🔌 read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.scale: 🔌 read scale of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.rotation: 🔌 read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.layoutDirection: not realized
-Slider.isAccessibilityHidden: ✅
-Stepper.accessibilityLabel: ✅
-Switch.frame: ✅
-TextEditor.frameChanged: ✅
-TextEditor.height: ✅
-TextEditor.width: ✅
-TextField.isVisible: ✅
-TextField.translationX: 🔌 read translationX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.scale: 🔌 read scale of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.rotation: 🔌 read rotation of VStack: the host's own transform, checked against the layer it composed itself
-ZStack.isAccessibilityHidden: ✅
+ProgressBar.frame: ✅
+RadioButton.frameChanged: ✅
+RadioButton.height: ✅
+RadioButton.width: ✅
+Rectangle.isVisible: ✅
+Rectangle.translationX: 🔌 read translationX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.scale: 🔌 read scale of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.rotation: 🔌 read rotation of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.layoutDirection: not realized
+Stepper.isAccessibilityHidden: ✅
+Switch.accessibilityLabel: ✅
+TextEditor.frame: ✅
+TextField.frameChanged: ✅
+TextField.height: ✅
+TextField.width: ✅
+TimePicker.isVisible: ✅
+TimePicker.translationX: 🔌 read translationX of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.scale: 🔌 read scale of VStack: the host's own transform, checked against the layer it composed itself
+WebView.rotation: 🔌 read rotation of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.layoutDirection: not realized
