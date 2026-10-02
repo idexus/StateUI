@@ -22,9 +22,8 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
     private var requestedOpen = false
     private var menuOpen = false
     private var openingScheduled = false
-    /// Whether the program is opening or closing the list, which is no opening or closing of the user's.
-    private var programOpens = false
-    private var programCloses = false
+    /// Who opened or closed the list: only the user's are heard.
+    private var opening = PickerOpening()
     /// The choices and the choice as the tree last wrote them (`PickerChoices`).
     private var written = PickerChoices()
 
@@ -156,8 +155,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
 
         if open {
             presentRequestedMenuIfPossible()
-        } else if menuOpen {
-            programCloses = true
+        } else if opening.programAsks(open: false, shown: menuOpen) {
             button.menu?.cancelTracking()
         }
     }
@@ -176,8 +174,8 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.openingScheduled = false
-            guard self.requestedOpen, self.window != nil, !self.menuOpen else { return }
-            self.programOpens = true
+            guard self.requestedOpen, self.window != nil, self.opening.programAsks(open: true, shown: self.menuOpen)
+            else { return }
             if let opensForTesting {
                 opensForTesting(self)
             } else {
@@ -194,21 +192,13 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
 
     func menuWillOpen(_ menu: NSMenu) {
         menuOpen = true
-        if programOpens {
-            programOpens = false
-        } else {
-            onOpened?()
-        }
+        if opening.heard(open: true) { onOpened?() }
     }
 
     func menuDidClose(_ menu: NSMenu) {
         menuOpen = false
         requestedOpen = false
-        if programCloses {
-            programCloses = false
-        } else {
-            onClosed?()
-        }
+        if opening.heard(open: false) { onClosed?() }
     }
 
     var contentTintForTesting: NSColor? { button.contentTintColor }
