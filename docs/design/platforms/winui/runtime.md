@@ -213,7 +213,11 @@ package: the runtime of WinUI, Foundation and InteractiveExperiences, a
 manifest registering every class each component declares - the registrations
 the SDK's own build writes - and `resources.pri`, where WinUI's controls find
 their resources. `.scripts/WinUI/tools.ps1` lays them out after each build,
-the test runner's included, and owns the versions.
+the test runner's included, and owns the versions. What a backend's engine
+needs beside an application the backend lays itself, and only beside one
+linking it: each `lib/Backends/<Element>.WinUI/SelfContained.ps1` the script
+runs looks for its own library there - the web view's lays WebView2's
+component and loader.
 
 The manifest stands beside the executable as `<name>.exe.manifest`, which
 Windows reads for an executable carrying none of its own. It is not written

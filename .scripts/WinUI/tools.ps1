@@ -99,9 +99,10 @@ function Write-StateUIEditorBuilds {
 }
 
 # Makes `Directory` self-contained for each of `Executables`: the Windows App
-# SDK's runtime beside them, every class its components declare registered in
-# the manifest beside each one, and resources.pri. An executable is never
-# rewritten after its build: the next build would link it again.
+# SDK's runtime beside them, what each backend linked there needs
+# (lib\Backends\*.WinUI\SelfContained.ps1), every class its components declare
+# registered in the manifest beside each one, and resources.pri. An executable
+# is never rewritten after its build: the next build would link it again.
 function Set-StateUISelfContained([string]$Directory, [string[]]$Executables) {
     $components = 'microsoft.windowsappsdk.winui', 'microsoft.windowsappsdk.foundation',
         'microsoft.windowsappsdk.interactiveexperiences' | ForEach-Object { Get-StateUIPackage $_ }
@@ -111,11 +112,11 @@ function Set-StateUISelfContained([string]$Directory, [string[]]$Executables) {
         robocopy $native $Directory /E /XO /NFL /NDL /NJH /NJS /NP | Out-Null
         if ($LASTEXITCODE -ge 8) { throw "the Windows App SDK could not be copied from $native" }
     }
-    # The WebView2 package's component, which the manifest's classes name, and its loader: WinUI's WebView2 drives
-    # the system's WebView2 runtime through them.
-    $webview = Get-StateUIPackage 'microsoft.web.webview2'
-    Copy-Item (Join-Path $webview "runtimes\win-$StateUIArchitecture\native_uap\Microsoft.Web.WebView2.Core.dll") $Directory -Force
-    Copy-Item (Join-Path $webview "runtimes\win-$StateUIArchitecture\native\WebView2Loader.dll") $Directory -Force
+    # What a backend's engine needs beside an application linking it, each backend lays itself.
+    foreach ($backend in Get-ChildItem (Join-Path $StateUIRepository 'lib\Backends') -Directory -Filter '*.WinUI') {
+        $lays = Join-Path $backend.FullName 'SelfContained.ps1'
+        if (Test-Path $lays) { & $lays -Directory $Directory }
+    }
     $global:LASTEXITCODE = 0
 
     $manifest = New-StateUIManifest $components

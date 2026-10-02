@@ -342,8 +342,9 @@ A WebView on WinUI is a backend, `lib/Backends/WebView.WinUI`: WinUI's
 `WebView2`, made by the backend's own C++/WinRT relay through the host's
 registration of an application's own controls, its page asked for once the
 element's values are applied. It runs over the system's WebView2 runtime: the
-WebView2 package's component and loader stand beside the application, as
-the Windows App SDK's runtime does. Its `CoreWebView2` stands a moment after it is
+WebView2 package's component and loader stand beside an application linking
+the backend, which lays them there (`SelfContained.ps1`), as the Windows App
+SDK's runtime stands beside every one. Its `CoreWebView2` stands a moment after it is
 first asked for a page, so a page asked for before then is gone to once it
 stands, in the order asked. What the page does comes back as the element's
 events: a navigation as it starts and as it ends, why it began by the host
