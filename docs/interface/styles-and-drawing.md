@@ -224,7 +224,7 @@ vocabulary:
 - `Polygon` and `Polyline` with `Point` values.
 
 Common shape modifiers include fill, stroke, stroke width and dash
-settings, aspect, and `renderTransform`. Geometry-specific modifiers such as a
+settings, aspect, and `geometryTransform`. Geometry-specific modifiers such as a
 rectangle's corner radius or line endpoints remain on the matching shape.
 
 ```swift

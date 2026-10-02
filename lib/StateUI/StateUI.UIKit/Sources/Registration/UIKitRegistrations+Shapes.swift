@@ -77,7 +77,7 @@ extension UIKitRegistrations {
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
-        ShapeContract.contentMode, ShapeContract.renderTransform,
+        ShapeContract.contentMode, ShapeContract.geometryTransform,
     ]
 
     private static func paint<Realized: ElementContract>(_ view: UIKitShapeView, _ values: ElementValues<Realized>) {
@@ -102,7 +102,7 @@ extension UIKitRegistrations {
 
     /// The shape's own transform's six numbers, where it has one that is all numbers.
     private static func transform<Realized: ElementContract>(_ values: ElementValues<Realized>) -> [Double]? {
-        let numbers = values[ShapeContract.renderTransform]?.propValue.values?.compactMap(\.number)
+        let numbers = values[ShapeContract.geometryTransform]?.propValue.values?.compactMap(\.number)
         return numbers.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil }
     }
 }

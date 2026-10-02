@@ -23,7 +23,7 @@
                 Aspects.holds(ShapeContract.lineJoin, on: element, .miter, then: .bevel, with: figure(element)),
                 Aspects.holds(ShapeContract.miterLimit, on: element, 10, then: 4, with: figure(element)),
                 Aspects.holds(ShapeContract.contentMode, on: element, .fit, then: .stretch, with: figure(element)),
-                Aspects.holds(ShapeContract.renderTransform, on: element, .identity, then: .rotate(45), with: figure(element)),
+                Aspects.holds(ShapeContract.geometryTransform, on: element, .identity, then: .rotate(45), with: figure(element)),
             ]
         }
     }
@@ -110,7 +110,7 @@
     /// A shape's transform moves what it draws, as the tree changes it.
     static func movedByItsTransform(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isMovedByItsTransform", proves: [
-            Covered(ShapeContract.renderTransform, on: element),
+            Covered(ShapeContract.geometryTransform, on: element),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let moved = State(wrappedValue: false)
             let line = element == "Line"
@@ -119,7 +119,7 @@
                 : [Write(ShapeContract.fill, Brush.solidColor(.red))]
             s.start {
                 Specimens.page(element, figure(element) + paint + [
-                    Write(ShapeContract.renderTransform, moved.wrappedValue
+                    Write(ShapeContract.geometryTransform, moved.wrappedValue
                           ? (line ? ViewTransform.translate(0, 12) : .translate(24, 0)) : .identity),
                     Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
                 ], beside: [Button("Move").onClicked { moved.wrappedValue = true }.id("change")])

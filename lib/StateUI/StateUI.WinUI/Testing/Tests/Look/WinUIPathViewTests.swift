@@ -68,7 +68,7 @@ final class WinUIPathViewTests: XCTestCase {
     func testAFigureMovedPastItsRoomIsDrawnWhole() throws {
         let colours = try drawn(width: 80, height: 40, at: [(48, 36), (5, 36), (20, 4)]) {
             ZStack {
-                Rectangle().fill(Color("#FF0000")).renderTransform(.skew(20, 0)).width(40).height(40)
+                Rectangle().fill(Color("#FF0000")).geometryTransform(.skew(20, 0)).width(40).height(40)
                     .horizontalAlignment(.start).verticalAlignment(.start)
             }
             .width(80).height(40)

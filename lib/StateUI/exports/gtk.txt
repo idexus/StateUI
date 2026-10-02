@@ -51,11 +51,11 @@ Ellipse
   dash
   dashPhase
   fill
+  geometryTransform
   lineCap
   lineJoin
   lineWidth
   miterLimit
-  renderTransform
   stroke
 Grid
   background
@@ -98,11 +98,11 @@ Line
   dash
   dashPhase
   fill
+  geometryTransform
   lineCap
   lineJoin
   lineWidth
   miterLimit
-  renderTransform
   stroke
   x1
   x2
@@ -114,11 +114,11 @@ Path
   dashPhase
   data
   fill
+  geometryTransform
   lineCap
   lineJoin
   lineWidth
   miterLimit
-  renderTransform
   stroke
 Picker
   fontAttributes
@@ -134,12 +134,12 @@ Polygon
   dashPhase
   fill
   fillRule
+  geometryTransform
   lineCap
   lineJoin
   lineWidth
   miterLimit
   points
-  renderTransform
   stroke
 Polyline
   contentMode
@@ -147,12 +147,12 @@ Polyline
   dashPhase
   fill
   fillRule
+  geometryTransform
   lineCap
   lineJoin
   lineWidth
   miterLimit
   points
-  renderTransform
   stroke
 ProgressBar
   progress
@@ -173,11 +173,11 @@ Rectangle
   dash
   dashPhase
   fill
+  geometryTransform
   lineCap
   lineJoin
   lineWidth
   miterLimit
-  renderTransform
   stroke
 ScrollView
   background

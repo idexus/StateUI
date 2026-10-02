@@ -42,7 +42,7 @@ final class AppKitShapeView: AppKitHitTestView {
     private var lineJoin: Int32 = 0
     private var miterLimit: CGFloat = 10
     private var aspect = ContentMode.fit
-    private var renderTransform: [Double]?
+    private var geometryTransform: [Double]?
     private var geometry: AppKitShapeGeometry
 
     init(kind: AppKitShapeKind) {
@@ -75,7 +75,7 @@ final class AppKitShapeView: AppKitHitTestView {
         lineJoin: Int32,
         miterLimit: Double,
         aspect: ContentMode,
-        renderTransform: [Double]?,
+        geometryTransform: [Double]?,
         geometry: AppKitShapeGeometry
     ) {
         self.fill = AppKitBrush(fill)
@@ -87,7 +87,7 @@ final class AppKitShapeView: AppKitHitTestView {
         self.lineJoin = lineJoin
         self.miterLimit = max(0, miterLimit.isFinite ? CGFloat(miterLimit) : 0)
         self.aspect = aspect
-        self.renderTransform = renderTransform
+        self.geometryTransform = geometryTransform
         self.geometry = geometry
         needsDisplay = true
     }
@@ -130,14 +130,14 @@ final class AppKitShapeView: AppKitHitTestView {
         }
 
         configureStroke(on: path)
-        guard stretchesAuthoredGeometry else { return moved(path, by: renderTransform) }
+        guard stretchesAuthoredGeometry else { return moved(path, by: geometryTransform) }
         guard path.elementCount > 0 else { return path }
 
         let drawn = path.bounds
         let placed = ShapeArithmetic.placement(
             of: Rect(Double(drawn.minX), Double(drawn.minY), Double(drawn.width), Double(drawn.height)),
             in: LayoutSize(width: Double(bounds.width), height: Double(bounds.height)), aspect: aspect,
-            transform: renderTransform)
+            transform: geometryTransform)
         return moved(path, by: placed)
     }
 

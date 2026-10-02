@@ -27,7 +27,7 @@ import CRT
 /// A view wears it through `.transform(_:)` as five properties that animate
 /// like any other - `translationX`, `translationY`, `rotation`, `scaleX` and
 /// `scaleY` - and its own `.scale(_:)` multiplies on top. A `Path` takes it
-/// through `.renderTransform(_:)`, where the whole matrix draws. A view cannot
+/// through `.geometryTransform(_:)`, where the whole matrix draws. A view cannot
 /// show a shear: after a turn, a sizing along one axis
 /// (`.rotate(45).scaleX(2)`) keeps the turn, the move and both sizes, and
 /// drops the slant.
@@ -224,7 +224,7 @@ public struct ViewTransform: Equatable, Sendable {
     /// degrees over, each horizontal line `y` degrees down - after everything
     /// written before it.
     ///
-    /// A `Path` draws the lean through `.renderTransform(_:)`; on a view it
+    /// A `Path` draws the lean through `.geometryTransform(_:)`; on a view it
     /// changes nothing, since a view cannot show a slant.
     ///
     /// - Parameters:

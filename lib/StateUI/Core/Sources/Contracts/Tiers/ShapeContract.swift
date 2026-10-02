@@ -17,7 +17,7 @@ public enum ShapeContract: Contract {
     public static let fill = ElementProperty<Self, Brush>("fill", layer: .stateUI)
 
     /// A transform of the shape's drawing, which moves nothing around it.
-    public static let renderTransform = ElementProperty<Self, ViewTransform>("renderTransform", layer: .native)
+    public static let geometryTransform = ElementProperty<Self, ViewTransform>("geometryTransform", layer: .native)
 
     /// What the outline is painted with.
     public static let stroke = ElementProperty<Self, Brush>("stroke", layer: .stateUI)
@@ -44,7 +44,7 @@ public enum ShapeContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        contentMode, fill, renderTransform, stroke, dashPhase, dash,
+        contentMode, fill, geometryTransform, stroke, dashPhase, dash,
         lineCap, lineJoin, miterLimit, lineWidth,
     ]
 }

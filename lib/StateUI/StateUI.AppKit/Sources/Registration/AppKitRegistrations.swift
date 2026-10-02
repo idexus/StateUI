@@ -62,7 +62,7 @@ enum AppKitRegistrations {
     static func transform<Realized: ElementContract>(
         _ values: ElementValues<Realized>
     ) -> [Double]? {
-        guard let components = values[ShapeContract.renderTransform]?.propValue.values,
+        guard let components = values[ShapeContract.geometryTransform]?.propValue.values,
               components.count == 6
         else { return nil }
 

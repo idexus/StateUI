@@ -564,7 +564,7 @@
             return .number(1)
         case .scaleX, .scaleY:
             return .number(resolvedValue(.scale)?.number ?? 1)
-        case .renderTransform:
+        case .geometryTransform:
             return .values([
                 .number(1), .number(0), .number(0),
                 .number(1), .number(0), .number(0),

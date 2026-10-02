@@ -50,13 +50,13 @@ extension AndroidRegistrations {
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
-        ShapeContract.contentMode, ShapeContract.renderTransform,
+        ShapeContract.contentMode, ShapeContract.geometryTransform,
     ]
 
     private static func draw<Realized: ElementContract>(
         _ view: AndroidShapeView, _ values: ElementValues<Realized>, _ geometry: AndroidShapeView.Geometry
     ) {
-        let transform = values[ShapeContract.renderTransform]?.propValue.values?.compactMap(\.number)
+        let transform = values[ShapeContract.geometryTransform]?.propValue.values?.compactMap(\.number)
         view.draw(
             geometry,
             fill: values[ShapeContract.fill]?.propValue,

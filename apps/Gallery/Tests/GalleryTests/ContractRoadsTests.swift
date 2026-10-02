@@ -512,6 +512,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = \AppInfo.requestedTheme"#,
             contract: #"_ = \AppInfo.colorScheme"#),
         Road(
+            name: "a shape's own transform as a render transform",
+            removed: "_ = Rectangle().renderTransform(.rotate(45))",
+            contract: "_ = Rectangle().geometryTransform(.rotate(45))"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

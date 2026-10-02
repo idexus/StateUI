@@ -78,14 +78,14 @@ struct ShapesSample: SampleContent, ExampleContent {
                 // a Path.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .renderTransform(.skew(20, 0))
+                    .geometryTransform(.skew(20, 0))
                     .width(56)
                     .height(56)
 
                 Rectangle()
                     .fill(Palette.accent)
                     .cornerRadius(14)
-                    .renderTransform(.skew(20, 0))
+                    .geometryTransform(.skew(20, 0))
                     .width(56)
                     .height(56)
 
@@ -224,14 +224,14 @@ struct ShapesSample: SampleContent, ExampleContent {
                 // a Path.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .renderTransform(.skew(20, 0))
+                    .geometryTransform(.skew(20, 0))
                     .width(56)
                     .height(56)
 
                 Rectangle()
                     .fill(Palette.accent)
                     .cornerRadius(14)
-                    .renderTransform(.skew(20, 0))
+                    .geometryTransform(.skew(20, 0))
                     .width(56)
                     .height(56)
 

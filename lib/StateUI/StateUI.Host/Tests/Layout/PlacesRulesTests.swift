@@ -84,7 +84,7 @@ final class PlacesRulesTests: XCTestCase {
             .opacity, .background, .textColor, .placeholderColor, .tint, .color, .isEnabled,
             .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
             .stroke, .fill, .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin,
-            .miterLimit, .shape, .cornerRadius, .renderTransform, .barBackgroundColor, .barForegroundColor,
+            .miterLimit, .shape, .cornerRadius, .geometryTransform, .barBackgroundColor, .barForegroundColor,
             .drawing, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough,
         ]
         XCTAssertEqual(drawn.subtracting(MountedElement.unmeasuredProperties), [])

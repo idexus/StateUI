@@ -16,7 +16,7 @@ final class TransitionSurfaceTests: XCTestCase {
         }
         XCTAssertTrue(TransitionSurface.presents(.opacity, on: .text))
         XCTAssertTrue(TransitionSurface.presents(.padding, on: .page))
-        XCTAssertTrue(TransitionSurface.presents(.renderTransform, on: .line))
+        XCTAssertTrue(TransitionSurface.presents(.geometryTransform, on: .line))
         XCTAssertTrue(TransitionSurface.presents(.x, on: .window))
         XCTAssertTrue(TransitionSurface.presents(.barBackgroundColor, on: .splitView))
         XCTAssertTrue(TransitionSurface.presents(.barForegroundColor, on: .modalStack))

@@ -27,12 +27,12 @@ final class WinUIDriver: HostDriver {
         "read contentMode of Path": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read contentMode of Polygon": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read contentMode of Polyline": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
-        "read renderTransform of Rectangle": "WinUI folds a shape's transform into its figure; its drawing proves it",
-        "read renderTransform of Ellipse": "WinUI folds a shape's transform into its figure; its drawing proves it",
-        "read renderTransform of Line": "WinUI folds a shape's transform into its figure; its drawing proves it",
-        "read renderTransform of Path": "WinUI folds a shape's transform into its figure; its drawing proves it",
-        "read renderTransform of Polygon": "WinUI folds a shape's transform into its figure; its drawing proves it",
-        "read renderTransform of Polyline": "WinUI folds a shape's transform into its figure; its drawing proves it",
+        "read geometryTransform of Rectangle": "WinUI folds a shape's transform into its figure; its drawing proves it",
+        "read geometryTransform of Ellipse": "WinUI folds a shape's transform into its figure; its drawing proves it",
+        "read geometryTransform of Line": "WinUI folds a shape's transform into its figure; its drawing proves it",
+        "read geometryTransform of Path": "WinUI folds a shape's transform into its figure; its drawing proves it",
+        "read geometryTransform of Polygon": "WinUI folds a shape's transform into its figure; its drawing proves it",
+        "read geometryTransform of Polyline": "WinUI folds a shape's transform into its figure; its drawing proves it",
         "read format of TimePicker":
             "WinUI's time picker holds no format: it writes hours and minutes in the user's own clock",
         "read maximumLength of TextField":

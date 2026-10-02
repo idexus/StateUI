@@ -158,7 +158,7 @@
 
     private static let shapeProperties: Set<Prop> = [
         .fill, .stroke, .lineWidth, .dashPhase, .miterLimit,
-        .renderTransform,
+        .geometryTransform,
     ]
 
     private static let lineProperties: Set<Prop> = [.x1, .y1, .x2, .y2]

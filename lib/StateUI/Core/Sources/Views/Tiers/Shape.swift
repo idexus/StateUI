@@ -13,11 +13,11 @@ extension ShapeProperties {
     /// transformed path, and a `skew` draws exactly.
     ///
     ///     Line().x2(56).y2(0)
-    ///         .renderTransform(.rotate(15).scaleX(1.2))
+    ///         .geometryTransform(.rotate(15).scaleX(1.2))
     ///
     /// `.transform(_:)` instead moves what was drawn, about the view's centre.
-    public func renderTransform(_ value: ViewTransform) -> Modified {
-        setValue(ShapeContract.renderTransform, value)
+    public func geometryTransform(_ value: ViewTransform) -> Modified {
+        setValue(ShapeContract.geometryTransform, value)
     }
 
     /// What the inside of the shape is painted with.

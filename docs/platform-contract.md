@@ -514,7 +514,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 |
 | [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
-| [Shape](controls/tiers/Shape.md) | `contentMode`, `fill`, `renderTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineJoin`, `miterLimit`, `lineWidth` | 10 |
+| [Shape](controls/tiers/Shape.md) | `contentMode`, `fill`, `geometryTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineJoin`, `miterLimit`, `lineWidth` | 10 |
 | [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 2 |
 | [TextStyleElement](controls/tiers/TextStyleElement.md) | `tracking`, `textColor` | 2 |
 | [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `isFontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |
@@ -610,24 +610,24 @@ realizes the element and each of its members.
 `columnSpacing`, `contentMode`, `cornerRadius`, `cursorPosition`, `dash`,
 `dashPhase`, `data`, `date`, `dragText`, `drawing`, `endReachedWithin`, `fill`,
 `fillRule`, `floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`, `format`,
-`frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `groupName`,
-`growsWithText`, `height`, `hidesWhenInactive`, `horizontalAlignment`,
-`horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
-`iconSpacing`, `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`,
-`isAnimating`, `isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`,
-`isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
-`isScrollEnabled`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
-`isTranslucent`, `isVisible`, `isZoomEnabled`, `items`, `itemsLayout`, `label`,
-`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`,
-`lineJoin`, `lineWidth`, `location`, `mapType`, `margin`, `maximum`,
-`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
-`minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`, `miterLimit`,
-`opacity`, `options`, `order`, `orientation`, `padding`, `panTouchCount`,
-`panXChannel`, `panYChannel`, `pivotX`, `pivotY`, `placeholder`,
-`placeholderColor`, `placement`, `points`, `progress`, `region`,
-`renderTransform`, `rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`,
-`scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`,
-`selectedTab`, `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`frame`, `geometryTransform`, `gridColumn`, `gridColumnSpan`, `gridRow`,
+`gridRowSpan`, `groupName`, `growsWithText`, `height`, `hidesWhenInactive`,
+`horizontalAlignment`, `horizontalScrollIndicator`, `horizontalTextAlignment`,
+`icon`, `iconPosition`, `iconSpacing`, `ignoresInput`, `inputPurpose`,
+`isAccessibilityHidden`, `isAnimating`, `isDestructive`, `isEnabled`,
+`isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`,
+`isPassword`, `isReadOnly`, `isScrollEnabled`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isTranslucent`, `isVisible`, `isZoomEnabled`,
+`items`, `itemsLayout`, `label`, `layoutDirection`, `letsInputThrough`,
+`lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`,
+`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
+`maximumLines`, `maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`,
+`minimumWidth`, `miterLimit`, `opacity`, `options`, `order`, `orientation`,
+`padding`, `panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
+`placeholder`, `placeholderColor`, `placement`, `points`, `progress`, `region`,
+`rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`,
+`scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
+`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsNavigationBar`, `showsSidebar`, `showsText`,
 `showsTraffic`, `showsUserLocation`, `side`, `source`, `spacing`, `step`,
 `stroke`, `style`, `submitLabel`, `swipeDirection`, `swipeThreshold`,

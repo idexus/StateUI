@@ -112,7 +112,7 @@ first time is simply shown or not, since nothing anybody saw is changing, and
 `scaleY` from one `ViewTransform`, about the view's own centre, so those five
 are its to say. The parts apply in the order written, each to what the parts
 before it made: a move written before a turn is swung round by it, one written
-after is not. `renderTransform` on a shape is the other transform: it
+after is not. `geometryTransform` on a shape is the other transform: it
 transforms the geometry, in the shape's own units, before it is drawn.
 
 ## Turning out of the screen plane

@@ -60,7 +60,7 @@ extension WinUIRegistrations {
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
-        ShapeContract.contentMode, ShapeContract.renderTransform,
+        ShapeContract.contentMode, ShapeContract.geometryTransform,
     ]
 
     private static func paint<Realized: ElementContract>(_ view: WinUIPathView, _ values: ElementValues<Realized>) {
@@ -86,6 +86,6 @@ extension WinUIRegistrations {
 
     /// The shape's transform, as the six numbers of its matrix; nil for none.
     private static func moved<Realized: ElementContract>(_ values: ElementValues<Realized>) -> [Double]? {
-        values[ShapeContract.renderTransform]?.propValue.values?.compactMap(\.number)
+        values[ShapeContract.geometryTransform]?.propValue.values?.compactMap(\.number)
     }
 }

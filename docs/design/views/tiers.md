@@ -114,13 +114,13 @@ style without also giving it the modifiers of `View`.
 
 Rectangle, Ellipse, Line, Path, Polygon and Polyline share one drawing
 vocabulary, the shape tier, checked once by the shared case rather than once
-per shape. `renderTransform` transforms the path each shape makes, so one
+per shape. `geometryTransform` transforms the path each shape makes, so one
 modifier means one thing on all of them and the stroke follows the transformed
 path; `.transform` moves what was drawn, after layout.
 
 A layout's outline, `BorderElement`'s `stroke` and `lineWidth`, carries the
 same properties as a shape's rather than wearing the shape tier, because that
-tier also carries `fill`, `renderTransform`, `aspect` and the dash pattern, a
+tier also carries `fill`, `geometryTransform`, `aspect` and the dash pattern, a
 drawn figure's properties and none of them a layout's. In the patch they are the
 same properties.
 

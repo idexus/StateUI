@@ -25,7 +25,7 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `contentMode` | property | `ContentMode` | native |
 | `fill` | property | `Brush` | stateUI |
-| `renderTransform` | property | `ViewTransform` | native |
+| `geometryTransform` | property | `ViewTransform` | native |
 | `stroke` | property | `Brush` | stateUI |
 | `dashPhase` | property | `Double` | stateUI |
 | `dash` | property | `[Double]` | stateUI |

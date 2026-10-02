@@ -2,7 +2,7 @@
 
 `ViewTransform` is the one transform in the library: a view wears it through
 `.transform(_:)`, and a `Path`'s geometry takes the same value through
-`.renderTransform(_:)`.
+`.geometryTransform(_:)`.
 
 ## One transform
 
@@ -47,7 +47,7 @@ platform has a view property that draws one. Such a chain is drawn as the
 nearest thing the five can say: the turn, the move and both sizes are kept,
 and the slant alone is left out. `skew` is exactly that slant, so on a view
 it changes nothing. A geometry is redrawn rather than carried by view
-properties, so `.renderTransform(_:)` on a `Path` draws the whole matrix,
+properties, so `.geometryTransform(_:)` on a `Path` draws the whole matrix,
 lean included.
 
 ## Turned away drawn flat

@@ -858,8 +858,8 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("line"), type: .line)
-        changed.properties[.renderTransform] = transform(x: 10, y: 20)
-        changed.transitions[.renderTransform] = HostTransition(motion: .eased(200, .linear))
+        changed.properties[.geometryTransform] = transform(x: 10, y: 20)
+        changed.transitions[.geometryTransform] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(changed)
 
         let shape = try XCTUnwrap(

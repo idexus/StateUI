@@ -59,7 +59,7 @@ extension GTKRegistrations {
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
-        ShapeContract.contentMode, ShapeContract.renderTransform,
+        ShapeContract.contentMode, ShapeContract.geometryTransform,
     ]
 
     private static func paint<Realized: ElementContract>(_ view: GTKShapeView, _ values: ElementValues<Realized>) {
@@ -83,7 +83,7 @@ extension GTKRegistrations {
 
     /// The shape's transform, as the six numbers of its matrix; nil for none, or numbers that are not six and finite.
     private static func moved<Realized: ElementContract>(_ values: ElementValues<Realized>) -> [Double]? {
-        let transform = values[ShapeContract.renderTransform]?.propValue.values?.compactMap(\.number)
+        let transform = values[ShapeContract.geometryTransform]?.propValue.values?.compactMap(\.number)
         return transform.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil }
     }
 

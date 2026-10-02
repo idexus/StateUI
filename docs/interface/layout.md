@@ -85,7 +85,7 @@ one-axis scale after an earlier rotation—keeps its move, rotation, and sizes
 while omitting the slant. `turn` and `tilt` are flat projections rather than
 platform camera transforms, and stop shrinking at a right angle.
 
-Shapes accept the same value through `renderTransform`. A shape is redrawn
+Shapes accept the same value through `geometryTransform`. A shape is redrawn
 from the full matrix in its own coordinate system, so `skew` is preserved
 there. This is distinct from `transform`, which moves the already drawn view
 about its center.

@@ -364,7 +364,7 @@ final class ControlTests: XCTestCase {
                     // The one transform, sent as its whole matrix: a matrix
                     // with a lean in it exercises the part only a geometry
                     // can draw.
-                    .renderTransform(Self.leaned)),
+                    .geometryTransform(Self.leaned)),
 
             ControlCase("Polygon", source: "Polygon.swift",
                 Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
@@ -448,7 +448,7 @@ final class ControlTests: XCTestCase {
                         .contentMode(.fill)
                         // The one transform, on the geometry: a matrix with a
                         // lean in it exercises the part only a geometry draws.
-                        .renderTransform(Self.leaned)
+                        .geometryTransform(Self.leaned)
                         // A gradient behind a view, which is what a Brush is for
                         // everywhere else.
                         .background(.solidColor(Color(light: .whiteSmoke, dark: .black)))
@@ -701,7 +701,7 @@ final class ControlTests: XCTestCase {
             "background", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
             "minimumDate", "dash", "points", "options", "columns",
-            "rows", "shape", "renderTransform", "transform", "motion", "id",
+            "rows", "shape", "geometryTransform", "transform", "motion", "id",
             "assign", "area",
             // Tiers no view wears.
             "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle", "isScrollEnabled",

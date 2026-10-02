@@ -23,7 +23,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineJoin: LineJoin.miter.rawValue,
             miterLimit: 10,
             aspect: .center,
-            renderTransform: nil,
+            geometryTransform: nil,
             geometry: .line(x1: 2, y1: 3, x2: 70, y2: 30))
 
         let path = view.pathForTesting(in: view.bounds)
@@ -45,7 +45,7 @@ final class AppKitShapeViewTests: XCTestCase {
             let view = AppKitShapeView(kind: kind)
             view.apply(
                 fill: brush(.red), stroke: nil, lineWidth: 0, dash: [], dashOffset: 0, lineCap: 0, lineJoin: 0,
-                miterLimit: 10, aspect: .fit, renderTransform: skew,
+                miterLimit: 10, aspect: .fit, geometryTransform: skew,
                 geometry: kind == .rectangle ? .rectangle([0, 0, 0, 0]) : .ellipse)
 
             let bounds = view.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 40)).cgPath.boundingBoxOfPath
@@ -67,7 +67,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineJoin: 0,
             miterLimit: 10,
             aspect: .center,
-            renderTransform: nil,
+            geometryTransform: nil,
             geometry: .points([0, 0, 40, 0, 20, 30], fillRule: FillRule.evenOdd.rawValue))
 
         let path = view.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 30))
@@ -91,7 +91,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineJoin: 0,
             miterLimit: 10,
             aspect: .fit,
-            renderTransform: nil,
+            geometryTransform: nil,
             geometry: .points([0, 0, 100, 50], fillRule: FillRule.nonzero.rawValue))
 
         let bounds = view.pathForTesting(in: NSRect(x: 0, y: 0, width: 200, height: 200))
@@ -113,7 +113,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineJoin: 0,
             miterLimit: 10,
             aspect: .center,
-            renderTransform: nil,
+            geometryTransform: nil,
             geometry: .path("M 0 40 L 20 0 C 25 5 35 5 40 40 Z"))
 
         let path = view.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 40))
@@ -137,7 +137,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineJoin: 0,
             miterLimit: 10,
             aspect: .center,
-            renderTransform: nil,
+            geometryTransform: nil,
             geometry: .path("M 0 20 A 20 20 0 0 1 40 20"))
 
         let path = view.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 20))
@@ -186,7 +186,7 @@ final class AppKitShapeViewTests: XCTestCase {
         line.properties[.x2] = .number(21)
         line.properties[.y2] = .number(12)
         line.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
-        line.properties[.renderTransform] = .values([
+        line.properties[.geometryTransform] = .values([
             .number(1), .number(0), .number(0),
             .number(1), .number(10), .number(20),
         ])
@@ -289,7 +289,7 @@ final class AppKitShapeViewTests: XCTestCase {
             var moved = HostPatch(id: .manual("moved"), type: type)
             moved.properties = geometry.merging([
                 .contentMode: .enumeration(ContentMode.stretch.rawValue),
-                .renderTransform: .values([
+                .geometryTransform: .values([
                     .number(1), .number(0), .number(0),
                     .number(1), .number(10), .number(20),
                 ]),

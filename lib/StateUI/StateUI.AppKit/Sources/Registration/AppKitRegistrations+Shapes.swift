@@ -76,7 +76,7 @@ extension AppKitRegistrations {
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap, ShapeContract.lineJoin, ShapeContract.miterLimit,
-        ShapeContract.contentMode, ShapeContract.renderTransform,
+        ShapeContract.contentMode, ShapeContract.geometryTransform,
     ]
 
     /// The stroke, the fill and the transform every shape draws with, around
@@ -96,7 +96,7 @@ extension AppKitRegistrations {
             lineJoin: values[ShapeContract.lineJoin]?.rawValue ?? 0,
             miterLimit: values[ShapeContract.miterLimit] ?? 10,
             aspect: values[ShapeContract.contentMode] ?? .fit,
-            renderTransform: Self.transform(values),
+            geometryTransform: Self.transform(values),
             geometry: geometry)
     }
 }
