@@ -330,7 +330,7 @@ final class UIKitDriver: HostDriver {
         case (.tint, let slider as UIKitSliderView): return slider.minimumTrackTintColor.map { Self.color($0).propValue }
         case (.selectedIndex, let picker as UIKitPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as UIKitPickerView): return picker.choices.propValue
-        case (.title, let picker as UIKitPickerView): return picker.title.propValue
+        case (.placeholder, let picker as UIKitPickerView): return picker.title.propValue
         case (.date, let picker as UIKitDatePickerView): return picker.day.propValue
         case (.time, let picker as UIKitTimePickerView): return picker.time.propValue
         case (.minimumDate, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue

@@ -36,7 +36,7 @@ extension UIKitDriver {
         case (.inputPurpose, let editor as UITextView):
             return purpose(editor.keyboardType, spelling: editor.spellCheckingType).propValue
         case (.contentMode, let image as UIImageView):
-            let aspects: [UIView.ContentMode: ContentMode] = [
+            let aspects: [UIView.ContentMode: StateUI.ContentMode] = [
                 .scaleAspectFit: .fit, .scaleAspectFill: .fill, .scaleToFill: .stretch, .center: .center,
             ]
             return aspects[image.contentMode]?.propValue
@@ -97,7 +97,7 @@ extension UIKitDriver {
         switch property {
         case .background: return box.backgroundColor.map { Background.color(color($0)).propValue }
         case .stroke: return box.strokeColor.map { Brush.solidColor(color($0)).propValue }
-        case .lineWidth: return Double(box.lineWidth).propValue
+        case .lineWidth: return Double(box.strokeWidth).propValue
         case .shape:
             if configuration.cornerStyle == .capsule { return ContainerShape.ellipse.propValue }
             let radius = Double(box.cornerRadius)

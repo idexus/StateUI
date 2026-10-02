@@ -70,7 +70,7 @@ extension AndroidDriver {
             let bar = Self.read(scroller.reference, property == .verticalScrollIndicator ? "verticalBar" : "horizontalBar")
             let bars: [String: ScrollIndicatorVisibility] = ["never": .never, "always": .visible, "default": .automatic]
             return bar.flatMap { bars[$0] }?.propValue
-        case .aspect where view is AndroidImageView:
+        case .contentMode where view is AndroidImageView:
             let aspects: [String: ContentMode] = ["FIT_CENTER": .fit, "CENTER_CROP": .fill, "FIT_XY": .stretch, "CENTER": .center]
             return read("scaleType").flatMap { aspects[$0] }?.propValue
         case .tint:

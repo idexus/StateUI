@@ -36,7 +36,7 @@ final class AndroidWebViewTests: XCTestCase {
 
             XCTAssertEqual(heard.values, [
                 "navigating newPage https://a.example/", "navigated success newPage https://a.example/",
-                "navigating refresh https://a.example/", "navigated timeout refresh https://a.example/",
+                "navigating reload https://a.example/", "navigated timeout reload https://a.example/",
                 "gone",
             ])
         }
@@ -89,8 +89,8 @@ private struct BrowsingPage: View {
                 .aim(browser)
                 .canGoBack($back)
                 .canGoForward($forward)
-                .onNavigating { heard.values.append("navigating \($0.event) \($0.url)") }
-                .onNavigated { heard.values.append("navigated \($0.result) \($0.event) \($0.url)") }
+                .onNavigating { heard.values.append("navigating \($0.type) \($0.url)") }
+                .onNavigated { heard.values.append("navigated \($0.result) \($0.type) \($0.url)") }
                 .onProcessTerminated { heard.values.append("gone") }
                 .height(200)
             Button("Reload").onClicked { try await browser.reload() }

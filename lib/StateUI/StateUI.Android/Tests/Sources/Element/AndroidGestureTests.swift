@@ -58,7 +58,7 @@ final class AndroidGestureTests: XCTestCase {
             box.touch(1, x: 170, y: 30, at: 60)
             host.settle { heard.values.count == 4 }
 
-            XCTAssertEqual(heard.values, ["started 0 0", "running 50 0", "running 80 10", "completed 0 0"])
+            XCTAssertEqual(heard.values, ["began 0 0", "changed 50 0", "changed 80 10", "ended 0 0"])
             XCTAssertEqual(across.wrappedValue, 85)
         }
     }
@@ -83,8 +83,8 @@ final class AndroidGestureTests: XCTestCase {
         }
     }
 
-    /// Two fingers spreading from 600 to 900 pixels apart in steps of 75: the pinch starts once Android tells
-    /// it apart - at the first step, 675 - runs from there to 900 and completes, centred where the fingers are.
+    /// Two fingers spreading from 600 to 900 pixels apart in steps of 75: the pinch begins once Android tells
+    /// it apart - at the first step, 675 - changes from there to 900 and ends, centred where the fingers are.
     func testAPinchSaysItsScaleAndWhereItIsCentred() throws {
         try onMainActor {
             let phases = Received<String>()
@@ -99,8 +99,8 @@ final class AndroidGestureTests: XCTestCase {
             TestTouches.pinch(box, x: 100, y: 100, from: 600, to: 900)
             host.runtime.pump.turn()
 
-            XCTAssertEqual(phases.values.first, "started 0.5 0.5")
-            XCTAssertEqual(phases.values.last, "completed 0.5 0.5")
+            XCTAssertEqual(phases.values.first, "began 0.5 0.5")
+            XCTAssertEqual(phases.values.last, "ended 0.5 0.5")
             XCTAssertEqual(scales.values.reduce(1, *), 900.0 / 675.0, accuracy: 0.01)
         }
     }

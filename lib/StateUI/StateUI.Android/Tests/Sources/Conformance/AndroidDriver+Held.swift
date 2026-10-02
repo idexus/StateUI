@@ -59,7 +59,7 @@ extension AndroidDriver {
             guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
             return Background.color(Self.color(UInt32(truncatingIfNeeded: held))).propValue
         case (.options, let picker as AndroidPickerView): return Array(Self.rows(of: picker).dropFirst()).propValue
-        case (.title, let picker as AndroidPickerView): return Self.rows(of: picker).first?.propValue
+        case (.placeholder, let picker as AndroidPickerView): return Self.rows(of: picker).first?.propValue
         case (.selectedIndex, let picker as AndroidPickerView):
             // The title's row stands first: it is no choice.
             return (Int(Java.callInt(picker.reference, Self.getSelectedItemPosition)) - 1).propValue

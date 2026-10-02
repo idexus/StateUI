@@ -301,7 +301,7 @@ extension WinUIDriver {
         case ("tint", _): return try Self.color(read(view, "tint")).map { $0.propValue }
         case ("selectedIndex", let picker as WinUIPickerView): return picker.chosen < 0 ? nil : picker.chosen.propValue
         case ("options", let picker as WinUIPickerView): return picker.choices.propValue
-        case ("title", let picker as WinUIPickerView): return .string(try read(picker, "placeholder"))
+        case ("placeholder", let picker as WinUIPickerView): return .string(try read(picker, "placeholder"))
         case ("isOpen", let picker as WinUIPickerView): return picker.isOpen.propValue
         case ("isOpen", let picker as WinUIDatePickerView): return picker.isOpen.propValue
         case ("date", let picker as WinUIDatePickerView): return picker.date?.propValue

@@ -204,10 +204,10 @@
             }
 
             try s.perform(.pan(by: Point(-60, 20)), on: s.element("specimen"))
-            s.settle { heard.values.last?.hasPrefix("completed") == true }
-            s.expect(heard.values.first?.hasPrefix("started"), true, "heard as it starts")
-            s.expect(heard.values.contains("running -60 20"), true, "running, with how far it went")
-            s.expect(heard.values.last?.hasPrefix("completed"), true, "and as it ends")
+            s.settle { heard.values.last?.hasPrefix("ended") == true }
+            s.expect(heard.values.first?.hasPrefix("began"), true, "heard as it begins")
+            s.expect(heard.values.contains("changed -60 20"), true, "changed, with how far it went")
+            s.expect(heard.values.last?.hasPrefix("ended"), true, "and as it ends")
             s.expect(x.wrappedValue, -50, "the state carried as far as the hand went across")
         }
     }
