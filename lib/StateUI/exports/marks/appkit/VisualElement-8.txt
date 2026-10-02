@@ -57,5 +57,5 @@ TextEditor.translationY: ✓ read translationY of TextEditor: the host's own tra
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.pivotX: ✓ read pivotX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.automationExcludedWithChildren: not realized
+WebView.automationExcludedWithChildren: ✅
 ZStack.accessibilityHint: ✅

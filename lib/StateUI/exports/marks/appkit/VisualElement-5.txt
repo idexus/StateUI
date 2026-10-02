@@ -55,7 +55,7 @@ TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform, chec
 TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.pivotX: ✓ read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.automationExcludedWithChildren: ✅
-WebView.accessibilityHint: not realized
+WebView.accessibilityHint: ✅
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

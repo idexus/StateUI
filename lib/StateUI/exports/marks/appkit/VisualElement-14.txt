@@ -57,5 +57,5 @@ TextField.minimumWidth: ✅
 TimePicker.opacity: ✅
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.scaleX: ✓ read scaleX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.rotationX: not realized
+WebView.rotationX: ✓ read rotationX of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform, checked against the layer it composed itself

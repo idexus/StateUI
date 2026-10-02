@@ -89,3 +89,16 @@ words keep their letters as typed whatever the setting; text starts its
 sentences in capitals; the default leaves the setting alone. A Mac has no
 keyboard on the screen, so a purpose picks no keys - the register records it.
 
+## A web view
+
+A WebView is WebKit's own web view, as on UIKit
+([the host layer's web rules](../../host/web.md)): a page at an address is
+loaded; a document written in place with an address of its own is shown
+there, and one with none is gone to as a `data:` address. What the page does
+comes back as the element's events - a navigation as it starts, with why, and
+as it ends, with how; the way back and forward said as a navigation commits
+and ends, only a flag that changed; its web process dying. A step back,
+forward or a load again the program asks for carries that as its cause; a
+page still coming is asked for again. macOS's WebKit also declares a legacy
+`WebHistory` class, so the host names the host layer's `StateUIHost.WebHistory`
+in full.

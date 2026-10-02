@@ -100,9 +100,13 @@ final class AppKitActToolkit: ActToolkit {
         return true
     }
 
-    /// An ItemsView's scroll to an item, and a map's slide to a region.
+    /// An ItemsView's scroll to an item, a map's slide to a region, and a web view's steps and scripts.
     func performOwn(_ call: HostActCall) -> Bool {
-        guard call.act == .scrollTo || call.act == .moveToRegion else { return false }
+        let owners: [Act: String] = [
+            .scrollTo: "an ItemsView", .moveToRegion: "a Map",
+            .goBack: "a web view", .goForward: "a web view", .reload: "a web view", .evaluateJavaScript: "a web view",
+        ]
+        guard let owner = owners[call.act] else { return false }
         let core = CoreLink()
         do {
             let element = try renderer.runtime.tree.aimed(call)
@@ -114,8 +118,16 @@ final class AppKitActToolkit: ActToolkit {
             case (.moveToRegion, let map as AppKitMapView):
                 let number = { call.arguments.value($0)?.number ?? 0 }
                 map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
+            case (.goBack, let web as AppKitWebView): web.step(.back)
+            case (.goForward, let web as AppKitWebView): web.step(.forward)
+            case (.reload, let web as AppKitWebView): web.step(.refresh)
+            case (.evaluateJavaScript, let web as AppKitWebView):
+                web.evaluate(call.arguments.value(1)?.string ?? "") { [weak renderer] answer in
+                    core.reply(call, [answer.propValue])
+                    renderer?.runtime.pump.turn()
+                }
+                return true
             default:
-                let owner = call.act == .scrollTo ? "an ItemsView" : "a Map"
                 core.fail(call, "\(call.act.name) is an act of \(owner)", log: { AppKitRenderer.log.error($0) })
                 return true
             }

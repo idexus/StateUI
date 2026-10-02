@@ -51,9 +51,9 @@ TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own transform
 TextField.pivotX: ✓ read pivotX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.automationExcludedWithChildren: ✅
 VStack.accessibilityHint: ✅
-WebView.focus: not realized
-WebView.isFocusedChanged: not realized
-WebView.unfocus: not realized
+WebView.focus: ✅
+WebView.isFocusedChanged: ✅
+WebView.unfocus: ✅
 ZStack.frameChanged: ✅
 ZStack.maximumHeight: ✅
 ZStack.maximumWidth: ✅

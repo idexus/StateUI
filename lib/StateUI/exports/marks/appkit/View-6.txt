@@ -103,6 +103,6 @@ WebView.canDrag: not realized
 WebView.dragStarting: not realized
 WebView.dragText: not realized
 WebView.dropCompleted: not realized
-WebView.frameChanged: not realized
-WebView.margin: not realized
+WebView.frameChanged: ✅
+WebView.margin: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: handed to the host's recognizer or handler, no NSEvent sent

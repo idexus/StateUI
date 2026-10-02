@@ -41,5 +41,5 @@ TimePicker.height: ✅
 TimePicker.width: ✅
 VStack.isVisible: ✅
 VStack.translationX: ✓ read translationX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.scale: not realized
+WebView.scale: ✓ read scale of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.rotation: ✓ read rotation of ZStack: the host's own transform, checked against the layer it composed itself

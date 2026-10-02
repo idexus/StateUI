@@ -191,6 +191,9 @@ final class AppKitDriver: HostDriver {
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held
         }
+        if let web = (element.native as? AppKitElement)?.view as? AppKitWebView, let held = try webHolds(property, web) {
+            return held
+        }
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
         if property == .barBackgroundColor { return try barHolds(element) }
         // Whether a page offers the way back: the window's toolbar holds its back item while the page shows.

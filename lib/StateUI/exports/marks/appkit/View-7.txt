@@ -96,9 +96,9 @@ WebView.allowDrop: not realized
 WebView.dragLeave: not realized
 WebView.dragOver: not realized
 WebView.drop: not realized
-WebView.frameChanged: not realized
-WebView.horizontalAlignment: not realized
-WebView.verticalAlignment: not realized
+WebView.frameChanged: ✅
+WebView.horizontalAlignment: ✅
+WebView.verticalAlignment: ✅
 ZStack.pointerEntered: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerExited: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerMoved: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent

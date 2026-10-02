@@ -292,6 +292,14 @@ TimePicker
 VStack
   padding
   spacing
+WebView
+  source
+  userAgent
+  canGoBackChanged()
+  canGoForwardChanged()
+  navigated()
+  navigating()
+  processTerminated()
 (every element)
   accessibilityHeadingLevel
   accessibilityHint
@@ -352,13 +360,17 @@ VStack
   confirm()
   currentTime()
   currentTimeZone()
+  evaluateJavaScript()
   focus()
+  goBack()
+  goForward()
   handlerFailed()
   hideOnScreenKeyboard()
   moveToRegion()
   persistSceneValue()
   persistValue()
   prompt()
+  reload()
   scrollTo()
   unfocus()
   utcOffset()

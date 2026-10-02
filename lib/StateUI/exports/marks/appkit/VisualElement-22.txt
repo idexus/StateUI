@@ -38,8 +38,8 @@ TextEditor.layoutDirection: ✅
 TextField.isAccessibilityHidden: ✅
 TimePicker.accessibilityLabel: ✅
 VStack.frame: ✅
-WebView.frameChanged: not realized
-WebView.height: not realized
-WebView.width: not realized
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.width: ✅
 ZStack.isVisible: ✅
 ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself

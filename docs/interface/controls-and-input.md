@@ -331,7 +331,7 @@ WebView("https://example.com")
 
 | Host | The web view |
 | --- | --- |
-| AppKit | none yet |
+| AppKit | WebKit's `WKWebView` |
 | UIKit | WebKit's `WKWebView` |
 | Android Views | Android's `WebView` |
 | WinUI 3 | WinUI's `WebView2`, over the system's WebView2 runtime - a backend |

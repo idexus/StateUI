@@ -39,7 +39,7 @@ TextEditor.rotation: ✓ read rotation of TextEditor: the host's own transform, 
 TextField.layoutDirection: ✅
 TimePicker.isAccessibilityHidden: ✅
 VStack.accessibilityLabel: ✅
-WebView.frame: not realized
+WebView.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.width: ✅

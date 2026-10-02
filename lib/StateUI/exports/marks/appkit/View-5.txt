@@ -96,11 +96,11 @@ VStack.drop: not realized
 VStack.frameChanged: ✅
 VStack.horizontalAlignment: ✅
 VStack.verticalAlignment: ✅
-WebView.pointerEntered: not realized
-WebView.pointerExited: not realized
-WebView.pointerMoved: not realized
-WebView.pointerPressed: not realized
-WebView.pointerReleased: not realized
+WebView.pointerEntered: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.pointerExited: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.pointerMoved: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.pointerPressed: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.pointerReleased: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.swipeDirection: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.swipeThreshold: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.swiped: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent

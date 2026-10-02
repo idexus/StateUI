@@ -99,9 +99,9 @@ TimePicker.pointerReleased: ✓ hover on TimePicker: handed to the host's recogn
 VStack.swipeDirection: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.swipeThreshold: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.swiped: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
-WebView.panTouchCount: not realized
-WebView.panUpdated: not realized
-WebView.panXChannel: not realized
+WebView.panTouchCount: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.panUpdated: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.panXChannel: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.frameChanged: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅

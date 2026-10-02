@@ -28,6 +28,13 @@ private enum InteropTestContract: ApplicationTier {
     static let members: [any ContractMember] = [doubled, unregistered, spoke, unheard]
 }
 
+/// An element no registration answers, which the host shows as unsupported.
+private enum DialContract: ElementContract {
+    static let nodeType: NodeType = "InteropTest.Dial"
+    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let members: [any ContractMember] = []
+}
+
 /// A page that calls the acts and listens for the event, writing whatever
 /// came back where a test can read it.
 private struct Calling: ContentView {
@@ -141,8 +148,8 @@ final class AppKitInteropTests: XCTestCase {
         XCTAssertEqual(said(renderer), "heard hello")
     }
 
-    /// A running host tells the core what it realizes: the library's elements
-    /// it shows, not those it shows as unsupported, and the events the
+    /// A running host tells the core what it realizes: the elements it shows,
+    /// not those it shows as unsupported, and the events the
     /// application declared it raises - so a handler listening for one no
     /// source raises is told so.
     @MainActor
@@ -154,7 +161,8 @@ final class AppKitInteropTests: XCTestCase {
 
         XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
         XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
-        XCTAssertFalse(HostBoundary.realizes(MapContract.self))
+        XCTAssertTrue(HostBoundary.realizes(WebViewContract.self))
+        XCTAssertFalse(HostBoundary.realizes(DialContract.self))
         XCTAssertNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.spoke.name))
         XCTAssertNotNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.unheard.name))
     }
