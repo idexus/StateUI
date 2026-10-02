@@ -18,6 +18,7 @@ host merely implements or declares by hand earns a mark.
 | ✅ | Every test of the member that ran on that host passed. |
 | ☑️ | The member is proven by its tests, but the host's register records what is still missing; the element's page in [the control dictionary](controls/README.md) names it. |
 | – | The member will never be met by that host's family - a phone with no menu bar, a desktop whose keyboard captions no return key, a view that takes no keyboard focus - and meets the contract there: the host's register, or the case that proved it absent, says why, and the Gallery shows that family no example of it. |
+| 🧩 | Left to the application: the platform ships no control for it - a map on Android Views, WinUI 3 and GTK 4, where each provider needs the application's own key - so the host makes none, and the application registers its own control with the host, as each host's page shows ([Android Views](hosts/android.md#controls-acts-and-events-registered-in-swift)). It meets the contract there and counts as met. |
 | ❌ | A test of the member failed on that host's last run; the note gives the first failure. |
 | ◐ | Some of its tests proved it and another could not run or read; the note says which. |
 | 🔌 | Its tests passed only through the host's own entry or record - an act the driver hands past the toolkit's input, a read of what the host keeps rather than what the toolkit holds - which the driver names; it is not counted as met. |
@@ -26,7 +27,7 @@ host merely implements or declares by hand earns a mark.
 | ⌛ | The verdict was written at another revision of its family than it stands at: each run writes its family's revision over its verdicts, and a change that changes what a family's cases prove raises the family's in `lib/StateUI/StateUI.Conformance/revisions.txt`, so a verdict of another is stale until the host's suite runs the family again. It carries no note: what that run said is no verdict of the family as it stands. |
 | empty | Not realized on that host, or no run of it; the note says which. It is deliberately not an estimate of how difficult the work will be. |
 
-A host's totals count its ✅ and – as met. An element's ✅ under
+A host's totals count its ✅, – and 🧩 as met. An element's ✅ under
 [Control creation](#control-creation) means that host's own test proved it
 makes the element. It does not imply that every member has been completed;
 the member rows state that separately.
