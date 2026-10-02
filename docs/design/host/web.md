@@ -30,7 +30,10 @@ begins for what is told again (`WebNavigationCause`).
 ## A document with no address
 
 A document written in place with an address of its own is shown at that
-address. One with none is, on a WebKit web view, gone to as a `data:`
-address holding it - its words as UTF-8, in base64 - because WebKit keeps
-no history of a document shown without an address, and the way back and
-forward is the page's history like any other (`WebDocument`).
+address. One with none is gone to at an address holding it, because a web
+view keeps no history of a document shown without an address, and the way
+back and forward is the page's history like any other. On a WebKit web view
+and on Android's it is a `data:` address - its words as UTF-8, in base64
+(`WebDocument`), from which the document is read back; WebView2 goes to an
+address its backend answers with the document. A navigation reports the
+address the page stands at.

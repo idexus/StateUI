@@ -63,7 +63,7 @@ final class StateUIWebView extends FrameLayout {
         web.loadUrl(address);
     }
 
-    /** Shows `document`, its relative links resolved against `base` where there is one, as `load` does. */
+    /** Shows `document` at its own address, `base`, its relative links resolved against it, as `load` does. */
     void show(String agent, String document, String base) {
         setUserAgent(agent);
         web.loadDataWithBaseURL(base, document, "text/html", "UTF-8", null);

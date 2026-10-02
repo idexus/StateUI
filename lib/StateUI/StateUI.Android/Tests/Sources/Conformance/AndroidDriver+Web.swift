@@ -21,11 +21,11 @@ extension AndroidDriver {
                 } ?? nil
             }?.propValue)
         case .source:
+            // A document with no address of its own from the `data:` address holding it.
             let address = Java.frame { onWeb(view) { web in Java.callObject(web, getUrl).map { Java.text($0) } } ?? nil }
-            guard let address, address != "about:blank" else {
-                throw DriverCannot("read a document written in place", because: "Android's web view gives back no address for it")
-            }
-            return .some(WebViewSource.url(address).propValue)
+            guard let address else { return .some(nil) }
+            let shown = WebDocument.document(at: address).map { WebViewSource.html($0, baseUrl: nil) } ?? .url(address)
+            return .some(shown.propValue)
         default: return nil
         }
     }

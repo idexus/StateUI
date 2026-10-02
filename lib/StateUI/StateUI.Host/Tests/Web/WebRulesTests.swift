@@ -48,4 +48,16 @@ final class WebRulesTests: XCTestCase {
         XCTAssertEqual(WebDocument.base64(Array("ab".utf8)), "YWI=")
         XCTAssertEqual(WebDocument.base64(Array("żółw".utf8)), "xbzDs8WCdw==")
     }
+
+    /// The document a view standing at such an address shows is read back from it; any other address holds none.
+    func testADocumentIsReadBackFromItsDataAddress() {
+        for document in ["<p>Hi</p>", "a", "ab", "abc", "żółw", ""] {
+            XCTAssertEqual(WebDocument.document(at: WebDocument.address(of: document)), document, document)
+        }
+        XCTAssertNil(WebDocument.document(at: "https://example.com/"))
+        XCTAssertNil(WebDocument.document(at: "about:blank"))
+        XCTAssertNil(WebDocument.document(at: "data:text/plain;base64,YQ=="))
+        XCTAssertNil(WebDocument.document(at: "data:text/html;charset=utf-8;base64,P*A+"), "no base64")
+        XCTAssertNil(WebDocument.document(at: "data:text/html;charset=utf-8;base64,PHA"), "not whole groups of four")
+    }
 }

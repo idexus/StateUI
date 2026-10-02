@@ -285,6 +285,9 @@ resolve against the address given beside it, where one is:
 WebView().source(html: "<h1>Offline</h1><p>Written in place.</p>")
 ```
 
+A document given no address travels as an address of its own, which on
+Android holds at most 2 MB: give a larger document an address beside it.
+
 The web content scrolls itself, so give it room of its own - a Grid row, or a
 page without a scroller - rather than a place inside a ScrollView.
 

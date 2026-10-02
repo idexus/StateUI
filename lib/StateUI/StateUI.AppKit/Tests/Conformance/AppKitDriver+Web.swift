@@ -12,24 +12,19 @@ import WebKit
 /// A web view as WebKit holds it: the agent it names itself by, and what it shows by the address WebKit gives back.
 extension AppKitDriver {
     /// What WebKit's view holds of `property`; nil for what is not the web view's.
-    func webHolds(_ property: Prop, _ web: AppKitWebView) throws -> HostValue? {
+    func webHolds(_ property: Prop, _ web: AppKitWebView) -> HostValue? {
         switch property {
         case .userAgent: web.customUserAgent.propValue
-        case .source: try Self.shown(by: web)?.propValue
+        case .source: Self.shown(by: web)?.propValue
         default: nil
         }
     }
 
     /// What a web view shows, by the address WebKit gives back: a document with no address of its own from the
     /// `data:` address holding it.
-    private static func shown(by web: AppKitWebView) throws -> WebViewSource? {
+    private static func shown(by web: AppKitWebView) -> WebViewSource? {
         guard let address = web.url?.absoluteString else { return nil }
-        let prefix = "data:text/html;charset=utf-8;base64,"
-        guard address.hasPrefix(prefix) else { return .url(address) }
-        guard let bytes = Data(base64Encoded: String(address.dropFirst(prefix.count))) else {
-            throw DriverCannot("read a document from an address that holds none")
-        }
-        return .html(String(decoding: bytes, as: UTF8.self), baseUrl: nil)
+        return WebDocument.document(at: address).map { .html($0, baseUrl: nil) } ?? .url(address)
     }
 }
 #endif

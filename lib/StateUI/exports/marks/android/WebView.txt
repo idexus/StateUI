@@ -1,4 +1,4 @@
-# revision 1.2
+# revision 1.3
 WebView: ✅
 WebView.canGoBackChanged: ✅
 WebView.canGoForwardChanged: ✅
@@ -6,9 +6,9 @@ WebView.evaluateJavaScript: ✅
 WebView.frameChanged: ✅
 WebView.goBack: ✅
 WebView.goForward: ✅
-WebView.navigated: cannot read a document written in place - Android's web view gives back no address for it
+WebView.navigated: ✅
 WebView.navigating: ✅
 WebView.processTerminated: ✅
 WebView.reload: ✅
-WebView.source: cannot read a document written in place - Android's web view gives back no address for it
+WebView.source: ✅
 WebView.userAgent: ✅

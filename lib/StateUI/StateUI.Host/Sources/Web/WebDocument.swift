@@ -7,8 +7,17 @@
 @_spi(Host) public enum WebDocument {
     /// The `data:` address holding `document`, its words as UTF-8 in base64.
     public static func address(of document: String) -> String {
-        "data:text/html;charset=utf-8;base64," + base64(Array(document.utf8))
+        prefix + base64(Array(document.utf8))
     }
+
+    /// The document the `data:` address `address` holds; nil for any other address.
+    public static func document(at address: String) -> String? {
+        guard address.hasPrefix(prefix), let bytes = bytes(base64: address.dropFirst(prefix.count)) else { return nil }
+        return String(decoding: bytes, as: UTF8.self)
+    }
+
+    /// What every such address starts with.
+    static let prefix = "data:text/html;charset=utf-8;base64,"
 
     /// `bytes` in base64, padded to whole groups of four.
     static func base64(_ bytes: [UInt8]) -> String {
@@ -22,5 +31,26 @@
             }
         }
         return written
+    }
+
+    /// The bytes `text` holds in base64, padded to whole groups of four; nil for text that is not.
+    static func bytes(base64 text: Substring) -> [UInt8]? {
+        let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".utf8)
+        let digits = Array(text.utf8)
+        guard digits.count % 4 == 0 else { return nil }
+        var bytes: [UInt8] = []
+        for start in stride(from: 0, to: digits.count, by: 4) {
+            let group = digits[start..<start + 4]
+            let padding = group.reversed().prefix { $0 == UInt8(ascii: "=") }.count
+            guard padding <= 2, start + 4 == digits.count || padding == 0 else { return nil }
+            var number = 0
+            for digit in group.dropLast(padding) {
+                guard let value = alphabet.firstIndex(of: digit) else { return nil }
+                number = number << 6 | value
+            }
+            number <<= 6 * padding
+            bytes += [UInt8(number >> 16 & 255), UInt8(number >> 8 & 255), UInt8(number & 255)].prefix(3 - padding)
+        }
+        return bytes
     }
 }

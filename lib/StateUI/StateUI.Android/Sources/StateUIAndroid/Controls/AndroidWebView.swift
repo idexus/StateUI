@@ -41,7 +41,8 @@ final class AndroidWebView: AndroidView {
     }
 
     /// Shows the page at an address, or a document written in place, asking as `agent`; none leaves the view
-    /// as it is. The page and its agent cross together, the agent first.
+    /// as it is. The page and its agent cross together, the agent first. A document with no address of its own
+    /// is gone to as a `data:` address (`WebDocument`).
     /// Design: docs/design/platforms/android/controls.md#a-web-view
     func show(_ source: WebViewSource?, userAgent agent: String?) {
         Java.frame {
@@ -49,10 +50,13 @@ final class AndroidWebView: AndroidView {
             switch source {
             case .url(let address)?:
                 Java.call(reference, JavaAPI.loadWeb, .object(agent), .object(Java.string(address)))
-            case .html(let document, let base)?:
+            case .html(let document, nil)?:
+                Java.call(
+                    reference, JavaAPI.loadWeb, .object(agent), .object(Java.string(WebDocument.address(of: document))))
+            case .html(let document, let base?)?:
                 Java.call(
                     reference, JavaAPI.showWeb, .object(agent), .object(Java.string(document)),
-                    .object(base.flatMap(Java.string)))
+                    .object(Java.string(base)))
             case nil:
                 Java.call(reference, JavaAPI.setWebUserAgent, .object(agent))
             }

@@ -191,7 +191,7 @@ final class AppKitDriver: HostDriver {
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held
         }
-        if let web = (element.native as? AppKitElement)?.view as? AppKitWebView, let held = try webHolds(property, web) {
+        if let web = (element.native as? AppKitElement)?.view as? AppKitWebView, let held = webHolds(property, web) {
             return held
         }
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
