@@ -67,6 +67,12 @@ final class GTKTextEditorView: GTKView, GTKInputView {
         return String(cString: words)
     }
 
+    /// The words stand in the editor's direction, the window that scrolls them in it too.
+    override func setDirection(_ direction: GtkTextDirection) {
+        super.setDirection(direction)
+        gtk_widget_set_direction(editor, direction)
+    }
+
     func setText(_ text: String) {
         guard text != self.text else { return }
         gtk_text_buffer_set_text(buffer, text, -1)

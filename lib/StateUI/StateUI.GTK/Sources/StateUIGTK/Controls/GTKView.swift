@@ -118,6 +118,16 @@ class GTKView {
         swapClass(&tintClass, to: self.tint.map { GTKStyleSheet.tint($0, on: accent) })
     }
 
+    /// Lays the view out, and writes its words, in `direction` - a field's and a stepper's through the text they
+    /// edit by.
+    /// Design: docs/design/platforms/gtk/layout.md#right-to-left
+    func setDirection(_ direction: GtkTextDirection) {
+        gtk_widget_set_direction(widget, direction)
+        guard g_type_check_instance_is_a(widget.of(GTypeInstance.self), gtk_editable_get_type()) != 0,
+              let words = gtk_editable_get_delegate(widget.opaque) else { return }
+        gtk_widget_set_direction(UnsafeMutablePointer(words), direction)
+    }
+
     func setShown(_ shown: Bool) {
         isShown = shown
         gtk_widget_set_visible(widget, shown ? 1 : 0)

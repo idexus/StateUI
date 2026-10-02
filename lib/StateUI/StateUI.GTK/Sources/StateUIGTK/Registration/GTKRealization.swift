@@ -54,6 +54,7 @@ enum GTKRealization {
         .complete("PageElement", "title"),
         .notPlanned("PropertyContainer", "accessibilityIdentifier", reason: "GTK 4 gives an accessible the identifier "
             + "a GtkBuilder file names alone: none is set on a widget made in code."),
+        .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
@@ -108,6 +109,8 @@ enum GTKRealization {
         .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),
+        .partial("TextEditor", "layoutDirection",
+                 missing: "Its placeholder stands at the left edge whichever way the words are written."),
         .partial("TimePicker", "format",
                  missing: "GTK writes hours and minutes in the user's own clock, whatever the format asks: no seconds, no pattern."),
         .complete("ToolbarItem", "isDestructive"),

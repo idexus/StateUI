@@ -13,7 +13,7 @@ ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isVisible: ✅
-ActivityIndicator.layoutDirection: not realized
+ActivityIndicator.layoutDirection: ✅
 ActivityIndicator.maximumHeight: ✅
 ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
@@ -47,7 +47,7 @@ Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
 Button.isFocusedChanged: ✅
 Button.isVisible: ✅
-Button.layoutDirection: not realized
+Button.layoutDirection: ✅
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -81,7 +81,7 @@ Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
 Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.isVisible: ✅
-Canvas.layoutDirection: not realized
+Canvas.layoutDirection: ✅
 Canvas.maximumHeight: ✅
 Canvas.maximumWidth: ✅
 Canvas.minimumHeight: ✅
@@ -115,7 +115,7 @@ CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
 CheckBox.isFocusedChanged: ✅
 CheckBox.isVisible: ✅
-CheckBox.layoutDirection: not realized
+CheckBox.layoutDirection: ✅
 CheckBox.maximumHeight: ✅
 CheckBox.maximumWidth: ✅
 CheckBox.minimumHeight: ✅
@@ -149,7 +149,7 @@ ColorBox.isAccessibilityHidden: ✅
 ColorBox.isEnabled: ✅
 ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.isVisible: ✅
-ColorBox.layoutDirection: not realized
+ColorBox.layoutDirection: ✅
 ColorBox.maximumHeight: ✅
 ColorBox.maximumWidth: ✅
 ColorBox.minimumHeight: ✅
@@ -183,7 +183,7 @@ DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
 DatePicker.isFocusedChanged: ✅
 DatePicker.isVisible: ✅
-DatePicker.layoutDirection: not realized
+DatePicker.layoutDirection: ✅
 DatePicker.maximumHeight: ✅
 DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
@@ -217,7 +217,7 @@ Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
 Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.isVisible: ✅
-Ellipse.layoutDirection: not realized
+Ellipse.layoutDirection: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
@@ -251,7 +251,7 @@ Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
 Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.isVisible: ✅
-Grid.layoutDirection: not realized
+Grid.layoutDirection: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
@@ -285,7 +285,7 @@ HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
 HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.isVisible: ✅
-HStack.layoutDirection: not realized
+HStack.layoutDirection: ✅
 HStack.maximumHeight: ✅
 HStack.maximumWidth: ✅
 HStack.minimumHeight: ✅
@@ -319,7 +319,7 @@ Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
 Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.isVisible: ✅
-Image.layoutDirection: not realized
+Image.layoutDirection: ✅
 Image.maximumHeight: ✅
 Image.maximumWidth: ✅
 Image.minimumHeight: ✅
@@ -353,7 +353,7 @@ ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
 ItemsView.isFocusedChanged: ✅
 ItemsView.isVisible: ✅
-ItemsView.layoutDirection: not realized
+ItemsView.layoutDirection: ✅
 ItemsView.maximumHeight: ✅
 ItemsView.maximumWidth: ✅
 ItemsView.minimumHeight: ✅
@@ -387,7 +387,7 @@ Label.isAccessibilityHidden: ✅
 Label.isEnabled: ✅
 Label.isFocusedChanged: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.isVisible: ✅
-Label.layoutDirection: not realized
+Label.layoutDirection: ✅
 Label.maximumHeight: ✅
 Label.maximumWidth: ✅
 Label.minimumHeight: ✅
@@ -421,7 +421,7 @@ Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.isVisible: ✅
-Line.layoutDirection: not realized
+Line.layoutDirection: ✅
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
 Line.minimumHeight: ✅
@@ -489,7 +489,7 @@ Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
 Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.isVisible: ✅
-Path.layoutDirection: not realized
+Path.layoutDirection: ✅
 Path.maximumHeight: ✅
 Path.maximumWidth: ✅
 Path.minimumHeight: ✅
@@ -523,7 +523,7 @@ Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
 Picker.isFocusedChanged: ✅
 Picker.isVisible: ✅
-Picker.layoutDirection: not realized
+Picker.layoutDirection: ✅
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅
@@ -557,7 +557,7 @@ Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
 Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.isVisible: ✅
-Polygon.layoutDirection: not realized
+Polygon.layoutDirection: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
@@ -591,7 +591,7 @@ Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.isVisible: ✅
-Polyline.layoutDirection: not realized
+Polyline.layoutDirection: ✅
 Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
@@ -625,7 +625,7 @@ ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
 ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.isVisible: ✅
-ProgressBar.layoutDirection: not realized
+ProgressBar.layoutDirection: ✅
 ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
@@ -659,7 +659,7 @@ RadioButton.isAccessibilityHidden: ✅
 RadioButton.isEnabled: ✅
 RadioButton.isFocusedChanged: ✅
 RadioButton.isVisible: ✅
-RadioButton.layoutDirection: not realized
+RadioButton.layoutDirection: ✅
 RadioButton.maximumHeight: ✅
 RadioButton.maximumWidth: ✅
 RadioButton.minimumHeight: ✅
@@ -693,7 +693,7 @@ Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
 Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.isVisible: ✅
-Rectangle.layoutDirection: not realized
+Rectangle.layoutDirection: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅
@@ -727,7 +727,7 @@ ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
 ScrollView.isFocusedChanged: ✅
 ScrollView.isVisible: ✅
-ScrollView.layoutDirection: not realized
+ScrollView.layoutDirection: ✅
 ScrollView.maximumHeight: ✅
 ScrollView.maximumWidth: ✅
 ScrollView.minimumHeight: ✅
@@ -761,7 +761,7 @@ SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
 SearchField.isFocusedChanged: ✅
 SearchField.isVisible: ✅
-SearchField.layoutDirection: not realized
+SearchField.layoutDirection: ✅
 SearchField.maximumHeight: ✅
 SearchField.maximumWidth: ✅
 SearchField.minimumHeight: ✅
@@ -795,7 +795,7 @@ Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
 Slider.isFocusedChanged: ✅
 Slider.isVisible: ✅
-Slider.layoutDirection: not realized
+Slider.layoutDirection: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
@@ -829,7 +829,7 @@ Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
 Stepper.isFocusedChanged: ✅
 Stepper.isVisible: ✅
-Stepper.layoutDirection: not realized
+Stepper.layoutDirection: ✅
 Stepper.maximumHeight: ✅
 Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅
@@ -863,7 +863,7 @@ Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
 Switch.isFocusedChanged: ✅
 Switch.isVisible: ✅
-Switch.layoutDirection: not realized
+Switch.layoutDirection: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
@@ -897,7 +897,7 @@ TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
 TextEditor.isFocusedChanged: ✅
 TextEditor.isVisible: ✅
-TextEditor.layoutDirection: not realized
+TextEditor.layoutDirection: ☑️ Its placeholder stands at the left edge whichever way the words are written.
 TextEditor.maximumHeight: ✅
 TextEditor.maximumWidth: ✅
 TextEditor.minimumHeight: ✅
@@ -931,7 +931,7 @@ TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
 TextField.isFocusedChanged: ✅
 TextField.isVisible: ✅
-TextField.layoutDirection: not realized
+TextField.layoutDirection: ✅
 TextField.maximumHeight: ✅
 TextField.maximumWidth: ✅
 TextField.minimumHeight: ✅
@@ -965,7 +965,7 @@ TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
 TimePicker.isFocusedChanged: ✅
 TimePicker.isVisible: ✅
-TimePicker.layoutDirection: not realized
+TimePicker.layoutDirection: ✅
 TimePicker.maximumHeight: ✅
 TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
@@ -999,7 +999,7 @@ VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
 VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.isVisible: ✅
-VStack.layoutDirection: not realized
+VStack.layoutDirection: ✅
 VStack.maximumHeight: ✅
 VStack.maximumWidth: ✅
 VStack.minimumHeight: ✅
@@ -1033,7 +1033,7 @@ WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
 WebView.isFocusedChanged: ✅
 WebView.isVisible: ✅
-WebView.layoutDirection: not realized
+WebView.layoutDirection: ✅
 WebView.maximumHeight: ✅
 WebView.maximumWidth: ✅
 WebView.minimumHeight: ✅
@@ -1067,7 +1067,7 @@ ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅
 ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isVisible: ✅
-ZStack.layoutDirection: not realized
+ZStack.layoutDirection: ✅
 ZStack.maximumHeight: ✅
 ZStack.maximumWidth: ✅
 ZStack.minimumHeight: ✅

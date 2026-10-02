@@ -41,7 +41,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>27 ✅ · 28 ✓ · 3 –</td><td><code>UIView</code> <code>draw(_:)</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 3 –</td><td><code>View</code> <code>onDraw(Canvas)</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>52 ✅ · 3 –</td><td>Direct2D in a <code>SurfaceImageSource</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>43 ✅ · 11 ✓ · 4 –</td><td><code>GtkDrawingArea</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>44 ✅ · 11 ✓ · 4 –</td><td><code>GtkDrawingArea</code></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;canvas&gt;</code></td></tr>
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
@@ -96,8 +96,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: Canvas takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">WinUI 3: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>minimumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>

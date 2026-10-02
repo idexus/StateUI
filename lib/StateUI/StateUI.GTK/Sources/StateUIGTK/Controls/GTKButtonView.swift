@@ -119,6 +119,7 @@ final class GTKButtonView: GTKView {
 
         let across = position == .leading || position == .trailing
         let box = gtk_box_new(across ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, Int32((spacing ?? 6).rounded()))!
+        gtk_widget_set_direction(box, gtk_widget_get_direction(widget))
         let label = gtk_label_new(caption)!
         let first = position == .leading || position == .top
         for part in first ? [picture.widget, label] : [label, picture.widget] {
@@ -192,6 +193,12 @@ final class GTKButtonView: GTKView {
     /// The caption the button shows now, read back from GTK.
     var text: String {
         captionLabel.flatMap { gtk_label_get_text($0) }.map { String(cString: $0) } ?? ""
+    }
+
+    /// The picture and the caption stand in the button's direction too.
+    override func setDirection(_ direction: GtkTextDirection) {
+        super.setDirection(direction)
+        if let content = gtk_button_get_child(widget.of(GtkButton.self)) { gtk_widget_set_direction(content, direction) }
     }
 
     override func clicked() {

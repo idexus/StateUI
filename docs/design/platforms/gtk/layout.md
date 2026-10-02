@@ -84,3 +84,20 @@ program's write: `ProgramWrite` drops that echo, and nothing else is kept.
 A viewport owns its child: a view whose parent is not a StateUI panel is not
 taken out by the view as it goes, and the scroller takes its document out of
 the viewport before it goes itself.
+
+## Right to left
+
+A layout mirrors its children by the host layer's arithmetic, never by GTK's
+direction ([right to left](../../host/layout.md#right-to-left)). What a widget
+draws of itself - where a field's words start, which end a slider fills from,
+the side a check box's mark stands on - follows GTK's own direction, which
+each element's widget takes from the element as it is made and as it turns.
+
+GTK hands a widget's direction to none of its parts: below it, every widget
+keeps the language's. So the host hands it on where words are written: to
+the text a field, a search field or a stepper edit by, which GTK names
+publicly as the editable's delegate (`gtk_editable_get_delegate`); to an
+editor's text view; to the box a button stands its picture and caption in,
+made in the button's direction whenever it is made again. An editor's
+placeholder is laid over its text at a place from the left edge, and stays
+there.

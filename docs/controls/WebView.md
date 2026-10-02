@@ -47,7 +47,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 26 ✓</td><td><code>WKWebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 3 –</td><td><code>WebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>20 ✅ · 15 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 12 ✓ · 1 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 12 ✓ · 1 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;iframe&gt;</code> (?)</td></tr>
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
@@ -124,8 +124,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">AppKit: not realized<br>Android Views: WebView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
-<tr><td colspan="9">AppKit, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td></td></tr>

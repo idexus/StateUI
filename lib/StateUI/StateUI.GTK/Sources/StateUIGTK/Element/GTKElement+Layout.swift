@@ -3,9 +3,15 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIGTK
 
 /// Children placed: the layout item each child gives its parent.
 extension GTKElement {
+    /// The view lays out, and its control writes, in the element's direction.
+    func directionChanged() {
+        view?.setDirection(element.layoutDirection == .rightToLeft ? GTK_TEXT_DIR_RTL : GTK_TEXT_DIR_LTR)
+    }
+
     /// Hands a layout its children's items, in order - a page's slots furnish its header bar and stand in none of
     /// its room - and a label the runs of its spans.
     func arrangeChildren() {

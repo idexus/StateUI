@@ -229,6 +229,8 @@ final class GTKDriver: HostDriver {
         case (.isVisible, let view?): return (gtk_widget_get_mapped(view.widget) != 0).propValue
         case (.opacity, let view?): return gtk_widget_get_opacity(view.widget).propValue
         case (.isEnabled, let view?): return (gtk_widget_get_sensitive(view.widget) != 0).propValue
+        case (.layoutDirection, let view?):
+            return (gtk_widget_get_direction(view.widget) == GTK_TEXT_DIR_RTL ? LayoutDirection.rightToLeft : .leftToRight).propValue
         default: throw DriverCannot(reading: property, of: element)
         }
     }
