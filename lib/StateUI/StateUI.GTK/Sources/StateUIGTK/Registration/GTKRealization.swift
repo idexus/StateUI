@@ -84,7 +84,7 @@ enum GTKRealization {
         .notPlanned("Picker", "isOpen", reason: "GTK's drop-down tells no one its list opened or closed."),
         .notPlanned("Picker", "opened", reason: "GTK's drop-down tells no one its list opened or closed."),
         .notPlanned("Picker", "tint", reason: "A GNOME drop-down wears no accent: a check in its words' colour marks the choice."),
-        .notPlanned("Picker", "title", reason: "GTK's drop-down shows a choice or nothing: it has no words standing for none."),
+        .notPlanned("Picker", "placeholder", reason: "GTK's drop-down shows a choice or nothing: it has no words standing for none."),
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),

@@ -7,7 +7,7 @@ public protocol CanvasProperties: PropertyContainer {}
 extension CanvasProperties {
     /// What to draw, written as the canvas calls that make the drawing.
     ///
-    ///     .drawable {
+    ///     .drawing {
     ///         Draw.strokeColor(.firebrick)
     ///         Draw.strokeWidth(2)
     ///         Draw.drawLine(x1: 0, y1: 0, x2: 120, y2: 0)
@@ -15,8 +15,8 @@ extension CanvasProperties {
     ///
     /// Usually given in the initializer instead; this is how a `Style<Canvas>`
     /// states one.
-    public func drawable(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Modified {
-        setValue(CanvasContract.drawable, drawing())
+    public func drawing(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Modified {
+        setValue(CanvasContract.drawing, drawing())
     }
 }
 
@@ -50,7 +50,7 @@ public struct Canvas: ElementView, CanvasProperties {
     /// A canvas showing what the closure draws.
     public init(@DrawingBuilder _ drawing: () -> [DrawCommand]) {
         node = Node(contract: CanvasContract.self)
-        node.write(CanvasContract.drawable, drawing())
+        node.write(CanvasContract.drawing, drawing())
     }
 
     /// A finger went down, or a mouse button was pressed.

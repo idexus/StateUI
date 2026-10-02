@@ -106,7 +106,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
 
             Picker(Self.colors)
                 .selectedIndex($color)
-                .title("Color")
+                .placeholder("Color")
 
             HStack {
                 Text("Spin")
@@ -869,7 +869,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("cube3D.color")
                 .accessibilityLabel("Color")
                 .selectedIndex($color)
-                .title("Color")
+                .placeholder("Color")
 
             HStack {
                 Text("Spin")

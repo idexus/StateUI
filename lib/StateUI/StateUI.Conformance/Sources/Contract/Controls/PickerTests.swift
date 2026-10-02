@@ -51,12 +51,12 @@
                 s.expect(heard.values, ["chose 2"], "and heard by nobody")
             },
             ConformanceCase("theUsersChoiceStandsWhileTheTreeChangesItsTitle", proves: [
-                Covered(PickerContract.title),
+                Covered(PickerContract.placeholder),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let named = State(wrappedValue: false)
                 s.start {
                     VStack {
-                        Picker(["S", "M", "L"]).title(named.wrappedValue ? "Size" : "Pick").id("picker")
+                        Picker(["S", "M", "L"]).placeholder(named.wrappedValue ? "Size" : "Pick").id("picker")
                         Button("Name").onClicked { named.wrappedValue = true }.id("change")
                     }
                 }
@@ -65,7 +65,7 @@
                 try s.perform(.choose(2), on: picker)
                 try s.settle { try s.held(PickerContract.selectedIndex, on: picker) == 2 }
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(PickerContract.title, on: picker) == "Size" }
+                try s.settle { try s.held(PickerContract.placeholder, on: picker) == "Size" }
                 s.expect(try s.held(PickerContract.selectedIndex, on: picker), 2, "the user's choice, not argued with")
             },
             ConformanceCase("choicesTheTreeChangesAreOffered", proves: [
@@ -135,7 +135,7 @@
                 s.settle { heard.values == ["closed"] }
                 s.expect(heard.values, ["closed"], "the user closing what the program opened")
             },
-            Aspects.holds(PickerContract.title, on: "Picker", "Size", then: "Colour",
+            Aspects.holds(PickerContract.placeholder, on: "Picker", "Size", then: "Colour",
                           with: [Write(PickerContract.options, ["S", "M"])]),
         ]
     }

@@ -28,7 +28,7 @@ final class PositionIndicatorTests: XCTestCase {
 
     /// As many dots as the count, each the size it is given, the current one in its own colour.
     func testTheCountIsTheDotsTheCurrentOneMarked() {
-        let row = dots(PositionIndicator().count(5).position(2).indicatorColor(.gray).selectedIndicatorColor(.red)
+        let row = dots(PositionIndicator().count(5).position(2).indicatorColor(.gray).currentIndicatorColor(.red)
             .indicatorSize(10))
 
         XCTAssertEqual(row.count, 5)
@@ -48,7 +48,7 @@ final class PositionIndicatorTests: XCTestCase {
         XCTAssertEqual(PositionIndicator.shown(count: 3, position: 1, maximumVisible: 5, hidesSingle: true), 0..<3)
         XCTAssertEqual(PositionIndicator.shown(count: 4, position: 0, maximumVisible: 0, hidesSingle: true), 0..<1)
 
-        let row = dots(PositionIndicator().count(12).position(6).maximumVisible(5).selectedIndicatorColor(.red))
+        let row = dots(PositionIndicator().count(12).position(6).maximumVisible(5).currentIndicatorColor(.red))
         XCTAssertEqual(row.count, 5)
         XCTAssertEqual(row.firstIndex { $0.properties[.color] == Color.red.propValue }, 2)
     }
@@ -56,14 +56,14 @@ final class PositionIndicatorTests: XCTestCase {
     /// One lonely dot is hidden unless the row asks for it; no items, no dots.
     func testALoneDotIsHiddenUnlessAskedFor() {
         XCTAssertEqual(dots(PositionIndicator().count(1)).count, 0)
-        XCTAssertEqual(dots(PositionIndicator().count(1).hideSingle(false)).count, 1)
+        XCTAssertEqual(dots(PositionIndicator().count(1).hidesForSinglePage(false)).count, 1)
         XCTAssertEqual(dots(PositionIndicator()).count, 0)
     }
 
     /// A dot is round, a square has square corners.
     func testADotIsRoundASquareIsNot() {
         let round = dots(PositionIndicator().count(2).indicatorSize(8)).first?.properties[.cornerRadius]
-        let square = dots(PositionIndicator().count(2).indicatorSize(8).indicatorsShape(.square)).first?
+        let square = dots(PositionIndicator().count(2).indicatorSize(8).indicatorShape(.square)).first?
             .properties[.cornerRadius]
 
         XCTAssertNotEqual(round, square)

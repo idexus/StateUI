@@ -27,7 +27,7 @@ extension AppKitRegistrations {
             }
             return canvas
         }, members: { canvas in
-            canvas.property(CanvasContract.drawable) { view, drawing in
+            canvas.property(CanvasContract.drawing) { view, drawing in
                 view.apply(drawing)
             }
             canvas.raises(CanvasContract.pressed)

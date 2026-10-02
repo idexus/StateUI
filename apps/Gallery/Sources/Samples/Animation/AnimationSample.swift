@@ -50,7 +50,7 @@ struct AnimationSample: SampleContent, ExampleContent {
 
             Picker(Self.curves)
                 .selectedIndex($curve)
-                .title("Easing")
+                .placeholder("Easing")
 
             HStack {
                 // A movement answers whether it ran to the END. Stop says
@@ -131,7 +131,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("animation.curve")
                 .accessibilityLabel("Easing curve")
                 .selectedIndex($curve)
-                .title("Easing")
+                .placeholder("Easing")
 
             HStack {
                 // A movement answers whether it ran to the END. Stop says

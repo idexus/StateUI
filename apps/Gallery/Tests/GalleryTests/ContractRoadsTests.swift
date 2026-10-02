@@ -161,8 +161,8 @@ final class ContractRoadsTests: XCTestCase {
             contract: #"_ = Button("Save").shape(.roundedRectangle(8))"#),
         Road(
             name: "the withdrawn style of the composed PositionIndicator",
-            removed: "_ = Style<PositionIndicator>().selectedIndicatorColor(.red)",
-            contract: "_ = PositionIndicator().selectedIndicatorColor(.red)"),
+            removed: "_ = Style<PositionIndicator>().currentIndicatorColor(.red)",
+            contract: "_ = PositionIndicator().currentIndicatorColor(.red)"),
         Road(
             name: "the withdrawn PositionIndicatorContract",
             removed: "_ = PositionIndicator().setValue(PositionIndicatorContract.count, 3)",
@@ -391,6 +391,30 @@ final class ContractRoadsTests: XCTestCase {
             name: "a drag's end reported as a completed drop",
             removed: "_ = ViewContract.dropCompleted",
             contract: "_ = ViewContract.dragEnded"),
+        Road(
+            name: "a picker's empty caption as its title",
+            removed: "_ = PickerContract.title",
+            contract: "_ = PickerContract.placeholder"),
+        Road(
+            name: "the current dot's colour as selected",
+            removed: "_ = PositionIndicator().selectedIndicatorColor(.red)",
+            contract: "_ = PositionIndicator().currentIndicatorColor(.red)"),
+        Road(
+            name: "the dots' shape in the plural",
+            removed: "_ = PositionIndicator().indicatorsShape(.square)",
+            contract: "_ = PositionIndicator().indicatorShape(.square)"),
+        Road(
+            name: "one dot hidden by command",
+            removed: "_ = PositionIndicator().hideSingle(false)",
+            contract: "_ = PositionIndicator().hidesForSinglePage(false)"),
+        Road(
+            name: "a gallery fading",
+            removed: #"_ = GalleryView(["a", "b"]) { Text($0) }.fading(0)"#,
+            contract: #"_ = GalleryView(["a", "b"]) { Text($0) }.fade(0)"#),
+        Road(
+            name: "a canvas holding a drawable",
+            removed: "_ = CanvasContract.drawable",
+            contract: "_ = CanvasContract.drawing"),
         Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,

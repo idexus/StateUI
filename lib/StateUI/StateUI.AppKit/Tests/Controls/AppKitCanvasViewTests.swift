@@ -40,7 +40,7 @@ final class AppKitCanvasViewTests: XCTestCase {
             Draw.saveState()
             Draw.restoreState()
         }
-        let value = try XCTUnwrap(element.node.props[.drawable])
+        let value = try XCTUnwrap(element.node.props[.drawing])
         let view = AppKitCanvasView()
 
         view.apply(Self.drawing(value))
@@ -57,7 +57,7 @@ final class AppKitCanvasViewTests: XCTestCase {
         }
         let view = AppKitCanvasView()
         view.frame = NSRect(x: 0, y: 0, width: 40, height: 40)
-        view.apply(Self.drawing(try XCTUnwrap(element.node.props[.drawable])))
+        view.apply(Self.drawing(try XCTUnwrap(element.node.props[.drawing])))
 
         let image = try bitmap(of: view)
 
@@ -76,7 +76,7 @@ final class AppKitCanvasViewTests: XCTestCase {
         }
         let view = AppKitCanvasView()
         view.frame = NSRect(x: 0, y: 0, width: 20, height: 20)
-        view.apply(Self.drawing(try XCTUnwrap(element.node.props[.drawable])))
+        view.apply(Self.drawing(try XCTUnwrap(element.node.props[.drawing])))
 
         let image = try bitmap(of: view, width: 80)
 
@@ -114,7 +114,7 @@ final class AppKitCanvasViewTests: XCTestCase {
             Draw.fillEllipse(x: 0, y: 0, width: 20, height: 20)
         }
         var canvas = HostPatch(id: .manual("canvas"), type: .canvas)
-        canvas.properties[.drawable] = try XCTUnwrap(element.node.props[.drawable])
+        canvas.properties[.drawing] = try XCTUnwrap(element.node.props[.drawing])
         canvas.events = .replace([
             .pressed: 10,
             .dragged: 11,

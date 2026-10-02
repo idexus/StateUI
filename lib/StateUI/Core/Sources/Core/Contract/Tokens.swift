@@ -118,7 +118,7 @@ extension NodeType {
     static let data = PathContract.data.token
     static let date = DatePickerContract.date.token
     static let dragText = ViewContract.dragText.token
-    static let drawable = CanvasContract.drawable.token
+    static let drawing = CanvasContract.drawing.token
     static let fill = ShapeContract.fill.token
     static let fillRule = PolygonContract.fillRule.token
     static let floatsOnTop = WindowContract.floatsOnTop.token

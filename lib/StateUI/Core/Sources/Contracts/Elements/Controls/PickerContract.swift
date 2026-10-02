@@ -27,6 +27,9 @@ public enum PickerContract: ElementContract {
     /// The list to choose from, in the order it is offered.
     public static let options = ElementProperty<Self, [String]>("options", layer: .structure, cleared: false)
 
+    /// What the field says while nothing is chosen.
+    public static let placeholder = ElementProperty<Self, String>("placeholder", layer: .native)
+
     /// Which item is chosen, counted from zero; -1 for none.
     public static let selectedIndex = ElementProperty<Self, Int>(
         "selectedIndex", layer: .native, travels: false, cleared: false)
@@ -34,11 +37,8 @@ public enum PickerContract: ElementContract {
     /// The user changed the choice, to the index it carries.
     public static let selectedIndexChanged = ElementEvent<Self, Int>("selectedIndexChanged", layer: .native)
 
-    /// What the field says while nothing is chosen.
-    public static let title = ElementProperty<Self, String>("title", layer: .native)
-
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        closed, isOpen, opened, options, selectedIndex, selectedIndexChanged, title,
+        closed, isOpen, opened, options, placeholder, selectedIndex, selectedIndexChanged,
     ]
 }

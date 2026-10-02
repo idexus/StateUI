@@ -82,7 +82,7 @@
             return lineProperties.contains(property)
 
         case .canvas:
-            return property == .drawable
+            return property == .drawing
 
         case .window:
             return windowProperties.contains(property)

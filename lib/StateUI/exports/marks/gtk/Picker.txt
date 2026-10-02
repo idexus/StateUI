@@ -5,7 +5,7 @@ Picker.frameChanged: ✅
 Picker.isOpen: – GTK's drop-down tells no one its list opened or closed.
 Picker.opened: – GTK's drop-down tells no one its list opened or closed.
 Picker.options: ✅
+Picker.placeholder: – GTK's drop-down shows a choice or nothing: it has no words standing for none.
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅
-Picker.title: – GTK's drop-down shows a choice or nothing: it has no words standing for none.
 Text.text: ✅

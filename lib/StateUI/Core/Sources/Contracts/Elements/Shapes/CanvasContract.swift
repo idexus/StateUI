@@ -17,7 +17,7 @@ public enum CanvasContract: ElementContract {
     public static let dragged = ElementEvent<Self, Point>("dragged", layer: .native)
 
     /// What the canvas draws: its instructions, in order.
-    public static let drawable = ElementProperty<Self, [DrawCommand]>("drawable", layer: .structure)
+    public static let drawing = ElementProperty<Self, [DrawCommand]>("drawing", layer: .structure)
 
     /// A finger went down, or a mouse button was pressed, at a point in the
     /// canvas.
@@ -27,5 +27,5 @@ public enum CanvasContract: ElementContract {
     public static let released = ElementEvent<Self, Point>("released", layer: .native)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [dragged, drawable, pressed, released]
+    public static let members: [any ContractMember] = [dragged, drawing, pressed, released]
 }

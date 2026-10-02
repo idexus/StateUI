@@ -24,8 +24,8 @@ extension PickerProperties {
 
     /// What the field says while nothing is chosen. A host can also reuse it
     /// as the heading of a separate native choice surface.
-    public func title(_ value: String) -> Modified {
-        setValue(PickerContract.title, value)
+    public func placeholder(_ value: String) -> Modified {
+        setValue(PickerContract.placeholder, value)
     }
 }
 

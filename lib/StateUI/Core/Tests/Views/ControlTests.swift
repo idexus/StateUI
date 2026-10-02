@@ -153,7 +153,7 @@ final class ControlTests: XCTestCase {
             ControlCase("Picker", source: "Picker.swift",
                 Picker(["Small", "Medium", "Large"])
                     .selectedIndex(1)
-                    .title("Size")
+                    .placeholder("Size")
                     .tint(.gray)
                     .isOpen(false)
                     .onSelectedIndexChanged { _ in }

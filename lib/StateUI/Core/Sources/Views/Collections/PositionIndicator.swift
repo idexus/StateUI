@@ -8,7 +8,7 @@
 ///         .count(cards.count)
 ///         .position(shown)
 ///         .indicatorColor(.lightGray)
-///         .selectedIndicatorColor(.cornflowerBlue)
+///         .currentIndicatorColor(.cornflowerBlue)
 ///
 /// It is joined to a `GalleryView` by shared state: the gallery's
 /// `.position($shown)` writes it as the user swipes, and `.position(shown)`
@@ -23,11 +23,11 @@ public struct PositionIndicator: View {
     private var count: Given<Int> = .value(0)
     private var position = 0
     private var indicatorColor: Given<Color> = .value(Self.dotColor)
-    private var selectedIndicatorColor: Given<Color> = .value(Self.currentColor)
+    private var currentIndicatorColor: Given<Color> = .value(Self.currentColor)
     private var indicatorSize: Given<Double> = .value(7)
     private var maximumVisible: Given<Int> = .value(.max)
-    private var indicatorsShape: Given<IndicatorShape> = .value(.circle)
-    private var hideSingle: Given<Bool> = .value(true)
+    private var indicatorShape: Given<IndicatorShape> = .value(.circle)
+    private var hidesForSinglePage: Given<Bool> = .value(true)
 
     /// A row with no dots yet - `count` gives it some.
     public init() {
@@ -55,7 +55,7 @@ public struct PositionIndicator: View {
     public var body: some View {
         let shown = Self.shown(
             count: marks?.nodes.count ?? count.current, position: position,
-            maximumVisible: maximumVisible.current, hidesSingle: hideSingle.current)
+            maximumVisible: maximumVisible.current, hidesSingle: hidesForSinglePage.current)
         let current = position
         return HStack {
             ForEach(shown) { place in
@@ -73,9 +73,9 @@ public struct PositionIndicator: View {
             return Mark(node: marks.nodes[place]).opacity(current ? 1 : Self.faded)
         }
         let size = indicatorSize.current
-        let color = current ? selectedIndicatorColor.current : indicatorColor.current
+        let color = current ? currentIndicatorColor.current : indicatorColor.current
         let dot = ColorBox(color)
-            .cornerRadius(indicatorsShape.current == .circle ? size / 2 : 0)
+            .cornerRadius(indicatorShape.current == .circle ? size / 2 : 0)
             .width(size)
             .height(size)
         return Mark(node: dot.node)
@@ -120,8 +120,8 @@ extension PositionIndicator {
     }
 
     /// And of the one that is.
-    public func selectedIndicatorColor(_ value: Color) -> Self {
-        with { $0.selectedIndicatorColor = .value(value) }
+    public func currentIndicatorColor(_ value: Color) -> Self {
+        with { $0.currentIndicatorColor = .value(value) }
     }
 
     /// How big each dot is, in device units, and how far apart.
@@ -135,13 +135,13 @@ extension PositionIndicator {
     }
 
     /// A dot or a square, for every dot.
-    public func indicatorsShape(_ value: IndicatorShape) -> Self {
-        with { $0.indicatorsShape = .value(value) }
+    public func indicatorShape(_ value: IndicatorShape) -> Self {
+        with { $0.indicatorShape = .value(value) }
     }
 
     /// Whether one lonely dot is hidden rather than drawn. True by default.
-    public func hideSingle(_ value: Bool) -> Self {
-        with { $0.hideSingle = .value(value) }
+    public func hidesForSinglePage(_ value: Bool) -> Self {
+        with { $0.hidesForSinglePage = .value(value) }
     }
 
     /// `count` from a state, `$x`: the row is built again as it changes.
@@ -149,9 +149,9 @@ extension PositionIndicator {
         with { $0.count = .state(state) }
     }
 
-    /// `hideSingle` from a state, `$x`: the row is built again as it changes.
-    public func hideSingle(_ state: Binding<Bool>) -> Self {
-        with { $0.hideSingle = .state(state) }
+    /// `hidesForSinglePage` from a state, `$x`: the row is built again as it changes.
+    public func hidesForSinglePage(_ state: Binding<Bool>) -> Self {
+        with { $0.hidesForSinglePage = .state(state) }
     }
 
     /// `indicatorColor` from a state, `$x`: the row is built again as it
@@ -165,10 +165,10 @@ extension PositionIndicator {
         with { $0.indicatorSize = .state(state) }
     }
 
-    /// `indicatorsShape` from a state, `$x`: the row is built again as it
+    /// `indicatorShape` from a state, `$x`: the row is built again as it
     /// changes.
-    public func indicatorsShape(_ state: Binding<IndicatorShape>) -> Self {
-        with { $0.indicatorsShape = .state(state) }
+    public func indicatorShape(_ state: Binding<IndicatorShape>) -> Self {
+        with { $0.indicatorShape = .state(state) }
     }
 
     /// `maximumVisible` from a state, `$x`: the row is built again as it
@@ -177,10 +177,10 @@ extension PositionIndicator {
         with { $0.maximumVisible = .state(state) }
     }
 
-    /// `selectedIndicatorColor` from a state, `$x`: the row is built again as
+    /// `currentIndicatorColor` from a state, `$x`: the row is built again as
     /// it changes, and the current dot travels to the new colour.
-    public func selectedIndicatorColor(_ state: Binding<Color>) -> Self {
-        with { $0.selectedIndicatorColor = .state(state) }
+    public func currentIndicatorColor(_ state: Binding<Color>) -> Self {
+        with { $0.currentIndicatorColor = .state(state) }
     }
 
     private func with(_ change: (inout Self) -> Void) -> Self {

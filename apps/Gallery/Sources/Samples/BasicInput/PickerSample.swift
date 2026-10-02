@@ -29,7 +29,7 @@ struct PickerSample: SampleContent, ExampleContent {
             Picker(Self.sizes)
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
-                .title("Size")
+                .placeholder("Size")
                 // Settable, so a button elsewhere can open the list. The two
                 // events answer the user and the platform - never this
                 // side's own write.
@@ -60,7 +60,7 @@ struct PickerSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Size")
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
-                .title("Size")
+                .placeholder("Size")
                 .isOpen(showing)
                 .onOpened { opened += 1; showing = true }
                 .onClosed { showing = false }

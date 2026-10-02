@@ -104,7 +104,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .count(cards.count)
                     .position(shown)
                     .indicatorColor(Palette.outline)
-                    .selectedIndicatorColor(Palette.accent)
+                    .currentIndicatorColor(Palette.accent)
 
                 Text("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
                     + "card \\(shown + 1) of \\(cards.count) · \\(opened) · moved \\(moves)")
@@ -144,7 +144,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             // whatever is behind it, which on a wheel is the next card - so
             // depth is a shade drawn OVER the card. It wears the card's own
             // corners, which is why the view is the application's to give.
-            // `.fading(_:)` says how much fade is left beside it.
+            // `.fade(_:)` says how much fade is left beside it.
             return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
         }
 
@@ -201,7 +201,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .count(Self.cards.count)
                     .position(shown)
                     .indicatorColor(Palette.outline)
-                    .selectedIndicatorColor(Palette.accent)
+                    .currentIndicatorColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 Text("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
@@ -325,7 +325,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded. Turn it off and watch a far card go transparent - "
                 + "what shows through is the card behind it. The shade is a view because "
-                + "it has to wear the card's own corners, and `.fading(_:)` beside it "
+                + "it has to wear the card's own corners, and `.fade(_:)` beside it "
                 + "says how much fade is left, from 0 to 1.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

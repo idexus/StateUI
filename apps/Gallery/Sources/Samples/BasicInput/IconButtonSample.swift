@@ -61,7 +61,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
 
             Picker(Self.sides)
                 .selectedIndex($side)
-                .title("Picture")
+                .placeholder("Picture")
 
             Slider($gap)
                 .minimum(0)
@@ -113,7 +113,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
 
             Picker(Self.sides)
                 .selectedIndex($side)
-                .title("Picture")
+                .placeholder("Picture")
                 .horizontalAlignment(.center)
 
             Slider($gap)

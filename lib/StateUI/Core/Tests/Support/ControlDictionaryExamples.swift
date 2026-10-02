@@ -266,7 +266,7 @@ extension ControlDictionary {
 
             Picker(["Small", "Medium", "Large"])
                 .selectedIndex($size)
-                .title("Size")
+                .placeholder("Size")
             """#),
 
         (PinContract.self, #"""

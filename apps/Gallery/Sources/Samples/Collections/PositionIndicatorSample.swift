@@ -26,15 +26,15 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
 
             PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
-                .indicatorsShape(.square)
+                .indicatorShape(.square)
                 .indicatorSize(10)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
 
             HStack {
                 Button("Back")
@@ -57,7 +57,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .position(step)
                 .maximumVisible(12)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
 
             Text("The same twelve, maximumVisible(\\(Int(cap)))")
 
@@ -66,36 +66,36 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .position(step)
                 .maximumVisible(Int(cap))
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
 
             Stepper($cap)
                 .minimum(4)
                 .maximum(12)
 
-            // One item twice. `hideSingle` is true by default, so the
+            // One item twice. `hidesForSinglePage` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
             // about where the user is - and the right-hand one asks for it.
             HStack {
                 VStack {
-                    Text("hideSingle(true)")
+                    Text("hidesForSinglePage(true)")
 
                     PositionIndicator()
                         .count(1)
                         .position(0)
-                        .hideSingle(true)
+                        .hidesForSinglePage(true)
                         .indicatorColor(Palette.outline)
-                        .selectedIndicatorColor(Palette.accent)
+                        .currentIndicatorColor(Palette.accent)
                 }
 
                 VStack {
-                    Text("hideSingle(false)")
+                    Text("hidesForSinglePage(false)")
 
                     PositionIndicator()
                         .count(1)
                         .position(0)
-                        .hideSingle(false)
+                        .hidesForSinglePage(false)
                         .indicatorColor(Palette.outline)
-                        .selectedIndicatorColor(Palette.accent)
+                        .currentIndicatorColor(Palette.accent)
                 }
             }
         }
@@ -116,16 +116,16 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
             PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
-                .indicatorsShape(.square)
+                .indicatorShape(.square)
                 .indicatorSize(10)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
             HStack {
@@ -158,7 +158,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .position(step)
                 .maximumVisible(12)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
             Text("The same twelve, maximumVisible(\(Int(cap)))")
@@ -171,7 +171,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .position(step)
                 .maximumVisible(Int(cap))
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
             Stepper($cap)
@@ -181,12 +181,12 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .maximum(12)
                 .horizontalAlignment(.center)
 
-            // One item twice. `hideSingle` is true by default, so the
+            // One item twice. `hidesForSinglePage` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
             // about where the user is - and the right-hand one asks for it.
             HStack {
                 VStack {
-                    Text("hideSingle(true)")
+                    Text("hidesForSinglePage(true)")
                         .fontSize(12)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -194,15 +194,15 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                     PositionIndicator()
                         .count(1)
                         .position(0)
-                        .hideSingle(true)
+                        .hidesForSinglePage(true)
                         .indicatorColor(Palette.outline)
-                        .selectedIndicatorColor(Palette.accent)
+                        .currentIndicatorColor(Palette.accent)
                         .horizontalAlignment(.center)
                 }
                 .spacing(6)
 
                 VStack {
-                    Text("hideSingle(false)")
+                    Text("hidesForSinglePage(false)")
                         .fontSize(12)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -210,9 +210,9 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                     PositionIndicator()
                         .count(1)
                         .position(0)
-                        .hideSingle(false)
+                        .hidesForSinglePage(false)
                         .indicatorColor(Palette.outline)
-                        .selectedIndicatorColor(Palette.accent)
+                        .currentIndicatorColor(Palette.accent)
                         .horizontalAlignment(.center)
                 }
                 .spacing(6)
@@ -242,7 +242,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`hideSingle` is true by default, which is why an indicator over a "
+            Text("`hidesForSinglePage` is true by default, which is why an indicator over a "
                 + "ONE-item list draws nothing at all: a lone dot says nothing about where "
                 + "the user is. The two columns above are that same one-item indicator, "
                 + "both ways round.")

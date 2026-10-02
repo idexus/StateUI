@@ -19,10 +19,10 @@ extension UIKitRegistrations {
             picker.onClosed = { reports.raise(PickerContract.closed) }
             return picker
         }, members: { picker in
-            picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.title]) { view, values in
+            picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder]) { view, values in
                 view.setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
-                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.title])
+                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
             }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             picker.raises(PickerContract.selectedIndexChanged)

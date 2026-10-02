@@ -65,7 +65,7 @@ extension UIKitRegistrations {
             canvas.onReleased = { point in reports.raise(CanvasContract.released, Point(x: point.x, y: point.y)) }
             return canvas
         }, members: { canvas in
-            canvas.property(CanvasContract.drawable) { view, drawing in view.apply(drawing) }
+            canvas.property(CanvasContract.drawing) { view, drawing in view.apply(drawing) }
             canvas.raises(CanvasContract.pressed)
             canvas.raises(CanvasContract.dragged)
             canvas.raises(CanvasContract.released)

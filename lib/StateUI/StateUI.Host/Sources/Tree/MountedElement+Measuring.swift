@@ -23,6 +23,6 @@ extension MountedElement {
         .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
         .stroke, .fill, .strokeWidth, .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
         .strokeMiterLimit, .shape, .cornerRadius, .renderTransform, .barBackgroundColor, .barForegroundColor,
-        .drawable, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough,
+        .drawing, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough,
     ]).union(transformProperties).union(accessibilityProperties)
 }

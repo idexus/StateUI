@@ -1,7 +1,7 @@
 # revision 1.1
 Canvas: ✅
 Canvas.dragged: ✅
-Canvas.drawable: ✅
+Canvas.drawing: ✅
 Canvas.frameChanged: ✅
 Canvas.pressed: ✅
 Canvas.released: ✅

@@ -22,7 +22,7 @@ Button
   pressed()
   released()
 Canvas
-  drawable
+  drawing
   dragged()
   pressed()
   released()

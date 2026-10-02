@@ -284,8 +284,8 @@ final class HostContractTests: XCTestCase {
     /// boxes: no host receives a position indicator, so no contract declares one.
     func testThePositionIndicatorIsComposedNotDeclared() {
         XCTAssertNil(Self.layer(of: NodeType("PositionIndicator")), "PositionIndicator has a contract again")
-        for name in ["count", "indicatorColor", "selectedIndicatorColor", "indicatorSize", "indicatorsShape",
-                     "maximumVisible", "hideSingle"] {
+        for name in ["count", "indicatorColor", "currentIndicatorColor", "indicatorSize", "indicatorShape",
+                     "maximumVisible", "hidesForSinglePage"] {
             XCTAssertNil(Self.facts(of: name, kind: .property), "the composed indicator's \(name) is a member again")
         }
     }

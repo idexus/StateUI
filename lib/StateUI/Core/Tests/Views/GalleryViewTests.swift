@@ -438,7 +438,7 @@ final class GalleryViewTests: XCTestCase {
 
         let whole = farCard { $0.shade(mask) }
         let half = farCard { $0.shade(mask, amount: 0.5) }
-        let none = farCard { $0.shade(mask).fading(0) }
+        let none = farCard { $0.shade(mask).fade(0) }
 
         XCTAssertEqual(half.shade, whole.shade / 2, accuracy: 0.001, """
             the amount says how far the shade goes, and half of it is half as \

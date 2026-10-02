@@ -13,7 +13,7 @@
         [
             Aspects.standsAlone("Canvas"),
             ConformanceCase("itsInstructionsAreDrawnInOrder", proves: [
-                Covered(CanvasContract.drawable),
+                Covered(CanvasContract.drawing),
             ]) { s in
                 s.start {
                     VStack {
@@ -35,7 +35,7 @@
                 s.expect(try s.color(of: canvas, at: Point(60, 20)), .blue, "the later fill over it")
                 s.expect(try s.color(of: canvas, at: Point(95, 20)), nil, "nothing past both")
             },
-            ConformanceCase("aWholeTurnFillsTheWholeOval", proves: [Covered(CanvasContract.drawable)]) { s in
+            ConformanceCase("aWholeTurnFillsTheWholeOval", proves: [Covered(CanvasContract.drawing)]) { s in
                 s.start {
                     VStack {
                         Canvas {
@@ -59,7 +59,7 @@
                 s.expect(try s.color(of: canvas, at: Point(2, 2)), nil, "the oval's corner stands empty")
             },
             ConformanceCase("aDrawingTheTreeChangesIsDrawnAgain", proves: [
-                Covered(CanvasContract.drawable),
+                Covered(CanvasContract.drawing),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let blue = State(wrappedValue: false)
                 s.start {

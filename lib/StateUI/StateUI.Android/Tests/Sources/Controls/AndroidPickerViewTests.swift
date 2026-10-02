@@ -20,7 +20,7 @@ final class AndroidPickerViewTests: XCTestCase {
         try onMainActor {
             let chosen = State(wrappedValue: -1)
             let host = AndroidRenderer.running {
-                Picker(["S", "M", "L"]).selectedIndex(chosen.projectedValue).title("Size")
+                Picker(["S", "M", "L"]).selectedIndex(chosen.projectedValue).placeholder("Size")
             }
             host.layOut()
             let picker = try XCTUnwrap(host.views(AndroidPickerView.self).first)

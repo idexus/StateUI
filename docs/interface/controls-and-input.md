@@ -254,7 +254,7 @@ VStack {
     PositionIndicator()
         .count(4)
         .position(step)
-        .selectedIndicatorColor(.cornflowerBlue)
+        .currentIndicatorColor(.cornflowerBlue)
 
     Button("Next")
         .onClicked { step = (step + 1) % 4 }
@@ -263,8 +263,8 @@ VStack {
 
 StateUI composes it of colour boxes in a row, so it looks and behaves the same
 on every platform. `maximumVisible` caps the dots, the current one kept among
-them; one lone dot is hidden unless `hideSingle(false)` asks for it;
-`indicatorsShape(.square)` draws squares. Given items,
+them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
+`indicatorShape(.square)` draws squares. Given items,
 `PositionIndicator(items) { … }` shows each item's own mark, the current one
 whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.

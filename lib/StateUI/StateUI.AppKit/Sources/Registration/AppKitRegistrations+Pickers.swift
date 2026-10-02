@@ -19,7 +19,7 @@ extension AppKitRegistrations {
             return picker
         }, members: { picker in
             picker.applies([
-                PickerContract.options, PickerContract.selectedIndex, PickerContract.title,
+                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder,
                 PickerContract.isOpen, FontElementContract.fontFamily, FontElementContract.fontSize,
                 FontElementContract.fontAttributes, TextStyleElementContract.textColor,
                 TintElementContract.tint, TextAlignmentElementContract.horizontalTextAlignment,
@@ -29,7 +29,7 @@ extension AppKitRegistrations {
                     items: values[PickerContract.options] ?? [],
                     selectedIndex: values[PickerContract.selectedIndex] ?? -1,
                     writeSelection: values.changed(PickerContract.selectedIndex),
-                    title: values[PickerContract.title],
+                    title: values[PickerContract.placeholder],
                     font: appKitFont(
                         family: values[FontElementContract.fontFamily]?.text,
                         size: values[FontElementContract.fontSize],

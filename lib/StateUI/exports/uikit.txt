@@ -23,7 +23,7 @@ Button
   pressed()
   released()
 Canvas
-  drawable
+  drawing
   dragged()
   pressed()
   released()
@@ -123,8 +123,8 @@ Path
 Picker
   isEnabled
   options
+  placeholder
   selectedIndex
-  title
   closed()
   opened()
   selectedIndexChanged()

@@ -149,9 +149,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     /// - Parameter style: the arrangement.
     /// - Returns: the gallery, in that shape.
-    public func arrangement(_ style: GalleryArrangement) -> Self {
+    public func arrangement(_ arrangement: GalleryArrangement) -> Self {
         var copy = self
-        copy.look = style
+        copy.look = arrangement
         return copy
     }
 
@@ -249,7 +249,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// A shade darkens a far card without showing the card behind it, as
     /// fading would; the card in front wears none of it. Give the view the
     /// corners the card has. With a shade the fade drops to a quarter, unless
-    /// `fading(_:)` says otherwise.
+    /// `fade(_:)` says otherwise.
     ///
     /// - Parameters:
     ///   - view: what to draw over each card.
@@ -269,13 +269,13 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
     ///         .shade(ColorBox(Color("#000000")).cornerRadius(14))
-    ///         .fading(0)
+    ///         .fade(0)
     ///
     /// - Parameter amount: how far a far card fades.
     /// - Returns: the gallery, fading that much.
-    public func fading(_ amount: Double) -> Self {
+    public func fade(_ amount: Double) -> Self {
         var copy = self
-        copy.fades = Self.fraction(amount, "fading(_:)")
+        copy.fades = Self.fraction(amount, "fade(_:)")
         return copy
     }
 

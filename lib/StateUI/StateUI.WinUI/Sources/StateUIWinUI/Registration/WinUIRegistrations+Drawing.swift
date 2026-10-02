@@ -14,7 +14,7 @@ extension WinUIRegistrations {
             canvas.onReleased = { reports.raise(CanvasContract.released, $0) }
             return canvas
         }, members: { canvas in
-            canvas.property(CanvasContract.drawable) { view, drawing in view.draw(drawing) }
+            canvas.property(CanvasContract.drawing) { view, drawing in view.draw(drawing) }
             canvas.raises(CanvasContract.pressed)
             canvas.raises(CanvasContract.dragged)
             canvas.raises(CanvasContract.released)

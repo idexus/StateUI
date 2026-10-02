@@ -23,7 +23,7 @@ Button
   pressed()
   released()
 Canvas
-  drawable
+  drawing
   dragged()
   pressed()
   released()
@@ -128,10 +128,10 @@ Picker
   isEnabled
   isOpen
   options
+  placeholder
   selectedIndex
   textColor
   tint
-  title
   closed()
   opened()
   selectedIndexChanged()
