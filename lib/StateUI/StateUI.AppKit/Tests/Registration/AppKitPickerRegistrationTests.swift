@@ -10,10 +10,11 @@ import XCTest
 
 /// The pickers, realized through the registry: what each says it realizes -
 /// and what it refuses to claim - and the date and time their user picks
-/// reported by member, as the lanes those values are carried in.
+/// reported by member.
 ///
-/// What a picker does on screen is held to `AppKitPickerViewTests` and
-/// `AppKitDateTimePickerViewTests`, which drive the same registered views.
+/// What a picker does on screen is held to `AppKitPickerViewTests`,
+/// `AppKitDatePickerViewTests` and `AppKitTimePickerViewTests`, which drive the
+/// same registered views.
 final class AppKitPickerRegistrationTests: XCTestCase {
     /// The registry realizes all three, each with its own value and event -
     /// and claims no moment a native control does not have: an AppKit date or
@@ -52,14 +53,14 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         renderer.applyForTesting(tree(due))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("due")) as? AppKitDateTimePickerView)
-        XCTAssertEqual(native.valueLanesForTesting, [2026, 9, 16])
+            renderer.viewForTesting(id: .manual("due")) as? AppKitDatePickerView)
+        XCTAssertEqual(native.date, CalendarDate(year: 2026, month: 9, day: 16))
 
-        native.changeForTesting(to: [2027, 1, 1])
+        native.chooseForTesting(CalendarDate(year: 2027, month: 1, day: 1))
 
     }
 
-    /// A time picker does the same with the lanes a time of day is carried in.
+    /// A time picker does the same with a time of day.
     @MainActor
     func testATimePickerWearsItsTimeAndReportsTheUsersChoice() throws {
         let renderer = testRenderer(
@@ -73,10 +74,10 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         renderer.applyForTesting(tree(alarm))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("alarm")) as? AppKitDateTimePickerView)
-        XCTAssertEqual(native.valueLanesForTesting, [9, 30, 0])
+            renderer.viewForTesting(id: .manual("alarm")) as? AppKitTimePickerView)
+        XCTAssertEqual(native.time, ClockTime(hour: 9, minute: 30))
 
-        native.changeForTesting(to: [7, 15, 0])
+        native.chooseForTesting(ClockTime(hour: 7, minute: 15))
 
     }
 
@@ -94,10 +95,10 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         renderer.applyForTesting(tree(due))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("due")) as? AppKitDateTimePickerView)
+            renderer.viewForTesting(id: .manual("due")) as? AppKitDatePickerView)
 
-        XCTAssertEqual(native.minimumLanesForTesting, [2026, 1, 1])
-        XCTAssertEqual(native.maximumLanesForTesting, [2026, 12, 31])
+        XCTAssertEqual(native.earliestForTesting, CalendarDate(year: 2026, month: 1, day: 1))
+        XCTAssertEqual(native.latestForTesting, CalendarDate(year: 2026, month: 12, day: 31))
     }
 }
 #endif

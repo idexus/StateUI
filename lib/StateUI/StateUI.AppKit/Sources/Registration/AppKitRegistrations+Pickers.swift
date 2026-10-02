@@ -7,9 +7,7 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
-    /// A choice, a date and a time: what the user picks, reported by member.
-    /// A date and a time travel as the lanes their types carry, which is how
-    /// StateUI keeps a civil date out of an absolute instant's zone.
+    /// A choice, a day and a time: what the user picks, reported by member.
     static func pickers(_ registry: Registry<NSView>) {
         registry.add(PickerContract.self, create: { reports in
             let picker = AppKitPickerView()
@@ -52,12 +50,8 @@ extension AppKitRegistrations {
         })
 
         registry.add(DatePickerContract.self, create: { reports in
-            let picker = AppKitDateTimePickerView(mode: .date)
-            picker.onValueChanged = { lanes in
-                guard let picked = CalendarDate(propValue: .numbers(lanes)) else { return }
-
-                reports.report(DatePickerContract.date, picked, as: DatePickerContract.dateChanged)
-            }
+            let picker = AppKitDatePickerView()
+            picker.onChosen = { day in reports.report(DatePickerContract.date, day, as: DatePickerContract.dateChanged) }
             return picker
         }, members: { picker in
             picker.applies([
@@ -66,30 +60,16 @@ extension AppKitRegistrations {
                 FontElementContract.fontAttributes, TextStyleElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
-                view.apply(
-                    value: values[DatePickerContract.date]?.propValue.numbers,
-                    writeValue: values.changed(DatePickerContract.date),
-                    minimum: values[DatePickerContract.minimumDate]?.propValue.numbers,
-                    maximum: values[DatePickerContract.maximumDate]?.propValue.numbers,
-                    font: appKitFont(
-                        family: values[FontElementContract.fontFamily]?.text,
-                        size: values[FontElementContract.fontSize],
-                        attributes: values[FontElementContract.fontAttributes],
-                        fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                    textColor: values[TextStyleElementContract.textColor]
-                        .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                dress(view, values)
+                view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
+                if values.changed(DatePickerContract.date) { view.setDate(values[DatePickerContract.date]) }
             }
             picker.raises(DatePickerContract.dateChanged)
         })
 
         registry.add(TimePickerContract.self, create: { reports in
-            let picker = AppKitDateTimePickerView(mode: .time)
-            picker.onValueChanged = { lanes in
-                guard let picked = ClockTime(propValue: .numbers(lanes)) else { return }
-
-                reports.report(TimePickerContract.time, picked, as: TimePickerContract.timeChanged)
-            }
+            let picker = AppKitTimePickerView()
+            picker.onChosen = { time in reports.report(TimePickerContract.time, time, as: TimePickerContract.timeChanged) }
             return picker
         }, members: { picker in
             picker.applies([
@@ -97,22 +77,18 @@ extension AppKitRegistrations {
                 FontElementContract.fontAttributes, TextStyleElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
-                view.apply(
-                    value: values[TimePickerContract.time]?.propValue.numbers,
-                    writeValue: values.changed(TimePickerContract.time),
-                    minimum: nil,
-                    maximum: nil,
-                    font: appKitFont(
-                        family: values[FontElementContract.fontFamily]?.text,
-                        size: values[FontElementContract.fontSize],
-                        attributes: values[FontElementContract.fontAttributes],
-                        fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                    textColor: values[TextStyleElementContract.textColor]
-                        .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                dress(view, values)
+                if values.changed(TimePickerContract.time) { view.setTime(values[TimePickerContract.time]) }
             }
             picker.raises(TimePickerContract.timeChanged)
         })
+    }
+
+    /// A day's or a time's field in the font, colour and state its element gives.
+    private static func dress<Realized: ElementContract>(_ picker: NSDatePicker, _ values: ElementValues<Realized>) {
+        picker.font = font(values)
+        picker.textColor = values[TextStyleElementContract.textColor].flatMap { nsColor($0.propValue) } ?? .controlTextColor
+        picker.isEnabled = values[VisualElementContract.isEnabled] ?? true
     }
 }
 

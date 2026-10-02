@@ -216,14 +216,10 @@ final class AppKitDriver: HostDriver {
         case (.tint, let picker as AppKitPickerView): return picker.contentTintForTesting.map { Self.color($0).propValue }
         case (.tint, let check as AppKitCheckBoxView): return check.contentTintColor.map { Self.color($0).propValue }
         case (.tint, let slider as AppKitSliderView): return slider.trackFillColor.map { Self.color($0).propValue }
-        case (.date, let picker as AppKitDateTimePickerView): return Self.day(picker.valueLanesForTesting)?.propValue
-        case (.minimumDate, let picker as AppKitDateTimePickerView):
-            return picker.minimumLanesForTesting.flatMap(Self.day)?.propValue
-        case (.maximumDate, let picker as AppKitDateTimePickerView):
-            return picker.maximumLanesForTesting.flatMap(Self.day)?.propValue
-        case (.time, let picker as AppKitDateTimePickerView):
-            let lanes = picker.valueLanesForTesting
-            return lanes.count >= 2 ? ClockTime(hour: Int(lanes[0]), minute: Int(lanes[1])).propValue : nil
+        case (.date, let picker as AppKitDatePickerView): return picker.date.propValue
+        case (.minimumDate, let picker as AppKitDatePickerView): return picker.earliestForTesting?.propValue
+        case (.maximumDate, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
+        case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
         case (.currentPage, let tabs as AppKitTabbedView): return tabs.selectedIndexForTesting.propValue
         case (.isSidebarVisible, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.
@@ -244,11 +240,6 @@ final class AppKitDriver: HostDriver {
             throw DriverCannot(reading: property, of: element)
         default: throw DriverCannot(reading: property, of: element)
         }
-    }
-
-    /// The day a date picker's lanes say: year, month, day.
-    private static func day(_ lanes: [Double]) -> CalendarDate? {
-        lanes.count >= 3 ? CalendarDate(year: Int(lanes[0]), month: Int(lanes[1]), day: Int(lanes[2])) : nil
     }
 
     /// Tests/Resources/Images: the pictures the cases name.

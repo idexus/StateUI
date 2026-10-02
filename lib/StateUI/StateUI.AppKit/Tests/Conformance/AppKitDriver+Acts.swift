@@ -46,10 +46,8 @@ extension AppKitDriver {
         case (.choose(let place), let tabs as AppKitTabbedView): try choose(place, of: tabs, element)
         case (.open, let picker as AppKitPickerView): picker.menuWillOpen(NSMenu())
         case (.close, let picker as AppKitPickerView): picker.menuDidClose(NSMenu())
-        case (.pickDate(let day), let picker as AppKitDateTimePickerView):
-            picker.changeForTesting(to: [Double(day.year), Double(day.month), Double(day.day)])
-        case (.pickTime(let time), let picker as AppKitDateTimePickerView):
-            picker.changeForTesting(to: [Double(time.hour), Double(time.minute), 0])
+        case (.pickDate(let day), let picker as AppKitDatePickerView): picker.chooseForTesting(day)
+        case (.pickTime(let time), let picker as AppKitTimePickerView): picker.chooseForTesting(time)
         case (.pressDown(let point), let view?): try press(view, native, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, native, down: false, at: point, element)
         case (.drag(let point), let canvas as AppKitCanvasView): canvas.dragForTesting(at: NSPoint(point))

@@ -1,7 +1,7 @@
-# revision 1.1
+# revision 2.1
 DatePicker: ✅
 DatePicker.closed: not realized
-DatePicker.date: 🔌 pickDate on DatePicker: the host's change handler called, not the picker's action
+DatePicker.date: ✅
 DatePicker.dateChanged: 🔌 pickDate on DatePicker: the host's change handler called, not the picker's action
 DatePicker.format: not realized
 DatePicker.frameChanged: ✅

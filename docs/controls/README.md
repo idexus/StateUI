@@ -34,7 +34,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Canvas](Canvas.md) | 70 | 26 ✅ · 1 ☑️ · 3 – | 25 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 52 ✅ · 3 – | 43 ✅ · 4 – |  |
 | [CheckBox](CheckBox.md) | 69 | 32 ✅ · 1 ☑️ | 26 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ | 44 ✅ · 1 – |  |
 | [ColorBox](ColorBox.md) | 68 | 27 ✅ · 3 – | 26 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 41 ✅ · 4 – |  |
-| [DatePicker](DatePicker.md) | 80 | 32 ✅ · 1 ☑️ | 24 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 63 ✅ · 1 ☑️ | 45 ✅ · 1 – |  |
+| [DatePicker](DatePicker.md) | 80 | 36 ✅ · 1 ☑️ | 24 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 63 ✅ · 1 ☑️ | 45 ✅ · 1 – |  |
 | [Ellipse](Ellipse.md) | 76 | 25 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 49 ✅ · 1 ☑️ · 3 – | 58 ✅ · 3 – | 44 ✅ · 4 – |  |
 | [Grid](Grid.md) | 77 | 32 ✅ · 3 – | 34 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 47 ✅ · 4 – |  |
 | [HStack](HStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
@@ -57,11 +57,11 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Switch](Switch.md) | 69 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ | 44 ✅ · 1 – |  |
 | [TextEditor](TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 59 ✅ · 1 – |  |
 | [TextField](TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 60 ✅ · 1 – |  |
-| [TimePicker](TimePicker.md) | 78 | 32 ✅ · 1 ☑️ | 27 ✅ | 52 ✅ · 1 ☑️ · 3 – | 58 ✅ | 45 ✅ · 1 – |  |
+| [TimePicker](TimePicker.md) | 78 | 34 ✅ · 1 ☑️ | 27 ✅ | 52 ✅ · 1 ☑️ · 3 – | 58 ✅ | 45 ✅ · 1 – |  |
 | [VStack](VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
 | [WebView](WebView.md) | 77 |  |  |  | 20 ✅ · 15 – | 52 ✅ · 1 – |  |
 | [ZStack](ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅, – and 🧩 | 2447 | 1001 of 2447 met | 998 of 2447 met | 1778 of 2447 met | 1928 of 2447 met | 1627 of 2447 met |  |
+| **Met** - ✅, – and 🧩 | 2447 | 1007 of 2447 met | 998 of 2447 met | 1778 of 2447 met | 1928 of 2447 met | 1627 of 2447 met |  |
 <!-- controls:end -->
 
 ## Application structure
