@@ -88,6 +88,8 @@ process.
   implementation plus host tests.
 - [Control dictionary](controls/README.md) lists every control and part of an
   application's structure member by member, each with a mark per platform.
+- [Tested setups](tested-setups.md) names the systems, toolchains and
+  devices on which each host's suites pass and its Gallery is walked.
 - [Project structure and development](development.md) covers repository
   layout, Gallery samples, vertical feature work, tests, and native builds.
 - [Design notes](design/README.md) draw the architecture and give the reasons

@@ -27,7 +27,8 @@ the GTK host needs on Linux.
 With the extension installed ([Installing the extension](#installing-the-extension)),
 **StateUI: Check Toolchain** in the Command Palette looks on this machine for
 what these pages list for its platform's hosts, and says what to install for
-whatever is missing.
+whatever is missing. [Tested setups](tested-setups.md) names the versions and
+devices StateUI's suites pass on.
 
 ## Working in VS Code
 
