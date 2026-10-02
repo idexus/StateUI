@@ -198,14 +198,14 @@ private struct WrittenInPlacePart: ExampleContent {
         struct WrittenInPlacePart: ContentView {
             var content: some View {
                 WebView()
-                    .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
+                    .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
             }
         }
         """
 
     var content: some View {
         WebView()
-            .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
+            .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
     }
 
     var notes: (any View)? {
