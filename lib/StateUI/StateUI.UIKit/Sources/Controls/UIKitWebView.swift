@@ -13,10 +13,10 @@ import WebKit
 @MainActor
 final class UIKitWebView: WKWebView, WKNavigationDelegate {
     /// What the view does when a navigation starts: why, and where it goes.
-    var onNavigating: ((WebNavigationEvent, String) -> Void)?
+    var onNavigating: ((WebNavigationType, String) -> Void)?
 
     /// What the view does when a navigation ends: how, why, and where it went.
-    var onNavigated: ((WebNavigationResult, WebNavigationEvent, String) -> Void)?
+    var onNavigated: ((WebNavigationResult, WebNavigationType, String) -> Void)?
 
     /// What the view does when there comes to be, or stops being, a page behind it and ahead of it.
     var onCanGoBack: ((Bool) -> Void)?
@@ -67,7 +67,7 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
 
     /// Steps back or forward in the page's history, or loads the page again - the navigation's cause said as the
     /// program's.
-    func step(_ event: WebNavigationEvent) {
+    func step(_ event: WebNavigationType) {
         cause.ask(event)
         switch event {
         case .back: _ = goBack()
@@ -105,9 +105,9 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
         decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void
     ) {
         if action.targetFrame?.isMainFrame != false {
-            let told: WebNavigationEvent = switch action.navigationType {
+            let told: WebNavigationType = switch action.navigationType {
             case .backForward: backForward(to: action.request.url)
-            case .reload: .refresh
+            case .reload: .reload
             case .linkActivated, .formSubmitted, .formResubmitted, .other: .newPage
             @unknown default: .unknown
             }
@@ -117,7 +117,7 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
     }
 
     /// Whether a step through the history goes back or forward, by where it lands.
-    private func backForward(to address: URL?) -> WebNavigationEvent {
+    private func backForward(to address: URL?) -> WebNavigationType {
         backForwardList.backList.contains { $0.url == address } ? .back : .forward
     }
 
@@ -152,7 +152,7 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
     /// How a navigation that failed ended: cancelled, timed out, or failed.
     private static func result(_ error: any Error) -> WebNavigationResult {
         switch (error as NSError).code {
-        case NSURLErrorCancelled: .cancel
+        case NSURLErrorCancelled: .cancelled
         case NSURLErrorTimedOut: .timeout
         default: .failure
         }

@@ -316,6 +316,18 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = ElementId.manual("total")"#,
             contract: #"_ = ElementID.manual("total")"#),
         Road(
+            name: "a web navigation's reason as an event",
+            removed: "_ = WebNavigationEvent.refresh",
+            contract: "_ = WebNavigationType.reload"),
+        Road(
+            name: "a navigation called off as cancel",
+            removed: "_ = WebNavigationResult.cancel",
+            contract: "_ = WebNavigationResult.cancelled"),
+        Road(
+            name: "a base address spelled baseUrl",
+            removed: #"_ = WebViewSource.html("<p>Hi</p>", baseUrl: nil)"#,
+            contract: #"_ = WebViewSource.html("<p>Hi</p>", baseURL: nil)"#),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

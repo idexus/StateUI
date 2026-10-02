@@ -27,7 +27,7 @@ name (bindings.md, both spellings).
 ## Closed vocabularies are numbered here
 
 A closed vocabulary a control uses - `IconPosition`, `MapType`,
-`WebNavigationEvent`, `WebNavigationResult` - crosses as an `.enumeration`
+`WebNavigationType`, `WebNavigationResult` - crosses as an `.enumeration`
 whose numbers are the library's own, in declaration order, the rule of
 [closed vocabularies](../types/vocabularies.md#written-out-and-appended). A
 host translates its toolkit's value onto the member

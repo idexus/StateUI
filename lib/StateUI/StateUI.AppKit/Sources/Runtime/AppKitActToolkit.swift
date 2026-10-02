@@ -120,7 +120,7 @@ final class AppKitActToolkit: ActToolkit {
                 map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
             case (.goBack, let web as AppKitWebView): web.step(.back)
             case (.goForward, let web as AppKitWebView): web.step(.forward)
-            case (.reload, let web as AppKitWebView): web.step(.refresh)
+            case (.reload, let web as AppKitWebView): web.step(.reload)
             case (.evaluateJavaScript, let web as AppKitWebView):
                 web.evaluate(call.arguments.value(1)?.string ?? "") { [weak renderer] answer in
                     core.reply(call, [answer.propValue])

@@ -24,10 +24,10 @@ extension WebViewProperties {
     ///     WebView().source(html: "<h1>Offline</h1>")
     ///
     /// - Parameter html: The document itself, not a path to one.
-    /// - Parameter baseUrl: What relative links in it resolve against, when
+    /// - Parameter baseURL: What relative links in it resolve against, when
     ///   there are any.
-    public func source(html: String, baseUrl: String? = nil) -> Modified {
-        setValue(WebViewContract.source, .html(html, baseUrl: baseUrl))
+    public func source(html: String, baseURL: String? = nil) -> Modified {
+        setValue(WebViewContract.source, .html(html, baseURL: baseURL))
     }
 }
 
@@ -83,16 +83,16 @@ public struct WebView: ElementView, WebViewProperties {
     /// Fires as a navigation starts, with where it is going. Observing only: it
     /// cannot cancel the navigation.
     public func onNavigating(_ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
-        onEvent(WebViewContract.navigating) { event, url in
-            try await handler(WebNavigation(event: event, url: url))
+        onEvent(WebViewContract.navigating) { type, url in
+            try await handler(WebNavigation(type: type, url: url))
         }
     }
 
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
     public func onNavigated(_ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
-        onEvent(WebViewContract.navigated) { result, event, url in
-            try await handler(WebNavigated(result: result, event: event, url: url))
+        onEvent(WebViewContract.navigated) { result, type, url in
+            try await handler(WebNavigated(result: result, type: type, url: url))
         }
     }
 
@@ -106,7 +106,7 @@ public struct WebView: ElementView, WebViewProperties {
 // MARK: - What a navigation reports
 
 /// Why a navigation happened.
-public enum WebNavigationEvent: Int32, Sendable, HostRepresentable {
+public enum WebNavigationType: Int32, Sendable, HostRepresentable {
     /// No reason named - what the host answers for a reason it has no case
     /// for. Windows sends it for a view's first navigation, so it is an
     /// ordinary answer there rather than a fault.
@@ -122,14 +122,14 @@ public enum WebNavigationEvent: Int32, Sendable, HostRepresentable {
     case newPage = 3
 
     /// The same page, fetched again.
-    case refresh = 4
+    case reload = 4
 
     /// The member a number names, `.unknown` for one this side has no case for,
     /// and nil for anything that is not a member.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard case .enumeration(let member) = propValue else { return nil }
-        self = WebNavigationEvent(rawValue: member) ?? .unknown
+        self = WebNavigationType(rawValue: member) ?? .unknown
     }
 }
 
@@ -143,7 +143,7 @@ public enum WebNavigationResult: Int32, Sendable, HostRepresentable {
     case success = 1
 
     /// The navigation was called off before it finished.
-    case cancel = 2
+    case cancelled = 2
 
     /// The server never answered.
     case timeout = 3
@@ -163,7 +163,7 @@ public enum WebNavigationResult: Int32, Sendable, HostRepresentable {
 /// One navigation, as it starts.
 public struct WebNavigation: Equatable, Sendable {
     /// Why it happened.
-    public var event: WebNavigationEvent
+    public var type: WebNavigationType
 
     /// Where it is going.
     public var url: String
@@ -175,7 +175,7 @@ public struct WebNavigated: Equatable, Sendable {
     public var result: WebNavigationResult
 
     /// Why it happened.
-    public var event: WebNavigationEvent
+    public var type: WebNavigationType
 
     /// Where it went.
     public var url: String
@@ -194,7 +194,7 @@ public enum WebViewSource: Equatable, Sendable, HostRepresentable {
 
     /// A document written into the description itself, and the address its
     /// relative links resolve against, where there is one.
-    case html(String, baseUrl: String?)
+    case html(String, baseURL: String?)
 
     /// Which of the two a source is, as the number that crosses.
     private enum Kind: Int32 {
@@ -207,10 +207,10 @@ public enum WebViewSource: Equatable, Sendable, HostRepresentable {
         switch self {
         case .url(let address):
             .values([.enumeration(Kind.url.rawValue), .string(address)])
-        case .html(let document, let baseUrl):
+        case .html(let document, let baseURL):
             .values([
                 .enumeration(Kind.html.rawValue), .string(document),
-                baseUrl.map { PropValue.string($0) } ?? .nothing,
+                baseURL.map { PropValue.string($0) } ?? .nothing,
             ])
         }
     }
@@ -230,8 +230,8 @@ public enum WebViewSource: Equatable, Sendable, HostRepresentable {
             guard case .string(let document) = parts[1] else { return nil }
 
             switch parts[2] {
-            case .string(let baseUrl): self = .html(document, baseUrl: baseUrl)
-            case .nothing: self = .html(document, baseUrl: nil)
+            case .string(let baseURL): self = .html(document, baseURL: baseURL)
+            case .nothing: self = .html(document, baseURL: nil)
             default: return nil
             }
         default:

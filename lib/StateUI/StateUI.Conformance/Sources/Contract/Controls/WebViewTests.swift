@@ -21,7 +21,7 @@
                 s.start {
                     VStack {
                         WebView().source(html: Self.page("First"))
-                            .onNavigating { heard.values.append("navigating \($0.event)") }
+                            .onNavigating { heard.values.append("navigating \($0.type)") }
                             .onNavigated { heard.values.append("navigated \($0.result)") }
                             .height(200).id("web")
                     }
@@ -29,7 +29,7 @@
 
                 s.settle(for: Self.pageSeconds) { heard.values.contains { $0.hasPrefix("navigated") } }
                 s.expect(heard.values.last, "navigated success")
-                s.expect(try s.held(WebViewContract.source, on: s.element("web")), .html(Self.page("First"), baseUrl: nil))
+                s.expect(try s.held(WebViewContract.source, on: s.element("web")), .html(Self.page("First"), baseURL: nil))
             },
             ConformanceCase("aScriptsAnswerComesBack", proves: [
                 Covered(WebViewContract.evaluateJavaScript),
@@ -118,11 +118,11 @@
                 Covered(WebViewContract.reload), Covered(WebViewContract.navigating),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let web = Aim(WebView.self)
-                let heard = Received<WebNavigationEvent>()
+                let heard = Received<WebNavigationType>()
                 s.start {
                     VStack {
                         WebView().source(html: Self.page("First")).aim(web)
-                            .onNavigating { heard.values.append($0.event) }.height(200).id("web")
+                            .onNavigating { heard.values.append($0.type) }.height(200).id("web")
                         Button("Reload").onClicked { try await web.reload() }.id("reload")
                     }
                 }
@@ -130,7 +130,7 @@
 
                 try s.perform(.activate, on: s.element("reload"))
                 s.settle(for: Self.pageSeconds) { heard.values.count >= 2 }
-                s.expect(heard.values.last, .refresh)
+                s.expect(heard.values.last, .reload)
             },
             ConformanceCase("theEndOfItsContentIsHeard", proves: [Covered(WebViewContract.processTerminated)]) { s in
                 let heard = Received<String>()

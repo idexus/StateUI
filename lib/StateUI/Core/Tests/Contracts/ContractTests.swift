@@ -106,7 +106,7 @@ final class ContractTests: XCTestCase {
             WebViewSource.url("https://example.com").propValue,
             .values([.enumeration(0), .string("https://example.com")]))
         XCTAssertEqual(
-            WebViewSource.html("<p>Hi</p>", baseUrl: nil).propValue,
+            WebViewSource.html("<p>Hi</p>", baseURL: nil).propValue,
             .values([.enumeration(1), .string("<p>Hi</p>"), .nothing]))
         XCTAssertEqual(
             [Draw.fillColor(.gold)].propValue,
@@ -164,8 +164,8 @@ final class ContractTests: XCTestCase {
             SafeAreaEdges.uniform(.all),
             SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container),
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
-            WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseUrl: nil),
-            WebViewSource.html("<p/>", baseUrl: "https://example.com"),
+            WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseURL: nil),
+            WebViewSource.html("<p/>", baseURL: "https://example.com"),
             MapRegion(latitude: 52.25, longitude: 21.01, radiusMeters: 1500),
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
@@ -182,7 +182,7 @@ final class ContractTests: XCTestCase {
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.leading,
             SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!,
-            WebNavigationEvent(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.running,
+            WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.running,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center,
             ItemsEntries(header: "h", sections: [ItemsEntries.Section(footer: "f", items: ["1", "2"])]),

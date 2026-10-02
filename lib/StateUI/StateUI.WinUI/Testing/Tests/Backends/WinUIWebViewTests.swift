@@ -21,7 +21,7 @@ final class WinUIWebViewTests: XCTestCase {
     func testADocumentWrittenInPlaceStandsAtItsOwnAddress() throws {
         try onUIThread {
             let (host, said) = try Self.asking(
-                { WebView().source(html: "<p>Based</p>", baseUrl: "https://example.invalid/dir/") },
+                { WebView().source(html: "<p>Based</p>", baseURL: "https://example.invalid/dir/") },
                 "document.body.innerText + ' ' + new URL('next', document.baseURI).href")
             XCTAssertEqual(said.values, ["Based https://example.invalid/dir/next"])
             _ = host

@@ -18,7 +18,7 @@ typedef struct WebViewObject *WebViewObjectRef;
 
 /// What the web views tell their Swift halves, each naming its view by the number it was made with.
 typedef struct {
-    /// A page began to be gone to, for the reason the platform says (StateUI's WebNavigationEvent), at `address`.
+    /// A page began to be gone to, for the reason the platform says (StateUI's WebNavigationType), at `address`.
     void (*navigating)(int64_t view, int32_t told, char const *address);
 
     /// Its navigation ended (StateUI's WebNavigationResult) at `address`.

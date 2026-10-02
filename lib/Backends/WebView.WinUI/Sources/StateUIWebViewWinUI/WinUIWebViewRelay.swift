@@ -61,7 +61,7 @@ enum WinUIWebViewRelay {
                 let address = utf8.map { String(cString: $0) } ?? ""
                 MainActor.assumeIsolated {
                     WinUIWebViewRelay.view(view)?.navigating(
-                        told: WebNavigationEvent(rawValue: told) ?? .unknown, to: address)
+                        told: WebNavigationType(rawValue: told) ?? .unknown, to: address)
                 }
             },
             navigated: { view, result, utf8 in

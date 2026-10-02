@@ -35,7 +35,7 @@ public enum StateUIWebViewGTK {
         }
         StateUIActs.add(WebViewContract.goBack, on: GTKWebView.self) { web in web.step(.back) }
         StateUIActs.add(WebViewContract.goForward, on: GTKWebView.self) { web in web.step(.forward) }
-        StateUIActs.add(WebViewContract.reload, on: GTKWebView.self) { web in web.step(.refresh) }
+        StateUIActs.add(WebViewContract.reload, on: GTKWebView.self) { web in web.step(.reload) }
         StateUIActs.add(WebViewContract.evaluateJavaScript, on: GTKWebView.self) { web, script in
             try await web.evaluate(script)
         }

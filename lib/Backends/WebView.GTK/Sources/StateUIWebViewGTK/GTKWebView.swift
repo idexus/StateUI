@@ -15,8 +15,8 @@ final class GTKWebView: GTKControl {
 
     /// What the view tells: a navigation beginning, one ending, the ways back and forward as they change, and its
     /// web process gone.
-    var onNavigating: ((WebNavigationEvent, String) -> Void)?
-    var onNavigated: ((WebNavigationResult, WebNavigationEvent, String) -> Void)?
+    var onNavigating: ((WebNavigationType, String) -> Void)?
+    var onNavigated: ((WebNavigationResult, WebNavigationType, String) -> Void)?
     var onCanGoBack: ((Bool) -> Void)?
     var onCanGoForward: ((Bool) -> Void)?
     var onProcessGone: (() -> Void)?
@@ -28,7 +28,7 @@ final class GTKWebView: GTKControl {
     private var cause = WebNavigationCause()
 
     /// Why the navigation WebKit decides on next began, as its action says.
-    private var told = WebNavigationEvent.newPage
+    private var told = WebNavigationType.newPage
 
     /// Whether the navigation under way failed, so its finish tells nothing more.
     private var failed = false
@@ -65,7 +65,7 @@ final class GTKWebView: GTKControl {
         self.pending = nil
         switch pending {
         case .url(let address): webkit_web_view_load_uri(webView, address)
-        case .html(let document, let baseUrl?): webkit_web_view_load_html(webView, document, baseUrl)
+        case .html(let document, let baseURL?): webkit_web_view_load_html(webView, document, baseURL)
         case .html(let document, nil): webkit_web_view_load_uri(webView, WebDocument.address(of: document))
         }
     }
@@ -79,7 +79,7 @@ final class GTKWebView: GTKControl {
     // MARK: - Its acts
 
     /// Takes the program's step - back, forward, the page again - which the navigation it begins is told as.
-    func step(_ step: WebNavigationEvent) {
+    func step(_ step: WebNavigationType) {
         cause.ask(step)
         switch step {
         case .back: webkit_web_view_go_back(webView)
@@ -103,7 +103,7 @@ final class GTKWebView: GTKControl {
     /// WebKit decides on a navigation: what its action says it is.
     func decided(_ navigationType: Int32) {
         told = switch navigationType {
-        case NavigationType.reload: .refresh
+        case NavigationType.reload: .reload
         case NavigationType.backForward: .unknown
         default: .newPage
         }
@@ -129,7 +129,7 @@ final class GTKWebView: GTKControl {
     /// A load failed: called off, or not fetched.
     func loadFailed(_ address: String, cancelled: Bool) {
         failed = true
-        onNavigated?(cancelled ? .cancel : .failure, cause.current, address)
+        onNavigated?(cancelled ? .cancelled : .failure, cause.current, address)
     }
 
     /// The pages behind and ahead may have changed: each way said as it changes (`WebHistory`).

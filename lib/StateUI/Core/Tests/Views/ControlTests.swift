@@ -1273,7 +1273,7 @@ final class ControlTests: XCTestCase {
     ///
     /// Measured on Windows: a web view's FIRST navigation - the source it was
     /// handed before its browser existed - arrives with a reason no
-    /// `WebNavigationEvent` member names, and the host has nothing to
+    /// `WebNavigationType` member names, and the host has nothing to
     /// translate it onto but `.unknown`. Refusing that report would leave a
     /// page loaded on screen while the interface still said nothing had, with
     /// only a second navigation ever reporting. An unknown member degrades; a
@@ -1289,13 +1289,13 @@ final class ControlTests: XCTestCase {
 
         renders.fire(handler(patch, "navigated"), with: [
             .enumeration(WebNavigationResult.success.rawValue),
-            .enumeration(WebNavigationEvent.unknown.rawValue),
+            .enumeration(WebNavigationType.unknown.rawValue),
             .string("https://example.com/"),
         ])
 
         XCTAssertEqual(seen.count, 1)
         XCTAssertEqual(seen.first?.result, .success)
-        XCTAssertEqual(seen.first?.event, .unknown)
+        XCTAssertEqual(seen.first?.type, .unknown)
         XCTAssertEqual(seen.first?.url, "https://example.com/")
 
         // `.unknown` is what this platform actually reports, and it has a case
@@ -1307,7 +1307,7 @@ final class ControlTests: XCTestCase {
 
         XCTAssertEqual(seen.count, 2)
         XCTAssertEqual(seen.last?.result, .unknown)
-        XCTAssertEqual(seen.last?.event, .unknown)
+        XCTAssertEqual(seen.last?.type, .unknown)
     }
 
     /// The other half of the same rule: a value of the wrong KIND is a
@@ -1325,7 +1325,7 @@ final class ControlTests: XCTestCase {
         // The reason as a plain NUMBER where a member is wanted - what a host
         // that stopped translating would send.
         renders.fire(handler(patch, "navigating"), with: [
-            .number(Double(WebNavigationEvent.newPage.rawValue)),
+            .number(Double(WebNavigationType.newPage.rawValue)),
             .string("https://example.com/"),
         ])
 

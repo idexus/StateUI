@@ -24,7 +24,7 @@ extension AndroidDriver {
             // A document with no address of its own from the `data:` address holding it.
             let address = Java.frame { onWeb(view) { web in Java.callObject(web, getUrl).map { Java.text($0) } } ?? nil }
             guard let address else { return .some(nil) }
-            let shown = WebDocument.document(at: address).map { WebViewSource.html($0, baseUrl: nil) } ?? .url(address)
+            let shown = WebDocument.document(at: address).map { WebViewSource.html($0, baseURL: nil) } ?? .url(address)
             return .some(shown.propValue)
         default: return nil
         }

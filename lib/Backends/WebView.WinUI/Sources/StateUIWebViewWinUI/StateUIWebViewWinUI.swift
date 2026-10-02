@@ -34,7 +34,7 @@ public enum StateUIWebViewWinUI {
         }
         StateUIActs.add(WebViewContract.goBack, on: WinUIWebView.self) { web in web.step(.back) }
         StateUIActs.add(WebViewContract.goForward, on: WinUIWebView.self) { web in web.step(.forward) }
-        StateUIActs.add(WebViewContract.reload, on: WinUIWebView.self) { web in web.step(.refresh) }
+        StateUIActs.add(WebViewContract.reload, on: WinUIWebView.self) { web in web.step(.reload) }
         StateUIActs.add(WebViewContract.evaluateJavaScript, on: WinUIWebView.self) { web, script in
             try await web.evaluate(script)
         }

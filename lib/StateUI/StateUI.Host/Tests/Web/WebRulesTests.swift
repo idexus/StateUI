@@ -38,7 +38,7 @@ final class WebRulesTests: XCTestCase {
         XCTAssertEqual(cause.current, .newPage, "asked, not begun")
         XCTAssertEqual(cause.begin(told: .back), .forward)
         XCTAssertEqual(cause.current, .forward)
-        XCTAssertEqual(cause.begin(told: .refresh), .refresh)
+        XCTAssertEqual(cause.begin(told: .reload), .reload)
     }
 
     /// A document with no address of its own is gone to as a `data:` address holding it, its words in base64.

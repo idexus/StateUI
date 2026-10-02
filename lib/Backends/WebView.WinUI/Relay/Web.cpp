@@ -31,7 +31,7 @@ namespace core = winrt::Microsoft::Web::WebView2::Core;
 namespace streams = winrt::Windows::Storage::Streams;
 
 namespace {
-    /// Why the platform says a navigation began, as StateUI's WebNavigationEvent: the page again (4), a step
+    /// Why the platform says a navigation began, as StateUI's WebNavigationType: the page again (4), a step
     /// through the history it does not tell apart (0), a new page (3).
     int32_t told(core::CoreWebView2NavigationKind kind) {
         switch (kind) {
