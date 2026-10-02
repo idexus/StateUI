@@ -1,17 +1,27 @@
 import StateUI
 
-/// Two buttons whose content is an icon, each drawn once per theme.
+/// Two buttons whose content is an icon, each drawn once per theme, and one whose picture stands beside its words.
 struct IconButtonSample: SampleContent, ExampleContent {
     @State private var taps = 0
     @State private var pressed = false
+    @State private var side = 0
+    @State private var gap = 8.0
+
+    static let sides = ["Leading", "Top", "Trailing", "Bottom"]
+    static let positions: [IconPosition] = [.leading, .top, .trailing, .bottom]
 
     static let id = "iconButton"
     static let title = "Icon button"
-    static let summary = "A button whose content is an icon - with an outline, a rounded shape and a pressed state."
+    static let summary = "A button that is a picture, and one whose picture stands beside its words."
 
     static let code = """
         @State private var taps = 0
         @State private var pressed = false
+        @State private var side = 0
+        @State private var gap = 8.0
+
+        static let sides = ["Leading", "Top", "Trailing", "Bottom"]
+        static let positions: [IconPosition] = [.leading, .top, .trailing, .bottom]
 
         VStack {
             // The count is read here, so a press builds this closure again.
@@ -40,6 +50,22 @@ struct IconButtonSample: SampleContent, ExampleContent {
             }
 
             Label(pressed ? "Held down" : "Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
+
+            // Words and a picture: the picture on the side chosen, the gap
+            // between them as the slider says.
+            Button("Media")
+                .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                .iconPosition(Self.positions[side])
+                .iconSpacing(gap)
+                .onClicked { taps += 1 }
+
+            Picker(Self.sides)
+                .selectedIndex($side)
+                .title("Picture")
+
+            Slider($gap)
+                .minimum(0)
+                .maximum(24)
         }
         """
 
@@ -77,6 +103,22 @@ struct IconButtonSample: SampleContent, ExampleContent {
             Label(pressed ? "Held down" : "Tapped \(taps) time\(taps == 1 ? "" : "s")")
                 .fontSize(14)
                 .horizontalAlignment(.center)
+
+            Button("Media")
+                .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                .iconPosition(Self.positions[side])
+                .iconSpacing(gap)
+                .horizontalAlignment(.center)
+                .onClicked { taps += 1 }
+
+            Picker(Self.sides)
+                .selectedIndex($side)
+                .title("Picture")
+                .horizontalAlignment(.center)
+
+            Slider($gap)
+                .minimum(0)
+                .maximum(24)
         }
         .spacing(12)
     }

@@ -32,6 +32,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorsShape(.square)
+                .indicatorSize(10)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
 
@@ -122,6 +123,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorsShape(.square)
+                .indicatorSize(10)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)

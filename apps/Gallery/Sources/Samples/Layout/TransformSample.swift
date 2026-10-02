@@ -76,6 +76,16 @@ struct TransformSample: SampleContent, ExampleContent {
                     .pivotY(0)
             }
 
+            // The same tip and turn as one transform, drawn flat: the box
+            // narrows as it turns away, with no depth.
+            HStack {
+                box(Family.turn)
+                    .transform(transformed ? .tilt(55) : .identity)
+
+                box(Family.turn)
+                    .transform(transformed ? .turn(55) : .identity)
+            }
+
             // A WIDER GAP than the rows above: a scaled box is drawn outside
             // the room the layout gave it, so the spacing has to leave what
             // it grows into or the three of them touch.
@@ -159,6 +169,13 @@ struct TransformSample: SampleContent, ExampleContent {
                         .pivotX(0)
                         .pivotY(0),
                     "anchor 0,0")
+            }
+            .spacing(24)
+            .horizontalAlignment(.center)
+
+            HStack {
+                piece(box(Family.turn).transform(transformed ? .tilt(55) : .identity), "tilt, flat")
+                piece(box(Family.turn).transform(transformed ? .turn(55) : .identity), "turn, flat")
             }
             .spacing(24)
             .horizontalAlignment(.center)

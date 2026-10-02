@@ -43,6 +43,10 @@ struct LevelPage: ContentView {
     @State private var leaving = 0
     @State private var left = 0
 
+    /// What this page asks of its stack's bar: to show, and to offer the way back.
+    @State private var showsBar = true
+    @State private var offersBack = true
+
     var content: some View {
         VStack {
             SectionTitle("Pushed page")
@@ -75,6 +79,9 @@ struct LevelPage: ContentView {
                 .horizontalAlignment(.center)
                 .onClicked { path.removeLast() }
 
+            SwitchRow("Bar", $showsBar)
+            SwitchRow("Way back", $offersBack)
+
             Label("Go deeper and come back: the same page counts a second arrival.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -90,6 +97,9 @@ struct LevelPage: ContentView {
             // whose back affordance has no text ignores it.
             page.backButtonTitle = "Level \(level)"
         }
+        // The bar and its way back are the page's to ask for, from its session.
+        .onChanged(showsBar) { page.hasNavigationBar = showsBar }
+        .onChanged(offersBack) { page.hasBackButton = offersBack }
         // What this page sees of its own life, one count per moment. Appearing
         // and disappearing answer visibility; the other three answer a move.
         // `appearing` comes on every arrival, the first one included, which

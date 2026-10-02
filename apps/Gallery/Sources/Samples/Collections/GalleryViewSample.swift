@@ -35,6 +35,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     @State private var swipes = true
     @State private var shaded = true
     @State private var opened = "tap one"
+    @State private var moves = 0
 
     // The cards are turned by a scroller of their own, so the example is not
     // put in a second one: the page's scroller would claim the swipe before it
@@ -51,6 +52,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         @State private var swipes = true
         @State private var shaded = true
         @State private var opened = "tap one"
+        @State private var moves = 0
 
         struct Card { let name: String; let art: String }
 
@@ -82,6 +84,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .position($shown)
                 .isSwipeEnabled(swipes)
                 .onItemTapped { card in opened = "tapped \\(card.name)" }
+                // Another card in the middle, swiped or assigned.
+                .onPositionChanged { _ in moves += 1 }
                 .gridRow(0)
 
             VStack {
@@ -103,7 +107,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .selectedIndicatorColor(Palette.accent)
 
                 Label("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
-                    + "card \\(shown + 1) of \\(cards.count) · \\(opened)")
+                    + "card \\(shown + 1) of \\(cards.count) · \\(opened) · moved \\(moves)")
             }
             .gridRow(1)
 
@@ -173,6 +177,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .position($shown)
                     .isSwipeEnabled(swipes)
                     .onItemTapped { card in opened = "tapped \(card.name)" }
+                    .onPositionChanged { _ in moves += 1 }
             }
             .gridRow(0)
             // The cards stay ON the board: one mid-crossing between two shapes,
@@ -200,7 +205,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.center)
 
                 Label("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
-                    + "card \(shown + 1) of \(Self.cards.count) · \(opened)")
+                    + "card \(shown + 1) of \(Self.cards.count) · \(opened) · moved \(moves)")
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
