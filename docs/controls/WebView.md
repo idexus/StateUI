@@ -43,10 +43,10 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (77) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `WKWebView` | not realized |
-| UIKit | ✅ | 11 ✅ | `WKWebView` |  |
+| UIKit | ✅ | 11 ✅ · 1 🔌 | `WKWebView` |  |
 | Android Views | ✅ | 10 ✅ | `WebView` |  |
 | WinUI 3 | ✅ | 20 ✅ · 15 – | `WebView2`, a backend |  |
-| GTK 4 | ✅ | 52 ✅ · 1 – | WebKitGTK `WebKitWebView`, a backend |  |
+| GTK 4 | ✅ | 52 ✅ · 1 – · 12 🔌 | WebKitGTK `WebKitWebView`, a backend |  |
 | Web |  |  | `<iframe>` (?) | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContract.swift`.

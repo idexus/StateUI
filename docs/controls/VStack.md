@@ -35,11 +35,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (74) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 29 ✅ · 3 – | custom `NSView` |  |
-| UIKit | ✅ | 31 ✅ · 3 – | custom `UIView` |  |
+| AppKit | ✅ | 29 ✅ · 3 – · 25 🔌 | custom `NSView` |  |
+| UIKit | ✅ | 31 ✅ · 3 – · 25 🔌 | custom `UIView` |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | custom `ViewGroup` |  |
 | WinUI 3 | ✅ | 56 ✅ · 3 – | `StackPanel` |  |
-| GTK 4 | ✅ | 44 ✅ · 4 – | `GtkBox` |  |
+| GTK 4 | ✅ | 44 ✅ · 4 – · 11 🔌 | `GtkBox` |  |
 | Web |  |  | flexbox | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/VStackContract.swift`.

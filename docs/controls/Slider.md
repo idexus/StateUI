@@ -34,11 +34,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (73) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 34 ✅ · 1 ☑️ | `NSSlider` |  |
-| UIKit | ✅ | 30 ✅ · 3 – | `UISlider` |  |
+| AppKit | ✅ | 34 ✅ · 1 ☑️ · 25 🔌 | `NSSlider` |  |
+| UIKit | ✅ | 30 ✅ · 3 – · 27 🔌 | `UISlider` |  |
 | Android Views | ✅ | 55 ✅ · 1 ☑️ · 3 – | `SeekBar` |  |
 | WinUI 3 | ✅ | 57 ✅ | `Slider` |  |
-| GTK 4 | ✅ | 46 ✅ · 3 – | `GtkScale` |  |
+| GTK 4 | ✅ | 46 ✅ · 3 – · 12 🔌 | `GtkScale` |  |
 | Web |  |  | `<input type=range>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SliderContract.swift`.

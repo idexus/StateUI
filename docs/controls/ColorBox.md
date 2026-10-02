@@ -32,11 +32,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (68) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 27 ✅ · 3 – | custom `NSView` drawing |  |
-| UIKit | ✅ | 26 ✅ · 3 – | `UIView` + `CALayer` |  |
+| AppKit | ✅ | 27 ✅ · 3 – · 25 🔌 | custom `NSView` drawing |  |
+| UIKit | ✅ | 26 ✅ · 3 – · 25 🔌 | `UIView` + `CALayer` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | `View` + `GradientDrawable` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `Border` |  |
-| GTK 4 | ✅ | 41 ✅ · 4 – | custom `GtkWidget` snapshot |  |
+| GTK 4 | ✅ | 41 ✅ · 4 – · 11 🔌 | custom `GtkWidget` snapshot |  |
 | Web |  |  | `<div>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ColorBoxContract.swift`.

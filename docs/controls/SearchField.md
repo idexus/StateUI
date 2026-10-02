@@ -36,11 +36,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (89) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 41 ✅ · 1 – | `NSSearchField` |  |
-| UIKit | ✅ | 45 ✅ | `UISearchBar` |  |
+| AppKit | ✅ | 41 ✅ · 1 – · 26 🔌 | `NSSearchField` |  |
+| UIKit | ✅ | 45 ✅ · 25 🔌 | `UISearchBar` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | `SearchView` |  |
 | WinUI 3 | ✅ | 64 ✅ · 1 ☑️ | `AutoSuggestBox` |  |
-| GTK 4 | ✅ | 59 ✅ · 1 – | `GtkSearchEntry` |  |
+| GTK 4 | ✅ | 59 ✅ · 1 – · 12 🔌 | `GtkSearchEntry` |  |
 | Web |  |  | `<input type=search>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContract.swift`.

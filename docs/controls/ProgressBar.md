@@ -33,11 +33,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (68) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 26 ✅ · 1 ☑️ · 3 – | `NSProgressIndicator` bar |  |
-| UIKit | ✅ | 26 ✅ · 3 – | `UIProgressView` |  |
+| AppKit | ✅ | 26 ✅ · 1 ☑️ · 3 – · 25 🔌 | `NSProgressIndicator` bar |  |
+| UIKit | ✅ | 26 ✅ · 3 – · 25 🔌 | `UIProgressView` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | horizontal `ProgressBar` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `ProgressBar` |  |
-| GTK 4 | ✅ | 40 ✅ · 4 – | `GtkProgressBar` |  |
+| GTK 4 | ✅ | 40 ✅ · 4 – · 12 🔌 | `GtkProgressBar` |  |
 | Web |  |  | `<progress>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ProgressBarContract.swift`.

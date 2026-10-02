@@ -34,11 +34,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (80) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 29 ✅ · 1 ☑️ · 3 – | `NSView` drawing `NSBezierPath` |  |
-| UIKit | ✅ | 30 ✅ · 3 – | `UIView` drawing `UIBezierPath` |  |
+| AppKit | ✅ | 29 ✅ · 1 ☑️ · 3 – · 25 🔌 | `NSView` drawing `NSBezierPath` |  |
+| UIKit | ✅ | 30 ✅ · 3 – · 25 🔌 | `UIView` drawing `UIBezierPath` |  |
 | Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `View` drawing `Path` |  |
 | WinUI 3 | ✅ | 62 ✅ · 3 – | `Microsoft.UI.Xaml.Shapes` |  |
-| GTK 4 | ✅ | 48 ✅ · 4 – | `GskPath` in a snapshot |  |
+| GTK 4 | ✅ | 48 ✅ · 4 – · 11 🔌 | `GskPath` in a snapshot |  |
 | Web |  |  | inline SVG | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/LineContract.swift`.

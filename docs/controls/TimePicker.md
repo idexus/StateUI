@@ -33,11 +33,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (78) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 34 ✅ · 1 ☑️ | `NSDatePicker` in time mode |  |
-| UIKit | ✅ | 30 ✅ | `UIDatePicker` in time mode |  |
-| Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – | `TimePickerDialog` |  |
+| AppKit | ✅ | 34 ✅ · 1 ☑️ · 26 🔌 | `NSDatePicker` in time mode |  |
+| UIKit | ✅ | 30 ✅ · 25 🔌 | `UIDatePicker` in time mode |  |
+| Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – · 1 🔌 | `TimePickerDialog` |  |
 | WinUI 3 | ✅ | 58 ✅ | `TimePicker` |  |
-| GTK 4 | ⌛ | 45 ✅ · 1 – | an hour's and a minute's `GtkSpinButton` in a `GtkPopover` |  |
+| GTK 4 | ⌛ | 45 ✅ · 1 – · 11 🔌 | an hour's and a minute's `GtkSpinButton` in a `GtkPopover` |  |
 | Web |  |  | `<input type=time>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.

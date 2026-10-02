@@ -36,11 +36,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (73) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 28 ✅ · 3 – | custom `NSView` |  |
-| UIKit | ✅ | 30 ✅ · 3 – | custom `UIView` |  |
+| AppKit | ✅ | 28 ✅ · 3 – · 25 🔌 | custom `NSView` |  |
+| UIKit | ✅ | 30 ✅ · 3 – · 25 🔌 | custom `UIView` |  |
 | Android Views | ◐ | 51 ✅ · 1 ☑️ · 3 – | custom `ViewGroup` | cannot read what reaches ColorBox - Android's driver has no path for it yet |
 | WinUI 3 | ✅ | 55 ✅ · 3 – | `Canvas` |  |
-| GTK 4 | ✅ | 43 ✅ · 4 – | `GtkFixed` |  |
+| GTK 4 | ✅ | 43 ✅ · 4 – · 11 🔌 | `GtkFixed` |  |
 | Web |  |  | `position: absolute` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ZStackContract.swift`.

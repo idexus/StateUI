@@ -33,11 +33,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (68) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 25 ✅ · 1 ☑️ · 3 – | spinning `NSProgressIndicator` |  |
-| UIKit | ✅ | 26 ✅ · 3 – | `UIActivityIndicatorView` |  |
+| AppKit | ✅ | 25 ✅ · 1 ☑️ · 3 – · 26 🔌 | spinning `NSProgressIndicator` |  |
+| UIKit | ✅ | 26 ✅ · 3 – · 25 🔌 | `UIActivityIndicatorView` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | indeterminate `ProgressBar` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `ProgressRing` |  |
-| GTK 4 | ✅ | 41 ✅ · 4 – | `GtkSpinner` |  |
+| GTK 4 | ✅ | 41 ✅ · 4 – · 11 🔌 | `GtkSpinner` |  |
 | Web |  |  | indeterminate `<progress>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ActivityIndicatorContract.swift`.

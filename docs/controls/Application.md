@@ -39,11 +39,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (12) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 7 ✅ | `NSApplication` / structure |  |
-| UIKit | ✅ | 6 ✅ | `UIApplication` / `UIWindowScene` |  |
-| Android Views | ✅ | 4 ✅ | `Application` / structure |  |
+| AppKit | ✅ | 7 ✅ · 5 🔌 | `NSApplication` / structure |  |
+| UIKit | ✅ | 6 ✅ · 5 🔌 | `UIApplication` / `UIWindowScene` |  |
+| Android Views | ✅ | 4 ✅ · 4 🔌 | `Application` / structure |  |
 | WinUI 3 | ✅ | 12 ✅ | `Application` / structure |  |
-| GTK 4 | ✅ | 11 ✅ | `GtkApplication` / structure |  |
+| GTK 4 | ✅ | 11 ✅ · 1 🔌 | `GtkApplication` / structure |  |
 | Web |  |  | `document` / structure | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.

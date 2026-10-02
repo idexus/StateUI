@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (10) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 5 ✅ | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
+| AppKit | ✅ | 5 ✅ · 1 🔌 | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
 | UIKit | ✅ | 8 ✅ · 2 – | `UITabBarController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `LinearLayout` tab row |  |
 | WinUI 3 | ✅ | 10 ✅ | `NavigationView` with a top pane |  |

@@ -36,11 +36,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (69) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 32 ✅ · 1 ☑️ | `NSButton` checkbox |  |
-| UIKit | ✅ | 26 ✅ · 3 – | composed by StateUI |  |
+| AppKit | ✅ | 32 ✅ · 1 ☑️ · 25 🔌 | `NSButton` checkbox |  |
+| UIKit | ✅ | 26 ✅ · 3 – · 26 🔌 | composed by StateUI |  |
 | Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `CheckBox` |  |
 | WinUI 3 | ✅ | 56 ✅ | `CheckBox` |  |
-| GTK 4 | ✅ | 44 ✅ · 1 – | `GtkCheckButton` |  |
+| GTK 4 | ✅ | 44 ✅ · 1 – · 12 🔌 | `GtkCheckButton` |  |
 | Web |  |  | `<input type=checkbox>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/CheckBoxContract.swift`.

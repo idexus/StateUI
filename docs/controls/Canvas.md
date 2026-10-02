@@ -37,11 +37,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (70) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 26 ✅ · 1 ☑️ · 3 – | custom `NSView` drawing |  |
-| UIKit | ✅ | 25 ✅ · 3 – | `UIView` `draw(_:)` |  |
+| AppKit | ✅ | 26 ✅ · 1 ☑️ · 3 – · 28 🔌 | custom `NSView` drawing |  |
+| UIKit | ✅ | 25 ✅ · 3 – · 28 🔌 | `UIView` `draw(_:)` |  |
 | Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `View` `onDraw(Canvas)` |  |
 | WinUI 3 | ✅ | 52 ✅ · 3 – | Direct2D in a `SurfaceImageSource` |  |
-| GTK 4 | ✅ | 43 ✅ · 4 – | `GtkDrawingArea` |  |
+| GTK 4 | ✅ | 43 ✅ · 4 – · 11 🔌 | `GtkDrawingArea` |  |
 | Web |  |  | `<canvas>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/CanvasContract.swift`.

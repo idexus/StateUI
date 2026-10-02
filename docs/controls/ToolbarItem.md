@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (8) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | 🔌 | 2 ✅ | `NSToolbarItem`; `NSMenuToolbarItem` overflow | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
+| AppKit | 🔌 | 2 ✅ · 1 🔌 | `NSToolbarItem`; `NSMenuToolbarItem` overflow | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
 | UIKit | ✅ | 6 ✅ | `UIBarButtonItem` |  |
 | Android Views | ✅ | 4 ✅ · 1 – | `Toolbar` `MenuItem` |  |
 | WinUI 3 | ✅ | 8 ✅ | `CommandBar` `AppBarButton` |  |

@@ -36,11 +36,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (76) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 33 ✅ · 1 ☑️ | `NSCollectionView` / `NSTableView` |  |
-| UIKit | ✅ | 29 ✅ · 3 – | `UICollectionView` |  |
-| Android Views | ✅ | 60 ✅ · 1 ☑️ | AndroidX `RecyclerView` |  |
+| AppKit | ✅ | 33 ✅ · 1 ☑️ · 29 🔌 | `NSCollectionView` / `NSTableView` |  |
+| UIKit | ✅ | 29 ✅ · 3 – · 29 🔌 | `UICollectionView` |  |
+| Android Views | ✅ | 60 ✅ · 1 ☑️ · 1 🔌 | AndroidX `RecyclerView` |  |
 | WinUI 3 | ✅ | 60 ✅ | `ItemsView` |  |
-| GTK 4 | ✅ | 51 ✅ · 1 – | `GtkListView` / `GtkGridView` |  |
+| GTK 4 | ✅ | 51 ✅ · 1 – · 11 🔌 | `GtkListView` / `GtkGridView` |  |
 | Web |  |  | semantic list or grid | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Collections/ItemsViewContract.swift`.

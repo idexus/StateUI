@@ -34,11 +34,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (87) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 46 ✅ · 1 ☑️ | `NSTextView` in an `NSScrollView` |  |
-| UIKit | ✅ | 46 ✅ | `UITextView` |  |
+| AppKit | ✅ | 46 ✅ · 1 ☑️ · 26 🔌 | `NSTextView` in an `NSScrollView` |  |
+| UIKit | ✅ | 46 ✅ · 25 🔌 | `UITextView` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | multi-line `EditText` |  |
 | WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
-| GTK 4 | ✅ | 59 ✅ · 1 – | `GtkTextView` |  |
+| GTK 4 | ✅ | 59 ✅ · 1 – · 12 🔌 | `GtkTextView` |  |
 | Web |  |  | `<textarea>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextEditorContract.swift`.

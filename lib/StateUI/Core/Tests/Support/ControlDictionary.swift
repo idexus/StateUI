@@ -142,10 +142,11 @@ struct ControlDictionary {
         var partial = 0
         var notPlanned = 0
         var byApplication = 0
+        var byHost = 0
 
         /// The members the host meets the contract on: realized in full, not planned for its family, or left to the
         /// application's own registration.
-        var met: Int { done + notPlanned + byApplication }
+        var met: Int { done + notPlanned + byApplication + byHost }
     }
 
     /// Every element contract, by name.
@@ -241,6 +242,7 @@ struct ControlDictionary {
                     if mark == "☑️" { marks[platform, default: Marks()].partial += 1 }
                     if mark == "–" { marks[platform, default: Marks()].notPlanned += 1 }
                     if mark == "🧩" { marks[platform, default: Marks()].byApplication += 1 }
+                    if mark == "🔌" { marks[platform, default: Marks()].byHost += 1 }
                 }
 
                 lines.append("| " + (cells + [Self.notes(notes)]).joined(separator: " | ") + " |")
@@ -541,6 +543,7 @@ struct ControlDictionary {
             if mark == "☑️" { counts.partial += 1 }
             if mark == "–" { counts.notPlanned += 1 }
             if mark == "🧩" { counts.byApplication += 1 }
+            if mark == "🔌" { counts.byHost += 1 }
         }
         return Self.counted(counts)
     }
@@ -605,7 +608,7 @@ struct ControlDictionary {
 
     /// One table of counts: a row per element, how many members its page
     /// lists, and how many each host realizes - an element with none, its own
-    /// mark.
+    /// mark - then a row a mark that counts as met, and met, their sum.
     func summary(of elements: [any ElementContract.Type], heading: String, linking prefix: String) -> String {
         var lines = [
             "| \(heading) | Members | " + Self.platforms.joined(separator: " | ") + " |",
@@ -623,6 +626,7 @@ struct ControlDictionary {
                 totals[platform, default: Marks()].partial += marks.partial
                 totals[platform, default: Marks()].notPlanned += marks.notPlanned
                 totals[platform, default: Marks()].byApplication += marks.byApplication
+                totals[platform, default: Marks()].byHost += marks.byHost
                 // An element with no members is said by its own mark: whether the host makes it.
                 guard page.members == 0 else { return Self.counted(marks) }
                 return column(of: platform)?.mark(of: nil, on: element.name).mark ?? ""
@@ -632,18 +636,26 @@ struct ControlDictionary {
                 + cells.joined(separator: " | ") + " |")
         }
 
-        let met = Self.platforms.map { platform -> String in
-            let marks = totals[platform] ?? Marks()
-            return marks.met + marks.partial == 0 ? "" : "\(marks.met) of \(total) met"
+        // The sums, a row each mark that counts as met, then met itself: a host with no mark at all shows none.
+        let counted: [(label: String, count: (Marks) -> Int, members: String)] = [
+            ("✅", \.done, ""), ("–", \.notPlanned, ""), ("🧩", \.byApplication, ""), ("🔌", \.byHost, ""),
+            ("**Met**", \.met, "\(total)"),
+        ]
+        for row in counted {
+            let cells = Self.platforms.map { platform -> String in
+                let marks = totals[platform] ?? Marks()
+                guard marks.met + marks.partial > 0 else { return "" }
+                return row.label == "**Met**" ? "**\(row.count(marks))**" : "\(row.count(marks))"
+            }
+            lines.append("| \(row.label) | \(row.members) | " + cells.joined(separator: " | ") + " |")
         }
-        lines.append("| **Met** - ✅, – and 🧩 | \(total) | " + met.joined(separator: " | ") + " |")
 
         return lines.joined(separator: "\n")
     }
 
     /// One host's marks on one element, counted: each kind it has, in the legend's order.
     static func counted(_ marks: Marks) -> String {
-        [(marks.done, "✅"), (marks.partial, "☑️"), (marks.notPlanned, "–"), (marks.byApplication, "🧩")]
+        [(marks.done, "✅"), (marks.partial, "☑️"), (marks.notPlanned, "–"), (marks.byApplication, "🧩"), (marks.byHost, "🔌")]
             .filter { $0.0 > 0 }
             .map { "\($0.0) \($0.1)" }
             .joined(separator: " · ")

@@ -34,11 +34,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (82) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 38 ✅ · 1 ☑️ | `NSPopUpButton` |  |
-| UIKit | ✅ | 25 ✅ · 3 – | pop-up `UIButton` menu |  |
-| Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `Spinner` |  |
+| AppKit | ✅ | 38 ✅ · 1 ☑️ · 26 🔌 | `NSPopUpButton` |  |
+| UIKit | ✅ | 25 ✅ · 3 – · 29 🔌 | pop-up `UIButton` menu |  |
+| Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – · 2 🔌 | `Spinner` |  |
 | WinUI 3 | ✅ | 65 ✅ | `ComboBox` |  |
-| GTK 4 | ✅ | 49 ✅ · 7 – | `GtkDropDown` |  |
+| GTK 4 | ✅ | 49 ✅ · 7 – · 11 🔌 | `GtkDropDown` |  |
 | Web |  |  | `<select>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract.swift`.

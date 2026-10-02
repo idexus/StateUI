@@ -33,11 +33,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (86) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 40 ✅ · 1 ☑️ | `NSButton` |  |
-| UIKit | ✅ | 41 ✅ · 3 – | `UIButton` |  |
+| AppKit | ✅ | 40 ✅ · 1 ☑️ · 27 🔌 | `NSButton` |  |
+| UIKit | ✅ | 41 ✅ · 3 – · 27 🔌 | `UIButton` |  |
 | Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `Button` |  |
 | WinUI 3 | ✅ | 71 ✅ | `Button` |  |
-| GTK 4 | ✅ | 54 ✅ · 1 – | `GtkButton` |  |
+| GTK 4 | ✅ | 54 ✅ · 1 – · 18 🔌 | `GtkButton` |  |
 | Web |  |  | `<button>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract.swift`.

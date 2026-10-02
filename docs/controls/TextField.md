@@ -36,11 +36,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (90) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 42 ✅ · 1 ☑️ | `NSTextField` / `NSSecureTextField` |  |
-| UIKit | ✅ | 46 ✅ | `UITextField` |  |
+| AppKit | ✅ | 42 ✅ · 1 ☑️ · 26 🔌 | `NSTextField` / `NSSecureTextField` |  |
+| UIKit | ✅ | 46 ✅ · 25 🔌 | `UITextField` |  |
 | Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
 | WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
-| GTK 4 | ✅ | 60 ✅ · 1 – | `GtkEntry` / `GtkPasswordEntry` |  |
+| GTK 4 | ✅ | 60 ✅ · 1 – · 12 🔌 | `GtkEntry` / `GtkPasswordEntry` |  |
 | Web |  |  | `<input>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextFieldContract.swift`.

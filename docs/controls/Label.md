@@ -32,11 +32,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (81) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 38 ✅ · 1 ☑️ · 3 – | `NSTextField` label; `NSAttributedString` runs |  |
-| UIKit | ✅ | 39 ✅ · 3 – | `UILabel`; `NSAttributedString` runs |  |
+| AppKit | ✅ | 38 ✅ · 1 ☑️ · 3 – · 25 🔌 | `NSTextField` label; `NSAttributedString` runs |  |
+| UIKit | ✅ | 39 ✅ · 3 – · 25 🔌 | `UILabel`; `NSAttributedString` runs |  |
 | Android Views | ✅ | 61 ✅ · 1 ☑️ · 3 – | `TextView`; `SpannableString` spans |  |
 | WinUI 3 | ✅ | 63 ✅ · 3 – | `TextBlock`; `Run` inlines |  |
-| GTK 4 | ✅ | 52 ✅ · 4 – | `GtkLabel`; `PangoAttrList` runs |  |
+| GTK 4 | ✅ | 52 ✅ · 4 – · 13 🔌 | `GtkLabel`; `PangoAttrList` runs |  |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/LabelContract.swift`.

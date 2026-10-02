@@ -39,11 +39,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (77) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 32 ✅ · 2 ☑️ · 3 – | `NSScrollView` |  |
-| UIKit | ✅ | 33 ✅ · 3 – | `UIScrollView` |  |
+| AppKit | ✅ | 32 ✅ · 2 ☑️ · 3 – · 27 🔌 | `NSScrollView` |  |
+| UIKit | ✅ | 33 ✅ · 3 – · 25 🔌 | `UIScrollView` |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `ScrollView` / `HorizontalScrollView` |  |
 | WinUI 3 | ✅ | 60 ✅ · 3 – | `ScrollViewer` |  |
-| GTK 4 | ✅ | 50 ✅ · 1 – | `GtkScrolledWindow` |  |
+| GTK 4 | ✅ | 50 ✅ · 1 – · 11 🔌 | `GtkScrolledWindow` |  |
 | Web |  |  | `overflow: auto` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ScrollViewContract.swift`.

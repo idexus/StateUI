@@ -41,11 +41,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (81) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 38 ✅ · 1 ☑️ | `NSButton` radio |  |
-| UIKit | ✅ | 34 ✅ · 3 – | composed by StateUI |  |
+| AppKit | ✅ | 38 ✅ · 1 ☑️ · 25 🔌 | `NSButton` radio |  |
+| UIKit | ✅ | 34 ✅ · 3 – · 26 🔌 | composed by StateUI |  |
 | Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `RadioButton` |  |
 | WinUI 3 | ✅ | 63 ✅ | `RadioButton` |  |
-| GTK 4 | ✅ | 51 ✅ · 1 – | grouped `GtkCheckButton` |  |
+| GTK 4 | ✅ | 51 ✅ · 1 – · 12 🔌 | grouped `GtkCheckButton` |  |
 | Web |  |  | `<input type=radio>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/RadioButtonContract.swift`.

@@ -107,7 +107,10 @@ the register calls never is marked – without the case running, and one of an
 element the register leaves to the application (`byApplication`) - a map on
 a platform with none of its own - is marked 🧩 so. Both count as met: the
 host has done all it will, and the contract is kept there by the family's
-nature or by the application's own registration. The element
+nature or by the application's own registration. A member proven only
+through the host's own entry or record, 🔌, counts as met too - it works and
+its effect is proven, by weaker evidence - and every total names how many of
+its met are 🔌, so the evidence stays in sight. The element
 itself has a verdict of its own, `Button: ✅`: the creation table's mark, and
 the "Created" cell of the hosts table that opens the element's page, above
 its own members and then its tiers'. Every view has one case that proves it

@@ -33,11 +33,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (69) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 27 ✅ · 1 ☑️ · 3 – | `NSImageView` |  |
-| UIKit | ✅ | 26 ✅ · 3 – | `UIImageView` |  |
+| AppKit | ✅ | 27 ✅ · 1 ☑️ · 3 – · 25 🔌 | `NSImageView` |  |
+| UIKit | ✅ | 26 ✅ · 3 – · 25 🔌 | `UIImageView` |  |
 | Android Views | ✅ | 50 ✅ · 1 ☑️ · 3 – | `ImageView` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `Image` |  |
-| GTK 4 | ✅ | 41 ✅ · 4 – | `GtkPicture` |  |
+| GTK 4 | ✅ | 41 ✅ · 4 – · 11 🔌 | `GtkPicture` |  |
 | Web |  |  | `<img>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ImageContract.swift`.

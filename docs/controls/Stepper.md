@@ -35,11 +35,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (71) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 31 ✅ · 1 ☑️ | `NSStepper` |  |
-| UIKit | ✅ | 27 ✅ · 3 – | `UIStepper` |  |
+| AppKit | ✅ | 31 ✅ · 1 ☑️ · 25 🔌 | `NSStepper` |  |
+| UIKit | ✅ | 27 ✅ · 3 – · 25 🔌 | `UIStepper` |  |
 | Android Views | ✅ | 50 ✅ · 1 ☑️ · 3 – | custom `NumberPicker`-based view |  |
 | WinUI 3 | ✅ | 57 ✅ | `NumberBox` |  |
-| GTK 4 | ✅ | 47 ✅ · 1 – | `GtkSpinButton` |  |
+| GTK 4 | ✅ | 47 ✅ · 1 – · 11 🔌 | `GtkSpinButton` |  |
 | Web |  |  | `<input type=number>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/StepperContract.swift`.

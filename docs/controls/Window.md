@@ -44,11 +44,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (22) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 15 ✅ | `NSWindow` |  |
-| UIKit | ✅ | 3 ✅ | `UIWindow` |  |
-| Android Views | ✅ | 2 ✅ | `Activity` |  |
+| AppKit | ✅ | 15 ✅ · 6 🔌 | `NSWindow` |  |
+| UIKit | ✅ | 3 ✅ · 4 🔌 | `UIWindow` |  |
+| Android Views | ✅ | 2 ✅ · 4 🔌 | `Activity` |  |
 | WinUI 3 | ✅ | 22 ✅ | `Window` |  |
-| GTK 4 | ✅ | 8 ✅ · 8 – | `GtkApplicationWindow` |  |
+| GTK 4 | ✅ | 8 ✅ · 8 – · 6 🔌 | `GtkApplicationWindow` |  |
 | Web |  |  | browser `window` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContract.swift`.

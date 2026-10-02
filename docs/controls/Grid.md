@@ -42,11 +42,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (77) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 32 ✅ · 3 – | custom `NSView` |  |
-| UIKit | ✅ | 34 ✅ · 3 – | composed by StateUI |  |
+| AppKit | ✅ | 32 ✅ · 3 – · 25 🔌 | custom `NSView` |  |
+| UIKit | ✅ | 34 ✅ · 3 – · 25 🔌 | composed by StateUI |  |
 | Android Views | ✅ | 55 ✅ · 1 ☑️ · 3 – | composed by StateUI |  |
 | WinUI 3 | ✅ | 59 ✅ · 3 – | composed by StateUI |  |
-| GTK 4 | ✅ | 47 ✅ · 4 – | composed by StateUI |  |
+| GTK 4 | ✅ | 47 ✅ · 4 – · 11 🔌 | composed by StateUI |  |
 | Web |  |  | composed by StateUI | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/GridContract.swift`.

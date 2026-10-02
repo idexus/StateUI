@@ -38,8 +38,8 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (1) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ |  | `NSMenu` / `NSMenuItem` |  |
-| UIKit | ✅ |  | `UIMenu` / `UIAction` |  |
+| AppKit | ✅ | 1 🔌 | `NSMenu` / `NSMenuItem` |  |
+| UIKit | ✅ | 1 🔌 | `UIMenu` / `UIAction` |  |
 | Android Views | ✅ | 1 ✅ | `PopupMenu` / `MenuItem`; no menu bar |  |
 | WinUI 3 | ✅ | 1 ✅ | `MenuFlyout` / `MenuBar` |  |
 | GTK 4 | ✅ | 1 ✅ | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |

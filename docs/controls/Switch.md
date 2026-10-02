@@ -33,11 +33,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (69) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 31 ✅ · 1 ☑️ | `NSSwitch` |  |
-| UIKit | ✅ | 27 ✅ · 3 – | `UISwitch` |  |
+| AppKit | ✅ | 31 ✅ · 1 ☑️ · 25 🔌 | `NSSwitch` |  |
+| UIKit | ✅ | 27 ✅ · 3 – · 25 🔌 | `UISwitch` |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `Switch` |  |
 | WinUI 3 | ✅ | 56 ✅ | `ToggleSwitch` |  |
-| GTK 4 | ✅ | 44 ✅ · 1 – | `GtkSwitch` |  |
+| GTK 4 | ✅ | 44 ✅ · 1 – · 12 🔌 | `GtkSwitch` |  |
 | Web |  |  | checkbox `<input>` with `role=switch` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SwitchContract.swift`.

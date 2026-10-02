@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (9) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 4 ✅ | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
+| AppKit | ✅ | 4 ✅ · 1 🔌 | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
 | UIKit | ✅ | 7 ✅ · 2 – | `UINavigationController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `ViewGroup` stack + `Toolbar` |  |
 | WinUI 3 | ✅ | 9 ✅ | `Frame` |  |

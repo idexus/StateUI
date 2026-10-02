@@ -34,11 +34,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (80) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 36 ✅ · 1 ☑️ | `NSDatePicker` |  |
-| UIKit | ✅ | 29 ✅ · 3 – | `UIDatePicker` |  |
-| Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – | `DatePickerDialog` |  |
+| AppKit | ✅ | 36 ✅ · 1 ☑️ · 26 🔌 | `NSDatePicker` |  |
+| UIKit | ✅ | 29 ✅ · 3 – · 25 🔌 | `UIDatePicker` |  |
+| Android Views | ✅ | 58 ✅ · 1 ☑️ · 3 – · 3 🔌 | `DatePickerDialog` |  |
 | WinUI 3 | ✅ | 63 ✅ · 1 ☑️ | `CalendarDatePicker` |  |
-| GTK 4 | ⌛ | 45 ✅ · 1 – | `GtkCalendar` in a `GtkPopover` |  |
+| GTK 4 | ⌛ | 45 ✅ · 1 – · 11 🔌 | `GtkCalendar` in a `GtkPopover` |  |
 | Web |  |  | `<input type=date>` | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/DatePickerContract.swift`.
