@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (69) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 33 ✅ · 1 ☑️ · 25 ✓ | `NSButton` checkbox |  |
-| UIKit | ✅ | 27 ✅ · 26 ✓ · 3 – | composed by StateUI |  |
+| UIKit | ✅ | 28 ✅ · 26 ✓ · 3 – | composed by StateUI |  |
 | Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `CheckBox` |  |
 | WinUI 3 | ✅ | 56 ✅ | `CheckBox` |  |
 | GTK 4 | ✅ | 44 ✅ · 12 ✓ · 1 – | `GtkCheckButton` |  |
@@ -79,7 +79,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: CheckBox takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: CheckBox takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

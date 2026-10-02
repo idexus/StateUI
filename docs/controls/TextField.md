@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (90) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 43 ✅ · 1 ☑️ · 26 ✓ · 3 – | `NSTextField` / `NSSecureTextField` |  |
-| UIKit | ✅ | 49 ✅ · 25 ✓ | `UITextField` |  |
+| UIKit | ✅ | 50 ✅ · 25 ✓ | `UITextField` |  |
 | Android Views | ✅ | 70 ✅ · 1 ☑️ · 2 – | `EditText` |  |
 | WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
 | GTK 4 | ✅ | 60 ✅ · 12 ✓ · 1 – | `GtkEntry` / `GtkPasswordEntry` |  |
@@ -81,7 +81,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

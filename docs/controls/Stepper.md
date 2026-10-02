@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (71) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 32 ✅ · 1 ☑️ · 25 ✓ | `NSStepper` |  |
-| UIKit | ✅ | 28 ✅ · 25 ✓ · 3 – | `UIStepper` |  |
+| UIKit | ✅ | 29 ✅ · 25 ✓ · 3 – | `UIStepper` |  |
 | Android Views | ✅ | 50 ✅ · 1 ☑️ · 3 – | custom `NumberPicker`-based view |  |
 | WinUI 3 | ✅ | 57 ✅ | `NumberBox` |  |
 | GTK 4 | ✅ | 47 ✅ · 11 ✓ · 1 – | `GtkSpinButton` |  |
@@ -81,7 +81,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ | ✅ |  | UIKit: Stepper takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Stepper takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (68) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 26 ✅ · 1 ☑️ · 26 ✓ · 3 – | spinning `NSProgressIndicator` |  |
-| UIKit | ✅ | 27 ✅ · 25 ✓ · 3 – | `UIActivityIndicatorView` |  |
+| UIKit | ✅ | 28 ✅ · 25 ✓ · 3 – | `UIActivityIndicatorView` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | indeterminate `ProgressBar` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `ProgressRing` |  |
 | GTK 4 | ✅ | 41 ✅ · 11 ✓ · 4 – | `GtkSpinner` |  |
@@ -75,7 +75,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

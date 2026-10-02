@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (69) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 28 ✅ · 1 ☑️ · 25 ✓ · 3 – | `NSImageView` |  |
-| UIKit | ✅ | 27 ✅ · 25 ✓ · 3 – | `UIImageView` |  |
+| UIKit | ✅ | 28 ✅ · 25 ✓ · 3 – | `UIImageView` |  |
 | Android Views | ✅ | 50 ✅ · 1 ☑️ · 3 – | `ImageView` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `Image` |  |
 | GTK 4 | ✅ | 41 ✅ · 11 ✓ · 4 – | `GtkPicture` |  |
@@ -76,7 +76,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Image takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Image takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Image takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Image takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Image takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

@@ -7,7 +7,7 @@ Canvas.isVisible: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform, checked against the layer it composed itself
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself
 ColorBox.rotation: ✓ read rotation of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.layoutDirection: not realized
+DatePicker.layoutDirection: ✅
 Ellipse.isAccessibilityHidden: ✅
 Grid.accessibilityLabel: ✅
 HStack.frame: ✅
@@ -29,7 +29,7 @@ ProgressBar.isVisible: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.scale: ✓ read scale of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.layoutDirection: not realized
+ScrollView.layoutDirection: ✅
 SearchField.isAccessibilityHidden: ✅
 Slider.accessibilityLabel: ✅
 Stepper.frame: ✅
@@ -40,6 +40,6 @@ TextEditor.isVisible: ✅
 TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.layoutDirection: not realized
+VStack.layoutDirection: ✅
 WebView.isAccessibilityHidden: ✅
 ZStack.accessibilityLabel: ✅

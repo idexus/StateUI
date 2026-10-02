@@ -345,6 +345,9 @@ final class UIKitDriver: HostDriver {
         case (.showsClearButton, let field as UITextField): return (field.clearButtonMode != .never).propValue
         // Ignoring input: UIKit passes over the view and all in it as it finds what a touch lands on.
         case (.ignoresInput, let view?): return (!view.isUserInteractionEnabled).propValue
+        case (.layoutDirection, let view?):
+            return (view.effectiveUserInterfaceLayoutDirection == .rightToLeft ? LayoutDirection.rightToLeft : .leftToRight)
+                .propValue
         case (.isEnabled, let label as UILabel): return label.isEnabled.propValue
         case (.isEnabled, let editor as UITextView): return (editor.isEditable || editor.isSelectable).propValue
         case (.padding, let button as UIButton):

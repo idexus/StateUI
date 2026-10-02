@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | Host | Created | Members (77) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 33 ✅ · 25 ✓ · 3 – | custom `NSView` |  |
-| UIKit | ✅ | 34 ✅ · 25 ✓ · 3 – | composed by StateUI |  |
+| UIKit | ✅ | 35 ✅ · 25 ✓ · 3 – | composed by StateUI |  |
 | Android Views | ✅ | 55 ✅ · 1 ☑️ · 3 – | composed by StateUI |  |
 | WinUI 3 | ✅ | 59 ✅ · 3 – | composed by StateUI |  |
 | GTK 4 | ✅ | 47 ✅ · 11 ✓ · 4 – | composed by StateUI |  |
@@ -87,7 +87,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Grid takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Grid takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Grid takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Grid takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Grid takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ | ✅ |  |  |  |  | Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

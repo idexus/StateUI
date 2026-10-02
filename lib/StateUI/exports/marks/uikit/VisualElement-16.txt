@@ -1,5 +1,5 @@
 # revision 1.1
-ActivityIndicator.layoutDirection: not realized
+ActivityIndicator.layoutDirection: ✅
 Button.isAccessibilityHidden: ✅
 Canvas.accessibilityLabel: ✅
 CheckBox.frame: ✅
@@ -10,7 +10,7 @@ DatePicker.isVisible: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform, checked against the layer it composed itself
 Ellipse.scale: ✓ read scale of Ellipse: the host's own transform, checked against the layer it composed itself
 Grid.rotation: ✓ read rotation of Grid: the host's own transform, checked against the layer it composed itself
-HStack.layoutDirection: not realized
+HStack.layoutDirection: ✅
 Image.isAccessibilityHidden: ✅
 ItemsView.accessibilityLabel: ✅
 Label.frame: ✅
@@ -21,7 +21,7 @@ Map.isVisible: not realized
 Map.translationX: not realized
 Path.scale: ✓ read scale of Path: the host's own transform, checked against the layer it composed itself
 Picker.rotation: ✓ read rotation of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.layoutDirection: not realized
+Polygon.layoutDirection: ✅
 Polyline.isAccessibilityHidden: ✅
 ProgressBar.accessibilityLabel: ✅
 RadioButton.frame: ✅
@@ -32,7 +32,7 @@ ScrollView.isVisible: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.scale: ✓ read scale of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.rotation: ✓ read rotation of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.layoutDirection: not realized
+Stepper.layoutDirection: ✅
 Switch.isAccessibilityHidden: ✅
 TextEditor.accessibilityLabel: ✅
 TextField.frame: ✅

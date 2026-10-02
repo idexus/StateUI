@@ -9,6 +9,11 @@ import UIKit
 /// What a layout holds: its children's views, each as the item the host layer's arithmetic places; and a label, the
 /// runs of its spans.
 extension UIKitElement {
+    /// The view lays out, and its control writes, in the element's direction.
+    func directionChanged() {
+        view?.semanticContentAttribute = element.layoutDirection == .rightToLeft ? .forceRightToLeft : .forceLeftToRight
+    }
+
     func arrangeChildren() {
         if let items = view as? UIKitItemsView { return items.childrenChanged() }
         if let label = view as? UIKitLabelView { return label.setRuns(element.textRuns) }
