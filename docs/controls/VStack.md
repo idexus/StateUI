@@ -15,7 +15,7 @@ VStack {
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [StackBase](tiers/StackBase.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [Stack](tiers/Stack.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -196,7 +196,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 <tr><td colspan="9">AppKit: cannot read letsInputThrough of VStack - AppKit's driver has no path for it yet<br>UIKit: cannot read letsInputThrough of VStack - UIKit's driver has no path for it yet<br>Android Views, WinUI 3: not realized</td></tr></tbody>
 </table>
 
-## From [StackBase](tiers/StackBase.md)
+## From [Stack](tiers/Stack.md)
 
 What both stacks have: the space between their children.
 

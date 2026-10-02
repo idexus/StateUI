@@ -194,9 +194,9 @@ extern "C" int32_t stateui_winui_text_runs(StateUIObjectRef handle, double *valu
                     if (range.StartIndex == at && range.Length == length) background = argb(highlighter.Background());
             if (6 * (count + 1) <= capacity) {
                 auto *slot = values + 6 * count;
-                slot[0] = run.ReadLocalValue(documents::TextElement::ForegroundProperty()) == xaml::DependencyProperty::UnsetValue()
+                slot[0] = run.ReadLocalValue(documents::TextualElement::ForegroundProperty()) == xaml::DependencyProperty::UnsetValue()
                     ? 0 : argb(run.Foreground());
-                slot[1] = run.ReadLocalValue(documents::TextElement::FontSizeProperty()) == xaml::DependencyProperty::UnsetValue()
+                slot[1] = run.ReadLocalValue(documents::TextualElement::FontSizeProperty()) == xaml::DependencyProperty::UnsetValue()
                     ? 0 : run.FontSize();
                 slot[2] = run.FontWeight().Weight;
                 slot[3] = run.FontStyle() == winrt::Windows::UI::Text::FontStyle::Italic ? 1 : 0;

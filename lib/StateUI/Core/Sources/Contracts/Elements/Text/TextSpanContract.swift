@@ -11,7 +11,7 @@ public enum TextSpanContract: ElementContract {
 
     /// A run is text in a font, spaced and decorated - and no view.
     public static let tiers: [any Contract.Type] = [
-        TextElementContract.self, FontElementContract.self, LineHeightElementContract.self,
+        TextualElementContract.self, FontElementContract.self, LineHeightElementContract.self,
         DecorableTextElementContract.self,
     ]
 

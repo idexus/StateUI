@@ -478,7 +478,7 @@ public final class Renderer: @unchecked Sendable {
     /// Shown until an application registers, in the shape a real one has.
     private static var unregistered: Node {
         var label = Node(contract: TextContract.self)
-        label.write(TextElementContract.text, "StateUI: no application registered")
+        label.write(TextualElementContract.text, "StateUI: no application registered")
 
         let page = Node(contract: PageContract.self, children: [label])
         let main = Node(contract: WindowContract.self, id: SceneElement.mainKey, children: [page])

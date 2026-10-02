@@ -13,13 +13,13 @@ Swift protocols behind them refine each other.
   |-- VisualElement                      size, visibility, transform, input, focus, accessibility
   |   |-- View                           place in a layout, margin, gestures, drag and drop, frame
   |   |   |-- Layout  (+ PaddingElement, BorderElement) safe area, clipping, own box, input through empty space
-  |   |   |   '-- StackBase              spacing between children
-  |   |   |-- InputView                  text limits, caret, keyboard, placeholder
+  |   |   |   '-- Stack              spacing between children
+  |   |   |-- TextInput                  text limits, caret, keyboard, placeholder
   |   |   '-- Shape                      fill, stroke, a transform of its own drawing
   |   |-- PaddingElement                 space inside an element
   |   '-- TextAlignmentElement           where text sits in its element
   |-- TextStyleElement                   text colour, space between letters
-  |   '-- TextElement                    the words and their case
+  |   '-- TextualElement                    the words and their case
   |-- FontElement                        family, size, weight and slant, text-size scaling
   |-- LineHeightElement                  space between lines
   |-- DecorableTextElement               underline and strikethrough
@@ -40,8 +40,8 @@ Swift protocols behind them refine each other.
                      RadioButton, ScrollView, Slider, Stepper, Switch,
                      TimePicker, WebView
   Layout             Grid, ZStack
-  StackBase          HStack, VStack
-  InputView          SearchField, TextEditor, TextField
+  Stack          HStack, VStack
+  TextInput          SearchField, TextEditor, TextField
   Shape              Ellipse, Line, Path, Polygon, Polyline, Rectangle
   MenuItemElement    MenuItem, ToolbarItem
   PageElement        Page, NavigationStack, TabView, SplitView

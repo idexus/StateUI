@@ -9,7 +9,7 @@ import CStateUIWinUI
 /// its template holds, which takes what the box says of it: whether it is read only, the case typing takes and the
 /// words typed across it; the placeholder's colour stands in the box's theme resources.
 @MainActor
-final class WinUISearchFieldView: WinUIInputView {
+final class WinUISearchFieldView: WinUITextInputView {
     private var readOnly = false
     private var textCase = TextCase.none
     private var alignment = TextAlignment.start

@@ -85,10 +85,10 @@ final class WinUIConformanceTests: XCTestCase {
     func testView4() { conform(ViewTests.self, part: Conformance.Part(4, of: 5)) }
     func testView5() { conform(ViewTests.self, part: Conformance.Part(5, of: 5)) }
     func testLayout() { conform(LayoutTests.self) }
-    func testStackBase() { conform(StackBaseTests.self) }
-    func testInputView() { conform(InputViewTests.self) }
+    func testStack() { conform(StackTests.self) }
+    func testTextInput() { conform(TextInputTests.self) }
     func testShape() { conform(ShapeTests.self) }
-    func testTextElement() { conform(TextElementTests.self) }
+    func testTextualElement() { conform(TextualElementTests.self) }
     func testTextStyleElement() { conform(TextStyleElementTests.self) }
     func testFontElement() { conform(FontElementTests.self) }
     func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }

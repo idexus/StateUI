@@ -37,7 +37,7 @@ final class ContractPayloadTests: XCTestCase {
         check(ViewContract.pointerReleased, [])
         check(ViewContract.swiped, [.enumeration(1)])
         check(ViewContract.tapped)
-        check(InputViewContract.textChanged, [.string("typed")])
+        check(TextInputContract.textChanged, [.string("typed")])
         check(MenuItemElementContract.clicked)
 
         // The elements.

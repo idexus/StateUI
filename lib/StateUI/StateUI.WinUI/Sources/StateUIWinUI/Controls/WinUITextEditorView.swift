@@ -9,7 +9,7 @@ import CStateUIWinUI
 /// keeping the height it is given and scrolling them.
 /// Design: docs/design/platforms/winui/controls.md#an-editor
 @MainActor
-final class WinUITextEditorView: WinUIInputView {
+final class WinUITextEditorView: WinUITextInputView {
     /// Whether the editor takes the height of its words.
     var growsWithText = false {
         didSet { if growsWithText != oldValue { invalidateMeasure() } }

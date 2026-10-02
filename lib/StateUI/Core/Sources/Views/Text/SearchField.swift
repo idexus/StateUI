@@ -29,7 +29,7 @@ extension SearchFieldProperties {
 /// Given a binding the field shows the value and writes every edit back; given a
 /// plain string it shows that, and `.onTextChanged` is how what is typed gets
 /// anywhere.
-public struct SearchField: InputView, TextElement, FontElement, TextAlignmentElement, TintElement,
+public struct SearchField: TextInput, TextualElement, FontElement, TextAlignmentElement, TintElement,
     SearchFieldProperties
 {
     /// The node this control describes.
@@ -44,7 +44,7 @@ public struct SearchField: InputView, TextElement, FontElement, TextAlignmentEle
     /// `.onTextChanged`.
     public init(_ text: String) {
         node = Node(contract: SearchFieldContract.self)
-        node.write(TextElementContract.text, text)
+        node.write(TextualElementContract.text, text)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
@@ -67,8 +67,8 @@ public struct SearchField: InputView, TextElement, FontElement, TextAlignmentEle
     /// - Returns: the control, wearing and reporting that text.
     public func text(_ value: Binding<String>) -> Modified {
         value.image == nil
-            ? described(TextElementContract.text.token, value, on: .textChanged)
-            : words(TextElementContract.text.token, by: value, mode: .inOut)
+            ? described(TextualElementContract.text.token, value, on: .textChanged)
+            : words(TextualElementContract.text.token, by: value, mode: .inOut)
     }
 
     // MARK: Events

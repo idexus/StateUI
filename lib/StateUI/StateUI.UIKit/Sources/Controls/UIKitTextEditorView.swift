@@ -9,7 +9,7 @@ import UIKit
 /// A TextEditor: UIKit's own text view of many lines, scrolling its words - or, growing with them, asking for their
 /// whole height. What shows while there are no words is a label of its own over it, as a text view has none.
 @MainActor
-final class UIKitTextEditorView: UITextView, UIKitInputView {
+final class UIKitTextEditorView: UITextView, UIKitTextInputView {
     let typing = UIKitTyping()
 
     private let madeFont = UIFont.preferredFont(forTextStyle: .body)

@@ -7,7 +7,7 @@ import CStateUIWinUI
 /// A TextField: a WinUI `TextBox` on one line, whose Enter submits - a `PasswordBox` while it holds a password.
 /// Design: docs/design/platforms/winui/controls.md#a-password
 @MainActor
-final class WinUITextFieldView: WinUIInputView {
+final class WinUITextFieldView: WinUITextInputView {
     /// Whether the field stands as a `PasswordBox`.
     private(set) var isPassword = false
 

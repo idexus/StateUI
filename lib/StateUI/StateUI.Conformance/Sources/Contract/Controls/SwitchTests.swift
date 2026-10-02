@@ -34,7 +34,7 @@
             },
             ConformanceCase("aUsersTurnReachesTheStateAndTheHandlerOnce", proves: [
                 Covered(SwitchContract.isOn), Covered(SwitchContract.toggled),
-                Covered(TextElementContract.text, on: TextContract.self),
+                Covered(TextualElementContract.text, on: TextContract.self),
             ]) { s in
                 let on = State(wrappedValue: false)
                 let heard = Received<Bool>()
@@ -51,7 +51,7 @@
 
                 s.expect(on.wrappedValue, true)
                 s.expect(heard.values, [true])
-                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "on")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "on")
                 s.expect(try s.held(SwitchContract.isOn, on: toggle), true)
             },
             ConformanceCase("aUsersTurnBackIsHeardToo", proves: [

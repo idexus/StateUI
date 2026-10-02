@@ -3,9 +3,9 @@
 
 /// What every field a user types into has: the text's limits and caret, the
 /// keyboard it asks for, and the placeholder shown while it is empty.
-public enum InputViewContract: Contract {
+public enum TextInputContract: Contract {
     /// The tier's name.
-    public static let name = "InputView"
+    public static let name = "TextInput"
 
     /// A field is a view.
     public static let tiers: [any Contract.Type] = [ViewContract.self]

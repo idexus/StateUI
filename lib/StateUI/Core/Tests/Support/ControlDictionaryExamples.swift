@@ -591,7 +591,7 @@ extension ControlDictionary {
             .clipsContent(true)
             """#),
 
-        (StackBaseContract.self, #"""
+        (StackContract.self, #"""
             HStack {
                 Button("Cancel")
                 Button("Save")
@@ -599,7 +599,7 @@ extension ControlDictionary {
             .spacing(8)
             """#),
 
-        (InputViewContract.self, #"""
+        (TextInputContract.self, #"""
             @State var email = ""
 
             TextField($email)
@@ -617,7 +617,7 @@ extension ControlDictionary {
                 .height(40)
             """#),
 
-        (TextElementContract.self, #"""
+        (TextualElementContract.self, #"""
             Button("Continue")
                 .textCase(.uppercase)
             """#),

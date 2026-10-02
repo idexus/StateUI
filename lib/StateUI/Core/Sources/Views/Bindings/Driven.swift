@@ -21,7 +21,7 @@ extension Text {
     /// - Parameter state: the state the words are read from.
     /// - Returns: the label, with its text carried from that state.
     public func text(_ state: Binding<String>) -> Text {
-        setValue(TextElementContract.text, on: state, mode: .out, kind: .text)
+        setValue(TextualElementContract.text, on: state, mode: .out, kind: .text)
     }
 }
 
@@ -31,7 +31,7 @@ extension Button {
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the button, with its caption carried from that state.
     public func text(_ state: Binding<String>) -> Button {
-        setValue(TextElementContract.text, on: state, mode: .out, kind: .text)
+        setValue(TextualElementContract.text, on: state, mode: .out, kind: .text)
     }
 }
 

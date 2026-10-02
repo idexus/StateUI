@@ -134,9 +134,9 @@ turns the nodes into the patch.
   [menus](../design/views/builders.md#menus-collect-without-keys);
   [navigation and presentation](../interface/navigation-and-presentation.md))
 - **The tier protocols** (`Tiers/`) - `PropertyContainer`,
-  `ModifiableElement`, `VisualElement`, `View`, `Layout`, `StackBase`, `Shape`
-  and `InputView`, each with the `…Properties` half a style wears - and **the
-  mixin tiers** (`Mixins/`), `TextElement`, `FontElement`, `TintElement` and
+  `ModifiableElement`, `VisualElement`, `View`, `Layout`, `Stack`, `Shape`
+  and `TextInput`, each with the `…Properties` half a style wears - and **the
+  mixin tiers** (`Mixins/`), `TextualElement`, `FontElement`, `TintElement` and
   their kin, offer the modifiers; a protocol's modifiers write the members of
   the tier contract of its name. *Application.*
   ([Two halves](../design/views/tiers.md#two-halves),

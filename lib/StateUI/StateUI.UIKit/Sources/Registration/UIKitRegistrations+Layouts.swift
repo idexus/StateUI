@@ -98,11 +98,11 @@ extension UIKitRegistrations {
 
     /// What both stacks take: the space between their children, and the space inside their own edge.
     private static let stackMembers: [any ContractMember] = [
-        StackBaseContract.spacing, PaddingElementContract.padding,
+        StackContract.spacing, PaddingElementContract.padding,
     ]
 
     private static func applyStack<Realized: ElementContract>(_ view: UIKitStackView, _ values: ElementValues<Realized>) {
-        view.spacing = values[StackBaseContract.spacing] ?? 0
+        view.spacing = values[StackContract.spacing] ?? 0
         view.padding = values[PaddingElementContract.padding] ?? Insets(0)
     }
 }

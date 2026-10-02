@@ -104,7 +104,7 @@ final class WinUIDriver: HostDriver {
             guard takesTyping(search) else { break }
             search.type(words)
             for _ in 0..<150 where element.value(.text)?.string != words { step() }
-        case (.type(let words), let field as WinUIInputView): type(words, into: field)
+        case (.type(let words), let field as WinUITextInputView): type(words, into: field)
         case (.submit, let search as WinUISearchFieldView): stateui_winui_search_submit_as_user(search.handle)
         case (.choose(let place), let picker as WinUIPickerView):
             stateui_winui_picker_choose_as_user(picker.handle, Int32(place))
@@ -268,13 +268,13 @@ final class WinUIDriver: HostDriver {
     /// Types `words` as the whole of a field's words: written outside a program's write, which WinUI reports through
     /// the keyboard's `TextChanging`; a box WinUI holds read only takes none, as its keyboard takes none.
     /// Design: docs/design/platforms/winui/conformance.md#typing
-    private func type(_ words: String, into field: WinUIInputView) {
+    private func type(_ words: String, into field: WinUITextInputView) {
         guard takesTyping(field) else { return }
         stateui_winui_field_set_text(field.handle, words)
     }
 
     /// Whether the keyboard reaches `field`: none reaches a text box WinUI holds read only.
-    private func takesTyping(_ field: WinUIInputView) -> Bool {
+    private func takesTyping(_ field: WinUITextInputView) -> Bool {
         var facts = [Int32](repeating: 0, count: 9)
         stateui_winui_field_facts(field.handle, &facts)
         return facts[0] == 0

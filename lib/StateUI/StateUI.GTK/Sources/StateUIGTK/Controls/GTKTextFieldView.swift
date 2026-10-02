@@ -9,7 +9,7 @@ import CStateUIGTK
 /// words stand in the entry's `GtkText`, which the search field's entry holds too.
 /// Design: docs/design/platforms/gtk/controls.md#a-field-and-its-words
 @MainActor
-class GTKTextFieldView: GTKView, GTKInputView {
+class GTKTextFieldView: GTKView, GTKTextInputView {
     /// What the field does when its words change, handed all of them.
     var onTextChanged: ((String) -> Void)?
 

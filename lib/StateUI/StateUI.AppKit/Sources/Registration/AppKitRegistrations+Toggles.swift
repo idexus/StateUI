@@ -54,15 +54,15 @@ extension AppKitRegistrations {
             return radio
         }, members: { radio in
             radio.applies([
-                RadioButtonContract.isOn, TextElementContract.text, TextElementContract.textCase,
+                RadioButtonContract.isOn, TextualElementContract.text, TextualElementContract.textCase,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
                 FontElementContract.fontAttributes, TextStyleElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
                 view.apply(
                     checked: values[RadioButtonContract.isOn] ?? false,
-                    text: (values[TextElementContract.textCase] ?? .none)
-                        .applied(to: values[TextElementContract.text] ?? ""),
+                    text: (values[TextualElementContract.textCase] ?? .none)
+                        .applied(to: values[TextualElementContract.text] ?? ""),
                     font: appKitFont(
                         family: values[FontElementContract.fontFamily]?.text,
                         size: values[FontElementContract.fontSize],

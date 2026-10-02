@@ -58,7 +58,7 @@ enum AndroidRealization {
         .complete("VisualElement", "layoutDirection"),
         .notPlanned("TextField", "showsClearButton", reason: "Android's text field has no button of its own that empties it."),
         .notPlanned("Page", "backButtonTitle", reason: "Android's way back in the bar is an arrow, with no words."),
-        .notPlanned("InputView", "isSpellCheckEnabled",
+        .notPlanned("TextInput", "isSpellCheckEnabled",
                     reason: "Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off."),
         .notPlanned("MenuItem", "accessibilityIdentifier",
                     reason: "An Android menu entry holds no identifier: automation finds it by its title."),

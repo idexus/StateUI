@@ -124,7 +124,7 @@
             },
             ConformanceCase("aUsersMoveTakesTheJourneyAndIsHeard", proves: [
                 Covered(SliderContract.value), Covered(SliderContract.valueChanged),
-                Covered(TextElementContract.text, on: TextContract.self),
+                Covered(TextualElementContract.text, on: TextContract.self),
             ]) { s in
                 let level = State(wrappedValue: 0.0)
                 let moves = Received<Double>()
@@ -141,7 +141,7 @@
 
                 s.expect(level.wrappedValue, 0.75, within: 1e-9, "the journey took the thumb's value")
                 s.expect(moves.values, [0.75], "and the handler heard it once")
-                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "level 0.75")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "level 0.75")
                 s.expect(try s.held(SliderContract.value, on: slider), 0.75, within: 1e-9,
                          "the render left the thumb where the hand put it")
             },

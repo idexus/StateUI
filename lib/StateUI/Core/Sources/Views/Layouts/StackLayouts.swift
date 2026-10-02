@@ -20,7 +20,7 @@
 /// A stack grows as tall as its children need and does not scroll, so a column
 /// longer than the screen wants a `ScrollView` around it. A column that must
 /// DIVIDE a fixed height among its children is a `Grid` instead.
-public struct VStack: StackBase {
+public struct VStack: Stack {
     /// The node this control describes.
     public var node: Node
 
@@ -47,7 +47,7 @@ public struct VStack: StackBase {
 ///
 /// A stack takes as much room as its children need and does not wrap. Use a
 /// `Grid` when children must divide a known width into rows and columns.
-public struct HStack: StackBase {
+public struct HStack: Stack {
     /// The node this control describes.
     public var node: Node
 

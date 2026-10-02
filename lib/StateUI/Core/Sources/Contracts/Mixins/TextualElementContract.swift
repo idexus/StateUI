@@ -3,9 +3,9 @@
 
 /// What every element showing words has: the words, and the case they are
 /// drawn in.
-public enum TextElementContract: Contract {
+public enum TextualElementContract: Contract {
     /// The tier's name.
-    public static let name = "TextElement"
+    public static let name = "TextualElement"
 
     /// Words are drawn in a colour and a spacing.
     public static let tiers: [any Contract.Type] = [TextStyleElementContract.self]

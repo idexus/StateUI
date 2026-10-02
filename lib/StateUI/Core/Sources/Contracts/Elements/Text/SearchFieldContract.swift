@@ -11,7 +11,7 @@ public enum SearchFieldContract: ElementContract {
 
     /// A search field is an input of text in a font, aligned and tinted.
     public static let tiers: [any Contract.Type] = [
-        InputViewContract.self, TextElementContract.self, FontElementContract.self,
+        TextInputContract.self, TextualElementContract.self, FontElementContract.self,
         TextAlignmentElementContract.self, TintElementContract.self,
     ]
 

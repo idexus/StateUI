@@ -12,7 +12,7 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aTextsSpansAreItsWordsRunByRun", proves: [
-                Covered(TextSpanContract.self), Covered(TextElementContract.text, on: "TextSpan"),
+                Covered(TextSpanContract.self), Covered(TextualElementContract.text, on: "TextSpan"),
             ]) { s in
                 s.start {
                     VStack {
@@ -24,11 +24,11 @@
                     }
                 }
 
-                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "let x = 1")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "let x = 1")
                 s.expect(s.elements(ofType: TextSpanContract.nodeType).count, 3, "a span a run")
             },
             ConformanceCase("aSpanTheTreeChangesChangesItsRun", proves: [
-                Covered(TextElementContract.text, on: "TextSpan"),
+                Covered(TextualElementContract.text, on: "TextSpan"),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {
@@ -43,8 +43,8 @@
                 let label = try s.element("label")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(TextElementContract.text, on: label) == "let y" }
-                s.expect(try s.held(TextElementContract.text, on: label), "let y")
+                try s.settle { try s.held(TextualElementContract.text, on: label) == "let y" }
+                s.expect(try s.held(TextualElementContract.text, on: label), "let y")
             },
             Aspects.holds(TextSpanContract.background, on: "TextSpan", .yellow, then: .cyan),
         ]

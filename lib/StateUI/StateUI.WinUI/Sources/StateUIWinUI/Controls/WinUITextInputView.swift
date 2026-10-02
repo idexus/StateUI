@@ -9,7 +9,7 @@ import CStateUIWinUI
 /// Swift through the relay as it happens.
 /// Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
 @MainActor
-class WinUIInputView: WinUIView {
+class WinUITextInputView: WinUIView {
     override var takesDirection: Bool { true }
 
     /// What the view does when the user changes its words, handed all of them.

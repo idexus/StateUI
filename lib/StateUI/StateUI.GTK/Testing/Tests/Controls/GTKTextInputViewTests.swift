@@ -24,7 +24,7 @@ private struct RewrittenPage: View {
     }
 }
 
-final class GTKInputViewTests: XCTestCase {
+final class GTKTextInputViewTests: XCTestCase {
     /// Typing stops at the most characters allowed - an emoji one character, whole or not at all - in a field and an
     /// editor alike.
     /// GNOME selects a field's words whole as it takes the focus: a caret or a selection the program put there stands

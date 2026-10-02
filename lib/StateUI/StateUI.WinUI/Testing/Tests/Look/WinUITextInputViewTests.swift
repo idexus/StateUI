@@ -9,7 +9,7 @@ import CStateUIWinUI
 import StateUIConformance
 import XCTest
 
-final class WinUIInputViewTests: XCTestCase {
+final class WinUITextInputViewTests: XCTestCase {
     /// A search box draws its placeholder in a colour of its own, through the theme resources its template reads,
     /// and in a new one written later with no theme read again; the template stands it at the start
     /// (`WinUIRealization`).

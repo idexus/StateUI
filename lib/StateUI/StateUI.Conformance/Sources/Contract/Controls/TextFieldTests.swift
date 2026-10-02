@@ -12,8 +12,8 @@
         [
             Aspects.standsAlone("TextField"),
             ConformanceCase("eachKeystrokeReachesTheStateAndTheGreeting", proves: [
-                Covered(TextElementContract.text, on: TextFieldContract.self),
-                Covered(TextElementContract.text, on: TextContract.self),
+                Covered(TextualElementContract.text, on: TextFieldContract.self),
+                Covered(TextualElementContract.text, on: TextContract.self),
             ]) { s in
                 let name = State(wrappedValue: "")
                 s.start {
@@ -30,8 +30,8 @@
                 }
 
                 s.expect(name.wrappedValue, "Ada")
-                s.expect(try s.held(TextElementContract.text, on: field), "Ada")
-                s.expect(try s.held(TextElementContract.text, on: s.element("greeting")), "Hello, Ada!")
+                s.expect(try s.held(TextualElementContract.text, on: field), "Ada")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("greeting")), "Hello, Ada!")
             },
             ConformanceCase("enterSubmitsAFieldOnce", proves: [Covered(TextFieldContract.submitted)]) { s in
                 let heard = Received<String>()
@@ -44,7 +44,7 @@
                 s.expect(heard.values, ["submitted"])
             },
             ConformanceCase("aPasswordsWordsAreHeardAsTyped", proves: [
-                Covered(TextFieldContract.isPassword), Covered(TextElementContract.text, on: "TextField"),
+                Covered(TextFieldContract.isPassword), Covered(TextualElementContract.text, on: "TextField"),
             ]) { s in
                 let secret = State(wrappedValue: "")
                 s.start { VStack { TextField(secret.projectedValue).isPassword(true).id("field") } }

@@ -638,7 +638,7 @@ final class StyleTests: XCTestCase {
 
                 guard name.hasSuffix("Properties") || name == "PropertyContainer"
                         || name == "PaddingElement" || name == "TextStyleElement"
-                        || name == "TextElement" || name == "FontElement"
+                        || name == "TextualElement" || name == "FontElement"
                         || name == "TextAlignmentElement" || name == "BarElement"
                 else { continue }
 

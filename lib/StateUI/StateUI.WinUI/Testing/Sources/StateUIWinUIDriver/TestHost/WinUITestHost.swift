@@ -285,7 +285,7 @@ extension WinUIValueView {
     }
 }
 
-extension WinUIInputView {
+extension WinUITextInputView {
     /// Changes the words as the user does: written outside a program's write, WinUI reports them the same - a
     /// search box's through the text box its template holds, where its own words would be the program's.
     /// Design: docs/design/platforms/winui/controls.md#a-field-and-its-words

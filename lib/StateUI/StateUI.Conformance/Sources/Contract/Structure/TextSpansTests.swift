@@ -25,11 +25,11 @@
                         Button("Plain").onClicked { spanned.wrappedValue = false }.id("change")
                     }
                 }
-                s.expect(try s.held(TextElementContract.text, on: s.element("words")), "runs")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("words")), "runs")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(TextElementContract.text, on: s.element("words")) == "own" }
-                s.expect(try s.held(TextElementContract.text, on: s.element("words")), "own", "its own words again")
+                try s.settle { try s.held(TextualElementContract.text, on: s.element("words")) == "own" }
+                s.expect(try s.held(TextualElementContract.text, on: s.element("words")), "own", "its own words again")
             },
         ]
     }

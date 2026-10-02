@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What both stacks have: the space between their children.
-public enum StackBaseContract: Contract {
+public enum StackContract: Contract {
     /// The tier's name.
-    public static let name = "StackBase"
+    public static let name = "Stack"
 
     /// A stack is a layout.
     public static let tiers: [any Contract.Type] = [LayoutContract.self]

@@ -15,8 +15,8 @@
 TextEditor 2
 SplitView 2
 android TextAlignmentElement 2
-appkit InputView 2
-android InputView 2
+appkit TextInput 2
+android TextInput 2
 ToolbarItem 3
 ToolbarItemGroup 2
 TitleView 2

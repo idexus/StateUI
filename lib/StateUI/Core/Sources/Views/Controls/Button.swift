@@ -49,7 +49,7 @@ extension ButtonProperties {
 /// A handler runs on the main actor and may `await`; the interface goes on
 /// updating while it is suspended, so `.onClicked { items = try await load() }`
 /// needs nothing around it.
-public struct Button: ElementView, TextElement, FontElement, PaddingElement, BorderElement, ImageElement,
+public struct Button: ElementView, TextualElement, FontElement, PaddingElement, BorderElement, ImageElement,
     ButtonProperties {
     /// The node this control describes.
     public var node: Node
@@ -75,7 +75,7 @@ public struct Button: ElementView, TextElement, FontElement, PaddingElement, Bor
     /// A button captioned `text`.
     public init(_ text: String) {
         node = Node(contract: ButtonContract.self)
-        node.write(TextElementContract.text, text)
+        node.write(TextualElementContract.text, text)
     }
 
     /// A button whose caption is carried from a state, written by the host as

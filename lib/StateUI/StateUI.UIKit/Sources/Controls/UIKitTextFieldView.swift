@@ -8,7 +8,7 @@ import UIKit
 
 /// A TextField: UIKit's own field on one line. The user's words are reported; the program's are only written.
 @MainActor
-final class UIKitTextFieldView: UITextField, UIKitInputView {
+final class UIKitTextFieldView: UITextField, UIKitTextInputView {
     let typing = UIKitTyping()
 
     private let madeFont = UIFont.preferredFont(forTextStyle: .body)

@@ -70,23 +70,23 @@
 
     /// The members the traits are read from.
     public static let members: [any ContractMember] = [
-        InputViewContract.isSpellCheckEnabled, InputViewContract.isTextPredictionEnabled,
-        InputViewContract.inputPurpose,
+        TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
+        TextInputContract.inputPurpose,
     ]
 
     /// The traits `values` give.
     public init<Realized>(_ values: ElementValues<Realized>) {
         self.init(
-            spellChecked: values[InputViewContract.isSpellCheckEnabled] ?? true,
-            predicted: values[InputViewContract.isTextPredictionEnabled] ?? true,
-            purpose: values[InputViewContract.inputPurpose])
+            spellChecked: values[TextInputContract.isSpellCheckEnabled] ?? true,
+            predicted: values[TextInputContract.isTextPredictionEnabled] ?? true,
+            purpose: values[TextInputContract.inputPurpose])
     }
 
     /// The traits `values` give where one of their members changed; nil where none did.
     public static func changed<Realized>(_ values: ElementValues<Realized>) -> InputTraits? {
-        guard values.changed(InputViewContract.isSpellCheckEnabled)
-            || values.changed(InputViewContract.isTextPredictionEnabled)
-            || values.changed(InputViewContract.inputPurpose)
+        guard values.changed(TextInputContract.isSpellCheckEnabled)
+            || values.changed(TextInputContract.isTextPredictionEnabled)
+            || values.changed(TextInputContract.inputPurpose)
         else { return nil }
         return InputTraits(values)
     }

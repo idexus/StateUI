@@ -40,7 +40,7 @@ extension RadioButtonProperties {
 /// same name and reports both changes together, which is why the handler above
 /// acts on `checked` alone. Buttons with no group name are exclusive within
 /// the layout that holds them.
-public struct RadioButton: ElementView, TextElement, FontElement, PaddingElement,
+public struct RadioButton: ElementView, TextualElement, FontElement, PaddingElement,
     BorderElement, RadioButtonProperties {
     /// The node this control describes.
     public var node: Node
@@ -54,7 +54,7 @@ public struct RadioButton: ElementView, TextElement, FontElement, PaddingElement
     /// without `.onToggled`.
     public init(_ text: String) {
         node = Node(contract: RadioButtonContract.self)
-        node.write(TextElementContract.text, text)
+        node.write(TextualElementContract.text, text)
     }
 
     // MARK: Properties

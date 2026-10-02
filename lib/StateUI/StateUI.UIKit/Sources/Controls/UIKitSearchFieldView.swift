@@ -9,7 +9,7 @@ import UIKit
 /// A SearchField: UIKit's own search field, its return key a search. The user's words are reported; the program's
 /// are only written.
 @MainActor
-final class UIKitSearchFieldView: UISearchTextField, UIKitInputView {
+final class UIKitSearchFieldView: UISearchTextField, UIKitTextInputView {
     let typing = UIKitTyping()
 
     private let madeFont = UIFont.preferredFont(forTextStyle: .body)

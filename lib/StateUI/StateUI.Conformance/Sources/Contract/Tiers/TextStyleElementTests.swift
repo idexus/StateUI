@@ -26,7 +26,7 @@ enum Words {
         switch element {
         case "Picker": [Write(PickerContract.options, ["Some words"]), Write(PickerContract.selectedIndex, 0)]
         case "DatePicker", "TimePicker": []
-        default: [Write(TextElementContract.text, "Some words")]
+        default: [Write(TextualElementContract.text, "Some words")]
         }
     }
 }

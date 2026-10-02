@@ -8,7 +8,7 @@ import CStateUIGTK
 /// Words the user types - a field on one line or an editor of several - whose changes reach Swift as they happen.
 /// Design: docs/design/platforms/gtk/controls.md#a-field-and-its-words
 @MainActor
-protocol GTKInputView: GTKView {
+protocol GTKTextInputView: GTKView {
     /// What the view does when the user changes its words, handed all of them.
     var onTextChanged: ((String) -> Void)? { get set }
 
@@ -40,7 +40,7 @@ protocol GTKInputView: GTKView {
     func select(start: Int, length: Int)
 }
 
-extension GTKInputView {
+extension GTKTextInputView {
     /// What GTK tells the input method of words typed with `traits`.
     /// Design: docs/design/platforms/gtk/controls.md#a-field-and-its-words
     static func input(_ traits: InputTraits) -> (GtkInputHints, GtkInputPurpose) {

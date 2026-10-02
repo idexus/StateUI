@@ -12,9 +12,9 @@
         [
             Aspects.standsAlone("TextEditor"),
             ConformanceCase("anEditorsLinesAreHeardWithinTheirBound", proves: [
-                Covered(TextElementContract.text, on: TextEditorContract.self),
-                Covered(InputViewContract.textChanged, on: TextEditorContract.self),
-                Covered(InputViewContract.maximumLength, on: TextEditorContract.self),
+                Covered(TextualElementContract.text, on: TextEditorContract.self),
+                Covered(TextInputContract.textChanged, on: TextEditorContract.self),
+                Covered(TextInputContract.maximumLength, on: TextEditorContract.self),
             ]) { s in
                 let words = State(wrappedValue: "")
                 let heard = Received<String>()
@@ -31,7 +31,7 @@
                 s.turn()
 
                 s.expect(words.wrappedValue, "one\nt")
-                s.expect(try s.held(TextElementContract.text, on: editor), "one\nt")
+                s.expect(try s.held(TextualElementContract.text, on: editor), "one\nt")
                 s.expect(heard.values, ["one\nt"], "heard once, as the bound left the words")
             },
             ConformanceCase("anEditorGrowsWithItsWordsOnlyWhereItIsToldTo", proves: [

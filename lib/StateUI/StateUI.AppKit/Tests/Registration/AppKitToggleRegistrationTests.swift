@@ -144,7 +144,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "RadioButton", owner: "RadioButton", member: "toggled")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "RadioButton", owner: "TextElement", member: "text")))
+            HostRealizedMember(element: "RadioButton", owner: "TextualElement", member: "text")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "RadioButton", owner: "TextStyleElement", member: "textColor")))
     }

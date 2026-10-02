@@ -14,7 +14,7 @@
             Aspects.standsAlone("Button"),
             ConformanceCase("eachClickIsHeardOnceAndRendersWhatItsHandlerChanged", proves: [
                 Covered(ButtonContract.clicked),
-                Covered(TextElementContract.text, on: TextContract.self),
+                Covered(TextualElementContract.text, on: TextContract.self),
             ]) { s in
                 let count = State(wrappedValue: 0)
                 let heard = Received<Int>()
@@ -30,12 +30,12 @@
                 let button = try s.element("button")
 
                 try s.perform(.activate, on: button)
-                try s.settle { try s.held(TextElementContract.text, on: s.element("label")) == "count 1" }
+                try s.settle { try s.held(TextualElementContract.text, on: s.element("label")) == "count 1" }
                 try s.perform(.activate, on: button)
-                try s.settle { try s.held(TextElementContract.text, on: s.element("label")) == "count 2" }
+                try s.settle { try s.held(TextualElementContract.text, on: s.element("label")) == "count 2" }
 
                 s.expect(heard.values, [1, 2], "each click heard once")
-                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "count 2")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "count 2")
             },
             ConformanceCase("aPressIsHeardAsItGoesDownAndAsItIsLetGo", proves: [
                 Covered(ButtonContract.pressed), Covered(ButtonContract.released),
@@ -61,15 +61,15 @@
                 s.expect(heard.values, ["pressed", "released"])
             },
             Aspects.holds(ButtonContract.icon, on: "Button", "test_dot.png", then: "test_wide.png",
-                          with: [Write(TextElementContract.text, "Go")]),
+                          with: [Write(TextualElementContract.text, "Go")]),
             Aspects.holds(ButtonContract.iconPosition, on: "Button", .leading, then: .top, with: [
-                Write(TextElementContract.text, "Go"), Write(ButtonContract.icon, "test_dot.png"),
+                Write(TextualElementContract.text, "Go"), Write(ButtonContract.icon, "test_dot.png"),
             ]),
             Aspects.holds(ButtonContract.iconSpacing, on: "Button", 4, then: 12, with: [
-                Write(TextElementContract.text, "Go"), Write(ButtonContract.icon, "test_dot.png"),
+                Write(TextualElementContract.text, "Go"), Write(ButtonContract.icon, "test_dot.png"),
             ]),
             Aspects.holds(ButtonContract.lineBreak, on: "Button", .wordWrap, then: .tailTruncation,
-                          with: [Write(TextElementContract.text, "Words enough to break across more than one line")]),
+                          with: [Write(TextualElementContract.text, "Words enough to break across more than one line")]),
         ]
     }
 }

@@ -8,11 +8,11 @@
 extension StyleBag: VisualElementProperties {}
 extension StyleBag: ViewProperties where Target: View {}
 extension StyleBag: LayoutProperties where Target: Layout {}
-extension StyleBag: StackBaseProperties where Target: StackBase {}
+extension StyleBag: StackProperties where Target: Stack {}
 extension StyleBag: ShapeProperties where Target: Shape {}
 extension StyleBag: PaddingElement where Target: PaddingElement {}
 extension StyleBag: TextStyleElement where Target: TextStyleElement {}
-extension StyleBag: TextElement where Target: TextElement {}
+extension StyleBag: TextualElement where Target: TextualElement {}
 extension StyleBag: FontElement where Target: FontElement {}
 extension StyleBag: TintElement where Target: TintElement {}
 extension StyleBag: TextAlignmentElement where Target: TextAlignmentElement {}
@@ -20,7 +20,7 @@ extension StyleBag: LineHeightElement where Target: LineHeightElement {}
 extension StyleBag: DecorableTextElement where Target: DecorableTextElement {}
 extension StyleBag: BorderElement where Target: BorderElement {}
 extension StyleBag: ImageElement where Target: ImageElement {}
-extension StyleBag: InputViewProperties where Target: InputView {}
+extension StyleBag: TextInputProperties where Target: TextInput {}
 
 // And each control's own properties.
 

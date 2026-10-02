@@ -101,12 +101,12 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testView10() { conform(ViewTests.self, part: Conformance.Part(10, of: 11)) }
     @MainActor func testView11() { conform(ViewTests.self, part: Conformance.Part(11, of: 11)) }
     @MainActor func testLayout() { conform(LayoutTests.self) }
-    @MainActor func testStackBase() { conform(StackBaseTests.self) }
-    @MainActor func testInputView() { conform(InputViewTests.self) }
+    @MainActor func testStack() { conform(StackTests.self) }
+    @MainActor func testTextInput() { conform(TextInputTests.self) }
     @MainActor func testShape1() { conform(ShapeTests.self, part: Conformance.Part(1, of: 3)) }
     @MainActor func testShape2() { conform(ShapeTests.self, part: Conformance.Part(2, of: 3)) }
     @MainActor func testShape3() { conform(ShapeTests.self, part: Conformance.Part(3, of: 3)) }
-    @MainActor func testTextElement() { conform(TextElementTests.self) }
+    @MainActor func testTextualElement() { conform(TextualElementTests.self) }
     @MainActor func testTextStyleElement() { conform(TextStyleElementTests.self) }
     @MainActor func testFontElement() { conform(FontElementTests.self) }
     @MainActor func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }

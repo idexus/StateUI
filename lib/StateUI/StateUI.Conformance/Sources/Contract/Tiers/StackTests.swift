@@ -4,21 +4,21 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `StackBaseContract` on a host: a stack keeps its children the spacing apart the tree says, and the spacing the
+/// `StackContract` on a host: a stack keeps its children the spacing apart the tree says, and the spacing the
 /// tree changes it to - each case made for every stack.
-@_spi(Host) public enum StackBaseTests: ConformanceFamily {
-    public static let name = "StackBase"
+@_spi(Host) public enum StackTests: ConformanceFamily {
+    public static let name = "Stack"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(StackBaseContract.self).flatMap { element in
-            [spaced(element), Aspects.holds(StackBaseContract.spacing, on: element, 4, then: 12)]
+        Specimens.wearing(StackContract.self).flatMap { element in
+            [spaced(element), Aspects.holds(StackContract.spacing, on: element, 4, then: 12)]
         }
     }
 
     /// A stack's children stand the spacing apart.
     static func spaced(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).keepsItsChildrenItsSpacingApart", proves: [
-            Covered(StackBaseContract.spacing, on: element),
+            Covered(StackContract.spacing, on: element),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let wide = State(wrappedValue: false)
             let second = Received<[Double]>()

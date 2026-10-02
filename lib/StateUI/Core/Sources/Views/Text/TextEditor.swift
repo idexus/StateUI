@@ -31,7 +31,7 @@ extension TextEditorProperties {
 /// a field that wraps and keeps the newlines the user types. A Return is
 /// text here, so it has no `onSubmitted`; `isFocused` says when the editing
 /// ends.
-public struct TextEditor: InputView, TextElement, FontElement, TextAlignmentElement, TextEditorProperties {
+public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentElement, TextEditorProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -44,7 +44,7 @@ public struct TextEditor: InputView, TextElement, FontElement, TextAlignmentElem
     /// `.onTextChanged`, which is what the binding form does for you.
     public init(_ text: String) {
         node = Node(contract: TextEditorContract.self)
-        node.write(TextElementContract.text, text)
+        node.write(TextualElementContract.text, text)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
@@ -67,8 +67,8 @@ public struct TextEditor: InputView, TextElement, FontElement, TextAlignmentElem
     /// - Returns: the control, wearing and reporting that text.
     public func text(_ value: Binding<String>) -> Modified {
         value.image == nil
-            ? described(TextElementContract.text.token, value, on: .textChanged)
-            : words(TextElementContract.text.token, by: value, mode: .inOut)
+            ? described(TextualElementContract.text.token, value, on: .textChanged)
+            : words(TextualElementContract.text.token, by: value, mode: .inOut)
     }
 
 }

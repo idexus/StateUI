@@ -44,7 +44,7 @@ extension TextFieldProperties {
 ///
 /// The handler receives the whole text as it stands after the edit. It runs
 /// beside a binding rather than instead of one, so a field may have both.
-public struct TextField: InputView, TextElement, FontElement, TextAlignmentElement, TextFieldProperties {
+public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentElement, TextFieldProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -57,7 +57,7 @@ public struct TextField: InputView, TextElement, FontElement, TextAlignmentEleme
     /// `.onTextChanged`, which is what the binding form does for you.
     public init(_ text: String) {
         node = Node(contract: TextFieldContract.self)
-        node.write(TextElementContract.text, text)
+        node.write(TextualElementContract.text, text)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
@@ -80,8 +80,8 @@ public struct TextField: InputView, TextElement, FontElement, TextAlignmentEleme
     /// - Returns: the control, wearing and reporting that text.
     public func text(_ value: Binding<String>) -> Modified {
         value.image == nil
-            ? described(TextElementContract.text.token, value, on: .textChanged)
-            : words(TextElementContract.text.token, by: value, mode: .inOut)
+            ? described(TextualElementContract.text.token, value, on: .textChanged)
+            : words(TextualElementContract.text.token, by: value, mode: .inOut)
     }
 
     // MARK: Events

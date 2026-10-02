@@ -23,19 +23,19 @@ allowed can be written" a compiler rule rather than a convention.
   ├── VisualElementProperties              └── ModifiableElement      events, lifetime
   │   └── ViewProperties                       └── VisualElement      key, aim, samples,
   │       ├── LayoutProperties                     │                  environment, style
-  │       │   └── StackBaseProperties              └── View           gestures, pan, frame,
+  │       │   └── StackProperties              └── View           gestures, pan, frame,
   │       ├── ShapeProperties                          │              context menu
-  │       └── InputViewProperties                      ├── Layout
-  └── the mixins, one file each:                       │   └── StackBase
-      TextStyleElement  TextElement  FontElement       ├── Shape
-      TextAlignmentElement  PaddingElement             └── InputView
+  │       └── TextInputProperties                      ├── Layout
+  └── the mixins, one file each:                       │   └── Stack
+      TextStyleElement  TextualElement  FontElement       ├── Shape
+      TextAlignmentElement  PaddingElement             └── TextInput
       LineHeightElement  DecorableTextElement
       BorderElement  ImageElement  TintElement
       BarElement  PageElement  MenuItemElement
 ```
 
 A control conforms on the element side - `View`, `Layout`, `Shape`,
-`InputView` - which brings the matching property side with it, plus the mixins
+`TextInput` - which brings the matching property side with it, plus the mixins
 it carries and its own `…Properties` protocol. A `Style<Target>` conforms to
 the property side alone, one conditional conformance per tier its target wears,
 so a style offers exactly the setters its target can carry, and an event, a
@@ -85,9 +85,9 @@ tree at all - can both wear them.
 There are two text tiers because some controls colour text they do not own. A
 Picker shows the chosen item, and a DatePicker and a TimePicker format a value:
 each carries `textColor` and `tracking` through `TextStyleElement`, and
-only a control that says something of its own wears `TextElement`, which adds
+only a control that says something of its own wears `TextualElement`, which adds
 the text and its case. Changing the case of a formatted picker value would be
-a different, platform-specific promise, so `textCase` is on `TextElement`.
+a different, platform-specific promise, so `textCase` is on `TextualElement`.
 
 `PaddingElement` and `TextAlignmentElement` stop at `VisualElementProperties`:
 each names a set of properties rather than a kind of control, and asks for
@@ -103,8 +103,8 @@ are written once and serve the control and the style alike.
 
 ## Input views
 
-`InputViewProperties` is a `ViewProperties`: it stands for a kind of control, a
-positioned view the user types into. `InputView` is its element half, as
+`TextInputProperties` is a `ViewProperties`: it stands for a kind of control, a
+positioned view the user types into. `TextInput` is its element half, as
 `Layout` and `Shape` are theirs, and the element half is what a style is told
 apart by: the conditional conformances in `StyleBag+Properties.swift` name the
 element protocol, so a tier with only a property half could not be given to a

@@ -181,13 +181,13 @@ final class UIKitDriver: HostDriver {
             else { return }
             editor.text = words
             editor.delegate?.textViewDidChange?(editor)
-        case (.type(let words), let field as UITextField & UIKitInputView):
+        case (.type(let words), let field as UITextField & UIKitTextInputView):
             let whole = NSRange(location: 0, length: field.words.utf16.count)
             guard field.delegate?.textField?(field, shouldChangeCharactersIn: whole, replacementString: words) ?? true
             else { return }
             field.text = words
             field.sendActions(for: .editingChanged)
-        case (.submit, let field as UITextField & UIKitInputView): _ = field.delegate?.textFieldShouldReturn?(field)
+        case (.submit, let field as UITextField & UIKitTextInputView): _ = field.delegate?.textFieldShouldReturn?(field)
         case (.toggle, let toggle as UIKitSwitchView):
             toggle.setOn(!toggle.isOn, animated: false)
             toggle.sendActions(for: .valueChanged)
@@ -299,9 +299,9 @@ final class UIKitDriver: HostDriver {
         case (.selectedItems, let items as UIKitItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as UIKitItemsView): return items.modeForTesting.propValue
         case (.text, let label as UIKitTextView): return (label.text ?? "").propValue
-        case (.text, let field as any UIKitInputView): return field.words.propValue
-        case (.cursorPosition, let field as any UIKitInputView): return field.selection.start.propValue
-        case (.selectionLength, let field as any UIKitInputView): return field.selection.length.propValue
+        case (.text, let field as any UIKitTextInputView): return field.words.propValue
+        case (.cursorPosition, let field as any UIKitTextInputView): return field.selection.start.propValue
+        case (.selectionLength, let field as any UIKitTextInputView): return field.selection.length.propValue
         case (.placeholder, let field as UITextField): return field.attributedPlaceholder?.string.propValue
         case (.placeholder, let editor as UIKitTextEditorView): return editor.placeholder.propValue
         case (.isSpellCheckEnabled, let field as UITextField): return (field.spellCheckingType != .no).propValue
@@ -309,8 +309,8 @@ final class UIKitDriver: HostDriver {
         case (.isTextPredictionEnabled, let field as UITextField): return (field.autocorrectionType != .no).propValue
         case (.isTextPredictionEnabled, let editor as UITextView): return (editor.autocorrectionType != .no).propValue
         case (.isReadOnly, let editor as UIKitTextEditorView): return (!editor.isEditable && editor.isSelectable).propValue
-        case (.isReadOnly, let field as any UIKitInputView): return field.typing.isReadOnly.propValue
-        case (.maximumLength, let field as any UIKitInputView): return field.typing.maximumLength.map(\.propValue)
+        case (.isReadOnly, let field as any UIKitTextInputView): return field.typing.isReadOnly.propValue
+        case (.maximumLength, let field as any UIKitTextInputView): return field.typing.maximumLength.map(\.propValue)
         case (.isPassword, let field as UITextField): return field.isSecureTextEntry.propValue
         case (.text, let button as UIKitButtonView): return (button.configuration?.title ?? "").propValue
         case (.isOn, let toggle as UIKitSwitchView): return toggle.isOn.propValue

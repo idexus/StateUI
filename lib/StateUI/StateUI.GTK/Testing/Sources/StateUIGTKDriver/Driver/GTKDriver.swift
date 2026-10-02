@@ -311,7 +311,7 @@ final class GTKDriver: HostDriver {
 
     /// Types `words` into `input` as the keyboard leaves them - what does not lead to them chosen and deleted, the
     /// rest typed after what does - through the key bindings' signals of `keys`, which a read-only field refuses.
-    private func type(_ words: String, into input: any GTKInputView, keys: OpaquePointer) {
+    private func type(_ words: String, into input: any GTKTextInputView, keys: OpaquePointer) {
         let kept = words.hasPrefix(input.text) ? input.text : ""
         if kept.isEmpty && !input.text.isEmpty {
             input.select(start: 0, length: input.text.unicodeScalars.count)

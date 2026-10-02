@@ -13,11 +13,11 @@
         [
             Aspects.standsAlone("Text"),
             ConformanceCase("aTextShowsItsWords", proves: [
-                Covered(TextElementContract.text, on: "Text"),
+                Covered(TextualElementContract.text, on: "Text"),
             ]) { s in
                 s.start { VStack { Text("Some words").id("label") } }
 
-                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "Some words")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words")
             },
             ConformanceCase("noMoreLinesStandThanItsMaximum", proves: [
                 Covered(TextContract.maximumLines), Covered(TextContract.lineBreak),
@@ -63,9 +63,9 @@
                 s.expect((frames.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2, true, "wrapped over lines")
             },
             Aspects.holds(TextContract.lineBreak, on: "Text", .wordWrap, then: .tailTruncation,
-                          with: [Write(TextElementContract.text, Self.long)]),
+                          with: [Write(TextualElementContract.text, Self.long)]),
             Aspects.holds(TextContract.maximumLines, on: "Text", 2, then: 1,
-                          with: [Write(TextElementContract.text, Self.long)]),
+                          with: [Write(TextualElementContract.text, Self.long)]),
         ]
     }
 

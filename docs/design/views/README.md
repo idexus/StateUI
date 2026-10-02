@@ -118,7 +118,7 @@ through those members, never through spelled tokens.
 ```text
   Contracts/Elements, Contracts/Tiers, Contracts/Mixins
     TextContract: ElementContract
-      nodeType "Text", layer, tiers [View, TextElement, FontElement, …]
+      nodeType "Text", layer, tiers [View, TextualElement, FontElement, …]
       members: lineBreak, maximumLines         ElementProperty / ElementEvent / ElementAct
          │
          ├─ Node(contract: TextContract.self)           the control's node type

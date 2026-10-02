@@ -24,15 +24,15 @@ final class AppKitFieldRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.isSuperset(of: ["TextField", "TextEditor", "SearchField"]))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "TextField", owner: "TextElement", member: "text")))
+            HostRealizedMember(element: "TextField", owner: "TextualElement", member: "text")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "TextField", owner: "InputView", member: "textChanged")))
+            HostRealizedMember(element: "TextField", owner: "TextInput", member: "textChanged")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TextField", owner: "TextField", member: "submitted")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TextEditor", owner: "TextEditor", member: "growsWithText")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "SearchField", owner: "InputView", member: "placeholder")))
+            HostRealizedMember(element: "SearchField", owner: "TextInput", member: "placeholder")))
     }
 
     /// `StateMode.in` says the host writes the value and this side only reads

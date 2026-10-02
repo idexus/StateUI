@@ -512,10 +512,10 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isFocusedChanged`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `translationX`, `translationY`, `width`, `zIndex` | 31 |
 | [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDragEnded` (`dragEnded`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 32 |
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
-| [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 |
-| [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
+| [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
+| [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
 | [Shape](controls/tiers/Shape.md) | `contentMode`, `fill`, `geometryTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineJoin`, `miterLimit`, `lineWidth` | 10 |
-| [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 2 |
+| [TextualElement](controls/tiers/TextualElement.md) | `text`, `textCase` | 2 |
 | [TextStyleElement](controls/tiers/TextStyleElement.md) | `tracking`, `textColor` | 2 |
 | [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `isFontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |
 | [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment`, `verticalTextAlignment` | 2 |

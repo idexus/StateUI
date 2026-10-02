@@ -16,7 +16,7 @@ Text()
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [LineHeightElement](tiers/LineHeightElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [TextualElement](tiers/TextualElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [LineHeightElement](tiers/LineHeightElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -65,7 +65,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
 </table>
 
-## From [TextElement](tiers/TextElement.md)
+## From [TextualElement](tiers/TextualElement.md)
 
 What every element showing words has: the words, and the case they are drawn in.
 

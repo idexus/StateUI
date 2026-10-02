@@ -532,6 +532,18 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = SpanContract.background",
             contract: "_ = TextSpanContract.background"),
         Road(
+            name: "the words tier as TextElement",
+            removed: "_ = TextElementContract.text",
+            contract: "_ = TextualElementContract.text"),
+        Road(
+            name: "the typing tier as InputView",
+            removed: "_ = InputViewContract.placeholder",
+            contract: "_ = TextInputContract.placeholder"),
+        Road(
+            name: "the stacks' tier as StackBase",
+            removed: "_ = StackBaseContract.spacing",
+            contract: "_ = StackContract.spacing"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

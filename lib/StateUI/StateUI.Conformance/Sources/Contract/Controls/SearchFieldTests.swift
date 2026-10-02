@@ -13,8 +13,8 @@
         [
             Aspects.standsAlone("SearchField"),
             ConformanceCase("theUsersSearchIsHeardAndTheProgramsIsNot", proves: [
-                Covered(TextElementContract.text, on: SearchFieldContract.self),
-                Covered(InputViewContract.textChanged, on: SearchFieldContract.self),
+                Covered(TextualElementContract.text, on: SearchFieldContract.self),
+                Covered(TextInputContract.textChanged, on: SearchFieldContract.self),
                 Covered(SearchFieldContract.submitted),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let query = State(wrappedValue: "")
@@ -36,8 +36,8 @@
                 s.expect(heard.values, ["coffee", "submitted"])
 
                 try s.perform(.activate, on: s.element("tea"))
-                try s.settle { try s.held(TextElementContract.text, on: search) == "tea" }
-                s.expect(try s.held(TextElementContract.text, on: search), "tea")
+                try s.settle { try s.held(TextualElementContract.text, on: search) == "tea" }
+                s.expect(try s.held(TextualElementContract.text, on: search), "tea")
                 s.expect(heard.values, ["coffee", "submitted"], "the program's words heard by nobody")
             },
             ConformanceCase("eachSubmissionIsHeardOnce", proves: [Covered(SearchFieldContract.submitted)]) { s in

@@ -65,10 +65,10 @@ enum WinUICallbacks {
             },
             textChanged: { view, utf8 in
                 let text = utf8.map { String(cString: $0) } ?? ""
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIInputView)?.typed(text) }
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.typed(text) }
             },
             submitted: { view in
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIInputView)?.onSubmitted?() }
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.onSubmitted?() }
             },
             scrolled: { view, x, y in
                 MainActor.assumeIsolated {

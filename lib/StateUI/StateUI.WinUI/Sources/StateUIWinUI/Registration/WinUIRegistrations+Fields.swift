@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A TextField, a TextEditor and a SearchField: their words are `TextElementContract.text` and the change they
-    /// report is `InputViewContract.textChanged`. Each member reaches the view only where the tree changed it,
+    /// A TextField, a TextEditor and a SearchField: their words are `TextualElementContract.text` and the change they
+    /// report is `TextInputContract.textChanged`. Each member reaches the view only where the tree changed it,
     /// which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<WinUIView>) {
         registry.add(TextFieldContract.self, create: { reports in
@@ -18,7 +18,7 @@ extension WinUIRegistrations {
             field.property(TextFieldContract.isPassword) { view, password in view.setPassword(password ?? false) }
             field.applies(wordMembers) { view, values in applyWords(view, values) }
             field.applies(boxMembers) { view, values in applyBox(view, values) }
-            field.raises(InputViewContract.textChanged)
+            field.raises(TextInputContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
@@ -29,7 +29,7 @@ extension WinUIRegistrations {
             editor.applies(wordMembers) { view, values in applyWords(view, values) }
             editor.applies(boxMembers) { view, values in applyBox(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
-            editor.raises(InputViewContract.textChanged)
+            editor.raises(TextInputContract.textChanged)
         })
         registry.add(SearchFieldContract.self, create: { reports in
             let search = WinUISearchFieldView()
@@ -38,37 +38,37 @@ extension WinUIRegistrations {
             return search
         }, members: { search in
             search.applies(wordMembers) { view, values in applyWords(view, values) }
-            search.property(InputViewContract.isReadOnly) { view, readOnly in view.setReadOnly(readOnly ?? false) }
+            search.property(TextInputContract.isReadOnly) { view, readOnly in view.setReadOnly(readOnly ?? false) }
             search.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(alignment ?? .start)
             }
-            search.property(InputViewContract.placeholderColor) { view, color in view.setPlaceholderColor(color?.propValue) }
-            search.raises(InputViewContract.textChanged)
+            search.property(TextInputContract.placeholderColor) { view, color in view.setPlaceholderColor(color?.propValue) }
+            search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })
     }
 
-    private static func hearInput<Realized: ElementContract>(_ view: WinUIInputView, _ reports: Reports<Realized>) {
-        view.onTextChanged = { typed in reports.report(TextElementContract.text, typed, as: InputViewContract.textChanged) }
+    private static func hearInput<Realized: ElementContract>(_ view: WinUITextInputView, _ reports: Reports<Realized>) {
+        view.onTextChanged = { typed in reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged) }
     }
 
     /// What every view the user types in takes: its words and their case, what it shows while they are none, how
     /// many it holds, whether it takes them, and their font and colour.
     private static let wordMembers: [any ContractMember] = [
-        TextElementContract.text, TextElementContract.textCase, InputViewContract.placeholder,
-        InputViewContract.maximumLength,
+        TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextInputContract.maximumLength,
         VisualElementContract.isEnabled, FontElementContract.fontSize, FontElementContract.fontAttributes,
         FontElementContract.fontFamily, TextStyleElementContract.textColor,
     ]
 
-    private static func applyWords<Realized: ElementContract>(_ view: WinUIInputView, _ values: ElementValues<Realized>) {
-        view.maximumLength = values[InputViewContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
-        let textCase = values[TextElementContract.textCase] ?? .none
-        if values.changed(TextElementContract.textCase) { view.setCasing(textCase) }
-        if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
-            view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
+    private static func applyWords<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
+        view.maximumLength = values[TextInputContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
+        let textCase = values[TextualElementContract.textCase] ?? .none
+        if values.changed(TextualElementContract.textCase) { view.setCasing(textCase) }
+        if values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase) {
+            view.setText(textCase.applied(to: values[TextualElementContract.text] ?? ""))
         }
-        if values.changed(InputViewContract.placeholder) { view.setPlaceholder(values[InputViewContract.placeholder]) }
+        if values.changed(TextInputContract.placeholder) { view.setPlaceholder(values[TextInputContract.placeholder]) }
         if values.changed(VisualElementContract.isEnabled) {
             view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
         }
@@ -86,23 +86,23 @@ extension WinUIRegistrations {
     /// What a text box takes beyond: how it takes words, its words across it, its placeholder's colour, and the
     /// caret and the selection.
     private static let boxMembers: [any ContractMember] = [
-        InputViewContract.isReadOnly, InputViewContract.isSpellCheckEnabled, InputViewContract.isTextPredictionEnabled,
-        InputViewContract.inputPurpose, TextAlignmentElementContract.horizontalTextAlignment,
-        InputViewContract.placeholderColor, InputViewContract.cursorPosition, InputViewContract.selectionLength,
+        TextInputContract.isReadOnly, TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
+        TextInputContract.inputPurpose, TextAlignmentElementContract.horizontalTextAlignment,
+        TextInputContract.placeholderColor, TextInputContract.cursorPosition, TextInputContract.selectionLength,
     ]
 
-    private static func applyBox<Realized: ElementContract>(_ view: WinUIInputView, _ values: ElementValues<Realized>) {
+    private static func applyBox<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
         view.setBehaviour(
-            readOnly: values[InputViewContract.isReadOnly] ?? false,
-            spellChecked: values[InputViewContract.isSpellCheckEnabled] ?? true,
-            predicted: values[InputViewContract.isTextPredictionEnabled] ?? true,
-            purpose: values[InputViewContract.inputPurpose])
+            readOnly: values[TextInputContract.isReadOnly] ?? false,
+            spellChecked: values[TextInputContract.isSpellCheckEnabled] ?? true,
+            predicted: values[TextInputContract.isTextPredictionEnabled] ?? true,
+            purpose: values[TextInputContract.inputPurpose])
         view.setLook(
             alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
-            placeholderColor: values[InputViewContract.placeholderColor]?.propValue)
-        if values.changed(InputViewContract.cursorPosition) || values.changed(InputViewContract.selectionLength),
-           let caret = values[InputViewContract.cursorPosition] {
-            view.select(start: caret, length: values[InputViewContract.selectionLength] ?? 0)
+            placeholderColor: values[TextInputContract.placeholderColor]?.propValue)
+        if values.changed(TextInputContract.cursorPosition) || values.changed(TextInputContract.selectionLength),
+           let caret = values[TextInputContract.cursorPosition] {
+            view.select(start: caret, length: values[TextInputContract.selectionLength] ?? 0)
         }
     }
 }

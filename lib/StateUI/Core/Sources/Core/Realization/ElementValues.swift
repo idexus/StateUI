@@ -38,9 +38,9 @@
     /// the platform, a frame a layout reports. What the tree describes beside
     /// such a value is not put on the control: the control is the source.
     ///
-    ///     let words = values.carriedIn(TextElementContract.text)
+    ///     let words = values.carriedIn(TextualElementContract.text)
     ///         ? nil
-    ///         : values[TextElementContract.text]
+    ///         : values[TextualElementContract.text]
     ///
     /// - Parameter member: the property, written with its contract.
     public func carriedIn<Owner: Contract, Value: HostRepresentable>(

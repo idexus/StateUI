@@ -25,7 +25,7 @@ extension TextProperties {
 ///         .fontSize(20)
 ///         .fontAttributes(.bold)
 ///         .horizontalTextAlignment(.center)
-public struct Text: ElementView, TextElement, FontElement, TextAlignmentElement,
+public struct Text: ElementView, TextualElement, FontElement, TextAlignmentElement,
     PaddingElement, LineHeightElement, DecorableTextElement, TextProperties {
     /// The node this control describes.
     public var node: Node
@@ -38,7 +38,7 @@ public struct Text: ElementView, TextElement, FontElement, TextAlignmentElement,
     /// Words showing `text`.
     public init(_ text: String) {
         node = Node(contract: TextContract.self)
-        node.write(TextElementContract.text, text)
+        node.write(TextualElementContract.text, text)
     }
 
     /// Words carried from a state, written by the host as it
@@ -82,7 +82,7 @@ public struct Text: ElementView, TextElement, FontElement, TextAlignmentElement,
 ///
 /// Not a view: a run has text and font properties and nothing else, and it
 /// goes only in a Text's `spans`.
-public struct TextSpan: ModifiableElement, TextElement, FontElement,
+public struct TextSpan: ModifiableElement, TextualElement, FontElement,
     LineHeightElement, DecorableTextElement {
     /// The node this run describes.
     public var node: Node
@@ -95,7 +95,7 @@ public struct TextSpan: ModifiableElement, TextElement, FontElement,
     /// A run showing `text`.
     public init(_ text: String) {
         node = Node(contract: TextSpanContract.self)
-        node.write(TextElementContract.text, text)
+        node.write(TextualElementContract.text, text)
     }
 
     /// What is drawn behind this run - a highlight over part of a line.

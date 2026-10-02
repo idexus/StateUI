@@ -23,7 +23,7 @@
             },
             ConformanceCase("aUsersChoiceIsHeardAndTheProgramsIsNot", proves: [
                 Covered(PickerContract.selectedIndex), Covered(PickerContract.selectedIndexChanged),
-                Covered(TextElementContract.text, on: TextContract.self),
+                Covered(TextualElementContract.text, on: TextContract.self),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let size = State(wrappedValue: 1)
                 let heard = Received<String>()
@@ -41,9 +41,9 @@
                 let label = try s.element("label")
 
                 try s.perform(.choose(2), on: picker)
-                try s.settle { try heard.values == ["chose 2"] && s.held(TextElementContract.text, on: label) == "size 2" }
+                try s.settle { try heard.values == ["chose 2"] && s.held(TextualElementContract.text, on: label) == "size 2" }
                 s.expect(heard.values, ["chose 2"])
-                s.expect(try s.held(TextElementContract.text, on: label), "size 2", "the state took the user's choice")
+                s.expect(try s.held(TextualElementContract.text, on: label), "size 2", "the state took the user's choice")
 
                 try s.perform(.activate, on: s.element("small"))
                 try s.settle { try s.held(PickerContract.selectedIndex, on: picker) == 0 }

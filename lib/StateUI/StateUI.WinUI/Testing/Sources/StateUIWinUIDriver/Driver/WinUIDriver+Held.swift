@@ -166,7 +166,7 @@ extension WinUIDriver {
         case "text":
             switch view {
             case let text as WinUITextualView: return .string(text.text)
-            case let field as WinUIInputView: return .string(field.text)
+            case let field as WinUITextInputView: return .string(field.text)
             case let button as WinUIButtonView: return .string(button.text)
             case let radio as WinUIRadioButtonView: return .string(radio.text)
             default: return nil
@@ -261,7 +261,7 @@ extension WinUIDriver {
 
     /// A field's and an editor's words and how it takes them.
     private func fieldHolds(_ name: String, _ view: WinUIView) throws -> HostValue? {
-        guard view is WinUIInputView else { return nil }
+        guard view is WinUITextInputView else { return nil }
         switch name {
         case "placeholder": return .string(try read(view, "placeholder"))
         case "placeholderColor": return try Self.color(read(view, "placeholderForeground")).map { $0.propValue }

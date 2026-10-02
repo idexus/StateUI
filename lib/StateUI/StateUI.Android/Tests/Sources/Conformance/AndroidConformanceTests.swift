@@ -69,10 +69,10 @@ final class AndroidConformanceTests: XCTestCase {
             ("testVisualElement", testVisualElement),
             ("testView", testView),
             ("testLayout", testLayout),
-            ("testStackBase", testStackBase),
-            ("testInputView", testInputView),
+            ("testStack", testStack),
+            ("testTextInput", testTextInput),
             ("testShape", testShape),
-            ("testTextElement", testTextElement),
+            ("testTextualElement", testTextualElement),
             ("testTextStyleElement", testTextStyleElement),
             ("testFontElement", testFontElement),
             ("testTextAlignmentElement", testTextAlignmentElement),
@@ -145,10 +145,10 @@ final class AndroidConformanceTests: XCTestCase {
     func testVisualElement() throws { try conform(VisualElementTests.self) }
     func testView() throws { try conform(ViewTests.self) }
     func testLayout() throws { try conform(LayoutTests.self) }
-    func testStackBase() throws { try conform(StackBaseTests.self) }
-    func testInputView() throws { try conform(InputViewTests.self) }
+    func testStack() throws { try conform(StackTests.self) }
+    func testTextInput() throws { try conform(TextInputTests.self) }
     func testShape() throws { try conform(ShapeTests.self) }
-    func testTextElement() throws { try conform(TextElementTests.self) }
+    func testTextualElement() throws { try conform(TextualElementTests.self) }
     func testTextStyleElement() throws { try conform(TextStyleElementTests.self) }
     func testFontElement() throws { try conform(FontElementTests.self) }
     func testTextAlignmentElement() throws { try conform(TextAlignmentElementTests.self) }

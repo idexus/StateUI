@@ -76,8 +76,8 @@ enum AppKitRegistrations {
     /// where the tree took the words away, so clearing a field clears the
     /// control.
     static func words<Realized: ElementContract>(_ values: ElementValues<Realized>) -> String? {
-        guard !values.carriedIn(TextElementContract.text) else { return nil }
-        return (values[TextElementContract.textCase] ?? .none).applied(to: values[TextElementContract.text] ?? "")
+        guard !values.carriedIn(TextualElementContract.text) else { return nil }
+        return (values[TextualElementContract.textCase] ?? .none).applied(to: values[TextualElementContract.text] ?? "")
     }
 
     /// The font a field draws in, composed from the members it wears.

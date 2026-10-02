@@ -13,7 +13,7 @@ Button("Pressed \(count) times")
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -193,7 +193,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
 </table>
 
-## From [TextElement](tiers/TextElement.md)
+## From [TextualElement](tiers/TextualElement.md)
 
 What every element showing words has: the words, and the case they are drawn in.
 

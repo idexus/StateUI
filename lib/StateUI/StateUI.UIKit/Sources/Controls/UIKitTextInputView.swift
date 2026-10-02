@@ -10,7 +10,7 @@ import UIKit
 /// them only where the tree changed it, which keeps the user's typing and caret their own.
 /// Design: docs/design/platforms/uikit/controls.md#a-field-and-its-words
 @MainActor
-protocol UIKitInputView: UIView, UITextInput {
+protocol UIKitTextInputView: UIView, UITextInput {
     /// What the view does with the words the user types.
     var typing: UIKitTyping { get }
 
@@ -34,7 +34,7 @@ protocol UIKitInputView: UIView, UITextInput {
     func setAlignment(_ alignment: TextAlignment)
 }
 
-extension UIKitInputView {
+extension UIKitTextInputView {
     /// Puts the caret `start` characters in and selects `length` from it.
     func select(start: Int, length: Int) {
         let units = InputWords.utf16Selection(start: start, length: length, in: words)
@@ -66,7 +66,7 @@ extension UIKitInputView {
     }
 }
 
-extension UIKitInputView where Self: UITextField {
+extension UIKitTextInputView where Self: UITextField {
     var words: String { text ?? "" }
 
     func setText(_ words: String) {

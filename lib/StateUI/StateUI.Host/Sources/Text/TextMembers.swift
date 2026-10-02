@@ -10,18 +10,18 @@
     /// What every element showing words takes: the words in their case, the font, their colour, and the room
     /// around them.
     public static let members: [any ContractMember] = [
-        TextElementContract.text, TextElementContract.textCase, FontElementContract.fontSize,
+        TextualElementContract.text, TextualElementContract.textCase, FontElementContract.fontSize,
         FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
         PaddingElementContract.padding,
     ]
 
     /// The words in their case, where the words or their case changed; nil where neither did.
     public static func words<Realized>(_ values: ElementValues<Realized>) -> String? {
-        guard values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) else {
+        guard values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase) else {
             return nil
         }
-        let text = values[TextElementContract.text] ?? ""
-        return values[TextElementContract.textCase]?.applied(to: text) ?? text
+        let text = values[TextualElementContract.text] ?? ""
+        return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 
     /// The look the font and the colour give the words, where one of them changed; nil where none did.

@@ -22,7 +22,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.isSuperset(of: ["VStack", "HStack", "Grid"]))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "VStack", owner: "StackBase", member: "spacing")))
+            HostRealizedMember(element: "VStack", owner: "Stack", member: "spacing")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "HStack", owner: "PaddingElement", member: "padding")))
         XCTAssertTrue(realization.members.contains(

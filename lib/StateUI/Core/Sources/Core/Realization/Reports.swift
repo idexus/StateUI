@@ -59,8 +59,8 @@
     ///     }
     ///
     /// The two members need not come from one contract: a field's words are
-    /// `TextElementContract.text` and the change it reports is
-    /// `InputViewContract.textChanged`, and the element wears both. A member of
+    /// `TextualElementContract.text` and the change it reports is
+    /// `TextInputContract.textChanged`, and the element wears both. A member of
     /// a contract it does not wear is refused, and said once.
     ///
     /// - Parameters:

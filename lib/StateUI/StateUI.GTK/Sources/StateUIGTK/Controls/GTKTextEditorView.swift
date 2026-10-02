@@ -9,7 +9,7 @@ import CStateUIGTK
 /// growing with its words, or keeping a line's height and scrolling them.
 /// Design: docs/design/platforms/gtk/controls.md#an-editor
 @MainActor
-final class GTKTextEditorView: GTKView, GTKInputView {
+final class GTKTextEditorView: GTKView, GTKTextInputView {
     var onTextChanged: ((String) -> Void)?
 
     /// Whether the editor takes the height of its words.

@@ -28,13 +28,13 @@ final class AndroidRegistrationTests: XCTestCase {
                 ])
             for member in [
                 HostRealizedMember(element: "Button", owner: "Button", member: "clicked"),
-                HostRealizedMember(element: "Text", owner: "TextElement", member: "text"),
+                HostRealizedMember(element: "Text", owner: "TextualElement", member: "text"),
                 HostRealizedMember(element: "Switch", owner: "Switch", member: "toggled"),
                 HostRealizedMember(element: "CheckBox", owner: "CheckBox", member: "toggled"),
                 HostRealizedMember(element: "CheckBox", owner: "TintElement", member: "tint"),
                 HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged"),
                 HostRealizedMember(element: "Slider", owner: "Slider", member: "released"),
-                HostRealizedMember(element: "TextField", owner: "InputView", member: "textChanged"),
+                HostRealizedMember(element: "TextField", owner: "TextInput", member: "textChanged"),
                 HostRealizedMember(element: "TextField", owner: "TextField", member: "submitted"),
                 HostRealizedMember(element: "Grid", owner: "Grid", member: "rows"),
                 HostRealizedMember(element: "Text", owner: "View", member: "gridRow"),

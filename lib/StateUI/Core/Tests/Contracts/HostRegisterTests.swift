@@ -59,10 +59,10 @@ final class HostRegisterTests: XCTestCase {
 
     /// A tier's record reaches every wearer, and each wearer's test is its own.
     func testATiersRecordReachesEveryWearer() {
-        let register = HostRegister(records: [.complete("TextElement", "text")], unrealized: [], viewless: [])
+        let register = HostRegister(records: [.complete("TextualElement", "text")], unrealized: [], viewless: [])
 
-        XCTAssertTrue(register.realizes("text", on: "Text", from: "TextElement"))
-        XCTAssertTrue(register.realizes("text", on: "Button", from: "TextElement"))
+        XCTAssertTrue(register.realizes("text", on: "Text", from: "TextualElement"))
+        XCTAssertTrue(register.realizes("text", on: "Button", from: "TextualElement"))
     }
 
     /// A viewless element takes only its own records: no tier's reaches it.
@@ -99,9 +99,9 @@ final class HostRegisterTests: XCTestCase {
         ])
         let records = Set(HostRegister.records(of: declaration).map { "\($0.owner).\($0.member)" })
 
-        XCTAssertTrue(records.contains("TextElement.text"), "\(records.sorted())")
+        XCTAssertTrue(records.contains("TextualElement.text"), "\(records.sorted())")
         XCTAssertTrue(records.contains("Text.textCase"), "\(records.sorted())")
-        XCTAssertFalse(records.contains("TextElement.textCase"), "\(records.sorted())")
+        XCTAssertFalse(records.contains("TextualElement.textCase"), "\(records.sorted())")
     }
 
     /// What a host wrote by hand is checked against the contracts: a record naming what its owner does not
@@ -111,9 +111,9 @@ final class HostRegisterTests: XCTestCase {
         let register = HostRegister(
             records: [
                 .complete("Button", "text"), .complete("Button", "text"), .complete("Button", "wings"),
-                .complete("TextElement", "textCase"), .partial("Text", "maximumLines", missing: ""),
+                .complete("TextualElement", "textCase"), .partial("Text", "maximumLines", missing: ""),
                 .notPlanned("Text", "lineBreak", reason: ""), .unrealized("Text", "textCase", why: ""),
-                .unrealized("TextElement", "text", why: "Not here."),
+                .unrealized("TextualElement", "text", why: "Not here."),
             ],
             unrealized: ["Map"], viewless: [], notPlanned: ["Map": "No maps.", "MenuBar": ""])
 
@@ -123,7 +123,7 @@ final class HostRegisterTests: XCTestCase {
             "Text.maximumLines is partial and says nothing is missing",
             "Text.lineBreak is never and says no reason",
             "Text.textCase is unrealized and says no reason",
-            "TextElement.text is unrealized on a tier, which only an element's record says",
+            "TextualElement.text is unrealized on a tier, which only an element's record says",
             "Map is both unrealized and never",
             "MenuBar is never and says no reason",
         ])

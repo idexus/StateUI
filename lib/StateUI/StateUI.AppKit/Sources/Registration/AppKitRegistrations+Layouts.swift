@@ -14,14 +14,14 @@ extension AppKitRegistrations {
     static func layouts(_ registry: Registry<NSView>) {
         registry.add(VStackContract.self, create: { _ in AppKitStackView(axis: .vertical) }) { stack in
             stack.applies(Self.stackMembers) { view, values in
-                view.spacing = CGFloat(values[StackBaseContract.spacing] ?? 0)
+                view.spacing = CGFloat(values[StackContract.spacing] ?? 0)
                 view.padding = Self.edgeInsets(values[PaddingElementContract.padding])
             }
         }
 
         registry.add(HStackContract.self, create: { _ in AppKitStackView(axis: .horizontal) }) { stack in
             stack.applies(Self.stackMembers) { view, values in
-                view.spacing = CGFloat(values[StackBaseContract.spacing] ?? 0)
+                view.spacing = CGFloat(values[StackContract.spacing] ?? 0)
                 view.padding = Self.edgeInsets(values[PaddingElementContract.padding])
             }
         }
@@ -79,7 +79,7 @@ extension AppKitRegistrations {
     /// What both stacks take: the space between their children, and the space
     /// kept inside their own edge.
     private static let stackMembers: [any ContractMember] = [
-        StackBaseContract.spacing, PaddingElementContract.padding,
+        StackContract.spacing, PaddingElementContract.padding,
     ]
 
     /// A row or a column is a kind and an amount, and travels as the two of

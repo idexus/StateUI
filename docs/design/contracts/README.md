@@ -30,12 +30,12 @@ a property and its value meet in the compiler and nothing is spelled twice.
   public enum TextContract: ElementContract
       nodeType   "Text"                  the name a host resolves; the contract's own name
       layer      .native                  who realizes the element
-      tiers      View, TextElement, FontElement, TextAlignmentElement,
+      tiers      View, TextualElement, FontElement, TextAlignmentElement,
                  LineHeightElement, DecorableTextElement, PaddingElement
       members    lineBreak      ElementProperty<Self, LineBreak>
                  maximumLines   ElementProperty<Self, Int>     travels: false
 
-  TextContract.worn    Text, View, VisualElement, PropertyContainer, TextElement,
+  TextContract.worn    Text, View, VisualElement, PropertyContainer, TextualElement,
                         TextStyleElement, FontElement, TextAlignmentElement, ...
                         every tier once, nearest first
 ```

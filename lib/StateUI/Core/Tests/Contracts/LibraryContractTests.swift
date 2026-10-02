@@ -176,8 +176,8 @@ final class LibraryContractTests: XCTestCase {
     /// VisualElement, which wears PropertyContainer.
     func testATierWearsTheChainItsProtocolRefines() {
         XCTAssertEqual(ViewContract.worn.map { $0.name }, ["View", "VisualElement", "PropertyContainer"])
-        XCTAssertEqual(StackBaseContract.worn.map { $0.name }, [
-            "StackBase", "Layout", "View", "VisualElement", "PropertyContainer", "PaddingElement", "BorderElement",
+        XCTAssertEqual(StackContract.worn.map { $0.name }, [
+            "Stack", "Layout", "View", "VisualElement", "PropertyContainer", "PaddingElement", "BorderElement",
         ])
     }
 
