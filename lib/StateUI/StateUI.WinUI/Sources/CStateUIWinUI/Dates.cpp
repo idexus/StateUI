@@ -57,14 +57,17 @@ extern "C" StateUIObjectRef stateui_winui_date_make(int64_t view) {
     try {
         controls::CalendarDatePicker picker;
         picker.DateFormat(dayPattern(false));
-        picker.DateChanged([view](controls::CalendarDatePicker const &, controls::CalendarDatePickerDateChangedEventArgs const &args) {
+        picker.DateChanged(guarded("handling DateChanged",
+            [view](controls::CalendarDatePicker const &, controls::CalendarDatePickerDateChangedEventArgs const &args) {
             if (!args.NewDate()) return;
             int32_t parts[3];
             dayOf(args.NewDate().Value(), parts);
             callbacks.picked(view, parts[0], parts[1], parts[2]);
-        });
-        picker.Opened([view](IInspectable const &, IInspectable const &) { callbacks.presented(view, true); });
-        picker.Closed([view](IInspectable const &, IInspectable const &) { callbacks.presented(view, false); });
+        }));
+        picker.Opened(guarded("handling Opened",
+            [view](IInspectable const &, IInspectable const &) { callbacks.presented(view, true); }));
+        picker.Closed(guarded("handling Closed",
+            [view](IInspectable const &, IInspectable const &) { callbacks.presented(view, false); }));
         return detach(picker);
     } catch (...) {
         report("making a date picker");
@@ -153,11 +156,12 @@ extern "C" void stateui_winui_date_pick_as_user(StateUIObjectRef handle, int32_t
 extern "C" StateUIObjectRef stateui_winui_time_make(int64_t view) {
     try {
         controls::TimePicker picker;
-        picker.SelectedTimeChanged([view](controls::TimePicker const &, controls::TimePickerSelectedValueChangedEventArgs const &args) {
+        picker.SelectedTimeChanged(guarded("handling SelectedTimeChanged",
+            [view](controls::TimePicker const &, controls::TimePickerSelectedValueChangedEventArgs const &args) {
             if (!args.NewTime()) return;
             auto minutes = std::chrono::duration_cast<std::chrono::minutes>(args.NewTime().Value()).count();
             callbacks.picked(view, static_cast<int32_t>(minutes / 60), static_cast<int32_t>(minutes % 60), 0);
-        });
+        }));
         return detach(picker);
     } catch (...) {
         report("making a time picker");

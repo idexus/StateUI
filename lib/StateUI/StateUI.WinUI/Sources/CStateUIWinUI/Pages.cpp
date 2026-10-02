@@ -127,15 +127,18 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
     try {
         controls::TitleBar bar;
         bar.Tag(winrt::box_value(view));
-        bar.BackRequested([view](controls::TitleBar const &, IInspectable const &) { callbacks.chosen(view, -1); });
-        bar.PaneToggleRequested([view](controls::TitleBar const &, IInspectable const &) { callbacks.chosen(view, -2); });
+        bar.BackRequested(guarded("handling BackRequested",
+            [view](controls::TitleBar const &, IInspectable const &) { callbacks.chosen(view, -1); }));
+        bar.PaneToggleRequested(guarded("handling PaneToggleRequested",
+            [view](controls::TitleBar const &, IInspectable const &) { callbacks.chosen(view, -2); }));
         bar.Content(slot());
-        bar.Loaded([](IInspectable const &sender, xaml::RoutedEventArgs const &) {
+        bar.Loaded(guarded("handling Loaded", [](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             capCaptionRoom(sender.as<controls::TitleBar>());
-        });
-        bar.SizeChanged([](IInspectable const &sender, xaml::SizeChangedEventArgs const &) {
+        }));
+        bar.SizeChanged(guarded("handling SizeChanged",
+            [](IInspectable const &sender, xaml::SizeChangedEventArgs const &) {
             capCaptionRoom(sender.as<controls::TitleBar>());
-        });
+        }));
 
         // The leading edge's actions stand after the way back and the toggle; it shows only while it holds some.
         auto leading = actionBar();
@@ -230,9 +233,9 @@ extern "C" void stateui_winui_title_bar_set_actions(
             if (destructive[index])
                 markDestructive(button, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",
                                          L"AppBarButtonForegroundPressed"});
-            button.Click([view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
+            button.Click(guarded("handling Click", [view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
                 callbacks.chosen(view, index);
-            });
+            }));
             if (groups[index] < 0) {
                 trailing.SecondaryCommands().Append(button);
                 continue;
@@ -277,7 +280,7 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expand
         split.Content(rows({true, false}));
         // The pane's own content stands in a row sized to what it holds, so a sidebar's scroller would never scroll.
         // Design: docs/design/platforms/winui/pages.md#a-split-view
-        split.Loaded([](IInspectable const &sender, xaml::RoutedEventArgs const &) {
+        split.Loaded(guarded("handling Loaded", [](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             auto split = sender.as<controls::NavigationView>();
             auto sidebar = first<controls::ContentControl>(split, L"PaneCustomContentBorder");
             auto items = first<controls::Grid>(split, L"ItemsContainerGrid");
@@ -288,20 +291,24 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expand
             rows.GetAt(controls::Grid::GetRow(items)).Height(xaml::GridLengthHelper::Auto());
             // Laid out once already, in the row sized to what it holds: measured again, it takes the pane's height.
             measureAgain(sidebar);
-        });
-        split.PaneOpening([view](controls::NavigationView const &sender, IInspectable const &) {
+        }));
+        split.PaneOpening(guarded("handling PaneOpening",
+            [view](controls::NavigationView const &sender, IInspectable const &) {
             showSidebar(sender, true);
             callbacks.presented(view, true);
-        });
-        split.PaneClosing([view](controls::NavigationView const &, controls::NavigationViewPaneClosingEventArgs const &) {
+        }));
+        split.PaneClosing(guarded("handling PaneClosing",
+            [view](controls::NavigationView const &, controls::NavigationViewPaneClosingEventArgs const &) {
             callbacks.presented(view, false);
-        });
-        split.PaneClosed([](controls::NavigationView const &sender, IInspectable const &) {
+        }));
+        split.PaneClosed(guarded("handling PaneClosed",
+            [](controls::NavigationView const &sender, IInspectable const &) {
             if (!sender.IsPaneOpen()) showSidebar(sender, false);
-        });
-        split.DisplayModeChanged([](controls::NavigationView const &sender, IInspectable const &) {
+        }));
+        split.DisplayModeChanged(guarded("handling DisplayModeChanged",
+            [](controls::NavigationView const &sender, IInspectable const &) {
             if (!sender.IsPaneOpen()) showSidebar(sender, false);
-        });
+        }));
         return detach(split);
     } catch (...) {
         report("making a split view");
@@ -364,13 +371,14 @@ extern "C" void stateui_winui_menu_bar_set_colours(
 extern "C" StateUIObjectRef stateui_winui_tabs_make(int64_t view) {
     try {
         controls::SelectorBar tabs;
-        tabs.SelectionChanged([view](controls::SelectorBar const &sender, controls::SelectorBarSelectionChangedEventArgs const &) {
+        tabs.SelectionChanged(guarded("handling SelectionChanged",
+            [view](controls::SelectorBar const &sender, controls::SelectorBarSelectionChangedEventArgs const &) {
             if (settingTabs) return;
             uint32_t index = 0;
             if (sender.SelectedItem() && sender.Items().IndexOf(sender.SelectedItem(), index)) {
                 callbacks.chosen(view, static_cast<int32_t>(index));
             }
-        });
+        }));
         return detach(tabs);
     } catch (...) {
         report("making a row of tabs");

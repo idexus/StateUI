@@ -25,16 +25,19 @@ namespace {
 extern "C" StateUIObjectRef stateui_winui_scroller_make(int64_t view) {
     try {
         controls::ScrollViewer scroller;
-        scroller.ViewChanged([view](IInspectable const &sender, controls::ScrollViewerViewChangedEventArgs const &) {
+        scroller.ViewChanged(guarded("handling ViewChanged",
+            [view](IInspectable const &sender, controls::ScrollViewerViewChangedEventArgs const &) {
             auto scroller = sender.as<controls::ScrollViewer>();
             callbacks.scrolled(view, scroller.HorizontalOffset(), scroller.VerticalOffset());
-        });
-        scroller.DirectManipulationStarted([view](IInspectable const &, IInspectable const &) {
+        }));
+        scroller.DirectManipulationStarted(guarded("handling DirectManipulationStarted",
+            [view](IInspectable const &, IInspectable const &) {
             callbacks.held(view, true);
-        });
-        scroller.DirectManipulationCompleted([view](IInspectable const &, IInspectable const &) {
+        }));
+        scroller.DirectManipulationCompleted(guarded("handling DirectManipulationCompleted",
+            [view](IInspectable const &, IInspectable const &) {
             callbacks.held(view, false);
-        });
+        }));
         return detach(scroller);
     } catch (...) {
         report("making a scroller");

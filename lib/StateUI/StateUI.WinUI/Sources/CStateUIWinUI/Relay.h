@@ -147,6 +147,19 @@ namespace stateui {
         return code;
     }
 
+    /// A handler WinUI calls from its own loop, what it throws said and swallowed: one leaving it is stowed and ends
+    /// the process.
+    template <typename Handler>
+    auto guarded(char const *where, Handler handler) {
+        return [where, handler = std::move(handler)](auto &&...arguments) mutable {
+            try {
+                handler(std::forward<decltype(arguments)>(arguments)...);
+            } catch (...) {
+                report(where);
+            }
+        };
+    }
+
     /// Hands a projected object's default interface to the host, AddRef'd.
     template <typename T>
     StateUIObjectRef detach(T object) {

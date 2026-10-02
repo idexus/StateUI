@@ -94,10 +94,11 @@ namespace {
     /// place - once its CoreWebView2 stands.
     void hear(core::CoreWebView2 const &page, int64_t view) {
         ownAgents[view] = page.Settings().UserAgent();
-        page.HistoryChanged([view](core::CoreWebView2 const &sender, winrt::Windows::Foundation::IInspectable const &) {
+        page.HistoryChanged(guarded("handling HistoryChanged",
+            [view](core::CoreWebView2 const &sender, winrt::Windows::Foundation::IInspectable const &) {
             callbacks.history(view, sender.CanGoBack(), sender.CanGoForward());
-        });
-        page.WebResourceRequested([view](core::CoreWebView2 const &sender,
+        }));
+        page.WebResourceRequested(guarded("handling WebResourceRequested", [view](core::CoreWebView2 const &sender,
                                          core::CoreWebView2WebResourceRequestedEventArgs const &args) {
             auto documents = served.find(view);
             if (documents == served.end()) return;
@@ -105,7 +106,7 @@ namespace {
             if (document == documents->second.end()) return;
             args.Response(sender.Environment().CreateWebResourceResponse(
                 reading(*document->second), 200, L"OK", L"Content-Type: text/html; charset=utf-8"));
-        });
+        }));
     }
 
     /// Goes to `address` asking as `agent`; where `document` is given, it is what the address answers, whenever
@@ -124,23 +125,25 @@ namespace {
 extern "C" WebViewObjectRef stateui_webview_winui_make(int64_t view) {
     try {
         controls::WebView2 web;
-        web.CoreWebView2Initialized([view](controls::WebView2 const &sender, auto const &) {
+        web.CoreWebView2Initialized(guarded("handling CoreWebView2Initialized",
+            [view](controls::WebView2 const &sender, auto const &) {
             if (auto page = sender.CoreWebView2()) hear(page, view);
-        });
-        web.NavigationStarting([view](controls::WebView2 const &,
+        }));
+        web.NavigationStarting(guarded("handling NavigationStarting", [view](controls::WebView2 const &,
                                       core::CoreWebView2NavigationStartingEventArgs const &args) {
             callbacks.navigating(view, told(args.NavigationKind()), winrt::to_string(args.Uri()).c_str());
-        });
-        web.NavigationCompleted([view](controls::WebView2 const &sender,
+        }));
+        web.NavigationCompleted(guarded("handling NavigationCompleted", [view](controls::WebView2 const &sender,
                                        core::CoreWebView2NavigationCompletedEventArgs const &args) {
             callbacks.navigated(view, ended(args.IsSuccess(), args.WebErrorStatus()), addressOf(sender).c_str());
-        });
-        web.CoreProcessFailed([view](controls::WebView2 const &, core::CoreWebView2ProcessFailedEventArgs const &args) {
+        }));
+        web.CoreProcessFailed(guarded("handling CoreProcessFailed",
+            [view](controls::WebView2 const &, core::CoreWebView2ProcessFailedEventArgs const &args) {
             auto kind = args.ProcessFailedKind();
             if (kind == core::CoreWebView2ProcessFailedKind::RenderProcessExited ||
                 kind == core::CoreWebView2ProcessFailedKind::BrowserProcessExited)
                 callbacks.ended(view);
-        });
+        }));
         return detach(web);
     } catch (...) {
         report("making a web view");
@@ -159,10 +162,11 @@ extern "C" void stateui_webview_winui_show(WebViewObjectRef handle, int64_t view
         // Its CoreWebView2 stands a moment after it is asked for: the page is gone to then, in the order asked.
         auto token = std::make_shared<winrt::event_token>();
         *token = web.CoreWebView2Initialized(
-            [token, view, at, held, asking](controls::WebView2 const &sender, auto const &) {
+            guarded("handling CoreWebView2Initialized",
+                [token, view, at, held, asking](controls::WebView2 const &sender, auto const &) {
                 sender.CoreWebView2Initialized(*token);
                 if (auto page = sender.CoreWebView2()) go(page, view, at, held, asking);
-            });
+            }));
         web.EnsureCoreWebView2Async();
     } catch (...) {
         report("showing a page");
@@ -208,13 +212,14 @@ extern "C" void stateui_webview_winui_evaluate(WebViewObjectRef handle, char con
         auto web = as<controls::WebView2>(handle);
         auto queue = web.DispatcherQueue();
         web.ExecuteScriptAsync(text(script)).Completed(
-            [ticket, queue](auto const &operation, winrt::Windows::Foundation::AsyncStatus status) {
+            guarded("handling Completed",
+                [ticket, queue](auto const &operation, winrt::Windows::Foundation::AsyncStatus status) {
                 auto done = status == winrt::Windows::Foundation::AsyncStatus::Completed;
                 auto json = done ? winrt::to_string(operation.GetResults()) : std::string();
-                queue.TryEnqueue([ticket, done, json] {
+                queue.TryEnqueue(guarded("handling TryEnqueue", [ticket, done, json] {
                     callbacks.answered(ticket, done, done ? json.c_str() : nullptr);
-                });
-            });
+                }));
+            }));
     } catch (...) {
         report("running a script");
         callbacks.answered(ticket, false, nullptr);

@@ -101,24 +101,29 @@ namespace {
 
     /// Hangs every handler once; each asks what the view listens for as it runs.
     void listen(xaml::UIElement const &element, int64_t view, Listening &entry) {
-        entry.tapped = element.Tapped([view](IInspectable const &sender, input::TappedRoutedEventArgs const &args) {
+        entry.tapped = element.Tapped(guarded("handling Tapped",
+            [view](IInspectable const &sender, input::TappedRoutedEventArgs const &args) {
             if (!listener(view, StateUIHearingTaps)) return;
             args.Handled(true);
             tap(view, args.GetPosition(sender.as<xaml::UIElement>()), false);
-        });
+        }));
         entry.doubleTapped = element.DoubleTapped(
-            [view](IInspectable const &sender, input::DoubleTappedRoutedEventArgs const &args) {
+            guarded("handling DoubleTapped",
+                [view](IInspectable const &sender, input::DoubleTappedRoutedEventArgs const &args) {
                 if (!listener(view, StateUIHearingTaps)) return;
                 args.Handled(true);
                 tap(view, args.GetPosition(sender.as<xaml::UIElement>()), true);
-            });
-        entry.entered = element.PointerEntered([view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+            }));
+        entry.entered = element.PointerEntered(guarded("handling PointerEntered",
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerEntered, sender, args);
-        });
-        entry.exited = element.PointerExited([view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+        }));
+        entry.exited = element.PointerExited(guarded("handling PointerExited",
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerExited, sender, args);
-        });
-        entry.pressed = element.PointerPressed([view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+        }));
+        entry.pressed = element.PointerPressed(guarded("handling PointerPressed",
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerPressed, sender, args);
             auto *entry = listener(view, StateUIHearingDrags);
             if (!entry || !args.GetCurrentPoint(sender.as<xaml::UIElement>()).Properties().IsLeftButtonPressed()) return;
@@ -126,8 +131,9 @@ namespace {
             entry->dragging = false;
             entry->capturing = false;
             tell(view, StateUIHeardPress, 0, onContent(args));
-        });
-        entry.movedToken = element.PointerMoved([view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+        }));
+        entry.movedToken = element.PointerMoved(guarded("handling PointerMoved",
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerMoved, sender, args);
             auto *entry = listener(view, StateUIHearingDrags);
             if (!entry || entry->pointer != args.Pointer().PointerId()) return;
@@ -140,31 +146,37 @@ namespace {
                 sender.as<xaml::UIElement>().CapturePointer(args.Pointer());
             }
             args.Handled(true);
-        });
-        entry.released = element.PointerReleased([view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+        }));
+        entry.released = element.PointerReleased(guarded("handling PointerReleased",
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerReleased, sender, args);
             letGo(view, 2);
-        });
-        entry.lost = element.PointerCaptureLost([view](IInspectable const &, input::PointerRoutedEventArgs const &) {
+        }));
+        entry.lost = element.PointerCaptureLost(guarded("handling PointerCaptureLost",
+            [view](IInspectable const &, input::PointerRoutedEventArgs const &) {
             letGo(view, 3);
-        });
-        entry.canceled = element.PointerCanceled([view](IInspectable const &, input::PointerRoutedEventArgs const &) {
+        }));
+        entry.canceled = element.PointerCanceled(guarded("handling PointerCanceled",
+            [view](IInspectable const &, input::PointerRoutedEventArgs const &) {
             letGo(view, 3);
-        });
+        }));
         entry.started = element.ManipulationStarted(
-            [view](IInspectable const &sender, input::ManipulationStartedRoutedEventArgs const &args) {
+            guarded("handling ManipulationStarted",
+                [view](IInspectable const &sender, input::ManipulationStartedRoutedEventArgs const &args) {
                 if (listener(view, StateUIHearingPinches)) tell(view, StateUIHeardPinch, 0, shares(sender, args.Position()), 1);
-            });
+            }));
         entry.delta = element.ManipulationDelta(
-            [view](IInspectable const &sender, input::ManipulationDeltaRoutedEventArgs const &args) {
+            guarded("handling ManipulationDelta",
+                [view](IInspectable const &sender, input::ManipulationDeltaRoutedEventArgs const &args) {
                 if (!listener(view, StateUIHearingPinches)) return;
                 args.Handled(true);
                 tell(view, StateUIHeardPinch, 1, shares(sender, args.Position()), args.Delta().Scale);
-            });
+            }));
         entry.completed = element.ManipulationCompleted(
-            [view](IInspectable const &sender, input::ManipulationCompletedRoutedEventArgs const &args) {
+            guarded("handling ManipulationCompleted",
+                [view](IInspectable const &sender, input::ManipulationCompletedRoutedEventArgs const &args) {
                 if (listener(view, StateUIHearingPinches)) tell(view, StateUIHeardPinch, 2, shares(sender, args.Position()), 1);
-            });
+            }));
         ++hung;
     }
 
@@ -191,9 +203,8 @@ namespace {
     /// Design: docs/design/platforms/winui/input.md#listening
     void unhookLater(xaml::UIElement const &element, Listening const &entry) {
         element.ManipulationMode(input::ManipulationModes::System);
-        winrt::Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread().TryEnqueue([element, entry] {
-            unhook(element, entry);
-        });
+        auto queue = winrt::Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+        queue.TryEnqueue(guarded("handling TryEnqueue", [element, entry] { unhook(element, entry); }));
     }
 
     /// The clear brush a panel is painted with to be hit, told from an author's by being this one.
@@ -348,10 +359,12 @@ extern "C" void stateui_winui_hear_focus(StateUIObjectRef handle, int64_t view, 
 
         // Both events bubble from what stands in the element, so the keyboard is asked where it is now.
         auto &entry = focusing.emplace(view, Focus{}).first->second;
-        entry.got = element.GotFocus([view](IInspectable const &, xaml::RoutedEventArgs const &) { tellFocus(view, true); });
-        entry.lost = element.LostFocus([view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
+        entry.got = element.GotFocus(guarded("handling GotFocus",
+            [view](IInspectable const &, xaml::RoutedEventArgs const &) { tellFocus(view, true); }));
+        entry.lost = element.LostFocus(guarded("handling LostFocus",
+            [view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             tellFocus(view, holdsFocus(sender.as<xaml::UIElement>()));
-        });
+        }));
     } catch (...) {
         report("hearing an element's focus");
     }

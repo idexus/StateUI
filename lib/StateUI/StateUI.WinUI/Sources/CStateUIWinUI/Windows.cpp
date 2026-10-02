@@ -49,10 +49,11 @@ namespace {
             xaml::Input::KeyboardAccelerator accelerator;
             accelerator.Key(key);
             accelerator.Modifiers(modifiers);
-            accelerator.Invoked([chrome](auto const &, xaml::Input::KeyboardAcceleratorInvokedEventArgs const &args) {
+            accelerator.Invoked(guarded("handling Invoked",
+                [chrome](auto const &, xaml::Input::KeyboardAcceleratorInvokedEventArgs const &args) {
                 callbacks.chosen(chrome, -1);
                 args.Handled(true);
-            });
+            }));
             grid.KeyboardAccelerators().Append(accelerator);
         };
         accelerate(VirtualKey::Left, VirtualKeyModifiers::Menu);
@@ -61,12 +62,13 @@ namespace {
         // Escape takes the top sheet away, chosen on the chrome as -3; with no sheet it is left to whatever has it.
         xaml::Input::KeyboardAccelerator escape;
         escape.Key(VirtualKey::Escape);
-        escape.Invoked([chrome](auto const &, xaml::Input::KeyboardAcceleratorInvokedEventArgs const &args) {
+        escape.Invoked(guarded("handling Invoked",
+            [chrome](auto const &, xaml::Input::KeyboardAcceleratorInvokedEventArgs const &args) {
             auto root = args.Element().try_as<controls::Grid>();
             if (!root || !showsSheets(root)) return;
             callbacks.chosen(chrome, -3);
             args.Handled(true);
-        });
+        }));
         grid.KeyboardAccelerators().Append(escape);
     }
 
@@ -113,12 +115,20 @@ extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
         window.Content(rows({true, true, true, false}));
         // The window's state is read at each of them: a minimized window is also told it lost its activation, and
         // one hidden - with the window it belongs to, or by its scene - stands off the screen as a minimized one.
-        window.Activated([number](IInspectable const &sender, xaml::WindowActivatedEventArgs const &args) {
+        window.Activated(guarded("handling Activated",
+            [number](IInspectable const &sender, xaml::WindowActivatedEventArgs const &args) {
             auto activated = args.WindowActivationState() != xaml::WindowActivationState::Deactivated;
-            callbacks.windowStateChanged(number, offScreen(sender.as<xaml::Window>().AppWindow()), activated);
-        });
+            // A window UI Automation closes is told it lost its activation once its AppWindow is gone: off the screen.
+            auto hidden = true;
+            try {
+                hidden = offScreen(sender.as<xaml::Window>().AppWindow());
+            } catch (winrt::hresult_invalid_argument const &) {
+            }
+            callbacks.windowStateChanged(number, hidden, activated);
+        }));
         window.AppWindow().Changed(
-            [number](windowing::AppWindow const &sender, windowing::AppWindowChangedEventArgs const &args) {
+            guarded("handling Changed",
+                [number](windowing::AppWindow const &sender, windowing::AppWindowChangedEventArgs const &args) {
                 if (args.DidVisibilityChange()) {
                     auto active = GetActiveWindow() == reinterpret_cast<HWND>(sender.Id().Value);
                     callbacks.windowStateChanged(number, offScreen(sender), active && sender.IsVisible());
@@ -126,11 +136,11 @@ extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
                 }
                 if (!args.DidPresenterChange() && !args.DidSizeChange()) return;
                 if (minimized(sender)) callbacks.windowStateChanged(number, true, false);
-            });
-        window.Closed([number](IInspectable const &sender, xaml::WindowEventArgs const &) {
+            }));
+        window.Closed(guarded("handling Closed", [number](IInspectable const &sender, xaml::WindowEventArgs const &) {
             releaseOwned(reinterpret_cast<HWND>(sender.as<xaml::Window>().AppWindow().Id().Value));
             callbacks.windowClosed(number);
-        });
+        }));
         return detach(window);
     } catch (...) {
         report("making a window");

@@ -20,9 +20,10 @@ namespace numbers = winrt::Windows::Globalization::NumberFormatting;
 extern "C" StateUIObjectRef stateui_winui_slider_make(int64_t view) {
     try {
         controls::Slider slider;
-        slider.ValueChanged([view](IInspectable const &, controls::Primitives::RangeBaseValueChangedEventArgs const &args) {
+        slider.ValueChanged(guarded("handling ValueChanged",
+            [view](IInspectable const &, controls::Primitives::RangeBaseValueChangedEventArgs const &args) {
             callbacks.valueChanged(view, args.NewValue());
-        });
+        }));
         return detach(slider);
     } catch (...) {
         report("making a slider");
@@ -80,7 +81,8 @@ extern "C" StateUIObjectRef stateui_winui_stepper_make(int64_t view) {
         box.ValidationMode(controls::NumberBoxValidationMode::InvalidInputOverwritten);
         // Words that say no number leave the number where it was: the box is given it back, and nobody hears it.
         auto restoring = std::make_shared<bool>(false);
-        box.ValueChanged([view, restoring](controls::NumberBox const &box, controls::NumberBoxValueChangedEventArgs const &args) {
+        box.ValueChanged(guarded("handling ValueChanged",
+            [view, restoring](controls::NumberBox const &box, controls::NumberBoxValueChangedEventArgs const &args) {
             if (*restoring) return;
             if (std::isnan(args.NewValue())) {
                 *restoring = true;
@@ -89,7 +91,7 @@ extern "C" StateUIObjectRef stateui_winui_stepper_make(int64_t view) {
                 return;
             }
             callbacks.valueChanged(view, args.NewValue());
-        });
+        }));
         return detach(box);
     } catch (...) {
         report("making a stepper");

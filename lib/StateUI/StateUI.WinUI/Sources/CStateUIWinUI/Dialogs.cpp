@@ -31,9 +31,10 @@ namespace {
     /// Shows `dialog`, handing its result to `closed` once it closes.
     void show(controls::ContentDialog const &dialog, std::function<void(controls::ContentDialogResult)> closed) {
         dialog.ShowAsync().Completed(
-            [closed](IAsyncOperation<controls::ContentDialogResult> const &operation, AsyncStatus status) {
+            guarded("handling Completed",
+                [closed](IAsyncOperation<controls::ContentDialogResult> const &operation, AsyncStatus status) {
                 closed(status == AsyncStatus::Completed ? operation.GetResults() : controls::ContentDialogResult::None);
-            });
+            }));
     }
 
     /// Words as a text block that wraps.
@@ -91,21 +92,23 @@ namespace {
                 controls::Button button;
                 button.Content(winrt::box_value(winrt::to_hstring(caption)));
                 button.HorizontalAlignment(xaml::HorizontalAlignment::Stretch);
-                button.Click([dialog, chosen, pressed, caption](IInspectable const &, xaml::RoutedEventArgs const &) {
+                button.Click(guarded("handling Click",
+                    [dialog, chosen, pressed, caption](IInspectable const &, xaml::RoutedEventArgs const &) {
                     *chosen = caption;
                     *pressed = true;
                     dialog.Hide();
-                });
+                }));
                 choices.Children().Append(button);
             }
             dialog.Content(choices);
             if (question.cancel) {
                 auto cancel = std::string(question.cancel);
                 dialog.CloseButtonText(text(question.cancel));
-                dialog.CloseButtonClick([chosen, pressed, cancel](auto const &, auto const &) {
+                dialog.CloseButtonClick(guarded("handling CloseButtonClick",
+                    [chosen, pressed, cancel](auto const &, auto const &) {
                     *chosen = cancel;
                     *pressed = true;
-                });
+                }));
             }
             closed = [ticket, chosen, pressed](auto) { answer(ticket, *pressed, *chosen, *pressed); };
             break;
@@ -163,11 +166,12 @@ extern "C" void stateui_winui_ask(StateUIObjectRef handle, int64_t ticket, State
         // A window opened a moment ago is not loaded yet: the question stands over it once it is.
         // Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
         auto token = std::make_shared<winrt::event_token>();
-        *token = element.Loaded([asked, token](IInspectable const &sender, xaml::RoutedEventArgs const &) {
+        *token = element.Loaded(guarded("handling Loaded",
+            [asked, token](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             auto loaded = sender.as<xaml::FrameworkElement>();
             loaded.Loaded(*token);
             asked.show(loaded.XamlRoot());
-        });
+        }));
     } catch (...) {
         report("asking the user");
         answer(ticket, false, {}, false);

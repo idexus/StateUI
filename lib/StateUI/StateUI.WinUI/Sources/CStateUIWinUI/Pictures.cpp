@@ -269,12 +269,13 @@ extern "C" bool stateui_winui_image_set(
         if (extension != L".svg") {
             // A bitmap's size is known once it is read; the layout holding it measures it again then.
             imaging::BitmapImage bitmap(address(path));
-            bitmap.ImageOpened([held = winrt::make_weak(image)](auto const &, xaml::RoutedEventArgs const &) {
+            bitmap.ImageOpened(guarded("handling ImageOpened",
+                [held = winrt::make_weak(image)](auto const &, xaml::RoutedEventArgs const &) {
                 auto image = held.get();
                 if (!image) return;
                 if (auto layout = xaml::Media::VisualTreeHelper::GetParent(image).try_as<xaml::UIElement>())
                     layout.InvalidateMeasure();
-            });
+            }));
             image.Source(bitmap);
             return true;
         }

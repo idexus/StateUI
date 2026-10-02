@@ -64,9 +64,10 @@ namespace {
                 if (destructive)
                     markDestructive(item, {L"MenuFlyoutItemForeground", L"MenuFlyoutItemForegroundPointerOver",
                                            L"MenuFlyoutItemForegroundPressed"});
-                item.Click([view = view, place = chosen++](IInspectable const &, xaml::RoutedEventArgs const &) {
+                item.Click(guarded("handling Click",
+                    [view = view, place = chosen++](IInspectable const &, xaml::RoutedEventArgs const &) {
                     callbacks.menuChosen(view, place);
-                });
+                }));
                 levels.back().Append(item);
                 break;
             }

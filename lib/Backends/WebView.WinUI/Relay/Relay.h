@@ -14,6 +14,7 @@
 #include <cstdio>
 #include <exception>
 #include <string>
+#include <utility>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Microsoft.UI.Xaml.h>
@@ -42,6 +43,19 @@ namespace webview {
         }
         std::fprintf(stderr, "StateUI WebView WinUI: %s failed: %s\n", where, words.c_str());
         std::fflush(stderr);
+    }
+
+    /// A handler WinUI calls from its own loop, what it throws said and swallowed: one leaving it is stowed and ends
+    /// the process.
+    template <typename Handler>
+    auto guarded(char const *where, Handler handler) {
+        return [where, handler = std::move(handler)](auto &&...arguments) mutable {
+            try {
+                handler(std::forward<decltype(arguments)>(arguments)...);
+            } catch (...) {
+                report(where);
+            }
+        };
     }
 
     /// Hands a projected object's default interface to Swift, AddRef'd.

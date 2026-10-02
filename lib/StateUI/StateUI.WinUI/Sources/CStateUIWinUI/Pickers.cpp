@@ -19,11 +19,14 @@ using namespace stateui;
 extern "C" StateUIObjectRef stateui_winui_picker_make(int64_t view) {
     try {
         controls::ComboBox box;
-        box.SelectionChanged([view](IInspectable const &sender, controls::SelectionChangedEventArgs const &) {
+        box.SelectionChanged(guarded("handling SelectionChanged",
+            [view](IInspectable const &sender, controls::SelectionChangedEventArgs const &) {
             callbacks.chosen(view, sender.as<controls::ComboBox>().SelectedIndex());
-        });
-        box.DropDownOpened([view](IInspectable const &, IInspectable const &) { callbacks.presented(view, true); });
-        box.DropDownClosed([view](IInspectable const &, IInspectable const &) { callbacks.presented(view, false); });
+        }));
+        box.DropDownOpened(guarded("handling DropDownOpened",
+            [view](IInspectable const &, IInspectable const &) { callbacks.presented(view, true); }));
+        box.DropDownClosed(guarded("handling DropDownClosed",
+            [view](IInspectable const &, IInspectable const &) { callbacks.presented(view, false); }));
         return detach(box);
     } catch (...) {
         report("making a picker");

@@ -120,11 +120,12 @@ extern "C" void stateui_winui_set_accessibility(
         if (!record.control.get()) {
             auto control = element.as<xaml::FrameworkElement>();
             record.control = winrt::make_weak(control);
-            record.loaded = control.Loaded([key](IInspectable const &, xaml::RoutedEventArgs const &) {
+            record.loaded = control.Loaded(guarded("handling Loaded",
+                [key](IInspectable const &, xaml::RoutedEventArgs const &) {
                 auto found = leftOut.find(key);
                 if (found == leftOut.end()) return;
                 if (auto control = found->second.control.get()) leaveOutParts(control, found->second);
-            });
+            }));
         }
         leaveOutParts(element, record);
     } catch (...) {

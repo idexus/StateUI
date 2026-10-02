@@ -18,17 +18,19 @@ namespace primitives = winrt::Microsoft::UI::Xaml::Controls::Primitives;
 namespace {
     /// Tells the view `view` of each check and uncheck of `button`.
     void hear(primitives::ToggleButton const &button, int64_t view) {
-        button.Checked([view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.toggled(view, true); });
-        button.Unchecked([view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.toggled(view, false); });
+        button.Checked(guarded("handling Checked",
+            [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.toggled(view, true); }));
+        button.Unchecked(guarded("handling Unchecked",
+            [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.toggled(view, false); }));
     }
 }
 
 extern "C" StateUIObjectRef stateui_winui_switch_make(int64_t view) {
     try {
         controls::ToggleSwitch toggle;
-        toggle.Toggled([view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
+        toggle.Toggled(guarded("handling Toggled", [view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             callbacks.toggled(view, sender.as<controls::ToggleSwitch>().IsOn());
-        });
+        }));
         return detach(toggle);
     } catch (...) {
         report("making a switch");

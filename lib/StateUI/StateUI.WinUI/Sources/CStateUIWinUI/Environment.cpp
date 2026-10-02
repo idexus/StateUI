@@ -168,7 +168,8 @@ extern "C" void stateui_winui_watch_environment(void) {
         // Kept for the process, never destroyed: an event handler lives as long as the object that raises it, and
         // one destroyed as the process exits is let go of after WinUI, which ends the process there.
         static auto &settings = **new std::optional(winrt::Windows::UI::ViewManagement::UISettings());
-        settings.ColorValuesChanged([](auto const &, auto const &) { changed(); });
+        settings.ColorValuesChanged(guarded("handling ColorValuesChanged",
+            [](auto const &, auto const &) { changed(); }));
         power::PowerManager::BatteryStatusChanged([](auto const &, auto const &) { changed(); });
         power::PowerManager::PowerSupplyStatusChanged([](auto const &, auto const &) { changed(); });
         power::PowerManager::RemainingChargePercentChanged([](auto const &, auto const &) { changed(); });
@@ -176,7 +177,7 @@ extern "C" void stateui_winui_watch_environment(void) {
         connectivity::NetworkInformation::NetworkStatusChanged([](auto const &) { changed(); });
         // A screen turned, or sized again: its area changes.
         static auto &displays = **new std::optional(winrt::Microsoft::UI::Windowing::DisplayArea::CreateWatcher());
-        displays.Updated([](auto const &, auto const &) { changed(); });
+        displays.Updated(guarded("handling Updated", [](auto const &, auto const &) { changed(); }));
         displays.Start();
     } catch (...) {
         report("watching the environment");

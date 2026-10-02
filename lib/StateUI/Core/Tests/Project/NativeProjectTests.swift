@@ -235,6 +235,25 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertEqual(open, [], "a C function of the relay lets an exception out")
     }
 
+    /// No exception leaves a handler the relays give WinUI either: WinUI calls it from its own loop, and one leaving
+    /// it is stowed and ends the process (a window's activation read as UI Automation closed it, 0xc000027b). Every
+    /// handler goes through `guarded`.
+    func testNoCppExceptionLeavesARelaysHandler() throws {
+        let bare = try NSRegularExpression(pattern: #"\.[A-Z]\w*\(\s*(winrt::auto_revoke,\s*)?\["#)
+        var open: [String] = []
+        for folder in ["lib/StateUI/StateUI.WinUI/Sources/CStateUIWinUI", "lib/Backends/WebView.WinUI/Relay"] {
+            let root = SourceTree.repository.appendingPathComponent(folder)
+            for name in try FileManager.default.contentsOfDirectory(atPath: root.path) where name.hasSuffix(".cpp") {
+                let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+                for match in bare.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+                    let before = text[..<Range(match.range, in: text)!.lowerBound]
+                    open.append("\(name):\(before.filter { $0 == "\n" }.count + 1)")
+                }
+            }
+        }
+        XCTAssertEqual(open, [], "a handler WinUI calls is not guarded")
+    }
+
     /// Each `extern "C"` function `text` defines: its name, and its body - braces counted outside words, letters and
     /// comments.
     private static func cFunctions(in text: String) -> [(name: String, body: String)] {

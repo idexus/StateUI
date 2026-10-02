@@ -92,7 +92,7 @@ namespace stateui {
 namespace stateui {
     void post(void (*work)()) {
         try {
-            if (queue) queue.TryEnqueue([work] { work(); });
+            if (queue) queue.TryEnqueue(guarded("handling TryEnqueue", [work] { work(); }));
         } catch (...) {
             report("posting work to the UI thread");
         }
@@ -154,7 +154,7 @@ extern "C" void stateui_winui_pump(double seconds) {
 
 extern "C" void stateui_winui_post_turn(void) {
     try {
-        if (queue) queue.TryEnqueue([] { callbacks.turn(); });
+        if (queue) queue.TryEnqueue(guarded("handling TryEnqueue", [] { callbacks.turn(); }));
     } catch (...) {
         report("posting a turn");
     }

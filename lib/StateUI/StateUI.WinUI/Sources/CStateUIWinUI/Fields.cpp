@@ -25,11 +25,12 @@ namespace {
     /// Tells the view `view` of each change of the box's words. TextChanging, not TextChanged: it is raised in the
     /// write that makes it, so a program's write is known as one, where TextChanged comes later.
     void hearWords(controls::TextBox const &box, int64_t view) {
-        box.TextChanging([view](controls::TextBox const &sender, controls::TextBoxTextChangingEventArgs const &args) {
+        box.TextChanging(guarded("handling TextChanging",
+            [view](controls::TextBox const &sender, controls::TextBoxTextChangingEventArgs const &args) {
             if (!args.IsContentChanging()) return;
             auto bytes = winrt::to_string(sender.Text());
             callbacks.textChanged(view, bytes.c_str());
-        });
+        }));
     }
 
     /// The words across a text box for StateUI's `TextAlignment`: centred, at the end, or at the start.
@@ -60,9 +61,10 @@ namespace {
 
     /// Tells the view `view` that Enter was pressed in `field`.
     void hearEnter(controls::Control const &field, int64_t view) {
-        field.KeyDown([view](IInspectable const &, xaml::Input::KeyRoutedEventArgs const &args) {
+        field.KeyDown(guarded("handling KeyDown",
+            [view](IInspectable const &, xaml::Input::KeyRoutedEventArgs const &args) {
             if (args.Key() == winrt::Windows::System::VirtualKey::Enter) callbacks.submitted(view);
-        });
+        }));
     }
 
     /// The only scopes a password box takes: digits for a numeric purpose, a password's otherwise.
@@ -100,12 +102,12 @@ extern "C" StateUIObjectRef stateui_winui_password_make(int64_t view) {
     try {
         controls::PasswordBox field;
         // PasswordChanging, as a text box's TextChanging: raised in the write that makes it.
-        field.PasswordChanging([view](controls::PasswordBox const &sender,
+        field.PasswordChanging(guarded("handling PasswordChanging", [view](controls::PasswordBox const &sender,
                                       controls::PasswordBoxPasswordChangingEventArgs const &args) {
             if (!args.IsContentChanging()) return;
             auto bytes = winrt::to_string(sender.Password());
             callbacks.textChanged(view, bytes.c_str());
-        });
+        }));
         hearEnter(field, view);
         return detach(field);
     } catch (...) {
@@ -132,14 +134,16 @@ extern "C" StateUIObjectRef stateui_winui_search_make(int64_t view) {
     try {
         controls::AutoSuggestBox search;
         search.QueryIcon(controls::SymbolIcon(controls::Symbol::Find));
-        search.TextChanged([view](controls::AutoSuggestBox const &sender, controls::AutoSuggestBoxTextChangedEventArgs const &args) {
+        search.TextChanged(guarded("handling TextChanged",
+            [view](controls::AutoSuggestBox const &sender, controls::AutoSuggestBoxTextChangedEventArgs const &args) {
             if (args.Reason() != controls::AutoSuggestionBoxTextChangeReason::UserInput) return;
             auto bytes = winrt::to_string(sender.Text());
             callbacks.textChanged(view, bytes.c_str());
-        });
-        search.QuerySubmitted([view](controls::AutoSuggestBox const &, controls::AutoSuggestBoxQuerySubmittedEventArgs const &) {
+        }));
+        search.QuerySubmitted(guarded("handling QuerySubmitted",
+            [view](controls::AutoSuggestBox const &, controls::AutoSuggestBoxQuerySubmittedEventArgs const &) {
             callbacks.submitted(view);
-        });
+        }));
         return detach(search);
     } catch (...) {
         report("making a search box");

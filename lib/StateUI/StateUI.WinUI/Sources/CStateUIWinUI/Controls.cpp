@@ -100,7 +100,8 @@ extern "C" void stateui_winui_text_set_vertical(StateUIObjectRef handle, int32_t
 extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
     try {
         controls::Button button;
-        button.Click([view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.clicked(view); });
+        button.Click(guarded("handling Click",
+            [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.clicked(view); }));
         // Held down by a pointer or a key, and let go: what WinUI's own pressed look follows.
         button.RegisterPropertyChangedCallback(
             controls::Primitives::ButtonBase::IsPressedProperty(),
