@@ -33,7 +33,7 @@ private struct LongList: ExampleContent {
         .rows(.fill, .auto)
         """
 
-    var content: some View {
+    var body: some View {
         Grid {
             ItemsView(0..<1_000) { number in
                 HStack {
@@ -117,7 +117,7 @@ private struct AcrossList: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -183,7 +183,7 @@ private struct GridList: ExampleContent {
         .rows(.fill, .auto)
         """
 
-    var content: some View {
+    var body: some View {
         Grid {
             ItemsView(0..<120) { number in
                 Text("\(number)")
@@ -263,7 +263,7 @@ private struct GroupedList: ExampleContent {
         .rows(.auto, .fill)
         """
 
-    var content: some View {
+    var body: some View {
         Grid {
             SwitchRow("Counts", $counts)
                 .gridRow(0)

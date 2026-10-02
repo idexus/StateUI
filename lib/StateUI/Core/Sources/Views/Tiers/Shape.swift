@@ -5,7 +5,7 @@
 public protocol ShapeProperties: ViewProperties {}
 
 /// A drawn outline.
-public protocol Shape: View, ShapeProperties {}
+public protocol Shape: ElementView, ShapeProperties {}
 
 extension ShapeProperties {
     /// A transform applied to the shape's geometry before it is drawn, in the

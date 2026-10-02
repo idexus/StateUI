@@ -14,10 +14,10 @@ import XCTest
 
 /// A page with toolbar groups declared on its content and a menu written into
 /// its session as it comes into the tree.
-private struct BarredPage: ContentView {
+private struct BarredPage: View {
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         Text("one")
             .toolbar {
                 ToolbarItem("Save")
@@ -132,14 +132,14 @@ final class PageBarTests: XCTestCase {
     /// A group declared on an arrangement stands after its pages, and a title
     /// view holds the one view it was given.
     func testAnArrangementsGroupFollowsItsPagesAndATitleViewHoldsOneView() {
-        struct Plain: ContentView {
-            var content: some View { Text("one") }
+        struct Plain: View {
+            var body: some View { Text("one") }
         }
 
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Plain() } destination: { _ in Plain() }
             .toolbar { ToolbarItem("Share").id("share") }
             .titleView { Text("title") }
-        let built = stack.body
+        let built = stack.node
 
         XCTAssertEqual(built.children.map { $0.type }.suffix(2), ["ToolbarItems", "TitleView"], "after the root page")
         XCTAssertEqual(built.children.count, 3)
@@ -156,7 +156,7 @@ final class PageBarTests: XCTestCase {
                 if more { Text("two") }
             }
             if grouped { stack = stack.toolbar { ToolbarItem("Save").id("save") } }
-            return stack.body
+            return stack.node
         }
         let differ = Differ()
         let group = { (patch: HostPatch) in patch.children.first { $0.type == "ToolbarItems" } }
@@ -178,8 +178,8 @@ final class PageBarTests: XCTestCase {
     /// A page with neither says nothing about them, so a host that has none is
     /// not told to empty one.
     func testAPageWithNoToolbarSendsNoSlot() {
-        struct Plain: ContentView {
-            var content: some View { Text("one") }
+        struct Plain: View {
+            var body: some View { Text("one") }
         }
 
         XCTAssertEqual(Node.page(Plain()).built.children.map { $0.type }, ["Text"])

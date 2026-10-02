@@ -22,7 +22,7 @@ private final class Builds {
 
 /// A composed view reading ONE of two states it is handed, by a decision the
 /// test flips - the `decision ? first : second` shape.
-private final class Chooses: ContentView {
+private final class Chooses: View {
     let first: State<Int>
     let second: State<Int>
     @State var decision = true
@@ -32,74 +32,74 @@ private final class Chooses: ContentView {
         self.second = second
     }
 
-    var content: some View {
+    var body: some View {
         ModifiedContent(node: label("\(decision ? first.get() : second.get())"))
     }
 }
 
 /// A composed view that reads a state it is HANDED - a live reader of it for
 /// as long as it stands in a tree.
-private struct Shows: ContentView {
+private struct Shows: View {
     let state: State<Int>
 
-    var content: some View {
+    var body: some View {
         ModifiedContent(node: label("\(state.get())"))
     }
 }
 
 /// A composed view that reads its own `@State` and counts its builds.
-private struct Tile: ContentView {
+private struct Tile: View {
     let builds: Builds
     let tag: String
     @State var n = 0
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return ModifiedContent(node: label("\(tag)\(n)"))
     }
 }
 
 /// A parent whose body builds a Tile afresh each time it runs.
-private struct Panel: ContentView {
+private struct Panel: View {
     let builds: Builds
     let child: Builds
     @State var title = "t"
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: "c").body]))
+        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: "c").node]))
     }
 }
 
 /// Owns a flag it never reads - only lends. The reader is what depends on it.
 /// A parent that hands its own state to the child as a plain value.
-private struct Handing: ContentView {
+private struct Handing: View {
     let builds: Builds
     let child: Builds
     @State var title = "t"
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: title).body]))
+        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: title).node]))
     }
 }
 
-private struct FlagOwner: ContentView {
+private struct FlagOwner: View {
     let builds: Builds
     let reader: Builds
     @State var flag = false
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([FlagReader(builds: reader, flag: $flag).body]))
+        return ModifiedContent(node: stack([FlagReader(builds: reader, flag: $flag).node]))
     }
 }
 
-private struct FlagReader: ContentView {
+private struct FlagReader: View {
     let builds: Builds
     @Binding var flag: Bool
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return ModifiedContent(node: label("\(flag)"))
     }
@@ -110,10 +110,10 @@ private struct FlagReader: ContentView {
 /// The handler captures the view's own `@State` box, exactly as an
 /// application's does - a write through it is tracked, so the walk after a
 /// tap has something to act on.
-private struct TapCounter: ContentView {
+private struct TapCounter: View {
     @State var count = 0
 
-    var content: some View {
+    var body: some View {
         Button("Count: \(count)").onClicked { count += 1 }
     }
 }
@@ -122,11 +122,11 @@ private struct TapCounter: ContentView {
 /// in the other. No stored class here: in the test package a handler closure
 /// capturing a plain class inside a `content` getter hops to MainActor
 /// silently, so state stays in `@State` boxes the way an application holds it.
-private struct Switcher: ContentView {
+private struct Switcher: View {
     @State var editing = false
     @State var taps = 0
 
-    var content: some View {
+    var body: some View {
         if editing {
             Button("done").onClicked { taps += 1 }
         } else {
@@ -138,10 +138,10 @@ private struct Switcher: ContentView {
 /// A builder `if` with no `else`, and a sibling AFTER it - the case `Node.key`
 /// exists for: matched by position alone, the sibling would move whenever the
 /// branch appears.
-private struct Fields: ContentView {
+private struct Fields: View {
     @State var editing = false
 
-    var content: some View {
+    var body: some View {
         VStack {
             if editing {
                 Text("banner")
@@ -153,10 +153,10 @@ private struct Fields: ContentView {
 }
 
 /// A `ForEach` whose length IS the state, each row named with `.id()`.
-private struct RowList: ContentView {
+private struct RowList: View {
     @State var n = 2
 
-    var content: some View {
+    var body: some View {
         VStack {
             ForEach(0..<n) { i in
                 Text("row \(i)").id("r\(i)")
@@ -167,23 +167,23 @@ private struct RowList: ContentView {
 
 /// A view holding another, each with state of its own - the walk has to find
 /// a dirty view DEEP under clean ancestors, not only beside the root.
-private struct Outer: ContentView {
+private struct Outer: View {
     let builds: Builds
     let innerBuilds: Builds
     let innerCount: State<Int>
     @State var title = "t"
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([label(title), Inner(builds: innerBuilds, count: innerCount).body]))
+        return ModifiedContent(node: stack([label(title), Inner(builds: innerBuilds, count: innerCount).node]))
     }
 }
 
-private struct Inner: ContentView {
+private struct Inner: View {
     let builds: Builds
     let count: State<Int>
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return ModifiedContent(node: label("inner \(count.get())"))
     }
@@ -192,10 +192,10 @@ private struct Inner: ContentView {
 /// A view holding the choice its content shows - the shape a tabbed sample
 /// page has - so the state is read inside the container the view is made of,
 /// once the view's body has returned.
-private struct Tabbed: ContentView {
+private struct Tabbed: View {
     @State var showing = 0
 
-    var content: some View {
+    var body: some View {
         Grid {
             Text("one").isVisible(showing == 0).gridRow(1).id("one")
             Text("two").isVisible(showing == 1).gridRow(1).id("two")
@@ -221,7 +221,7 @@ final class InvalidationTests: XCTestCase {
         let left = Tile(builds: a, tag: "L")
         let right = Tile(builds: b, tag: "R")
 
-        renders.render(stack([left.body, right.body], id: "root"))
+        renders.render(stack([left.node, right.node], id: "root"))
         XCTAssertEqual(a.count, 1)
         XCTAssertEqual(b.count, 1)
 
@@ -240,7 +240,7 @@ final class InvalidationTests: XCTestCase {
         let a = Builds()
         let tile = Tile(builds: a, tag: "x")
 
-        renders.render(stack([tile.body], id: "root"))
+        renders.render(stack([tile.node], id: "root"))
 
         let patch = renders.revisit(changed: [])
 
@@ -253,7 +253,7 @@ final class InvalidationTests: XCTestCase {
         let parent = Builds(), child = Builds()
         let panel = Panel(builds: parent, child: child)
 
-        renders.render(stack([panel.body], id: "root"))
+        renders.render(stack([panel.node], id: "root"))
         XCTAssertEqual(parent.count, 1)
         XCTAssertEqual(child.count, 1)
 
@@ -274,7 +274,7 @@ final class InvalidationTests: XCTestCase {
         let parent = Builds(), child = Builds()
         let panel = Handing(builds: parent, child: child)
 
-        renders.render(stack([panel.body], id: "root"))
+        renders.render(stack([panel.node], id: "root"))
         panel.title = "T"
         let patch = renders.revisit(changed: changed)
 
@@ -290,7 +290,7 @@ final class InvalidationTests: XCTestCase {
         let parent = Builds(), child = Builds()
         let panel = Panel(builds: parent, child: child)
 
-        renders.render(stack([panel.body], id: "root"))
+        renders.render(stack([panel.node], id: "root"))
 
         panel.title = "T"
         let patch = renders.revisit(changed: changed)
@@ -310,7 +310,7 @@ final class InvalidationTests: XCTestCase {
         let owner = Builds(), reader = Builds()
         let view = FlagOwner(builds: owner, reader: reader)
 
-        renders.render(stack([view.body], id: "root"))
+        renders.render(stack([view.node], id: "root"))
         XCTAssertEqual(owner.count, 1)
         XCTAssertEqual(reader.count, 1)
 
@@ -328,7 +328,7 @@ final class InvalidationTests: XCTestCase {
         let renders = Renders()
         let view = TapCounter()
 
-        let first = renders.render(stack([view.body], id: "root"))
+        let first = renders.render(stack([view.node], id: "root"))
         let id = first.child(.auto(1))?.events?["clicked"]
         XCTAssertNotNil(id)
 
@@ -377,7 +377,7 @@ final class InvalidationTests: XCTestCase {
         let renders = Renders()
         let view = Switcher()
 
-        let first = renders.render(stack([view.body], id: "root"))
+        let first = renders.render(stack([view.node], id: "root"))
         XCTAssertEqual(first.child(.auto(1))?.props["text"], .string("view 0"))
 
         view.editing = true
@@ -412,7 +412,7 @@ final class InvalidationTests: XCTestCase {
         let renders = Renders()
         let view = Fields()
 
-        renders.render(stack([view.body], id: "root"))
+        renders.render(stack([view.node], id: "root"))
 
         view.editing = true
         let patch = renders.revisit(changed: changed)
@@ -442,7 +442,7 @@ final class InvalidationTests: XCTestCase {
         let renders = Renders()
         let view = RowList()
 
-        renders.render(stack([view.body], id: "root"))
+        renders.render(stack([view.node], id: "root"))
 
         view.n = 3
         let grown = renders.revisit(changed: changed)
@@ -468,7 +468,7 @@ final class InvalidationTests: XCTestCase {
         let count = State(0)
         let view = Outer(builds: outer, innerBuilds: inner, innerCount: count)
 
-        renders.render(stack([view.body], id: "root"))
+        renders.render(stack([view.node], id: "root"))
         XCTAssertEqual(outer.count, 1)
         XCTAssertEqual(inner.count, 1)
 
@@ -497,7 +497,7 @@ final class InvalidationTests: XCTestCase {
         let left = Tile(builds: a, tag: "L")
         let right = Tile(builds: b, tag: "R")
 
-        renders.render(stack([left.body, right.body], id: "root"))
+        renders.render(stack([left.node, right.node], id: "root"))
 
         left.n = 1
         right.n = 2
@@ -521,7 +521,7 @@ final class InvalidationTests: XCTestCase {
         let view = Tile(builds: builds, tag: "m")
 
         func tree() -> Node {
-            stack([view.id("row").body], id: "root")
+            stack([view.id("row").node], id: "root")
         }
 
         renders.render(tree())
@@ -543,7 +543,7 @@ final class InvalidationTests: XCTestCase {
         let view = Tile(builds: builds, tag: "m")
 
         func tree() -> Node {
-            stack([view.id("row").body], id: "root")
+            stack([view.id("row").node], id: "root")
         }
 
         renders.render(tree())
@@ -559,13 +559,13 @@ final class InvalidationTests: XCTestCase {
         let a = Tile(builds: Builds(), tag: "x")
         let b = Tile(builds: Builds(), tag: "x")
 
-        full.render(stack([label("above"), a.body], id: "root"))
-        clean.render(stack([label("above"), b.body], id: "root"))
+        full.render(stack([label("above"), a.node], id: "root"))
+        clean.render(stack([label("above"), b.node], id: "root"))
 
         a.n = 7
         b.n = 7
 
-        let fromFull = full.render(stack([label("above"), a.body], id: "root"), changed: changed)
+        let fromFull = full.render(stack([label("above"), a.node], id: "root"), changed: changed)
         let fromClean = clean.revisit(changed: changed)
 
         XCTAssertEqual(
@@ -732,10 +732,10 @@ final class InvalidationTests: XCTestCase {
         let renders = Renders()
         let state = State(0)
 
-        renders.render(stack([Shows(state: state).body], id: "root"))
+        renders.render(stack([Shows(state: state).node], id: "root"))
         XCTAssertTrue(Renderer.shared.isRead(state.storage), "the element counted itself")
 
-        renders.render(stack([Shows(state: state).body], id: "root"))
+        renders.render(stack([Shows(state: state).node], id: "root"))
         XCTAssertTrue(Renderer.shared.isRead(state.storage), "the fresh element took over the count")
 
         Renderer.shared.clearInvalidation()
@@ -762,12 +762,12 @@ final class InvalidationTests: XCTestCase {
         let first = State(1), second = State(2)
         let chooser = Chooses(first: first, second: second)
 
-        renders.render(stack([chooser.body], id: "root"))
+        renders.render(stack([chooser.node], id: "root"))
         XCTAssertTrue(Renderer.shared.isRead(first.storage))
         XCTAssertFalse(Renderer.shared.isRead(second.storage), "the arm not taken read nothing")
 
         chooser.decision = false
-        renders.render(stack([chooser.body], id: "root"), changed: changed)
+        renders.render(stack([chooser.node], id: "root"), changed: changed)
 
         XCTAssertFalse(Renderer.shared.isRead(first.storage), "no longer read, no longer counted")
         XCTAssertTrue(Renderer.shared.isRead(second.storage))
@@ -795,7 +795,7 @@ final class InvalidationTests: XCTestCase {
                     Shows(state: b)
                 }
             }
-            .body
+            .node
         }
 
         renders.render(tree(true))
@@ -821,7 +821,7 @@ final class InvalidationTests: XCTestCase {
             VStack {
                 ForEach(shown) { index in Shows(state: states[index]) }
             }
-            .body
+            .node
         }
 
         renders.render(tree([0, 1, 2]))
@@ -843,8 +843,8 @@ final class InvalidationTests: XCTestCase {
 
         do {
             let renders = Renders()
-            renders.render(stack([Shows(state: a).id("a").body, Shows(state: b).id("b").body], id: "root"))
-            renders.render(stack([Shows(state: a).id("a").body, Shows(state: b).id("b").body], id: "root"))
+            renders.render(stack([Shows(state: a).id("a").node, Shows(state: b).id("b").node], id: "root"))
+            renders.render(stack([Shows(state: a).id("a").node, Shows(state: b).id("b").node], id: "root"))
             XCTAssertTrue(Renderer.shared.isRead(a.storage))
         }
 
@@ -859,10 +859,10 @@ final class InvalidationTests: XCTestCase {
         let state = State(0)
 
         renders.render(stack([
-            Shows(state: state).id("a").body,
-            Shows(state: state).id("b").body,
+            Shows(state: state).id("a").node,
+            Shows(state: state).id("b").node,
         ], id: "root"))
-        renders.render(stack([Shows(state: state).id("a").body], id: "root"))
+        renders.render(stack([Shows(state: state).id("a").node], id: "root"))
 
         XCTAssertTrue(Renderer.shared.isRead(state.storage), "one reader left is still a reader")
 
@@ -884,17 +884,17 @@ final class InvalidationTests: XCTestCase {
         let builds = Builds()
         let ticker = Ticker(every: .seconds(1))
 
-        struct Clock: ContentView {
+        struct Clock: View {
             let builds: Builds
             let ticker: Ticker
 
-            var content: some View {
+            var body: some View {
                 builds.count += 1
                 return ModifiedContent(node: label("\(ticker.ticks)"))
             }
         }
 
-        renders.render(stack([Clock(builds: builds, ticker: ticker).body], id: "root"))
+        renders.render(stack([Clock(builds: builds, ticker: ticker).node], id: "root"))
         XCTAssertEqual(builds.count, 1)
 
         ticker.limit = 5
@@ -913,19 +913,19 @@ final class InvalidationTests: XCTestCase {
         let toggle = State(false)
         let counter = State(0)
 
-        struct Either: ContentView {
+        struct Either: View {
             let builds: Builds
             let toggle: State<Bool>
             let counter: State<Int>
 
-            var content: some View {
+            var body: some View {
                 builds.count += 1
                 return ModifiedContent(node: toggle.get() ? label("\(counter.get())") : label("off"))
             }
         }
 
         func tree() -> Node {
-            stack([Either(builds: builds, toggle: toggle, counter: counter).body], id: "root")
+            stack([Either(builds: builds, toggle: toggle, counter: counter).node], id: "root")
         }
 
         renders.render(tree())
@@ -963,8 +963,8 @@ private final class WritingPage: @unchecked Sendable {
     var writes = 0
 }
 
-private struct WritingBody: ContentView {
-    var content: some View {
+private struct WritingBody: View {
+    var body: some View {
         let page = WritingPage.shared
         let shown = page.count.wrappedValue
 
@@ -994,8 +994,8 @@ private final class Aside: @unchecked Sendable {
     var writes = 0
 }
 
-private struct AsideBody: ContentView {
-    var content: some View {
+private struct AsideBody: View {
+    var body: some View {
         let aside = Aside.shared
 
         if aside.writes > 0 {
@@ -1026,10 +1026,10 @@ private final class Chosen: @unchecked Sendable {
 }
 
 /// The page it shows, handed what was chosen.
-private struct ChosenPage: ContentView {
+private struct ChosenPage: View {
     let text: String
 
-    var content: some View { ModifiedContent(node: label(text)) }
+    var body: some View { ModifiedContent(node: label(text)) }
 }
 
 private struct ChosenWindow: Window {

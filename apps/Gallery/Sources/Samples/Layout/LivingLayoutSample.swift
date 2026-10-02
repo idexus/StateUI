@@ -67,7 +67,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             // `wide` is read in THESE braces - `.columns` below asks
             // it - so widening the grid builds this closure. What the rows do

@@ -1084,11 +1084,11 @@ private enum ChromeRoute: Hashable {
 /// A pushed page that declares one action and, for its route, takes its way
 /// back or its whole navigation bar away - written through its session as
 /// it comes in.
-private struct ChromePage: ContentView {
+private struct ChromePage: View {
     @Environment private var page: PageSession
     let route: ChromeRoute
 
-    var content: some View {
+    var body: some View {
         Text("Pushed").toolbar { ToolbarItem("Save") }.onCreated {
             switch route {
             case .plain: break

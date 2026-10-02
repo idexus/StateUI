@@ -8,7 +8,7 @@ struct FontsWindow: Window {
 }
 
 /// The families on offer, each set in itself.
-struct FontsPage: ContentView {
+struct FontsPage: View {
     /// The gallery's look - the one its scene offers every window of it.
     @Environment private var style: SessionStyle
 
@@ -22,7 +22,7 @@ struct FontsPage: ContentView {
     /// platform's own.
     static let families = ["", "Georgia", "Courier New", "Trebuchet MS"]
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("The font this gallery's preview is set in.")
                 .fontSize(13)

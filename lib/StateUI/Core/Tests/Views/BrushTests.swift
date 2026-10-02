@@ -43,7 +43,7 @@ final class BrushTests: XCTestCase {
                     [GradientStop(.gold, 0), GradientStop(.tomato, 1)],
                     startPoint: Point(0, 0),
                     endPoint: diagonal ? Point(1, 1) : Point(1, 0)))
-                .body
+                .node
                 .built
         }
 

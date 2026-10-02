@@ -47,10 +47,10 @@ struct WindowBarSample: SampleContent, ExampleContent {
             }
         }
 
-        struct WindowBarSample: ContentView {
+        struct WindowBarSample: View {
             let bar: WindowBarState
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     TextField(bar.$subtitle)
                         .placeholder("Window subtitle")
@@ -62,7 +62,7 @@ struct WindowBarSample: SampleContent, ExampleContent {
 
     var notes: (any View)? { nil }
 
-    var content: some View {
+    var body: some View {
         VStack {
             TextField(bar.$subtitle)
                 .accessibilityIdentifier("windowBar.subtitle")

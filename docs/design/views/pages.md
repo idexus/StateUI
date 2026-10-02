@@ -68,7 +68,7 @@ its platform provides; a host that shows one window refuses another with
 
 ## A window is a placeholder
 
-`Window.body` answers a placeholder like a composed view's (`Node.composed`),
+`Window.node` answers a placeholder like a composed view's (`Node.composed`),
 so a window declared as a type may hold `@State` of its own and is built again
 on its own when that state changes. A window shown alone, outside every scene,
 keeps its `WindowSession` on its element, the way a page does. A scene's

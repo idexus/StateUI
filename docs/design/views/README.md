@@ -38,7 +38,7 @@ An application declares types; the tree under a window is views.
                                                                                       │
           ┌───────────────────────────────────────────────────────────────────────────┤
           │ an arrangement - NavigationStack, TabbedView, SplitView -                  │ any other view -
-          │ is a page itself, and keys the pages it holds                              │ usually a ContentView -
+          │ is a page itself, and keys the pages it holds                              │ usually a View -
           ▼                                                                            ▼ goes on a page element
       pages (each a view on a page element, or another arrangement)            that holds its PageSession
                                                                                        │
@@ -53,7 +53,7 @@ toolbar, menus, title view and overlays. See pages.md.
 
 ## What a view is
 
-Everything a builder collects is an `Element`: something that answers `body`, a
+Everything a builder collects is an `Element`: something that answers `node`, a
 `Node` read afresh on every render.
 
 ```text
@@ -64,9 +64,9 @@ Everything a builder collects is an `Element`: something that answers `body`, a
                            Node(VStack) whose content closure runs only when
                            the differ reaches the stack
 
-  a composed view        struct Header: ContentView { var content: some View }
-    Header("Settings")     body is a placeholder, Node(Composed): the differ builds
-                           `content` into it, keeping the view's @State - or
+  a composed view        struct Header: View { var body: some View }
+    Header("Settings")     node is a placeholder, Node(Composed): the differ builds
+                           `body` into it, keeping the view's @State - or
                            carries the view whole
 
   a modifier             .fontSize(20)        props[fontSize] = 20

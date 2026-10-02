@@ -9,12 +9,12 @@ import CStateUIWinUI
 import XCTest
 
 /// A row that counts its taps - `count` of them in a quick run make one - beside a stack that answers nothing.
-private struct TapsPage: ContentView {
+private struct TapsPage: View {
     let count: Int
     @State private var taps = 0
     @State private var shown = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("taps \(taps)")
             if shown {

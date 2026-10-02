@@ -16,24 +16,24 @@ private final class Counts {
 }
 
 /// A composed view built with one value.
-private struct Titled: ContentView {
+private struct Titled: View {
     let text: String
 
-    var content: some View { Text(text) }
+    var body: some View { Text(text) }
 }
 
 /// A composed view that reads the model's count.
-private struct Reads: ContentView {
+private struct Reads: View {
     let counts: Counts
 
-    var content: some View { Text("\(counts.count)") }
+    var body: some View { Text("\(counts.count)") }
 }
 
 /// A composed view holding both.
-private struct Holds: ContentView {
+private struct Holds: View {
     let counts: Counts
 
-    var content: some View {
+    var body: some View {
         VStack {
             Titled(text: "fixed")
             Reads(counts: counts)
@@ -42,8 +42,8 @@ private struct Holds: ContentView {
 }
 
 /// A page with nothing on it.
-private struct Blank: ContentView {
-    var content: some View { Text("blank") }
+private struct Blank: View {
+    var body: some View { Text("blank") }
 }
 
 /// A scene's main window.
@@ -60,8 +60,8 @@ private final class Drawn: @unchecked Sendable {
 private let drawn = Drawn()
 
 /// A page that reads it, so a write to it has a reader.
-private struct Showing: ContentView {
-    var content: some View { Text("\(drawn.revision)") }
+private struct Showing: View {
+    var body: some View { Text("\(drawn.revision)") }
 }
 
 private struct ShowingWindow: Window {
@@ -198,7 +198,7 @@ final class InspectionTests: XCTestCase {
     func testAPassIsWrittenOutOnceTheHostReportsOnIt() throws {
         Inspection.logging = true
 
-        let first = try XCTUnwrap(pass(generation: 7) { Renders().render(Holds(counts: Counts()).body) })
+        let first = try XCTUnwrap(pass(generation: 7) { Renders().render(Holds(counts: Counts()).node) })
 
         XCTAssertEqual(Inspection.takeLog(), "", "written before the host reported on it")
 
@@ -222,7 +222,7 @@ final class InspectionTests: XCTestCase {
     // MARK: - The tree
 
     func testAFirstRenderBuildsEveryComposedViewForTheFirstTime() {
-        let first = pass { Renders().render(Holds(counts: Counts()).body) }
+        let first = pass { Renders().render(Holds(counts: Counts()).node) }
 
         XCTAssertEqual(said(first), [
             "Holds: first time",
@@ -241,7 +241,7 @@ final class InspectionTests: XCTestCase {
             VStack {
                 Titled(text: text)
                 Reads(counts: counts)
-            }.body
+            }.node
         }
 
         renders.render(tree("a"))
@@ -260,7 +260,7 @@ final class InspectionTests: XCTestCase {
         let renders = Renders()
         let counts = Counts()
 
-        renders.render(Holds(counts: counts).body)
+        renders.render(Holds(counts: counts).node)
         counts.count += 1
 
         let walked = pass(.walk) { renders.revisit(changed: Renderer.shared.pendingChanges) }
@@ -291,7 +291,7 @@ final class InspectionTests: XCTestCase {
     /// An element's time holds the entries under it, and its own leaves them
     /// out.
     func testAnEntrysOwnTimeLeavesOutWhatIsUnderIt() throws {
-        let first = try XCTUnwrap(pass { Renders().render(Holds(counts: Counts()).body) })
+        let first = try XCTUnwrap(pass { Renders().render(Holds(counts: Counts()).node) })
         let outer = first.entries[0]
         let under = first.entries[1].micros + first.entries[2].micros
 
@@ -302,7 +302,7 @@ final class InspectionTests: XCTestCase {
     func testNothingIsWrittenWhileNobodyRecords() {
         Inspection.stop()
 
-        Renders().render(Holds(counts: Counts()).body)
+        Renders().render(Holds(counts: Counts()).node)
 
         XCTAssertFalse(Inspection.enter("Anything", .carried))
         XCTAssertTrue(Inspection.passes.isEmpty)
@@ -313,7 +313,7 @@ final class InspectionTests: XCTestCase {
     func testTheInspectorsOwnViewsAreMutedAndTimedApart() {
         Inspection.ownViews = [String(reflecting: Titled.self)]
 
-        let first = pass { Renders().render(Holds(counts: Counts()).body) }
+        let first = pass { Renders().render(Holds(counts: Counts()).node) }
 
         XCTAssertEqual(said(first), [
             "Holds: first time",
@@ -351,8 +351,8 @@ final class InspectionTests: XCTestCase {
     // MARK: - The host's half
 
     func testTheHostsHalfLandsOnThePassItNames() {
-        _ = pass(generation: 6) { Renders().render(Text("six").body) }
-        _ = pass(generation: 7) { Renders().render(Text("seven").body) }
+        _ = pass(generation: 6) { Renders().render(Text("six").node) }
+        _ = pass(generation: 7) { Renders().render(Text("seven").node) }
 
         Inspection.applied(generation: 6, scene: 1, micros: 30)
         Inspection.applied(

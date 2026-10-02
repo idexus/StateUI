@@ -179,7 +179,7 @@ final class PlacedRunTests: XCTestCase {
             PlacedLayout([1, 2], id: \.self) { Text("\($0)") }
                 .placement(run.projectedValue)
                 .id("run")
-                .body)
+                .node)
 
         func layout(_ patch: HostPatch) -> HostPatch? {
             if patch.type == .zStack { return patch }
@@ -219,7 +219,7 @@ final class PlacedRunTests: XCTestCase {
                 .shade(ColorBox(.black))
                 .placement(run.projectedValue)
                 .id("run")
-                .body)
+                .node)
 
         func layout(_ patch: HostPatch) -> HostPatch? {
             if patch.type == .zStack { return patch }
@@ -246,7 +246,7 @@ final class PlacedRunTests: XCTestCase {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
         let renders = Renders()
 
-        let patch = renders.render(ColorBox().frame(room.projectedValue).id("box").body)
+        let patch = renders.render(ColorBox().frame(room.projectedValue).id("box").node)
 
         XCTAssertEqual(
             patch.driven?[.frame],

@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// One render in the list.
-struct Row: ContentView {
+struct Row: View {
     let pass: InspectedPass
     let scene: ElementId
     let index: Int?
     let chosen: Bool
 
-    var content: some View {
+    var body: some View {
         let mine = pass.entries.filter { $0.scene == scene }
         let built = mine.filter { if case .built = $0.outcome { return true } else { return false } }.count
         let carried = mine.filter { $0.outcome == .carried }.count

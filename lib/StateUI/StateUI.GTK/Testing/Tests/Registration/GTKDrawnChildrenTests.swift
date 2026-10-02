@@ -39,8 +39,6 @@ private struct Book: Element {
         node.write(BookContract.title, title)
     }
 
-    var body: Node { node }
-
     func onOpened(_ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(BookContract.opened, handler)
@@ -49,13 +47,13 @@ private struct Book: Element {
 }
 
 /// The Swift half of a shelf, holding its books.
-private struct Shelf: View {
+private struct Shelf: ElementView {
     var node = Node(contract: ShelfContract.self)
 
     init() {}
 
     init(_ books: [Book]) {
-        node.children = books.map(\.body)
+        node.children = books.map(\.node)
     }
 }
 
@@ -72,11 +70,11 @@ private final class ShelfControl: GTKControl {
 }
 
 /// A page with a shelf of books, each heard when opened, and a button taking one away.
-private struct Shelving: ContentView {
+private struct Shelving: View {
     @State private var titles = ["Dune", "Emma"]
     @State private var said = "-"
 
-    var content: some View {
+    var body: some View {
         VStack {
             Shelf(titles.map { title in Book(title).onOpened { said = "opened \(title)" } })
             Button("Shorter").onClicked { titles = ["Emma"] }

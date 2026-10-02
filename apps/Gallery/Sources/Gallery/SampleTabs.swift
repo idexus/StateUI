@@ -52,7 +52,7 @@ extension Sample {
 /// Every tab stays in the tree while the sample is shown, so reading the code
 /// and coming back keeps the example's state - what a gesture sample has to
 /// show IS its state.
-struct SampleTabPage: ContentView {
+struct SampleTabPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -65,7 +65,7 @@ struct SampleTabPage: ContentView {
 
     let nav: Navigation
 
-    var content: some View {
+    var body: some View {
         FrameReader { frame in
             held
                 .height(frame.height)
@@ -125,7 +125,7 @@ struct SampleTabPage: ContentView {
             }
 
             if let notes = example.notes {
-                SamplePage.section("Notes", ModifiedContent(node: notes.body))
+                SamplePage.section("Notes", ModifiedContent(node: notes.node))
             }
 
             SamplePage.section(example.codeHeading, CodeBlock(example.code))

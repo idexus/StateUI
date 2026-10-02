@@ -19,15 +19,15 @@ private struct PlainWindow: Window {
     var page: any Page { Home() }
 }
 
-private struct Home: ContentView {
-    var content: some View { ModifiedContent(node: label("home")) }
+private struct Home: View {
+    var body: some View { ModifiedContent(node: label("home")) }
 }
 
 /// A page laying a banner over its window while a state says so, and a field under it always.
-private struct Noticed: ContentView {
+private struct Noticed: View {
     let banner: State<Bool>
 
-    var content: some View {
+    var body: some View {
         let banner = banner
         return ModifiedContent(node: label("home")).overlays {
             if banner.wrappedValue { ModifiedContent(node: label("banner")) }
@@ -57,7 +57,7 @@ final class WindowTests: XCTestCase {
 
     /// Every authored session property keeps its StateUI spelling and value.
     func testAWindowCarriesItsSessionProperties() {
-        let node = PlainWindow().body(session: desktop()).built
+        let node = PlainWindow().node(session: desktop()).built
 
         XCTAssertEqual(node.type, "Window")
         XCTAssertEqual(node.props["title"], .string("My Application"))
@@ -82,7 +82,7 @@ final class WindowTests: XCTestCase {
         .barIcon("mark.png")
         .barBackgroundColor(.steelBlue)
         .barForegroundColor(.white)
-        .body
+        .node
 
         XCTAssertEqual(node.props["barTitle"], .string("StateUI"))
         XCTAssertEqual(node.props["barSubtitle"], .string("Home"))
@@ -96,12 +96,12 @@ final class WindowTests: XCTestCase {
     /// of the views in the order written, letting a click beside them through. A window lays none of its own until
     /// its scene's inspector docks in it.
     func testAViewDeclaresItsOverlaysInOneStack() throws {
-        XCTAssertFalse(PlainWindow().body(session: WindowSession()).built.children.contains { $0.type == .overlay })
+        XCTAssertFalse(PlainWindow().node(session: WindowSession()).built.children.contains { $0.type == .overlay })
 
         let node = ModifiedContent(node: label("home")).overlays {
             ModifiedContent(node: label("banner"))
             ModifiedContent(node: label("toast"))
-        }.body
+        }.node
 
         let overlay = try XCTUnwrap(node.children.last)
         XCTAssertEqual(overlay.type, .overlay)
@@ -117,10 +117,10 @@ final class WindowTests: XCTestCase {
         let banner = State(wrappedValue: true)
         let renders = Renders()
 
-        let both = entry(in: renders.render(Noticed(banner: banner).body))
+        let both = entry(in: renders.render(Noticed(banner: banner).node))
 
         banner.wrappedValue = false
-        let alone = entry(in: renders.render(Noticed(banner: banner).body, changed: Renderer.shared.pendingChanges))
+        let alone = entry(in: renders.render(Noticed(banner: banner).node, changed: Renderer.shared.pendingChanges))
 
         XCTAssertNotNil(both)
         XCTAssertEqual(both, alone)
@@ -139,7 +139,7 @@ final class WindowTests: XCTestCase {
                         TextField("nickname")
                     }
                 }
-                .body
+                .node
         }
 
         let renders = Renders()
@@ -171,7 +171,7 @@ final class WindowTests: XCTestCase {
         session.maximumWidth = 1600
         session.maximumHeight = 1200
 
-        let node = PlainWindow().body(session: session).built
+        let node = PlainWindow().node(session: session).built
 
         XCTAssertEqual(node.props["maximumWidth"], .number(1600))
         XCTAssertEqual(node.props["maximumHeight"], .number(1200))
@@ -185,7 +185,7 @@ final class WindowTests: XCTestCase {
         let session = WindowSession()
         session.title = "Plain"
 
-        let node = PlainWindow().body(session: session).built
+        let node = PlainWindow().node(session: session).built
 
         XCTAssertEqual(node.propNames, ["title"])
     }
@@ -193,7 +193,7 @@ final class WindowTests: XCTestCase {
     /// The page is still the child, whatever else the window carries - the
     /// window's own properties change the window, never what is in it.
     func testThePropertiesLeaveThePageAlone() throws {
-        let node = PlainWindow().body(session: desktop()).built
+        let node = PlainWindow().node(session: desktop()).built
 
         XCTAssertEqual(node.children.count, 1)
         XCTAssertEqual(try XCTUnwrap(node.children.first).type, "Page")
@@ -202,7 +202,7 @@ final class WindowTests: XCTestCase {
     /// The size a session says is the window's own properties, exactly the
     /// numbers written.
     func testTheSessionsSizeIsTheWindowsProperties() {
-        let patch = Renders().render(PlainWindow().body(session: desktop()))
+        let patch = Renders().render(PlainWindow().node(session: desktop()))
 
         XCTAssertEqual(patch.props["width"], .number(1200))
         XCTAssertEqual(patch.props["minimumHeight"], .number(400))
@@ -216,12 +216,12 @@ final class WindowTests: XCTestCase {
         session.width = 1200
 
         let renders = Renders()
-        renders.render(PlainWindow().body(session: session))
+        renders.render(PlainWindow().node(session: session))
 
         session.width = 1400
 
         let patch = renders.render(
-            PlainWindow().body(session: session),
+            PlainWindow().node(session: session),
             changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(patch.propNames, ["width"])
@@ -231,7 +231,7 @@ final class WindowTests: XCTestCase {
     /// The window node carries the six moments of its life as its events, so
     /// the host's window reports with them.
     func testAWindowsLifetimeRidesAsItsEvents() {
-        let patch = Renders().render(PlainWindow().body(session: WindowSession()))
+        let patch = Renders().render(PlainWindow().node(session: WindowSession()))
 
         XCTAssertEqual(
             patch.events?.keys.sorted(),
@@ -244,7 +244,7 @@ final class WindowTests: XCTestCase {
         let session = WindowSession()
         let renders = Renders()
 
-        let patch = renders.render(PlainWindow().body(session: session))
+        let patch = renders.render(PlainWindow().node(session: session))
         let events = try XCTUnwrap(patch.events)
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(events["stopped"])))

@@ -25,7 +25,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
         }
 
         // The menu is a page of its own:
-        struct MenuPage: ContentView {
+        struct MenuPage: View {
             let catalog: Catalog
             let nav: Navigation
             let log: WindowLog
@@ -34,7 +34,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
             @Environment private var device: DeviceInfo
             @Environment private var page: PageSession
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // Choose, then close: `open` writes the section and the
                     // path, then the menu.
@@ -77,7 +77,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
             .onClicked { nav.open(.hidden) }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("Open the menu: every row in it is a view.")
                 .fontSize(14)

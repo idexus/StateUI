@@ -17,45 +17,45 @@ private final class Builds {
 }
 
 /// A composed view over one value, counting how often its content runs.
-private struct Caption: ContentView {
+private struct Caption: View {
     let text: String
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return Text(text)
     }
 }
 
 /// The same, handed a closure - an input nothing can compare.
-private struct Pressed: ContentView {
+private struct Pressed: View {
     let text: String
     let builds: Builds
     let tapped: () -> Void
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return Button(text).onClicked { tapped() }
     }
 }
 
 /// A composed view that READS what it is lent.
-private struct Shown: ContentView {
+private struct Shown: View {
     @Binding var text: String
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return Text(text)
     }
 }
 
 /// A composed view that hands what it is lent straight on, reading nothing.
-private struct Typed: ContentView {
+private struct Typed: View {
     @Binding var text: String
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return TextField($text)
     }
@@ -79,7 +79,7 @@ final class CarriedViewTests: XCTestCase {
             VStack {
                 Text("n \(n)")
                 Caption(text: "fixed", builds: builds)
-            }.body
+            }.node
         }
 
         renders.render(tree(1))
@@ -100,7 +100,7 @@ final class CarriedViewTests: XCTestCase {
             VStack {
                 Text("n \(n)")
                 Caption(text: "caption \(n)", builds: builds)
-            }.body
+            }.node
         }
 
         renders.render(tree(1))
@@ -117,7 +117,7 @@ final class CarriedViewTests: XCTestCase {
             VStack {
                 Text("n \(n)")
                 Pressed(text: "fixed", builds: builds) {}
-            }.body
+            }.node
         }
 
         renders.render(tree(1))
@@ -139,7 +139,7 @@ final class CarriedViewTests: XCTestCase {
             VStack {
                 Text("other \(other.wrappedValue)")
                 Shown(text: text.projectedValue, builds: builds)
-            }.body
+            }.node
         }
 
         renders.render(tree())
@@ -170,7 +170,7 @@ final class CarriedViewTests: XCTestCase {
             VStack {
                 Text("other \(other.wrappedValue)")
                 Typed(text: text.projectedValue, builds: builds)
-            }.body
+            }.node
         }
 
         renders.render(tree())
@@ -197,7 +197,7 @@ final class CarriedViewTests: XCTestCase {
                 Text("n \(n)")
                 Caption(text: "fixed", builds: builds)
                     .onTapped { heard.append(n) }
-            }.body
+            }.node
         }
 
         let first = renders.render(tree(1))
@@ -221,7 +221,7 @@ final class CarriedViewTests: XCTestCase {
             VStack {
                 Caption(text: "fixed", builds: builds)
                     .opacity(Double(n) / 10)
-            }.body
+            }.node
         }
 
         renders.render(tree(5))
@@ -238,7 +238,7 @@ final class CarriedViewTests: XCTestCase {
         let builds = Builds()
 
         func row(_ text: String) -> Node {
-            Caption(text: text, builds: builds).id(text).body
+            Caption(text: text, builds: builds).id(text).node
         }
 
         renders.render(stack([row("a"), row("b")], id: "root"))
@@ -257,7 +257,7 @@ final class CarriedViewTests: XCTestCase {
         let builds = Builds()
 
         func tree() -> Node {
-            stack([Caption(text: "a", builds: builds).id("a").body], id: "root")
+            stack([Caption(text: "a", builds: builds).id("a").node], id: "root")
         }
 
         renders.render(tree())

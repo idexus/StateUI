@@ -23,7 +23,7 @@ extension ActivityIndicatorProperties {
 ///
 /// For work whose progress can be measured, use a `ProgressBar`: a spinner
 /// says "wait", a bar says "how much longer".
-public struct ActivityIndicator: View, TintElement, ActivityIndicatorProperties {
+public struct ActivityIndicator: ElementView, TintElement, ActivityIndicatorProperties {
     /// The node this control describes.
     public var node: Node
 

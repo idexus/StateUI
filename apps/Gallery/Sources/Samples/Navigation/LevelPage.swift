@@ -7,7 +7,7 @@ import StateUI
 /// It also shows what a PAGE can still ask of the stack it is on, the bar
 /// itself belonging to the arrangement: those requests are written into the
 /// page session.
-struct LevelPage: ContentView {
+struct LevelPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -47,7 +47,7 @@ struct LevelPage: ContentView {
     @State private var showsBar = true
     @State private var offersBack = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             SectionTitle("Pushed page")
 

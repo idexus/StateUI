@@ -11,7 +11,7 @@ import StateUI
 /// whatever a handler can do.
 ///
 /// Its title names the pane on hosts whose navigation chrome exposes that name.
-struct MenuPage: ContentView {
+struct MenuPage: View {
     /// Everything the gallery shows - the rows are one per group.
     let catalog: Catalog
 
@@ -36,7 +36,7 @@ struct MenuPage: ContentView {
     /// The window the menu stands in - whether the desktop shows through it.
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         Grid {
             header
 

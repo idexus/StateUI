@@ -12,7 +12,7 @@ struct SwatchWindow: Window {
 }
 
 /// One swatch: its colour, its number, and a way on to the next.
-struct SwatchPage: ContentView {
+struct SwatchPage: View {
     /// The window's own value.
     @Binding var number: Int
 
@@ -23,7 +23,7 @@ struct SwatchPage: ContentView {
     /// The page itself - its padding.
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         VStack {
             ColorBox()
                 .color(SwatchPage.colour(of: number))

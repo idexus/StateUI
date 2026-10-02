@@ -18,10 +18,10 @@ for choosing and composing those paths.
 A state belongs where its lifetime belongs:
 
 ```swift
-struct Counter: ContentView {
+struct Counter: View {
     @State private var count = 0
 
-    var content: some View {
+    var body: some View {
         HStack {
             Text("Count: \(count)")
             Button("Add").onClicked { count += 1 }
@@ -59,10 +59,10 @@ tasks must derive a new value from the same old value, use `update` on the state
 box so the transform runs under one hold:
 
 ```swift
-struct DownloadCount: ContentView {
+struct DownloadCount: View {
     @State private var completed = 0
 
-    var content: some View {
+    var body: some View {
         Text("Completed: \(completed)")
             .onCreated {
                 await withTaskGroup(of: Void.self) { group in
@@ -105,10 +105,10 @@ final class Profile {
     var cachedInitials = "G"
 }
 
-struct ProfileCard: ContentView {
+struct ProfileCard: View {
     @State private var profile = Profile()
 
-    var content: some View {
+    var body: some View {
         VStack {
             TextField(profile.$name)
             Text("\(profile.name) · \(profile.visits) visit(s)")
@@ -170,18 +170,18 @@ adapter whose properties are `@State`.
 another source of truth:
 
 ```swift
-struct NameEditor: ContentView {
+struct NameEditor: View {
     @Binding var name: String
 
-    var content: some View {
+    var body: some View {
         TextField($name)
     }
 }
 
-struct AccountForm: ContentView {
+struct AccountForm: View {
     @State private var name = ""
 
-    var content: some View {
+    var body: some View {
         VStack {
             NameEditor(name: $name)
             Text(name.isEmpty ? "Choose a name" : "Hello, \(name)")
@@ -206,10 +206,10 @@ struct Contact {
     var subscribed = false
 }
 
-struct ContactForm: ContentView {
+struct ContactForm: View {
     @State private var contact = Contact()
 
-    var content: some View {
+    var body: some View {
         VStack {
             TextField($contact.name)
             Switch($contact.subscribed)
@@ -312,10 +312,10 @@ struct NotesWindow: Window {
     var page: any Page { SettingsPage() }
 }
 
-struct SettingsPage: ContentView {
+struct SettingsPage: View {
     @State(persistentKey: .appearance) private var appearance = Appearance.system
 
-    var content: some View {
+    var body: some View {
         Button("Appearance: \(appearance.rawValue)").onClicked {
             appearance = appearance == .system ? .dark : .system
         }
@@ -360,10 +360,10 @@ extension SceneKey {
         of: Int.self)
 }
 
-struct SceneSidebar: ContentView {
+struct SceneSidebar: View {
     @State(sceneKey: .selectedSection) private var selectedSection = 0
 
-    var content: some View {
+    var body: some View {
         HStack {
             Button("Previous").onClicked {
                 selectedSection = max(0, selectedSection - 1)
@@ -476,11 +476,11 @@ When a continuous value must occasionally feed description logic, sample its
 journey into another state:
 
 ```swift
-struct SampledProgress: ContentView {
+struct SampledProgress: View {
     @State private var progress = 0.0
     @State private var shown = 0.0
 
-    var content: some View {
+    var body: some View {
         VStack {
             ProgressBar().progress($progress)
             Text("Shown: \(Int(shown * 100))%")
@@ -506,10 +506,10 @@ cannot be expressed as a pure conversion. An engine is attached to an element
 and runs inside the host's display cycle.
 
 ```swift
-struct SpringDot: ContentView {
+struct SpringDot: View {
     @State(motion: .custom) private var y = 0.0
 
-    var content: some View {
+    var body: some View {
         VStack {
             ColorBox(.cornflowerBlue)
                 .width(28)

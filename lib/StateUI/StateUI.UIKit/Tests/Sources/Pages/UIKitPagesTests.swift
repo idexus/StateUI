@@ -195,12 +195,12 @@ final class UIKitPagesTests: XCTestCase {
 }
 
 /// A page that names itself.
-private struct TitledPage: ContentView {
+private struct TitledPage: View {
     let title: String
 
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let title = self.title
         let page = self.page
         return Text(title).onCreated { page.title = title }
@@ -208,10 +208,10 @@ private struct TitledPage: ContentView {
 }
 
 /// A page whose background the page itself says, as the Gallery's pages do.
-private struct PaintedPage: ContentView {
+private struct PaintedPage: View {
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let page = self.page
         return Text("Painted").onCreated { page.background = Color("#F7F5FC") }
     }

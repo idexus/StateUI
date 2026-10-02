@@ -10,10 +10,10 @@ import StateUIConformance
 import XCTest
 
 /// A caption whose words a button lengthens, in a stack 300 wide travelling on a 200 ms linear law.
-private struct LengtheningPage: ContentView {
+private struct LengtheningPage: View {
     @State private var long = false
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(long ? "Text & typing" : "Text").horizontalAlignment(.start)
             Button("Longer").onClicked { long = true }

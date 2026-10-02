@@ -16,11 +16,11 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
         + "facts a layout branches on."
 
     static let code = """
-        struct AboutBox: ContentView {
+        struct AboutBox: View {
             @Environment var device: DeviceInfo
             @Environment var app: AppInfo
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The device never changes, so this stands at one build.
                     DebugInfoLabel()
@@ -38,7 +38,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

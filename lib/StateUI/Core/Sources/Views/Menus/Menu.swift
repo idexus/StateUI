@@ -33,12 +33,9 @@ public struct Menu: Element {
     ///   row that opens it inside another menu.
     /// - Parameter items: the entries, in the order they are written.
     public init(_ text: String, @MenuBuilder items: () -> [Element]) {
-        node = Node(contract: MenuContract.self, children: items().map { $0.body })
+        node = Node(contract: MenuContract.self, children: items().map { $0.node })
         node.write(MenuContract.text, text)
     }
-
-    /// The node, as every element answers it.
-    public var body: Node { node }
 
     /// Who this menu is among the others, so it stays matched to itself when
     /// the menus around it come and go; without one it is matched by position.

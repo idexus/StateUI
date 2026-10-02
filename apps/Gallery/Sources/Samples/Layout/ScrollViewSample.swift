@@ -62,13 +62,13 @@ private func spelling(_ text: String) -> Text {
 
 /// THE OFFSET DESCRIBED: the reading is a get in these braces, so this view is
 /// the reader and is built again on every report the strip makes.
-private struct DescribedOffset: ContentView {
+private struct DescribedOffset: View {
     /// Where the strip is - the state declared beside the buttons that move
     /// all three strips, handed down: the scroller gets it, and the label
     /// below reads it.
     @Binding var offset: Point
 
-    var content: some View {
+    var body: some View {
         Grid {
             columnTitle("DESCRIBED")
 
@@ -100,7 +100,7 @@ private struct DescribedOffset: ContentView {
 /// column before does, and this column shows a READING of it taken ten times a
 /// second - so the number is as right whenever it is read, and the count is a
 /// tenth.
-private struct PacedOffset: ContentView {
+private struct PacedOffset: View {
     /// Handed to the scroller, as the column before.
     @Binding var offset: Point
 
@@ -108,7 +108,7 @@ private struct PacedOffset: ContentView {
     /// state, so the get below is a get like any other.
     let shown: Point
 
-    var content: some View {
+    var body: some View {
         Grid {
             columnTitle("ON A CADENCE")
 
@@ -141,11 +141,11 @@ private struct PacedOffset: ContentView {
 /// THE OFFSET THROUGH A CHANNEL: nothing here reads it. The words are a
 /// conversion the host works out on its own frames, so the number keeps up
 /// with the finger and this view is never built again.
-private struct DrivenOffset: ContentView {
+private struct DrivenOffset: View {
     /// Handed to the scroller and to the conversion, and read by nobody.
     @Binding var offset: Point
 
-    var content: some View {
+    var body: some View {
         Grid {
             columnTitle("A CHANNEL")
 
@@ -213,12 +213,12 @@ private struct OffsetStrips: ExampleContent {
 
         // THE OFFSET DESCRIBED: the reading is a get in these braces, so this
         // view is the reader and is built again on every report.
-        struct DescribedOffset: ContentView {
+        struct DescribedOffset: View {
             // This strip's own state, declared beside the buttons that move
             // all three and handed down.
             @Binding var offset: Point
 
-            var content: some View {
+            var body: some View {
                 Grid {
                     columnTitle("DESCRIBED")
 
@@ -240,14 +240,14 @@ private struct OffsetStrips: ExampleContent {
 
         // THE SAME GET, ON A CADENCE: at most ten renders a second, so the
         // reading is the same and the count is a tenth of the reports.
-        struct PacedOffset: ContentView {
+        struct PacedOffset: View {
             @Binding var offset: Point
 
             // Where the value had got to when the reading was taken - an
             // ordinary state, so this is an ordinary get.
             let shown: Point
 
-            var content: some View {
+            var body: some View {
                 Grid {
                     columnTitle("ON A CADENCE")
 
@@ -267,10 +267,10 @@ private struct OffsetStrips: ExampleContent {
 
         // THROUGH A CHANNEL: nothing here reads the offset. The words are a
         // conversion the host works out on its own frames.
-        struct DrivenOffset: ContentView {
+        struct DrivenOffset: View {
             @Binding var offset: Point
 
-            var content: some View {
+            var body: some View {
                 Grid {
                     columnTitle("A CHANNEL")
 
@@ -291,7 +291,7 @@ private struct OffsetStrips: ExampleContent {
             }
         }
 
-        struct OffsetStrips: ContentView {
+        struct OffsetStrips: View {
             // One state per strip. THE DECLARATIONS ARE IDENTICAL: what the
             // three columns are about is what each ASKS for and how it reads.
             @State private var described = Point.zero
@@ -299,7 +299,7 @@ private struct OffsetStrips: ExampleContent {
             @State private var pacedShown = Point.zero
             @State private var driven = Point.zero
 
-            var content: some View {
+            var body: some View {
                 Grid {
                     Grid {
                         DescribedOffset(offset: $described)
@@ -330,7 +330,7 @@ private struct OffsetStrips: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         Grid {
             // THREE IDENTICAL STRIPS over three states. What differs is where
             // each column's reading comes from, and the count under it is
@@ -447,11 +447,11 @@ private struct RestStrips: ExampleContent {
             .orientation(.horizontal)
         }
 
-        struct RestStrips: ContentView {
+        struct RestStrips: View {
             @State private var offset = Point.zero
             @State private var rested = 1
 
-            var content: some View {
+            var body: some View {
                 Grid {
                     tileStrip()
                         .scrollOffset($offset)
@@ -479,7 +479,7 @@ private struct RestStrips: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         Grid {
             tileStrip()
                 .scrollOffset($offset)
@@ -546,8 +546,8 @@ private struct RestStrips: ExampleContent {
 /// The bar down the side, asked for and taken away.
 private struct BarStrips: ExampleContent {
     static let code = """
-        struct BarStrips: ContentView {
-            var content: some View {
+        struct BarStrips: View {
+            var body: some View {
                 Grid {
                     barCase(.always).gridColumn(0)
                     barCase(.never).gridColumn(1)
@@ -570,7 +570,7 @@ private struct BarStrips: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         Grid {
             barCase(.always, "verticalScrollBarVisibility(.always)")
                 .gridColumn(0)

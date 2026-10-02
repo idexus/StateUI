@@ -7,7 +7,7 @@ import StateUI
 /// It is on EVERY tab page rather than on one of them, because what is being
 /// watched is which tab the platform leaves showing - so wherever it lands, the
 /// same readings are under it.
-struct TabsControls: ContentView {
+struct TabsControls: View {
     /// Where the gallery is, and the moves that change the tab list.
     let nav: Navigation
 
@@ -15,7 +15,7 @@ struct TabsControls: ContentView {
     /// the binding and the screen agree.
     let thisTab: DemoTab
 
-    var content: some View {
+    var body: some View {
         VStack {
             SectionTitle("The tab bar, as Swift describes it")
 

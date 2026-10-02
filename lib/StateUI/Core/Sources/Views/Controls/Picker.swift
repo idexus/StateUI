@@ -42,7 +42,7 @@ extension PickerProperties {
 /// while nothing is chosen; `sizes[size]` turns it back into a value, which is
 /// why the list is worth holding. The picker takes `.textColor` but has no
 /// `.text`: the field shows the chosen item or the title.
-public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement, TintElement,
+public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentElement, TintElement,
     PickerProperties {
     /// The node this control describes.
     public var node: Node

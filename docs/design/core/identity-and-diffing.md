@@ -59,7 +59,7 @@ view before it watched, wrote or was told carries over - its page, its
 of its own kind ([state survives a rebuild](#state-survives-a-rebuild)).
 
 The branch a composed view's content root was written in is part of it too:
-`if editing { TextField(…) } else { TextField(…) }` as a view's `content` is
+`if editing { TextField(…) } else { TextField(…) }` as a view's `body` is
 two elements, as in a container, though the placeholder's key covers the
 content root's own path (`Node.branch`, compared with the views' types). The
 composed view itself keeps its state across the swap; an `.id()` on the

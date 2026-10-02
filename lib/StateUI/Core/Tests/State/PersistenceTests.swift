@@ -41,8 +41,8 @@ private struct KeepingWindow: Window {
     var page: any Page { KeepingPage() }
 }
 
-private struct KeepingPage: ContentView {
-    var content: some View { Text("kept") }
+private struct KeepingPage: View {
+    var body: some View { Text("kept") }
 }
 
 /// A MODEL that keeps two of its settings - the shape an application's own
@@ -295,7 +295,7 @@ final class PersistenceTests: XCTestCase {
     /// ...and the host, reporting what the user typed into the field that carries it.
     func testAKeptStateTheHostReportsIsSentToTheStore() throws {
         let preferences = Preferences()
-        let patch = Renders().render(TextField(preferences.$name).body)
+        let patch = Renders().render(TextField(preferences.$name).node)
         guard case .replace(let driven)? = patch.driven else { return XCTFail("expected the field's state") }
         _ = drainedActs()
 

@@ -55,7 +55,7 @@ final class LampView: UIView {
 }
 
 /// The Swift half of the lamp, which the application writes.
-private struct Lamp: View {
+private struct Lamp: ElementView {
     var node = Node(contract: LampContract.self)
 
     func lit(_ value: Bool) -> Self {
@@ -75,12 +75,12 @@ extension Aim where Target == Lamp {
 }
 
 /// A page calling the application's acts, hearing its event, and holding one lamp - saying what came back.
-private struct Calling: ContentView {
+private struct Calling: View {
     @State private var said = "-"
     @State private var heard: [HostEventSubscription] = []
     @Aim(Lamp.self) private var lamp
 
-    var content: some View {
+    var body: some View {
         VStack {
             Button("Ask").onClicked {
                 do {

@@ -9,12 +9,12 @@ import CStateUIGTK
 import XCTest
 
 /// A row that counts its taps - `count` of them in a quick run make one - beside a stack that answers nothing.
-private struct TapsPage: ContentView {
+private struct TapsPage: View {
     let count: Int
     @State private var taps = 0
     @State private var shown = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("taps \(taps)")
             if shown {
@@ -34,11 +34,11 @@ private struct TapsPage: ContentView {
 }
 
 /// A box a press drags across, a swipe told apart, and what the pan, the pinch and the pointer said last.
-private struct DragPage: ContentView {
+private struct DragPage: View {
     @State private var x = 10.0
     @State private var said = ""
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("x \(Int(x)) \(said)")
             ColorBox(.steelBlue)

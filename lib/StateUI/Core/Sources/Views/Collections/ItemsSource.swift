@@ -122,7 +122,7 @@ final class ItemsSource<Items: RandomAccessCollection, Id: Hashable>: ItemsViews
         realized.filter { places[$0] != nil }
             .sorted { (order[$0] ?? 0) < (order[$1] ?? 0) }
             .map { identity in
-                var node = ItemsEntry(identity: identity, source: self).body
+                var node = ItemsEntry(identity: identity, source: self).node
                 node.id = identity
                 return node
             }
@@ -132,12 +132,12 @@ final class ItemsSource<Items: RandomAccessCollection, Id: Hashable>: ItemsViews
 /// One entry of an ItemsView, built as a view of its own - with its own reads, so
 /// a state it reads builds it alone - and carried whole while its source is the
 /// same.
-struct ItemsEntry: ContentView {
+struct ItemsEntry: View {
     let identity: String
     let source: any ItemsViews
 
-    var content: some View {
+    var body: some View {
         // Chosen by identity, so held as `any View` and handed on as its node.
-        ModifiedContent(node: (source.view(for: identity) ?? VStack {}).body)
+        ModifiedContent(node: (source.view(for: identity) ?? VStack {}).node)
     }
 }

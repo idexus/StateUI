@@ -38,7 +38,7 @@ final class ContractRoadsTests: XCTestCase {
             static let members: [any ContractMember] = [title, level, tapped]
         }
 
-        struct Marker: View {
+        struct Marker: ElementView {
             var node = Node(contract: MarkerContract.self)
         }
 
@@ -217,16 +217,16 @@ final class ContractRoadsTests: XCTestCase {
             contract: "struct Lone: Window { var page: any Page { if Bool.random() { Text(\"a\") } else { Text(\"b\") } } }"),
         Road(
             name: "a composed view's content as an existential",
-            removed: "struct Old: ContentView { var content: any View { Text(\"a\") } }",
-            contract: "struct New: ContentView { var content: some View { Text(\"a\") } }"),
+            removed: "struct Old: View { var content: any View { Text(\"a\") } }",
+            contract: "struct New: View { var body: some View { Text(\"a\") } }"),
         Road(
             name: "two views in the title's place",
             removed: #"_ = Text("Notes").titleView { Button("Back"); Button("Next") }"#,
             contract: #"_ = Text("Notes").titleView { HStack { Button("Back"); Button("Next") } }"#),
         Road(
             name: "two views as a composed view's content",
-            removed: "struct Pair: ContentView { var content: some View { Text(\"a\"); Text(\"b\") } }",
-            contract: "struct Pair: ContentView { var content: some View { VStack { Text(\"a\"); Text(\"b\") } } }"),
+            removed: "struct Pair: View { var body: some View { Text(\"a\"); Text(\"b\") } }",
+            contract: "struct Pair: View { var body: some View { VStack { Text(\"a\"); Text(\"b\") } } }"),
         Road(
             name: "a view standing among a label's runs",
             removed: #"_ = Text().spans { Text("Hi") }"#,
@@ -311,6 +311,10 @@ final class ContractRoadsTests: XCTestCase {
             name: "the Label contract",
             removed: "_ = LabelContract.maximumLines",
             contract: "_ = TextContract.maximumLines"),
+        Road(
+            name: "a view composed as a ContentView",
+            removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
+            contract: #"struct Card: View { var body: some View { Text("Total") } }"#),
     ]
 
     func testEveryUntypedRoadIsClosedAndItsContractRoadOpen() throws {

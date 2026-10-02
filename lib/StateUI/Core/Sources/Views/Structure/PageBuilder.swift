@@ -37,5 +37,5 @@ struct BranchPage: Page {
     let segment: String
     let page: any Page
 
-    var body: Node { BuilderPath.tagged(segment, page.body) }
+    var node: Node { BuilderPath.tagged(segment, page.node) }
 }

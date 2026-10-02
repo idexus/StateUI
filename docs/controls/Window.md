@@ -9,10 +9,10 @@ struct MainWindow: Window {
     var page: any Page { MainPage() }
 }
 
-struct MainPage: ContentView {
+struct MainPage: View {
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         Text("Hello")
             .onCreated {
                 window.title = "Notes"

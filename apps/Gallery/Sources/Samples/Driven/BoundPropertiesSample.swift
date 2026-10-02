@@ -113,7 +113,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             row("1 · a number the host walks - fontSize($size)") {
                 Text("The quick brown fox")

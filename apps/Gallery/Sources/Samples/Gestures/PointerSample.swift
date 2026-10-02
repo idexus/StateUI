@@ -66,7 +66,7 @@ struct PointerSample: SampleContent, ExampleContent {
         // The position is in the VIEW's own coordinates, not the window's.
         """
 
-    var content: some View {
+    var body: some View {
         ZStack {
             VStack {
                 DebugInfoLabel()

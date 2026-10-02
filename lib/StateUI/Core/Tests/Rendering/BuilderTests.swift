@@ -42,7 +42,7 @@ final class BuilderTests: XCTestCase {
             .onChanged(1) {}
             .gridRow(1)
             .margin(8)
-            .body
+            .node
 
         XCTAssertEqual(node.props["text"], .string("x"))
         XCTAssertEqual(node.props["gridRow"], .number(1))
@@ -66,7 +66,7 @@ final class BuilderTests: XCTestCase {
 
                 TextField("search")
             }
-            .body
+            .node
         }
 
         let renders = Renders()
@@ -106,7 +106,7 @@ final class BuilderTests: XCTestCase {
 
                 Button("Go").onClicked { taps.wrappedValue += 1 }
             }
-            .body
+            .node
         }
 
         let renders = Renders()
@@ -139,7 +139,7 @@ final class BuilderTests: XCTestCase {
                     TextField("nickname")
                 }
             }
-            .body
+            .node
         }
 
         let renders = Renders()
@@ -162,8 +162,8 @@ final class BuilderTests: XCTestCase {
     func testTheTwoBranchesOfAContentRootAreDifferentElements() {
         let renders = Renders()
 
-        let first = renders.render(VStack { Field(editing: true) }.body)
-        let second = renders.render(VStack { Field(editing: false) }.body)
+        let first = renders.render(VStack { Field(editing: true) }.node)
+        let second = renders.render(VStack { Field(editing: false) }.node)
         let field = patch(second, forType: "TextField")
 
         XCTAssertNotNil(patch(first, forType: "TextField"))
@@ -189,7 +189,7 @@ final class BuilderTests: XCTestCase {
 
         XCTAssertTrue(type(of: pair(true)) == Either<Text, Button>.self)
         XCTAssertTrue(type(of: both()) == Statements<Text, Button>.self)
-        XCTAssertTrue(type(of: Field(editing: true).content) == Either<TextField, TextField>.self)
+        XCTAssertTrue(type(of: Field(editing: true).body) == Either<TextField, TextField>.self)
     }
 
     /// Going back to a branch that was shown before starts it afresh rather
@@ -213,7 +213,7 @@ final class BuilderTests: XCTestCase {
                     .gridRow(1)
                 }
             }
-            .body
+            .node
         }
 
         let renders = Renders()
@@ -240,7 +240,7 @@ final class BuilderTests: XCTestCase {
             ForEach(["left", "right"]) { Text($0) }
             ForEach([(name: "a", n: 1), (name: "b", n: 2)], id: \.name) { Text($0.name) }
         }
-        .body
+        .node
 
         // Raw trees keep a container's content in its closure; see the differ.
         tree.materialize()
@@ -251,7 +251,7 @@ final class BuilderTests: XCTestCase {
         var named = VStack {
             ForEach(["x"]) { Text($0).id("mine") }
         }
-        .body
+        .node
 
         named.materialize()
 
@@ -268,7 +268,7 @@ final class BuilderTests: XCTestCase {
                     Text(item)
                 }
             }
-            .body
+            .node
         }
 
         let renders = Renders()
@@ -303,7 +303,7 @@ final class BuilderTests: XCTestCase {
                     }
                 }
             }
-            .body
+            .node
         }
 
         let renders = Renders()
@@ -339,7 +339,7 @@ final class BuilderTests: XCTestCase {
                     Text("turn \(turn)")
                 }
             }
-            .body
+            .node
         }
 
         let renders = Renders()
@@ -382,7 +382,7 @@ final class BuilderTests: XCTestCase {
                     Text("b").id("row")
                 }
             }
-            .body
+            .node
         }
 
         let renders = Renders()
@@ -443,7 +443,7 @@ final class BuilderTests: XCTestCase {
                 Text("turn \(turn)")
             }
         }
-        .body
+        .node
 
         let dump = PatchDump.text(Renders().render(tree))
 
@@ -453,10 +453,10 @@ final class BuilderTests: XCTestCase {
 }
 
 /// A field that is one of two, by what it is handed - its content root an `if/else`.
-private struct Field: ContentView {
+private struct Field: View {
     let editing: Bool
 
-    var content: some View {
+    var body: some View {
         if editing {
             TextField("name")
         } else {

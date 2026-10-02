@@ -10,11 +10,11 @@ import StateUIConformance
 import XCTest
 
 /// A field and an editor sharing words a button rewrites, each telling what it hears.
-private struct RewrittenPage: ContentView {
+private struct RewrittenPage: View {
     @State private var words = "one"
     let heard: Received<String>
 
-    var content: some View {
+    var body: some View {
         let heard = self.heard
         return VStack {
             TextField($words).onTextChanged { heard.values.append("field \($0)") }

@@ -23,7 +23,7 @@ final class PositionIndicatorTests: XCTestCase {
 
     /// The dots a view describes.
     private func dots(_ view: some View) -> [HostPatch] {
-        nodes(.colorBox, in: Renders().render(VStack { view }.body))
+        nodes(.colorBox, in: Renders().render(VStack { view }.node))
     }
 
     /// As many dots as the count, each the size it is given, the current one in its own colour.
@@ -75,7 +75,7 @@ final class PositionIndicatorTests: XCTestCase {
     func testItemsAreTheirOwnMarks() {
         let patch = Renders().render(VStack {
             PositionIndicator(["one", "two", "three"]) { name in Text(name) }.position(1)
-        }.body)
+        }.node)
         let marks = nodes(.text, in: patch)
 
         XCTAssertEqual(marks.map { $0.properties[.text] }, ["one", "two", "three"].map { .string($0) })
@@ -86,7 +86,7 @@ final class PositionIndicatorTests: XCTestCase {
     func testACountFromAStateBuildsTheRowAgain() {
         let count = State(wrappedValue: 2)
         let renders = Renders()
-        let tree = { VStack { PositionIndicator().count(count.projectedValue) }.body }
+        let tree = { VStack { PositionIndicator().count(count.projectedValue) }.node }
         XCTAssertEqual(nodes(.colorBox, in: renders.render(tree())).count, 2)
 
         count.wrappedValue = 4

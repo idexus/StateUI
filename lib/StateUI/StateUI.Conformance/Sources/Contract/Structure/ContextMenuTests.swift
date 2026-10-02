@@ -57,13 +57,13 @@
 }
 
 /// A row with a context menu whose entries follow the page's states, saying what the user chose.
-struct MenuPage: ContentView {
+struct MenuPage: View {
     let heard: Received<String>
 
     @State private var canPaste = false
     @State private var shares = ["Mail"]
 
-    var content: some View {
+    var body: some View {
         let (heard, canPaste, shares) = (self.heard, $canPaste, $shares)
         return VStack {
             Text("Row").contextMenu {

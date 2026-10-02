@@ -31,7 +31,7 @@ extension PropertyContainer where Self: Page {
     public func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Modified {
         let menus = menus()
         return modified {
-            var bar = Node(contract: MenuBarContract.self, children: menus.map(\.body))
+            var bar = Node(contract: MenuBarContract.self, children: menus.map(\.node))
             bar.write(MenuBarContract.order, order)
 
             // After the element's own children; the host finds it by type.

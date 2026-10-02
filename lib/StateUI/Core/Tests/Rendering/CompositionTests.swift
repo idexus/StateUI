@@ -3,7 +3,7 @@
 
 // The shape of a composed view.
 //
-// A `ContentView` is what a piece of interface IS in this library, and the
+// A `View` is what a piece of interface IS in this library, and the
 // question every one of them answers is: how does a caller configure it? The
 // library answers with MODIFIERS - `GalleryView(cards).position($x)`
 // - which is the same answer every control gives, because the rule is written
@@ -173,26 +173,28 @@ final class CompositionTests: XCTestCase {
         }
     }
 
-    /// Every composed view in the repository: the library's `ContentView`s and
-    /// every view an application declares.
+    /// Every composed view in the repository: the library's `View`s with a
+    /// `body` and every view an application declares.
     ///
     /// An application's views are taken whatever they conform to - `MenuRow` is
-    /// an `Element` rather than a `ContentView`, being a row with no state, and
-    /// the rule is the same for it. The LIBRARY's plain `View`s are its control
-    /// wrappers, which the control recipe and ControlTests already hold to
+    /// an `Element` rather than a `View`, being a row with no state, and
+    /// the rule is the same for it. The LIBRARY's `ElementView`s are its
+    /// controls, which the control recipe and ControlTests already hold to
     /// their own shape.
     private func composedViews() throws -> [ComposedView] {
         let repository = SourceTree.repository
         var found: [ComposedView] = []
 
         let roots = [
-            ("lib/StateUI/Core/Sources", ["ContentView"]),
-            ("apps", ["ContentView", "Element", "View"]),
+            ("lib/StateUI/Core/Sources", ["View"]),
+            ("apps", ["View", "Element", "ElementView"]),
         ]
 
-        // Protocols that REFINE ContentView carry the rule with them -
-        // `SampleContent` is what every gallery sample is written against.
-        var composed = Set(["ContentView"])
+        // Protocols that REFINE View carry the rule with them -
+        // `SampleContent` is what every gallery sample is written against. An
+        // `ElementView` and the tiers refining it are elements, never composed.
+        var composed = Set(["View"])
+        var elements = Set(["ElementView"])
         var files: [(path: String, source: String)] = []
 
         for (root, _) in roots {
@@ -208,7 +210,12 @@ final class CompositionTests: XCTestCase {
 
             for file in files {
                 for declaration in declarations(in: file.source, kinds: ["protocol"]) {
-                    if !composed.contains(declaration.name),
+                    if !elements.contains(declaration.name),
+                        !elements.isDisjoint(with: declaration.conformances)
+                    {
+                        elements.insert(declaration.name)
+                        grew = true
+                    } else if !composed.contains(declaration.name), !elements.contains(declaration.name),
                         !composed.isDisjoint(with: declaration.conformances)
                     {
                         composed.insert(declaration.name)
@@ -219,11 +226,11 @@ final class CompositionTests: XCTestCase {
         }
 
         // A type may be made a view by an EXTENSION rather than by its own
-        // declaration - `extension Card: ContentView {}` - and one written that
+        // declaration - `extension Card: View {}` - and one written that
         // way would otherwise never be looked at, so its name is collected here
         // and matched below whatever the declaration says.
         //
-        // PER ROOT, using that root's own set: the library counts `ContentView`
+        // PER ROOT, using that root's own set: the library counts `View`
         // alone, and taking `Element` there too made `Node` - which conforms by
         // extension and is the patch's data structure rather than a view - a
         // composed view with four defaulted initializer parameters.
@@ -274,7 +281,7 @@ final class CompositionTests: XCTestCase {
 
     /// The source with every multi-line string literal taken out.
     ///
-    /// A sample's `static let code` holds SWIFT - whole `struct … : ContentView`
+    /// A sample's `static let code` holds SWIFT - whole `struct … : View`
     /// declarations, several of them - and a scanner that reads those is reading
     /// an example rather than the program. Measured: five of the gallery's
     /// samples declare a view inside their snippet.

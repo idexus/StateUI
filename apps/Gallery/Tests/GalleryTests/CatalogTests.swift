@@ -10,7 +10,7 @@
 // at nothing - and none of it is visible until the app is running and someone
 // taps the wrong row.
 //
-// Building the tree is the whole test harness: `GalleryScene().windows.main.body` produces
+// Building the tree is the whole test harness: `GalleryScene().windows.main.node` produces
 // the Node tree the host would be sent, with no renderer, no host and no device
 // involved. And WHERE THE GALLERY IS is state on this side - so a move is
 // tested by firing the handler a user would touch and reading the boxes it
@@ -63,7 +63,7 @@ private struct Filling: SampleContent, ExampleContent {
     static let scrolls = false
     static let fills = true
 
-    var content: some View {
+    var body: some View {
         ScrollView {
             Text("row")
         }
@@ -85,7 +85,7 @@ private struct TwoSided: SampleContent, ExampleContent {
         .swift("let row = HostRow()"),
         .java("Row row = new Row(context);"))
 
-    var content: some View {
+    var body: some View {
         Text("row")
     }
 
@@ -683,7 +683,7 @@ final class CatalogTests: XCTestCase {
     /// moves down.
     func testAScrollingPageShowsEachExampleThenItsNotesThenItsSwift() throws {
         let sample = try XCTUnwrap(catalog().sample(id: TwoLayersSample.id))
-        let page = SamplePage(sample: sample, nav: Place().nav).body.built
+        let page = SamplePage(sample: sample, nav: Place().nav).node.built
 
         XCTAssertEqual(headings(in: page), [
             "Example 1", "Notes", "In Swift",
@@ -706,13 +706,13 @@ final class CatalogTests: XCTestCase {
     func testAnExamplesHostHalfIsShownUnderItsOwnHeading() {
         let sample = Sample(TwoSided())
 
-        let page = SamplePage(sample: sample, nav: Place().nav).body.built
+        let page = SamplePage(sample: sample, nav: Place().nav).node.built
         XCTAssertEqual(headings(in: page), ["Example", "In Swift", "In the host - Swift", "In the host - Java"])
 
-        let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).body.built
+        let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).node.built
         XCTAssertEqual(headings(in: tab), ["In Swift", "In the host - Swift", "In the host - Java"])
 
-        let plain = SamplePage(sample: Sample(Filling()), nav: Place().nav).body.built
+        let plain = SamplePage(sample: Sample(Filling()), nav: Place().nav).node.built
         XCTAssertEqual(
             headings(in: plain), ["Example", "In Swift"],
             "an example written in Swift alone draws no second section")
@@ -751,7 +751,7 @@ final class CatalogTests: XCTestCase {
     /// notes and its Swift, in turn - the notes in no scroller of their own.
     func testAHeldSamplesCodeTabGivesEachExamplesNotesThenItsSwift() throws {
         let sample = try XCTUnwrap(catalog().sample(id: WebViewSample.id))
-        let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).body.built
+        let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).node.built
 
         XCTAssertEqual(headings(in: tab), [
             "Example 1", "Notes", "In Swift",
@@ -780,7 +780,7 @@ final class CatalogTests: XCTestCase {
     /// A code listing owns only horizontal overflow. The sample page owns its
     /// vertical viewport, including a wheel gesture made above the listing.
     func testACodeBlockScrollsOnlyAcrossThePage() {
-        let block = CodeBlock("let value = aVeryLongExpression()").body.built
+        let block = CodeBlock("let value = aVeryLongExpression()").node.built
         var scrollers: [Node] = []
 
         func walk(_ node: Node) {
@@ -814,7 +814,7 @@ final class CatalogTests: XCTestCase {
                 // wrote it.
                 for (index, example) in sample.examples.enumerated() {
                     XCTAssertFalse(example.code.isEmpty, "\(sample.id) example \(index + 1) shows no code")
-                    XCTAssertFalse(example.view.body.built.type.name.isEmpty)
+                    XCTAssertFalse(example.view.node.built.type.name.isEmpty)
                 }
             }
         }
@@ -983,7 +983,7 @@ final class CatalogTests: XCTestCase {
     /// run and describes every row of it. What carries such an example
     /// is therefore a GRID, whose one implicit row IS the cell.
     func testAFillingExampleRidesAGridRatherThanAStack() throws {
-        let page = SampleTabPage(sample: Sample(Filling()), tab: .example(0), nav: Place().nav).body
+        let page = SampleTabPage(sample: Sample(Filling()), tab: .example(0), nav: Place().nav).node
         var carriers: [String] = []
 
         // The chain from the box the page draws around a part down to the
@@ -1027,7 +1027,7 @@ final class CatalogTests: XCTestCase {
         for group in catalog().groups {
             for sample in group.samples {
                 for example in sample.examples {
-                    for said in shownTexts(in: example.view.body.built) where said.count > bound {
+                    for said in shownTexts(in: example.view.node.built) where said.count > bound {
                         XCTFail("\(sample.id) explains itself inside the example - "
                                 + "\"\(said.prefix(60))...\" - and the words belong in `notes`")
                     }
@@ -1074,7 +1074,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
 
         XCTAssertEqual(place.section.wrappedValue, .home)
-        XCTAssertEqual(window(place.nav).root().body.stateful?.viewType, String(reflecting: HomePage.self))
+        XCTAssertEqual(window(place.nav).root().node.stateful?.viewType, String(reflecting: HomePage.self))
     }
 
     /// The gallery is a menu over a stack, and both halves are pages.
@@ -1083,7 +1083,7 @@ final class CatalogTests: XCTestCase {
     /// two children wearing the identity of their halves, the pane has a native
     /// title, and the detail is a stack that opens on its root alone.
     func testTheWindowIsAMenuOverAStack() throws {
-        let window = GalleryScene().windows.main.body.built
+        let window = GalleryScene().windows.main.node.built
 
         XCTAssertEqual(window.type, "Window")
 
@@ -1220,7 +1220,7 @@ final class CatalogTests: XCTestCase {
         let menu = MenuPage(catalog: catalog, nav: Place().nav,
                             log: WindowLog(), listsHiddenRow: false)
 
-        XCTAssertEqual(rowTitles(in: menu.body),
+        XCTAssertEqual(rowTitles(in: menu.node),
                        ["Home"] + catalog.groups.map { $0.title } + ["Surprise me"])
     }
 
@@ -1234,8 +1234,8 @@ final class CatalogTests: XCTestCase {
                      log: WindowLog(), listsHiddenRow: lists)
         }
 
-        XCTAssertFalse(rowTitles(in: menu(false).body).contains("Not in the list"))
-        XCTAssertTrue(rowTitles(in: menu(true).body).contains("Not in the list"))
+        XCTAssertFalse(rowTitles(in: menu(false).node).contains("Not in the list"))
+        XCTAssertTrue(rowTitles(in: menu(true).node).contains("Not in the list"))
 
         // And the section itself needs no row: this is what the sample's
         // "Go there anyway" button does.
@@ -1254,7 +1254,7 @@ final class CatalogTests: XCTestCase {
         let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
                             log: WindowLog(), listsHiddenRow: false)
 
-        Renderer.shared.start(try XCTUnwrap(rowHandler("Layout", in: menu.body)))
+        Renderer.shared.start(try XCTUnwrap(rowHandler("Layout", in: menu.node)))
 
         XCTAssertEqual(place.section.wrappedValue, .home, "a group stands ON home")
         XCTAssertEqual(
@@ -1275,13 +1275,13 @@ final class CatalogTests: XCTestCase {
         let sample = try XCTUnwrap(group.shown(on: .unknown).first)
 
         let renders = Renders()
-        let patch = renders.render(GroupPage(group: group, nav: place.nav).body)
+        let patch = renders.render(GroupPage(group: group, nav: place.nav).node)
         let tapped = try XCTUnwrap(eventId("tapped", in: patch), "no card answers a tap")
 
         await settle(
             try XCTUnwrap(renders.handler(tapped)),
             rendering: renders,
-            { GroupPage(group: group, nav: place.nav).body })
+            { GroupPage(group: group, nav: place.nav).node })
 
         XCTAssertEqual(place.path.wrappedValue, [.sample(sample.id)])
     }
@@ -1291,7 +1291,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.path.wrappedValue = [.group("layout"), .sample("grid"), .level(1)]
 
-        let home = try XCTUnwrap(ToolbarItem.home(place.nav).body.events["clicked"])
+        let home = try XCTUnwrap(ToolbarItem.home(place.nav).node.events["clicked"])
         Renderer.shared.start(home)
 
         XCTAssertEqual(place.section.wrappedValue, .home)
@@ -1309,7 +1309,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let detail = window(place.nav).detail().body
+        let detail = window(place.nav).detail().node
 
         XCTAssertEqual(detail.type, "TabbedView")
         XCTAssertEqual(detail.props["currentPage"], .number(0))
@@ -1348,11 +1348,11 @@ final class CatalogTests: XCTestCase {
         place.tabs.wrappedValue = [.stack, .second, .extra(1)]
         place.tab.wrappedValue = .second
 
-        let before = window(place.nav).detail().body.props["currentPage"]
+        let before = window(place.nav).detail().node.props["currentPage"]
 
         place.nav.reverseTabs(showing: .second)
 
-        let after = window(place.nav).detail().body.props["currentPage"]
+        let after = window(place.nav).detail().node.props["currentPage"]
 
         XCTAssertEqual(place.tabs.wrappedValue, [.extra(1), .second, .stack])
         XCTAssertEqual(before, .number(1))
@@ -1370,7 +1370,7 @@ final class CatalogTests: XCTestCase {
         place.nav.closeTab(.second, showing: .second)
 
         XCTAssertEqual(place.tabs.wrappedValue, [.stack])
-        XCTAssertNil(window(place.nav).detail().body.props["currentPage"],
+        XCTAssertNil(window(place.nav).detail().node.props["currentPage"],
                      "a selection naming no tab must describe no index")
     }
 
@@ -1392,7 +1392,7 @@ final class CatalogTests: XCTestCase {
 
         let tabsPath = place.tabsPath
 
-        let detail = window(place.nav).detail().body
+        let detail = window(place.nav).detail().node
 
         let stack = try XCTUnwrap(detail.children.first)
         let root = try XCTUnwrap(stack.children.first).built
@@ -1410,7 +1410,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let detail = window(place.nav).detail().body
+        let detail = window(place.nav).detail().node
 
         for (index, child) in detail.children.enumerated() {
             // The first tab is a stack, so the page to read is its root.
@@ -1440,7 +1440,7 @@ final class CatalogTests: XCTestCase {
         let catalog = catalog()
 
         for group in catalog.groups {
-            try assertEveryCardIsTappable(in: GroupPage(group: group, nav: Place().nav).body.built,
+            try assertEveryCardIsTappable(in: GroupPage(group: group, nav: Place().nav).node.built,
                                           expecting: group.samples.count)
         }
     }
@@ -1482,7 +1482,7 @@ final class CatalogTests: XCTestCase {
         let renders = Renders()
         let page = HomePage(catalog: catalog(), nav: Place().nav)
 
-        let first = renders.render(page.body)
+        let first = renders.render(page.node)
         let before = renders.builds
 
         // What the user does: the arrow under the run, which writes the
@@ -1541,7 +1541,7 @@ final class CatalogTests: XCTestCase {
     }
 
     func testTheHomePageIsSizedByTheCycleRatherThanByARender() throws {
-        let page = HomePage(catalog: catalog(), nav: Place().nav).body.built
+        let page = HomePage(catalog: catalog(), nav: Place().nav).node.built
         var heights: [String] = []
         var rooms: [String] = []
         var fades: [String] = []
@@ -1584,7 +1584,7 @@ final class CatalogTests: XCTestCase {
     /// handler however many groups there are - inside the scroller lying over
     /// the cards, which is the only thing here a finger can reach.
     func testTheHomePagesGalleryAnswersATap() throws {
-        let page = HomePage(catalog: catalog(), nav: Place().nav).body.built
+        let page = HomePage(catalog: catalog(), nav: Place().nav).node.built
         var carriers: [String] = []
 
         func walk(_ node: Node) {
@@ -1705,7 +1705,7 @@ final class CatalogTests: XCTestCase {
                 "\(sample.id) does not offer the example and the code")
 
             for tab in [SampleTab.example(0), .code] {
-                walk(SampleTabPage(sample: sample, tab: tab, nav: Place().nav).body.built, scrolled: false)
+                walk(SampleTabPage(sample: sample, tab: tab, nav: Place().nav).node.built, scrolled: false)
             }
             XCTAssertGreaterThan(found, 0, "\(sample.id) is a gesture sample with no gesture on it")
             XCTAssertEqual(caught, [], "\(sample.id) would lose \(caught) to the page's scroller")
@@ -1731,7 +1731,7 @@ final class CatalogTests: XCTestCase {
         }
 
         for example in sample.examples {
-            walk(example.view.body.built)
+            walk(example.view.node.built)
         }
 
         XCTAssertEqual(pinched.count, 1)
@@ -1753,7 +1753,7 @@ final class CatalogTests: XCTestCase {
         // scale that lands on the tree.
         let renders = Renders()
 
-        let first = renders.render(PinchSample().body)
+        let first = renders.render(PinchSample().node)
         let pinchUpdated = try XCTUnwrap(eventId("pinchUpdated", in: first))
 
         // Exactly what the platform sent, in the order it sent it.
@@ -1764,7 +1764,7 @@ final class CatalogTests: XCTestCase {
             .enumeration(GesturePhase.completed.rawValue), .number(1), .numbers([0, 0]),
         ])
 
-        let second = renders.render(PinchSample().body, changed: Renderer.shared.pendingChanges)
+        let second = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: second)), 1.02, accuracy: 0.0001,
                        "the scale did not follow a pinch that never said .started")
 
@@ -1773,7 +1773,7 @@ final class CatalogTests: XCTestCase {
             .enumeration(GesturePhase.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
         ])
 
-        let third = renders.render(PinchSample().body, changed: Renderer.shared.pendingChanges)
+        let third = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: third)), 1.0404, accuracy: 0.0001)
     }
 

@@ -7,7 +7,7 @@ import StateUI
 /// One type for every group rather than one page per category - a group differs
 /// by what is in it, and nothing else. Adding a category is a line in the
 /// catalog, not a file.
-struct GroupPage: ContentView {
+struct GroupPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -22,7 +22,7 @@ struct GroupPage: ContentView {
     /// Which kind of device this is - what decides which samples are listed.
     @Environment var device: DeviceInfo
 
-    var content: some View {
+    var body: some View {
         ScrollView {
             VStack {
                 Text(group.title)

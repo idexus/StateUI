@@ -56,7 +56,7 @@ struct KeyboardSample: SampleContent, ExampleContent {
             .textColor(Palette.subtle)
     }
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

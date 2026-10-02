@@ -55,7 +55,7 @@
     public static func view(_ element: String, _ worn: [any Worn] = [], id: String = "specimen") -> ModifiedContent {
         // Chosen by name, so held as `any View` and handed on as its node.
         let view: any View = make(element, Dressing(worn, id: id)) ?? Text("no specimen of \(element)")
-        return ModifiedContent(node: view.body)
+        return ModifiedContent(node: view.node)
     }
 
     /// A page holding `element`'s specimen wearing `worn` where an application puts one, `beside` it on the page. A
@@ -104,7 +104,7 @@
 
 /// A page that writes its page's and its window's sessions - a title, a size - as it is made and
 /// again whenever what it writes changes, over words and what stands beside them.
-public struct SessionPage: ContentView {
+public struct SessionPage: View {
     /// What stands beside its words.
     let beside: [any View]
 
@@ -126,7 +126,7 @@ public struct SessionPage: ContentView {
         self.write = write
     }
 
-    public var content: some View {
+    public var body: some View {
         let (write, page, window) = (self.write, self.page, self.window)
         return VStack { [Text("Page")] + beside }
             .onCreated { write(page, window) }
@@ -137,7 +137,7 @@ public struct SessionPage: ContentView {
 /// A page declaring a group of `items` for its bar - at `side`, in `order`, joining the group `group` names - and a
 /// title view, over words and what stands beside them; built again whenever `key` changes or a state it reads is
 /// written.
-public struct DeclaringPage: ContentView {
+public struct DeclaringPage: View {
     /// What stands beside its words.
     let beside: [any View]
 
@@ -174,11 +174,11 @@ public struct DeclaringPage: ContentView {
         self.items = items
     }
 
-    public var content: some View {
+    public var body: some View {
         let (items, words) = (self.items, VStack { [Text("Page")] + beside })
         let grouped = group.map { words.toolbar(side, id: $0, order: order) { items() } }
             ?? words.toolbar(side, order: order) { items() }
         guard let title else { return grouped }
-        return grouped.titleView { ModifiedContent(node: title.body) }
+        return grouped.titleView { ModifiedContent(node: title.node) }
     }
 }

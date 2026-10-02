@@ -23,12 +23,16 @@ extension Either: Views where First: Views, Second: Views {
 }
 
 extension Either: Element where First: Element, Second: Element {
-    /// The branch's node under which branch it is.
-    public var body: Node {
-        switch self {
-        case .first(let first): BuilderPath.tagged("if", first.body)
-        case .second(let second): BuilderPath.tagged("else", second.body)
+    /// The branch's node under which branch it is, read afresh each time;
+    /// assigning to it does nothing.
+    public var node: Node {
+        get {
+            switch self {
+            case .first(let first): BuilderPath.tagged("if", first.node)
+            case .second(let second): BuilderPath.tagged("else", second.node)
+            }
         }
+        set {}
     }
 }
 
@@ -37,15 +41,12 @@ extension Either: PropertyContainer, ModifiableElement, VisualElementProperties,
     /// A modifier on a branch is kept on the branch's node, as on a composed view.
     public typealias Modified = ModifiedContent
 
-    /// The branch's node, read afresh each time; assigning to it does nothing.
-    public var node: Node {
-        get { body }
-        set {}
-    }
+    /// None: a branch is described by the view it chose.
+    public var body: Never { fatalError("a branch has no body: it is the view it chose") }
 
     /// A modifier written on the branch, kept on a `ModifiedContent`.
     public func modified(_ change: (inout Node) -> Void) -> ModifiedContent {
-        var node = body
+        var node = self.node
         change(&node)
         return ModifiedContent(node: node)
     }

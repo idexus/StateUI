@@ -52,7 +52,7 @@ extension ColorBoxProperties {
 /// or a deliberate piece of empty space. It has no content and no children -
 /// for a coloured area around something, give the layout holding it a
 /// background.
-public struct ColorBox: View, ColorBoxProperties {
+public struct ColorBox: ElementView, ColorBoxProperties {
     /// The node this control describes.
     public var node: Node
 

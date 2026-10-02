@@ -127,11 +127,11 @@ An `Aim<Target>` identifies one rendered control for a method call. It is not
 state and does not participate in tree identity:
 
 ```swift
-struct FocusForm: ContentView {
+struct FocusForm: View {
     @Aim(TextField.self) private var field
     @State private var text = ""
 
-    var content: some View {
+    var body: some View {
         VStack {
             TextField($text).aim(field)
             Button("Edit").onClicked { try await field.focus() }

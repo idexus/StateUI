@@ -28,10 +28,10 @@ import XCTest
 /// navigation bar at once, which no real page would. What it is for is the
 /// guards below: a property nobody writes here is a property the host may
 /// quietly not apply.
-private struct EveryPropertyPage: ContentView {
+private struct EveryPropertyPage: View {
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         Text("content")
             // What it declares for its bar, each saying everything ITS type can
             // say - a page is the only place a toolbar item is covered, there
@@ -99,7 +99,7 @@ private struct EveryPropertyWindow: Window {
         session.isMinimizable = true
         session.isTranslucent = true
 
-        return EveryPropertyWindow().body(session: session).built
+        return EveryPropertyWindow().node(session: session).built
     }
 }
 
@@ -107,10 +107,10 @@ private struct EveryPropertyWindow: Window {
 /// property to another value - on a press. So the write that matters is made
 /// once the page is standing, and what the next message carries is what the
 /// page READ of its session, nothing else having moved.
-private struct KnobPage: ContentView {
+private struct KnobPage: View {
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         Button("dress")
             .onCreated { dress(false) }
             .onClicked { dress(true) }
@@ -130,16 +130,16 @@ private struct KnobPage: ContentView {
 }
 
 /// A view that says nothing about the page it is shown on.
-private struct Plain: ContentView {
-    var content: some View { Text("plain") }
+private struct Plain: View {
+    var body: some View { Text("plain") }
 }
 
 /// A view that names the page it is shown on, as it arrives.
-private struct Named: ContentView {
+private struct Named: View {
     @Environment private var page: PageSession
     let name: String
 
-    var content: some View {
+    var body: some View {
         Text(name).onCreated { page.title = name }
     }
 }
@@ -150,11 +150,11 @@ private final class Builds {
 }
 
 /// A view that renames its page on a press, counting its builds.
-private struct Renaming: ContentView {
+private struct Renaming: View {
     @Environment private var page: PageSession
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return Button("rename").onClicked { page.title = "Renamed" }
     }
@@ -434,7 +434,7 @@ final class PageTests: XCTestCase {
             }
             .title("Home")
             .icon("house.png")
-            .body
+            .node
             .built
             .props
             .keys
@@ -461,7 +461,7 @@ final class PageTests: XCTestCase {
         let constructed = NavigationStack(path.projectedValue) { EveryPropertyPage() }
             destination: { _ in EveryPropertyPage() }
             .title("Everything")
-            .body
+            .node
             .built
             .props[.title]
 
@@ -587,11 +587,11 @@ final class PageTests: XCTestCase {
     func testAPagesArrivalHandlerRuns() throws {
         let arrivals = State(0)
 
-        struct Watched: ContentView {
+        struct Watched: View {
             @Environment private var page: PageSession
             let arrivals: Binding<Int>
 
-            var content: some View {
+            var body: some View {
                 Text("\(page.phase)")
                     .onChanged(page.phase) {
                         if page.phase == .appearing { arrivals.wrappedValue += 1 }
@@ -679,11 +679,11 @@ final class PageTests: XCTestCase {
 }
 
 /// A page saying when it is made, by its name.
-private struct Created: ContentView {
+private struct Created: View {
     let name: String
     @Binding var log: [String]
 
-    var content: some View {
+    var body: some View {
         Text(name).onCreated { log.append("created \(name)") }
     }
 }

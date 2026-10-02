@@ -9,10 +9,10 @@ import AppKit
 import XCTest
 
 /// Three items, the first chosen.
-private struct ChoosingPage: ContentView {
+private struct ChoosingPage: View {
     @State private var chosen: Int? = 0
 
-    var content: some View {
+    var body: some View {
         ItemsView(0..<3) { Text("Item \($0)").padding(12) }
             .selection($chosen)
             .width(300).height(400)

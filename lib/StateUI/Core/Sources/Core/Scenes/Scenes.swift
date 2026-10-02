@@ -115,6 +115,6 @@ final class Scenes: @unchecked Sendable {
         // One scene value per scene: a scene's `@State` boxes are its value's own.
         Node(
             contract: ApplicationContract.self,
-            children: list.map { SceneElement(record: $0, scene: application.scene).body })
+            children: list.map { SceneElement(record: $0, scene: application.scene).node })
     }
 }

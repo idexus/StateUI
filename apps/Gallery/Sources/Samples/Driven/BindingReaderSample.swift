@@ -27,10 +27,10 @@ struct BindingReaderSample: SampleContent, ExampleContent {
             ConvertedMeter(level: $level)
         }
 
-        private struct Knob: ContentView {
+        private struct Knob: View {
             @Binding var level: Double
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     Slider($level)
                         .motion(.eased(600, .cubicOut))
@@ -43,10 +43,10 @@ struct BindingReaderSample: SampleContent, ExampleContent {
             }
         }
 
-        private struct ReadingMeter: ContentView {
+        private struct ReadingMeter: View {
             @Binding var level: Double
 
-            var content: some View {
+            var body: some View {
                 let count = debugInfo()          // this view's own build count
 
                 return VStack {
@@ -57,10 +57,10 @@ struct BindingReaderSample: SampleContent, ExampleContent {
             }
         }
 
-        private struct ConvertedMeter: ContentView {
+        private struct ConvertedMeter: View {
             @Binding var level: Double
 
-            var content: some View {
+            var body: some View {
                 let count = debugInfo()          // stays at one
 
                 return VStack {
@@ -73,7 +73,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             Knob(level: $level)
 
@@ -117,10 +117,10 @@ struct BindingReaderSample: SampleContent, ExampleContent {
 }
 
 /// The input, handed the parent's state: drags it and sends it.
-private struct Knob: ContentView {
+private struct Knob: View {
     @Binding var level: Double
 
-    var content: some View {
+    var body: some View {
         VStack {
             Slider($level)
                 .accessibilityIdentifier("bindingReader.level")
@@ -151,10 +151,10 @@ private struct Knob: ContentView {
 
 /// A meter that READS the value: a reader, rebuilt on every report, and it
 /// says so on its own face.
-private struct ReadingMeter: ContentView {
+private struct ReadingMeter: View {
     @Binding var level: Double
 
-    var content: some View {
+    var body: some View {
         // Taken before the container, so it is this view's own reading.
         let count = BuildCount.of(debugInfo())
 
@@ -173,10 +173,10 @@ private struct ReadingMeter: ContentView {
 
 /// A meter handed the same state and CONVERTING it: no reader, never rebuilt,
 /// and it says so too.
-private struct ConvertedMeter: ContentView {
+private struct ConvertedMeter: View {
     @Binding var level: Double
 
-    var content: some View {
+    var body: some View {
         let count = BuildCount.of(debugInfo())
 
         return VStack {

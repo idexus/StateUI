@@ -44,11 +44,11 @@ private struct Areas: ExampleContent {
             SwitchRow("Proportional area", $proportional)
         }
 
-        private struct Marker: ContentView {
+        private struct Marker: View {
             let text: String
             let color: String
 
-            var content: some View {
+            var body: some View {
                 Text(text)
                     .textColor(.white)
                     .background(Color(color))
@@ -57,7 +57,7 @@ private struct Areas: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             // NO BUILD READING HERE. `proportional` is read inside the stack's
             // own braces, and a container describes its children when the
@@ -121,7 +121,7 @@ private struct Layers: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             ZStack {
                 ColorBox(Color("#E53935"))
@@ -151,11 +151,11 @@ private struct Layers: ExampleContent {
 
 /// One labelled marker, so the sample says what is being positioned rather than
 /// how it is drawn.
-private struct Marker: ContentView {
+private struct Marker: View {
     let text: String
     let color: String
 
-    var content: some View {
+    var body: some View {
         Text(text)
             .fontSize(12)
             .textColor(.white)

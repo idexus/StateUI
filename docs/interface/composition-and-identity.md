@@ -7,15 +7,15 @@ meaning.
 
 ## Composed views
 
-A `ContentView` declares one semantic component and returns the views it is
+A `View` declares one semantic component and returns the views it is
 made from:
 
 ```swift
-struct StatusBadge: ContentView {
+struct StatusBadge: View {
     let title: String
     let ready: Bool
 
-    var content: some View {
+    var body: some View {
         HStack {
             ColorBox(ready ? .green : .gray)
                 .width(8)
@@ -36,7 +36,7 @@ every view; a control-specific modifier belongs inside the component, on the
 control that actually implements it.
 
 A composed view does not create an extra native wrapper. Its placeholder gives
-the differ an ownership boundary, then resolves to `content` when that boundary
+the differ an ownership boundary, then resolves to `body` when that boundary
 must be described. This keeps composition cheap while giving local state and
 invalidation a precise owner.
 
@@ -47,10 +47,10 @@ contract across the target platforms or belongs to an optional provider.
 A modifier specific to the composed concept returns another `Self`:
 
 ```swift
-struct Badge: ContentView {
+struct Badge: View {
     private var color = Color.cornflowerBlue
 
-    var content: some View {
+    var body: some View {
         Text("New")
             .textColor(.white)
             .background(color)
@@ -116,10 +116,10 @@ class instance by a stable property it owns rather than by the class value
 itself.
 
 ```swift
-struct FileRow: ContentView {
+struct FileRow: View {
     let path: String
 
-    var content: some View {
+    var body: some View {
         TextField()
             .placeholder(path)
             .id(path)
@@ -245,10 +245,10 @@ creates a feedback loop; every such write needs a stopping condition.
 Call `debugInfo()` inside the description whose work you want to understand:
 
 ```swift
-struct BuildProbe: ContentView {
+struct BuildProbe: View {
     @State private var count = 0
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(debugInfo())
             Button("Build").onClicked { count += 1 }

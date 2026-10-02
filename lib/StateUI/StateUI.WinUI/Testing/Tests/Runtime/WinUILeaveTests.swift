@@ -9,10 +9,10 @@
 import XCTest
 
 /// A page whose note a click takes away.
-struct NotePage: ContentView {
+struct NotePage: View {
     @State private var shown = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             if shown {
                 Text("note")
@@ -137,10 +137,10 @@ private struct LeavingMainWindow: Window {
     var page: any Page { LeavingOpeningPage() }
 }
 
-private struct LeavingOpeningPage: ContentView {
+private struct LeavingOpeningPage: View {
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         let scene = self.scene
         return VStack {
             Button("Open").onClicked { try await scene.openWindow(WindowType("leave.tool")) }

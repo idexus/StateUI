@@ -10,7 +10,41 @@ public protocol ViewProperties: VisualElementProperties {}
 /// the frame report and the context menu only a control can carry. A
 /// modifier on a view gives back a view, so a chain goes on - on `any View`
 /// too.
-public protocol View: VisualElement, ViewProperties, Page, Views where Modified: View {}
+///
+/// A view of the application's own is made of other views, in its `body`:
+///
+///     struct Header: View {
+///         private let title: String
+///
+///         init(_ title: String) {
+///             self.title = title
+///         }
+///
+///         var body: some View {
+///             Text(title).fontSize(28).fontAttributes(.bold)
+///         }
+///     }
+///
+/// `body` is read the first time the view is built, and again when what it
+/// was built with or a state it read changes; otherwise the view is carried
+/// whole.
+///
+/// Configure it the way every control is: what it is goes in the initializer,
+/// with no default, and what a caller may leave out is a modifier returning
+/// `Self` that sets a `private` field. The modifiers every view has work on it
+/// too, written after its own, since they return a `ModifiedContent`:
+///
+///     Header("Settings")
+///         .margin(0, 8)
+///         .gridRow(1)
+public protocol View: VisualElement, ViewProperties, Page, Views where Modified: View {
+    /// The view it is made of.
+    associatedtype Body: View
+
+    /// What this view is made of, read each time the view is built: one view -
+    /// an `if`/`else` of views is one, its branches two elements.
+    @ViewBuilder var body: Body { get }
+}
 
 extension ViewProperties {
     /// The space kept outside the view, between it and its neighbours.
@@ -66,7 +100,7 @@ extension View {
         modified {
             // After the view's own children; the host finds it by type.
             // Design: docs/design/views/modifiers.md#slot-children
-            $0.children.append(Node(contract: ContextMenuContract.self, children: items().map { $0.body }))
+            $0.children.append(Node(contract: ContextMenuContract.self, children: items().map { $0.node }))
         }
     }
 }

@@ -14,12 +14,12 @@ private enum Sheet: Hashable {
 }
 
 /// The page beneath the window's sheets, presenting the first and saying where it stands.
-private struct SheetsPage: ContentView {
+private struct SheetsPage: View {
     let log: Received<String>
     @Binding var sheets: [Sheet]
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let (log, page, sheets) = (log, page, $sheets)
         return VStack {
             Text("beneath")
@@ -39,12 +39,12 @@ private func sheetsOver(_ sheets: State<[Sheet]>, log: Received<String>) -> Moda
 }
 
 /// A page presented on a sheet, which presents another.
-private struct SheetPage: ContentView {
+private struct SheetPage: View {
     let name: String
     @Binding var sheets: [Sheet]
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let page = page
         let name = name
         return VStack {

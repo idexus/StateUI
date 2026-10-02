@@ -164,7 +164,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {

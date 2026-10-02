@@ -91,7 +91,7 @@ enum Holding {
         _ element: String, clips: Bool = false, through: Bool = false, width: Double? = nil, height: Double? = nil,
         _ content: () -> any View
     ) -> ModifiedContent {
-        let held = ModifiedContent(node: content().body)
+        let held = ModifiedContent(node: content().node)
         var worn: [any Worn] = [Write(LayoutContract.clipsContent, clips), Write(LayoutContract.letsInputThrough, through)]
         if let width {
             worn += [Write(VisualElementContract.width, width), Write(ViewContract.horizontalAlignment, Alignment.start)]
@@ -106,6 +106,6 @@ enum Holding {
         case "ZStack": dressing.dress(ZStack { held })
         default: dressing.dress(VStack { held })
         }
-        return ModifiedContent(node: layout.body)
+        return ModifiedContent(node: layout.node)
     }
 }

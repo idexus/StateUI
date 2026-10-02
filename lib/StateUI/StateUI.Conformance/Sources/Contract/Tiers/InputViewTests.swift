@@ -142,6 +142,6 @@
         case "TextField": dressing.dress(TextField(words.projectedValue))
         default: Text("no field of \(element)")
         }
-        return ModifiedContent(node: field.body)
+        return ModifiedContent(node: field.node)
     }
 }

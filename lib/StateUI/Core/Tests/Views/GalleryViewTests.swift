@@ -232,7 +232,7 @@ final class GalleryViewTests: XCTestCase {
                 return Text("\(number)")
             }
             .position(standing.projectedValue)
-            .body
+            .node
         }
 
         _ = laid(renders, tree)
@@ -265,7 +265,7 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         // The FIRST message is where a registration is written: the second
         // says nothing about a tie that did not change.
-        let showing = laid(renders, { self.gallery(6).body }).first
+        let showing = laid(renders, { self.gallery(6).node }).first
 
         guard let scroller = find(.scrollView, in: showing)?.driven?[.scrollOffset]?.state else {
             XCTFail("the gallery's scroller is moved by no number")
@@ -290,7 +290,7 @@ final class GalleryViewTests: XCTestCase {
 
     func testTheChosenCardStandsInTheMiddle() {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(3).body }).patch
+        let showing = laid(renders, { self.gallery(3).node }).patch
 
         // 352 wide is room for exactly one card at half of it: 176 by 248 in
         // the middle.
@@ -304,7 +304,7 @@ final class GalleryViewTests: XCTestCase {
     /// there are.
     func testARowPutsTheCardsSideBySide() {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(3).arrangement(.row).body }).patch
+        let showing = laid(renders, { self.gallery(3).arrangement(.row).node }).patch
 
         assertCard(showing, 0, Rect(88, 76, 176, 248))
         assertCard(showing, 1, Rect(200.64, 76, 176, 248))
@@ -314,7 +314,7 @@ final class GalleryViewTests: XCTestCase {
     /// well as to the side.
     func testAFanLeansTheCardsOutAndSinksThem() {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(3).arrangement(.fan).body }).patch
+        let showing = laid(renders, { self.gallery(3).arrangement(.fan).node }).patch
 
         assertCard(showing, 0, Rect(88, 76, 176, 248))
         assertCard(showing, 1, Rect(158.4, 92.12, 176, 248))
@@ -328,7 +328,7 @@ final class GalleryViewTests: XCTestCase {
     /// size in a card too narrow to hold it.
     func testASmallRoomShowsTheSameGallerySmaller() {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(3).body }, width: 264, height: 400).patch
+        let showing = laid(renders, { self.gallery(3).node }, width: 264, height: 400).patch
 
         // The rectangle is the size the card was told, in the middle of the
         // room: 176 by 248 about (132, 200).
@@ -350,7 +350,7 @@ final class GalleryViewTests: XCTestCase {
         // Room for twice a card, so the ceiling is what answers: 242 by 341,
         // in the middle of a thousand by 575.
         let showing = laid(
-            renders, { self.gallery(3).body }, width: 1000, height: 575.36).patch
+            renders, { self.gallery(3).node }, width: 1000, height: 575.36).patch
 
         assertCard(showing, 0, Rect(412, 163.68, 176, 248))
         XCTAssertEqual(scale(showing, 0), 1.1 * 1.375, accuracy: 0.001)
@@ -361,7 +361,7 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let showing = laid(
             renders,
-            { self.gallery(3).itemSize(width: 100, height: 100).body }).patch
+            { self.gallery(3).itemSize(width: 100, height: 100).node }).patch
 
         // Half of 352 is 176, which is 1.76 cards, and 400 within 116 is 3.45
         // - so the ceiling answers, and a 100-square card is drawn at 137.5.
@@ -377,7 +377,7 @@ final class GalleryViewTests: XCTestCase {
     /// SHADE and keeps the card nearly opaque - which is the whole point, a
     /// faded card on a wheel showing the card behind it rather than the page.
     func testAShadedGalleryDarkensWhereItWouldHaveFaded() {
-        let plain = settled { self.gallery(5).body }
+        let plain = settled { self.gallery(5).node }
 
         guard let without = placements(plain).last?.opacity else {
             return XCTFail("a far card said nothing about how opaque it is")
@@ -386,7 +386,7 @@ final class GalleryViewTests: XCTestCase {
         let shaded = settled {
             self.gallery(5)
                 .shade(ColorBox(Color("#000000")).cornerRadius(16))
-                .body
+                .node
         }
 
         guard let with = placements(shaded).last?.opacity else {
@@ -421,7 +421,7 @@ final class GalleryViewTests: XCTestCase {
     func testEachStrengthIsTheAuthorsToTurnDown() {
         func farCard(_ build: (GalleryView<Range<Int>, Int>) -> GalleryView<Range<Int>, Int>)
             -> (opacity: Double, shade: Double) {
-            let card = board(settled { build(self.gallery(5)).body }).children[4]
+            let card = board(settled { build(self.gallery(5)).node }).children[4]
 
             guard case .number(let opacity)? = card.props[.opacity] else { return (1, 0) }
 
@@ -460,7 +460,7 @@ final class GalleryViewTests: XCTestCase {
             placements(settled {
                 self.gallery(5)
                     .shade(ColorBox(Color("#000000")), amount: amount)
-                    .body
+                    .node
             }).last?.shade ?? -1
         }
 
@@ -481,7 +481,7 @@ final class GalleryViewTests: XCTestCase {
     /// of a card wherever the run stands.
     func testTheRunIsAsLongAsTheCardsItHas() throws {
         func length(_ count: Int) throws -> Double {
-            let showing = laid(Renders(), { self.gallery(count).body })
+            let showing = laid(Renders(), { self.gallery(count).node })
 
             return try XCTUnwrap(find(.colorBox, in: showing.patch)?.props[.width]?.number)
         }
@@ -501,7 +501,7 @@ final class GalleryViewTests: XCTestCase {
     func testTheRunNamesTheCardItPasses() throws {
         let renders = Renders()
         let shown = State(0)
-        let showing = laid(renders, { self.gallery(5).position(shown.projectedValue).body })
+        let showing = laid(renders, { self.gallery(5).position(shown.projectedValue).node })
         let offset = try XCTUnwrap(find(.scrollView, in: showing.first)?.driven?[.scrollOffset]?.state)
         let step = try XCTUnwrap(travel(showing.patch, cards: 5))
         let board = Renderer.shared.board(for: .display)
@@ -534,7 +534,7 @@ final class GalleryViewTests: XCTestCase {
     /// stands. A run already on a card is left there.
     func testARunAtRestBetweenTwoCardsTravelsOnToTheNearer() throws {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(5).body })
+        let showing = laid(renders, { self.gallery(5).node })
         let scroller = try XCTUnwrap(find(.scrollView, in: showing.first))
         let offset = try XCTUnwrap(scroller.driven?[.scrollOffset]?.state)
         let stopped = try XCTUnwrap(scroller.events?[.scrollStopped])
@@ -579,7 +579,7 @@ final class GalleryViewTests: XCTestCase {
     /// rectangle taken through the shape's own scale.
     func testATapIsAnsweredOnTheCardInFront() throws {
         let renders = Renders()
-        let shown = laid(renders, { self.gallery(5).onItemTapped { _ in }.body })
+        let shown = laid(renders, { self.gallery(5).onItemTapped { _ in }.node })
 
         // The event rides the description; WHERE the box stands does not - it
         // follows the offset on the reader's own number, so it is read off that.
@@ -599,7 +599,7 @@ final class GalleryViewTests: XCTestCase {
     /// And a gallery nobody asked for a tap lays no target at all.
     func testAGalleryNobodyAskedForATapAnswersNone() throws {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(5).body }).first
+        let showing = laid(renders, { self.gallery(5).node }).first
 
         XCTAssertNil(tappable(in: showing))
     }
@@ -612,14 +612,14 @@ final class GalleryViewTests: XCTestCase {
     func testTheCardInFrontIsPressedWhileTheTapIsAnswered() async throws {
         let renders = Renders()
         let view = gallery(5).onItemTapped { _ in }
-        let showing = laid(renders, { view.body }).first
+        let showing = laid(renders, { view.node }).first
 
         let target = try XCTUnwrap(tappable(in: showing))
         let tap = try XCTUnwrap(target.events?[.tapped])
 
         XCTAssertTrue(renders.fire(tap))
 
-        XCTAssertEqual(faces(in: renders.render(view.body)).first, .number(0.96))
+        XCTAssertEqual(faces(in: renders.render(view.node)).first, .number(0.96))
 
         // AND IT LETS GO BY ITSELF. Drained to the end rather than left
         // holding: a handler still part-way through is a job queued on this
@@ -631,7 +631,7 @@ final class GalleryViewTests: XCTestCase {
         while Date() < deadline, back == nil {
             stateUIRunJobs()
             try? await Task.sleep(nanoseconds: 5_000_000)
-            back = faces(in: renders.render(view.body)).first
+            back = faces(in: renders.render(view.node)).first
         }
 
         XCTAssertEqual(back, .number(1))
@@ -710,7 +710,7 @@ final class GalleryViewTests: XCTestCase {
     /// user's hand is stopped, and there is nothing left to stop it with.
     func testAGalleryNobodyMaySwipeLaysNoScroller() {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(3).isSwipeEnabled(false).body }).first
+        let showing = laid(renders, { self.gallery(3).isSwipeEnabled(false).node }).first
 
         XCTAssertNil(find(.scrollView, in: showing))
         XCTAssertNotNil(find(.zStack, in: showing))
@@ -722,7 +722,7 @@ final class GalleryViewTests: XCTestCase {
         let patch = renders.render(
             GalleryView([Int]()) { number in Text("\(number)") }
                 .emptyView(Text("nothing here"))
-                .body)
+                .node)
 
         XCTAssertNil(find(.zStack, in: patch))
         XCTAssertEqual(find(.text, in: patch)?.props[.text], .string("nothing here"))
@@ -735,7 +735,7 @@ final class GalleryViewTests: XCTestCase {
     /// out from - and turning one cycle answers where the cards go.
     func testTheCardsArePlacedByAStateTheHostTurns() throws {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(3).body }).first
+        let showing = laid(renders, { self.gallery(3).node }).first
         let placer = board(showing)
 
         XCTAssertEqual(placer.driven?[.area]?.kind, .placement)
@@ -758,7 +758,7 @@ final class GalleryViewTests: XCTestCase {
     /// said. Without that the host could not tell a card wearing NONE of a
     /// shade from a run that has no shade at all, both of which say nought.
     func testAGallerySaysWhetherItHasAShadeAtAll() {
-        let bare = placements(laid(Renders(), { self.gallery(3).body }).first)
+        let bare = placements(laid(Renders(), { self.gallery(3).node }).first)
 
         XCTAssertEqual(bare.first?.shade, PackedPlacement.unshaded, """
             a gallery given no shade view says so on every card, whatever \
@@ -766,7 +766,7 @@ final class GalleryViewTests: XCTestCase {
             """)
 
         let shaded = placements(
-            laid(Renders(), { self.gallery(3).shade(ColorBox(.black)).body }).first)
+            laid(Renders(), { self.gallery(3).shade(ColorBox(.black)).node }).first)
 
         XCTAssertEqual(shaded.first?.shade, 0, "the card in front wears none of it")
         XCTAssertTrue((shaded.last?.shade ?? -1) > 0, "and a card behind it wears some")
@@ -783,15 +783,15 @@ final class GalleryViewTests: XCTestCase {
     func testAChangeOfShapeReachesTheCards() {
         let renders = Renders()
 
-        _ = laid(renders, { self.gallery(3).body })
+        _ = laid(renders, { self.gallery(3).node })
 
         // The shape is worn a render LATE, so the first of these fires the
         // handler that writes it down and the second is the one that wears it.
-        _ = renders.render(self.gallery(3).arrangement(.row).body)
+        _ = renders.render(self.gallery(3).arrangement(.row).node)
 
-        let lined = placements(renders.render(self.gallery(3).arrangement(.row).body))
+        let lined = placements(renders.render(self.gallery(3).arrangement(.row).node))
 
-        _ = renders.render(self.gallery(3).arrangement(.fan).body)
+        _ = renders.render(self.gallery(3).arrangement(.fan).node)
 
         let fanned = placements(renders.revisit(changed: Renderer.shared.pendingChanges))
 
@@ -856,7 +856,7 @@ final class GalleryViewTests: XCTestCase {
             Renderer.shared.clearStates()
             StandardEnvironment.device.formFactor = formFactor
 
-            let showing = laid(Renders(), { self.gallery(5).body }).first
+            let showing = laid(Renders(), { self.gallery(5).node }).first
 
             XCTAssertEqual(
                 hears(.panUpdated, in: showing),

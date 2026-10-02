@@ -124,10 +124,10 @@ interface clock, use `Ticker`, which advances a deadline and spends that
 lateness instead of adding it to the next interval.
 
 ```swift
-struct Countdown: ContentView {
+struct Countdown: View {
     @State private var ticker = Ticker(every: .seconds(1), limit: 10)
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("\((ticker.limit ?? 0) - ticker.ticks)")
 

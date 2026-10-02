@@ -58,7 +58,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             // A CONVERTER. The host works the words out on its own frames and
             // wears them, so nothing here is described again - this count

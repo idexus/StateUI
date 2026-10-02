@@ -82,12 +82,12 @@
 }
 
 /// A page that shows `element`'s specimen wearing `worn` and takes it away again, a click on its toggle each way.
-struct ComingAndGoing: ContentView {
+struct ComingAndGoing: View {
     let element: String
     let worn: [any Worn]
     @State private var shown = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             if shown {
                 Specimens.view(element, worn)

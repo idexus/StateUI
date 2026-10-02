@@ -9,11 +9,11 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A view that says when it comes and goes, into a log it is lent.
-private struct Coming: ContentView {
+private struct Coming: View {
     @Binding var log: [String]
     let name: String
 
-    var content: some View {
+    var body: some View {
         Text(name)
             .onCreated { log.append("created \(name)") }
             .onDestroying { log.append("destroying \(name)") }
@@ -21,11 +21,11 @@ private struct Coming: ContentView {
 }
 
 /// Another kind of view drawing what `Coming` draws, saying when it comes and goes.
-private struct Arriving: ContentView {
+private struct Arriving: View {
     @Binding var log: [String]
     let name: String
 
-    var content: some View {
+    var body: some View {
         Text(name)
             .onCreated { log.append("created \(name)") }
             .onDestroying { log.append("destroying \(name)") }
@@ -38,10 +38,10 @@ private func chosen(_ arriving: Bool, log: Binding<[String]>) -> any View {
 }
 
 /// A view holding another, both saying when they come and go.
-private struct Holding: ContentView {
+private struct Holding: View {
     @Binding var log: [String]
 
-    var content: some View {
+    var body: some View {
         VStack {
             Coming(log: $log, name: "inner")
         }
@@ -51,11 +51,11 @@ private struct Holding: ContentView {
 }
 
 /// A view whose own state is changed while it stands and read as it leaves.
-private struct Drafting: ContentView {
+private struct Drafting: View {
     @Binding var log: [String]
     @State private var draft = "typed"
 
-    var content: some View {
+    var body: some View {
         Button(draft)
             .onClicked { draft = "edited" }
             .onDestroying { log.append("saved \(draft)") }
@@ -73,7 +73,7 @@ final class LifetimeTests: XCTestCase {
     func testAnElementRunsOnCreatedOnceAsItComesIntoTheTree() {
         let log = State(wrappedValue: [String]())
         let renders = Renders()
-        let tree = { VStack { Coming(log: log.projectedValue, name: "a") }.body }
+        let tree = { VStack { Coming(log: log.projectedValue, name: "a") }.node }
 
         renders.render(tree())
         XCTAssertEqual(log.wrappedValue, ["created a"])
@@ -94,7 +94,7 @@ final class LifetimeTests: XCTestCase {
                 if shown.wrappedValue {
                     Coming(log: log.projectedValue, name: "a")
                 }
-            }.body
+            }.node
         }
 
         renders.render(tree())
@@ -115,7 +115,7 @@ final class LifetimeTests: XCTestCase {
                 if shown.wrappedValue {
                     Holding(log: log.projectedValue)
                 }
-            }.body
+            }.node
         }
 
         renders.render(tree())
@@ -138,7 +138,7 @@ final class LifetimeTests: XCTestCase {
                 if shown.wrappedValue {
                     Drafting(log: log.projectedValue)
                 }
-            }.body
+            }.node
         }
 
         let first = renders.render(tree())
@@ -167,7 +167,7 @@ final class LifetimeTests: XCTestCase {
             VStack {
                 Coming(log: log.projectedValue, name: "\(identity.wrappedValue)")
                     .id(identity.wrappedValue)
-            }.body
+            }.node
         }
 
         renders.render(tree())
@@ -184,7 +184,7 @@ final class LifetimeTests: XCTestCase {
         let log = State(wrappedValue: [String]())
         let arriving = State(wrappedValue: false)
         let renders = Renders()
-        let tree = { VStack { ModifiedContent(node: chosen(arriving.wrappedValue, log: log.projectedValue).body) }.body }
+        let tree = { VStack { ModifiedContent(node: chosen(arriving.wrappedValue, log: log.projectedValue).node) }.node }
 
         renders.render(tree())
         arriving.wrappedValue = true
@@ -203,7 +203,7 @@ final class LifetimeTests: XCTestCase {
         renders.render(VStack {
             Coming(log: log.projectedValue, name: "a")
                 .onCreated { log.wrappedValue.append("written on it") }
-        }.body)
+        }.node)
 
         XCTAssertEqual(log.wrappedValue, ["created a", "written on it"])
     }
@@ -221,7 +221,7 @@ final class LifetimeTests: XCTestCase {
                 LifetimePage()
             }
             .onCreated { log.wrappedValue.append("created stack") }
-            .body)
+            .node)
 
         XCTAssertEqual(log.wrappedValue, ["created stack"])
     }
@@ -292,10 +292,10 @@ private struct TitlingWindow: Window {
 }
 
 /// A page that names the window it is in as it comes into the tree.
-private struct TitlingPage: ContentView {
+private struct TitlingPage: View {
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         Text("hello").onCreated { window.title = "Titled" }
     }
 }
@@ -311,10 +311,10 @@ private struct ChainingWindow: Window {
 }
 
 /// A page whose count moves every time it is seen to have moved.
-private struct ChainingPage: ContentView {
+private struct ChainingPage: View {
     @State private var count = 0
 
-    var content: some View {
+    var body: some View {
         Text("\(count)")
             .onCreated { count += 1 }
             .onChanged(count) { count += 1 }
@@ -322,6 +322,6 @@ private struct ChainingPage: ContentView {
 }
 
 /// A page with nothing on it, for a stack to hold.
-private struct LifetimePage: ContentView {
-    var content: some View { Text("page") }
+private struct LifetimePage: View {
+    var body: some View { Text("page") }
 }

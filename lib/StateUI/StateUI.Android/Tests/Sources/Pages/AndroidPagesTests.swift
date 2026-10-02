@@ -609,14 +609,14 @@ extension AndroidPagesTests {
 }
 
 /// A page on a blue ground with its words 8 points in, saying whether its bar shows and has a way back.
-private struct FurnishedPage: ContentView {
+private struct FurnishedPage: View {
     let title: String
     var hasBackButton = true
     var hasNavigationBar = true
 
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let page = self.page
         let title = self.title
         let back = hasBackButton
@@ -632,11 +632,11 @@ private struct FurnishedPage: ContentView {
 }
 
 /// A page whose search field stands in its bar in place of its title.
-private struct SearchingPage: ContentView {
+private struct SearchingPage: View {
     @Environment private var page: PageSession
     @State private var query = ""
 
-    var content: some View {
+    var body: some View {
         let page = self.page
         let query = $query
         return Text("Results")
@@ -657,13 +657,13 @@ private func sheetsPage(
 }
 
 /// A page that tells its scene as it comes.
-private struct ScenePage: ContentView {
+private struct ScenePage: View {
     let log: Received<String>
     let scenes: Received<SceneSession>
 
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         let (scenes, scene) = (self.scenes, self.scene)
         return TitledPage(title: "Page", log: log).onCreated { scenes.values.append(scene) }
     }
@@ -683,7 +683,7 @@ private func drawerOverStack(sidebar: any Page) -> any Page {
 }
 
 /// A page that names itself, and writes each phase it hears into `log`.
-private struct TitledPage: ContentView {
+private struct TitledPage: View {
     let title: String
     var icon: ImageSource? = nil
     var log: Received<String>? = nil
@@ -691,7 +691,7 @@ private struct TitledPage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let log = self.log
         let title = self.title
         let page = self.page

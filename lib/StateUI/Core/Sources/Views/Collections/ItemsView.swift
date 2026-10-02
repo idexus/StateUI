@@ -19,7 +19,7 @@
 ///
 /// An item names itself by `String(describing:)` of its identity, so two items
 /// must describe differently.
-public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentView {
+public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: View {
     /// The items, their identities and their views - one source a build.
     private let source: ItemsSource<Items, Id>
 
@@ -56,10 +56,10 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
     /// The platform's collection - or, while there are no items, the empty
     /// view in its place.
-    public var content: some View {
+    public var body: some View {
         source.finish(header: headerView, footer: footerView)
         // The empty view is held as `any View`, so both answers go as nodes.
-        if source.entries.isEmpty, let empty { return ModifiedContent(node: empty.body) }
+        if source.entries.isEmpty, let empty { return ModifiedContent(node: empty.node) }
 
         let source = self.source
         let realized = self.realized
@@ -111,7 +111,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
             element.node.addHandler(ItemsViewContract.endReached.token, endReached.handler)
         }
 
-        return ModifiedContent(node: element.body)
+        return ModifiedContent(node: element.node)
     }
 }
 
@@ -207,6 +207,6 @@ extension ItemsView {
 }
 
 /// The platform's collection an ItemsView stands on.
-struct ItemsViewElement: View {
+struct ItemsViewElement: ElementView {
     var node = Node(contract: ItemsViewContract.self)
 }

@@ -418,13 +418,13 @@ struct Contact: Hashable {
     let phone: String
 }
 
-struct ContactsPage: ContentView {
+struct ContactsPage: View {
     @State private var chosen: String?
     @Aim(ItemsViewContract.self) private var list
 
     let contacts: [Contact]
 
-    var content: some View {
+    var body: some View {
         Grid {
             ItemsView(contacts, id: \.name) { contact in
                 VStack {
@@ -473,6 +473,6 @@ end - once, until they scroll away or the list gains items - and
 ## Choosing a control
 
 Prefer the smallest accepted native primitive that expresses the behavior.
-Compose richer application controls as `ContentView`s. Add a base control only
+Compose richer application controls as `View`s. Add a base control only
 when the capability has one coherent meaning across target toolkits or belongs
 to a clearly optional provider package.

@@ -19,10 +19,10 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// Reads the battery - the view a report should rebuild.
-private struct BatteryLabel: ContentView {
+private struct BatteryLabel: View {
     @Environment var battery: Battery
 
-    var content: some View {
+    var body: some View {
         ModifiedContent(node: label("\(Int(battery.chargeLevel * 100))% \(battery.state)"))
     }
 }
@@ -31,22 +31,22 @@ private struct BatteryLabel: ContentView {
 /// ARGUMENT, inside a container's builder - which is the shape a page's own
 /// heading is written in, and a different one from reading a provider
 /// straight into a label.
-private struct Heading: ContentView {
+private struct Heading: View {
     @Environment var display: DeviceDisplay
 
     /// Whether the heading fits - the question a page asks of the screen.
     var fits: Bool { display.orientation != .landscape }
 
-    var content: some View {
+    var body: some View {
         ModifiedContent(node: label(fits ? "fits" : "too wide"))
     }
 }
 
 /// Reads nothing of the environment - the view a report must leave alone.
-private struct Bystander: ContentView {
+private struct Bystander: View {
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return ModifiedContent(node: label("still"))
     }
@@ -122,7 +122,7 @@ final class HostEnvironmentTests: XCTestCase {
     func testAStandardProviderResolvesWithNothingProvided() {
         let renders = Renders()
 
-        let patch = renders.render(stack([BatteryLabel().body], id: "root"))
+        let patch = renders.render(stack([BatteryLabel().node], id: "root"))
 
         XCTAssertEqual(
             patch.child(.auto(1))?.props["text"], .string("-100% unknown"),
@@ -134,8 +134,8 @@ final class HostEnvironmentTests: XCTestCase {
         let builds = Builds()
 
         renders.render(stack([
-            BatteryLabel().body,
-            Bystander(builds: builds).body,
+            BatteryLabel().node,
+            Bystander(builds: builds).node,
         ], id: "root"))
         XCTAssertEqual(builds.count, 1)
 
@@ -153,7 +153,7 @@ final class HostEnvironmentTests: XCTestCase {
     /// that reports on every tick of its battery or its network costs nothing between real changes.
     func testAReportThatChangesNothingAsksForNoRender() {
         let renders = Renders()
-        renders.render(stack([BatteryLabel().body], id: "root"))
+        renders.render(stack([BatteryLabel().node], id: "root"))
         let battery = HostBatteryInfo(chargeLevel: 0.5, state: .charging, powerSource: .usb, energySaverStatus: .off)
         let network = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.wiFi])
         let locale = HostLocaleInfo(
@@ -179,7 +179,7 @@ final class HostEnvironmentTests: XCTestCase {
     func testAReportReachesAReaderBehindAComputedProperty() {
         let renders = Renders()
 
-        let first = renders.render(stack([Heading().body], id: "root"))
+        let first = renders.render(stack([Heading().node], id: "root"))
 
         XCTAssertEqual(
             first.child(.auto(1))?.props["text"], .string("fits"),
@@ -208,7 +208,7 @@ final class HostEnvironmentTests: XCTestCase {
 
         Renderer.shared.clearInvalidation()
         let patch = renders.render(
-            stack([BatteryLabel().environment(fake).body], id: "root"))
+            stack([BatteryLabel().environment(fake).node], id: "root"))
 
         XCTAssertEqual(
             patch.child(.auto(1))?.props["text"], .string("7% discharging"),
@@ -216,7 +216,7 @@ final class HostEnvironmentTests: XCTestCase {
     }
 
     func testTheStructuralBuiltResolvesTheStandardProviders() {
-        let tree = stack([BatteryLabel().body], id: "root").built
+        let tree = stack([BatteryLabel().node], id: "root").built
 
         XCTAssertEqual(tree.children[0].props[.text], .string("-100% unknown"))
     }

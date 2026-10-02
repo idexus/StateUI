@@ -10,12 +10,12 @@ import StateUIConformance
 import XCTest
 
 /// A page filled by a button, declaring its menus while a state says so, which tells its scene.
-private struct OverlaidPage: ContentView {
+private struct OverlaidPage: View {
     let menus: State<Bool>
     let scenes: Received<SceneSession>
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         let (menus, scenes, scene) = (self.menus, self.scenes, self.scene)
         return Button("Beneath")
             .horizontalAlignment(.fill)

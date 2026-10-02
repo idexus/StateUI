@@ -10,10 +10,10 @@ import StateUIConformance
 import XCTest
 
 /// A page filled by a button, declaring a notice over its window while a state says so.
-private struct OverlaidPage: ContentView {
+private struct OverlaidPage: View {
     let notice: State<Bool>
 
-    var content: some View {
+    var body: some View {
         let notice = notice
         return Button("Beneath")
             .horizontalAlignment(.fill)
@@ -27,11 +27,11 @@ private struct OverlaidPage: ContentView {
 }
 
 /// A page filled by a button, which tells its scene.
-private struct ScenePage: ContentView {
+private struct ScenePage: View {
     let scenes: Received<SceneSession>
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         let (scenes, scene) = (self.scenes, self.scene)
         return Button("Beneath")
             .horizontalAlignment(.fill)

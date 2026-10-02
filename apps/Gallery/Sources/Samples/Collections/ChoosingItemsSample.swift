@@ -38,7 +38,7 @@ private struct PickList: ExampleContent {
         .rows(.auto, .fill, .auto)
         """
 
-    var content: some View {
+    var body: some View {
         Grid {
             HStack {
                 Button("Top")

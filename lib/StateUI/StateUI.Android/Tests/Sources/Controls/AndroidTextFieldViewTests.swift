@@ -303,11 +303,11 @@ final class AndroidTextFieldViewTests: XCTestCase {
 }
 
 /// A page whose field takes the focus each time the page appears, over a button.
-private struct AimedFieldPage: ContentView {
+private struct AimedFieldPage: View {
     @Environment private var page: PageSession
     @Aim(TextField.self) private var field
 
-    var content: some View {
+    var body: some View {
         let (page, field) = (self.page, self.field)
         return VStack {
             TextField(State(wrappedValue: "").projectedValue).aim(field)

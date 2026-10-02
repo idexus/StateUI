@@ -7,7 +7,7 @@ import StateUI
 /// a page in a list, so a page built from a number is as much a tab as one
 /// written out by hand. Adding one is `tabs.append`, and this page is what the
 /// `TabbedView`'s closure answers for the value.
-struct TabsExtraPage: ContentView {
+struct TabsExtraPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -22,7 +22,7 @@ struct TabsExtraPage: ContentView {
     /// holds while this page is showing.
     let number: Int
 
-    var content: some View {
+    var body: some View {
         ScrollView {
             VStack {
                 SectionTitle("A tab the user added")

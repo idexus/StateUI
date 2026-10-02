@@ -11,10 +11,10 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
         + "is turned - live through a rotation."
 
     static let code = """
-        struct DisplayBadge: ContentView {
+        struct DisplayBadge: View {
             @Environment var display: DeviceDisplay
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The display is read here, so a turn or a resize builds
                     // this closure.
@@ -38,7 +38,7 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

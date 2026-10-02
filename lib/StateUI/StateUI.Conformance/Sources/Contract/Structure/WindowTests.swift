@@ -158,12 +158,12 @@
 }
 
 /// A page saying each phase its window goes through.
-struct WindowPhasePage: ContentView {
+struct WindowPhasePage: View {
     let log: Received<WindowPhase>
 
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         let (log, window) = (self.log, self.window)
         return Text("Window")
             .onCreated { log.values.append(window.phase) }
@@ -197,11 +197,11 @@ struct MainNotesWindow: Window {
 }
 
 /// The page of the main window.
-struct NotesPage: ContentView {
+struct NotesPage: View {
     @Environment private var scene: SceneSession
     @Environment private var application: ApplicationSession
 
-    var content: some View {
+    var body: some View {
         let (scene, application) = (self.scene, self.application)
         return VStack {
             Button("Open").onClicked { try await scene.openWindow(NotesApplication.note, value: 7) }.id("open")

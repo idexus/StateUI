@@ -57,12 +57,12 @@ struct LifetimeSample: SampleContent, ExampleContent {
             }
         }
 
-        struct LifetimeCard: ContentView {
+        struct LifetimeCard: View {
             let number: Int
             @Binding var log: [String]
             @State private var taps = 0
 
-            var content: some View {
+            var body: some View {
                 Button("Card \\(number) · tapped \\(taps)")
                     .onClicked { taps += 1 }
                     // Once, after the render that brings the card in - its
@@ -79,7 +79,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -145,12 +145,12 @@ struct LifetimeSample: SampleContent, ExampleContent {
 }
 
 /// A card that says when it comes and goes, counting its own taps.
-private struct LifetimeCard: ContentView {
+private struct LifetimeCard: View {
     let number: Int
     @Binding var log: [String]
     @State private var taps = 0
 
-    var content: some View {
+    var body: some View {
         Button("Card \(number) · tapped \(taps)")
             .fontSize(15)
             .textColor(.white)

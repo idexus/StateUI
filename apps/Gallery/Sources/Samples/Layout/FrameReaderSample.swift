@@ -73,7 +73,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             // `slot`, `window` and `safe` are read in these braces - the three
             // lines below print all of them - so every frame report builds

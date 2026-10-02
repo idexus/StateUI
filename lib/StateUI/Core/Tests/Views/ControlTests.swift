@@ -48,7 +48,7 @@ private struct ControlCase {
     init(_ name: String, sources: [String], _ element: any Element) {
         self.name = name
         self.sources = sources
-        self.node = element.body
+        self.node = element.node
     }
 }
 
@@ -302,7 +302,7 @@ final class ControlTests: XCTestCase {
                     .selection(chosen.projectedValue)
                     .onItemActivated { _ in }
                     .onEndReached(within: 5) {}
-                    .body.built),
+                    .node.built),
 
             // Both halves of a map: the control, and the pins on it. A Pin is
             // not a control of its own - it is a marker on the map - so this
@@ -912,17 +912,17 @@ final class ControlTests: XCTestCase {
         // Rendered for the numbers the states are issued, which is what the
         // host's writes below are addressed by.
         _ = renders.render(Node(type: "VStack", children: [
-            TextField(text.projectedValue).body,
-            TextEditor(text.projectedValue).id("editor").body,
-            Switch(toggled.projectedValue).body,
-            Slider(volume.projectedValue).body,
-            Picker(["S", "M", "L"]).selectedIndex(size.projectedValue).body,
-            DatePicker(due.projectedValue).body,
-            CheckBox(ticked.projectedValue).id("checkBox").body,
-            RadioButton("Medium").isOn(chosen.projectedValue).id("radio").body,
-            Stepper(servings.projectedValue).id("stepper").body,
-            SearchField(query.projectedValue).id("search").body,
-            TimePicker(alarm.projectedValue).id("time").body,
+            TextField(text.projectedValue).node,
+            TextEditor(text.projectedValue).id("editor").node,
+            Switch(toggled.projectedValue).node,
+            Slider(volume.projectedValue).node,
+            Picker(["S", "M", "L"]).selectedIndex(size.projectedValue).node,
+            DatePicker(due.projectedValue).node,
+            CheckBox(ticked.projectedValue).id("checkBox").node,
+            RadioButton("Medium").isOn(chosen.projectedValue).id("radio").node,
+            Stepper(servings.projectedValue).id("stepper").node,
+            SearchField(query.projectedValue).id("search").node,
+            TimePicker(alarm.projectedValue).id("time").node,
         ]))
 
         // What the user TYPES is the HOST's own write onto the text state,
@@ -968,7 +968,7 @@ final class ControlTests: XCTestCase {
             RadioButton("Medium")
                 .isOn(chosen.projectedValue)
                 .groupName("size")
-                .body)
+                .node)
 
         moved(chosen.number, to: 0)
 
@@ -1054,7 +1054,7 @@ final class ControlTests: XCTestCase {
         let patch = renders.render(
             TextField(text.projectedValue)
                 .onTextChanged { seen.append($0) }
-                .body)
+                .node)
 
         // The host lands the typed words on the state first and raises the
         // event after, which is the order a handler relies on.
@@ -1083,7 +1083,7 @@ final class ControlTests: XCTestCase {
                     stateAsTheHandlerRan.append(size.wrappedValue)
                 }
                 .selectedIndex(size.projectedValue)
-                .body)
+                .node)
 
         // The choice is the HOST's write onto the plain tie, landed before the
         // event it raises beside it - so the handler reads the state already
@@ -1107,7 +1107,7 @@ final class ControlTests: XCTestCase {
             Button("Save")
                 .onClicked { seen.append("first") }
                 .onClicked { seen.append("second") }
-                .body)
+                .node)
 
         renders.fire(handler(patch, "clicked"))
 
@@ -1128,7 +1128,7 @@ final class ControlTests: XCTestCase {
             ToolbarItem("Save")
                 .onClicked { seen.append("first") }
                 .onClicked { seen.append("second") }
-                .body)
+                .node)
 
         renders.fire(handler(bar, "clicked"))
 
@@ -1139,7 +1139,7 @@ final class ControlTests: XCTestCase {
             Pin("Office")
                 .onPinClicked { seen.append("first") }
                 .onPinClicked { seen.append("second") }
-                .body)
+                .node)
 
         renders.fire(handler(pin, "pinClicked"))
 
@@ -1160,7 +1160,7 @@ final class ControlTests: XCTestCase {
             Picker(["S", "M", "L"])
                 .selectedIndex(size.projectedValue)
                 .onSelectedIndexChanged { seen.append($0) }
-                .body)
+                .node)
 
         renders.fire(handler(patch, "selectedIndexChanged"), with: [.string("not-a-number")])
 
@@ -1187,13 +1187,13 @@ final class ControlTests: XCTestCase {
 
         let renders = Renders()
         let patch = renders.render(Node(type: "VStack", children: [
-            Switch(closure).body,
-            Picker(["S", "M", "L"]).selectedIndex(Binding(get: { Int(room.wrappedValue.width) }, set: { room.wrappedValue.width = Double($0) })).body,
-            TextField(text).body,
-            TextEditor(profile.projectedValue.name).id("editor").body,
-            SearchField(text).id("search").body,
-            DatePicker(date).id("date").body,
-            TimePicker(time).id("time").body,
+            Switch(closure).node,
+            Picker(["S", "M", "L"]).selectedIndex(Binding(get: { Int(room.wrappedValue.width) }, set: { room.wrappedValue.width = Double($0) })).node,
+            TextField(text).node,
+            TextEditor(profile.projectedValue.name).id("editor").node,
+            SearchField(text).id("search").node,
+            DatePicker(date).id("date").node,
+            TimePicker(time).id("time").node,
         ]))
 
         XCTAssertEqual(patch.children[0].props[.isOn], .bool(false), "described: the value is written at build")
@@ -1240,7 +1240,7 @@ final class ControlTests: XCTestCase {
                 Text("content")
             }
             .scrollOffset(scrolled.projectedValue)
-            .body)
+            .node)
 
         slid(scrolled.number, to: Point(0, 120))
 
@@ -1260,7 +1260,7 @@ final class ControlTests: XCTestCase {
         let patch = renders.render(
             Slider(volume.projectedValue)
                 .onValueChanged { seen.append($0) }
-                .body)
+                .node)
 
         renders.fire(handler(patch, "valueChanged"), with: [.string("12,5")])
 
@@ -1285,7 +1285,7 @@ final class ControlTests: XCTestCase {
         let patch = renders.render(
             WebView("https://example.com")
                 .onNavigated { seen.append($0) }
-                .body)
+                .node)
 
         renders.fire(handler(patch, "navigated"), with: [
             .enumeration(WebNavigationResult.success.rawValue),
@@ -1320,7 +1320,7 @@ final class ControlTests: XCTestCase {
         let patch = renders.render(
             WebView("https://example.com")
                 .onNavigating { seen.append($0) }
-                .body)
+                .node)
 
         // The reason as a plain NUMBER where a member is wanted - what a host
         // that stopped translating would send.

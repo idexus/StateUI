@@ -37,10 +37,10 @@ struct StackLayoutSample: SampleContent, ExampleContent {
         }
         .spacing(8)
 
-        private struct StackCell: ContentView {
+        private struct StackCell: View {
             let text: String
 
-            var content: some View {
+            var body: some View {
                 Text(text)
                     .textColor(.white)
                     .background(Palette.accent)
@@ -49,7 +49,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             SectionTitle("Vertical")
 
@@ -97,10 +97,10 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 }
 
 /// One block of colour with a word in it, so an arrangement is visible.
-private struct StackCell: ContentView {
+private struct StackCell: View {
     let text: String
 
-    var content: some View {
+    var body: some View {
         Text(text)
             .fontSize(13)
             .textColor(.white)

@@ -22,7 +22,7 @@ import StateUI
 /// Its own modifiers are written FIRST, before the ones every view has:
 /// `.margin` and friends give back a `ModifiedContent`, which is a view and no
 /// longer a `Card`.
-struct Card: ContentView {
+struct Card: View {
     private let title: String
     private let summary: String
     private let action: EventHandler
@@ -57,13 +57,13 @@ struct Card: ContentView {
         return copy
     }
 
-    /// `ContentView`, not `Element`: the press is a piece of `@State`, and
+    /// `View`, not `Element`: the press is a piece of `@State`, and
     /// state on a view needs the placeholder a composed view puts in the tree.
     /// The differ builds the content once it knows this card stood here last
     /// render, and hands the rebuilt `dip` the storage its predecessor held;
     /// an eager `body` would hand out a fresh 1.0 on every render and the dip
     /// would have nowhere to live.
-    var content: some View {
+    var body: some View {
         // Copies for the handler to capture. The locals keep `self` out of
         // the closure, and a BINDING is copied like anything else the
         // handler holds. ConcurrencyTests pins this shape on the library's

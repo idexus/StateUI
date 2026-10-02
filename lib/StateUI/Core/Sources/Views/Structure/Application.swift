@@ -49,10 +49,10 @@ public protocol Application {
 /// runs - its title, its frame, its lifecycle - is its `WindowSession`, in the
 /// environment of everything in it:
 ///
-///     struct MainPage: ContentView {
+///     struct MainPage: View {
 ///         @Environment private var window: WindowSession
 ///
-///         var content: some View {
+///         var body: some View {
 ///             VStack { … }
 ///                 .onCreated {
 ///                     window.title = "My Application"
@@ -66,7 +66,7 @@ public protocol Application {
 /// it, with `.environment(_:)` on the scene or on its `Windows`.
 public protocol Window: Element, Scene {
     /// What the window shows: a `NavigationStack`, a `TabbedView`, a
-    /// `SplitView`, or any other view - usually a `ContentView` of the
+    /// `SplitView`, or any other view - usually a `View` of the
     /// application's own. Read again when a state it read changes. An
     /// `if`/`else` or a `switch` chooses among pages, each a page of its own.
     @PageBuilder var page: any Page { get }
@@ -78,7 +78,7 @@ extension Window {
     public var windows: Windows { Windows(main: { self }) }
 
     /// The window as a node: its page, and the library's overlay over it.
-    public var body: Node {
+    public var node: Node {
         let request = ElementSession(WindowSession.self) { WindowSession() }
 
         var node = composed { request.held(as: WindowSession.self) }
@@ -88,7 +88,7 @@ extension Window {
 
     /// The same, for a window of a scene: the session it keeps.
     /// Design: docs/design/views/pages.md#a-window-is-a-placeholder
-    func body(session: WindowSession) -> Node {
+    func node(session: WindowSession) -> Node {
         var node = composed { session }
 
         // On the placeholder, so the window's own `@Environment` resolves it too.
@@ -131,7 +131,7 @@ extension Node {
         guard let place, let scene else { return nil }
 
         var layer = ZStack().letsInputThrough(true).node
-        layer.children = [InspectorPanel(scene: scene, place: place).body]
+        layer.children = [InspectorPanel(scene: scene, place: place).node]
         return Node(contract: OverlayContract.self, children: [layer])
     }
 }
@@ -148,10 +148,10 @@ extension Node {
 /// everything in it, carrying what the screen is - its title, its buttons,
 /// its menus, its lifecycle:
 ///
-///     struct MainPage: ContentView {
+///     struct MainPage: View {
 ///         @Environment private var page: PageSession
 ///
-///         var content: some View {
+///         var body: some View {
 ///             VStack { … }
 ///                 .onCreated { page.title = "Home" }
 ///         }
@@ -170,7 +170,7 @@ extension Node {
     /// is part of what the page is.
     /// Design: docs/design/views/pages.md#a-page-around-a-view
     static func page(_ shown: any Page) -> Node {
-        let content = shown.body
+        let content = shown.node
         if arrangements.contains(content.type) { return content }
 
         let kind = (content.stateful?.viewType ?? content.type.name) + (content.id.map { "#\($0)" } ?? "")

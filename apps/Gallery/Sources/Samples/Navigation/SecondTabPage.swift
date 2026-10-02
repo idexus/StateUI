@@ -6,7 +6,7 @@ import StateUI
 /// and its own picture through its session's `title` and `icon`.
 /// Its button is `nav.tab = .stack`: the selection is a binding of the
 /// gallery's own type, so moving the tabs from code is an assignment.
-struct SecondTabPage: ContentView {
+struct SecondTabPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -15,7 +15,7 @@ struct SecondTabPage: ContentView {
 
     let nav: Navigation
 
-    var content: some View {
+    var body: some View {
         ScrollView {
             VStack {
                 SectionTitle("The other tab")

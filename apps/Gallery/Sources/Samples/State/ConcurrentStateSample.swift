@@ -77,7 +77,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
         //     total = value
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

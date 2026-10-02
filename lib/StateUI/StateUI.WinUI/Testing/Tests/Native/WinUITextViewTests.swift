@@ -9,10 +9,10 @@ import CStateUIWinUI
 import XCTest
 
 /// One label, its words in spans until a button takes them away.
-private struct SpannedPage: ContentView {
+private struct SpannedPage: View {
     @State private var spanned = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             if spanned {
                 Text("own").spans { TextSpan("runs") }.id("words")

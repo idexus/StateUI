@@ -49,7 +49,7 @@ private struct LayerRows: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             // Nothing here reads the count - a handler reads when it fires -
             // so this closure stands at one build however often you press.
@@ -197,7 +197,7 @@ private struct LayerCost: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             HStack {
                 Button("+1")
@@ -263,14 +263,14 @@ private struct LayerCost: ExampleContent {
 
 /// The block wired to layer one: the number is read inside the closure, so a
 /// press describes every leaf again.
-private struct Described: ContentView {
+private struct Described: View {
     /// Borrowed, and READ inside this view's own closure - which is what
     /// makes that closure the reader and this whole block the price.
     @Binding var counter: Int
 
     let leaves: Int
 
-    var content: some View {
+    var body: some View {
         HStack {
             let began = ContinuousClock.now
 
@@ -303,12 +303,12 @@ private struct Described: ContentView {
 
 /// The same block wired to layer two: the number rides a channel, so this
 /// closure is built once and its clock stands still.
-private struct Channelled: ContentView {
+private struct Channelled: View {
     @Binding var counter: Int
 
     let leaves: Int
 
-    var content: some View {
+    var body: some View {
         HStack {
             let began = ContinuousClock.now
 

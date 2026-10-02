@@ -25,7 +25,7 @@ extension TextProperties {
 ///         .fontSize(20)
 ///         .fontAttributes(.bold)
 ///         .horizontalTextAlignment(.center)
-public struct Text: View, TextElement, FontElement, TextAlignmentElement,
+public struct Text: ElementView, TextElement, FontElement, TextAlignmentElement,
     PaddingElement, LineHeightElement, DecorableTextElement, TextProperties {
     /// The node this control describes.
     public var node: Node
@@ -69,7 +69,7 @@ public struct Text: View, TextElement, FontElement, TextAlignmentElement,
     /// A Text given both runs and a `text` shows the runs.
     public func spans(@SpanBuilder _ spans: () -> [TextSpan]) -> Self {
         modified {
-            $0.children = [Node(contract: SpansContract.self, children: spans().map { $0.body })]
+            $0.children = [Node(contract: SpansContract.self, children: spans().map { $0.node })]
         }
     }
 }

@@ -12,12 +12,12 @@ import XCTest
 
 /// The pane. A page like any other, which is the whole point - and it carries
 /// a title, written as it comes into the tree, so the pane arrives with one.
-private struct MenuPage: ContentView {
+private struct MenuPage: View {
     @Environment private var page: PageSession
     @Binding var section: String
     @Binding var menu: Bool
 
-    var content: some View {
+    var body: some View {
         VStack {
             Button("Today").onClicked {
                 section = "today"
@@ -34,11 +34,11 @@ private struct MenuPage: ContentView {
 
 /// The page under the pane, named for the section it shows - as it comes into
 /// the tree, and again whenever it is handed another.
-private struct DetailPage: ContentView {
+private struct DetailPage: View {
     @Environment private var page: PageSession
     let section: String
 
-    var content: some View {
+    var body: some View {
         ModifiedContent(node: label(section))
             .onCreated { page.title = section }
             .onChanged(section) { page.title = section }
@@ -66,7 +66,7 @@ final class SplitViewTests: XCTestCase {
         let menu = State<Bool>(false)
         let section = State<String>("today")
 
-        let patch = Renders().settled(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = Renders().settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         XCTAssertEqual(patch.type, "SplitView")
         XCTAssertEqual(patch.children.map { $0.id }, [.manual("sidebar"), .manual("detail")])
@@ -80,7 +80,7 @@ final class SplitViewTests: XCTestCase {
         let menu = State<Bool>(true)
         let section = State<String>("today")
 
-        let node = flyout(menu.projectedValue, section.projectedValue).body.built
+        let node = flyout(menu.projectedValue, section.projectedValue).node.built
 
         XCTAssertEqual(node.props["isSidebarVisible"], .bool(true))
     }
@@ -92,10 +92,10 @@ final class SplitViewTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
+        renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         menu.wrappedValue = true
-        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         XCTAssertEqual(patch.props["isSidebarVisible"], .bool(true))
         XCTAssertTrue(patch.children.isEmpty)
@@ -109,7 +109,7 @@ final class SplitViewTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         let archive = patch.child("sidebar")?.children.first?.children.last
         XCTAssertTrue(renders.fire(archive?.events?["clicked"] ?? -1))
@@ -119,7 +119,7 @@ final class SplitViewTests: XCTestCase {
 
         // Which the next render says in one message: the detail page changed
         // and the pane is no longer showing.
-        let next = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
+        let next = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         XCTAssertEqual(next.props["isSidebarVisible"], .bool(false))
         XCTAssertEqual(next.child("detail")?.props["title"], .string("archive"))
@@ -145,7 +145,7 @@ final class SplitViewTests: XCTestCase {
             .title("Diary")
             .barBackgroundColor(Color("#512BD4"))
         }
-        .body
+        .node
 
         // As the message that brings the pages carries them - with the title
         // each wrote into its session on the way in.
@@ -176,7 +176,7 @@ final class SplitViewTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1, with: [.bool(true)]))
         XCTAssertTrue(menu.wrappedValue)
@@ -189,12 +189,12 @@ final class SplitViewTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1, with: [.bool(true)]))
 
         XCTAssertTrue(menu.wrappedValue)
-        XCTAssertTrue(renders.settled(flyout(menu.projectedValue, section.projectedValue).body).isEmpty,
+        XCTAssertTrue(renders.settled(flyout(menu.projectedValue, section.projectedValue).node).isEmpty,
                       "nothing to say after it")
     }
 
@@ -204,7 +204,7 @@ final class SplitViewTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1,
                                    with: [.string("true")]))

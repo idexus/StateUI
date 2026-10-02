@@ -57,13 +57,13 @@ enum Styled {
 }
 
 /// A page whose application wears `Styled.sheet`, holding `inner`.
-struct StyledPage: ContentView {
+struct StyledPage: View {
     let inner: any View
 
     @Environment private var application: ApplicationSession
 
-    var content: some View {
+    var body: some View {
         let (inner, application) = (self.inner, self.application)
-        return VStack { ModifiedContent(node: inner.body) }.onCreated { application.styles = Styled.sheet }
+        return VStack { ModifiedContent(node: inner.node) }.onCreated { application.styles = Styled.sheet }
     }
 }

@@ -59,7 +59,7 @@ struct SizingSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             row("width(120)",
                 ColorBox(Palette.accent).width(120).height(24))

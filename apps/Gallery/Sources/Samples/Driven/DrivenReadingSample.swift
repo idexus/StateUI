@@ -60,7 +60,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

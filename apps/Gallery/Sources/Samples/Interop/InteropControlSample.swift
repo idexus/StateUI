@@ -27,7 +27,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
             public static let members: [any ContractMember] = [signal, lampTapped]
         }
 
-        public struct TrafficLight: View {
+        public struct TrafficLight: ElementView {
             public var node = Node(contract: TrafficLightContract.self)
 
             public init() {}
@@ -480,7 +480,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
             """))
     #endif
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

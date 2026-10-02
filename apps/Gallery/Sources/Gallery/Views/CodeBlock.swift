@@ -6,7 +6,7 @@ import StateUI
 ///
 /// A block scrolls only horizontally. Its page keeps ownership of vertical
 /// scrolling when the pointer is over the listing.
-struct CodeBlock: ContentView {
+struct CodeBlock: View {
     private let code: String
 
     private var spoken: CodeLanguage = .swift
@@ -25,7 +25,7 @@ struct CodeBlock: ContentView {
         return copy
     }
 
-    var content: some View {
+    var body: some View {
         ScrollView {
             snippet
         }

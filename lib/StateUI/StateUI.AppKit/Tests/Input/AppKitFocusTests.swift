@@ -52,12 +52,12 @@ final class AppKitFocusTests: XCTestCase {
 }
 
 /// A field that says whether it has the focus, and two buttons that move it.
-private struct Watching: ContentView {
+private struct Watching: View {
     @State private var name = ""
     @State private var editing = false
     @Aim(TextField.self) private var field
 
-    var content: some View {
+    var body: some View {
         VStack {
             TextField($name).aim(field).isFocused($editing)
             Button("Focus").onClicked { try await field.focus() }

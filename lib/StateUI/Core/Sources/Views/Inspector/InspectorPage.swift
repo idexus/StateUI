@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The page of an inspector's own window.
-struct InspectorPage: ContentView {
+struct InspectorPage: View {
     /// The scene it looks at, by its number.
     let scene: String
 
@@ -12,7 +12,7 @@ struct InspectorPage: ContentView {
     /// The page itself.
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         InspectorView(scene: scene, place: .window, wide: true)
             .onCreated {
                 page.background = Look.ground

@@ -116,10 +116,10 @@ private struct KeptMainWindow: Window {
     var page: any Page { KeptSectionPage() }
 }
 
-private struct KeptSectionPage: ContentView {
+private struct KeptSectionPage: View {
     @State(sceneKey: SceneKey("kept.section", of: Int.self)) private var section = 0
 
-    var content: some View {
+    var body: some View {
         KeptApplication.sections.append(section)
         return Text("section \(section)")
     }

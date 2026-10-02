@@ -17,9 +17,6 @@ public struct MenuItem: Element, MenuItemElement {
         node.write(MenuItemElementContract.text, text)
     }
 
-    /// The node, as every element answers it.
-    public var body: Node { node }
-
     /// Who this entry is among the menu's others, so it stays matched to itself
     /// when the entries around it come and go; without one it is matched by
     /// position. On the menu bar an entry with the id of an entry in the menu

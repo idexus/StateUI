@@ -107,7 +107,7 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostReadsAndReportsTwoWayText() throws {
         let name = State("Ada")
         let renders = Renders()
-        let patch = renders.render(TextField(name.projectedValue).body)
+        let patch = renders.render(TextField(name.projectedValue).node)
 
         guard case .replace(let driven)? = patch.driven else {
             return XCTFail("expected the TextField's state attachment")
@@ -123,7 +123,7 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostRefusesAReportThroughAnOutOnlyAttachment() throws {
         let caption = State("Waiting")
         let renders = Renders()
-        let patch = renders.render(Text().text(caption.projectedValue).body)
+        let patch = renders.render(Text().text(caption.projectedValue).node)
 
         guard case .replace(let driven)? = patch.driven else {
             return XCTFail("expected the Text's state attachment")
@@ -139,7 +139,7 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostCyclePublishesAnApplicationStateWrite() throws {
         let caption = State("Waiting")
         let renders = Renders()
-        let patch = renders.render(Text().text(caption.projectedValue).body)
+        let patch = renders.render(Text().text(caption.projectedValue).node)
 
         guard case .replace(let driven)? = patch.driven else {
             return XCTFail("expected the Text's state attachment")
@@ -225,7 +225,7 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostReportsOnlyTheJourneyGroupsItWalked() throws {
         let fade = State(wrappedValue: 0.0, motion: .eased(400, .linear))
         let renders = Renders()
-        let patch = renders.render(Text("moving").opacity(fade.projectedValue).body)
+        let patch = renders.render(Text("moving").opacity(fade.projectedValue).node)
 
         guard case .replace(let driven)? = patch.driven else {
             return XCTFail("expected the opacity state attachment")

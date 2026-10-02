@@ -34,11 +34,11 @@ private final class PhaseStack {
 }
 
 /// A page that writes down every phase it sees.
-private struct PhasePage: ContentView {
+private struct PhasePage: View {
     @Environment private var page: PageSession
     let stack: PhaseStack
 
-    var content: some View {
+    var body: some View {
         Text("pushed").onChanged(page.phase) { stack.seen.append(page.phase) }
     }
 }

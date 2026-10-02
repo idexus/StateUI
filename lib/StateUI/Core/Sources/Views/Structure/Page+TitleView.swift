@@ -19,7 +19,7 @@ extension PropertyContainer where Self: Page {
     /// - Parameter content: one view - an `if`/`else` is one; put several
     ///   controls in a layout.
     public func titleView<Content: View>(@ViewBuilder _ content: () -> Content) -> Modified {
-        let view = content().body
+        let view = content().node
         return modified {
             // After the element's own children; the host finds it by type.
             // Design: docs/design/views/modifiers.md#slot-children

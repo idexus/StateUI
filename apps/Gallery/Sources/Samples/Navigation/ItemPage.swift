@@ -6,7 +6,7 @@ import StateUI
 /// what lets two of these be on the stack at once showing different things.
 /// The value never crosses to the host: the host is sent the page built from
 /// it, and knows nothing about routes or their arguments.
-struct ItemPage: ContentView {
+struct ItemPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -20,7 +20,7 @@ struct ItemPage: ContentView {
     /// The stack this page is on, so "Back" takes it off.
     @Binding var path: [Route]
 
-    var content: some View {
+    var body: some View {
         ZStack {
             VStack {
                 SectionTitle("Pushed page")

@@ -13,10 +13,10 @@ struct LocaleInfoSample: SampleContent, ExampleContent {
         + "the host's answer, on every platform."
 
     static let code = """
-        struct LocaleBadge: ContentView {
+        struct LocaleBadge: View {
             @Environment var locale: LocaleInfo
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The locale is read here, so a change to it builds this
                     // closure.
@@ -34,7 +34,7 @@ struct LocaleInfoSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

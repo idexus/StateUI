@@ -21,11 +21,11 @@ private enum Sheet: Hashable {
 }
 
 /// The page underneath, which is what presents.
-private struct HomePage: ContentView {
+private struct HomePage: View {
     @Environment private var page: PageSession
     @Binding var sheets: [Sheet]
 
-    var content: some View {
+    var body: some View {
         Button("Settings")
             .onClicked { sheets.append(.settings) }
             .onCreated { page.title = "Home" }
@@ -35,13 +35,13 @@ private struct HomePage: ContentView {
 /// A presented page. It carries its own way out, because a modal covers the
 /// bars as well as the content and there is nothing else to close it with -
 /// and it says what it is called as it comes into the tree.
-private struct SheetPage: ContentView {
+private struct SheetPage: View {
     @Environment private var page: PageSession
     @Binding var sheets: [Sheet]
 
     let name: String
 
-    var content: some View {
+    var body: some View {
         Button("Close")
             .onClicked { sheets.removeLast() }
             .onCreated {
@@ -91,7 +91,7 @@ final class ModalStackTests: XCTestCase {
     func testAWindowWithNothingPresentedShowsTheStacksPageAlone() {
         let sheets = State<[Sheet]>([])
 
-        let patch = Renders().settled(window(sheets.projectedValue).body)
+        let patch = Renders().settled(window(sheets.projectedValue).node)
 
         XCTAssertEqual(patch.children.map { $0.type.name }, ["ModalStack"])
         XCTAssertEqual(patch.children.first?.children.map(\.id), [.manual("root")])
@@ -104,7 +104,7 @@ final class ModalStackTests: XCTestCase {
     func testAPresentedPageIsAChildOfTheStackWearingItsDepth() {
         let sheets = State<[Sheet]>([.settings, .about])
 
-        let stack = Renders().settled(window(sheets.projectedValue).body).children.first
+        let stack = Renders().settled(window(sheets.projectedValue).node).children.first
         let presented = stack?.children.dropFirst()
 
         XCTAssertEqual(presented?.map { $0.id }, [.manual("0/settings"), .manual("1/about")])
@@ -119,14 +119,14 @@ final class ModalStackTests: XCTestCase {
         let sheets = State<[Sheet]>([])
         let renders = Renders()
 
-        let first = renders.settled(window(sheets.projectedValue).body)
+        let first = renders.settled(window(sheets.projectedValue).node)
         let button = first.children.first?.children.first?.children.first
 
         XCTAssertTrue(renders.fire(button?.events?["clicked"] ?? -1))
         XCTAssertEqual(sheets.wrappedValue, [.settings])
 
         let patch = renders.settled(
-            window(sheets.projectedValue).body, changed: Renderer.shared.pendingChanges)
+            window(sheets.projectedValue).node, changed: Renderer.shared.pendingChanges)
         let stack = patch.children.first { $0.type == "ModalStack" }
 
         XCTAssertEqual(stack?.arrangement, [.manual("root"), .manual("0/settings")], "presented over the stack's page")
@@ -139,7 +139,7 @@ final class ModalStackTests: XCTestCase {
         let sheets = State<[Sheet]>([.settings])
         let renders = Renders()
 
-        let first = renders.settled(window(sheets.projectedValue).body)
+        let first = renders.settled(window(sheets.projectedValue).node)
         let close = first.children.first { $0.type == "ModalStack" }?
             .children.last?.children.first
 
@@ -147,7 +147,7 @@ final class ModalStackTests: XCTestCase {
         XCTAssertEqual(sheets.wrappedValue, [])
 
         let patch = renders.settled(
-            window(sheets.projectedValue).body, changed: Renderer.shared.pendingChanges)
+            window(sheets.projectedValue).node, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(patch.children.first { $0.type == "ModalStack" }?.arrangement, [.manual("root")])
     }
@@ -160,7 +160,7 @@ final class ModalStackTests: XCTestCase {
         let sheets = State<[Sheet]>([.settings])
         let renders = Renders()
 
-        let patch = renders.settled(window(sheets.projectedValue).body)
+        let patch = renders.settled(window(sheets.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.children.first?.events?["popped"] ?? -1, with: [.number(0)]))
         XCTAssertEqual(sheets.wrappedValue, [])
@@ -172,7 +172,7 @@ final class ModalStackTests: XCTestCase {
         let sheets = State<[Sheet]>([.settings, .about])
         let renders = Renders()
 
-        let patch = renders.settled(window(sheets.projectedValue).body)
+        let patch = renders.settled(window(sheets.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.children.first?.events?["popped"] ?? -1, with: [.number(1)]))
         XCTAssertEqual(sheets.wrappedValue, [.settings])
@@ -185,7 +185,7 @@ final class ModalStackTests: XCTestCase {
         let sheets = State<[Sheet]>([])
         let renders = Renders()
 
-        let patch = renders.settled(window(sheets.projectedValue).body)
+        let patch = renders.settled(window(sheets.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.children.first?.events?["popped"] ?? -1, with: [.number(2)]))
         XCTAssertEqual(sheets.wrappedValue, [])
@@ -196,7 +196,7 @@ final class ModalStackTests: XCTestCase {
         let sheets = State<[Sheet]>([.settings])
         let renders = Renders()
 
-        let patch = renders.settled(window(sheets.projectedValue).body)
+        let patch = renders.settled(window(sheets.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.children.first?.events?["popped"] ?? -1, with: [.string("0")]))
         XCTAssertEqual(sheets.wrappedValue, [.settings])
@@ -212,7 +212,7 @@ final class ModalStackTests: XCTestCase {
         let path = State<[Int]>([1])
 
         let window = Renders().settled(
-            TestWindow(sheets: sheets.projectedValue, path: path.projectedValue).body)
+            TestWindow(sheets: sheets.projectedValue, path: path.projectedValue).node)
 
         XCTAssertEqual(window.children.map(\.type), [.modalStack])
         XCTAssertEqual(window.eventNames, HostPatch.windowEvents)

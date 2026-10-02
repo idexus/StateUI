@@ -21,7 +21,7 @@ struct SearchSample: SampleContent, ExampleContent {
 
         @State private var query = ""
 
-        var content: some View {
+        var body: some View {
             VStack {
                 // The query and the matches are read here, so every keystroke
                 // in the bar builds this closure.
@@ -53,7 +53,7 @@ struct SearchSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

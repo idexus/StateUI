@@ -375,7 +375,7 @@ final class GTKPagesTests: XCTestCase {
 
 /// A page with a title, maybe a log of its phases, the actions it puts on its header bar, and whether it hides its
 /// navigation bar.
-struct TitledPage: ContentView {
+struct TitledPage: View {
     let title: String
     var log: Received<String>? = nil
     var actions: [ToolbarItem] = []
@@ -384,7 +384,7 @@ struct TitledPage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let log = self.log
         let title = self.title
         let page = self.page
@@ -401,11 +401,11 @@ struct TitledPage: ContentView {
 }
 
 /// A page whose title view is a search field.
-private struct SearchingPage: ContentView {
+private struct SearchingPage: View {
     @Environment private var page: PageSession
     @State private var query = ""
 
-    var content: some View {
+    var body: some View {
         let page = self.page
         let query = $query
         return Text("Results")

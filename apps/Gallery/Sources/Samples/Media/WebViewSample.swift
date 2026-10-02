@@ -31,7 +31,7 @@ private struct WebBrowserPart: ExampleContent {
     @Aim(WebView.self) private var browser
 
     static let code = """
-        struct WebBrowserPart: ContentView {
+        struct WebBrowserPart: View {
             @State private var hasBack = false
             @State private var hasForward = false
             @State private var status = "nothing has loaded yet"
@@ -39,7 +39,7 @@ private struct WebBrowserPart: ExampleContent {
 
             @Aim(WebView.self) private var browser
 
-            var content: some View {
+            var body: some View {
                 Grid {
                     VStack {
                         // The history flags are read by this bar, so every
@@ -100,7 +100,7 @@ private struct WebBrowserPart: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         Grid {
             VStack {
                 DebugInfoLabel()
@@ -195,15 +195,15 @@ private struct WebBrowserPart: ExampleContent {
 /// network.
 private struct WrittenInPlacePart: ExampleContent {
     static let code = """
-        struct WrittenInPlacePart: ContentView {
-            var content: some View {
+        struct WrittenInPlacePart: View {
+            var body: some View {
                 WebView()
                     .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
             }
         }
         """
 
-    var content: some View {
+    var body: some View {
         WebView()
             .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
     }

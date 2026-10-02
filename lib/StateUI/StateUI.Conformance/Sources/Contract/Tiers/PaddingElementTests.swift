@@ -55,7 +55,7 @@
 enum Padded {
     /// A layout of `element`'s kind holding `content`, `padding` in.
     static func layout(_ element: String, padding: Insets, _ content: () -> any View) -> ModifiedContent {
-        let held = ModifiedContent(node: content().body)
+        let held = ModifiedContent(node: content().node)
         let dressing = Dressing([Write(PaddingElementContract.padding, padding)], id: "layout")
         let layout: any View = switch element {
         case "Grid": dressing.dress(Grid { held })
@@ -64,6 +64,6 @@ enum Padded {
         case "ScrollView": dressing.dress(ScrollView { held }.height(100))
         default: dressing.dress(VStack { held })
         }
-        return ModifiedContent(node: layout.body)
+        return ModifiedContent(node: layout.node)
     }
 }

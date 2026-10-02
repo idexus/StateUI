@@ -7,10 +7,10 @@
 
 /// A piece of state a view borrows from whoever owns it.
 ///
-///     struct ResetRow: ContentView {
+///     struct ResetRow: View {
 ///         @Binding var counter: Int
 ///
-///         var content: some View {
+///         var body: some View {
 ///             Button("Reset").onClicked { counter = 0 }
 ///         }
 ///     }

@@ -80,7 +80,7 @@
 
 /// A split view's detail in a window wide enough for every desktop host to stand the sidebar beside it: in a
 /// narrower one a host may lay the sidebar over the detail, and closed.
-private struct WideDetail: ContentView {
+private struct WideDetail: View {
     let detail: any View
 
     @Environment private var window: WindowSession
@@ -89,9 +89,9 @@ private struct WideDetail: ContentView {
         self.detail = detail
     }
 
-    var content: some View {
+    var body: some View {
         let window = self.window
-        return VStack { ModifiedContent(node: detail.body) }
+        return VStack { ModifiedContent(node: detail.node) }
             .onCreated {
                 window.width = 1016
                 window.height = 700

@@ -32,7 +32,7 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
         @Binding var notice: Bool
         @State private var onThisPage = false
 
-        var content: some View {
+        var body: some View {
             VStack {
                 HStack {
                     Switch($notice)
@@ -54,7 +54,7 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
 
     var notes: (any View)? { nil }
 
-    var content: some View {
+    var body: some View {
         VStack {
             switchRow(nav.$windowNotice, "Over every page", id: "window.overlay")
             switchRow($onThisPage, "Over this page", id: "window.overlay.page")
@@ -81,13 +81,13 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
 }
 
 /// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
-struct WindowNotice: ContentView {
+struct WindowNotice: View {
     let words: String
 
     /// Whether it stands; its button takes it away.
     @Binding var shown: Bool
 
-    var content: some View {
+    var body: some View {
         HStack {
             Text(words)
                 .textColor(.white)

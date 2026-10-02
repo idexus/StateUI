@@ -65,13 +65,13 @@ func sheetsOver(_ page: SheetsPage, _ sheets: State<[Int]>) -> ModalStack {
 }
 
 /// A page that presents numbered sheets over its window from one state, saying when it shows and when it stops.
-struct SheetsPage: ContentView {
+struct SheetsPage: View {
     let sheets: State<[Int]>
     let log: Received<String>
 
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let (sheets, log, page) = (self.sheets, self.log, self.page)
         return VStack {
             Text("beneath")

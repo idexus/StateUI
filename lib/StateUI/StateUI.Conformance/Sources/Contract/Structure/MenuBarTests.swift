@@ -125,12 +125,12 @@ func onAStack(_ page: MenusPage) -> NavigationStack {
 
 /// A page declaring its menus - File, with a submenu of what a state lists, and Edit - and saying what the user
 /// chose.
-struct MenusPage: ContentView {
+struct MenusPage: View {
     let heard: Received<String>
 
     @State private var recent = ["a.txt"]
 
-    var content: some View {
+    var body: some View {
         let (heard, recent) = (heard, $recent)
         return VStack { Button("More").onClicked { recent.wrappedValue.append("b.txt") }.id("more") }
             .menuBar {

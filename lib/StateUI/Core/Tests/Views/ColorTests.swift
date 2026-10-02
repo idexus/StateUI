@@ -91,7 +91,7 @@ final class ColorTests: XCTestCase {
     func testADrawingWritesEachColourAsItsFourChannels() {
         func drawn() -> PropValue? {
             Canvas { Draw.fillColor(Color(light: Color("#6495ED"), dark: .black)) }
-                .body.props[.drawable]?.resolvingTheme()
+                .node.props[.drawable]?.resolvingTheme()
         }
 
         // One record: the fillColor command's number, then the colour itself.

@@ -311,10 +311,10 @@
 
 /// A page whose scene keeps the section it shows, with the button that shows the second: the state is the page's,
 /// so its scene claims it.
-struct SectionPage: ContentView {
+struct SectionPage: View {
     @State(sceneKey: SceneKey("conformance.section", of: Int.self)) private var section = 0
 
-    var content: some View {
+    var body: some View {
         let section = $section
         return VStack { Button("Second").onClicked { section.wrappedValue = 2 }.id("write") }
     }

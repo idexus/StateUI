@@ -242,10 +242,10 @@ extension ControlDictionary {
             """#),
 
         (PageContract.self, #"""
-            struct NotePage: ContentView {
+            struct NotePage: View {
                 @Environment private var page: PageSession
 
-                var content: some View {
+                var body: some View {
                     Text("Nothing written yet.")
                         .onCreated {
                             page.title = "Note"
@@ -423,11 +423,11 @@ extension ControlDictionary {
             """#),
 
         (TabbedViewContract.self, #"""
-            struct Tab: ContentView {
+            struct Tab: View {
                 let name: String
                 @Environment private var page: PageSession
 
-                var content: some View {
+                var body: some View {
                     Text("Nothing in \(name)").onCreated { page.title = name }
                 }
             }
@@ -533,10 +533,10 @@ extension ControlDictionary {
                 var page: any Page { MainPage() }
             }
 
-            struct MainPage: ContentView {
+            struct MainPage: View {
                 @Environment private var window: WindowSession
 
-                var content: some View {
+                var body: some View {
                     Text("Hello")
                         .onCreated {
                             window.title = "Notes"

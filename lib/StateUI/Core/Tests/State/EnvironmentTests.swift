@@ -40,56 +40,56 @@ private final class Builds {
 }
 
 /// Reads one property of the session - the view a write should rebuild.
-private struct NameLabel: ContentView {
+private struct NameLabel: View {
     let builds: Builds
     @Environment var session: Session
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return ModifiedContent(node: label(session.name))
     }
 }
 
 /// Reads the theme - the other domain's reader.
-private struct AccentLabel: ContentView {
+private struct AccentLabel: View {
     let builds: Builds
     @Environment var theme: Theme
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return ModifiedContent(node: label(theme.accent))
     }
 }
 
 /// Owns the session, provides it, and never reads a property of it.
-private struct Provider: ContentView {
+private struct Provider: View {
     let builds: Builds
     let reader: Builds
     @State var session = Session()
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([NameLabel(builds: reader).environment(session).body]))
+        return ModifiedContent(node: stack([NameLabel(builds: reader).environment(session).node]))
     }
 }
 
 /// A handler writing through the environment - what an application's button
 /// does. The closure captures the view, whose wrapper resolves at fire time
 /// to what the walk that built this render filled in.
-private struct VisitButton: ContentView {
+private struct VisitButton: View {
     @Environment var session: Session
 
-    var content: some View {
+    var body: some View {
         Button("visits \(session.visits)").onClicked { session.visits += 1 }
     }
 }
 
 /// A handler lending one property on: `$session.name` is a `Binding<String>`
 /// writing through the object, the model rule.
-private struct RenameButton: ContentView {
+private struct RenameButton: View {
     @Environment var session: Session
 
-    var content: some View {
+    var body: some View {
         Button("rename").onClicked {
             let name: Binding<String> = $session.name
             name.wrappedValue = "typed"
@@ -99,12 +99,12 @@ private struct RenameButton: ContentView {
 
 /// A provider whose branch holds a reader built with constant inputs - a
 /// carry must still follow a provider replacement, which no input can see.
-private struct Holder: ContentView {
+private struct Holder: View {
     let reader: Builds
     @State var session = Session()
     @State var title = "t"
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(title)
             NameLabel(builds: reader).id("m")
@@ -127,7 +127,7 @@ final class EnvironmentTests: XCTestCase {
         let renders = Renders()
         let provider = Provider(builds: Builds(), reader: Builds())
 
-        let patch = renders.render(stack([provider.body], id: "root"))
+        let patch = renders.render(stack([provider.node], id: "root"))
 
         XCTAssertEqual(
             patch.child(.auto(1))?.child(.auto(2))?.props["text"], .string("guest"))
@@ -139,11 +139,11 @@ final class EnvironmentTests: XCTestCase {
         outer.name = "outer"
         inner.name = "inner"
 
-        struct Pair: ContentView {
+        struct Pair: View {
             let outer: Session
             let inner: Session
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     NameLabel(builds: Builds())
                     NameLabel(builds: Builds()).environment(inner)
@@ -153,7 +153,7 @@ final class EnvironmentTests: XCTestCase {
         }
 
         Renderer.shared.clearInvalidation()
-        let patch = renders.render(stack([Pair(outer: outer, inner: inner).body], id: "root"))
+        let patch = renders.render(stack([Pair(outer: outer, inner: inner).node], id: "root"))
 
         // A composed view adds no element of its own: the placeholder IS the
         // VStack it unwraps to, and each NameLabel is its label.
@@ -168,7 +168,7 @@ final class EnvironmentTests: XCTestCase {
 
         // `.built` is what a structural test reads - no differ involved, so
         // it keeps a scope of its own. See Node.built(within:).
-        let tree = stack([provider.body], id: "root").built
+        let tree = stack([provider.node], id: "root").built
 
         XCTAssertEqual(tree.children[0].children[0].props[.text], .string("guest"))
     }
@@ -180,7 +180,7 @@ final class EnvironmentTests: XCTestCase {
         let owner = Builds(), reader = Builds()
         let provider = Provider(builds: owner, reader: reader)
 
-        renders.render(stack([provider.body], id: "root"))
+        renders.render(stack([provider.node], id: "root"))
         XCTAssertEqual(owner.count, 1)
         XCTAssertEqual(reader.count, 1)
 
@@ -199,13 +199,13 @@ final class EnvironmentTests: XCTestCase {
         let names = Builds(), accents = Builds()
         let session = Session(), theme = Theme()
 
-        struct Both: ContentView {
+        struct Both: View {
             let names: Builds
             let accents: Builds
             let session: Session
             let theme: Theme
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     NameLabel(builds: names)
                     AccentLabel(builds: accents)
@@ -216,7 +216,7 @@ final class EnvironmentTests: XCTestCase {
         }
 
         let view = Both(names: names, accents: accents, session: session, theme: theme)
-        renders.render(stack([view.body], id: "root"))
+        renders.render(stack([view.node], id: "root"))
 
         theme.accent = "orange"
         let patch = renders.revisit(changed: changed)
@@ -232,7 +232,7 @@ final class EnvironmentTests: XCTestCase {
         let owner = Builds(), reader = Builds()
         let provider = Provider(builds: owner, reader: reader)
 
-        renders.render(stack([provider.body], id: "root"))
+        renders.render(stack([provider.node], id: "root"))
 
         let old = provider.session
         let fresh = Session()
@@ -263,7 +263,7 @@ final class EnvironmentTests: XCTestCase {
         let session = Session()
 
         let first = renders.render(
-            stack([VisitButton().environment(session).body], id: "root"))
+            stack([VisitButton().environment(session).node], id: "root"))
         let id = first.child(.auto(1))?.events?["clicked"]
         XCTAssertNotNil(id)
 
@@ -279,7 +279,7 @@ final class EnvironmentTests: XCTestCase {
         let session = Session()
 
         let first = renders.render(
-            stack([RenameButton().environment(session).body], id: "root"))
+            stack([RenameButton().environment(session).node], id: "root"))
         let id = first.child(.auto(1))?.events?["clicked"]
 
         XCTAssertTrue(renders.fire(id!))
@@ -294,7 +294,7 @@ final class EnvironmentTests: XCTestCase {
         let reader = Builds()
         let holder = Holder(reader: reader)
 
-        renders.render(stack([holder.body], id: "root"))
+        renders.render(stack([holder.node], id: "root"))
         XCTAssertEqual(reader.count, 1)
 
         let fresh = Session()
@@ -315,7 +315,7 @@ final class EnvironmentTests: XCTestCase {
         let reader = Builds()
         let holder = Holder(reader: reader)
 
-        renders.render(stack([holder.body], id: "root"))
+        renders.render(stack([holder.node], id: "root"))
 
         // The holder rebuilds for its own state; the provider object is the
         // same one, so the label under it is carried.

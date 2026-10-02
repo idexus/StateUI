@@ -119,7 +119,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

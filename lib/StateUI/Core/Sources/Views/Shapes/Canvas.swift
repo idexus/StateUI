@@ -38,7 +38,7 @@ extension CanvasProperties {
 /// The drawing travels as data - the canvas calls `Draw` offers, in order -
 /// and the host replays them on the platform's own canvas. A drawing that
 /// reads a state is drawn again when the state changes.
-public struct Canvas: View, CanvasProperties {
+public struct Canvas: ElementView, CanvasProperties {
     /// The node this control describes.
     public var node: Node
 

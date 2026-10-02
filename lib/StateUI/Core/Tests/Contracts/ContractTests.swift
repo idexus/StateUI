@@ -231,7 +231,7 @@ final class ContractTests: XCTestCase {
             .onEvent(LampContract.tapped) { index in heard.lines.append("tapped \(index)") }
             .onEvent(LampContract.dimmed) { level, on in heard.lines.append("dimmed \(level) \(on)") }
             .onEvent(LampContract.poked) { heard.lines.append("poked") }
-            .body)
+            .node)
 
         renders.fire(try XCTUnwrap(patch.events?["tapped"]), with: [.number(2)])
         renders.fire(try XCTUnwrap(patch.events?["dimmed"]), with: [.number(0.5), .bool(true)])
@@ -249,7 +249,7 @@ final class ContractTests: XCTestCase {
 
         let patch = renders.render(Lamp()
             .onEvent(LampContract.tapped) { index in heard.lines.append("tapped \(index)") }
-            .body)
+            .node)
 
         let id = try XCTUnwrap(patch.events?["tapped"])
         renders.fire(id, with: [.string("2")])
@@ -309,7 +309,7 @@ final class ContractTests: XCTestCase {
         let renders = Renders()
         let lamp = Aim(Lamp.self)
 
-        renders.render(stack([Lamp().aim(lamp).body], id: "root"))
+        renders.render(stack([Lamp().aim(lamp).node], id: "root"))
         _ = drainedActs()
 
         let asked = await Self.begin { try await lamp.call(LampContract.flash, 3) }
@@ -404,6 +404,6 @@ private enum TestDevice: ApplicationTier {
 }
 
 /// The lamp's view: its node from its contract.
-private struct Lamp: View {
+private struct Lamp: ElementView {
     var node = Node(contract: LampContract.self)
 }

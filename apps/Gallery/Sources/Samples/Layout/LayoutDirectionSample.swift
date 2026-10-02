@@ -35,7 +35,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             row("leftToRight", .leftToRight)
             row("rightToLeft", .rightToLeft)

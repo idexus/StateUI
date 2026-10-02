@@ -43,10 +43,10 @@ final class Profile {
     @State var notifications = true
 }
 
-struct ProfileForm: ContentView {
+struct ProfileForm: View {
     @State private var profile = Profile()
 
-    var content: some View {
+    var body: some View {
         VStack {
             TextField(profile.$name)
             Switch(profile.$notifications)
@@ -70,10 +70,10 @@ StateUI rebuilds those descriptions and diffs their result against the retained
 tree.
 
 ```swift
-struct Greeting: ContentView {
+struct Greeting: View {
     @State private var name = "StateUI"
 
-    var content: some View {
+    var body: some View {
         VStack {
             TextField($name).placeholder("Name")
             Text("Hello, \(name)")
@@ -104,10 +104,10 @@ typed state channel and the host can read or report it without rebuilding the
 body.
 
 ```swift
-struct Level: ContentView {
+struct Level: View {
     @State private var level = 0.25
 
-    var content: some View {
+    var body: some View {
         VStack {
             Slider($level)
             ColorBox(.cornflowerBlue).scaleX($level)
@@ -176,10 +176,10 @@ between destinations.
 | `convert` | derive a host-driven value from the live journey |
 
 ```swift
-struct Fader: ContentView {
+struct Fader: View {
     @State private var fade = 1.0
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("Native motion").opacity($fade)
             Button("Fade").onClicked {
@@ -215,10 +215,10 @@ host has that checked matrix row, an application relies only on the final
 destination.
 
 ```swift
-struct ResizingPanel: ContentView {
+struct ResizingPanel: View {
     @State private var expanded = false
 
-    var content: some View {
+    var body: some View {
         VStack {
             ColorBox(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
@@ -259,10 +259,10 @@ display cycle, reads and writes state, and returns `.again` while it needs
 another frame or `.wait` until a followed state is written.
 
 ```swift
-struct FallingDot: ContentView {
+struct FallingDot: View {
     @State(motion: .custom) private var y = 0.0
 
-    var content: some View {
+    var body: some View {
         ColorBox(.cornflowerBlue)
             .translationY($y)
             .engine(following: $y) { cycle in
@@ -305,10 +305,10 @@ struct HandbookWindow: Window {
     var page: any Page { HandbookPage() }
 }
 
-struct HandbookPage: ContentView {
+struct HandbookPage: View {
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         Text("Hello from StateUI")
             .onCreated { page.title = "StateUI" }
     }

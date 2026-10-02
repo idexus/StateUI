@@ -21,11 +21,11 @@ import XCTest
 /// A view on a carried state somebody else declared, reading it - so a test can
 /// see that reading one records nothing, and that `@Binding` is how a carried
 /// state is handed down.
-private struct Follower: ContentView {
+private struct Follower: View {
     @Binding var value: Double
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return ModifiedContent(node: label("at \(value)"))
     }
@@ -33,10 +33,10 @@ private struct Follower: ContentView {
 
 /// A view on a carried state somebody else declared, writing it - which is what
 /// `@Binding` is for, and the shape a child takes a carried state in.
-private struct Rider: ContentView {
+private struct Rider: View {
     @Binding var level: Double
 
-    var content: some View { ModifiedContent(node: label("riding")) }
+    var body: some View { ModifiedContent(node: label("riding")) }
 
     /// A handler's write, as a child handed the binding makes one.
     func bump() { level += 1 }
@@ -44,15 +44,15 @@ private struct Rider: ContentView {
 
 /// A view handing a state somebody else declared to the host to walk: a
 /// driven property and no read, which is the channel a host writes it through.
-private struct Driver: ContentView {
+private struct Driver: View {
     @Binding var level: Double
 
-    var content: some View { Text("driving").rotation($level) }
+    var body: some View { Text("driving").rotation($level) }
 }
 
 /// A view holding a driven state of its OWN, so a test can watch the wrapper a second
 /// render builds take over the storage the first one made.
-private struct Holder: ContentView {
+private struct Holder: View {
     @State var choice = 0
     let seen: Seen
 
@@ -60,7 +60,7 @@ private struct Holder: ContentView {
     /// the same inputs is carried, and these tests need it BUILT.
     var tag = 0
 
-    var content: some View {
+    var body: some View {
         seen.numbers.append($choice.number ?? -1)
         seen.values.append(choice)
         return Picker(["a", "b", "c", "d"]).selectedIndex($choice)
@@ -69,8 +69,8 @@ private struct Holder: ContentView {
 
 /// A composed view with nothing of its own written on it, so a test can write
 /// a driven state ON it and look for the registration on the element its body ends at.
-private struct Plain: ContentView {
-    var content: some View { Text("plain") }
+private struct Plain: View {
+    var body: some View { Text("plain") }
 }
 
 /// What each render of the holder saw. A class, for the same reason.
@@ -116,7 +116,7 @@ final class CarriedStateTests: XCTestCase {
         let builds = Builds()
         let renders = Renders()
 
-        renders.render(stack([Follower(value: value.projectedValue, builds: builds).body], id: "root"))
+        renders.render(stack([Follower(value: value.projectedValue, builds: builds).node], id: "root"))
         XCTAssertEqual(builds.count, 1)
 
         value.wrappedValue = 12
@@ -132,7 +132,7 @@ final class CarriedStateTests: XCTestCase {
         let value = State(wrappedValue: 0.0)
         let renders = Renders()
 
-        renders.render(stack([Rider(level: value.projectedValue).body], id: "root"))
+        renders.render(stack([Rider(level: value.projectedValue).node], id: "root"))
         Renderer.shared.clearInvalidation()
 
         value.wrappedValue = 12
@@ -157,7 +157,7 @@ final class CarriedStateTests: XCTestCase {
         let dip = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(stack([ZStack { Text("x") }.scale(dip.projectedValue).body], id: "root"))
+        renders.render(stack([ZStack { Text("x") }.scale(dip.projectedValue).node], id: "root"))
         Renderer.shared.clearInvalidation()
 
         // A build's scope, and the machinery of a write running inside it -
@@ -179,7 +179,7 @@ final class CarriedStateTests: XCTestCase {
     func testTheHostMovesItByItsNumber() {
         let value = State(wrappedValue: 0.0)
 
-        Renders().render(Driver(level: value.projectedValue).body)
+        Renders().render(Driver(level: value.projectedValue).node)
         dragged(value.number, to: 91.5)
 
         XCTAssertEqual(value.wrappedValue, 91.5)
@@ -195,9 +195,9 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Follower(value: value.projectedValue, builds: builds).body,
-            Rider(level: value.projectedValue).body,
-            Driver(level: value.projectedValue).body,
+            Follower(value: value.projectedValue, builds: builds).node,
+            Rider(level: value.projectedValue).node,
+            Driver(level: value.projectedValue).node,
         ], id: "root"))
         Renderer.shared.clearInvalidation()
 
@@ -219,8 +219,8 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Follower(value: value.projectedValue, builds: builds).body,
-            Driver(level: value.projectedValue).body,
+            Follower(value: value.projectedValue, builds: builds).node,
+            Driver(level: value.projectedValue).node,
         ], id: "root"))
         Renderer.shared.clearInvalidation()
 
@@ -241,7 +241,7 @@ final class CarriedStateTests: XCTestCase {
         let volume = State(wrappedValue: 0.25)
         let renders = Renders()
 
-        let patch = renders.render(Slider(volume.projectedValue).body)
+        let patch = renders.render(Slider(volume.projectedValue).node)
 
         XCTAssertNil(patch.props[.value], "nothing is described: the value rides the image")
         XCTAssertEqual(patch.driven?[.value]?.mode, .inOut)
@@ -276,8 +276,8 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Follower(value: volume.projectedValue, builds: builds).body,
-            Slider(volume.projectedValue).body,
+            Follower(value: volume.projectedValue, builds: builds).node,
+            Slider(volume.projectedValue).node,
         ], id: "root"))
         Renderer.shared.clearInvalidation()
 
@@ -340,7 +340,7 @@ final class CarriedStateTests: XCTestCase {
             .engine(following: volume.projectedValue) { _ in
                 reading.wrappedValue = "\(Int((volume.wrappedValue * 100).rounded()))%"
             }
-            .body)
+            .node)
 
         XCTAssertNotNil(patch.children.first?.driven?[.value], "the slider is tied all the same")
 
@@ -369,7 +369,7 @@ final class CarriedStateTests: XCTestCase {
                 .engine(following: volume.projectedValue) { _ in
                     reading.wrappedValue = "\(Int((volume.wrappedValue * 100).rounded()))%"
                 }
-                .body)
+                .node)
 
         let board = Renderer.shared.board(of: volume.image)
         board.cycle(now: 0, reducesMotion: false)
@@ -397,8 +397,8 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
         let seen = Seen()
 
-        renders.render(Holder(seen: seen).body)
-        renders.render(Holder(seen: seen, tag: 2).body)
+        renders.render(Holder(seen: seen).node)
+        renders.render(Holder(seen: seen, tag: 2).node)
 
         XCTAssertEqual(seen.numbers.count, 2, "the holder was built twice")
         XCTAssertEqual(
@@ -412,9 +412,9 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
         let seen = Seen()
 
-        renders.render(Holder(seen: seen).body)
+        renders.render(Holder(seen: seen).node)
         moved(seen.numbers[0], to: 3)
-        renders.render(Holder(seen: seen, tag: 2).body)
+        renders.render(Holder(seen: seen, tag: 2).node)
 
         XCTAssertEqual(seen.values, [0, 3])
     }
@@ -444,8 +444,8 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(VStack { Plain().opacity(fade.projectedValue).id("plain") }.body)
-        let patch = renders.render(VStack { Plain().id("plain") }.body)
+        renders.render(VStack { Plain().opacity(fade.projectedValue).id("plain") }.node)
+        let patch = renders.render(VStack { Plain().id("plain") }.node)
 
         let child = patch.children.first
         XCTAssertNotNil(child, "the child whose tie went has to be in the message")
@@ -489,7 +489,7 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        let patch = renders.render(Plain().opacity(fade.projectedValue).id("plain").body)
+        let patch = renders.render(Plain().opacity(fade.projectedValue).id("plain").node)
 
         XCTAssertEqual(
             patch.driven?[.opacity],
@@ -507,7 +507,7 @@ final class CarriedStateTests: XCTestCase {
             ScrollView { Text("x") }
                 .orientation(.horizontal)
                 .scrollOffset(offset.projectedValue)
-                .body)
+                .node)
 
         XCTAssertEqual(
             patch.driven?[.scrollOffset],
@@ -521,7 +521,7 @@ final class CarriedStateTests: XCTestCase {
         let across = State(wrappedValue: 0.0)
         let down = State(wrappedValue: 0.0)
 
-        let node = ColorBox(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).body
+        let node = ColorBox(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).node
 
         XCTAssertEqual(node.props[.panXChannel], .number(Double(across.number)))
         XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number)))
@@ -541,7 +541,7 @@ final class CarriedStateTests: XCTestCase {
                 .scrollOffset(across.projectedValue)
                 .onScrollStopped {}
                 .id("reader")
-                .body)
+                .node)
 
         func scroller(_ patch: HostPatch) -> HostPatch? {
             if patch.type == .scrollView { return patch }
@@ -577,7 +577,7 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(Text("x").motion(.spring(response: 450, damping: 0.7))
-            .opacity(fade.projectedValue).id("one").body)
+            .opacity(fade.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
@@ -591,7 +591,7 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Text("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
+        renders.render(Text("x").motion(.spring()).opacity(fade.projectedValue).id("one").node)
 
         XCTAssertTrue(fade.projectedValue.journey.motion.isInherited)
     }
@@ -603,9 +603,9 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(Text("x").motion(.eased(90, .linear))
-            .opacity(fade.projectedValue).id("one").body)
+            .opacity(fade.projectedValue).id("one").node)
         renders.render(Text("x").motion(.eased(700, .cubicIn))
-            .opacity(fade.projectedValue).id("one").body)
+            .opacity(fade.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
@@ -620,7 +620,7 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(Text("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
-            .background(tint.projectedValue).id("one").body)
+            .background(tint.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(tint.number, as: JourneyLanes<Color>.self)?.motion,

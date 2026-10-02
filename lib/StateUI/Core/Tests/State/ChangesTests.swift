@@ -8,11 +8,11 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A view watching its own state, the way an application writes it.
-private struct Watcher: ContentView {
+private struct Watcher: View {
     @State var count = 0
     let log: Log
 
-    var content: some View {
+    var body: some View {
         VStack {
             Button("Bump").onClicked { count += 1 }
         }
@@ -36,7 +36,7 @@ final class ChangesTests: XCTestCase {
         func tree(_ value: Int) -> Node {
             VStack { Text("\(value)") }
                 .onChanged(value) { log.lines.append("fired") }
-                .body
+                .node
         }
 
         renders.render(tree(1))
@@ -52,7 +52,7 @@ final class ChangesTests: XCTestCase {
         func tree(_ value: Int) -> Node {
             VStack { Text("\(value)") }
                 .onChanged(value) { log.lines.append("fired") }
-                .body
+                .node
         }
 
         renders.render(tree(1))
@@ -69,7 +69,7 @@ final class ChangesTests: XCTestCase {
         renders.render(
             VStack { Text("x") }
                 .onChanged(7) { log.lines.append("fired") }
-                .body)
+                .node)
 
         XCTAssertTrue(log.lines.isEmpty,
             "a view arriving is not a value changing - that is .onCreated's job")
@@ -82,7 +82,7 @@ final class ChangesTests: XCTestCase {
         func tree(_ value: Int) -> Node {
             VStack { Text("\(value)") }
                 .onChanged(value) { old, new in log.lines.append("\(old) -> \(new)") }
-                .body
+                .node
         }
 
         renders.render(tree(3))
@@ -99,7 +99,7 @@ final class ChangesTests: XCTestCase {
             VStack { Text(b) }
                 .onChanged(a) { log.lines.append("a") }
                 .onChanged(b) { log.lines.append("b") }
-                .body
+                .node
         }
 
         renders.render(tree(a: 1, b: "x"))
@@ -117,12 +117,12 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         renders.render(
-            VStack { Text("x") }.onChanged(1) { log.lines.append("fired") }.body)
+            VStack { Text("x") }.onChanged(1) { log.lines.append("fired") }.node)
 
         // A different node type at the same position replaces the control -
         // and a replaced element has nothing to have changed FROM.
         renders.render(
-            HStack { Text("x") }.onChanged(2) { log.lines.append("fired") }.body)
+            HStack { Text("x") }.onChanged(2) { log.lines.append("fired") }.node)
 
         XCTAssertTrue(log.lines.isEmpty, "a replaced element fired as though it continued")
     }
@@ -134,7 +134,7 @@ final class ChangesTests: XCTestCase {
         renders.render(
             VStack { Text("x") }
                 .onChanged(1) { log.lines.append("first") }
-                .body)
+                .node)
 
         // An `.onChanged` written under an `if` appears and moves every slot
         // after it: the safe reading is "different watches", not "all changed".
@@ -142,7 +142,7 @@ final class ChangesTests: XCTestCase {
             VStack { Text("x") }
                 .onChanged("extra") { log.lines.append("extra") }
                 .onChanged(2) { log.lines.append("first") }
-                .body)
+                .node)
 
         XCTAssertTrue(log.lines.isEmpty,
             "a changed number of watches was read as the values changing")
@@ -153,9 +153,9 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         renders.render(
-            VStack { Text("x") }.onChanged(1) { log.lines.append("fired") }.body)
+            VStack { Text("x") }.onChanged(1) { log.lines.append("fired") }.node)
         renders.render(
-            VStack { Text("x") }.onChanged("1") { log.lines.append("fired") }.body)
+            VStack { Text("x") }.onChanged("1") { log.lines.append("fired") }.node)
 
         XCTAssertTrue(log.lines.isEmpty,
             "a slot that changed its value type fired instead of starting over")
@@ -167,14 +167,14 @@ final class ChangesTests: XCTestCase {
         let renders = Renders()
         let log = Log()
 
-        struct Panel: ContentView {
-            var content: some View { Text("panel") }
+        struct Panel: View {
+            var body: some View { Text("panel") }
         }
 
         func tree(_ value: Int) -> Node {
             VStack {
                 Panel().onChanged(value) { log.lines.append("fired") }
-            }.body
+            }.node
         }
 
         renders.render(tree(1))
@@ -189,15 +189,15 @@ final class ChangesTests: XCTestCase {
         let log = Log()
         let view = Watcher(log: log)
 
-        renders.render(Node(type: "Window", children: [view.body]))
-        renders.render(Node(type: "Window", children: [view.body]))
+        renders.render(Node(type: "Window", children: [view.node]))
+        renders.render(Node(type: "Window", children: [view.node]))
 
         XCTAssertTrue(log.lines.isEmpty, "nothing moved yet")
 
         // The state the watch reads is on the view; a render after the write
         // carries the new value against the kept one.
         view.count = 5
-        renders.render(Node(type: "Window", children: [view.body]), changed: Renderer.shared.pendingChanges)
+        renders.render(Node(type: "Window", children: [view.node]), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(log.lines, ["moved"])
     }
@@ -213,7 +213,7 @@ final class ChangesTests: XCTestCase {
         func tree(_ value: Int) -> Node {
             VStack { Text("\(value)") }
                 .onChanged(value) { _, new in echo.wrappedValue = new }
-                .body
+                .node
         }
 
         renders.render(tree(1))
@@ -238,7 +238,7 @@ final class ChangesTests: XCTestCase {
         func tree(_ value: Int) -> Node {
             VStack { Text("\(value)") }
                 .onChanged(value) { log.lines.append("fired") }
-                .body
+                .node
         }
 
         renders.render(tree(1))
@@ -253,9 +253,9 @@ final class ChangesTests: XCTestCase {
     // MARK: - Interplay with the walks
 
     func testAWatchWrittenOnACarriedViewFiresWhenItsValueMoves() {
-        struct Row: ContentView {
+        struct Row: View {
             let item: String
-            var content: some View { Text(item) }
+            var body: some View { Text(item) }
         }
 
         let renders = Renders()
@@ -265,7 +265,7 @@ final class ChangesTests: XCTestCase {
             VStack {
                 Row(item: item)
                     .onChanged(watched) { log.lines.append("fired") }
-            }.body
+            }.node
         }
 
         renders.render(tree(item: "a", watched: 1))
@@ -287,7 +287,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
         let view = Watcher(log: log)
 
-        renders.render(Node(type: "Window", children: [view.body]))
+        renders.render(Node(type: "Window", children: [view.node]))
 
         // A clean walk builds nothing, so no fresh values exist to compare -
         // and a watch must not fire from a walk that computed nothing.
@@ -318,7 +318,7 @@ final class ChangesTests: XCTestCase {
                     .scrollOffset(offset.projectedValue)
             }
             .onChanged(offset.wrappedValue) { old, new in log.lines.append("\(old.y) -> \(new.y)") }
-            .body
+            .node
         }
 
         renders.render(tree())
@@ -345,7 +345,7 @@ final class ChangesTests: XCTestCase {
         let offset = State(Point.zero)
         let reader = reading { _ = offset.get() }
 
-        renders.render(VStack { ScrollView { Text("long") }.scrollOffset(offset.projectedValue) }.body)
+        renders.render(VStack { ScrollView { Text("long") }.scrollOffset(offset.projectedValue) }.node)
 
         Renderer.shared.clearInvalidation()
         slid(offset.number, to: Point(0, 250))
@@ -363,7 +363,7 @@ final class ChangesTests: XCTestCase {
         let renders = Renders()
         let offset = State(Point.zero)
 
-        renders.render(VStack { ScrollView { Text("wide") }.scrollOffset(offset.projectedValue) }.body)
+        renders.render(VStack { ScrollView { Text("wide") }.scrollOffset(offset.projectedValue) }.node)
         slid(offset.number, to: Point(120, 40))
 
         XCTAssertEqual(offset.wrappedValue.x, 120, "the horizontal half did not reach its state")
@@ -387,7 +387,7 @@ final class ChangesTests: XCTestCase {
         func tree(_ value: Int) -> Node {
             VStack { Text("\(value)").id("card").aim(card) }
                 .onChanged(value) { finished.wrappedValue = try await card.focus() }
-                .body
+                .node
         }
 
         _ = drainedActs()
@@ -418,7 +418,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
         let view = Watcher(log: log)
 
-        renders.render(Node(type: "Window", children: [view.body]))
+        renders.render(Node(type: "Window", children: [view.node]))
 
         // The tracked path, which is what a slider or an entry actually takes:
         // the write names its storage, the walk rebuilds just that view from

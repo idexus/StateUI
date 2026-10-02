@@ -48,11 +48,11 @@ struct IdentitySample: SampleContent, ExampleContent {
             }
         }
 
-        private struct IdentityRow: ContentView {
+        private struct IdentityRow: View {
             let item: String
             @Binding var items: [String]
 
-            var content: some View {
+            var body: some View {
                 HStack {
                     Text(item)
                         .width(90)
@@ -71,7 +71,7 @@ struct IdentitySample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             HStack {
                 Button("Add")
@@ -136,11 +136,11 @@ struct IdentitySample: SampleContent, ExampleContent {
 
 /// One row, with something worth keeping in it: what is typed lives in the
 /// control, not in the tree.
-private struct IdentityRow: ContentView {
+private struct IdentityRow: View {
     let item: String
     @Binding var items: [String]
 
-    var content: some View {
+    var body: some View {
         HStack {
             Text(item)
                 .fontSize(15)

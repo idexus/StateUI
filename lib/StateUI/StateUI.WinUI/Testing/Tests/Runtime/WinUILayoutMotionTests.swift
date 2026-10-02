@@ -170,10 +170,10 @@ final class WinUILayoutMotionTests: XCTestCase {
 }
 
 /// A label on red lengthened by a button, in a stack whose children travel for 200 ms.
-private struct LengtheningPage: ContentView {
+private struct LengtheningPage: View {
     @State private var long = false
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(long ? "Text & typing" : "Text").background(.red).horizontalAlignment(.start)
             Button("Longer").onClicked { long = true }

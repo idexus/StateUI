@@ -8,10 +8,10 @@
 import XCTest
 
 /// A spinner a click stops.
-private struct SpinnerPage: ContentView {
+private struct SpinnerPage: View {
     @State private var running = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             ActivityIndicator(running)
             Button("Stop").onClicked { running = false }

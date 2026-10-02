@@ -41,10 +41,10 @@ final class AppKitPatchIntakeTests: XCTestCase {
 }
 
 /// A count in a label, and a button that adds one.
-private struct Counter: ContentView {
+private struct Counter: View {
     @State private var count = 0
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("\(count)").fontSize(24)
             Button("Add").onClicked { count += 1 }

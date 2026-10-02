@@ -187,11 +187,11 @@ struct NotesWindow: Window {
     var page: any Page { NotesPage() }
 }
 
-struct NotesPage: ContentView {
+struct NotesPage: View {
     @Environment private var page: PageSession
     @State private var note = ""
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(note.isEmpty ? "A new note" : note)
             TextField($note).placeholder("Write something")
@@ -235,8 +235,8 @@ struct RegisteredWindow: Window {
     var page: any Page { RegisteredPage() }
 }
 
-struct RegisteredPage: ContentView {
-    var content: some View { Text("Hello, StateUI") }
+struct RegisteredPage: View {
+    var body: some View { Text("Hello, StateUI") }
 }
 
 @_cdecl("stateui_app_register")

@@ -78,7 +78,7 @@ struct NavigationSample: SampleContent, ExampleContent {
         Text("Arrived home \\(arrivals) time(s)")
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

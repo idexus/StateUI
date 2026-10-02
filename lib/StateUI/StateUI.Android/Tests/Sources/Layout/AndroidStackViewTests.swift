@@ -7,10 +7,10 @@
 import XCTest
 
 /// A row of two labels under a column whose direction a button turns.
-struct TurningRow: ContentView {
+struct TurningRow: View {
     @State private var rightToLeft = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             HStack {
                 Text("A").width(30).height(10)

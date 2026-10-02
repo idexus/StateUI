@@ -71,10 +71,10 @@ struct ReaderSample: SampleContent, ExampleContent {
             //    a driven text - no render on either side.
             Pulsed(pulses: $pulses)
         }
-        private struct Reading: ContentView {
+        private struct Reading: View {
             @Binding var value: Double
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     Text("a child that reads: \\(percent(value))")
                     DebugInfoLabel()                            // climbs
@@ -82,10 +82,10 @@ struct ReaderSample: SampleContent, ExampleContent {
             }
         }
 
-        private struct Holding: ContentView {
+        private struct Holding: View {
             @Binding var value: Double
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     Slider($value)
                     DebugInfoLabel()                            // stays at one
@@ -93,11 +93,11 @@ struct ReaderSample: SampleContent, ExampleContent {
             }
         }
 
-        private struct Pulsed: ContentView {
+        private struct Pulsed: View {
             @Binding var pulses: Int
             @State private var said = "pulses · 0"
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     Text($said)
                     DebugInfoLabel()                            // stays at one
@@ -114,7 +114,7 @@ struct ReaderSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             Slider($value)
                 .accessibilityIdentifier("reader.value")
@@ -253,10 +253,10 @@ struct ReaderSample: SampleContent, ExampleContent {
 
 /// A child that READS the value it borrowed: a reader, built again on every
 /// write, and it says so.
-private struct Reading: ContentView {
+private struct Reading: View {
     @Binding var value: Double
 
-    var content: some View {
+    var body: some View {
         ZStack {
             VStack {
                 Text("5 · a child that reads the value it borrowed")
@@ -280,10 +280,10 @@ private struct Reading: ContentView {
 }
 
 /// A child that only hands the binding on: no reader, never built again.
-private struct Holding: ContentView {
+private struct Holding: View {
     @Binding var value: Double
 
-    var content: some View {
+    var body: some View {
         ZStack {
             VStack {
                 Text("6 · a child that only hands the binding on")
@@ -308,12 +308,12 @@ private struct Holding: ContentView {
 
 /// A child on the parent's state by BINDING: its engine follows the state it
 /// was handed, and shows what it read as a driven text.
-private struct Pulsed: ContentView {
+private struct Pulsed: View {
     @Binding var pulses: Int
 
     @State private var said = "pulses · 0"
 
-    var content: some View {
+    var body: some View {
         ZStack {
             VStack {
                 Text("7 · a state by binding")

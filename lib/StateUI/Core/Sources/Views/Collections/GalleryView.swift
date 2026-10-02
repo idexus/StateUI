@@ -24,7 +24,7 @@
 /// A swipe settles on a card, and `.position($:)` says which; assigning it
 /// moves the run. A tap opens the middle card, handed to `.onItemTapped`. No
 /// view is rebuilt while the run moves: the one render is the card changing.
-public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentView {
+public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: View {
     // State first: boxes are adopted by path, and the card faces stored below
     // may carry boxes of their own.
     // Design: docs/design/views/composition.md#state-declared-first
@@ -139,7 +139,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         id: KeyPath<Items.Element, Id>,
         @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
-        source = Source(items: items, path: id, card: { content($0).body })
+        source = Source(items: items, path: id, card: { content($0).node })
     }
 
     /// Which shape the cards stand in - a wheel unless said. Changing it
@@ -300,13 +300,13 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     }
 
     /// The cards, the shape they stand in, and the scroller that turns them.
-    public var content: some View {
+    public var body: some View {
         let items = source.items
         let count = items.count
 
         // The empty view is held as `any View`, so every answer goes as a node.
         if count == 0, let empty {
-            return ModifiedContent(node: empty.body)
+            return ModifiedContent(node: empty.node)
         }
 
         // Locals rather than `self`, which holds a class.
@@ -429,9 +429,9 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
         guard swipes else {
             return ModifiedContent(node: Grid {
-                ModifiedContent(node: cards.body)
+                ModifiedContent(node: cards.node)
                 turning
-            }.body)
+            }.node)
         }
 
         var reader = ScrollReader(across: Double(count - 1) * step) { cards }
@@ -511,7 +511,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             turning
         }
 
-        return ModifiedContent(node: deck.body)
+        return ModifiedContent(node: deck.node)
     }
 
     /// How long one crossing between two shapes lasts, in milliseconds - what the
@@ -714,7 +714,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 /// The run's watcher: a view of nothing that reads where the run is asked to
 /// be, so the read rebuilds it and not the deck.
 /// Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
-private struct Turning: ContentView {
+private struct Turning: View {
     /// Where the run is asked to be - ASKED here, so the read is this view's.
     let at: () -> Int
 
@@ -727,7 +727,7 @@ private struct Turning: ContentView {
     /// What a new shape means.
     let wore: () async throws -> Void
 
-    var content: some View {
+    var body: some View {
         let position = at()
 
         return ColorBox(Color("#00000000"))

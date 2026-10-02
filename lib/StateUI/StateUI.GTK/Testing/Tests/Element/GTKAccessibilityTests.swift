@@ -9,10 +9,10 @@ import CStateUIGTK
 import XCTest
 
 /// A group whose words for assistive technology a button takes away.
-private struct SaidPage: ContentView {
+private struct SaidPage: View {
     @State private var said = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             if said {
                 VStack { Text("Title") }.accessibilityLabel("The title").accessibilityHint("Names the page").id("group")

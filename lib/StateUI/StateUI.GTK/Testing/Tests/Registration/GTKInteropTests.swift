@@ -30,11 +30,11 @@ private enum InteropTestContract: ApplicationTier {
 
 /// A page that calls the acts and listens for the event, writing whatever
 /// came back where a test can read it.
-private struct Calling: ContentView {
+private struct Calling: View {
     @State private var answer = "-"
     @State private var heard: [HostEventSubscription] = []
 
-    var content: some View {
+    var body: some View {
         VStack {
             Button("Ask")
                 .onClicked {
@@ -112,7 +112,7 @@ final class LampControl: GTKControl {
 }
 
 /// The Swift half, which the application could already write.
-private struct Lamp: View {
+private struct Lamp: ElementView {
     var node = Node(contract: LampContract.self)
 
     func lit(_ value: Bool) -> Self {
@@ -132,12 +132,12 @@ extension Aim where Target == Lamp {
 }
 
 /// A page holding one lamp, saying what it last heard.
-private struct Pulling: ContentView {
+private struct Pulling: View {
     @State private var said = "-"
     @State private var on = true
     @Aim(Lamp.self) private var lamp
 
-    var content: some View {
+    var body: some View {
         VStack {
             Lamp()
                 .lit(on)

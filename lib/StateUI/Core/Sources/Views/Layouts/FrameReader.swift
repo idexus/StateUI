@@ -77,7 +77,7 @@ private final class LastFrame: @unchecked Sendable {
 /// first layout it is given a zero rectangle. Several views stack on top of
 /// each other, as in a `Grid`. To report a frame rather than build from it,
 /// write `.onFrameChanged` on the view.
-public struct FrameReader: ContentView {
+public struct FrameReader: View {
     /// The last frame the layout settled on - zero until the first report.
     @State private var frame = Rect(0, 0, 0, 0)
 
@@ -112,7 +112,7 @@ public struct FrameReader: ContentView {
 
     /// The content, in a Grid that fills the offered space and writes its own
     /// frame into the state this body reads.
-    public var content: some View {
+    public var body: some View {
         Grid { BuiltViews(nodes: build(frame)) }
             .onFrameChanged(in: space) { frame = $0 }
     }

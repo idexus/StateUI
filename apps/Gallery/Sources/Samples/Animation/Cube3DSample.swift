@@ -54,7 +54,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
             public static let members: [any ContractMember] = [size, color, isSpinning]
         }
 
-        public struct Cube3D: View {
+        public struct Cube3D: ElementView {
             public var node = Node(contract: Cube3DContract.self)
 
             public init() {}
@@ -841,7 +841,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
             """))
     #endif
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

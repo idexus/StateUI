@@ -24,12 +24,12 @@ final class AimTests: XCTestCase {
         let renders = Renders()
         let panel = Aim(ZStack.self)
 
-        renders.render(stack([ZStack().aim(panel).body], id: "root"))
+        renders.render(stack([ZStack().aim(panel).node], id: "root"))
 
         XCTAssertEqual(try panel.box.target, .number(1))
         XCTAssertEqual(panel.description, "#1")
 
-        renders.render(stack([ZStack().aim(panel).opacity(0.5).body], id: "root"))
+        renders.render(stack([ZStack().aim(panel).opacity(0.5).node], id: "root"))
 
         XCTAssertEqual(
             try panel.box.target, .number(1),
@@ -41,7 +41,7 @@ final class AimTests: XCTestCase {
     func testAResyncKeepsTheAim() throws {
         let renders = Renders()
         let panel = Aim(ZStack.self)
-        let tree = stack([ZStack().aim(panel).body], id: "root")
+        let tree = stack([ZStack().aim(panel).node], id: "root")
 
         renders.render(tree)
         renders.renderFromScratch(tree)
@@ -57,7 +57,7 @@ final class AimTests: XCTestCase {
         let panel = Aim(ZStack.self)
 
         func tree(showing: Bool) -> Node {
-            stack(showing ? [ZStack().aim(panel).body] : [], id: "root")
+            stack(showing ? [ZStack().aim(panel).node] : [], id: "root")
         }
 
         renders.render(tree(showing: true))
@@ -78,7 +78,7 @@ final class AimTests: XCTestCase {
         let renders = Renders()
         let row = Aim(ZStack.self)
 
-        renders.render(stack([ZStack().id("row-7").aim(row).body], id: "root"))
+        renders.render(stack([ZStack().id("row-7").aim(row).node], id: "root"))
 
         XCTAssertEqual(try row.box.target, .string("row-7"))
     }
@@ -123,8 +123,8 @@ final class AimTests: XCTestCase {
         let panel = Aim(ZStack.self)
 
         renders.render(stack([
-            ZStack().aim(panel).body,
-            ZStack().aim(panel).body,
+            ZStack().aim(panel).node,
+            ZStack().aim(panel).node,
         ], id: "root"))
 
         XCTAssertThrowsError(try panel.box.target) { error in
@@ -132,7 +132,7 @@ final class AimTests: XCTestCase {
         }
         XCTAssertEqual(panel.description, "two views")
 
-        renders.render(stack([ZStack().aim(panel).body], id: "root"))
+        renders.render(stack([ZStack().aim(panel).node], id: "root"))
 
         XCTAssertEqual(
             try panel.box.target, .number(1),
@@ -149,7 +149,7 @@ final class AimTests: XCTestCase {
         let a = Panelled()
         let b = Panelled()
 
-        renders.render(stack([a.body, b.body], id: "root"))
+        renders.render(stack([a.node, b.node], id: "root"))
 
         let first = try a.panel.box.target
         let second = try b.panel.box.target
@@ -167,7 +167,7 @@ final class AimTests: XCTestCase {
         let outer = Aim(Carded.self)
         let card = Carded()
 
-        renders.render(stack([card.aim(outer).body], id: "root"))
+        renders.render(stack([card.aim(outer).node], id: "root"))
 
         XCTAssertEqual(try outer.box.target, try card.inner.box.target)
     }
@@ -176,17 +176,17 @@ final class AimTests: XCTestCase {
     /// it has, which is still the element's. A view built again restamps it
     /// with the same one.
     func testAnAimUnderACarriedViewKeepsItsTarget() throws {
-        struct Framed: ContentView {
+        struct Framed: View {
             let panel: Aim<ZStack>
             let tag: Int
-            var content: some View { ZStack().aim(panel) }
+            var body: some View { ZStack().aim(panel) }
         }
 
         let renders = Renders()
         let panel = Aim(ZStack.self)
 
         func tree(_ tag: Int) -> Node {
-            stack([Framed(panel: panel, tag: tag).body], id: "root")
+            stack([Framed(panel: panel, tag: tag).node], id: "root")
         }
 
         renders.render(tree(1))
@@ -205,10 +205,10 @@ final class AimTests: XCTestCase {
     func testADeclaredAimKeepsOneBoxAcrossBuilds() throws {
         let renders = Renders()
         let first = Panelled()
-        renders.render(stack([first.body], id: "root"))
+        renders.render(stack([first.node], id: "root"))
 
         let second = Panelled()
-        renders.render(stack([second.body], id: "root"))
+        renders.render(stack([second.node], id: "root"))
 
         XCTAssertTrue(
             second.panel.box === first.panel.box,
@@ -225,12 +225,12 @@ final class AimTests: XCTestCase {
         let tag = State(wrappedValue: 0)
         let builds = Builds()
 
-        renders.render(stack([Handing(tag: tag.projectedValue, builds: builds).body], id: "root"))
+        renders.render(stack([Handing(tag: tag.projectedValue, builds: builds).node], id: "root"))
         XCTAssertEqual(builds.count, 1)
 
         tag.wrappedValue = 1
         renders.render(
-            stack([Handing(tag: tag.projectedValue, builds: builds).body], id: "root"),
+            stack([Handing(tag: tag.projectedValue, builds: builds).node], id: "root"),
             changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(builds.count, 1, "the child was handed the same aim, and nothing else it holds moved")
@@ -246,11 +246,11 @@ final class AimTests: XCTestCase {
         let builds = Builds()
 
         renders.render(stack(
-            [Choosing(picksRight: picksRight.projectedValue, builds: builds).body], id: "root"))
+            [Choosing(picksRight: picksRight.projectedValue, builds: builds).node], id: "root"))
 
         picksRight.wrappedValue = true
         let second = Choosing(picksRight: picksRight.projectedValue, builds: builds)
-        renders.render(stack([second.body], id: "root"), changed: Renderer.shared.pendingChanges)
+        renders.render(stack([second.node], id: "root"), changed: Renderer.shared.pendingChanges)
 
         XCTAssertNotEqual(
             try second.left.target, try second.right.target,
@@ -264,7 +264,7 @@ final class AimTests: XCTestCase {
         let renders = Renders()
         let page = FormPage()
 
-        renders.render(stack([page.body], id: "root"))
+        renders.render(stack([page.node], id: "root"))
 
         XCTAssertEqual(try page.form.field.target, .number(1))
     }
@@ -285,7 +285,7 @@ final class AimTests: XCTestCase {
         let renders = Renders()
         let wheel = Aim(Wheel.self)
 
-        renders.render(stack([Wheel().aim(wheel).body], id: "root"))
+        renders.render(stack([Wheel().aim(wheel).node], id: "root"))
         _ = drainedActs()
 
         async let spun: Void = wheel.spin(by: 90)
@@ -322,7 +322,7 @@ private enum WheelContract: ElementContract {
 }
 
 /// The control's view: its node from its contract.
-private struct Wheel: View {
+private struct Wheel: ElementView {
     var node = Node(contract: WheelContract.self)
 }
 
@@ -336,20 +336,20 @@ extension Aim where Target == Wheel {
 
 /// A composed view holding a control of its own - what the per-instance tests
 /// render two of. Declared with `@Aim`, the way an application declares one.
-private struct Panelled: ContentView {
+private struct Panelled: View {
     @Aim(ZStack.self) var panel
 
-    var content: some View {
+    var body: some View {
         ZStack().aim(panel)
     }
 }
 
 /// A composed view whose content's ROOT is aimed at, for the test that pins
 /// the inside and the outside naming one element.
-private struct Carded: ContentView {
+private struct Carded: View {
     @Aim(ZStack.self) var inner
 
-    var content: some View {
+    var body: some View {
         ZStack().aim(inner)
     }
 }
@@ -361,11 +361,11 @@ private final class Builds {
 }
 
 /// A view HANDED an aim, putting it on a ZStack of its own.
-private struct Handed: ContentView {
+private struct Handed: View {
     let panel: Aim<ZStack>
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
         return ZStack().aim(panel)
     }
@@ -373,12 +373,12 @@ private struct Handed: ContentView {
 
 /// A view that declares an aim and hands it to a child - and reads a state in
 /// its own body, so a write to it builds this view again.
-private struct Handing: ContentView {
+private struct Handing: View {
     @Aim(ZStack.self) var panel
     @Binding var tag: Int
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         let shown = "\(tag)"
 
         return VStack {
@@ -390,13 +390,13 @@ private struct Handing: ContentView {
 
 /// A view that declares two aims and hands a child one or the other, putting
 /// the one it did not hand on a ZStack of its own.
-private struct Choosing: ContentView {
+private struct Choosing: View {
     @Aim(ZStack.self) var left
     @Aim(ZStack.self) var right
     @Binding var picksRight: Bool
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         let handsRight = picksRight
 
         return VStack {
@@ -416,10 +416,10 @@ private final class Form {
 }
 
 /// A view keeping such a model.
-private struct FormPage: ContentView {
+private struct FormPage: View {
     @State var form = Form()
 
-    var content: some View {
+    var body: some View {
         TextField(form.$note).aim(form.field)
     }
 }

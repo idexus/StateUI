@@ -31,7 +31,7 @@ final class FrameReaderTests: XCTestCase {
                 Text("content")
             }
             .onFrameChanged(in: space) { heard.frames.append($0) }
-            .body)
+            .node)
 
         renders.fire(patch.events?["frameChanged"] ?? -1, with: payload)
         return heard.frames.last
@@ -56,7 +56,7 @@ final class FrameReaderTests: XCTestCase {
         let patch = renders.render(
             VStack {}
                 .onFrameChanged { heard.frames.append($0) }
-                .body)
+                .node)
 
         renders.fire(patch.events?["frameChanged"] ?? -1, with: payload)
 
@@ -73,7 +73,7 @@ final class FrameReaderTests: XCTestCase {
             VStack {}
                 .onFrameChanged { heard.frames.append($0) }
                 .onFrameChanged(in: .global) { heard.frames.append($0) }
-                .body)
+                .node)
 
         renders.fire(patch.events?["frameChanged"] ?? -1, with: payload)
 
@@ -92,7 +92,7 @@ final class FrameReaderTests: XCTestCase {
             VStack {}
                 .onFrameChanged { parents.frames.append($0) }
                 .onFrameChanged(in: .global) { windows.frames.append($0) }
-                .body)
+                .node)
 
         let id = patch.events?["frameChanged"] ?? -1
 
@@ -117,7 +117,7 @@ final class FrameReaderTests: XCTestCase {
         let patch = renders.render(
             VStack {}
                 .onFrameChanged { heard.frames.append($0) }
-                .body)
+                .node)
 
         let id = patch.events?["frameChanged"] ?? -1
 
@@ -139,7 +139,7 @@ final class FrameReaderTests: XCTestCase {
         let patch = renders.render(
             VStack {}
                 .onFrameChanged { width.wrappedValue = $0.width }
-                .body)
+                .node)
 
         Renderer.shared.clearInvalidation()
         renders.fire(patch.events?["frameChanged"] ?? -1, with: payload)
@@ -165,7 +165,7 @@ final class FrameReaderTests: XCTestCase {
                     FrameReader { frame in
                         Text("\(Int(frame.width)) wide")
                     }
-                }.body,
+                }.node,
             ])
         }
 
@@ -203,7 +203,7 @@ final class FrameReaderTests: XCTestCase {
                     }
 
                     Text("sibling")
-                }.body,
+                }.node,
             ])
         }
 

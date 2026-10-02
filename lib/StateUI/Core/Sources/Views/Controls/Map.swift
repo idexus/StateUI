@@ -55,7 +55,7 @@ extension MapProperties {
 /// needs an API key in its manifest (`com.google.android.geo.API_KEY`) or the
 /// map stays a grey grid; a host with no map provider shows its
 /// unsupported-control marker instead.
-public struct Map: View, MapProperties {
+public struct Map: ElementView, MapProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -91,7 +91,7 @@ public struct Map: View, MapProperties {
         copy.node.children.removeAll { $0.type == .pin }
         let slots = copy.node.children.filter { $0.type == .contextMenu }
         copy.node.children.removeAll { $0.type == .contextMenu }
-        copy.node.children += content().map { $0.body } + slots
+        copy.node.children += content().map { $0.node } + slots
 
         return copy
     }
@@ -123,9 +123,6 @@ public struct Pin: Element {
         node = Node(contract: PinContract.self)
         node.write(PinContract.label, label)
     }
-
-    /// The node, as every element answers it.
-    public var body: Node { node }
 
     /// The callout's first line, in bold. The initializer takes the same
     /// value and is where a pin usually gets it.

@@ -59,7 +59,7 @@ public struct ForEach: Views {
         // The item's identity, unless the author wrote an `.id()` of their own.
         // Design: docs/design/views/builders.md#foreach-keys-are-text
         nodes = items.map { item in
-            var node = content(item).body
+            var node = content(item).node
             if node.id == nil { node.id = String(describing: item[keyPath: id]) }
             return node
         }

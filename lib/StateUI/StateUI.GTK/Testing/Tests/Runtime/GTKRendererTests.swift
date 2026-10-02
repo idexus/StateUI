@@ -10,10 +10,10 @@ import StateUIConformance
 import XCTest
 
 /// A page and its counter: a click raises the count, and the caption reads it.
-struct CounterPage: ContentView {
+struct CounterPage: View {
     @State private var count = 0
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("count \(count)")
             Button("Add")
@@ -96,10 +96,10 @@ final class GTKRendererTests: XCTestCase {
 }
 
 /// A page that sizes its window as it is made.
-private struct SizedPage: ContentView {
+private struct SizedPage: View {
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         let window = self.window
         return Text("sized").onCreated {
             window.width = 700
@@ -196,22 +196,22 @@ extension GTKRendererTests {
 }
 
 /// A page saying the locale's name and zone, the battery's state and the network's access.
-private struct MachinePage: ContentView {
+private struct MachinePage: View {
     @Environment private var locale: LocaleInfo
     @Environment private var battery: Battery
     @Environment private var connectivity: Connectivity
 
-    var content: some View {
+    var body: some View {
         Text("\(locale.name) \(locale.timeZone) \(battery.state) \(connectivity.networkAccess)")
     }
 }
 
 /// A page saying the application's phase and its window's.
-private struct PhasePage: ContentView {
+private struct PhasePage: View {
     @Environment private var application: ApplicationSession
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         Text("\(application.phase) \(window.phase)")
     }
 }
@@ -239,11 +239,11 @@ private struct GoingWindow: Window {
 }
 
 /// A page hearing its window go.
-private struct GoingPage: ContentView {
+private struct GoingPage: View {
     let gone: Received<String>
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         let gone = self.gone
         let window = self.window
         return Text("going")
@@ -266,10 +266,10 @@ private struct ToolMainWindow: Window {
     var page: any Page { ToolOpeningPage() }
 }
 
-private struct ToolOpeningPage: ContentView {
+private struct ToolOpeningPage: View {
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         let scene = self.scene
         return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
     }
@@ -280,10 +280,10 @@ private struct ToolWindow: Window {
 }
 
 /// A label reading its scene's phase, each phase it reads written down.
-private struct ScenePhaseLabel: ContentView {
+private struct ScenePhaseLabel: View {
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         Text("\(scene.phase)")
     }
 }

@@ -10,10 +10,10 @@ import AppKit
 import XCTest
 
 /// A page whose note a click takes away.
-private struct NotePage: ContentView {
+private struct NotePage: View {
     @State private var shown = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             if shown {
                 Text("note")

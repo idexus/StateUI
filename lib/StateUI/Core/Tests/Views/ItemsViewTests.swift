@@ -47,7 +47,7 @@ final class ItemsViewTests: XCTestCase {
             built.counts[number, default: 0] += 1
             return Text("\(number)")
         }
-        .header(Text("Numbers")).body))
+        .header(Text("Numbers")).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
         XCTAssertEqual(entries.header, "\u{1E}header")
@@ -62,7 +62,7 @@ final class ItemsViewTests: XCTestCase {
     /// identity; one it lets go leaves.
     func testAnEntryHeldIsAChildOfItsOwnAndLeavesWhenLetGo() throws {
         let renders = Renders()
-        let list = try list(in: renders.render(ItemsView(0..<1_000) { Text("\($0)") }.body))
+        let list = try list(in: renders.render(ItemsView(0..<1_000) { Text("\($0)") }.node))
 
         let held = try self.list(in: hold(["4", "3"], in: renders, list: list))
         XCTAssertEqual(held.children.map(\.id), [.manual("3"), .manual("4")], "in the order they show")
@@ -80,7 +80,7 @@ final class ItemsViewTests: XCTestCase {
         let list = try list(in: renders.render(ItemsView(0..<100) { number in
             built.counts[number, default: 0] += 1
             return Text("\(number)")
-        }.body))
+        }.node))
 
         _ = try hold(["3"], in: renders, list: list)
         _ = try hold(["3", "4"], in: renders, list: list)
@@ -97,7 +97,7 @@ final class ItemsViewTests: XCTestCase {
         let list = try list(in: renders.render(ItemsView(0..<100) { number in
             built.counts[number, default: 0] += 1
             return Text(number == 3 && starred.wrappedValue ? "★" : "\(number)")
-        }.body))
+        }.node))
         _ = try hold(["3", "4"], in: renders, list: list)
 
         starred.wrappedValue = true
@@ -116,7 +116,7 @@ final class ItemsViewTests: XCTestCase {
             ItemsView(0..<100) { number in
                 built.counts[number, default: 0] += 1
                 return Text("\(number)\(suffix)")
-            }.body
+            }.node
         }
         let list = try list(in: renders.render(tree("")))
         _ = try hold(["3"], in: renders, list: list)
@@ -133,7 +133,7 @@ final class ItemsViewTests: XCTestCase {
         let chosen = State<Int?>(wrappedValue: 5)
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
-            .selection(chosen.projectedValue).body))
+            .selection(chosen.projectedValue).node))
 
         XCTAssertEqual(list.props[.selectionMode], SelectionMode.single.propValue)
         XCTAssertEqual(list.props[.selectedItems], .strings(["5"]))
@@ -150,7 +150,7 @@ final class ItemsViewTests: XCTestCase {
         let chosen = State<Set<Int>>(wrappedValue: [8, 2])
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
-            .selection(chosen.projectedValue).body))
+            .selection(chosen.projectedValue).node))
 
         XCTAssertEqual(list.props[.selectionMode], SelectionMode.multiple.propValue)
         XCTAssertEqual(list.props[.selectedItems], .strings(["2", "8"]))
@@ -166,7 +166,7 @@ final class ItemsViewTests: XCTestCase {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
             .onItemActivated { opened.values.append($0) }
-            .onEndReached(within: 3) { ends.values.append(true) }.body))
+            .onEndReached(within: 3) { ends.values.append(true) }.node))
 
         XCTAssertEqual(list.props[.endReachedWithin], .number(3))
         renders.fire(try XCTUnwrap(list.events?[.itemActivated]), with: [.string("6")])
@@ -183,7 +183,7 @@ final class ItemsViewTests: XCTestCase {
         let list = try list(in: renders.render(ItemsView(groups: [
             ItemsGroup(["Apple", "Pear"]) { Text($0) }.id("Fruit").header(Text("Fruit")),
             ItemsGroup(["Apple"]) { Text($0) }.id("Cider").footer(Text("1 item")),
-        ]).body))
+        ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
         XCTAssertEqual(entries.sections.map(\.header), ["Fruit\u{1E}header", nil])
@@ -200,7 +200,7 @@ final class ItemsViewTests: XCTestCase {
     /// Two items that describe alike are told apart, as two repeated `.id()`s are.
     func testTwoItemsThatDescribeAlikeAreToldApart() throws {
         let renders = Renders()
-        let list = try list(in: renders.render(ItemsView(["a", "b", "a"], id: \.self) { Text($0) }.body))
+        let list = try list(in: renders.render(ItemsView(["a", "b", "a"], id: \.self) { Text($0) }.node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
         XCTAssertEqual(entries.sections[0].items, ["a", "b", "a\u{0}1"])
@@ -211,7 +211,7 @@ final class ItemsViewTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(ItemsView([Int]()) { Text("\($0)") }
             .header(Text("Numbers"))
-            .emptyView(Text("Nothing yet")).body)
+            .emptyView(Text("Nothing yet")).node)
 
         XCTAssertNil(patch.subtree.first { $0.type == .itemsView })
         XCTAssertEqual(patch.subtree.first { $0.type == .text }?.props[.text], .string("Nothing yet"))

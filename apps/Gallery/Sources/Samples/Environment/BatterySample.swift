@@ -12,10 +12,10 @@ struct BatterySample: SampleContent, ExampleContent {
         + "state, source and the saver."
 
     static let code = """
-        struct BatteryBadge: ContentView {
+        struct BatteryBadge: View {
             @Environment var battery: Battery
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The battery is read here, so a change the host reports
                     // builds this closure - and nothing else on the page.
@@ -33,7 +33,7 @@ struct BatterySample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

@@ -29,7 +29,7 @@ extension ImageProperties {
 ///     Image(light: "tab_list.png", dark: "tab_list_dark.png")
 ///
 /// and the picture follows the system theme.
-public struct Image: View, ImageElement, ImageProperties {
+public struct Image: ElementView, ImageElement, ImageProperties {
     /// The node this control describes.
     public var node: Node
 

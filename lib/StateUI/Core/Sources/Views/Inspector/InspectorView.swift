@@ -3,7 +3,7 @@
 
 /// An inspector itself: what it can do, its scene's renders, and the one
 /// chosen.
-struct InspectorView: ContentView {
+struct InspectorView: View {
     /// The scene it looks at, by its number.
     let scene: String
 
@@ -13,7 +13,7 @@ struct InspectorView: ContentView {
     /// Whether there is room for the renders and the chosen one side by side.
     let wide: Bool
 
-    var content: some View {
+    var body: some View {
         let model = InspectorModel.shared
 
         // Reading the revision rebuilds this view when a pass lands.
@@ -265,10 +265,10 @@ struct InspectorView: ContentView {
 }
 
 /// One composed view of the chosen render's tree.
-private struct Branch: ContentView {
+private struct Branch: View {
     let entry: InspectedEntry
 
-    var content: some View {
+    var body: some View {
         let (mark, said, colour): (String, String, Color) = {
             switch entry.outcome {
             case let .built(reason):

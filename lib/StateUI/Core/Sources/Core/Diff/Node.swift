@@ -201,7 +201,7 @@ public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat
 /// an `Element`, so one goes into any builder - which is how an application
 /// describes a control it registered with a host:
 ///
-///     struct Marker: View {
+///     struct Marker: ElementView {
 ///         var node = Node(contract: MarkerContract.self)
 ///
 ///         func title(_ value: String) -> Self {
@@ -340,7 +340,7 @@ public struct Node {
 
     /// A node of an element's own type: how every element's view begins.
     ///
-    ///     struct TrafficLight: View {
+    ///     struct TrafficLight: ElementView {
     ///         var node = Node(contract: TrafficLightContract.self)
     ///     }
     ///
@@ -359,15 +359,15 @@ public struct Node {
 }
 
 /// Anything that describes itself as a UI tree. A view is a value; StateUI reads
-/// `body` whenever it needs the element's description.
+/// `node` whenever it needs the element's description.
 public protocol Element {
-    /// This view as a node, read afresh on every render.
-    var body: Node { get }
+    /// This element as a node, read afresh on every render.
+    var node: Node { get }
 }
 
-/// A `Node` is an `Element`: a node already is what a body describes. In a
-/// view builder it goes as `ModifiedContent(node:)`.
+/// A `Node` is an `Element`: a node already is what an element describes. In
+/// a view builder it goes as `ModifiedContent(node:)`.
 extension Node: Element {
-    /// Itself - a node already is what a body describes.
-    public var body: Node { self }
+    /// Itself - a node already is what an element describes.
+    public var node: Node { self }
 }

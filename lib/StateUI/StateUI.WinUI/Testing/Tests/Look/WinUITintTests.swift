@@ -9,10 +9,10 @@ import CStateUIWinUI
 import XCTest
 
 /// A ticked box whose tint a click turns from red to blue.
-private struct TintedPage: ContentView {
+private struct TintedPage: View {
     @State private var blue = false
 
-    var content: some View {
+    var body: some View {
         VStack {
             CheckBox(true).tint(blue ? Color("#0000FF") : Color("#FF0000"))
             Button("Blue").onClicked { blue = true }

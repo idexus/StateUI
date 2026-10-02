@@ -76,7 +76,7 @@ final class DrivenPatchTests: XCTestCase {
                     .opacity(fade.projectedValue)
                     .isEnabled(enabled)
                     .visualState(.disabled) { $0.opacity(0.1) }
-                    .body)
+                    .node)
             return (page, try XCTUnwrap(page.at(.auto(3))))
         }
 
@@ -116,7 +116,7 @@ final class DrivenPatchTests: XCTestCase {
                     .selectedIndex(choice.projectedValue)
                 Switch(on.projectedValue)
             }
-            .body)
+            .node)
 
         // Numbered in the walk, and within one element in the names' order.
         XCTAssertEqual(
@@ -180,7 +180,7 @@ final class DrivenPatchTests: XCTestCase {
         // And the one modifier that is a control's own rather than a tier's.
         let box = ColorBox().color(colour.projectedValue)
 
-        let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).body)
+        let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).node)
 
         // The number is state 1, the colour 2 and the insets 3, in the walk.
         XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property))
@@ -212,7 +212,7 @@ final class DrivenPatchTests: XCTestCase {
     func testDrivenTextRegistersTheTextChannel() throws {
         let caption = State(wrappedValue: "60%")
 
-        let page = try page(VStack { Text().text(caption.projectedValue); Button().text(caption.projectedValue) }.body)
+        let page = try page(VStack { Text().text(caption.projectedValue); Button().text(caption.projectedValue) }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text))
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text))
@@ -229,7 +229,7 @@ final class DrivenPatchTests: XCTestCase {
             TextField(name.projectedValue).onTextChanged { _ in }
             TextEditor(name.projectedValue)
             SearchField(name.projectedValue)
-        }.body)
+        }.node)
 
         for field in [ElementId.auto(4), .auto(5), .auto(6)] {
             XCTAssertEqual(ties(page, .auto(3), field), tied(["text"], to: 1, .inOut, .text))
@@ -245,7 +245,7 @@ final class DrivenPatchTests: XCTestCase {
         let page = try page(VStack {
             DatePicker(due.projectedValue).onDateChanged { _ in }
             TimePicker(alarm.projectedValue)
-        }.body)
+        }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["date"], to: 1, .inOut, .plain))
         XCTAssertEqual(page.at(.auto(3), .auto(4))?.eventNames, ["dateChanged"])
@@ -260,7 +260,7 @@ final class DrivenPatchTests: XCTestCase {
         let page = try page(VStack {
             Slider().value(level.projectedValue)
             Stepper().value(steps.projectedValue)
-        }.body)
+        }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property))
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["value"], to: 2, .inOut, .property))
@@ -278,7 +278,7 @@ final class DrivenPatchTests: XCTestCase {
         let page = try page(VStack {
             Slider().value(level.projectedValue)
             ColorBox().width(level.projectedValue)
-        }.body)
+        }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property))
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["width"], to: 1, .inOut, .property))
@@ -300,7 +300,7 @@ final class DrivenPatchTests: XCTestCase {
                 .shade(ColorBox(.black))
                 .placement(run.projectedValue)
                 .frame(room.projectedValue)
-                .body)
+                .node)
         let layout = try XCTUnwrap(page.at(.auto(3)))
 
         XCTAssertEqual(
@@ -330,7 +330,7 @@ final class DrivenPatchTests: XCTestCase {
 
         _ = differ.reconcile(
             nil,
-            with: rooted(Text("x").translationX(moved.projectedValue).opacity(faded.projectedValue).body))
+            with: rooted(Text("x").translationX(moved.projectedValue).opacity(faded.projectedValue).node))
 
         XCTAssertEqual(faded.number, 1, "opacity sorts before translationX")
         XCTAssertEqual(moved.number, 2)

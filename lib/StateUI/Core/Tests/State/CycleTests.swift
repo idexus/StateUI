@@ -25,12 +25,12 @@ private final class Ran {
 
 /// A view with one engine over one driven state, which is the smallest thing
 /// that can be asked to run.
-private struct Doubler: ContentView {
+private struct Doubler: View {
     @State var input = 0.0
     @State var output = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("doubler").engine(following: $input) { cycle in
             ran.note("doubler", cycle)
             output = input * 2
@@ -41,11 +41,11 @@ private struct Doubler: ContentView {
 /// Two engines on one view, written in the order the LOWER priority is second
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
-private struct Ordered: ContentView {
+private struct Ordered: View {
     @State var value = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("ordered")
             .engine(following: $value, priority: 10) { cycle in ran.note("late", cycle) }
             .engine(following: $value, priority: 1) { cycle in ran.note("early", cycle) }
@@ -55,7 +55,7 @@ private struct Ordered: ContentView {
 /// An engine that READS two `@State`s and names neither in `following:`.
 /// Being read wakes nothing: what an engine is woken by is a write to a
 /// state it FOLLOWS, and nothing else.
-private struct Overhearing: ContentView {
+private struct Overhearing: View {
     enum Mode { case a, b }
 
     @State var level = 0.0
@@ -63,7 +63,7 @@ private struct Overhearing: ContentView {
     @State var out = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("overhearing").engine { cycle in
             ran.note("overhearing", cycle)
             out = mode == .a ? level : -level
@@ -73,12 +73,12 @@ private struct Overhearing: ContentView {
 }
 
 /// An engine with nothing to follow, which runs on its own answer alone.
-private struct Ticking: ContentView {
+private struct Ticking: View {
     @State var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
-    var content: some View {
+    var body: some View {
         Text("ticking").engine { cycle in
             ran.note("ticking", cycle)
             count += 1
@@ -89,13 +89,13 @@ private struct Ticking: ContentView {
 
 /// An engine following TWO states with a closure of more than one statement -
 /// the call shape that told the two `engine` overloads apart the hard way.
-private struct Pairing: ContentView {
+private struct Pairing: View {
     @State var left = 0.0
     @State var right = 0.0
     @State var sum = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("pairing").engine(following: $left, $right) { cycle in
             ran.note("pairing", cycle)
             sum = left + right
@@ -106,14 +106,14 @@ private struct Pairing: ContentView {
 /// A SEQUENCE: an enum naming the step - a value the host cannot carry -
 /// followed by the engine that switches on it, and written by that engine to
 /// move on.
-private struct Stepping: ContentView {
+private struct Stepping: View {
     enum Step { case waiting, counting, done }
 
     @State var step = Step.waiting
     @State var counted = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("stepping").engine(following: $step) { cycle in
             ran.note("stepping \(step)", cycle)
 
@@ -134,11 +134,11 @@ private struct Stepping: ContentView {
 }
 
 /// An engine that writes the very state it follows, once per run.
-private struct Selfish: ContentView {
+private struct Selfish: View {
     @State var mark = 0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("selfish").engine(following: $mark) { cycle in
             ran.note("selfish", cycle)
             mark += 1
@@ -148,14 +148,14 @@ private struct Selfish: ContentView {
 
 /// Three engines in a row: one writing `relay` from `trigger`, and two
 /// following `relay` - one ahead of the writer in the order, one behind it.
-private struct Relaying: ContentView {
+private struct Relaying: View {
     @State var trigger = 0.0
     @State var relay = 0.0
     @State var early = 0.0
     @State var late = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("relaying")
             .engine(following: $relay, priority: -1) { cycle in
                 ran.note("before", cycle)
@@ -175,13 +175,13 @@ private struct Relaying: ContentView {
 /// ONE STATE IN EVERY ROLE AT ONCE: `shown` is read by the body AND followed
 /// by the engine, `quiet` is followed and read by nobody, and `worn` is what
 /// the engine writes.
-private struct Serving: ContentView {
+private struct Serving: View {
     @State var shown = 0
     @State var quiet = 0
     @State var worn = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("\(shown)").engine(following: $shown, $quiet) { cycle in
             ran.note("serving", cycle)
             worn = Double(shown + quiet)
@@ -192,14 +192,14 @@ private struct Serving: ContentView {
 /// A view with two states: one its BODY shows, one only its ENGINE reads - and
 /// a followed state that never moves, so the only thing that can make the
 /// engine run again is a render arming it.
-private struct Quiet: ContentView {
+private struct Quiet: View {
     @State var shown = 0
     @State var hidden = 1.0
     @State var idle = 0.0
     @State var output = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("\(shown)").engine(following: $idle) { cycle in
             ran.note("quiet", cycle)
             output = hidden
@@ -210,13 +210,13 @@ private struct Quiet: ContentView {
 /// An engine whose `following:` is an EXPRESSION - one state or another, by
 /// a third the body reads - so a render may name a different state than the
 /// render before it did.
-private struct Choosing: ContentView {
+private struct Choosing: View {
     @State var byFirst = true
     @State var first = 0.0
     @State var second = 0.0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("choosing").engine(following: byFirst ? $first : $second) { cycle in
             ran.note("choosing", cycle)
         }
@@ -225,21 +225,21 @@ private struct Choosing: ContentView {
 
 /// A parent LENDING a state to a child, as `$step` - the child's engine
 /// follows it through the binding, and the owner's write wakes it.
-private struct Lending: ContentView {
+private struct Lending: View {
     @State var step = 0
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Borrowing(step: $step, ran: ran)
     }
 }
 
 /// The child: a binding to the parent's state, and an engine following it.
-private struct Borrowing: ContentView {
+private struct Borrowing: View {
     @Binding var step: Int
     let ran: Ran
 
-    var content: some View {
+    var body: some View {
         Text("borrowing").engine(following: $step) { cycle in
             ran.note("borrowing \(step)", cycle)
         }
@@ -326,7 +326,7 @@ final class CycleTests: XCTestCase {
     func testATextToldWholeReplacesTheImage() {
         let words = State(wrappedValue: "x")
 
-        Renders().render(TextField(words.projectedValue).body)
+        Renders().render(TextField(words.projectedValue).node)
 
         typed(words.number, "a much longer line of text")
         XCTAssertEqual(words.wrappedValue, "a much longer line of text")
@@ -343,7 +343,7 @@ final class CycleTests: XCTestCase {
         let quiet = Renders()
         let name = State(wrappedValue: "")
 
-        quiet.render(VStack { TextField(name.projectedValue) }.body)
+        quiet.render(VStack { TextField(name.projectedValue) }.node)
         Renderer.shared.clearInvalidation()
 
         typed(name.number, "Ada")
@@ -354,7 +354,7 @@ final class CycleTests: XCTestCase {
         let shown = Renders()
         let said = State(wrappedValue: "")
 
-        shown.render(VStack { TextField(said.projectedValue); Text(said.wrappedValue) }.body)
+        shown.render(VStack { TextField(said.projectedValue); Text(said.wrappedValue) }.node)
         Renderer.shared.clearInvalidation()
 
         typed(said.number, "Ada")
@@ -458,7 +458,7 @@ final class CycleTests: XCTestCase {
         let ran = Ran()
         let renders = Renders()
 
-        renders.render(Doubler(ran: ran).body)
+        renders.render(Doubler(ran: ran).node)
 
         board.cycle(now: 0, reducesMotion: false)
         XCTAssertEqual(ran.order, [], "nothing runs on the cycle that starts the clock")
@@ -476,7 +476,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Overhearing(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1, "the render armed it once")
@@ -497,7 +497,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Doubler(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1)
@@ -529,7 +529,7 @@ final class CycleTests: XCTestCase {
         let ran = Ran()
         let renders = Renders()
 
-        renders.render(Ordered(ran: ran).body)
+        renders.render(Ordered(ran: ran).node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
@@ -543,7 +543,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Doubler(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
@@ -566,7 +566,7 @@ final class CycleTests: XCTestCase {
         let ran = Ran()
         let renders = Renders()
 
-        renders.render(Ticking(ran: ran, stopAfter: 3).body)
+        renders.render(Ticking(ran: ran, stopAfter: 3).node)
         board.cycle(now: 0, reducesMotion: false)
 
         for frame in 1...5 {
@@ -586,7 +586,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Pairing(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1, "the render armed it once")
@@ -608,7 +608,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Stepping(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order, ["stepping waiting"], "the render armed it once")
@@ -631,7 +631,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Selfish(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(view.mark, 1, "the render armed it once, and it wrote once")
@@ -656,7 +656,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Stepping(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
@@ -683,7 +683,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Relaying(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order, ["before", "writer", "after"], "the render armed all three, in priority order")
@@ -713,7 +713,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Choosing(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1, "the render armed it once")
@@ -727,7 +727,7 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order.count, 2, "`first` is")
 
         view.byFirst = false
-        renders.render(view.body, changed: Renderer.shared.pendingChanges)
+        renders.render(view.node, changed: Renderer.shared.pendingChanges)
         board.cycle(now: 64, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 3, "the render armed it again")
 
@@ -751,7 +751,7 @@ final class CycleTests: XCTestCase {
 
         renders.render(Text("room").frame(room.projectedValue).engine(following: room.projectedValue) { cycle in
             ran.note("room", cycle)
-        }.body)
+        }.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1, "the render armed it once")
@@ -774,7 +774,7 @@ final class CycleTests: XCTestCase {
         let source = State(wrappedValue: 1.0)
         let words = source.projectedValue.convert { "\(Int($0))" }
 
-        renders.render(stack([Slider(source.projectedValue).body, Text().text(words).body]))
+        renders.render(stack([Slider(source.projectedValue).node, Text().text(words).node]))
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(words.wrappedValue, "1")
@@ -793,7 +793,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Lending(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order, ["borrowing 0"])
@@ -816,7 +816,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Serving(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         Renderer.shared.clearInvalidation()
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
@@ -849,7 +849,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Doubler(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
 
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
@@ -870,7 +870,7 @@ final class CycleTests: XCTestCase {
         let ran = Ran()
         let renders = Renders()
 
-        renders.render(Ticking(ran: ran, stopAfter: 99).body)
+        renders.render(Ticking(ran: ran, stopAfter: 99).node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
@@ -895,7 +895,7 @@ final class CycleTests: XCTestCase {
             let renders = Renders()
             let view = Doubler(ran: ran)
 
-            renders.render(view.body)
+            renders.render(view.node)
             board.cycle(now: 0, reducesMotion: false)
 
             var written: [Double] = []
@@ -919,12 +919,12 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Doubler(ran: ran)
 
-        renders.render(VStack { view }.body)
+        renders.render(VStack { view }.node)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1)
 
-        renders.render(VStack { Text("gone") }.body)
+        renders.render(VStack { Text("gone") }.node)
 
         view.input = 9
         board.cycle(now: 32, reducesMotion: false)
@@ -946,7 +946,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let view = Quiet(ran: ran)
 
-        renders.render(view.body)
+        renders.render(view.node)
         _ = board.cycle(now: 0, reducesMotion: false)
         _ = board.cycle(now: 16, reducesMotion: false)
 

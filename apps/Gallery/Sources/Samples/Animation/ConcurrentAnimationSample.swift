@@ -140,7 +140,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             ZStack {
                 VStack {

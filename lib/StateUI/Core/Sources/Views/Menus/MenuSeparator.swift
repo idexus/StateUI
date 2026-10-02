@@ -21,9 +21,6 @@ public struct MenuSeparator: Element {
         node = Node(contract: MenuSeparatorContract.self)
     }
 
-    /// The node, as every element answers it.
-    public var body: Node { node }
-
     /// Who this separator is, among the menu's others - worth giving one when
     /// entries come and go around it.
     public func id(_ value: some Hashable) -> Self {

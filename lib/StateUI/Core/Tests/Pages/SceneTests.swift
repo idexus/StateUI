@@ -25,21 +25,21 @@ private final class Palette {
 }
 
 /// The session's accent, as a view reads it.
-private struct Accent: ContentView {
+private struct Accent: View {
     @Environment private var palette: Palette
 
-    var content: some View { Text(palette.accent) }
+    var body: some View { Text(palette.accent) }
 }
 
 /// The session's main page: its accent and the value it keeps, and a button
 /// for each thing a test does from inside the scene - through the scene's
 /// session, which is in the environment of everything in it.
-private struct Home: ContentView {
+private struct Home: View {
     @Environment private var palette: Palette
     @Environment private var scene: SceneSession
     @Binding var shade: String
 
-    var content: some View {
+    var body: some View {
         VStack {
             Accent()
             Text(shade)
@@ -59,8 +59,8 @@ private struct MainWindow: Window {
 }
 
 /// A page showing the session's accent.
-private struct Showing: ContentView {
-    var content: some View { Accent() }
+private struct Showing: View {
+    var body: some View { Accent() }
 }
 
 /// The one fonts window a session may open.
@@ -70,10 +70,10 @@ private struct FontsWindow: Window {
 
 /// A page that says which document its window is for, and makes the window
 /// about another.
-private struct Retargeting: ContentView {
+private struct Retargeting: View {
     @Binding var number: Int
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("Document \(number)")
             Button("seven").onClicked { number = 7 }
@@ -112,8 +112,8 @@ private struct Studio: Application {
 }
 
 /// A page with nothing on it.
-private struct Blank: ContentView {
-    var content: some View { Text("blank") }
+private struct Blank: View {
+    var body: some View { Text("blank") }
 }
 
 /// A window and nothing else.
@@ -127,10 +127,10 @@ private struct Alone: Application {
 }
 
 /// A page that says loading is over.
-private struct Waiting: ContentView {
+private struct Waiting: View {
     @Binding var loading: Bool
 
-    var content: some View { Button("ready").onClicked { loading = false } }
+    var body: some View { Button("ready").onClicked { loading = false } }
 }
 
 /// What shows while a session is getting ready.
@@ -161,10 +161,10 @@ private struct StartingApp: Application {
 }
 
 /// A page showing what its window counted, and counting one more.
-private struct Counting: ContentView {
+private struct Counting: View {
     @Binding var opened: Int
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("\(opened)")
             Button("more").onClicked { opened += 1 }
@@ -185,10 +185,10 @@ private struct CountingApp: Application {
 
 /// A page that names its window and sizes it as it comes into the tree, and
 /// renames it on a press - through the window's session.
-private struct Naming: ContentView {
+private struct Naming: View {
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         VStack {
             Button("rename").onClicked { window.title = "Renamed" }
         }
@@ -208,11 +208,11 @@ private struct NamingApp: Application {
 }
 
 /// A page that says how many scenes are open and what its own has open.
-private struct Listing: ContentView {
+private struct Listing: View {
     @Environment private var application: ApplicationSession
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("\(application.scenes.count) scenes")
             Text(scene.windows.map(\.key).joined(separator: ", "))
@@ -602,7 +602,7 @@ final class SceneTests: XCTestCase {
                 "isMaximizable", "isMinimizable", "isTranslucent", "titleBar", "modalStack", "environment",
                 "onCreated", "onActivated", "onDeactivated", "onStopped", "onResumed", "onDestroying",
             ]),
-            ("ContentView", onPage + [
+            ("View", onPage + [
                 "onAppearing", "onDisappearing", "onNavigatedTo", "onNavigatingFrom", "onNavigatedFrom",
             ]),
         ]
@@ -639,7 +639,7 @@ final class SceneTests: XCTestCase {
     }
 
     /// The direct members of every type declared a `kind` - `Window`,
-    /// `ContentView`, `Application` - as text: what stands one level inside
+    /// `View`, `Application` - as text: what stands one level inside
     /// its braces, nested types left out.
     private func bodies(of kind: String, in text: String) -> [String] {
         var bodies: [String] = []

@@ -10,10 +10,10 @@ import StateUIConformance
 import XCTest
 
 /// A red box cut to its outline, which a click moves.
-private struct CutPage: ContentView {
+private struct CutPage: View {
     @State private var moved = false
 
-    var content: some View {
+    var body: some View {
         VStack {
             VStack { Text("cut") }
                 .width(40)

@@ -72,7 +72,7 @@ extension PropertyContainer where Self: Page {
 
     private func toolbarGroup(_ side: ToolbarSide, id: String?, order: Int, _ items: [ToolbarItem]) -> Modified {
         modified {
-            var group = Node(contract: ToolbarItemsContract.self, children: items.map(\.body))
+            var group = Node(contract: ToolbarItemsContract.self, children: items.map(\.node))
             group.id = id
             group.write(ToolbarItemsContract.side, side)
             group.write(ToolbarItemsContract.order, order)

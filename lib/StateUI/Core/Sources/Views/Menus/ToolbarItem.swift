@@ -3,10 +3,10 @@
 
 /// An action in the page's native navigation or toolbar surface.
 ///
-///     struct NotesPage: ContentView {
+///     struct NotesPage: View {
 ///         @Environment private var page: PageSession
 ///
-///         var content: some View {
+///         var body: some View {
 ///             VStack { … }
 ///                 .toolbar {
 ///                     ToolbarItem("Save")
@@ -34,9 +34,6 @@ public struct ToolbarItem: Element, MenuItemElement {
         node = Node(contract: ToolbarItemContract.self)
         node.write(MenuItemElementContract.text, text)
     }
-
-    /// The node this item describes.
-    public var body: Node { node }
 
     /// Who this item is among the page's others, so an item inserted in the
     /// middle is matched to itself rather than to whichever item stood there.

@@ -55,7 +55,7 @@ extension DatePickerProperties {
 ///
 /// The date is a `CalendarDate`: a year, a month and a day. The picker takes
 /// `.textColor` but has no `.text`, the field showing the formatted date.
-public struct DatePicker: View, TextStyleElement, FontElement, DatePickerProperties {
+public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePickerProperties {
     /// The node this control describes.
     public var node: Node
 

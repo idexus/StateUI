@@ -409,7 +409,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
             """))
     #endif
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

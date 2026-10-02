@@ -52,6 +52,6 @@ enum Stacked {
     static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> ModifiedContent {
         let held = children()
         let stack: any View = element == "HStack" ? HStack { held }.spacing(spacing) : VStack { held }.spacing(spacing)
-        return ModifiedContent(node: stack.body)
+        return ModifiedContent(node: stack.node)
     }
 }

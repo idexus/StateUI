@@ -9,7 +9,7 @@
 
 /// Collects views written as consecutive statements. Every closure in this
 /// library that takes views is one of these, and so is a composed view's
-/// `content`.
+/// `body`.
 ///
 /// `if`, `if/else`, `switch` and `ForEach` work inside one. A plain `for` does
 /// not compile: repeat views with `ForEach`, which keys each view by its item.
@@ -25,7 +25,7 @@
 /// One statement keeps its type, and an `if`/`else` whose branches are views
 /// is a view (`Either`); several statements or an `if` with no `else` are
 /// what a container holds and never one view. A value held as `any View` goes
-/// in as `ModifiedContent(node: view.body)`.
+/// in as `ModifiedContent(node: view.node)`.
 @resultBuilder
 public enum ViewBuilder {
     /// One statement: what it wrote, one view staying one view.

@@ -37,11 +37,11 @@ private enum DialContract: ElementContract {
 
 /// A page that calls the acts and listens for the event, writing whatever
 /// came back where a test can read it.
-private struct Calling: ContentView {
+private struct Calling: View {
     @State private var answer = "-"
     @State private var heard: [HostEventSubscription] = []
 
-    var content: some View {
+    var body: some View {
         VStack {
             Button("Ask")
                 .onClicked {

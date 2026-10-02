@@ -11,11 +11,11 @@ import XCTest
 
 /// Three layers, one inside another: red 10 wide, blue 20, green 30. A button raises blue by a described `zIndex`,
 /// another green by a bound one.
-struct LayeredBoxes: ContentView {
+struct LayeredBoxes: View {
     @State private var blueInFront = false
     @State private var green = 0
 
-    var content: some View {
+    var body: some View {
         VStack {
             ZStack {
                 ColorBox(.red).width(10).zIndex(blueInFront ? 0 : 1)

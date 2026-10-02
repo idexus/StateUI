@@ -512,9 +512,9 @@ private extension WindowType {
     static let appKitTestTool = WindowType("appkit.test.tool")
 }
 
-private struct AppKitSessionPage: ContentView {
+private struct AppKitSessionPage: View {
     let caption: String
-    var content: some View { Text(caption) }
+    var body: some View { Text(caption) }
 }
 
 private struct AppKitSessionMainWindow: Window {

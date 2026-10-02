@@ -33,9 +33,6 @@ public struct ModalStack: Page, ModifiableElement, BarElement {
     /// The node this stack describes.
     public var node: Node
 
-    /// The node, as every element answers it.
-    public var body: Node { node }
-
     /// A modal stack over the author's own type.
     ///
     /// - Parameters:

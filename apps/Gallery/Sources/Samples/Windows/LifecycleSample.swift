@@ -45,7 +45,7 @@ struct LifecycleSample: SampleContent, ExampleContent {
 
     var notes: (any View)? { nil }
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("What the window has said so far, newest last:")
                 .fontSize(14)

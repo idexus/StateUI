@@ -4,7 +4,7 @@ import StateUI
 ///
 /// It carries its own way out because the modal presentation covers the page
 /// that opened it.
-struct ModalPage: ContentView {
+struct ModalPage: View {
     /// Where the gallery is. A modal closes itself by shortening the array it
     /// is a member of, exactly as a pushed page pops itself.
     let nav: Navigation
@@ -12,7 +12,7 @@ struct ModalPage: ContentView {
     /// The page itself.
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         VStack {
             SectionTitle("Over everything")
 

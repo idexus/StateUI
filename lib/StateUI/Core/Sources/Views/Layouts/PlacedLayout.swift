@@ -38,7 +38,7 @@
 /// an axis nothing constrains - inside a scroller - keep the answer bounded:
 /// placements that grow with the room grow the room, and the layout never
 /// settles.
-public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: ContentView {
+public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: View {
     /// One view being placed: its identity, its index and its item.
     private struct Slot {
         let identity: String
@@ -73,7 +73,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         id: KeyPath<Items.Element, Id>,
         @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
-        self.source = Source(items: items, path: id, view: { content($0).body })
+        self.source = Source(items: items, path: id, view: { content($0).node })
     }
 
     /// The state this layout's placements are carried on.
@@ -123,12 +123,12 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// - Returns: the layout, shaded.
     public func shade<Shade: View>(_ view: Shade) -> PlacedLayout {
         var copy = self
-        copy.mask = view.body
+        copy.mask = view.node
         return copy
     }
 
     /// The views, each wrapped for the host to place from the run.
-    public var content: some View {
+    public var body: some View {
         let held = source
 
         let slots = held.items.enumerated().map { offset, item in

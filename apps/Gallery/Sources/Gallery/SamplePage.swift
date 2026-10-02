@@ -9,7 +9,7 @@ import StateUI
 /// back button and back gesture work as they do anywhere else, and two samples
 /// can be on the stack at once. A sample whose examples must hold the page
 /// still is shown as tabs instead - see `shown(_:nav:)` and `SampleTabPage`.
-struct SamplePage: ContentView {
+struct SamplePage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -37,7 +37,7 @@ struct SamplePage: ContentView {
         .barBackgroundColor(bar)
     }
 
-    var content: some View {
+    var body: some View {
         // Dressed as every page of the gallery is. What a sample adds to the
         // bar it writes from its own `.onCreated`, which runs AFTER this one,
         // being further in - so its buttons go before these and its title
@@ -85,7 +85,7 @@ struct SamplePage: ContentView {
             }
 
             if let notes = example.notes {
-                Self.section("Notes", ModifiedContent(node: notes.body))
+                Self.section("Notes", ModifiedContent(node: notes.node))
             }
 
             Self.section(example.codeHeading, CodeBlock(example.code))

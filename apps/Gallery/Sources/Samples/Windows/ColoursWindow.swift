@@ -8,7 +8,7 @@ struct ColoursWindow: Window {
 }
 
 /// The accents on offer, each drawn in itself.
-struct ColoursPage: ContentView {
+struct ColoursPage: View {
     /// The gallery's look - the one its scene offers every window of it.
     @Environment private var style: SessionStyle
 
@@ -18,7 +18,7 @@ struct ColoursPage: ContentView {
     /// The page itself - what it is called, and its padding.
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("The accent this gallery's bars are painted in.")
                 .fontSize(13)

@@ -58,10 +58,10 @@ private final class ForeignCart {
 }
 
 /// A view that keeps a model rather than a value.
-private struct CartPage: ContentView {
+private struct CartPage: View {
     @State var cart = Cart()
 
-    var content: some View {
+    var body: some View {
         Button("Items: \(cart.items.count)").onClicked { cart.items.append("one") }
     }
 }
@@ -92,11 +92,11 @@ private final class Tally {
 
 /// A view whose body is a field over the state it was handed: the host
 /// carries the text, and the view reads none of it.
-private struct Field: ContentView {
+private struct Field: View {
     let note: Binding<String>
     let tally: Tally
 
-    var content: some View {
+    var body: some View {
         tally.builds += 1
         return TextField(note)
     }
@@ -105,14 +105,14 @@ private struct Field: ContentView {
 /// A view whose content is one read the test chooses, so what it rebuilds
 /// for is exactly what the closure read - and which hands the closure the
 /// reading, because `debugInfo()` answers about the build that is RUNNING.
-private struct Reader: ContentView {
+private struct Reader: View {
     let read: (String) -> Void
 
     init(_ read: @escaping (String) -> Void) {
         self.read = read
     }
 
-    var content: some View {
+    var body: some View {
         read(debugInfo())
         return Text("reader")
     }
@@ -173,8 +173,8 @@ final class ModelStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Reader { items.builds += 1; _ = cart.items; items.said = $0 }.body,
-            Reader { note.builds += 1; _ = cart.note; note.said = $0 }.body,
+            Reader { items.builds += 1; _ = cart.items; items.said = $0 }.node,
+            Reader { note.builds += 1; _ = cart.note; note.said = $0 }.node,
         ], id: "root"))
         settled()
         XCTAssertEqual(items.builds, 1)
@@ -213,7 +213,7 @@ final class ModelStateTests: XCTestCase {
         XCTAssertNotNil(cart.$note.followed, "and an engine can follow it")
 
         renders.render(stack([
-            Field(note: cart.$note, tally: holder).body,
+            Field(note: cart.$note, tally: holder).node,
         ], id: "root"))
         settled()
         XCTAssertEqual(holder.builds, 1)
@@ -242,7 +242,7 @@ final class ModelStateTests: XCTestCase {
         XCTAssertEqual(cart.$fade.journey.value, 1, "and a journey to read")
 
         renders.render(stack([
-            Reader { _ in holder.builds += 1; _ = ColorBox().opacity(cart.$fade) }.body,
+            Reader { _ in holder.builds += 1; _ = ColorBox().opacity(cart.$fade) }.node,
         ], id: "root"))
         settled()
 
@@ -277,9 +277,9 @@ final class ModelStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Reader { page.builds += 1; _ = cart.note; page.said = $0 }.body,
-            Field(note: cart.$note, tally: field).body,
-            Reader { row.builds += 1; _ = cart.note; row.said = $0 }.body,
+            Reader { page.builds += 1; _ = cart.note; page.said = $0 }.node,
+            Field(note: cart.$note, tally: field).node,
+            Reader { row.builds += 1; _ = cart.note; row.said = $0 }.node,
         ], id: "root"))
         settled()
 
@@ -317,7 +317,7 @@ final class ModelStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Reader { _ in holder.builds += 1; _ = TextField(owner.cart.$note) }.body,
+            Reader { _ in holder.builds += 1; _ = TextField(owner.cart.$note) }.node,
         ], id: "root"))
         settled()
         XCTAssertEqual(holder.builds, 1)
@@ -386,7 +386,7 @@ final class ModelStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Reader { _ in shown.builds += 1; shown.said = "\(cart.note)/\(cart.lastSaved)" }.body,
+            Reader { _ in shown.builds += 1; shown.said = "\(cart.note)/\(cart.lastSaved)" }.node,
         ], id: "root"))
         settled()
         XCTAssertEqual(shown.said, "/")
@@ -438,7 +438,7 @@ final class ModelStateTests: XCTestCase {
     func testAModelInStateSurvivesTheRebuildAndReportsItsWrites() {
         let renders = Renders()
 
-        let first = renders.render(CartPage().body)
+        let first = renders.render(CartPage().node)
         settled()
 
         renders.fire(first.events?["clicked"] ?? -1)
@@ -448,7 +448,7 @@ final class ModelStateTests: XCTestCase {
 
         // A fresh view, as every render makes one - and a fresh `Cart()` with
         // it, which the box throws away in favour of the one it is holding.
-        let second = renders.render(CartPage().body, changed: Renderer.shared.pendingChanges)
+        let second = renders.render(CartPage().node, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["text"], .string("Items: 1"),
                        "the model the box kept is the one the rebuilt view reads")

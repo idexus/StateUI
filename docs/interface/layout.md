@@ -440,8 +440,8 @@ to run under them, so its background colours the status bar's strip:
 ```swift
 import StateUI
 
-struct Header: ContentView {
-    var content: some View {
+struct Header: View {
+    var body: some View {
         VStack {
             Text("StateUI")
         }

@@ -83,7 +83,7 @@ extension SampleContent where Self: ExampleContent {
 /// One example: a piece of interface, the words about it, and the Swift that
 /// wrote it.
 ///
-/// A `ContentView`, because that is what a piece of interface is in this
+/// A `View`, because that is what a piece of interface is in this
 /// library - so an example is written the way an application writes one, and
 /// a build reading it takes sits where the example means it to and is shown in
 /// the same place in `code`. Its `@State` is its own, carried by the catalog
@@ -91,7 +91,7 @@ extension SampleContent where Self: ExampleContent {
 ///
 /// The example says as little as it can: its controls, what they report, and
 /// at most one line saying what to try. Everything else is `notes`.
-protocol ExampleContent: ContentView {
+protocol ExampleContent: View {
     /// The Swift that produced the example: its own code with the decoration
     /// taken out, as a reader would write it.
     static var code: String { get }
@@ -226,7 +226,7 @@ struct Sample {
     let fills: Bool
 
     /// The examples, usually one. Stored as values: an example is a
-    /// ContentView, so what is kept here is a placeholder whose content builds
+    /// View, so what is kept here is a placeholder whose content builds
     /// when the page does - and whose `@State` lives as long as the gallery
     /// that keeps this catalog.
     let examples: [Example]

@@ -21,10 +21,10 @@ private struct ListWindow: Window {
 }
 
 /// A hundred numbered items, one chosen at a time, more asked for near the end.
-private struct ListPage: ContentView {
+private struct ListPage: View {
     @State private var chosen: Int?
 
-    var content: some View {
+    var body: some View {
         ItemsView(0..<100) { Text("\($0)") }
             .selection($chosen)
             .onItemActivated { Heard.opened.append($0) }

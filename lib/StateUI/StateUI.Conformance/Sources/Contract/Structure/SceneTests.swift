@@ -77,12 +77,12 @@
 }
 
 /// A page saying each phase its scene goes through.
-struct ScenePhasePage: ContentView {
+struct ScenePhasePage: View {
     let log: Received<ScenePhase>
 
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         let (log, scene) = (self.log, self.scene)
         return Text("Scene")
             .onCreated { log.values.append(scene.phase) }
@@ -91,12 +91,12 @@ struct ScenePhasePage: ContentView {
 }
 
 /// A page handing its application's session to the case.
-struct ApplicationPage: ContentView {
+struct ApplicationPage: View {
     let sessions: Received<ApplicationSession>
 
     @Environment private var application: ApplicationSession
 
-    var content: some View {
+    var body: some View {
         let (sessions, application) = (self.sessions, self.application)
         return Text("Application").onCreated { sessions.values.append(application) }
     }

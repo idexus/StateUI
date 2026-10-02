@@ -31,8 +31,8 @@ struct MainWindow: Window {
     var page: any Page { HomePage() }
 }
 
-struct HomePage: ContentView {
-    var content: some View { Text("Home") }
+struct HomePage: View {
+    var body: some View { Text("Home") }
 }
 ```
 
@@ -347,7 +347,7 @@ already stored changes no state, and therefore triggers no extra reaction.
 Whatever a container shows as a screen - a window's `page`, a navigation
 stack's root and destinations, a tab, either half of a split view, a sheet -
 is a `Page`. Nobody declares one by hand: every view is a page, usually a
-`ContentView` of the application's own, and so is each arrangement. The
+`View` of the application's own, and so is each arrangement. The
 container puts a view on a page that owns one `PageSession` for as long as
 the same view stands on it: the same view type under the same explicit id.
 Another view in that place starts a session of its own. A write to the session
@@ -393,11 +393,11 @@ Tell the page its values when the content element is created and again when
 the state they depend on changes; declare its actions where that state lives:
 
 ```swift quote
-struct EditorPage: ContentView {
+struct EditorPage: View {
     @Environment private var page: PageSession
     @State private var dirty = false
 
-    var content: some View {
+    var body: some View {
         TextEditor()
             .toolbar {
                 ToolbarItem("Save")

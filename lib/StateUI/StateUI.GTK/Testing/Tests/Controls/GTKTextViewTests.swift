@@ -9,10 +9,10 @@ import CStateUIGTK
 import XCTest
 
 /// A word whose colour a button changes.
-private struct ChangingRunPage: ContentView {
+private struct ChangingRunPage: View {
     @State private var red = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text().spans { TextSpan("word").textColor(red ? Color("#FF0000") : Color("#0000FF")) }
             Button("Blue").onClicked { red = false }
@@ -21,10 +21,10 @@ private struct ChangingRunPage: ContentView {
 }
 
 /// One label, its words in spans until a button takes them away.
-private struct SpannedPage: ContentView {
+private struct SpannedPage: View {
     @State private var spanned = true
 
-    var content: some View {
+    var body: some View {
         VStack {
             if spanned {
                 Text("own").spans { TextSpan("runs") }.id("words")

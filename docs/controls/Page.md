@@ -5,10 +5,10 @@
 What a container shows as a screen: a window's page, a stack's root and destinations, a tab, either half of a split view, a sheet.
 
 ```swift
-struct NotePage: ContentView {
+struct NotePage: View {
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         Text("Nothing written yet.")
             .onCreated {
                 page.title = "Note"

@@ -51,11 +51,11 @@ private struct GridPlacement: ExampleContent {
             SwitchRow("Second column twice as wide", $wideSecondColumn)
         }
 
-        private struct GridCell: ContentView {
+        private struct GridCell: View {
             let text: String
             let color: String
 
-            var content: some View {
+            var body: some View {
                 Text(text)
                     .textColor(.white)
                     .background(Color(color))
@@ -64,7 +64,7 @@ private struct GridPlacement: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -124,11 +124,11 @@ private struct GridPlacement: ExampleContent {
 
 /// One coloured cell, composed rather than built inline - and placed with
 /// `.gridRow`, `.gridColumn` and the spans like any other view.
-private struct GridCell: ContentView {
+private struct GridCell: View {
     let text: String
     let color: String
 
-    var content: some View {
+    var body: some View {
         Text(text)
             .fontSize(12)
             .textColor(.white)

@@ -453,11 +453,11 @@ final class WinUIPagesTests: XCTestCase {
 }
 
 /// A page that puts the focus in its field as it appears.
-private struct AimedFieldPage: ContentView {
+private struct AimedFieldPage: View {
     @Environment private var page: PageSession
     @Aim(TextField.self) private var field
 
-    var content: some View {
+    var body: some View {
         let (page, field) = (self.page, self.field)
         return VStack {
             TextField(State(wrappedValue: "").projectedValue).aim(field)
@@ -472,7 +472,7 @@ private struct AimedFieldPage: ContentView {
 
 /// A page with a title, maybe a log of its phases, the actions it puts on the window's chrome, and whether it hides
 /// its navigation bar.
-private struct TitledPage: ContentView {
+private struct TitledPage: View {
     let title: String
     var log: Received<String>? = nil
     var actions: [ToolbarItem] = []
@@ -480,7 +480,7 @@ private struct TitledPage: ContentView {
 
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let log = self.log
         let title = self.title
         let page = self.page
@@ -496,11 +496,11 @@ private struct TitledPage: ContentView {
 }
 
 /// A sidebar page in `tone`, written on its session as it is made and as the tone changes.
-private struct TonedSidebar: ContentView {
+private struct TonedSidebar: View {
     @Environment private var page: PageSession
     let tone: Color
 
-    var content: some View {
+    var body: some View {
         Text("sidebar")
             .onCreated { page.background = tone }
             .onChanged(tone) { page.background = tone }

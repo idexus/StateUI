@@ -42,11 +42,11 @@ struct SameInputsSample: SampleContent, ExampleContent {
             }
         }
 
-        private struct Block: ContentView {
+        private struct Block: View {
             let caption: String
             let value: String
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     Text("built with \\(caption): \\(value)")
                     DebugInfoLabel()
@@ -54,10 +54,10 @@ struct SameInputsSample: SampleContent, ExampleContent {
             }
         }
 
-        private struct Reads: ContentView {
+        private struct Reads: View {
             @Binding var count: Int
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     Text("reads the count: \\(count)")
                     DebugInfoLabel()
@@ -65,10 +65,10 @@ struct SameInputsSample: SampleContent, ExampleContent {
             }
         }
 
-        private struct Row: ContentView {
+        private struct Row: View {
             let item: String
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     Text(item)
                     DebugInfoLabel()
@@ -77,7 +77,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             // This closure reads the count, so a press builds it again - and
             // constructs every view below afresh. Which of them is BUILT is
@@ -124,7 +124,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A composed view - a ContentView of your own - is built again in two "
+            Text("A composed view - a View of your own - is built again in two "
                 + "cases and no other: when what it was built with changed, or when a "
                 + "state it read changed. Otherwise it is carried whole, with its state, "
                 + "its handlers and everything under it, however often the view around it "
@@ -154,12 +154,12 @@ struct SameInputsSample: SampleContent, ExampleContent {
 /// One block: the caption, and the value it was built with. Whether it is
 /// built again is decided by that value alone, which is what its own reading
 /// says.
-private struct Block: ContentView {
+private struct Block: View {
     let caption: String
     let value: String
     let tint: Color
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("Built with \(caption)")
                 .fontSize(12)
@@ -178,11 +178,11 @@ private struct Block: ContentView {
 }
 
 /// A block lent the count, and reading it.
-private struct Reads: ContentView {
+private struct Reads: View {
     @Binding var count: Int
     let tint: Color
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("Reads the count")
                 .fontSize(12)
@@ -201,10 +201,10 @@ private struct Reads: ContentView {
 }
 
 /// One row, built with its item and nothing else.
-private struct Row: ContentView {
+private struct Row: View {
     let item: String
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(item)
                 .fontSize(15)

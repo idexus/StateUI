@@ -79,7 +79,7 @@ struct DrivenSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             // WHAT THIS PAGE IS ABOUT, and it takes both halves to say it: the
             // marker crosses and the percentage counts up for no build at all,

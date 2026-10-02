@@ -26,14 +26,14 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A view that runs one closure of the test's while it is described.
-private struct Held: ContentView {
+private struct Held: View {
     let read: () -> Void
 
     init(_ read: @escaping () -> Void = {}) {
         self.read = read
     }
 
-    var content: some View { read(); return Text("held") }
+    var body: some View { read(); return Text("held") }
 }
 
 /// An object a test provides to a subtree, or hands to a handler to capture.
@@ -77,7 +77,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let fade = State(1.0)
 
-            renders.render(stack([ColorBox().opacity(fade.projectedValue).body], id: "root"))
+            renders.render(stack([ColorBox().opacity(fade.projectedValue).node], id: "root"))
             return fade.storage
         })
     }
@@ -91,7 +91,7 @@ final class ElementReleaseTests: XCTestCase {
             let out = State(0.0)
 
             renders.render(stack([
-                Held().engine(following: step.projectedValue) { _ in out.wrappedValue += 1 }.body,
+                Held().engine(following: step.projectedValue) { _ in out.wrappedValue += 1 }.node,
             ], id: "root"))
             return step.storage
         })
@@ -103,7 +103,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let taps = State(0)
 
-            renders.render(stack([Button("x").onClicked { taps.wrappedValue += 1 }.body], id: "root"))
+            renders.render(stack([Button("x").onClicked { taps.wrappedValue += 1 }.node], id: "root"))
             return taps.storage
         })
     }
@@ -122,12 +122,12 @@ final class ElementReleaseTests: XCTestCase {
             let held = Carried()
 
             first = held
-            renders.render(stack([Button("x").onClicked { _ = held }.body], id: "root"))
+            renders.render(stack([Button("x").onClicked { _ = held }.node], id: "root"))
 
             // The same element, described again with a handler that captures
             // something else.
             let other = Carried()
-            renders.render(stack([Button("x").onClicked { _ = other }.body], id: "root"))
+            renders.render(stack([Button("x").onClicked { _ = other }.node], id: "root"))
             _ = other
         }
 
@@ -140,7 +140,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let object = Carried()
 
-            renders.render(stack([Held().environment(object).body], id: "root"))
+            renders.render(stack([Held().environment(object).node], id: "root"))
             return object
         })
     }
@@ -150,7 +150,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let aim = Aim(TextField.self)
 
-            renders.render(stack([TextField("").aim(aim).body], id: "root"))
+            renders.render(stack([TextField("").aim(aim).node], id: "root"))
             return aim
         })
     }
@@ -160,7 +160,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let room = State(Rect(0, 0, 0, 0))
 
-            renders.render(stack([Held().frame(room.projectedValue).body], id: "root"))
+            renders.render(stack([Held().frame(room.projectedValue).node], id: "root"))
             return room.storage
         })
     }
@@ -171,7 +171,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let counter = State(0)
 
-            renders.render(stack([Held { _ = counter.get() }.body], id: "root"))
+            renders.render(stack([Held { _ = counter.get() }.node], id: "root"))
             return counter.storage
         })
     }
@@ -184,7 +184,7 @@ final class ElementReleaseTests: XCTestCase {
             let fade = State(1.0)
 
             renders.render(stack([
-                Text().text(fade.projectedValue.convert { "\($0)" }).body,
+                Text().text(fade.projectedValue.convert { "\($0)" }).node,
             ], id: "root"))
             return fade.storage
         })
@@ -198,7 +198,7 @@ final class ElementReleaseTests: XCTestCase {
 
             renders.render(stack([
                 Text().text(Binding.multi(name.projectedValue, count.projectedValue)
-                    .convert { "\($0) \($1)" }).body,
+                    .convert { "\($0) \($1)" }).node,
             ], id: "root"))
             return name.storage
         })
@@ -214,7 +214,7 @@ final class ElementReleaseTests: XCTestCase {
             renders.render(stack([
                 Held { _ = shown.get() }
                     .samples(fade.projectedValue, into: shown.projectedValue, .every(100))
-                    .body,
+                    .node,
             ], id: "root"))
             return fade.storage
         })
@@ -226,7 +226,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let seen = Carried()
 
-            renders.render(stack([Held { _ = seen }.body], id: "root"))
+            renders.render(stack([Held { _ = seen }.node], id: "root"))
             return seen
         })
     }

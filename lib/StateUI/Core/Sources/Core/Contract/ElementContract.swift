@@ -13,7 +13,7 @@
 ///         static let members: [any ContractMember] = [signal]
 ///     }
 ///
-///     struct TrafficLight: View {
+///     struct TrafficLight: ElementView {
 ///         var node = Node(contract: TrafficLightContract.self)
 ///
 ///         func signal(_ value: TrafficSignal) -> Self {

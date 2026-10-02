@@ -10,10 +10,10 @@ import XCTest
 
 /// A page that asks the host the time of day, its zone, and zones' distances from UTC on a winter's and a summer's
 /// day; then a zone nobody knows; then a word to a screen reader.
-private struct AskingPage: ContentView {
+private struct AskingPage: View {
     @State private var said = ""
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(said)
             Button("Time").onClicked {
@@ -44,12 +44,12 @@ private struct AskingPage: ContentView {
 }
 
 /// A field a button puts the keyboard's focus on, and another takes it off.
-private struct FocusPage: ContentView {
+private struct FocusPage: View {
     @Aim(TextField.self) private var field
     @State private var words = ""
     @State private var said = ""
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(said)
             TextField($words).aim(field)
@@ -63,10 +63,10 @@ private struct FocusPage: ContentView {
 }
 
 /// A page whose buttons ask the user each kind of question, saying every answer after the last.
-private struct QuestionsPage: ContentView {
+private struct QuestionsPage: View {
     @State private var said = ""
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(said)
             Button("Alert").onClicked {

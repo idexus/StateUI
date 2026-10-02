@@ -132,10 +132,10 @@ final class PumpTests: XCTestCase {
 }
 
 /// A page whose handlers add one, the second also calling an act.
-private struct CountingPage: ContentView {
+private struct CountingPage: View {
     @State private var count = 0
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("count \(count)")
             Button("Add")

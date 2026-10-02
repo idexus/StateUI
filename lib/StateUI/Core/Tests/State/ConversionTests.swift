@@ -16,11 +16,11 @@ private final class Builds {
 }
 
 /// A body that READS a conversion - so it is a reader of the source.
-private struct Percent: ContentView {
+private struct Percent: View {
     let volume: State<Double>
     let builds: Builds
 
-    var content: some View {
+    var body: some View {
         builds.count += 1
 
         return ModifiedContent(node: label("\(Int(volume.projectedValue.convert { $0 * 100 }.wrappedValue))%"))
@@ -29,10 +29,10 @@ private struct Percent: ContentView {
 
 /// A body that hands a conversion on, twice over, so the registration's
 /// number can be compared between two renders.
-private struct Twice: ContentView {
+private struct Twice: View {
     let volume: State<Double>
 
-    var content: some View {
+    var body: some View {
         Slider(volume.projectedValue.convert { $0 * 100 }.convertBack { $0 / 100 })
     }
 }
@@ -64,7 +64,7 @@ final class ConversionTests: XCTestCase {
         let patch = renders.render(
             Slider(volume.projectedValue.convert { $0 * 100 }.convertBack { $0 / 100 })
                 .maximum(100)
-                .body)
+                .node)
 
         let number = try XCTUnwrap(patch.driven?[.value]?.state)
         let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
@@ -95,8 +95,8 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
         let view = Twice(volume: volume)
 
-        let first = renders.render(view.body)
-        let again = renders.renderFromScratch(view.body)
+        let first = renders.render(view.node)
+        let again = renders.renderFromScratch(view.node)
 
         XCTAssertEqual(
             first.driven?[.value]?.state, again.driven?[.value]?.state,
@@ -113,7 +113,7 @@ final class ConversionTests: XCTestCase {
         let patch = renders.render(
             Text()
                 .text(width.projectedValue.convert(with: height.projectedValue) { "\(Int($0 + $1))" })
-                .body)
+                .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
@@ -141,7 +141,7 @@ final class ConversionTests: XCTestCase {
 
         let patch = renders.render(
             Text(Binding.multi(info.projectedValue, value.projectedValue).convert { "\($0) = \(Int($1))" })
-                .body)
+                .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
@@ -185,7 +185,7 @@ final class ConversionTests: XCTestCase {
                 rest[7].projectedValue,
                 rest[8].projectedValue
             ).convert { "\(Int($0 + $1 + $2 + $3 + $4 + $5 + $6 + $7 + $8 + $9))" })
-                .body)
+                .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
@@ -211,7 +211,7 @@ final class ConversionTests: XCTestCase {
         _ = renders.render(
             Text(Binding.multi(info.projectedValue, value.projectedValue)
                 .convert { "\($0) \(Int($1))" })
-                .body)
+                .node)
 
         XCTAssertFalse(info.storage.readAtBuild, "a multi source is read off its storage")
         XCTAssertFalse(value.storage.readAtBuild, "and so is the second")
@@ -229,7 +229,7 @@ final class ConversionTests: XCTestCase {
                     .convert(with: minutes.projectedValue) { h, m in h * 60 + m }
                     .convertBack { total in ((total / 60).rounded(.down), total.truncatingRemainder(dividingBy: 60)) })
             .maximum(600)
-            .body)
+            .node)
 
         let number = try XCTUnwrap(patch.driven?[.value]?.state)
         let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
@@ -252,7 +252,7 @@ final class ConversionTests: XCTestCase {
         let builds = Builds()
         let renders = Renders()
 
-        let first = renders.render(Percent(volume: volume, builds: builds).body)
+        let first = renders.render(Percent(volume: volume, builds: builds).node)
 
         XCTAssertEqual(first.props[.text], .string("20%"))
         XCTAssertEqual(builds.count, 1)

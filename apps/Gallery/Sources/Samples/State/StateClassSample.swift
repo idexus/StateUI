@@ -25,10 +25,10 @@ private final class Basket {
 /// like any other as far as lending is concerned. `$basket` says: I lend you
 /// this, do with it what you want - and `basket.$note` is the note's own
 /// state, the `Binding<String>` a TextField takes and the host carries.
-private struct NoteRow: ContentView {
+private struct NoteRow: View {
     @Binding var basket: Basket
 
-    var content: some View {
+    var body: some View {
         VStack {
             // The field is handed the note's own state and reads nothing; the
             // label below READS `note`, which is what builds this again.
@@ -69,10 +69,10 @@ struct StateClassSample: SampleContent, ExampleContent {
             }
         }
 
-        struct NoteRow: ContentView {
+        struct NoteRow: View {
             @Binding var basket: Basket
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The field is handed the note's own state and reads
                     // nothing; the label READS `note`, so typing rebuilds this.
@@ -113,7 +113,7 @@ struct StateClassSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

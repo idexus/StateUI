@@ -16,7 +16,7 @@
 ///
 /// StateUI composes it of colour boxes in a row, the same on every platform.
 /// Design: docs/design/views/measured-layouts.md#position-indicator
-public struct PositionIndicator: ContentView {
+public struct PositionIndicator: View {
     /// Each item's own mark, where the items were given; nil for dots.
     private let marks: Marks?
 
@@ -48,11 +48,11 @@ public struct PositionIndicator: ContentView {
         _ items: Items,
         @ViewBuilder content: (Items.Element) -> Content
     ) {
-        marks = Marks(items.map { content($0).body })
+        marks = Marks(items.map { content($0).node })
     }
 
     /// The marks in a row, centred in the room the row is given.
-    public var content: some View {
+    public var body: some View {
         let shown = Self.shown(
             count: marks?.nodes.count ?? count.current, position: position,
             maximumVisible: maximumVisible.current, hidesSingle: hideSingle.current)
@@ -78,7 +78,7 @@ public struct PositionIndicator: ContentView {
             .cornerRadius(indicatorsShape.current == .circle ? size / 2 : 0)
             .width(size)
             .height(size)
-        return Mark(node: dot.body)
+        return Mark(node: dot.node)
     }
 
     /// The places of the marks shown: none for a lone one hidden; every place
@@ -213,6 +213,6 @@ private final class Marks {
 }
 
 /// One mark of the row, as its node.
-private struct Mark: View {
+private struct Mark: ElementView {
     var node: Node
 }

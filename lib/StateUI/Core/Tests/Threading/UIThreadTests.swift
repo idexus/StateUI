@@ -25,10 +25,10 @@ import XCTest
 
 /// A composed view that reads one state - a live reader of it for as long as
 /// the tree that holds it stands.
-private struct Shows: ContentView {
+private struct Shows: View {
     let fade: State<Double>
 
-    var content: some View {
+    var body: some View {
         ModifiedContent(node: label("\(fade.get())"))
     }
 }
@@ -50,7 +50,7 @@ final class UIThreadTests: XCTestCase {
                     try await Task.sleep(nanoseconds: 30_000_000)
                     woke = true
                 }
-                .body)
+                .node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
@@ -161,7 +161,7 @@ final class UIThreadTests: XCTestCase {
         // write below is made to a state a live element reads.
         let fade = State(1.0)
         let renders = Renders()
-        renders.render(Shows(fade: fade).body)
+        renders.render(Shows(fade: fade).node)
 
         // Leave the waker with NO signal pending: a poke is coalesced into
         // one the flag already holds, and one wait collects exactly that one
@@ -291,7 +291,7 @@ final class UIThreadTests: XCTestCase {
         Renderer.shared.clearStates()
 
         let fade = State(wrappedValue: 1.0)
-        Renders().render(Text("worn").opacity(fade.projectedValue).id("worn").body)
+        Renders().render(Text("worn").opacity(fade.projectedValue).id("worn").node)
 
         _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
         Renderer.shared.clearInvalidation()
@@ -310,7 +310,7 @@ final class UIThreadTests: XCTestCase {
         let renders = Renders()
         var taps = 0
 
-        let patch = renders.render(Button("Tap").onClicked { taps += 1 }.body)
+        let patch = renders.render(Button("Tap").onClicked { taps += 1 }.node)
         let id = try XCTUnwrap(patch.events?["clicked"])
 
         XCTAssertTrue(renders.fire(id))
@@ -338,7 +338,7 @@ final class UIThreadTests: XCTestCase {
                     try await Dialogs.alert("//list", message: "saved")
                     reached = true
                 }
-                .body)
+                .node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
@@ -373,7 +373,7 @@ final class UIThreadTests: XCTestCase {
         let patch = renders.render(
             Button("Break")
                 .onClicked { throw StateUIError(message: "no route") }
-                .body)
+                .node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))

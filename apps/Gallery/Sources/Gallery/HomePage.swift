@@ -20,7 +20,7 @@ import StateUI
 /// but only when a user turns the device or drags the window past a
 /// threshold, which is a handful of times in a session rather than a handful of
 /// times a second.
-struct HomePage: ContentView {
+struct HomePage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -106,7 +106,7 @@ struct HomePage: ContentView {
     /// out of patience.
     @State private var waited = 0.0
 
-    var content: some View {
+    var body: some View {
         let groups = catalog.groups
 
         // THE CEILING AND THE CHROME ARE READ HERE, in the body, and handed to
@@ -487,7 +487,7 @@ struct HomePage: ContentView {
 ///
 /// It is handed the catalog rather than the group: a class, compared by
 /// identity, where a group holds its samples and could never compare cheaply.
-private struct Caption: ContentView {
+private struct Caption: View {
     /// Every group there is - a class, so this view's inputs are three cheap
     /// ones.
     let catalog: Catalog
@@ -499,7 +499,7 @@ private struct Caption: ContentView {
     /// What the device is, for the count - a phone is shown fewer samples.
     let formFactor: FormFactor
 
-    var content: some View {
+    var body: some View {
         let groups = catalog.groups
         let group = groups[min(max(position, 0), max(groups.count - 1, 0))]
 
@@ -526,14 +526,14 @@ private struct Caption: ContentView {
 /// mouse without a wheel - or a hand on a keyboard - has no way to turn it at
 /// all. A VIEW OF ITS OWN for the reason the caption is one: whether an arrow
 /// can be pressed follows the position, so this reads it and the page does not.
-private struct Steps: ContentView {
+private struct Steps: View {
     /// Which card is in the middle - read for the arrows, written by them.
     @Binding var position: Int
 
     /// How many there are, which is where the arrows stop.
     let count: Int
 
-    var content: some View {
+    var body: some View {
         HStack {
             step("‹", to: position - 1)
             step("›", to: position + 1)
@@ -564,12 +564,12 @@ private struct Steps: ContentView {
 /// caption, for a shape, for a press - while every card is CARRIED: a
 /// composed view built with the same inputs is not built again, and the run
 /// costs what the caption costs.
-private struct GroupFace: ContentView {
+private struct GroupFace: View {
     let title: String
     let summary: String
     let picture: ImageSource
 
-    var content: some View {
+    var body: some View {
         ZStack {
             Grid {
                 Image(picture)

@@ -4,12 +4,12 @@
 /// A composed view with a modifier written on it. It offers what every view
 /// has - margin, opacity, where it sits in a grid - and nothing that only
 /// some views do.
-public struct ModifiedContent: View {
+public struct ModifiedContent: ElementView {
     /// The content's node, with the change written into it.
     public var node: Node
 
     /// Wraps a node that a modifier has already been applied to. Made by
-    /// `ContentView.modified`; there is rarely a reason to call this directly.
+    /// a composed view's modifier; there is rarely a reason to call this directly.
     public init(node: Node) {
         self.node = node
     }

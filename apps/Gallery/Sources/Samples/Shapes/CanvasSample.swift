@@ -21,10 +21,10 @@ private struct FollowsState: ExampleContent {
     @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
     static let code = """
-        struct FollowsState: ContentView {
+        struct FollowsState: View {
             @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The bars are read by the drawing below, so changing
                     // one builds this closure - which is what redraws it.
@@ -56,7 +56,7 @@ private struct FollowsState: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -101,12 +101,12 @@ private struct FollowsAFinger: ExampleContent {
     @State private var trail: [Point] = []
 
     static let code = """
-        struct FollowsAFinger: ContentView {
+        struct FollowsAFinger: View {
             @State private var trail: [Point] = []
 
             // Where a finger went, drawn where it went: the canvas reports in
             // its own coordinates, which is what the instructions use.
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The trail is read by the drawing, so every report the
                     // finger makes builds this closure and draws again.
@@ -136,7 +136,7 @@ private struct FollowsAFinger: ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

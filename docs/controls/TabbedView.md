@@ -5,11 +5,11 @@
 A page showing several pages, one at a time, with a bar to choose between them.
 
 ```swift
-struct Tab: ContentView {
+struct Tab: View {
     let name: String
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         Text("Nothing in \(name)").onCreated { page.title = name }
     }
 }

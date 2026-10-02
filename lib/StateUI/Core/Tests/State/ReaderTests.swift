@@ -18,14 +18,14 @@ private final class Said {
 
 /// A body whose read sits in a NESTED container: the HStack's content reads
 /// `x`, the VStack's content and the body itself do not.
-private struct Outer: ContentView {
-    let body: Said
+private struct Outer: View {
+    let built: Said
     let inner: Said
 
     @State var x = 0
 
-    var content: some View {
-        body.count += 1
+    var body: some View {
+        built.count += 1
 
         return VStack {
             Text("still")
@@ -46,13 +46,13 @@ private struct Outer: ContentView {
 }
 
 /// A body that reads in the BODY ITSELF, outside every container.
-private struct Direct: ContentView {
-    let body: Said
+private struct Direct: View {
+    let built: Said
 
     @State var x = 0
 
-    var content: some View {
-        body.count += 1
+    var body: some View {
+        built.count += 1
 
         let title = "x \(x)"
 
@@ -74,18 +74,18 @@ final class ReaderTests: XCTestCase {
     /// its content is built again when the state moves, and the body around
     /// it - which read nothing - is not.
     func testTheReaderIsTheClosureThatRead() {
-        let body = Said(), inner = Said()
-        let view = Outer(body: body, inner: inner)
+        let built = Said(), inner = Said()
+        let view = Outer(built: built, inner: inner)
         let renders = Renders()
 
-        renders.render(stack([view.body], id: "root"))
-        XCTAssertEqual(body.count, 1)
+        renders.render(stack([view.node], id: "root"))
+        XCTAssertEqual(built.count, 1)
         XCTAssertEqual(inner.count, 1)
 
         view.$x.wrappedValue = 1
         let patch = renders.revisit(changed: changed)
 
-        XCTAssertEqual(body.count, 1, "the body read nothing, so it was not built again")
+        XCTAssertEqual(built.count, 1, "the built read nothing, so it was not built again")
         XCTAssertEqual(inner.count, 2, "the HStack's content read `x`, so it was")
 
         // What crossed: the way down to the HStack, and its changed label -
@@ -100,11 +100,11 @@ final class ReaderTests: XCTestCase {
     /// And the reading taken inside the braces names the view whose braces
     /// they are, counts the container, and says what it was built for.
     func testAReadingInsideTheRebuiltClosureNamesTheViewAndTheState() {
-        let body = Said(), inner = Said()
-        let view = Outer(body: body, inner: inner)
+        let built = Said(), inner = Said()
+        let view = Outer(built: built, inner: inner)
         let renders = Renders()
 
-        renders.render(stack([view.body], id: "root"))
+        renders.render(stack([view.node], id: "root"))
         XCTAssertEqual(inner.last, "Outer: 1 build, first time")
 
         view.$x.wrappedValue = 1
@@ -116,16 +116,16 @@ final class ReaderTests: XCTestCase {
     /// A read made in the body itself - before any container's braces - makes
     /// the body the reader, and the whole body is built again.
     func testAReadInTheBodyItselfRebuildsTheBody() {
-        let body = Said()
-        let view = Direct(body: body)
+        let built = Said()
+        let view = Direct(built: built)
         let renders = Renders()
 
-        renders.render(stack([view.body], id: "root"))
+        renders.render(stack([view.node], id: "root"))
 
         view.$x.wrappedValue = 1
         let patch = renders.revisit(changed: changed)
 
-        XCTAssertEqual(body.count, 2, "the body read `x`")
+        XCTAssertEqual(built.count, 2, "the built read `x`")
         XCTAssertEqual(patch.children.first?.children.first?.props["text"], .string("x 1"))
     }
 }

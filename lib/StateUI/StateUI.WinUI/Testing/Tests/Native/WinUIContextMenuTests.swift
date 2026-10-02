@@ -10,10 +10,10 @@ import StateUIConformance
 import XCTest
 
 /// Two stacks offering a menu a button empties, the second hearing taps too.
-private struct MenuStacksPage: ContentView {
+private struct MenuStacksPage: View {
     @State private var entries = ["Open"]
 
-    var content: some View {
+    var body: some View {
         let entries = $entries
         return VStack {
             HStack { Text("menu") }

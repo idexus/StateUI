@@ -11,10 +11,10 @@ struct ConnectivitySample: SampleContent, ExampleContent {
         + "updated the moment it changes."
 
     static let code = """
-        struct SaveButton: ContentView {
+        struct SaveButton: View {
             @Environment var connectivity: Connectivity
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The connection is read here, so a change to it builds
                     // this closure.
@@ -35,7 +35,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         // The list is the host's answer as given, and a host may report one
         // entry per adapter, so repeats are collapsed for display and the
         // value stays untouched. Sorted, because a Set's own order changes

@@ -23,7 +23,7 @@
 ///
 /// `across` and `down` are how far beyond the room it scrolls, in device
 /// units: `across: 540` on a room 300 wide is a run 840 long.
-public struct ScrollReader: ContentView {
+public struct ScrollReader: View {
     private let across: Double
     private let down: Double
     private let held: () -> [Node]
@@ -184,7 +184,7 @@ public struct ScrollReader: ContentView {
     }
 
     /// The views, and the empty scroller lying over them.
-    public var content: some View {
+    public var body: some View {
         let content = held
         let sideways = across
         let downward = down

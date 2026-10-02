@@ -8,10 +8,10 @@ import StateUIConformance
 import XCTest
 
 /// A page and its counter: a click raises the count, and the caption reads it.
-struct CounterPage: ContentView {
+struct CounterPage: View {
     @State private var count = 0
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("count \(count)")
             Button("Add")
@@ -21,12 +21,12 @@ struct CounterPage: ContentView {
 }
 
 /// What the host reported of the device's locale, battery and network, one label each.
-struct EnvironmentPage: ContentView {
+struct EnvironmentPage: View {
     @Environment var locale: LocaleInfo
     @Environment var battery: Battery
     @Environment var connectivity: Connectivity
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("locale \(locale.name) \(locale.timeZone)")
             Text("battery \(battery.state)")
@@ -36,10 +36,10 @@ struct EnvironmentPage: ContentView {
 }
 
 /// A page showing what the device is called.
-struct DevicePage: ContentView {
+struct DevicePage: View {
     @Environment var device: DeviceInfo
 
-    var content: some View {
+    var body: some View {
         Text("device \(device.name)")
     }
 }
@@ -188,11 +188,11 @@ extension AndroidRendererTests {
 }
 
 /// A page that names its window.
-private struct TitledWindowPage: ContentView {
+private struct TitledWindowPage: View {
     @Environment private var window: WindowSession
     let title: String
 
-    var content: some View {
+    var body: some View {
         let window = self.window
         let title = self.title
         return Text(title).onCreated { window.title = title }

@@ -3,11 +3,11 @@
 
 /// An inspector folded to one line: the last render that reached its scene,
 /// said the way the list says it, and the button that opens it out again.
-struct InspectorStrip: ContentView {
+struct InspectorStrip: View {
     /// The scene it looks at, by its number.
     let scene: String
 
-    var content: some View {
+    var body: some View {
         let model = InspectorModel.shared
 
         // Built again as renders land, the way the whole inspector is.

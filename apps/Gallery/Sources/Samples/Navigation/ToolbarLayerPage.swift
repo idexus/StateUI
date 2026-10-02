@@ -4,7 +4,7 @@ import StateUI
 ///
 /// Its actions stand nearer the title than the gallery's, which keep their place at the edge; going back takes them
 /// away with the page, and the bar stands as it stood before the push.
-struct ToolbarLayerPage: ContentView {
+struct ToolbarLayerPage: View {
     /// The page itself - what it is called.
     @Environment private var page: PageSession
 
@@ -17,7 +17,7 @@ struct ToolbarLayerPage: ContentView {
     /// How many times this page's Share was pressed.
     @State private var shared = 0
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("Layer \(depth)")
                 .fontSize(28)

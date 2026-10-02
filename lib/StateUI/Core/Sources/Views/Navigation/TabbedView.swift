@@ -24,10 +24,10 @@
 ///         }
 ///     }
 ///
-///     struct TodayPage: ContentView {
+///     struct TodayPage: View {
 ///         @Environment private var page: PageSession
 ///
-///         var content: some View {
+///         var body: some View {
 ///             Text("Nothing due.")
 ///                 .onCreated {
 ///                     page.title = "Today"           // the caption
@@ -51,9 +51,6 @@
 public struct TabbedView: Page, ModifiableElement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
-
-    /// The node, as every element answers it.
-    public var body: Node { node }
 
     /// The tabs as given, so `selection` can find the one it names and name
     /// back the one the user chose.

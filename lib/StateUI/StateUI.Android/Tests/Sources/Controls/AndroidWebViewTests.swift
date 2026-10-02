@@ -75,13 +75,13 @@ final class AndroidWebViewTests: XCTestCase {
 }
 
 /// A web view, aimed at, with a button that loads it again and one that asks its page's title.
-private struct BrowsingPage: ContentView {
+private struct BrowsingPage: View {
     @Aim(WebView.self) private var browser
     @State private var back = false
     @State private var forward = false
     let heard: Received<String>
 
-    var content: some View {
+    var body: some View {
         let browser = self.browser
         let heard = self.heard
         return VStack {

@@ -36,23 +36,23 @@ private enum Route: Hashable { case detail(String) }
 
 /// A view that READS state, so a session can take the clean walk - the render
 /// that builds only what read what changed - and have something to build.
-private struct Counter: ContentView {
+private struct Counter: View {
     @Binding var count: Int
 
-    var content: some View { Text("Count: \(count)").fontSize(20) }
+    var body: some View { Text("Count: \(count)").fontSize(20) }
 }
 
 /// The stack's root. Every page of the session names itself as it comes into
 /// the tree, which is the message that brings it - so the session's messages
 /// carry every title a host reads.
-private struct HomePage: ContentView {
+private struct HomePage: View {
     @Environment private var page: PageSession
 
     /// Lent rather than read here: what reads it is `Counter`, one level down,
     /// which is what makes the clean walk's answer interesting.
     let count: Binding<Int>
 
-    var content: some View {
+    var body: some View {
         VStack {
             Counter(count: count)
             Button("Open").onClicked {}
@@ -66,17 +66,17 @@ private struct HomePage: ContentView {
     }
 }
 
-private struct DetailPage: ContentView {
+private struct DetailPage: View {
     @Environment private var page: PageSession
     let name: String
 
-    var content: some View { Text(name).onCreated { page.title = name } }
+    var body: some View { Text(name).onCreated { page.title = name } }
 }
 
-private struct SettingsPage: ContentView {
+private struct SettingsPage: View {
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("Settings").fontAttributes(.bold)
             Switch(true).onToggled { _ in }
@@ -171,7 +171,7 @@ final class DeterminismTests: XCTestCase {
             DeterminismWindow(
                 tab: tab.projectedValue,
                 path: path.projectedValue,
-                count: count.projectedValue).body
+                count: count.projectedValue).node
         }
 
         func render(_ name: String, complete: Bool = false) {

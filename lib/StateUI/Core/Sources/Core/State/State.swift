@@ -7,7 +7,7 @@
 
 /// A mutable piece of state, owned by whoever declares it.
 ///
-///     struct CounterPage: ContentView {
+///     struct CounterPage: View {
 ///         @State private var counter = 0
 ///         …
 ///     }

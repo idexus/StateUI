@@ -5,7 +5,7 @@
 /// anywhere a view goes. See `Inspector`; in a bar, `ToolbarItem.inspector`.
 ///
 ///     VStack { InspectorButton() }
-public struct InspectorButton: ContentView {
+public struct InspectorButton: View {
     /// The scene the button is in, whose inspector it shows.
     @Environment private var scene: SceneSession
 
@@ -13,7 +13,7 @@ public struct InspectorButton: ContentView {
     public init() {}
 
     /// The button, as a view.
-    public var content: some View {
+    public var body: some View {
         Button("ⓘ")
             .fontSize(16)
             .textColor(Look.subtle)

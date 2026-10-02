@@ -92,10 +92,10 @@ extension HostActCall {
 /// (see `Renderer.stateChanged`). The element counts as a reader for as long as
 /// the tree that holds it stands, so the `Renders` that drew it is kept alive
 /// for as long as the reader must count.
-private struct Reading: ContentView {
+private struct Reading: View {
     let read: () -> Void
 
-    var content: some View {
+    var body: some View {
         read()
         return ModifiedContent(node: label("reader"))
     }
@@ -110,7 +110,7 @@ private struct Reading: ContentView {
 ///     _ = reader
 func reading(_ read: @escaping () -> Void) -> Renders {
     let renders = Renders()
-    renders.render(Reading(read: read).body)
+    renders.render(Reading(read: read).node)
     return renders
 }
 

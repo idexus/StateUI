@@ -13,7 +13,7 @@ import StateUI
 /// of them reads as a row of unrelated actions. A switch shows the state and
 /// the offer at once, which is what it is for. A button is for something that
 /// HAPPENS: Back, Next, Refill.
-struct SwitchRow: ContentView {
+struct SwitchRow: View {
     private let text: String
 
     private let value: Binding<Bool>
@@ -26,7 +26,7 @@ struct SwitchRow: ContentView {
         self.value = value
     }
 
-    var content: some View {
+    var body: some View {
         HStack {
             Text(text)
                 .fontSize(13)

@@ -7,7 +7,7 @@
 public protocol InputViewProperties: ViewProperties {}
 
 /// A view the user types into.
-public protocol InputView: View, InputViewProperties {}
+public protocol InputView: ElementView, InputViewProperties {}
 
 extension InputView {
     /// Fires on every edit, with the whole of the new text. Runs after a

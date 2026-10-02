@@ -20,10 +20,10 @@ protocol EnvironmentSlot: AnyObject {
 /// An object an ancestor provided with `.environment()`, resolved by its type -
 /// the annotation is the key, so there is no argument to pass.
 ///
-///     struct BasketRow: ContentView {
+///     struct BasketRow: View {
 ///         @Environment var basket: Basket
 ///
-///         var content: some View {
+///         var body: some View {
 ///             Text("\(basket.items.count) item(s)")
 ///         }
 ///     }

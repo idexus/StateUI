@@ -52,11 +52,11 @@ final class AndroidActTests: XCTestCase {
 }
 
 /// A field, and a button that aims the focus at it.
-private struct FocusPage: ContentView {
+private struct FocusPage: View {
     @Aim(TextField.self) private var field
     let answers: Received<Bool>
 
-    var content: some View {
+    var body: some View {
         let answers = self.answers
         let field = self.field
         return VStack {

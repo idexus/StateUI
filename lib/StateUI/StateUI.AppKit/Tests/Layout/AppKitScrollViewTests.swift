@@ -435,10 +435,10 @@ private final class ScrollWheelSpyView: NSScrollView {
 
 /// A run the user can scroll 300 points beyond its room, answering a tap on
 /// its first hundred.
-private struct TappedRun: ContentView {
+private struct TappedRun: View {
     @State private var across = Point.zero
 
-    var content: some View {
+    var body: some View {
         ScrollReader(across: 300) {
             ColorBox(Color("#3366FF"))
         }
@@ -447,10 +447,10 @@ private struct TappedRun: ContentView {
     }
 }
 /// A tall strip whose offset a state carries, read back by a label.
-private struct BoundStrip: ContentView {
+private struct BoundStrip: View {
     @State private var offset = Point.zero
 
-    var content: some View {
+    var body: some View {
         VStack {
             ScrollView {
                 ColorBox(Color("#3366FF")).height(2_000)

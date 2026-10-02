@@ -23,11 +23,11 @@ private enum InteropTestContract: ApplicationTier {
 }
 
 /// A page that calls the acts and listens for the event, showing whatever came back.
-private struct Calling: ContentView {
+private struct Calling: View {
     @State private var answer = "-"
     @State private var heard: [HostEventSubscription] = []
 
-    var content: some View {
+    var body: some View {
         VStack {
             Button("Ask").onClicked {
                 do {
@@ -94,7 +94,7 @@ private final class LampControl: AndroidControl {
 }
 
 /// The Swift half, which the application could already write.
-private struct Lamp: View {
+private struct Lamp: ElementView {
     var node = Node(contract: LampContract.self)
 
     func lit(_ value: Bool) -> Self {
@@ -114,11 +114,11 @@ extension Aim where Target == Lamp {
 }
 
 /// A lamp, lit, that says when it is pulled or flashed.
-private struct Pulling: ContentView {
+private struct Pulling: View {
     @State private var said = "-"
     @Aim(Lamp.self) private var lamp
 
-    var content: some View {
+    var body: some View {
         VStack {
             Lamp().lit(true).onPulled { pulls in said = "pulled \(pulls)" }.aim(lamp)
             Button("Flash").onClicked {

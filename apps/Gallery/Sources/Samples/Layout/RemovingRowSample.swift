@@ -64,7 +64,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             VStack {
                 // INSIDE the stack's own braces, because that is where `gone`

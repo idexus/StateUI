@@ -84,8 +84,3 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 }
-
-extension ModifiableElement where Modified == Self {
-    /// The node this control describes - itself, since a control has one.
-    public var body: Node { node }
-}

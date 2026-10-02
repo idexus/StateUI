@@ -75,10 +75,10 @@
 }
 
 /// A page that declares a notice over its window while a state says so.
-struct OverlaidPage: ContentView {
+struct OverlaidPage: View {
     let notice: State<Bool>
 
-    var content: some View {
+    var body: some View {
         let notice = notice
         return VStack {
             Button("Show").onClicked { notice.wrappedValue = true }.id("show")

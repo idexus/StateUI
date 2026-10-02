@@ -136,7 +136,8 @@ final class HostContractTests: XCTestCase {
     /// A page is what a container shows: every view is one and so is each
     /// arrangement, and nobody declares one by hand. An arrangement is not a
     /// view, so it stands only where a page stands. `ContentPage` does not
-    /// return, as a protocol or as a node type.
+    /// return, as a protocol or as a node type, nor `ContentView`: a composed
+    /// view is a `View` with a `body`.
     func testAPageIsWhatAContainerShows() throws {
         let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
@@ -159,9 +160,11 @@ final class HostContractTests: XCTestCase {
         }
 
         for (path, text) in try SourceTree.allSources() {
-            XCTAssertNil(
-                text.range(of: "\\bprotocol ContentPage\\b", options: .regularExpression),
-                "ContentPage is declared again in \(path)")
+            for withdrawn in ["ContentPage", "ContentView"] {
+                XCTAssertNil(
+                    text.range(of: "\\bprotocol \(withdrawn)\\b", options: .regularExpression),
+                    "\(withdrawn) is declared again in \(path)")
+            }
         }
     }
 

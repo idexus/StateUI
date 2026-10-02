@@ -14,7 +14,7 @@ struct SceneElement: Element {
     /// What the application says a scene is.
     let scene: Scene
 
-    var body: Node {
+    var node: Node {
         let authored = SceneElement.unwrapped(scene)
 
         var node = Node.composed(
@@ -45,7 +45,7 @@ struct SceneElement: Element {
 
         record.declared = declared
 
-        var main = windows.main.body(session: record.windowSession(SceneElement.mainKey))
+        var main = windows.main.node(session: record.windowSession(SceneElement.mainKey))
         main.id = SceneElement.mainKey
 
         var children = [main]
@@ -56,7 +56,7 @@ struct SceneElement: Element {
                 continue
             }
 
-            var window = group.make(opened, record).body(session: record.windowSession(opened.key))
+            var window = group.make(opened, record).node(session: record.windowSession(opened.key))
             window.id = opened.key
 
             // Written either way, so none of them is ever cleared off a window.

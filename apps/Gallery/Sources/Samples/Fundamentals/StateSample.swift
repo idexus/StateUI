@@ -59,7 +59,7 @@ struct StateSample: SampleContent, ExampleContent {
         .shape(.roundedRectangle(12))
         """
 
-    var content: some View {
+    var body: some View {
         // THE TWO CLOSURES ARE DRAWN, each inside an outline of its own, because
         // what a write rebuilds is easier to believe as a rectangle than as a
         // rule. The outlines are decoration: the reader of a value is the VStack

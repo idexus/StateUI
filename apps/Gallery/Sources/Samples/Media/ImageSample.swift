@@ -71,7 +71,7 @@ struct ImageSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             HStack {
                 Image(light: "nav_home.png", dark: "nav_home_dark.png")

@@ -135,13 +135,13 @@
 }
 
 /// A page saying each phase of its life, as its title and the phase.
-struct PhasePage: ContentView {
+struct PhasePage: View {
     let title: String
     let log: Received<String>
 
     @Environment private var page: PageSession
 
-    var content: some View {
+    var body: some View {
         let (title, log, page) = (self.title, self.log, self.page)
         return Text(title)
             .onCreated { page.title = title }

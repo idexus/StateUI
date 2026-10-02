@@ -91,7 +91,7 @@ final class WinUIDirectionTests: XCTestCase {
     ) throws -> [UInt32] {
         try onUIThread {
             let host = WinUIRenderer.running {
-                VStack { ModifiedContent(node: content().body).width(100).layoutDirection(.rightToLeft) }
+                VStack { ModifiedContent(node: content().node).width(100).layoutDirection(.rightToLeft) }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
             }

@@ -9,10 +9,10 @@ import CStateUIWinUI
 import XCTest
 
 /// A page and its counter: a click raises the count, and the caption reads it.
-struct CounterPage: ContentView {
+struct CounterPage: View {
     @State private var count = 0
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("count \(count)")
             Button("Add")
@@ -154,11 +154,11 @@ final class WinUIRendererTests: XCTestCase {
 }
 
 /// A page saying the application's phase and its window's.
-private struct PhasePage: ContentView {
+private struct PhasePage: View {
     @Environment private var application: ApplicationSession
     @Environment private var window: WindowSession
 
-    var content: some View {
+    var body: some View {
         Text("\(application.phase) \(window.phase)")
     }
 }
@@ -178,10 +178,10 @@ private struct ToolMainWindow: Window {
     var page: any Page { ToolOpeningPage() }
 }
 
-private struct ToolOpeningPage: ContentView {
+private struct ToolOpeningPage: View {
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         let scene = self.scene
         return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
     }
@@ -192,20 +192,20 @@ private struct ToolWindow: Window {
 }
 
 /// A page saying the screen's width and turn.
-private struct DisplayPage: ContentView {
+private struct DisplayPage: View {
     @Environment private var display: DeviceDisplay
 
-    var content: some View {
+    var body: some View {
         Text("\(Int(display.width)) \(display.rotation)")
     }
 }
 
 /// A page saying what it runs on and the theme it runs in.
-private struct EnvironmentPage: ContentView {
+private struct EnvironmentPage: View {
     @Environment private var device: DeviceInfo
     @Environment private var app: AppInfo
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("\(device.platform) \(device.formFactor)")
             Text("\(app.requestedTheme)")

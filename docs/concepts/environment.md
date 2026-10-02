@@ -20,26 +20,26 @@ final class Account {
     @State var visits = 0
 }
 
-struct AccountBadge: ContentView {
+struct AccountBadge: View {
     @Environment private var account: Account
 
-    var content: some View {
+    var body: some View {
         Text("\(account.name) · \(account.visits) visit(s)")
     }
 }
 
-struct AccountEditor: ContentView {
+struct AccountEditor: View {
     @Environment private var account: Account
 
-    var content: some View {
+    var body: some View {
         TextField(account.$name)
     }
 }
 
-struct AccountBranch: ContentView {
+struct AccountBranch: View {
     @State private var account = Account()
 
-    var content: some View {
+    var body: some View {
         VStack {
             AccountBadge()
             AccountEditor()
@@ -87,10 +87,10 @@ The same rule applies to standard providers. A test, preview, or controlled
 subtree can provide a nearer instance:
 
 ```swift
-struct SavePanel: ContentView {
+struct SavePanel: View {
     @Environment private var connectivity: Connectivity
 
-    var content: some View {
+    var body: some View {
         Button("Save")
             .isEnabled(connectivity.networkAccess == .internet)
     }
@@ -156,13 +156,13 @@ proves a capability, rely on the documented fallback.
 ### Reading platform facts
 
 ```swift
-struct RuntimeSummary: ContentView {
+struct RuntimeSummary: View {
     @Environment private var device: DeviceInfo
     @Environment private var display: DeviceDisplay
     @Environment private var locale: LocaleInfo
     @Environment private var app: AppInfo
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text("\(app.name) \(app.versionString)")
             Text("\(device.platform) · \(device.formFactor)")
@@ -199,11 +199,11 @@ Each scene, window, and page provides its own session nearer than the inert
 fallback instance. A descendant therefore acts on the session it is inside:
 
 ```swift
-struct WindowHeading: ContentView {
+struct WindowHeading: View {
     @Environment private var window: WindowSession
     @Environment private var application: ApplicationSession
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(window.title ?? "Untitled")
             Text("\(application.scenes.count) scene(s)")

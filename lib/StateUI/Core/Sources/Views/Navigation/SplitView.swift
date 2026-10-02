@@ -25,12 +25,12 @@
 ///         }
 ///     }
 ///
-///     struct MenuPage: ContentView {
+///     struct MenuPage: View {
 ///         @Binding var section: Section
 ///         @Binding var menu: Bool
 ///         @Environment private var page: PageSession
 ///
-///         var content: some View {
+///         var body: some View {
 ///             VStack {
 ///                 ForEach(Section.allCases, id: \.self) { which in
 ///                     Button("\(which)")
@@ -53,9 +53,6 @@
 public struct SplitView: Page, ModifiableElement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
-
-    /// The node, as every element answers it.
-    public var body: Node { node }
 
     /// A sidebar beside `detail`, shown when `isSidebarVisible` says so.
     ///

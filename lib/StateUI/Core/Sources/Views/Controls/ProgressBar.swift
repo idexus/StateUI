@@ -25,7 +25,7 @@ extension ProgressBarProperties {
 /// `ActivityIndicator`.
 ///
 /// `.progress($done)` carries it from a state, animated to each new value.
-public struct ProgressBar: View, TintElement, ProgressBarProperties {
+public struct ProgressBar: ElementView, TintElement, ProgressBarProperties {
     /// The node this control describes.
     public var node: Node
 

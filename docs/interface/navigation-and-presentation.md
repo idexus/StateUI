@@ -128,19 +128,19 @@ enum Sheet: Hashable {
     case about
 }
 
-struct Home: ContentView {
+struct Home: View {
     @Binding var sheets: [Sheet]
 
-    var content: some View {
+    var body: some View {
         Button("Settings").onClicked { sheets.append(.settings) }
     }
 }
 
-struct Presented: ContentView {
+struct Presented: View {
     let title: String
     @Binding var sheets: [Sheet]
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(title)
             Button("Close").onClicked { sheets.removeLast() }
@@ -177,10 +177,10 @@ A view declares what it lays over the window with `.overlays { }`, built
 with the state it follows - a notice comes and goes with its state:
 
 ```swift
-struct OfflineNotice: ContentView {
+struct OfflineNotice: View {
     @Binding var shown: Bool
 
-    var content: some View {
+    var body: some View {
         HStack {
             Text("Working offline")
             Button("Dismiss").onClicked { shown = false }
@@ -191,10 +191,10 @@ struct OfflineNotice: ContentView {
     }
 }
 
-struct LibraryPage: ContentView {
+struct LibraryPage: View {
     @State private var offline = false
 
-    var content: some View {
+    var body: some View {
         Switch($offline)
             .overlays {
                 if offline {

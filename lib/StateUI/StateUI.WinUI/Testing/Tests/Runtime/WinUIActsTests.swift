@@ -107,10 +107,10 @@ private struct AskingMainWindow: Window {
     var page: any Page { AskingOpeningPage() }
 }
 
-private struct AskingOpeningPage: ContentView {
+private struct AskingOpeningPage: View {
     @Environment private var scene: SceneSession
 
-    var content: some View {
+    var body: some View {
         let scene = self.scene
         return Button("Tool").onClicked { try await scene.openWindow(WindowType("acts.tool")) }
     }

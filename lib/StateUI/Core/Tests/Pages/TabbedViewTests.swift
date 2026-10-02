@@ -20,11 +20,11 @@ private enum Tab: Hashable, CaseIterable {
 
 /// A tab's page, which says its own caption and picture - written into its
 /// session as it comes into the tree, which is the message that brings it.
-private struct TabPage: ContentView {
+private struct TabPage: View {
     @Environment private var page: PageSession
     let tab: Tab
 
-    var content: some View {
+    var body: some View {
         ModifiedContent(node: label("\(tab)")).onCreated {
             page.title = "\(tab)"
             page.icon = ImageSource("\(tab).png")
@@ -50,7 +50,7 @@ final class TabbedViewTests: XCTestCase {
     /// and each arrives with the caption its page wrote on the way in.
     func testTheTabsAreTheChildrenOfTheNode() {
         let selection = State<Tab>(.home)
-        let patch = Renders().settled(tabs(selection.projectedValue).body)
+        let patch = Renders().settled(tabs(selection.projectedValue).node)
 
         XCTAssertEqual(patch.type, "TabbedView")
         XCTAssertEqual(patch.children.map { $0.id },
@@ -64,7 +64,7 @@ final class TabbedViewTests: XCTestCase {
     /// its session as it comes into the tree.
     func testATabsCaptionAndIconAreThePages() {
         let selection = State<Tab>(.home)
-        let patch = Renders().settled(tabs(selection.projectedValue).body)
+        let patch = Renders().settled(tabs(selection.projectedValue).node)
 
         XCTAssertEqual(patch.children.first?.props["title"], .string("home"))
         XCTAssertEqual(patch.children.first?.props["icon"],
@@ -75,7 +75,7 @@ final class TabbedViewTests: XCTestCase {
     /// same list, so the two cannot mean different things.
     func testTheSelectionIsAnIndexIntoTheChildren() {
         let selection = State<Tab>(.settings)
-        let node = tabs(selection.projectedValue).body.built
+        let node = tabs(selection.projectedValue).node.built
 
         XCTAssertEqual(node.props["currentPage"], .number(2))
     }
@@ -86,7 +86,7 @@ final class TabbedViewTests: XCTestCase {
     /// while it is showing resolves itself, with no rule of its own.
     func testASelectionThatNamesNoTabSaysNothing() {
         let selection = State<Tab>(.settings)
-        let node = tabs(selection.projectedValue, [.home, .browse]).body.built
+        let node = tabs(selection.projectedValue, [.home, .browse]).node.built
 
         XCTAssertNil(node.props["currentPage"])
         XCTAssertEqual(node.children.count, 2)
@@ -100,10 +100,10 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        renders.settled(tabs(selection.projectedValue).body)
+        renders.settled(tabs(selection.projectedValue).node)
 
         let patch = renders.settled(
-            tabs(selection.projectedValue, [.settings, .home, .browse]).body)
+            tabs(selection.projectedValue, [.settings, .home, .browse]).node)
 
         XCTAssertTrue(patch.arranged, "the tabs moved, so the arrangement is described")
         XCTAssertEqual(patch.children.map { $0.id },
@@ -118,10 +118,10 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        renders.settled(tabs(selection.projectedValue).body)
+        renders.settled(tabs(selection.projectedValue).node)
 
         selection.wrappedValue = .browse
-        let patch = renders.settled(tabs(selection.projectedValue).body)
+        let patch = renders.settled(tabs(selection.projectedValue).node)
 
         XCTAssertEqual(patch.props["currentPage"], .number(1))
         XCTAssertFalse(patch.arranged, "the tabs themselves did not move")
@@ -133,9 +133,9 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        renders.settled(tabs(selection.projectedValue, [.home]).body)
+        renders.settled(tabs(selection.projectedValue, [.home]).node)
 
-        let patch = renders.settled(tabs(selection.projectedValue, [.home, .settings]).body)
+        let patch = renders.settled(tabs(selection.projectedValue, [.home, .settings]).node)
 
         XCTAssertTrue(patch.arranged)
         XCTAssertEqual(patch.children.count, 2)
@@ -146,7 +146,7 @@ final class TabbedViewTests: XCTestCase {
     /// tabs are loaded starts there, empty until something is put in it.
     func testATabBarCanBeEmpty() {
         let selection = State<Tab>(.home)
-        let node = tabs(selection.projectedValue, []).body.built
+        let node = tabs(selection.projectedValue, []).node.built
 
         XCTAssertEqual(node.children.count, 0)
         XCTAssertNil(node.props["currentPage"])
@@ -169,7 +169,7 @@ final class TabbedViewTests: XCTestCase {
             .icon("house.png")
         }
         .selection(selection.projectedValue)
-        .body
+        .node
         .built
 
         let stack = node.children[0].built
@@ -190,7 +190,7 @@ final class TabbedViewTests: XCTestCase {
 
         let node = tabs(selection.projectedValue)
             .barBackgroundColor(Color("#512BD4"))
-            .body
+            .node
             .built
 
         XCTAssertEqual(node.props["barBackgroundColor"], Color("#512BD4").propValue)
@@ -208,7 +208,7 @@ final class TabbedViewTests: XCTestCase {
         let sent = Set(
             tabs(selection.projectedValue)
                 .barBackgroundColor(.black)
-                .body
+                .node
                 .built
                 .props
                 .keys
@@ -255,7 +255,7 @@ final class TabbedViewTests: XCTestCase {
         }
         .selection(selection.projectedValue)
         .barBackgroundColor(Color("#512BD4"))
-        .body
+        .node
 
         // As the message that brings the tabs carries them - with the caption
         // and picture each page wrote into its session on the way in.
@@ -281,7 +281,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        let patch = renders.settled(tabs(selection.projectedValue).body)
+        let patch = renders.settled(tabs(selection.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1, with: [.number(2)]))
         XCTAssertEqual(selection.wrappedValue, .settings)
@@ -294,14 +294,14 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.browse)
         let renders = Renders()
 
-        let patch = renders.settled(tabs(selection.projectedValue).body)
-        let before = renders.settled(tabs(selection.projectedValue).body)
+        let patch = renders.settled(tabs(selection.projectedValue).node)
+        let before = renders.settled(tabs(selection.projectedValue).node)
 
         XCTAssertTrue(before.isEmpty, "nothing to say before the report either")
         XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1, with: [.number(1)]))
 
         XCTAssertEqual(selection.wrappedValue, .browse)
-        XCTAssertTrue(renders.settled(tabs(selection.projectedValue).body).isEmpty,
+        XCTAssertTrue(renders.settled(tabs(selection.projectedValue).node).isEmpty,
                       "and nothing to say after it")
     }
 
@@ -312,7 +312,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        let patch = renders.settled(tabs(selection.projectedValue, [.home, .browse]).body)
+        let patch = renders.settled(tabs(selection.projectedValue, [.home, .browse]).node)
         let reported = patch.events?["currentPageChanged"] ?? -1
 
         XCTAssertTrue(renders.fire(reported, with: [.number(7)]))
@@ -327,7 +327,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        let patch = renders.settled(tabs(selection.projectedValue).body)
+        let patch = renders.settled(tabs(selection.projectedValue).node)
 
         XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1,
                                    with: [.string("settings")]))
@@ -342,7 +342,7 @@ final class TabbedViewTests: XCTestCase {
     /// This is what `Picker` without `selectedIndex` already does: the control
     /// remains usable without reporting its current choice into state.
     func testTabsWithoutASelectionDescribeThemselvesAndReportNothing() {
-        let node = TabbedView(Tab.allCases) { TabPage(tab: $0) }.body.built
+        let node = TabbedView(Tab.allCases) { TabPage(tab: $0) }.node.built
 
         XCTAssertEqual(node.children.map { $0.id }, ["home", "browse", "settings"])
         XCTAssertNil(node.props["currentPage"], "nothing says which tab is showing")
@@ -364,9 +364,9 @@ final class TabbedViewTests: XCTestCase {
         let page = TabbedView(Tab.allCases) { TabPage(tab: $0) }
             .selection(selection.projectedValue)
 
-        let patch = renders.settled(page.body)
+        let patch = renders.settled(page.node)
 
-        XCTAssertNil(page.body.built.props["currentPage"],
+        XCTAssertNil(page.node.built.props["currentPage"],
                      "a String is not one of these tabs, whatever it spells")
 
         XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1, with: [.number(2)]))

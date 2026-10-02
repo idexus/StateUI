@@ -25,11 +25,11 @@
 ///         }
 ///     }
 ///
-///     struct HomePage: ContentView {
+///     struct HomePage: View {
 ///         @Binding var path: [Route]
 ///         @Environment private var page: PageSession
 ///
-///         var content: some View {
+///         var body: some View {
 ///             Button("Open the first")
 ///                 .onClicked { path.append(.details("first")) }
 ///                 .onCreated { page.title = "Home" }
@@ -66,9 +66,6 @@
 public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
-
-    /// The node, as every element answers it.
-    public var body: Node { node }
 
     /// A stack over `path`, with `root` under it and `destination` above.
     ///

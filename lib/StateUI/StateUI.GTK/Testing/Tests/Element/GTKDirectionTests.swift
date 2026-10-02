@@ -9,12 +9,12 @@ import CStateUIGTK
 import XCTest
 
 /// Controls whose words stand in parts of their own, in the direction a switch gives them.
-private struct WritingControls: ContentView {
+private struct WritingControls: View {
     @Binding var direction: LayoutDirection
     @State private var words = "abc"
     @State private var count = 3.0
 
-    var content: some View {
+    var body: some View {
         VStack {
             TextField($words)
             SearchField($words)

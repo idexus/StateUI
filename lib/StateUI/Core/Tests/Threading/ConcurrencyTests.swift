@@ -21,7 +21,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// The gallery Card's exact shape: the handler literal written inside a
-/// conforming struct's `body` GETTER, an `async let` child inside it, and
+/// conforming struct's `node` GETTER, an `async let` child inside it, and
 /// GETTER LOCALS carrying the stored properties into the closure.
 ///
 /// The locals keep `self` out of the closure; an explicit capture list -
@@ -31,7 +31,7 @@ private struct PressCard: Element {
     let press = Aim(Button.self)
     let action: EventHandler
 
-    var body: Node {
+    var node: Node {
         let press = self.press
         let action = self.action
 
@@ -43,7 +43,7 @@ private struct PressCard: Element {
                 try await action()
                 _ = try await restored
             }
-            .body
+            .node
     }
 }
 
@@ -107,7 +107,7 @@ final class ConcurrencyTests: XCTestCase {
                         finished += 1
                     }
                 }
-                .body)
+                .node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
@@ -158,7 +158,7 @@ final class ConcurrencyTests: XCTestCase {
                     _ = try await restored
                     reached = true
                 }
-                .body)
+                .node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
@@ -190,7 +190,7 @@ final class ConcurrencyTests: XCTestCase {
     }
 
     /// The same contract, written where the gallery writes it: in a
-    /// conforming struct's `body` getter; see the doc on `PressCard`.
+    /// conforming struct's `node` getter; see the doc on `PressCard`.
     @MainActor
     func testACardShapedHandlerStaysOnTheLibrarysExecutor() async throws {
         let renders = Renders()
@@ -200,7 +200,7 @@ final class ConcurrencyTests: XCTestCase {
         let patch = renders.render(
             PressCard(
                 action: { _ = try await named("b", ColorBox.self).focus() }
-            ).body)
+            ).node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
@@ -249,7 +249,7 @@ final class ConcurrencyTests: XCTestCase {
                     _ = try await restored
                     reached = true
                 }
-                .body)
+                .node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
@@ -288,7 +288,7 @@ final class ConcurrencyTests: XCTestCase {
                     _ = try await named("a", ColorBox.self).focus()
                     reached = true
                 }
-                .body)
+                .node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))

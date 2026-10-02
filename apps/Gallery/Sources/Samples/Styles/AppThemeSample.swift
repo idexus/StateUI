@@ -11,10 +11,10 @@ struct AppThemeSample: SampleContent, ExampleContent {
         + "updated live when the system switches."
 
     static let code = """
-        struct ThemeBadge: ContentView {
+        struct ThemeBadge: View {
             @Environment var app: AppInfo
 
-            var content: some View {
+            var body: some View {
                 VStack {
                     // The theme is read here, so a change to it builds this
                     // closure.
@@ -33,7 +33,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: some View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 

@@ -14,7 +14,7 @@ it is, so one view is one view. An `if`/`else` is an `Either` of its two
 branches - a view where both branches are views - an `if` with no `else` an
 optional, several statements `Statements`, repetition a `ForEach`, and a list
 of `any View` an array. Everything a container holds is `Views`: every view is
-one, and so is each of these. A composed view's `content` and a one-view slot
+one, and so is each of these. A composed view's `body` and a one-view slot
 take a `View`, so two statements or an `if` with no `else` there do not compile,
 and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text, a
 pin and an arrangement of pages each go where they belong. A modifier on a view
@@ -23,7 +23,7 @@ gives back a view (`View where Modified: View`), so a chain goes on on
 
 The builder has no `buildExpression`. An overload taking `any View` is chosen
 for every view and erases it while type-checking stays green, so a value held
-as `any View` goes in explicitly, as `ModifiedContent(node: view.body)`. A
+as `any View` goes in explicitly, as `ModifiedContent(node: view.node)`. A
 function returning views is `@ViewBuilder` and `some View`: several `return`s of
 different types become an `if`/`else`.
 

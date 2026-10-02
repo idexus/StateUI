@@ -9,12 +9,12 @@ import UIKit
 import XCTest
 
 /// A page that counts clicks and greets whoever types a name.
-private struct Greeting: ContentView {
+private struct Greeting: View {
     @Environment private var page: PageSession
     @State private var count = 0
     @State private var name = ""
 
-    var content: some View {
+    var body: some View {
         VStack {
             Text(name.isEmpty ? "Hello" : "Hello, \(name)")
             TextField($name).maximumLength(5)

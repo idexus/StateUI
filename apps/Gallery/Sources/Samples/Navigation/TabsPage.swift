@@ -6,7 +6,7 @@ import StateUI
 /// that `TabbedView` is the detail of the same split view every other section
 /// is shown in. All three are pages, and pages nest - so a tab may hold a
 /// stack, and the stack it holds is its own array.
-struct TabsPage: ContentView {
+struct TabsPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
@@ -19,7 +19,7 @@ struct TabsPage: ContentView {
     /// the whole of why each tab keeps its place.
     @Binding var path: [Route]
 
-    var content: some View {
+    var body: some View {
         ScrollView {
             VStack {
                 SectionTitle("A section arranged as tabs")
