@@ -105,12 +105,13 @@ a host writes by hand and what its runtime registers - and by the case:
 A case runs only where the host realizes every member it covers; a member
 the register calls never is marked – without the case running, and one of an
 element the register leaves to the application (`byApplication`) - a map on
-a platform with none of its own - is marked 🧩 so. Both count as met: the
+a platform with none of its own - is marked 🧩 so. A – counts as met: the
 host has done all it will, and the contract is kept there by the family's
-nature or by the application's own registration. A member proven only
-through the host's own entry or record, 🔌, counts as met too - it works and
-its effect is proven, by weaker evidence - and every total names how many of
-its met are 🔌, so the evidence stays in sight. The element
+nature. A member proven only through the host's own entry or record, 🔌,
+counts as met too - it works and its effect is proven, by weaker evidence.
+A 🧩 is shown and not counted: what the user gets there is the
+application's. Every total gives each mark a row of its own, so the evidence
+stays in sight beside the sum. The element
 itself has a verdict of its own, `Button: ✅`: the creation table's mark, and
 the "Created" cell of the hosts table that opens the element's page, above
 its own members and then its tiers'. Every view has one case that proves it

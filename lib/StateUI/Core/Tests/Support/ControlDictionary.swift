@@ -146,7 +146,10 @@ struct ControlDictionary {
 
         /// The members the host meets the contract on: realized in full, not planned for its family, or left to the
         /// application's own registration.
-        var met: Int { done + notPlanned + byApplication + byHost }
+        var met: Int { done + notPlanned + byHost }
+
+        /// Whether the host has any mark that is counted or shown in a total.
+        var any: Bool { met + partial + byApplication > 0 }
     }
 
     /// Every element contract, by name.
@@ -608,7 +611,7 @@ struct ControlDictionary {
 
     /// One table of counts: a row per element, how many members its page
     /// lists, and how many each host realizes - an element with none, its own
-    /// mark - then a row a mark that counts as met, and met, their sum.
+    /// mark - then a row a mark that counts as met, met, their sum, and what is left to the application.
     func summary(of elements: [any ElementContract.Type], heading: String, linking prefix: String) -> String {
         var lines = [
             "| \(heading) | Members | " + Self.platforms.joined(separator: " | ") + " |",
@@ -636,15 +639,16 @@ struct ControlDictionary {
                 + cells.joined(separator: " | ") + " |")
         }
 
-        // The sums, a row each mark that counts as met, then met itself: a host with no mark at all shows none.
+        // The sums: a row each mark that counts as met, met itself, then what is left to the application, shown and
+        // not counted. A host with no mark at all shows none.
         let counted: [(label: String, count: (Marks) -> Int, members: String)] = [
-            ("✅", \.done, ""), ("–", \.notPlanned, ""), ("🧩", \.byApplication, ""), ("🔌", \.byHost, ""),
-            ("**Met**", \.met, "\(total)"),
+            ("✅", \.done, ""), ("–", \.notPlanned, ""), ("🔌", \.byHost, ""), ("**Met**", \.met, "\(total)"),
+            ("🧩", \.byApplication, ""),
         ]
         for row in counted {
             let cells = Self.platforms.map { platform -> String in
                 let marks = totals[platform] ?? Marks()
-                guard marks.met + marks.partial > 0 else { return "" }
+                guard marks.any else { return "" }
                 return row.label == "**Met**" ? "**\(row.count(marks))**" : "\(row.count(marks))"
             }
             lines.append("| \(row.label) | \(row.members) | " + cells.joined(separator: " | ") + " |")

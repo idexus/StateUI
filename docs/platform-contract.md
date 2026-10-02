@@ -18,17 +18,17 @@ host merely implements or declares by hand earns a mark.
 | ✅ | Every test of the member that ran on that host passed. |
 | ☑️ | The member is proven by its tests, but the host's register records what is still missing; the element's page in [the control dictionary](controls/README.md) names it. |
 | – | The member will never be met by that host's family - a phone with no menu bar, a desktop whose keyboard captions no return key, a view that takes no keyboard focus - and meets the contract there: the host's register, or the case that proved it absent, says why, and the Gallery shows that family no example of it. |
-| 🧩 | Left to the application: the platform ships no control for it - a map on Android Views, WinUI 3 and GTK 4, where each provider needs the application's own key - so the host makes none, and the application registers its own control with the host, as each host's page shows ([Android Views](hosts/android.md#controls-acts-and-events-registered-in-swift)). It meets the contract there and counts as met. |
+| 🧩 | Left to the application: the platform ships no control for it - a map on Android Views, WinUI 3 and GTK 4, where each provider needs the application's own key - so the host makes none, and the application registers its own control with the host, as each host's page shows ([Android Views](hosts/android.md#controls-acts-and-events-registered-in-swift)). Shown in each total, it is not counted as met: what the user gets there is the application's. |
 | ❌ | A test of the member failed on that host's last run; the note gives the first failure. |
 | ◐ | Some of its tests proved it and another could not run or read; the note says which. |
-| 🔌 | Its tests passed only through the host's own entry or record - an act the driver hands past the toolkit's input, a read of what the host keeps rather than what the toolkit holds - which the driver names. The member works and its effect is proven, by weaker evidence than ✅: it counts as met, and each total says how many of its met are 🔌. |
+| 🔌 | Its tests passed only through the host's own entry or record - an act the driver hands past the toolkit's input, a read of what the host keeps rather than what the toolkit holds - which the driver names. The member works and its effect is proven, by weaker evidence than ✅: it counts as met, in a row of its own in each total. |
 | · | The host realizes it, but its driver cannot yet do or read what the test needs. |
 | ⏸ | Its test waits on another member the host does not realize. |
 | ⌛ | The verdict was written at another revision of its family than it stands at: each run writes its family's revision over its verdicts, and a change that changes what a family's cases prove raises the family's in `lib/StateUI/StateUI.Conformance/revisions.txt`, so a verdict of another is stale until the host's suite runs the family again. It carries no note: what that run said is no verdict of the family as it stands. |
 | empty | Not realized on that host, or no run of it; the note says which. It is deliberately not an estimate of how difficult the work will be. |
 
-A host's totals count its ✅, –, 🧩 and 🔌, a row each, and their sum is
-what it meets. An element's ✅ under
+A host's totals count its ✅, – and 🔌, a row each, and their sum is what it
+meets; its 🧩 stand in a row of their own, apart from the sum. An element's ✅ under
 [Control creation](#control-creation) means that host's own test proved it
 makes the element. It does not imply that every member has been completed;
 the member rows state that separately.
@@ -458,9 +458,9 @@ Every control, and every part an application, its windows and its pages are made
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – · 25 🔌 | 30 ✅ · 3 – · 25 🔌 | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – · 11 🔌 |  |
 | ✅ |  | 955 | 939 | 1645 | 1788 | 1466 |  |
 | – |  | 52 | 78 | 81 | 66 | 87 |  |
-| 🧩 |  | 0 | 0 | 74 | 74 | 74 |  |
 | 🔌 |  | 768 | 768 | 7 | 0 | 359 |  |
-| **Met** | 2447 | **1775** | **1785** | **1807** | **1928** | **1986** |  |
+| **Met** | 2447 | **1775** | **1785** | **1733** | **1854** | **1912** |  |
+| 🧩 |  | 0 | 0 | 74 | 74 | 74 |  |
 
 ### Application structure
 
@@ -488,9 +488,9 @@ Every control, and every part an application, its windows and its pages are made
 | [Window](controls/Window.md) | 22 | 15 ✅ · 6 🔌 | 3 ✅ · 4 🔌 | 2 ✅ · 4 🔌 | 22 ✅ | 8 ✅ · 8 – · 6 🔌 |  |
 | ✅ |  | 63 | 66 | 40 | 113 | 78 |  |
 | – |  | 0 | 8 | 12 | 0 | 28 |  |
-| 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 | 🔌 |  | 15 | 10 | 10 | 0 | 7 |  |
-| **Met** | 125 | **78** | **84** | **68** | **119** | **119** |  |
+| **Met** | 125 | **78** | **84** | **62** | **113** | **113** |  |
+| 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 <!-- dictionary:end -->
 
 ## Contract members
