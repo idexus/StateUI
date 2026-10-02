@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (80) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 29 ✅ · 1 ☑️ · 25 ✓ · 3 – | `NSView` drawing `NSBezierPath` |  |
+| AppKit | ✅ | 30 ✅ · 1 ☑️ · 25 ✓ · 3 – | `NSView` drawing `NSBezierPath` |  |
 | UIKit | ✅ | 31 ✅ · 25 ✓ · 3 – | `UIView` drawing `UIBezierPath` |  |
 | Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `View` drawing `Path` |  |
 | WinUI 3 | ✅ | 62 ✅ · 3 – | `Microsoft.UI.Xaml.Shapes` |  |
@@ -79,7 +79,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Line takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Line takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Line takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Line takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Line takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

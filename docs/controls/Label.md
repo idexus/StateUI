@@ -32,7 +32,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (81) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 38 ✅ · 1 ☑️ · 25 ✓ · 4 – | `NSTextField` label; `NSAttributedString` runs |  |
+| AppKit | ✅ | 39 ✅ · 1 ☑️ · 25 ✓ · 4 – | `NSTextField` label; `NSAttributedString` runs |  |
 | UIKit | ✅ | 40 ✅ · 25 ✓ · 3 – | `UILabel`; `NSAttributedString` runs |  |
 | Android Views | ✅ | 61 ✅ · 1 ☑️ · 3 – | `TextView`; `SpannableString` spans |  |
 | WinUI 3 | ✅ | 63 ✅ · 3 – | `TextBlock`; `Run` inlines |  |
@@ -75,7 +75,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `isEnabled` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – | – |  | Label takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Label takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Label takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Label takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: Label takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

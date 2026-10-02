@@ -180,7 +180,11 @@
         }
 
         restack()
-        if changed.contains(.layoutDirection) { directionTurned(arrangingItself: false) }
+        if changed.contains(.layoutDirection) {
+            directionTurned(arrangingItself: false)
+        } else if !described {
+            native.directionChanged()
+        }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || held.contains { $0.framesRead }
         native.applied(changed: changed, wasDescribed: described)
@@ -240,10 +244,11 @@
         return true
     }
 
-    /// The direction this element lays out in turned: it and every layout under it that inherits the direction
-    /// arrange their children again, the element itself when its patch will not.
+    /// The direction this element lays out in turned: it and every element under it that inherits the direction
+    /// hear it, and every layout among them arranges its children again, the element itself when its patch will not.
     /// Design: docs/design/host/layout.md#right-to-left
     func directionTurned(arrangingItself: Bool) {
+        native.directionChanged()
         if arrangingItself, !children.isEmpty { native.arrangeChildren() }
         for child in children where child.inheritsDirection {
             child.directionTurned(arrangingItself: true)

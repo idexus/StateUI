@@ -81,39 +81,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  | · |  |  | ✅ |  | UIKit: cannot read a heading's level - UIKit marks a heading, not its level |
-| `accessibilityHint` | property | `String` | native |  | ✅ |  |  | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native |  | ✅ |  |  | ✅ |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native |  | ✅ |  |  | ✅ |  |  |
-| `background` | property | `Background` | native |  |  |  |  |  |  | UIKit: not realized; GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  |  | ✅ |  |  | ✅ |  |  |
-| `frame` | property | `Rect` | structure |  | ✅ |  |  | ✅ |  |  |
-| `height` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  | ✅ |  |  |  |  | GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native |  | ✅ |  |  | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | UIKit: not realized |
-| `isFocusedChanged` | event | `Bool` | native |  | ✅ |  |  | ✅ |  |  |
-| `isVisible` | property | `Bool` | native |  | ✅ |  |  | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | UIKit: not realized; GTK 4: not realized |
-| `maximumHeight` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
-| `opacity` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read pivotX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotX of WebView: the host's own transform: GTK reads back no part of one |
-| `pivotY` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read pivotY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotY of WebView: the host's own transform: GTK reads back no part of one |
-| `rotation` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read rotation of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotation of WebView: the host's own transform: GTK reads back no part of one |
-| `rotationX` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read rotationX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotationX of WebView: the host's own transform: GTK reads back no part of one |
-| `rotationY` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read rotationY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotationY of WebView: the host's own transform: GTK reads back no part of one |
-| `scale` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read scale of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scale of WebView: the host's own transform: GTK reads back no part of one |
-| `scaleX` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read scaleX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleX of WebView: the host's own transform: GTK reads back no part of one |
-| `scaleY` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read scaleY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleY of WebView: the host's own transform: GTK reads back no part of one |
-| `style` | property | `Name` | structure |  | ✅ |  |  | ✅ |  |  |
-| `translationX` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read translationX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of WebView: the host's own transform: GTK reads back no part of one |
-| `translationY` | property | `Double` | native |  | ✓ |  |  | ✓ |  | UIKit: only through the host's own: read translationY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of WebView: the host's own transform: GTK reads back no part of one |
-| `unfocus` | act | `() -> Void` |  |  | ✅ |  |  | ✅ |  |  |
-| `width` | property | `Double` | native |  | ✅ |  |  | ✅ |  |  |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  | UIKit: not realized; GTK 4: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  | · |  |  | ✅ |  | not realized; UIKit: cannot read a heading's level - UIKit marks a heading, not its level |
+| `accessibilityHint` | property | `String` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `accessibilityLabel` | property | `String` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `automationExcludedWithChildren` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `background` | property | `Background` | native |  |  |  |  |  |  | not realized; UIKit: not realized; GTK 4: not realized |
+| `focus` | act | `() -> Bool` |  |  | ✅ |  |  | ✅ |  | not realized |
+| `frame` | property | `Rect` | structure |  | ✅ |  |  | ✅ |  | not realized |
+| `height` | property | `Double` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `ignoresInput` | property | `Bool` | native |  | ✅ |  |  |  |  | not realized; GTK 4: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized |
+| `isFocusedChanged` | event | `Bool` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `isVisible` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; GTK 4: not realized |
+| `maximumHeight` | property | `Double` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `maximumWidth` | property | `Double` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `minimumHeight` | property | `Double` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `minimumWidth` | property | `Double` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `opacity` | property | `Double` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `pivotX` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read pivotX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotX of WebView: the host's own transform: GTK reads back no part of one |
+| `pivotY` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read pivotY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotY of WebView: the host's own transform: GTK reads back no part of one |
+| `rotation` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read rotation of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotation of WebView: the host's own transform: GTK reads back no part of one |
+| `rotationX` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read rotationX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotationX of WebView: the host's own transform: GTK reads back no part of one |
+| `rotationY` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read rotationY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotationY of WebView: the host's own transform: GTK reads back no part of one |
+| `scale` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read scale of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scale of WebView: the host's own transform: GTK reads back no part of one |
+| `scaleX` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read scaleX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleX of WebView: the host's own transform: GTK reads back no part of one |
+| `scaleY` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read scaleY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleY of WebView: the host's own transform: GTK reads back no part of one |
+| `style` | property | `Name` | structure |  | ✅ |  |  | ✅ |  | not realized |
+| `translationX` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read translationX of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of WebView: the host's own transform: GTK reads back no part of one |
+| `translationY` | property | `Double` | native |  | ✓ |  |  | ✓ |  | not realized; UIKit: only through the host's own: read translationY of WebView: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of WebView: the host's own transform: GTK reads back no part of one |
+| `unfocus` | act | `() -> Void` |  |  | ✅ |  |  | ✅ |  | not realized |
+| `width` | property | `Double` | native |  | ✅ |  |  | ✅ |  | not realized |
+| `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; GTK 4: not realized |
 
 ## From [View](tiers/View.md)
 

@@ -192,6 +192,8 @@ final class AppKitDriver: HostDriver {
         }
         let view = (element.native as? AppKitElement)?.view
         switch (property, view) {
+        case (.layoutDirection, let view?):
+            return (view.userInterfaceLayoutDirection == .rightToLeft ? LayoutDirection.rightToLeft : .leftToRight).propValue
         case (.selectedItems, let items as AppKitItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as AppKitItemsView): return items.modeForTesting.propValue
         case (.isOn, let toggle as AppKitSwitchView): return (toggle.state == .on).propValue

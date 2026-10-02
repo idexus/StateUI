@@ -54,6 +54,10 @@
     /// Places the element's children again.
     func arrangeChildren()
 
+    /// The direction the element lays out in, `MountedElement.layoutDirection`, was given or turned: the toolkit's
+    /// view takes it.
+    func directionChanged()
+
     /// The element leaves the tree: everything it attached outside the tree lets go of it.
     func leave()
 
@@ -70,6 +74,9 @@
 
     /// The sidebar as the tree says.
     public var showsSidebar: Bool? { nil }
+
+    /// A view that lays nothing out by direction takes none.
+    public func directionChanged() {}
 }
 
 /// The runtime's mounted tree: its root, its elements' numbers, and the animations its patches start.

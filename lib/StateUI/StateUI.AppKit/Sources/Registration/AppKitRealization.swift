@@ -41,6 +41,7 @@ enum AppKitRealization {
         .partial("InputView", "inputPurpose", missing: "A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction and prediction, no keys."),
         .partial("VisualElement", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by a layout."),
         .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
+        .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),
         .notPlanned("FontElement", "fontAutoScalingEnabled",
                     reason: "macOS gives an application no text size of the user's to follow."),

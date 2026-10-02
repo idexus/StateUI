@@ -8,6 +8,11 @@ import AppKit
 
 /// Children placed: the layout item each child gives its parent.
 extension AppKitElement {
+    /// The view lays out, and its control writes, in the element's direction.
+    func directionChanged() {
+        view?.userInterfaceLayoutDirection = element.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight
+    }
+
     func arrangeChildren() {
         guard let view else { return }
         if let items = view as? AppKitItemsView { return items.childrenChanged() }

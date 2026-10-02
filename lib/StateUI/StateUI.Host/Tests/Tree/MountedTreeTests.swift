@@ -168,6 +168,27 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["inner"])
     }
 
+    /// Every element hears its direction as it is made and again as it turns - each one under the turned element
+    /// that inherits the direction, its views and their contents alike; one that says its own, and what stands
+    /// under it, hears nothing.
+    @MainActor
+    func testEveryElementHearsItsDirectionMadeAndTurned() {
+        let (tree, log) = Self.tree()
+        var own = Self.stack("own", ["b"])
+        own.properties = [.layoutDirection: .enumeration(LayoutDirection.leftToRight.rawValue)]
+        var outer = HostPatch(id: .manual("outer"), type: .vStack)
+        outer.children = .arranged([Self.stack("inner", ["a"]), own])
+        tree.apply(outer, complete: true)
+        XCTAssertEqual(Set(log.turned), ["outer", "inner", "a", "own", "b"], "each as it is made")
+        log.turned.removeAll()
+
+        var turned = HostPatch(id: .manual("outer"), type: .vStack)
+        turned.properties = [.layoutDirection: .enumeration(LayoutDirection.rightToLeft.rawValue)]
+        tree.apply(turned, complete: false)
+
+        XCTAssertEqual(log.turned, ["outer", "inner", "a"])
+    }
+
     /// The language's direction turning lays the whole tree out again, and only a turn does.
     @MainActor
     func testTheLanguagesDirectionTurningArrangesEveryLayout() {
@@ -672,6 +693,7 @@ private final class NativeLog {
     var arranged: [String] = []
     var left: [String] = []
     var presentedWriting: [Bool] = []
+    var turned: [String] = []
 }
 
 /// A native half that records what the tree asks of it.
@@ -701,5 +723,6 @@ private final class RecordingNative: NativeElement {
         log.presentedWriting.append(ProgramWrite.isWriting)
     }
     func arrangeChildren() { log.arranged.append(name) }
+    func directionChanged() { log.turned.append(name) }
     func leave() { log.left.append(name) }
 }
