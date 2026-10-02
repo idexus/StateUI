@@ -331,7 +331,7 @@ final class StateChannelsTests: XCTestCase {
     @MainActor
     func testAnEmptyDrivenMapLetsItsStatesGo() throws {
         let runtime = HostRuntime.still()
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.driven = .replace([
             .opacity: HostStateBinding(state: Self.worn, mode: .out, kind: .property),
             .rotation: HostStateBinding(state: Self.worn + 1, mode: .out, kind: .property),
@@ -343,7 +343,7 @@ final class StateChannelsTests: XCTestCase {
         Self.open(Self.worn + 1, in: runtime, from: 0, to: 0)
         XCTAssertEqual(runtime.stateChannels.count, 2)
 
-        var unbound = HostPatch(id: .manual("label"), type: .label)
+        var unbound = HostPatch(id: .manual("label"), type: .text)
         unbound.driven = .replace([:])
         stack.children = .changed([unbound])
         runtime.tree.apply(stack, complete: false)
@@ -355,11 +355,11 @@ final class StateChannelsTests: XCTestCase {
     /// The state the labels' opacity wears.
     private static let worn: Int32 = 801
 
-    /// Labels under a stack, each wearing `worn` on its opacity.
+    /// Texts under a stack, each wearing `worn` on its opacity.
     private static func labels(_ names: [String]) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged(names.map { name in
-            var label = HostPatch(id: .manual(name), type: .label)
+            var label = HostPatch(id: .manual(name), type: .text)
             label.driven = .replace([.opacity: HostStateBinding(state: worn, mode: .out, kind: .property)])
             return label
         })

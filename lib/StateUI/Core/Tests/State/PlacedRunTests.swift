@@ -176,7 +176,7 @@ final class PlacedRunTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            PlacedLayout([1, 2], id: \.self) { Label("\($0)") }
+            PlacedLayout([1, 2], id: \.self) { Text("\($0)") }
                 .placement(run.projectedValue)
                 .id("run")
                 .body)
@@ -215,7 +215,7 @@ final class PlacedRunTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            PlacedLayout([1], id: \.self) { Label("\($0)") }
+            PlacedLayout([1], id: \.self) { Text("\($0)") }
                 .shade(ColorBox(.black))
                 .placement(run.projectedValue)
                 .id("run")

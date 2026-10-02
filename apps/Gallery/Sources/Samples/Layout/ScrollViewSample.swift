@@ -7,7 +7,7 @@ private func tileStrip() -> ScrollView {
     ScrollView {
         HStack {
             ForEach(1...40) { tile in
-                Label("Tile \(tile)")
+                Text("Tile \(tile)")
                     .fontSize(13)
                     .horizontalTextAlignment(.center)
                     .verticalAlignment(.center)
@@ -28,7 +28,7 @@ private func numberedLines() -> ScrollView {
     ScrollView {
         VStack {
             ForEach(1...40) { line in
-                Label("Line \(line)")
+                Text("Line \(line)")
                     .fontSize(14)
                     .padding(8, 6)
             }
@@ -40,8 +40,8 @@ private func numberedLines() -> ScrollView {
 ///
 /// - Parameter text: what this column is.
 /// - Returns: the words, styled.
-private func columnTitle(_ text: String) -> Label {
-    Label(text)
+private func columnTitle(_ text: String) -> Text {
+    Text(text)
         .fontSize(12)
         .fontAttributes(.bold)
         .textColor(Palette.subtle)
@@ -52,8 +52,8 @@ private func columnTitle(_ text: String) -> Label {
 ///
 /// - Parameter text: the line of code this column is about.
 /// - Returns: the words, in the code face.
-private func spelling(_ text: String) -> Label {
-    Label(text)
+private func spelling(_ text: String) -> Text {
+    Text(text)
         .fontSize(11)
         .fontFamily("Menlo")
         .textColor(Palette.subtle)
@@ -78,7 +78,7 @@ private struct DescribedOffset: ContentView {
 
             // THE GET. Reading the offset here is what makes this Grid its
             // reader, and a render is what every single report then costs.
-            Label("\(Int($offset.journey.value.y)) down")
+            Text("\(Int($offset.journey.value.y)) down")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -120,7 +120,7 @@ private struct PacedOffset: ContentView {
             // over the scroller's own state. The number is right the moment
             // the reading was taken; what the window holds back is how often
             // one is taken.
-            Label("\(Int(shown.y)) down")
+            Text("\(Int(shown.y)) down")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -157,7 +157,7 @@ private struct DrivenOffset: ContentView {
             // the first, so the reading moves without a view being built -
             // and it reads `value`, where the offset IS, so it follows a
             // glide frame by frame rather than jumping to where it is going.
-            Label($offset.journey.convert { "\(Int($0.value.y)) down" })
+            Text($offset.journey.convert { "\(Int($0.value.y)) down" })
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -199,7 +199,7 @@ private struct OffsetStrips: ExampleContent {
             ScrollView {
                 VStack {
                     ForEach(1...40) { line in
-                        Label("Line \\(line)")
+                        Text("Line \\(line)")
                             .padding(8, 6)
                     }
                 }
@@ -207,8 +207,8 @@ private struct OffsetStrips: ExampleContent {
         }
 
         // The heading over one column.
-        func columnTitle(_ text: String) -> Label {
-            Label(text)
+        func columnTitle(_ text: String) -> Text {
+            Text(text)
         }
 
         // THE OFFSET DESCRIBED: the reading is a get in these braces, so this
@@ -228,7 +228,7 @@ private struct OffsetStrips: ExampleContent {
 
                     // THE GET. Reading the journey here is what makes this Grid
                     // its reader, and a render is what every frame costs.
-                    Label("\\(Int($offset.journey.value.y)) down")
+                    Text("\\(Int($offset.journey.value.y)) down")
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -255,7 +255,7 @@ private struct OffsetStrips: ExampleContent {
                         .scrollOffset($offset)
                         .gridRow(1)
 
-                    Label("\\(Int(shown.y)) down")
+                    Text("\\(Int(shown.y)) down")
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -281,7 +281,7 @@ private struct OffsetStrips: ExampleContent {
                     // NO GET: a second state the host writes from the first,
                     // so the reading moves without a view being built - and
                     // `value` is where the offset IS, frame by frame.
-                    Label($offset.journey.convert { "\\(Int($0.value.y)) down" })
+                    Text($offset.journey.convert { "\\(Int($0.value.y)) down" })
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -386,13 +386,13 @@ private struct OffsetStrips: ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Three strips, three states. `.scrollOffset($offset)` hands the state over, "
+            Text("Three strips, three states. `.scrollOffset($offset)` hands the state over, "
                 + "so the scroller is no reader of it: what the offset costs is decided "
                 + "by who reads it, and each column reads it differently.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Described reads the offset in its own braces, so the column is built "
+            Text("Described reads the offset in its own braces, so the column is built "
                 + "again on every report. On a cadence reads a sample of it - "
                 + "`.samples($offset, into: $shown, .every(100))` - at most ten times a "
                 + "second, so its count is a tenth. A channel reads nothing: "
@@ -401,21 +401,21 @@ private struct OffsetStrips: ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Hand the value on where it moves with a finger, read it where "
+            Text("Hand the value on where it moves with a finger, read it where "
                 + "something decides by it, and put a cadence on the read where the "
                 + "difference cannot be seen. `A state on a cadence`, under Using state, "
                 + "shows the cadence on its own.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.scrollOffset($offset)` goes both ways: scrolling writes the state, and a "
+            Text("`.scrollOffset($offset)` goes both ways: scrolling writes the state, and a "
                 + "write moves the scroller. `try await $offset.journey.move(to:)` returns "
                 + "when the glide finishes, which is why Top moves the strips one after "
                 + "another; `$offset.journey.snap(to:)` puts one there at once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A ScrollView holds one view; several children are wrapped in a stack.")
+            Text("A ScrollView holds one view; several children are wrapped in a stack.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -437,7 +437,7 @@ private struct RestStrips: ExampleContent {
             ScrollView {
                 HStack {
                     ForEach(1...40) { tile in
-                        Label("Tile \\(tile)")
+                        Text("Tile \\(tile)")
                             .width(140)
                             .height(100)
                     }
@@ -465,7 +465,7 @@ private struct RestStrips: ExampleContent {
                         }
                         .gridRow(0)
 
-                    Label("at rest on tile \\(rested)")
+                    Text("at rest on tile \\(rested)")
                         .gridRow(1)
 
                     // The same strip with nothing said about where it rests.
@@ -493,14 +493,14 @@ private struct RestStrips: ExampleContent {
                 }
                 .gridRow(0)
 
-            Label("at rest on tile \(rested)")
+            Text("at rest on tile \(rested)")
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)
                 .gridRow(1)
 
-            Label("`.onScrollStopped` + a write to `.scrollOffset`")
+            Text("`.onScrollStopped` + a write to `.scrollOffset`")
                 .fontSize(11)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -511,7 +511,7 @@ private struct RestStrips: ExampleContent {
             tileStrip()
                 .gridRow(3)
 
-            Label("the platform's own rest")
+            Text("the platform's own rest")
                 .fontSize(11)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -526,13 +526,13 @@ private struct RestStrips: ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Drag the first strip and let go: the throw stops where the platform "
+            Text("Drag the first strip and let go: the throw stops where the platform "
                 + "stops it, and the strip then glides on to the tile it is nearest. The "
                 + "strip under it stays wherever the throw ends.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.onScrollStopped` runs once a movement of the user's has ended - "
+            Text("`.onScrollStopped` runs once a movement of the user's has ended - "
                 + "a drag, a throw, a wheel - and not after the glide it asked for itself. "
                 + "That is the moment work costs nothing, so it is also where a list builds "
                 + "the rows the next swipe needs.")
@@ -560,7 +560,7 @@ private struct BarStrips: ExampleContent {
                 ScrollView {
                     VStack {
                         ForEach(1...40) { line in
-                            Label("Line \\(line)")
+                            Text("Line \\(line)")
                                 .padding(6, 4)
                         }
                     }
@@ -592,7 +592,7 @@ private struct BarStrips: ExampleContent {
             ScrollView {
                 VStack {
                     ForEach(1...40) { line in
-                        Label("Line \(line)")
+                        Text("Line \(line)")
                             .fontSize(13)
                             .padding(6, 4)
                     }
@@ -601,7 +601,7 @@ private struct BarStrips: ExampleContent {
             .verticalScrollBarVisibility(visibility)
             .gridRow(0)
 
-            Label(caption)
+            Text(caption)
                 .fontSize(11)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -612,7 +612,7 @@ private struct BarStrips: ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("`.never` takes the bar away and nothing brings it back; `.always` asks for "
+        Text("`.never` takes the bar away and nothing brings it back; `.always` asks for "
             + "one that stays whether or not a drag is under way. Where the platform draws "
             + "an overlay bar that fades on its own, the two look alike until the scroller "
             + "is dragged.")

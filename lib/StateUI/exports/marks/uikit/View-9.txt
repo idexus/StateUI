@@ -35,9 +35,6 @@ ItemsView.pointerExited: ✓ hover on ItemsView: the view's listening handed the
 ItemsView.pointerMoved: ✓ hover on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.pointerPressed: ✓ hover on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.pointerReleased: ✓ hover on ItemsView: the view's listening handed the recognizer's states, no touch sent
-Label.swipeDirection: ✓ pan on Label: the view's listening handed the recognizer's states, no touch sent
-Label.swipeThreshold: ✓ pan on Label: the view's listening handed the recognizer's states, no touch sent
-Label.swiped: ✓ pan on Label: the view's listening handed the recognizer's states, no touch sent
 Line.panTouchCount: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.panUpdated: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.panXChannel: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
@@ -82,6 +79,9 @@ Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅
 Switch.area: ✅
 Switch.frameChanged: ✅
+Text.swipeDirection: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
+Text.swipeThreshold: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
+Text.swiped: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.canDrag: not realized
 TextEditor.dragStarting: not realized
 TextEditor.dragText: not realized

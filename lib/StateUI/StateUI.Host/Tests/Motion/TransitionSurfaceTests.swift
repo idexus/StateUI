@@ -14,26 +14,26 @@ final class TransitionSurfaceTests: XCTestCase {
         for property: Prop in [.color, .width, .height, .cornerRadius] {
             XCTAssertTrue(TransitionSurface.presents(property, on: .colorBox), "\(property)")
         }
-        XCTAssertTrue(TransitionSurface.presents(.opacity, on: .label))
+        XCTAssertTrue(TransitionSurface.presents(.opacity, on: .text))
         XCTAssertTrue(TransitionSurface.presents(.padding, on: .page))
         XCTAssertTrue(TransitionSurface.presents(.renderTransform, on: .line))
         XCTAssertTrue(TransitionSurface.presents(.x, on: .window))
         XCTAssertTrue(TransitionSurface.presents(.barBackgroundColor, on: .splitView))
         XCTAssertTrue(TransitionSurface.presents(.barForegroundColor, on: .modalStack))
 
-        XCTAssertFalse(TransitionSurface.presents(.rotationX, on: .label))
+        XCTAssertFalse(TransitionSurface.presents(.rotationX, on: .text))
         XCTAssertFalse(TransitionSurface.presents(.value, on: .stepper))
         XCTAssertFalse(TransitionSurface.presents(.opacity, on: .map))
-        XCTAssertFalse(TransitionSurface.presents(Prop("custom"), on: .label))
+        XCTAssertFalse(TransitionSurface.presents(Prop("custom"), on: .text))
     }
 
     /// What a host's toolkit paints only at rest arrives at once on that host, and the rest of the surface travels.
     func testWhatAToolkitPaintsAtRestArrivesAtOnce() {
-        let atRest: [NodeType: Set<Prop>] = [.label: [.padding, .background]]
+        let atRest: [NodeType: Set<Prop>] = [.text: [.padding, .background]]
 
-        XCTAssertFalse(TransitionSurface.presents(.padding, on: .label, atRest: atRest))
-        XCTAssertFalse(TransitionSurface.presents(.background, on: .label, atRest: atRest))
-        XCTAssertTrue(TransitionSurface.presents(.textColor, on: .label, atRest: atRest))
+        XCTAssertFalse(TransitionSurface.presents(.padding, on: .text, atRest: atRest))
+        XCTAssertFalse(TransitionSurface.presents(.background, on: .text, atRest: atRest))
+        XCTAssertTrue(TransitionSurface.presents(.textColor, on: .text, atRest: atRest))
         XCTAssertTrue(TransitionSurface.presents(.padding, on: .vStack, atRest: atRest))
     }
 }

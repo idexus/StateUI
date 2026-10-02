@@ -20,7 +20,7 @@ struct SecondTabPage: ContentView {
             VStack {
                 SectionTitle("The other tab")
 
-                Label("Second")
+                Text("Second")
                     .fontSize(26)
                     .fontAttributes(.bold)
 

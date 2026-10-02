@@ -29,7 +29,7 @@ final class HostRealizationTests: XCTestCase {
     func testANodeTypeTheHostRealizesIsNotSaid() {
         HostBoundary.setRealization(Self.realization)
 
-        XCTAssertNil(HostRealizations.unrealized(LabelContract.nodeType))
+        XCTAssertNil(HostRealizations.unrealized(TextContract.nodeType))
         XCTAssertNil(HostRealizations.unrealized("Test.Lamp"))
     }
 
@@ -81,7 +81,7 @@ final class HostRealizationTests: XCTestCase {
 
     /// A host realizing a label and a lamp, and raising one application event.
     private static let realization = HostRealization(
-        elements: ["Label", "Test.Lamp"],
+        elements: ["Text", "Test.Lamp"],
         members: [HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")])
 }
 

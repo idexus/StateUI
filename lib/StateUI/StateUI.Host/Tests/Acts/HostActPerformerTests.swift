@@ -113,7 +113,7 @@ final class HostActPerformerTests: XCTestCase {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("root"), type: .vStack)
         root.children = .arranged([
-            HostPatch(id: .manual("field"), type: .textField), HostPatch(id: .manual("label"), type: .label),
+            HostPatch(id: .manual("field"), type: .textField), HostPatch(id: .manual("label"), type: .text),
         ])
         runtime.tree.apply(root, complete: true)
         let (toolkit, answers) = (Toolkit(), Answers())

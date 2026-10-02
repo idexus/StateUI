@@ -26,7 +26,7 @@ final class AndroidScrollViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 ScrollView {
-                    VStack { Label("tall").height(2000) }.padding(10)
+                    VStack { Text("tall").height(2000) }.padding(10)
                 }
             }
             host.layOut()
@@ -41,7 +41,7 @@ final class AndroidScrollViewTests: XCTestCase {
     func testAScrollerCutsItsContentOffAtItsEdges() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                ScrollView { Label("tall").height(2000) }
+                ScrollView { Text("tall").height(2000) }
             }
             let scroll = try XCTUnwrap(host.views(AndroidScrollView.self).first)
 
@@ -53,14 +53,14 @@ final class AndroidScrollViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 ScrollView {
-                    Label("wide").width(1000).height(40)
+                    Text("wide").width(1000).height(40)
                 }
                 .orientation(.horizontal)
                 .height(100)
             }
             host.layOut()
 
-            let label = try XCTUnwrap(host.views(AndroidLabelView.self).first)
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
             XCTAssertTrue(label.frame == (0, 60, 2000, 80), "\(label.frame)")
         }
     }
@@ -73,7 +73,7 @@ final class AndroidScrollViewTests: XCTestCase {
                 VStack {
                     Button("Down").onClicked { offset.wrappedValue = Point(0, 300) }
                     Button("Past").onClicked { offset.wrappedValue = Point(0, 5000) }
-                    ScrollView { Label("tall").height(2000) }
+                    ScrollView { Text("tall").height(2000) }
                         .scrollOffset(offset.projectedValue)
                         .height(500)
                 }
@@ -100,7 +100,7 @@ final class AndroidScrollViewTests: XCTestCase {
             let heard = Received<Double>()
             let rests = Received<Int>()
             let host = AndroidRenderer.running(clock: clock) {
-                ScrollView { Label("tall").height(2000) }
+                ScrollView { Text("tall").height(2000) }
                     .scrollOffset(offset.projectedValue)
                     .onEvent(ScrollViewContract.scrollYChanged) { y in heard.values.append(y) }
                     .onScrollStopped { rests.values.append(1) }
@@ -140,8 +140,8 @@ final class AndroidScrollViewTests: XCTestCase {
             let reports = Received<[Double]>()
             let host = AndroidRenderer.running(clock: clock) {
                 VStack {
-                    Label("above").height(30)
-                    Label("read")
+                    Text("above").height(30)
+                    Text("read")
                         .height(20)
                         .frame(room.projectedValue)
                         .onEvent(ViewContract.frameChanged) { numbers in reports.values.append(numbers) }
@@ -194,8 +194,8 @@ final class AndroidScrollViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    ScrollView { Label("code") }.orientation(.horizontal).layoutDirection(.leftToRight)
-                    ScrollView { Label("words") }.orientation(.horizontal)
+                    ScrollView { Text("code") }.orientation(.horizontal).layoutDirection(.leftToRight)
+                    ScrollView { Text("words") }.orientation(.horizontal)
                 }
                 .layoutDirection(.rightToLeft)
             }

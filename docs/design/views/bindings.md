@@ -59,7 +59,7 @@ The twins sit on the element-side tiers - `VisualElement`, `View`, `Layout`,
 `StackBase`, `Shape`, `InputView`, and the control itself where the property is
 one control's own - and never on the `…Properties` protocols the value forms
 sit on. A `StyleBag` wears every property protocol there is, so a twin written
-there would appear inside `Style<Label>`, where it would compile and mean
+there would appear inside `Style<Text>`, where it would compile and mean
 nothing: a style is driven by nothing. The mixins have no element half, so
 their twins are written `where Self: VisualElement`.
 
@@ -94,7 +94,7 @@ following it, a label - for no render at all. What it costs is measuring the
 label again on the frame the words change, which any changed caption costs.
 
 There is no driven `text` on the `TextElement` tier, though the value form sits
-there. A Label's and a Button's text is `.out`, written by the host and
+there. A Text's and a Button's text is `.out`, written by the host and
 reported by nobody. The text of a `TextField`, a `TextEditor` and a
 `SearchField` goes both ways: the user types into it, and the typed words land
 on the state whole as the host's own write. The two directions differ per

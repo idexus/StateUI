@@ -27,7 +27,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let scroll = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("page")) as? AppKitScrollView)
         let code = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("code")) as? AppKitLabelView)
+            renderer.viewForTesting(id: .manual("code")) as? AppKitTextView)
         let box = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
         scroll.frame = NSRect(x: 0, y: 0, width: 800, height: 600)
         scroll.layoutSubtreeIfNeeded()
@@ -58,7 +58,7 @@ final class AppKitMeasurementTests: XCTestCase {
         card.driven = .replace([
             .translationX: HostStateBinding(state: 91, mode: .inOut, kind: .property),
         ])
-        var caption = HostPatch(id: .manual("caption"), type: .label)
+        var caption = HostPatch(id: .manual("caption"), type: .text)
         caption.properties[.text] = .string("A card that slides sideways")
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([card, caption])
@@ -71,7 +71,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let nativeStack = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
         let nativeCaption = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("caption")) as? AppKitLabelView)
+            renderer.viewForTesting(id: .manual("caption")) as? AppKitTextView)
         let nativeCard = try XCTUnwrap(renderer.viewForTesting(id: .manual("card")))
         nativeOuter.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
         nativeOuter.layoutSubtreeIfNeeded()
@@ -109,7 +109,7 @@ final class AppKitMeasurementTests: XCTestCase {
         scroll.layoutSubtreeIfNeeded()
         let shortHeight = frame.frame.height
 
-        var longer = HostPatch(id: .manual("notes"), type: .label)
+        var longer = HostPatch(id: .manual("notes"), type: .text)
         longer.properties[.text] = .string(
             String(repeating: "Press Size and watch the panel grow smoothly. ", count: 30))
         renderer.applyForTesting(path(to: longer, through: Array(route.dropLast())))
@@ -121,7 +121,7 @@ final class AppKitMeasurementTests: XCTestCase {
     }
 
     @MainActor
-    func testASpanTransitionReachesTheLabelThatPresentsIt() throws {
+    func testASpanTransitionReachesTheTextThatPresentsIt() throws {
         var now = 0.0
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -135,7 +135,7 @@ final class AppKitMeasurementTests: XCTestCase {
         span.properties[.textColor] = .color(red: 0, green: 0, blue: 0, alpha: 255)
         var formatted = HostPatch(id: .manual("formatted"), type: .spans)
         formatted.children = .arranged([span])
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.children = .arranged([formatted])
         renderer.applyForTesting(label)
 
@@ -144,12 +144,12 @@ final class AppKitMeasurementTests: XCTestCase {
         red.transitions[.textColor] = HostTransition(motion: .eased(200, .linear))
         var formattedPath = HostPatch(id: .manual("formatted"), type: .spans)
         formattedPath.children = .changed([red])
-        var labelPath = HostPatch(id: .manual("label"), type: .label)
+        var labelPath = HostPatch(id: .manual("label"), type: .text)
         labelPath.children = .changed([formattedPath])
         renderer.applyForTesting(labelPath)
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("label")) as? AppKitLabelView)
+            renderer.viewForTesting(id: .manual("label")) as? AppKitTextView)
         func redComponent() throws -> CGFloat {
             let color = try XCTUnwrap(native.attributedStringValue.attribute(
                 .foregroundColor, at: 0, effectiveRange: nil) as? NSColor)
@@ -250,7 +250,7 @@ final class AppKitMeasurementTests: XCTestCase {
             .area: HostStateBinding(state: 96, mode: .out, kind: .placement),
         ])
         layout.children = .arranged([card])
-        var caption = HostPatch(id: .manual("caption"), type: .label)
+        var caption = HostPatch(id: .manual("caption"), type: .text)
         caption.properties[.text] = .string("The card in front")
         var outer = HostPatch(id: .manual("outer"), type: .vStack)
         outer.children = .arranged([layout, caption])
@@ -260,7 +260,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let nativeOuter = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("outer")) as? AppKitStackView)
         let nativeCaption = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("caption")) as? AppKitLabelView)
+            renderer.viewForTesting(id: .manual("caption")) as? AppKitTextView)
         let nativeCard = try XCTUnwrap(renderer.viewForTesting(id: .manual("card")))
         nativeOuter.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
         nativeOuter.layoutSubtreeIfNeeded()
@@ -456,7 +456,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
     private func samplePage() -> HostPatch {
         func label(_ id: String, _ text: String) -> HostPatch {
-            var label = HostPatch(id: .manual(id), type: .label)
+            var label = HostPatch(id: .manual(id), type: .text)
             label.properties[.text] = .string(text)
             label.properties[.fontSize] = .number(13)
             return label

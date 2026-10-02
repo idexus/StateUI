@@ -22,7 +22,7 @@ struct InspectorStrip: ContentView {
                 if let last {
                     Row(pass: last, scene: element, index: Scenes.shared.index(of: scene), chosen: false)
                 } else {
-                    Label(InspectorView.waiting(all.count))
+                    Text(InspectorView.waiting(all.count))
                         .fontSize(12)
                         .textColor(Look.subtle)
                         .lineBreak(.tailTruncation)

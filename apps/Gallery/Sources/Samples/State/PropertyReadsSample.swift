@@ -41,7 +41,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label("visits: \\(profile.visits)")
+                Text("visits: \\(profile.visits)")
             }
 
             // Writes `name` and reads nothing: `profile.$name` is the name's
@@ -55,7 +55,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label("name: \\(profile.name)")
+                Text("name: \\(profile.name)")
             }
         }
         """
@@ -80,7 +80,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label("visits: \(profile.visits)")
+                Text("visits: \(profile.visits)")
                     .fontSize(17)
             }
             .spacing(4)
@@ -97,7 +97,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label("name: \(profile.name.isEmpty ? "-" : profile.name)")
+                Text("name: \(profile.name.isEmpty ? "-" : profile.name)")
                     .fontSize(17)
                     .lineBreak(.tailTruncation)
             }
@@ -110,28 +110,28 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Press Another visit and the FIRST count moves while the second stands "
+            Text("Press Another visit and the FIRST count moves while the second stands "
                 + "still; type a name and the second moves while the first stands. One "
                 + "model, two properties, and a write is about the property it was made "
                 + "to - the same thing two separate pieces of state would do.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Each block says what it was built FOR - `2 builds, for visits` - and a "
+            Text("Each block says what it was built FOR - `2 builds, for visits` - and a "
                 + "block carried along by a rebuilt parent says `with its parent` instead. "
                 + "That is the line to watch: while the counts move one at a time and each "
                 + "names its own property, the write reached one block and not the other.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The control and the reader are separate blocks so that each count is "
+            Text("The control and the reader are separate blocks so that each count is "
                 + "about one thing. `profile.$name` is the name's own state, handed to the "
                 + "field whole - the field reads nothing, so typing builds only the block "
                 + "that shows the name.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("One write that is not yours: press Another visit with the caret still "
+            Text("One write that is not yours: press Another visit with the caret still "
                 + "in the field and the name count moves once more, because the field, "
                 + "losing the focus, hands back its text as the platform finished it - the "
                 + "first letter capitalized - and a changed text is a write to `name`. "

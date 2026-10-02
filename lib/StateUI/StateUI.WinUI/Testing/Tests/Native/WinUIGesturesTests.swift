@@ -16,14 +16,14 @@ private struct TapsPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("taps \(taps)")
+            Text("taps \(taps)")
             if shown {
-                HStack { Label("row") }
+                HStack { Text("row") }
                     .width(200)
                     .height(40)
                     .onTapped(count: count) { taps += 1 }
             }
-            HStack { Label("plain") }
+            HStack { Text("plain") }
                 .width(200)
                 .height(40)
             Button("Hide").onClicked { shown = false }
@@ -110,6 +110,6 @@ final class WinUIGesturesTests: XCTestCase {
 private extension WinUIRenderer {
     /// The words every label shows, in order.
     var texts: [String] {
-        views(WinUILabelView.self).map(\.text)
+        views(WinUITextView.self).map(\.text)
     }
 }

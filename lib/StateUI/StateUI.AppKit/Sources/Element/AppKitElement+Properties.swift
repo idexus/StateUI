@@ -72,8 +72,8 @@ extension AppKitElement {
             }
             return scroll
 
-        case .label:
-            return AppKitLabelView()
+        case .text:
+            return AppKitTextView()
 
         case .toolbarItem:
             // The window's toolbar makes the native item; see visibleToolbarActions.

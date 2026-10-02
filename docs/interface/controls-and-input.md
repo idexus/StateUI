@@ -10,7 +10,7 @@ in [Platform contract](../platform-contract.md).
 The value that gives a control its purpose belongs in its initializer:
 
 ```swift
-Label("Account")
+Text("Account")
 Button("Save")
 Button(icon: "trash.png")
 Image("avatar.png")
@@ -111,10 +111,10 @@ caused by the user. Do not duplicate the assignment in the handler.
 
 ## Text display
 
-`Label` displays either one text value or a formatted sequence of runs:
+`Text` displays either one text value or a formatted sequence of runs:
 
 ```swift
-Label()
+Text()
     .spans {
         TextSpan("let ").textColor(.purple)
         TextSpan("count").fontAttributes(.bold)
@@ -129,7 +129,7 @@ margin, or gesture surface. Runs made from a list go in as an array, each
 matched by where it sits:
 
 ```swift quote
-Label().spans {
+Text().spans {
     tokens.map { TextSpan($0.text).textColor($0.colour) }
 }
 ```
@@ -428,8 +428,8 @@ struct ContactsPage: ContentView {
         Grid {
             ItemsView(contacts, id: \.name) { contact in
                 VStack {
-                    Label(contact.name).fontAttributes(.bold)
-                    Label(contact.phone)
+                    Text(contact.name).fontAttributes(.bold)
+                    Text(contact.phone)
                 }
                 .padding(14, 10)
             }

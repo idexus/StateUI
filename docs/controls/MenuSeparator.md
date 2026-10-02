@@ -5,7 +5,7 @@
 A line between entries, grouping the ones above it apart from the ones below.
 
 ```swift
-Label("Report.pdf")
+Text("Report.pdf")
     .contextMenu {
         MenuItem("Open")
         MenuItem("Rename")

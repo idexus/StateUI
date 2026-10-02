@@ -15,7 +15,7 @@ private struct CutPage: ContentView {
 
     var content: some View {
         VStack {
-            VStack { Label("cut") }
+            VStack { Text("cut") }
                 .width(40)
                 .height(40)
                 .background(Color("#FF0000"))
@@ -71,11 +71,11 @@ final class WinUIMotionTests: XCTestCase {
         try onUIThread {
             let clock = TestClock()
             let host = WinUIRenderer.bare(clock: clock)
-            var initial = HostPatch(id: .manual("label"), type: .label)
+            var initial = HostPatch(id: .manual("label"), type: .text)
             initial.properties[.opacity] = .number(0.25)
             host.apply(initial)
 
-            var changed = HostPatch(id: .manual("label"), type: .label)
+            var changed = HostPatch(id: .manual("label"), type: .text)
             changed.properties[.opacity] = .number(0.75)
             changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
             host.apply(changed)
@@ -97,11 +97,11 @@ final class WinUIMotionTests: XCTestCase {
     func testLessMotionPutsThePropertyAtItsValueAtOnce() throws {
         try onUIThread {
             let host = WinUIRenderer.bare(clock: TestClock(), reducesMotion: true)
-            var initial = HostPatch(id: .manual("label"), type: .label)
+            var initial = HostPatch(id: .manual("label"), type: .text)
             initial.properties[.opacity] = .number(0.25)
             host.apply(initial)
 
-            var changed = HostPatch(id: .manual("label"), type: .label)
+            var changed = HostPatch(id: .manual("label"), type: .text)
             changed.properties[.opacity] = .number(0.75)
             changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
             host.apply(changed)
@@ -148,7 +148,7 @@ final class WinUIMotionTests: XCTestCase {
             let arrived = State(wrappedValue: false)
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
-                    Label(arrived.wrappedValue ? "arrived" : "away")
+                    Text(arrived.wrappedValue ? "arrived" : "away")
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
                     Button("Go").onClicked {
@@ -170,7 +170,7 @@ final class WinUIMotionTests: XCTestCase {
             XCTAssertEqual(sliders.map(\.value), [1, 1])
 
             host.settle { arrived.wrappedValue }
-            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["arrived"])
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["arrived"])
         }
     }
 
@@ -179,7 +179,7 @@ final class WinUIMotionTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    Label("turned")
+                    Text("turned")
                         .width(100)
                         .height(40)
                         .translationX(10)
@@ -189,7 +189,7 @@ final class WinUIMotionTests: XCTestCase {
                         .pivotX(0)
                 }
             }
-            let label = try XCTUnwrap(host.views(WinUILabelView.self).first)
+            let label = try XCTUnwrap(host.views(WinUITextView.self).first)
             let drawn = label.drawnTransform
 
             XCTAssertEqual(drawn.translationX, 10)
@@ -208,13 +208,13 @@ final class WinUIMotionTests: XCTestCase {
             let offset = State(wrappedValue: 0.0)
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
-                    Label("moving").translationX(offset.projectedValue)
+                    Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked {
                         try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear))
                     }
                 }
             }
-            let label = try XCTUnwrap(host.views(WinUILabelView.self).first)
+            let label = try XCTUnwrap(host.views(WinUITextView.self).first)
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             clock.now = 100

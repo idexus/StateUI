@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A CheckBox: an `android.widget.CheckBox` with no words of its own - the words beside it are a Label.
+/// A CheckBox: an `android.widget.CheckBox` with no words of its own - the words beside it are a Text.
 @MainActor
 final class AndroidCheckBoxView: AndroidToggleView {
     private var madeTint: JavaObject??

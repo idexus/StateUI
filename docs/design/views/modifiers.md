@@ -13,7 +13,7 @@ working for controls, styles and composed views alike - a composed view's
 `modified` answers a `ModifiedContent` (composition.md).
 
 ```text
-  Label("Total")           Node(Label, props: [text: "Total"])
+  Text("Total")           Node(Text, props: [text: "Total"])
     .fontSize(20)          copy, props[fontSize] = 20
     .onTapped { … }        copy, events[tapped] += handler
     .id("total")           copy, id = "total"
@@ -23,7 +23,7 @@ working for controls, styles and composed views alike - a composed view's
 ## Setting a property
 
 A value modifier writes one property through its contract member:
-`setValue(LabelContract.maximumLines, 3)`. The member carries the property's
+`setValue(TextContract.maximumLines, 3)`. The member carries the property's
 token and its value's type, so a modifier cannot write the wrong type, and the
 token is what the patch names. A modifier that writes several things at once -
 `onTapped(count:)`, `onSwiped`, `transform` - does it inside one `modified`
@@ -150,7 +150,7 @@ container is not.
 ## Gestures
 
 Gestures belong to every view, so a stack holding a whole row, an Image or a
-Label can answer one; a list row can be a view with a tap recognizer rather
+Text can answer one; a list row can be a view with a tap recognizer rather
 than a button disguised as a container. Tap, swipe, pan, pinch, pointer, drag
 and drop are described.
 

@@ -18,15 +18,15 @@ final class WinUIItemsViewTests: XCTestCase {
                 Grid {
                     ItemsView(0..<1_000) { number in
                         HStack {
-                            Label("\(number)").width(90)
-                            Label("\(number * number)")
+                            Text("\(number)").width(90)
+                            Text("\(number * number)")
                         }
                         .padding(14, 10)
                     }
-                    .header(Label("N and N²").padding(14, 8))
+                    .header(Text("N and N²").padding(14, 8))
                     .gridRow(0)
 
-                    Label("Tap a row.").gridRow(1)
+                    Text("Tap a row.").gridRow(1)
                 }
                 .rows(.fill, .auto)
             }
@@ -49,8 +49,8 @@ final class WinUIItemsViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 ItemsView(0..<50) { number in
                     HStack {
-                        Label("\(number)")
-                        Label("\(doubled.wrappedValue ? number * 2 : number * number)")
+                        Text("\(number)")
+                        Text("\(doubled.wrappedValue ? number * 2 : number * number)")
                     }
                 }
                 .height(300)

@@ -10,7 +10,7 @@
 ///     @State private var ticker = Ticker(every: .seconds(1), limit: 30)
 ///
 ///     VStack {
-///         Label("\((ticker.limit ?? 0) - ticker.ticks)")
+///         Text("\((ticker.limit ?? 0) - ticker.ticks)")
 ///
 ///         Button(ticker.isRunning ? "Stop" : "Start")
 ///             .onClicked { ticker.isRunning ? ticker.stop() : ticker.start() }

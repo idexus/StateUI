@@ -11,16 +11,16 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aLabelsSpansStandInPlaceOfItsOwnWords", proves: [
+            ConformanceCase("aTextsSpansStandInPlaceOfItsOwnWords", proves: [
                 Covered(SpansContract.self),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let spanned = State(wrappedValue: true)
                 s.start {
                     VStack {
                         if spanned.wrappedValue {
-                            Label("own").spans { TextSpan("runs") }.id("words")
+                            Text("own").spans { TextSpan("runs") }.id("words")
                         } else {
-                            Label("own").id("words")
+                            Text("own").id("words")
                         }
                         Button("Plain").onClicked { spanned.wrappedValue = false }.id("change")
                     }

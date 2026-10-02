@@ -76,7 +76,7 @@ struct WindowSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label(window.title ?? "Platform title")
+            Text(window.title ?? "Platform title")
                 .fontSize(15)
                 .fontAttributes(.bold)
 
@@ -125,7 +125,7 @@ struct WindowSample: SampleContent, ExampleContent {
                     window.isTranslucent = translucent
                 }
 
-            Label("Sample frame: \(Int(width)) × \(Int(height))")
+            Text("Sample frame: \(Int(width)) × \(Int(height))")
                 .fontSize(13)
                 .textColor(Palette.accent)
         }
@@ -153,7 +153,7 @@ struct WindowSample: SampleContent, ExampleContent {
             Switch(value)
                 .accessibilityIdentifier(id)
                 .accessibilityLabel(title)
-            Label(title).verticalAlignment(.center)
+            Text(title).verticalAlignment(.center)
         }
         .spacing(8)
     }

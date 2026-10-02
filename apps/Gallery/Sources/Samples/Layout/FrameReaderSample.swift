@@ -30,14 +30,14 @@ struct FrameReaderSample: SampleContent, ExampleContent {
             // It fills the page's width, so widening the panel walks its x
             // in towards the middle.
             VStack {
-                Label("the parent")
+                Text("the parent")
 
                 // The reader's content is built FROM the measurement, which
                 // is the reader's own @State. The three handlers write the
                 // page's states instead, and the lines below print them - so
                 // a settled frame builds the reader AND the page's braces.
                 FrameReader { frame in
-                    Label("\\(Int(frame.width)) × \\(Int(frame.height))")
+                    Text("\\(Int(frame.width)) × \\(Int(frame.height))")
                 }
                 // Driven: the host carries the width, and no render
                 // describes it.
@@ -60,9 +60,9 @@ struct FrameReaderSample: SampleContent, ExampleContent {
 
             // Where the panel sits, in three spaces: inside the tinted box
             // above, inside the window, and inside the safe area.
-            Label("in its parent · \\(Int(slot.x)), \\(Int(slot.y))")
-            Label("in the window · \\(Int(window.x)), \\(Int(window.y))")
-            Label("in the safe area · \\(Int(safe.x)), \\(Int(safe.y))")
+            Text("in its parent · \\(Int(slot.x)), \\(Int(slot.y))")
+            Text("in the window · \\(Int(window.x)), \\(Int(window.y))")
+            Text("in the safe area · \\(Int(safe.x)), \\(Int(safe.y))")
 
             Button("Animate the width").onClicked {
                 // Nothing is described: the host carries the width and the
@@ -86,7 +86,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
             // It fills the page's width, so widening the panel walks its x
             // in towards the middle.
             VStack {
-                Label("the parent")
+                Text("the parent")
                     .fontSize(11)
                     .textColor(Palette.brand)
 
@@ -95,7 +95,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
                 // page's states instead, and the three lines below print
                 // them - so a settled frame builds the reader AND the page.
                 FrameReader { frame in
-                    Label("\(Int(frame.width)) × \(Int(frame.height))")
+                    Text("\(Int(frame.width)) × \(Int(frame.height))")
                         .fontSize(22)
                         .fontAttributes(.bold)
                         .textColor(Palette.onAccent)
@@ -127,16 +127,16 @@ struct FrameReaderSample: SampleContent, ExampleContent {
 
             // Where the panel sits, in three spaces. The first is against the
             // tinted box above, which is why that box is drawn at all.
-            Label("in its parent · \(Int(slot.x)), \(Int(slot.y))")
+            Text("in its parent · \(Int(slot.x)), \(Int(slot.y))")
                 .fontSize(13)
                 .textColor(Palette.brand)
                 .horizontalTextAlignment(.center)
 
-            Label("in the window · \(Int(window.x)), \(Int(window.y))")
+            Text("in the window · \(Int(window.x)), \(Int(window.y))")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
-            Label("in the safe area · \(Int(safe.x)), \(Int(safe.y))")
+            Text("in the safe area · \(Int(safe.x)), \(Int(safe.y))")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
@@ -155,28 +155,28 @@ struct FrameReaderSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The tinted box is the parent, drawn because the first reading is measured "
+            Text("The tinted box is the parent, drawn because the first reading is measured "
                 + "against it: `in its parent` is where the panel sits inside that box. "
                 + "Widening the panel walks its x in towards the middle, while the window "
                 + "and safe-area readings move by the same amount from wherever the page is.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A frame costs nothing until something asks for it: a view with no "
+            Text("A frame costs nothing until something asks for it: a view with no "
                 + "`.onFrameChanged` is not even subscribed. A report comes when the frame "
                 + "settles somewhere new, so dragging the slider re-lays the panel out and "
                 + "the button's walk reports every step of the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The panel's width and the slider's thumb are one driven state - "
+            Text("The panel's width and the slider's thumb are one driven state - "
                 + "`.width($width)` and `Slider($width)` - so dragging the thumb "
                 + "resizes the panel without the page being described for it, and the "
                 + "button moves that same state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The width costs no build - a driven state describes nothing by itself - "
+            Text("The width costs no build - a driven state describes nothing by itself - "
                 + "but the measurement does. The reader builds its content from the frame "
                 + "it was given, and the three handlers beside it write the page's own "
                 + "states, which the lines under the panel print. So the page is a reader "

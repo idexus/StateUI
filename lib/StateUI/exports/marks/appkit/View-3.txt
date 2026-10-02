@@ -35,8 +35,6 @@ Image.panXChannel: ✓ pan on Image: handed to the host's recognizer or handler,
 ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
-Label.area: ✅
-Label.frameChanged: ✅
 Line.canDrag: not realized
 Line.dragStarting: not realized
 Line.dragText: not realized
@@ -81,6 +79,8 @@ Slider.frameChanged: ✅
 Slider.margin: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Switch.panYChannel: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Text.area: ✅
+Text.frameChanged: ✅
 TextEditor.tapCount: ✓ tap on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.tapped: ✓ tap on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextField.frameChanged: ✅

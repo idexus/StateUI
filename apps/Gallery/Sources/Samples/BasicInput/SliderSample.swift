@@ -20,7 +20,7 @@ struct SliderSample: SampleContent, ExampleContent {
             // this closure - which is what a get on a dragged value costs.
             DebugInfoLabel()
 
-            Label(soundOn ? "Volume: \\(Int(volume))" : "Muted")
+            Text(soundOn ? "Volume: \\(Int(volume))" : "Muted")
 
             Slider($volume)
                 .minimum(0)
@@ -29,10 +29,10 @@ struct SliderSample: SampleContent, ExampleContent {
                 .onDragStarted { dragging = true }
                 .onDragCompleted { dragging = false }
 
-            Label(dragging ? "Dragging..." : "At rest")
+            Text(dragging ? "Dragging..." : "At rest")
 
             HStack {
-                Label("Sound")
+                Text("Sound")
                     .verticalAlignment(.center)
 
                 Switch($soundOn)
@@ -44,7 +44,7 @@ struct SliderSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label(soundOn ? "Volume: \(Int(volume))" : "Muted")
+            Text(soundOn ? "Volume: \(Int(volume))" : "Muted")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
@@ -58,12 +58,12 @@ struct SliderSample: SampleContent, ExampleContent {
                 .onDragStarted { dragging = true }
                 .onDragCompleted { dragging = false }
 
-            Label(dragging ? "Dragging..." : "At rest")
+            Text(dragging ? "Dragging..." : "At rest")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
             HStack {
-                Label("Sound")
+                Text("Sound")
                     .fontSize(14)
                     .verticalAlignment(.center)
 
@@ -80,14 +80,14 @@ struct SliderSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The drag's two ends are events of their own - `.onDragStarted` as the "
+            Text("The drag's two ends are events of their own - `.onDragStarted` as the "
                 + "thumb is grabbed, `.onDragCompleted` as it is let go - and every step "
                 + "between them is an `.onValueChanged`. Work too heavy for every step "
                 + "belongs in the completed end.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The value crosses the boundary as its own bits - nothing is formatted or "
+            Text("The value crosses the boundary as its own bits - nothing is formatted or "
                 + "parsed on the way, so no locale can touch it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

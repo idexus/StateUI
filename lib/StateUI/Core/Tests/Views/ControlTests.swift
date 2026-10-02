@@ -89,14 +89,14 @@ final class ControlTests: XCTestCase {
         let chosen = State<String?>(wrappedValue: "two")
 
         return [
-            ControlCase("Label", source: "Label.swift",
-                Label("Total")
+            ControlCase("Text", source: "Text.swift",
+                Text("Total")
                     .lineBreak(.tailTruncation)
                     .lineHeight(1.5)
                     .maximumLines(2)
                     .textDecorations([.underline, .strikethrough])
                     // The runs go here rather than in a case of their own: a
-                    // Span is not a view, so it has no case, and Label.swift
+                    // Span is not a view, so it has no case, and Text.swift
                     // is the file that declares it.
                     .spans {
                         TextSpan("let ")
@@ -243,9 +243,9 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Grid", source: "Grid.swift",
                 Grid {
-                    Label("Top left")
+                    Text("Top left")
 
-                    Label("Spanning both")
+                    Text("Spanning both")
                         .gridRow(1)
                         .gridColumnSpan(2)
                 }
@@ -256,13 +256,13 @@ final class ControlTests: XCTestCase {
 
             ControlCase("VStack", source: "StackLayouts.swift",
                 VStack {
-                    Label("One")
+                    Text("One")
                 }
                 .spacing(12)),
 
             ControlCase("HStack", source: "StackLayouts.swift",
                 HStack {
-                    Label("One")
+                    Text("One")
                 }
                 .spacing(6)),
 
@@ -271,7 +271,7 @@ final class ControlTests: XCTestCase {
                     ColorBox(.cornflowerBlue)
                         .area(.proportional(0, 0, 1, 0.5))
 
-                    Label("Bottom right")
+                    Text("Bottom right")
                         .horizontalAlignment(.end)
                         .verticalAlignment(.end)
                 }
@@ -282,7 +282,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("ScrollView", source: "ScrollView.swift",
                 ScrollView {
-                    Label("content")
+                    Text("content")
                 }
                 .orientation(.both)
                 .verticalScrollBarVisibility(.never)
@@ -296,8 +296,8 @@ final class ControlTests: XCTestCase {
             // layout, the choice, and what choosing, opening and scrolling to the
             // end raise. A composed view, so the case is its body built.
             ControlCase("ItemsView", source: "ItemsView.swift",
-                ItemsView(["one", "two"]) { Label($0) }
-                    .header(Label("Words"))
+                ItemsView(["one", "two"]) { Text($0) }
+                    .header(Text("Words"))
                     .itemsLayout(.grid(minimumItemWidth: 120, spacing: 8))
                     .selection(chosen.projectedValue)
                     .onItemActivated { _ in }
@@ -453,7 +453,7 @@ final class ControlTests: XCTestCase {
                         // everywhere else.
                         .background(.solidColor(Color(light: .whiteSmoke, dark: .black)))
 
-                    Label("Tiers")
+                    Text("Tiers")
                         .textColor(.firebrick)
                         .characterSpacing(1.5)
                         .textCase(.uppercase)
@@ -1237,7 +1237,7 @@ final class ControlTests: XCTestCase {
         let renders = Renders()
         renders.render(
             ScrollView {
-                Label("content")
+                Text("content")
             }
             .scrollOffset(scrolled.projectedValue)
             .body)

@@ -8,7 +8,7 @@ Arranges its children in rows and columns.
 @State var name = ""
 
 Grid {
-    Label("Name")
+    Text("Name")
     TextField($name)
         .gridColumn(1)
     Button("Save")

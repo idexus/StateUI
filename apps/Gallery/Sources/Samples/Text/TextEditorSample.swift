@@ -20,7 +20,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
             // height, the right grows with every line you add.
             Grid {
                 VStack {
-                    Label("a stated height")
+                    Text("a stated height")
 
                     TextEditor($draft)
                         .placeholder("Anything worth remembering")
@@ -28,7 +28,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
                 }
 
                 VStack {
-                    Label(".growsWithText(true)")
+                    Text(".growsWithText(true)")
 
                     TextEditor($draft)
                         .placeholder("The same text, sized by it")
@@ -38,7 +38,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
             }
             .columns(.fill, .fill)
 
-            Label(draft.isEmpty ? "nothing written yet" : "\\(draft.count) character(s)")
+            Text(draft.isEmpty ? "nothing written yet" : "\\(draft.count) character(s)")
 
             Button("Clear")
                 .isEnabled(!draft.isEmpty)
@@ -54,7 +54,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
             // other - and only the right one grows with it.
             Grid {
                 VStack {
-                    Label("a stated height")
+                    Text("a stated height")
                         .fontSize(12)
                         .textColor(Palette.subtle)
 
@@ -67,7 +67,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
                 .spacing(4)
 
                 VStack {
-                    Label(".growsWithText(true)")
+                    Text(".growsWithText(true)")
                         .fontSize(12)
                         .textColor(Palette.subtle)
 
@@ -84,7 +84,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
             .columns(.fill, .fill)
             .columnSpacing(12)
 
-            Label(draft.isEmpty ? "nothing written yet" : "\(draft.count) character(s)")
+            Text(draft.isEmpty ? "nothing written yet" : "\(draft.count) character(s)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)

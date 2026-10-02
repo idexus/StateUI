@@ -24,7 +24,6 @@ Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 ItemsView.opacity: ✅
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform, checked against the layer it composed itself
-Label.scaleX: ✓ read scaleX of Label: the host's own transform, checked against the layer it composed itself
 Line.rotationX: ✓ read rotationX of Line: the host's own transform, checked against the layer it composed itself
 Map.pivotX: ✓ read pivotX of Map: the host's own transform, checked against the layer it composed itself
 Path.automationExcludedWithChildren: ✅
@@ -52,6 +51,7 @@ Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
 Switch.minimumWidth: ✅
+Text.scaleX: ✓ read scaleX of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.opacity: ✅
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform, checked against the layer it composed itself

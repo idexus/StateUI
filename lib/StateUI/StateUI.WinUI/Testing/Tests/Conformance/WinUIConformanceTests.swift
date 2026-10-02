@@ -26,7 +26,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testGrid() { conform(GridTests.self) }
     func testHStack() { conform(HStackTests.self) }
     func testImage() { conform(ImageTests.self) }
-    func testLabel() { conform(LabelTests.self) }
+    func testText() { conform(TextTests.self) }
     func testLine() { conform(LineTests.self) }
     func testMap() { conform(MapTests.self) }
     func testPath() { conform(PathTests.self) }

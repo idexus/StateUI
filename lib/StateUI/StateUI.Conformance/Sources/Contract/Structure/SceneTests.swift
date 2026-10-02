@@ -13,7 +13,7 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aSceneHoldsItsWindow", proves: [Covered(SceneContract.self)]) { s in
-                s.start { VStack { Label("In a scene").id("label") } }
+                s.start { VStack { Text("In a scene").id("label") } }
 
                 _ = try s.element(ofType: SceneContract.nodeType)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("label")), true)
@@ -84,7 +84,7 @@ struct ScenePhasePage: ContentView {
 
     var content: some View {
         let (log, scene) = (self.log, self.scene)
-        return Label("Scene")
+        return Text("Scene")
             .onCreated { log.values.append(scene.phase) }
             .onChanged(scene.phase) { log.values.append(scene.phase) }
     }
@@ -98,6 +98,6 @@ struct ApplicationPage: ContentView {
 
     var content: some View {
         let (sessions, application) = (self.sessions, self.application)
-        return Label("Application").onCreated { sessions.values.append(application) }
+        return Text("Application").onCreated { sessions.values.append(application) }
     }
 }

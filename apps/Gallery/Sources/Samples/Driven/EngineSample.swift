@@ -50,10 +50,10 @@ struct EngineSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             // Off a driven state: written ten times a second, never described.
-            Label($reading)
+            Text($reading)
 
             // Off state: the same reading, described every time it lands.
-            Label("Lap: \\(lap)")
+            Text("Lap: \\(lap)")
 
             HStack {
                 Button($caption).onClicked {
@@ -96,7 +96,7 @@ struct EngineSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack {
-                Label()
+                Text()
                     .text($reading)
                     .fontSize(44)
                     .fontAttributes(.bold)
@@ -110,7 +110,7 @@ struct EngineSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(12))
             .horizontalAlignment(.center)
 
-            Label("Lap: \(lap)")
+            Text("Lap: \(lap)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalAlignment(.center)
@@ -153,7 +153,7 @@ struct EngineSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("An engine is for arithmetic that remembers. Rewriting one value as "
+            Text("An engine is for arithmetic that remembers. Rewriting one value as "
                 + "another - a number into words, two numbers into one - is a conversion: "
                 + "`$x.convert { … }`, or `$x.journey.convert { … }` where the words must "
                 + "follow the walk, is an engine the differ writes for you. This clock "
@@ -163,7 +163,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The two readings are the same reading. The clock is driven; Lap puts "
+            Text("The two readings are the same reading. The clock is driven; Lap puts "
                 + "that very reading into ordinary `@State`. The reading at the top says "
                 + "how many times this closure has been described and which value for. "
                 + "Start the clock and let it run for a minute: the count does not move. "
@@ -171,7 +171,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Label($reading)` reads its words off a driven state the engine writes "
+            Text("`Text($reading)` reads its words off a driven state the engine writes "
                 + "on the display's own frame, and the button's caption is driven the same "
                 + "way by the handler that toggles the clock: one tap starts the clock and "
                 + "renames the button, and neither is a render. Driven text is written onto "
@@ -181,7 +181,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`running` and `elapsed` are ordinary `@State` that no view reads, so "
+            Text("`running` and `elapsed` are ordinary `@State` that no view reads, so "
                 + "writing them renders nothing - a step, a running total, whatever the sum "
                 + "needs, kept across renders like any state. The engine names `$running` "
                 + "in `following:`, which is why tapping Start - a handler writing it - "

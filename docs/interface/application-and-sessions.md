@@ -32,7 +32,7 @@ struct MainWindow: Window {
 }
 
 struct HomePage: ContentView {
-    var content: some View { Label("Home") }
+    var content: some View { Text("Home") }
 }
 ```
 
@@ -451,9 +451,9 @@ struct NotesWindow: Window {
 
     var page: any Page {
         SplitView($showsFolders) {
-            Label("Folders")
+            Text("Folders")
         } detail: {
-            Label("Notes in \(folder)")
+            Text("Notes in \(folder)")
         }
         .barTitle("Notes")
         .barSubtitle(folder)

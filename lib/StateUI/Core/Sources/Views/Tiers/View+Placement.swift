@@ -7,7 +7,7 @@
 extension ViewProperties {
     /// Which row of the enclosing Grid the view sits in, counting from 0.
     ///
-    ///     Label("Name").gridRow(0).gridColumn(0)
+    ///     Text("Name").gridRow(0).gridColumn(0)
     ///     TextField($name).gridRow(0).gridColumn(1)
     public func gridRow(_ value: Int) -> Modified { setValue(ViewContract.gridRow, value) }
 
@@ -25,7 +25,7 @@ extension ViewProperties {
     /// The part of the enclosing ZStack's room the view stands in, in device
     /// units or in fractions of the room; the whole room without it.
     ///
-    ///     Label("Right half").area(.proportional(0.5, 0, 0.5, 1))
+    ///     Text("Right half").area(.proportional(0.5, 0, 0.5, 1))
     public func area(_ value: Area) -> Modified { setValue(ViewContract.area, value) }
 }
 

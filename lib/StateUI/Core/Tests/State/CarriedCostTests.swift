@@ -19,7 +19,7 @@ private struct Inner: ContentView {
 
     var content: some View {
         builds.count += 1
-        return VStack { Label("shown \(shown)") }
+        return VStack { Text("shown \(shown)") }
     }
 }
 
@@ -30,7 +30,7 @@ private struct Reader: ContentView {
 
     var content: some View {
         builds.count += 1
-        return Label("n\(n)")
+        return Text("n\(n)")
     }
 }
 
@@ -40,7 +40,7 @@ private struct Blank: ContentView {
 
     var content: some View {
         builds.count += 1
-        return Label("blank")
+        return Text("blank")
     }
 }
 
@@ -52,7 +52,7 @@ final class CarriedCostTests: XCTestCase {
 
         var body: Node {
             VStack {
-                Label("chosen \(chosen)")
+                Text("chosen \(chosen)")
                 Grid { Inner(shown: shown, builds: builds) }
             }.body
         }
@@ -114,7 +114,7 @@ final class CarriedCostTests: XCTestCase {
 
             var body: Node {
                 Grid {
-                    Label("held \(count) bumped \(bump)")
+                    Text("held \(count) bumped \(bump)")
                 }.body
             }
         }
@@ -139,7 +139,7 @@ final class CarriedCostTests: XCTestCase {
         // placeholder is where `@Environment` is resolved.
         struct Deep: ContentView {
             @Environment var theme: Theme
-            var content: some View { Label(theme.name) }
+            var content: some View { Text(theme.name) }
         }
 
         struct Above: ContentView {

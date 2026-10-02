@@ -42,12 +42,12 @@ extension GridProperties {
 /// Arranges its children in rows and columns.
 ///
 ///     Grid {
-///         Label("Column 0, Row 0")
+///         Text("Column 0, Row 0")
 ///
-///         Label("Column 1, Row 0")
+///         Text("Column 1, Row 0")
 ///             .gridColumn(1)
 ///
-///         Label("Spanning both")
+///         Text("Spanning both")
 ///             .gridRow(1)
 ///             .gridColumnSpan(2)
 ///     }

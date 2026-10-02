@@ -18,7 +18,7 @@ private struct BarredPage: ContentView {
     @Environment private var page: PageSession
 
     var content: some View {
-        Label("one")
+        Text("one")
             .toolbar {
                 ToolbarItem("Save")
                     .id("save")
@@ -72,7 +72,7 @@ final class PageBarTests: XCTestCase {
     func testADeclarationHangsOnTheElementDeclaringIt() throws {
         let page = Self.arrived()
 
-        XCTAssertEqual(page.children.map { $0.type }, ["Label"])
+        XCTAssertEqual(page.children.map { $0.type }, ["Text"])
         let label = page.children[0]
         XCTAssertEqual(label.children.map { $0.type }, ["ToolbarItems", "ToolbarItems", "MenuBar"])
 
@@ -133,17 +133,17 @@ final class PageBarTests: XCTestCase {
     /// view holds the one view it was given.
     func testAnArrangementsGroupFollowsItsPagesAndATitleViewHoldsOneView() {
         struct Plain: ContentView {
-            var content: some View { Label("one") }
+            var content: some View { Text("one") }
         }
 
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Plain() } destination: { _ in Plain() }
             .toolbar { ToolbarItem("Share").id("share") }
-            .titleView { Label("title") }
+            .titleView { Text("title") }
         let built = stack.body
 
         XCTAssertEqual(built.children.map { $0.type }.suffix(2), ["ToolbarItems", "TitleView"], "after the root page")
         XCTAssertEqual(built.children.count, 3)
-        XCTAssertEqual(built.children[2].children.map { $0.type }, ["Label"])
+        XCTAssertEqual(built.children[2].children.map { $0.type }, ["Text"])
     }
 
     /// A group keeps its element as the view it hangs on gains and loses
@@ -152,8 +152,8 @@ final class PageBarTests: XCTestCase {
     func testAGroupKeepsItsElementAsTheViewItHangsOnChanges() throws {
         let view = { (more: Bool, grouped: Bool) -> Node in
             var stack = VStack {
-                Label("one")
-                if more { Label("two") }
+                Text("one")
+                if more { Text("two") }
             }
             if grouped { stack = stack.toolbar { ToolbarItem("Save").id("save") } }
             return stack.body
@@ -179,9 +179,9 @@ final class PageBarTests: XCTestCase {
     /// not told to empty one.
     func testAPageWithNoToolbarSendsNoSlot() {
         struct Plain: ContentView {
-            var content: some View { Label("one") }
+            var content: some View { Text("one") }
         }
 
-        XCTAssertEqual(Node.page(Plain()).built.children.map { $0.type }, ["Label"])
+        XCTAssertEqual(Node.page(Plain()).built.children.map { $0.type }, ["Text"])
     }
 }

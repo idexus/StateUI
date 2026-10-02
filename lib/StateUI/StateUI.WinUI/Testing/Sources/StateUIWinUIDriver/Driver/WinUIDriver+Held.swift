@@ -165,7 +165,7 @@ extension WinUIDriver {
         switch name {
         case "text":
             switch view {
-            case let text as WinUITextView: return .string(text.text)
+            case let text as WinUITextualView: return .string(text.text)
             case let field as WinUIInputView: return .string(field.text)
             case let button as WinUIButtonView: return .string(button.text)
             case let radio as WinUIRadioButtonView: return .string(radio.text)
@@ -187,7 +187,7 @@ extension WinUIDriver {
         case "lineHeight":
             // DIPs on WinUI: back to a multiple of the font's own line, as the host writes it.
             let size = Double(try read(view, "fontSize")) ?? 14
-            return ((Double(try read(view, "lineHeight")) ?? 0) / (size * WinUITextView.lineHeightOfFont)).propValue
+            return ((Double(try read(view, "lineHeight")) ?? 0) / (size * WinUITextualView.lineHeightOfFont)).propValue
         case "textDecorations": return TextDecorations(rawValue: Int32(try read(view, "decorations")) ?? 0).propValue
         case "maximumLines": return Int(try read(view, "maxLines"))?.propValue
         case "lineBreak":
@@ -202,7 +202,7 @@ extension WinUIDriver {
             }
             let across = Int(try read(view, "textAlignment")) ?? 1
             return (across == 0 ? TextAlignment.center : across == 2 ? .end : .start).propValue
-        case "verticalTextAlignment" where view is WinUILabelView:
+        case "verticalTextAlignment" where view is WinUITextView:
             // WinUI's VerticalAlignment: top 0, centre 1, bottom 2, stretched 3 - the words at its top.
             let down = Int(try read(view, "verticalAlignment")) ?? 3
             return (down == 1 ? TextAlignment.center : down == 2 ? .end : .start).propValue
@@ -389,7 +389,7 @@ extension WinUIDriver {
     /// A span's run of its label's words.
     private func spanHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
         guard let spans = element.parent, let index = spans.children.firstIndex(where: { $0 === element }),
-              let label = (spans.parent?.native as? WinUIElement)?.view as? WinUILabelView
+              let label = (spans.parent?.native as? WinUIElement)?.view as? WinUITextView
         else { return nil }
         var values = [Double](repeating: 0, count: 6 * 16)
         let count = Int(stateui_winui_text_runs(label.handle, &values, Int32(values.count)))

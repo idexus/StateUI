@@ -38,7 +38,7 @@ struct LifecycleSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ForEach(log.events) { row in
-                Label(row)
+                Text(row)
             }
         }
         """
@@ -47,7 +47,7 @@ struct LifecycleSample: SampleContent, ExampleContent {
 
     var content: some View {
         VStack {
-            Label("What the window has said so far, newest last:")
+            Text("What the window has said so far, newest last:")
                 .fontSize(14)
                 .textColor(Palette.subtle)
 
@@ -55,13 +55,13 @@ struct LifecycleSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
 
                 if log.events.isEmpty {
-                    Label("nothing yet - switch away and back")
+                    Text("nothing yet - switch away and back")
                         .fontSize(15)
                         .textColor(Palette.subtle)
                 }
 
                 ForEach(log.events) { row in
-                    Label(row)
+                    Text(row)
                         .fontSize(15)
                 }
             }

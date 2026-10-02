@@ -28,14 +28,14 @@ public final class ApplicationSession {
     /// read like any state, so a view that shows them is built again as a
     /// scene opens or closes.
     ///
-    ///     Label("\(application.scenes.count) open")
+    ///     Text("\(application.scenes.count) open")
     public var scenes: [SceneSession] { Scenes.shared.list.map(\.session) }
 
     /// The styles every control in the application can be given.
     ///
     ///     init() {
     ///         application.styles = StyleSheet {
-    ///             Style<Label>().fontSize(14)
+    ///             Style<Text>().fontSize(14)
     ///         }
     ///     }
     ///

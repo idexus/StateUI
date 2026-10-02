@@ -11,8 +11,6 @@ Grid.background: ✅
 HStack.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Image.style: ✅
 ItemsView.ignoresInput: ✅
-Label.isEnabled: ✅
-Label.zIndex: not realized
 Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
 Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
@@ -28,6 +26,8 @@ SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, ch
 Slider.background: not realized
 Stepper.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Switch.style: ✅
+Text.isEnabled: ✅
+Text.zIndex: not realized
 TextEditor.ignoresInput: ✅
 TextField.isEnabled: ✅
 TextField.zIndex: not realized

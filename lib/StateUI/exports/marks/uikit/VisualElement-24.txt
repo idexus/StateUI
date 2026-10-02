@@ -11,7 +11,6 @@ Grid.zIndex: not realized
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform, checked against the layer it composed itself
 Image.rotationY: ✓ read rotationY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.pivotY: ✓ read pivotY of ItemsView: the host's own transform, checked against the layer it composed itself
-Label.background: ✅
 Line.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Map.style: ✅
 Path.ignoresInput: ✅
@@ -28,6 +27,7 @@ Slider.isEnabled: ✅
 Slider.zIndex: not realized
 Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself
+Text.background: ✅
 TextEditor.pivotY: ✓ read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.background: not realized
 TimePicker.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level

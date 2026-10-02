@@ -7,7 +7,7 @@ A menu: a caption and the entries it opens - on the menu bar, or one level down 
 ```swift
 @State var order = "Name"
 
-Label("Sorted by \(order)")
+Text("Sorted by \(order)")
     .menuBar {
         Menu("View") {
             Menu("Sort by") {

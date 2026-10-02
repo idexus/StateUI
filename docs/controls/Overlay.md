@@ -10,7 +10,7 @@ A view shown above a window's page, over everything else it holds.
 Switch($offline)
     .overlays {
         if offline {
-            Label("Working offline")
+            Text("Working offline")
                 .horizontalAlignment(.center)
                 .verticalAlignment(.start)
         }
@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td></td><td>pass-through <code>NSView</code> above the page</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td></td><td>pass-through <code>UIView</code> above the page</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">◐</td><td></td><td>top child of a <code>FrameLayout</code></td></tr>
-<tr><td colspan="3">cannot read what reaches Label - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="3">cannot read what reaches Text - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td></td><td>top layer of a root <code>Grid</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GtkOverlay</code></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>positioned element above the page</td></tr>

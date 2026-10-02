@@ -36,9 +36,6 @@ Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host
 Image.translationY: ✅
 ItemsView.rotation: ✅
 ItemsView.style: not realized
-Label.accessibilityHeadingLevel: ✅
-Label.opacity: ✅
-Label.scale: ✅
 Line.background: not realized
 Line.frameChanged: ✅
 Line.maximumHeight: ✅
@@ -93,6 +90,9 @@ Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.scaleY: ✅
 Switch.width: ✅
+Text.accessibilityHeadingLevel: ✅
+Text.opacity: ✅
+Text.scale: ✅
 TextEditor.frame: ✅
 TextEditor.pivotX: ✅
 TextEditor.zIndex: not realized

@@ -74,7 +74,7 @@ struct WindowBarSample: SampleContent, ExampleContent {
                     .accessibilityIdentifier("windowBar.surprise")
                     .accessibilityLabel("Show an action on every page")
 
-                Label("Surprise me on every page")
+                Text("Surprise me on every page")
                     .verticalAlignment(.center)
             }
             .spacing(8)

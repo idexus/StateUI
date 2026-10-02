@@ -25,7 +25,7 @@ enum Styled {
             dimmed(Grid.self)
             dimmed(HStack.self)
             dimmed(Image.self)
-            dimmed(Label.self)
+            dimmed(Text.self)
             dimmed(Line.self)
             dimmed(Map.self)
             dimmed(Path.self)

@@ -1,59 +1,59 @@
 import StateUI
 
-struct LabelSample: SampleContent, ExampleContent {
-    static let id = "label"
-    static let title = "Label"
+struct TextSample: SampleContent, ExampleContent {
+    static let id = "text"
+    static let title = "Text"
     static let summary = "Read-only native text with StateUI typography and alignment."
 
     static let code = """
         VStack {
-            Label("Plain")
+            Text("Plain")
 
-            Label("Bold")
+            Text("Bold")
                 .fontAttributes(.bold)
 
-            Label("Italic, and coloured")
+            Text("Italic, and coloured")
                 .fontAttributes(.italic)
                 .textColor(Palette.accent)
 
-            Label("Underlined and struck through")
+            Text("Underlined and struck through")
                 .textDecorations([.underline, .strikethrough])
 
-            Label("Centred, with room around it")
+            Text("Centred, with room around it")
                 .horizontalTextAlignment(.center)
                 .padding(8)
 
-            Label("A long line that has nowhere left to go, so it is cut short with an ellipsis")
+            Text("A long line that has nowhere left to go, so it is cut short with an ellipsis")
                 .lineBreak(.tailTruncation)
                 .maximumLines(1)
 
-            Label("Letters spaced out")
+            Text("Letters spaced out")
                 .characterSpacing(3)
 
             // The height of a line as a MULTIPLE of the font's own: the same
             // two lines packed tight, then opened out.
             HStack {
-                Label("Two lines,\\nlineHeight 0.8")
+                Text("Two lines,\\nlineHeight 0.8")
                     .lineHeight(0.8)
 
-                Label("Two lines,\\nlineHeight 2")
+                Text("Two lines,\\nlineHeight 2")
                     .lineHeight(2)
             }
 
             // One string in mixed case, drawn twice. The case is the DRAWING;
             // the text stays as it was written.
-            Label("One string, drawn in Two Ways")
+            Text("One string, drawn in Two Ways")
                 .textCase(.uppercase)
 
-            Label("One string, drawn in Two Ways")
+            Text("One string, drawn in Two Ways")
                 .textCase(.lowercase)
 
             // Text follows the system's text-size setting unless a label says
             // it does not.
-            Label("Grows with the system text size")
+            Text("Grows with the system text size")
                 .fontSize(16)
 
-            Label("Stays at 16 whatever the system says")
+            Text("Stays at 16 whatever the system says")
                 .fontSize(16)
                 .fontAutoScalingEnabled(false)
         }
@@ -61,61 +61,61 @@ struct LabelSample: SampleContent, ExampleContent {
 
     var content: some View {
         VStack {
-            Label("Plain")
+            Text("Plain")
                 .fontSize(16)
 
-            Label("Bold")
+            Text("Bold")
                 .fontSize(16)
                 .fontAttributes(.bold)
 
-            Label("Italic, and coloured")
+            Text("Italic, and coloured")
                 .fontSize(16)
                 .fontAttributes(.italic)
                 .textColor(Palette.accent)
 
-            Label("Underlined and struck through")
+            Text("Underlined and struck through")
                 .fontSize(16)
                 .textDecorations([.underline, .strikethrough])
 
-            Label("Centred, with room around it")
+            Text("Centred, with room around it")
                 .fontSize(16)
                 .horizontalTextAlignment(.center)
                 .padding(8)
 
-            Label("A long line that has nowhere left to go, so it is cut short with an ellipsis")
+            Text("A long line that has nowhere left to go, so it is cut short with an ellipsis")
                 .fontSize(16)
                 .lineBreak(.tailTruncation)
                 .maximumLines(1)
 
-            Label("Letters spaced out")
+            Text("Letters spaced out")
                 .fontSize(16)
                 .characterSpacing(3)
 
             // The height of a line as a MULTIPLE of the font's own: the same
             // two lines packed tight, then opened out.
             HStack {
-                Label("Two lines,\nlineHeight 0.8")
+                Text("Two lines,\nlineHeight 0.8")
                     .fontSize(16)
                     .lineHeight(0.8)
 
-                Label("Two lines,\nlineHeight 2")
+                Text("Two lines,\nlineHeight 2")
                     .fontSize(16)
                     .lineHeight(2)
             }
             .spacing(16)
 
-            Label("One string, drawn in Two Ways")
+            Text("One string, drawn in Two Ways")
                 .fontSize(16)
                 .textCase(.uppercase)
 
-            Label("One string, drawn in Two Ways")
+            Text("One string, drawn in Two Ways")
                 .fontSize(16)
                 .textCase(.lowercase)
 
-            Label("Grows with the system text size")
+            Text("Grows with the system text size")
                 .fontSize(16)
 
-            Label("Stays at 16 whatever the system says")
+            Text("Stays at 16 whatever the system says")
                 .fontSize(16)
                 .fontAutoScalingEnabled(false)
         }
@@ -124,12 +124,12 @@ struct LabelSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The uppercase and the lowercase line are written the same way, in mixed "
+            Text("The uppercase and the lowercase line are written the same way, in mixed "
                 + "case: the transform changes the DRAWING and leaves the text alone.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The last two are both 16 until the system's text-size setting moves - "
+            Text("The last two are both 16 until the system's text-size setting moves - "
                 + "iOS ▸ Settings ▸ Display & Brightness ▸ Text Size, Android ▸ Settings ▸ "
                 + "Display ▸ Font size. Then the first grows with it and the second stays "
                 + "where it is; where the platform offers no such setting, the two never "
@@ -137,7 +137,7 @@ struct LabelSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Formatting is expressed by StateUI properties and TextSpan runs; "
+            Text("Formatting is expressed by StateUI properties and TextSpan runs; "
                 + "the native host remains responsible for shaping and drawing glyphs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

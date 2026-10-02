@@ -23,12 +23,12 @@ extension GTKDriver {
         let classes = GTKTestHost.descendants(of: view.widget).flatMap(Self.classes)
         let named = { (prefix: String) in classes.first { $0.hasPrefix(prefix) }.map { String($0.dropFirst(prefix.count)) } }
         switch (property, view) {
-        case (.padding, is GTKTextView), (.padding, is GTKButtonView), (.padding, is GTKCheckView):
+        case (.padding, is GTKTextualView), (.padding, is GTKButtonView), (.padding, is GTKCheckView):
             guard let sides = named("stateui-padding-")?.split(separator: "-").compactMap({ Self.number($0) }),
                   sides.count == 4
             else { return .some(nil) }
             return Insets(sides[3], sides[0], sides[1], sides[2]).propValue
-        case (.background, is GTKTextView):
+        case (.background, is GTKTextualView):
             return .some(named("stateui-fill-").flatMap(Self.color).map { Background.color($0).propValue })
         case (.background, is GTKButtonView), (.stroke, is GTKButtonView), (.strokeWidth, is GTKButtonView),
              (.shape, is GTKButtonView):

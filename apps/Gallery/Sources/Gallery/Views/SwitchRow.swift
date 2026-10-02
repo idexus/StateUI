@@ -28,12 +28,12 @@ struct SwitchRow: ContentView {
 
     var content: some View {
         HStack {
-            Label(text)
+            Text(text)
                 .fontSize(13)
                 .verticalAlignment(.center)
 
             Switch(value)
-                // The caption is a Label BESIDE the switch, and no platform
+                // The caption is a Text BESIDE the switch, and no platform
                 // ties the two together on its own: a user who cannot see
                 // the row is handed a switch with no name. The same words say
                 // it, and the handle is worked out from them - Handle.swift.

@@ -18,7 +18,7 @@ private struct VisitBadge: ContentView {
             // this closure and nothing above it.
             DebugInfoLabel()
 
-            Label("\(session.name) - \(session.visits) visit(s)")
+            Text("\(session.name) - \(session.visits) visit(s)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
         }
@@ -66,7 +66,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
                     // builds this closure and nothing above it.
                     DebugInfoLabel()
 
-                    Label("\\(session.name) - \\(session.visits) visit(s)")
+                    Text("\\(session.name) - \\(session.visits) visit(s)")
                 }
             }
         }
@@ -137,13 +137,13 @@ struct EnvironmentSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The badge and the editor say `@Environment var session: Session` and "
+            Text("The badge and the editor say `@Environment var session: Session` and "
                 + "nothing is passed to them - the type is the key, and they resolve the "
                 + "nearest Session provided above.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Press the button and watch the two readings: the badge is built "
+            Text("Press the button and watch the two readings: the badge is built "
                 + "again, the closure around it is not - it passes a reference and reads "
                 + "no property, so a write in the object is none of its business. Typing "
                 + "in the TextField lands on `session.$name`, the provided object's own state "
@@ -151,7 +151,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The last badge sits under its OWN `.environment` - a different "
+            Text("The last badge sits under its OWN `.environment` - a different "
                 + "Session, so its branch resolves that one: a nearer provider wins for "
                 + "its branch, and the button moves nothing there.")
                 .fontSize(12)

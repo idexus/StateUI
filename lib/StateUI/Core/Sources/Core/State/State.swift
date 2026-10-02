@@ -132,7 +132,7 @@ public final class State<Value>: @unchecked Sendable {
     /// Reads the value, recording the dependency exactly as the wrapper does.
     ///
     ///     let counter = State(0)          // at file scope
-    ///     Label("Count: \(counter.get())")
+    ///     Text("Count: \(counter.get())")
     ///
     /// For state held WITHOUT the wrapper - at file scope, where Swift allows
     /// no property wrapper at all. On `@State private var counter = 0` the

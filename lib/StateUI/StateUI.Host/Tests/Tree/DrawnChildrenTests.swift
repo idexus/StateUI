@@ -79,7 +79,7 @@ final class DrawnChildrenTests: XCTestCase {
             book.properties[BookContract.title.token] = .string(title)
             return book
         }
-        if extra { children.append(HostPatch(id: .manual("label"), type: .label)) }
+        if extra { children.append(HostPatch(id: .manual("label"), type: .text)) }
         shelf.children = .arranged(children)
         return shelf
     }

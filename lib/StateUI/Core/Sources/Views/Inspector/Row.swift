@@ -18,14 +18,14 @@ struct Row: ContentView {
         } ?? "…"
 
         return VStack {
-            Label("#\(pass.number)  \(Look.road(pass.road))  "
+            Text("#\(pass.number)  \(Look.road(pass.road))  "
                 + (pass.causes.isEmpty ? "" : "for " + pass.causes.joined(separator: ", ")))
                 .fontSize(12)
                 .fontAttributes(.bold)
                 .textColor(Look.ink)
                 .lineBreak(.tailTruncation)
 
-            Label("Swift \(swift) · host \(host) · \(built) built · \(carried) carried")
+            Text("Swift \(swift) · host \(host) · \(built) built · \(carried) carried")
                 .fontSize(11)
                 .textColor(Look.subtle)
                 .lineBreak(.tailTruncation)

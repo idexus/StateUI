@@ -59,13 +59,13 @@ private struct Filling: SampleContent, ExampleContent {
     static let id = "filling"
     static let title = "Fills its cell"
     static let summary = "A scroller given the whole of the cell."
-    static let code = "ScrollView { Label(\"row\") }"
+    static let code = "ScrollView { Text(\"row\") }"
     static let scrolls = false
     static let fills = true
 
     var content: some View {
         ScrollView {
-            Label("row")
+            Text("row")
         }
     }
 
@@ -78,7 +78,7 @@ private struct TwoSided: SampleContent, ExampleContent {
     static let id = "twoSided"
     static let title = "Two sides"
     static let summary = "An example with a half written on the host."
-    static let code = "Label(\"row\")"
+    static let code = "Text(\"row\")"
 
     static let hostCode = HostCode(
         in: "the host",
@@ -86,7 +86,7 @@ private struct TwoSided: SampleContent, ExampleContent {
         .java("Row row = new Row(context);"))
 
     var content: some View {
-        Label("row")
+        Text("row")
     }
 
     var notes: (any View)? { nil }
@@ -397,7 +397,7 @@ private final class Renders {
 /// The `tapped` closure on the tab captioned `title`, wherever it is.
 ///
 /// A tab is a caption over a rule with a tap on the pair, so the node that
-/// answers is the one holding a Label that says so - see Gallery/Views/Tabs.swift.
+/// answers is the one holding a Text that says so - see Gallery/Views/Tabs.swift.
 private extension String {
     /// How many times a one-character marker appears.
     func count(of marker: String) -> Int {

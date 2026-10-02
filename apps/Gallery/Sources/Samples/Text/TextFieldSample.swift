@@ -35,11 +35,11 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .showsClearButton(true)
                 .isFocused($editing)
 
-            Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
+            Text(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
 
-            Label(editing ? "the field has the focus" : "the field does not have the focus")
+            Text(editing ? "the field has the focus" : "the field does not have the focus")
 
-            Label("return pressed \\(done)x")
+            Text("return pressed \\(done)x")
 
             // A field for something that is not prose: the platform's
             // underline and its next-word guesses only get in the way, the
@@ -70,7 +70,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .returnKey(.done)
 
             HStack {
-                Label("Hidden")
+                Text("Hidden")
                     .verticalAlignment(.center)
 
                 Switch($hidden)
@@ -97,16 +97,16 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .showsClearButton(true)
                 .isFocused($editing)
 
-            Label(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
+            Text(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Label(editing ? "the field has the focus" : "the field does not have the focus")
+            Text(editing ? "the field has the focus" : "the field does not have the focus")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
-            Label("return pressed \(done)x")
+            Text("return pressed \(done)x")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -149,7 +149,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .returnKey(.done)
 
             HStack {
-                Label("Hidden")
+                Text("Hidden")
                     .fontSize(14)
                     .verticalAlignment(.center)
 
@@ -174,7 +174,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("The binding IS the two-way part: `TextField($name)` hands the state to the "
+        Text("The binding IS the two-way part: `TextField($name)` hands the state to the "
             + "host, which shows it in the field and lands every edit back on it. "
             + "`.onTextChanged` written afterwards runs beside it, never instead of "
             + "it, and after the state already holds the text.")

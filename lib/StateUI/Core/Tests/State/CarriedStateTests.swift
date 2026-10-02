@@ -47,7 +47,7 @@ private struct Rider: ContentView {
 private struct Driver: ContentView {
     @Binding var level: Double
 
-    var content: some View { Label("driving").rotation($level) }
+    var content: some View { Text("driving").rotation($level) }
 }
 
 /// A view holding a driven state of its OWN, so a test can watch the wrapper a second
@@ -70,7 +70,7 @@ private struct Holder: ContentView {
 /// A composed view with nothing of its own written on it, so a test can write
 /// a driven state ON it and look for the registration on the element its body ends at.
 private struct Plain: ContentView {
-    var content: some View { Label("plain") }
+    var content: some View { Text("plain") }
 }
 
 /// What each render of the holder saw. A class, for the same reason.
@@ -157,7 +157,7 @@ final class CarriedStateTests: XCTestCase {
         let dip = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(stack([ZStack { Label("x") }.scale(dip.projectedValue).body], id: "root"))
+        renders.render(stack([ZStack { Text("x") }.scale(dip.projectedValue).body], id: "root"))
         Renderer.shared.clearInvalidation()
 
         // A build's scope, and the machinery of a write running inside it -
@@ -504,7 +504,7 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            ScrollView { Label("x") }
+            ScrollView { Text("x") }
                 .orientation(.horizontal)
                 .scrollOffset(offset.projectedValue)
                 .body)
@@ -537,7 +537,7 @@ final class CarriedStateTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            ScrollReader(across: 540) { Label("under") }
+            ScrollReader(across: 540) { Text("under") }
                 .scrollOffset(across.projectedValue)
                 .onScrollStopped {}
                 .id("reader")
@@ -576,7 +576,7 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Label("x").motion(.spring(response: 450, damping: 0.7))
+        renders.render(Text("x").motion(.spring(response: 450, damping: 0.7))
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
@@ -591,7 +591,7 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Label("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
+        renders.render(Text("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
 
         XCTAssertTrue(fade.projectedValue.journey.motion.isInherited)
     }
@@ -602,9 +602,9 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Label("x").motion(.eased(90, .linear))
+        renders.render(Text("x").motion(.eased(90, .linear))
             .opacity(fade.projectedValue).id("one").body)
-        renders.render(Label("x").motion(.eased(700, .cubicIn))
+        renders.render(Text("x").motion(.eased(700, .cubicIn))
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
@@ -619,7 +619,7 @@ final class CarriedStateTests: XCTestCase {
         let tint = State(wrappedValue: Color("#102030"))
         let renders = Renders()
 
-        renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
+        renders.render(Text("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
             .background(tint.projectedValue).id("one").body)
 
         XCTAssertEqual(

@@ -142,7 +142,7 @@ struct Presented: ContentView {
 
     var content: some View {
         VStack {
-            Label(title)
+            Text(title)
             Button("Close").onClicked { sheets.removeLast() }
         }
     }
@@ -182,7 +182,7 @@ struct OfflineNotice: ContentView {
 
     var content: some View {
         HStack {
-            Label("Working offline")
+            Text("Working offline")
             Button("Dismiss").onClicked { shown = false }
         }
         .spacing(12)
@@ -417,7 +417,7 @@ page, even where it holds nothing the page can do.
 The same item vocabulary can be attached to any view as a context menu:
 
 ```swift quote
-Label(document.title)
+Text(document.title)
     .contextMenu {
         MenuItem("Duplicate").onClicked { duplicate(document) }
         MenuItem("Delete")

@@ -43,7 +43,7 @@ final class AndroidCheckBoxViewTests: XCTestCase {
             let heard = Received<Bool>()
             let host = AndroidRenderer.running {
                 VStack {
-                    Label(on.wrappedValue ? "on" : "off")
+                    Text(on.wrappedValue ? "on" : "off")
                     CheckBox(on.projectedValue).onToggled { heard.values.append($0) }
                 }
             }
@@ -53,7 +53,7 @@ final class AndroidCheckBoxViewTests: XCTestCase {
 
             XCTAssertTrue(on.wrappedValue)
             XCTAssertEqual(heard.values, [true])
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["on"])
+            XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["on"])
             XCTAssertTrue(box.isOn)
         }
     }

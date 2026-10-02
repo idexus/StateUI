@@ -91,7 +91,7 @@ private struct Pulling: ContentView {
                     }
                 }
 
-            Label(said)
+            Text(said)
         }
     }
 }
@@ -132,7 +132,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
     /// The last thing the page said.
     @MainActor
     private func said(_ renderer: AppKitRenderer) -> String? {
-        renderer.nativeViews(AppKitLabelView.self).last?.textForTesting.string
+        renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string
     }
 
     /// The application's own element is made by its registration and takes the

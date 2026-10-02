@@ -28,7 +28,7 @@ private final class Palette {
 private struct Accent: ContentView {
     @Environment private var palette: Palette
 
-    var content: some View { Label(palette.accent) }
+    var content: some View { Text(palette.accent) }
 }
 
 /// The session's main page: its accent and the value it keeps, and a button
@@ -42,7 +42,7 @@ private struct Home: ContentView {
     var content: some View {
         VStack {
             Accent()
-            Label(shade)
+            Text(shade)
             Button("teal").onClicked { palette.accent = "teal" }
             Button("fonts").onClicked { try await scene.openWindow(.fonts) }
             Button("document").onClicked { try await scene.openWindow(.document, value: 42) }
@@ -75,7 +75,7 @@ private struct Retargeting: ContentView {
 
     var content: some View {
         VStack {
-            Label("Document \(number)")
+            Text("Document \(number)")
             Button("seven").onClicked { number = 7 }
         }
     }
@@ -113,7 +113,7 @@ private struct Studio: Application {
 
 /// A page with nothing on it.
 private struct Blank: ContentView {
-    var content: some View { Label("blank") }
+    var content: some View { Text("blank") }
 }
 
 /// A window and nothing else.
@@ -166,7 +166,7 @@ private struct Counting: ContentView {
 
     var content: some View {
         VStack {
-            Label("\(opened)")
+            Text("\(opened)")
             Button("more").onClicked { opened += 1 }
         }
     }
@@ -214,8 +214,8 @@ private struct Listing: ContentView {
 
     var content: some View {
         VStack {
-            Label("\(application.scenes.count) scenes")
-            Label(scene.windows.map(\.key).joined(separator: ", "))
+            Text("\(application.scenes.count) scenes")
+            Text(scene.windows.map(\.key).joined(separator: ", "))
         }
     }
 }
@@ -274,7 +274,7 @@ final class SceneTests: XCTestCase {
 
     /// Every label's text under a patch, in walk order.
     private func texts(in patch: HostPatch) -> [String] {
-        let own = patch.type == .label ? [patch.props[.text]?.string].compactMap { $0 } : []
+        let own = patch.type == .text ? [patch.props[.text]?.string].compactMap { $0 } : []
         return own + patch.children.flatMap { texts(in: $0) }
     }
 

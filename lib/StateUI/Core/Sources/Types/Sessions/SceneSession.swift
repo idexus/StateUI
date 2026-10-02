@@ -8,7 +8,7 @@
 ///
 ///     Button("Fonts").onClicked { try await scene.openWindow(.fonts) }
 ///     Button("Document 7").onClicked { try await scene.openWindow(.document, value: 7) }
-///     Label(scene.phase == .active ? "In front" : "Behind another window")
+///     Text(scene.phase == .active ? "In front" : "Behind another window")
 ///
 /// Every scene offers its own, so a view in one session acts on that session -
 /// from a handler, an engine or a task alike, the session it holds saying
@@ -23,7 +23,7 @@ public final class SceneSession {
     /// read like any state, so a view that shows them is built again as a
     /// window opens or closes. Nothing for a scene that has ended.
     ///
-    ///     Label("\(scene.windows.count) windows")
+    ///     Text("\(scene.windows.count) windows")
     public var windows: [WindowSession] {
         guard let record = try? standing() else { return [] }
 

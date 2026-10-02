@@ -13,7 +13,7 @@ final class AppKitAccessibilityTests: XCTestCase {
     func testAuthoredIdentityWordsAndHeadingReachTheNativeElement() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var label = HostPatch(id: .manual("heading"), type: .label)
+        var label = HostPatch(id: .manual("heading"), type: .text)
         label.properties = [
             .text: .string("Visible title"),
             .accessibilityIdentifier: .string("semantics.heading"),
@@ -76,7 +76,7 @@ final class AppKitAccessibilityTests: XCTestCase {
     func testExplicitExclusionWinsOverWordsAndCanHideAWholeNativeSubtree() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var child = HostPatch(id: .manual("child"), type: .label)
+        var child = HostPatch(id: .manual("child"), type: .text)
         child.properties[.text] = .string("Skipped child")
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.properties = [
@@ -99,7 +99,7 @@ final class AppKitAccessibilityTests: XCTestCase {
             resourceDirectory: nil,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var caption = HostPatch(id: .manual("caption"), type: .label)
+        var caption = HostPatch(id: .manual("caption"), type: .text)
         caption.properties[.text] = .string("Motion")
         caption.events = .replace([.tapped: 301])
         var card = HostPatch(id: .manual("card"), type: .vStack)

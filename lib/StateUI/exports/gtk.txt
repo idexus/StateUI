@@ -93,22 +93,6 @@ ItemsView
   itemActivated()
   realizedChanged()
   selectionChanged()
-Label
-  background
-  characterSpacing
-  fontAttributes
-  fontFamily
-  fontSize
-  horizontalTextAlignment
-  lineBreak
-  lineHeight
-  maximumLines
-  padding
-  text
-  textCase
-  textColor
-  textDecorations
-  verticalTextAlignment
 Line
   aspect
   fill
@@ -243,6 +227,22 @@ Switch
   isOn
   tint
   toggled()
+Text
+  background
+  characterSpacing
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  lineBreak
+  lineHeight
+  maximumLines
+  padding
+  text
+  textCase
+  textColor
+  textDecorations
+  verticalTextAlignment
 TextEditor
   cursorPosition
   fontAttributes

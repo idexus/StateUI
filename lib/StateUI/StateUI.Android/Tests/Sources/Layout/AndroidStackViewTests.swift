@@ -13,8 +13,8 @@ struct TurningRow: ContentView {
     var content: some View {
         VStack {
             HStack {
-                Label("A").width(30).height(10)
-                Label("B").width(10).height(10)
+                Text("A").width(30).height(10)
+                Text("B").width(10).height(10)
             }
             .spacing(4)
             .padding(6, 0)
@@ -42,8 +42,8 @@ final class AndroidStackViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Label("A").width(100).height(40).horizontalAlignment(.start)
-                    Label("B").width(80).height(60).horizontalAlignment(.end)
+                    Text("A").width(100).height(40).horizontalAlignment(.start)
+                    Text("B").width(80).height(60).horizontalAlignment(.end)
                 }
                 .spacing(10)
                 .padding(20)
@@ -51,7 +51,7 @@ final class AndroidStackViewTests: XCTestCase {
 
             host.layOut(width: 1080, height: 1920)
 
-            let labels = host.views(AndroidLabelView.self)
+            let labels = host.views(AndroidTextView.self)
             XCTAssertEqual(labels.count, 2)
             XCTAssertTrue(labels[0].frame == (40, 40, 200, 80), "\(labels[0].frame)")
             XCTAssertTrue(labels[1].frame == (1080 - 40 - 160, 140, 160, 120), "\(labels[1].frame)")
@@ -62,7 +62,7 @@ final class AndroidStackViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Label("A").width(100).height(40)
+                    Text("A").width(100).height(40)
                 }
                 .verticalAlignment(.center)
             }
@@ -77,7 +77,7 @@ final class AndroidStackViewTests: XCTestCase {
     /// A child on its way, turned or moved, is drawn past its layout's edges: a layout cuts off only where told to.
     func testALayoutDoesNotCutItsChildrenOff() throws {
         try onMainActor {
-            let host = AndroidRenderer.running { VStack { Label("moving").translationX(500) } }
+            let host = AndroidRenderer.running { VStack { Text("moving").translationX(500) } }
             let stack = try XCTUnwrap(host.views(AndroidStackView.self).first)
 
             XCTAssertFalse(Java.callBool(stack.reference, TestJava.getClipChildren))
@@ -112,13 +112,13 @@ final class AndroidStackViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running { TurningRow() }
             host.layOut(width: 1080, height: 1920)
-            let labels = host.views(AndroidLabelView.self)
+            let labels = host.views(AndroidTextView.self)
             XCTAssertEqual(labels.map { $0.frame.x }, [1080 - 12 - 60, 1080 - 80 - 20], "\(labels.map(\.frame))")
 
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
             host.layOut(width: 1080, height: 1920)
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).map { $0.frame.x }, [12, 80])
+            XCTAssertEqual(host.views(AndroidTextView.self).map { $0.frame.x }, [12, 80])
         }
     }
 }

@@ -15,9 +15,9 @@ private struct SaidPage: ContentView {
     var content: some View {
         VStack {
             if said {
-                VStack { Label("Title") }.accessibilityLabel("The title").accessibilityHint("Names the page").id("group")
+                VStack { Text("Title") }.accessibilityLabel("The title").accessibilityHint("Names the page").id("group")
             } else {
-                VStack { Label("Title") }.id("group")
+                VStack { Text("Title") }.id("group")
             }
             Button("Quiet").onClicked { said = false }
         }
@@ -31,9 +31,9 @@ final class GTKAccessibilityTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    VStack { Label("Title") }.accessibilityLabel("The title").accessibilityHint("Names the page")
-                    Label("Title").accessibilityHeadingLevel(.level2)
-                    VStack { Label("Plain") }
+                    VStack { Text("Title") }.accessibilityLabel("The title").accessibilityHint("Names the page")
+                    Text("Title").accessibilityHeadingLevel(.level2)
+                    VStack { Text("Plain") }
                 }
             }
             let root = host.views(GTKStackView.self)[0]

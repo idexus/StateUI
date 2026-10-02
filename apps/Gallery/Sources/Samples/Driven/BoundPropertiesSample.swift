@@ -51,7 +51,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             // A JOURNEY. `size = 30` sends the font size there under the
             // label's law; the row is never built again.
             VStack {
-                Label("The quick brown fox").fontSize($size)
+                Text("The quick brown fox").fontSize($size)
                 DebugInfoLabel()                            // stays at one
             }
             HStack {
@@ -61,7 +61,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
             // A colour walks the same way.
             VStack {
-                Label("Tinted").textColor($tint)
+                Text("Tinted").textColor($tint)
                 DebugInfoLabel()                            // stays at one
             }
             Button("Swap the tint").onClicked {
@@ -71,7 +71,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
             // A PLAIN flag: set as it stands, nothing walks.
             VStack {
-                Label("Now you see me").isVisible($shown)
+                Text("Now you see me").isVisible($shown)
                 DebugInfoLabel()                            // stays at one
             }
             Switch($shown)
@@ -96,7 +96,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             // A MEMBER: an alignment handed on as $side. The host sets it, and
             // `side = .end` moves the label without building anything.
             VStack {
-                Label("Where am I?").horizontalAlignment($side)
+                Text("Where am I?").horizontalAlignment($side)
                 DebugInfoLabel()                            // stays at one
             }
             Button("Move me along").onClicked {
@@ -107,7 +107,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             // reader, so a flip renders this row and no other.
             VStack {
                 Switch($on)
-                Label(on ? "on" : "off")
+                Text(on ? "on" : "off")
                 DebugInfoLabel()                            // climbs on every flip
             }
         }
@@ -116,7 +116,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     var content: some View {
         VStack {
             row("1 · a number the host walks - fontSize($size)") {
-                Label("The quick brown fox")
+                Text("The quick brown fox")
                     .fontSize($size)
                 DebugInfoLabel()
             }
@@ -129,7 +129,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             row("2 · a colour the host walks - textColor($tint)") {
-                Label("Tinted words")
+                Text("Tinted words")
                     .fontSize(17)
                     .textColor($tint)
                 DebugInfoLabel()
@@ -141,7 +141,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             }
 
             row("3 · a flag the host sets - isVisible($shown)") {
-                Label("Now you see me")
+                Text("Now you see me")
                     .fontSize(15)
                     .isVisible($shown)
                 DebugInfoLabel()
@@ -170,7 +170,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             button("Choose L") { choice = 2 }
 
             row("6 · a member the host sets - horizontalAlignment($side)") {
-                Label("Where am I?")
+                Text("Where am I?")
                     .fontSize(15)
                     .horizontalAlignment($side)
                 DebugInfoLabel()
@@ -185,7 +185,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                     .accessibilityIdentifier("boundProperties.on")
                     .accessibilityLabel("On")
                     .horizontalAlignment(.start)
-                Label(on ? "on" : "off")
+                Text(on ? "on" : "off")
                     .fontSize(15)
                 DebugInfoLabel()
             }
@@ -195,7 +195,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Every property here is handed a plain `@State` as `$x`, and the host "
+            Text("Every property here is handed a plain `@State` as `$x`, and the host "
                 + "carries it: a number and a colour are WALKED there under the "
                 + "element's law, a flag is SET as it stands, words are WRITTEN, and a "
                 + "choice or a toggle is set from the state and landed on it when the "
@@ -206,7 +206,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The rule is the same one everywhere: a get makes the closure it sits "
+            Text("The rule is the same one everywhere: a get makes the closure it sits "
                 + "in a reader, a binding makes none. What a property can be handed is "
                 + "every value form's twin taking `Binding<T>` - a number, a colour, a "
                 + "insets, a flag, a count, a string - so a value that moves is never "
@@ -222,7 +222,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     private func row<Content: Views>(_ caption: String, @ViewBuilder _ content: @escaping () -> Content) -> some View {
         ZStack {
             VStack {
-                Label(caption)
+                Text(caption)
                     .fontSize(11)
                     .textColor(Palette.subtle)
 

@@ -14,12 +14,12 @@ final class UIKitMotionTests: XCTestCase {
     /// A label whose width travels lays its words out at the width it is bound for: midway, its view is already as
     /// wide as it lands, so words that fit there on one line never break at the widths its place passes through.
     @MainActor
-    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+    func testATextsWordsStandAtTheWidthItTravelsTo() throws {
         let clock = TestClock()
         let long = State(wrappedValue: false)
         let host = UIKitRenderer.running(clock: clock) {
             VStack {
-                Label(long.wrappedValue ? "Text & typing" : "Text").horizontalAlignment(.start).id("caption")
+                Text(long.wrappedValue ? "Text & typing" : "Text").horizontalAlignment(.start).id("caption")
             }
             .motion(.eased(200, .linear))
             .width(300)

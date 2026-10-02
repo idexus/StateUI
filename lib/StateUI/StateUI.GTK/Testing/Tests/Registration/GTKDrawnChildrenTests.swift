@@ -80,7 +80,7 @@ private struct Shelving: ContentView {
         VStack {
             Shelf(titles.map { title in Book(title).onOpened { said = "opened \(title)" } })
             Button("Shorter").onClicked { titles = ["Emma"] }
-            Label(said)
+            Text(said)
         }
     }
 }
@@ -126,8 +126,8 @@ final class GTKDrawnChildrenTests: XCTestCase {
             let emma = try XCTUnwrap(shelf.books.last)
 
             emma.reports.raise(BookContract.opened)
-            host.settle { host.views(GTKLabelView.self).last?.text != "-" }
-            XCTAssertEqual(host.views(GTKLabelView.self).last?.text, "opened Emma")
+            host.settle { host.views(GTKTextView.self).last?.text != "-" }
+            XCTAssertEqual(host.views(GTKTextView.self).last?.text, "opened Emma")
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
             host.settle { shelf.books.count == 1 }

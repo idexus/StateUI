@@ -16,7 +16,7 @@ extension GTKElement {
     /// its room - and a label the runs of its spans.
     func arrangeChildren() {
         if let items = view as? GTKItemsView { return items.childrenChanged() }
-        if let label = view as? GTKLabelView {
+        if let label = view as? GTKTextView {
             return arrangeRuns(of: label)
         }
         let arranged = element.arrangedChildren.map(\.gtk)
@@ -29,7 +29,7 @@ extension GTKElement {
 
     /// A label's spans as runs of its words (`MountedElement.textRuns`); without spans, its own words, once the runs
     /// are gone.
-    private func arrangeRuns(of label: GTKLabelView) {
+    private func arrangeRuns(of label: GTKTextView) {
         guard let runs = element.textRuns else {
             if hasRuns {
                 hasRuns = false

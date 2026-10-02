@@ -16,7 +16,7 @@ extension UIKitElement {
 
     func arrangeChildren() {
         if let items = view as? UIKitItemsView { return items.childrenChanged() }
-        if let label = view as? UIKitLabelView { return label.setRuns(element.textRuns) }
+        if let label = view as? UIKitTextView { return label.setRuns(element.textRuns) }
         guard let layout = view as? UIKitLayoutView else { return }
         layout.direction = element.layoutDirection
         layout.laidOut = { [weak host] in host?.runtime.frames.laidOut() }

@@ -16,8 +16,8 @@ extension ViewProperties {
     /// The space kept outside the view, between it and its neighbours.
     /// Padding is the space inside.
     ///
-    ///     Label("Total").margin(16)                      // all four sides
-    ///     Label("Total").margin(Insets(16, 0, 0, 0))  // the left edge only
+    ///     Text("Total").margin(16)                      // all four sides
+    ///     Text("Total").margin(Insets(16, 0, 0, 0))  // the left edge only
     public func margin(_ value: Insets) -> Modified { setValue(ViewContract.margin, value) }
 
     /// Left and right, then top and bottom.
@@ -47,7 +47,7 @@ extension ViewProperties {
 extension View {
     /// A menu on the view itself, opened with a right-click.
     ///
-    ///     Label(item.name)
+    ///     Text(item.name)
     ///         .contextMenu {
     ///             MenuItem("Rename").onClicked { rename(item) }
     ///             MenuSeparator()

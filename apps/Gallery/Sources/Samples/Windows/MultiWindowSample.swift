@@ -113,9 +113,9 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             // What the last button answered, and what is open - read here, so
             // a gallery or a window opening or closing builds this closure.
             DebugInfoLabel()
-            Label(said)
-            Label("\\(application.scenes.count) galleries open")
-            Label(scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
+            Text(said)
+            Text("\\(application.scenes.count) galleries open")
+            Text(scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
         }
         """
 
@@ -142,19 +142,19 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label(said)
+                Text(said)
                     .fontSize(13)
                     .fontFamily("Menlo")
                     .textColor(Palette.accent)
                     .horizontalTextAlignment(.center)
 
-                Label(application.scenes.count == 1
+                Text(application.scenes.count == 1
                     ? "1 gallery open"
                     : "\(application.scenes.count) galleries open")
                     .fontSize(13)
                     .horizontalTextAlignment(.center)
 
-                Label("this gallery's windows: "
+                Text("this gallery's windows: "
                     + scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
                     .fontSize(13)
                     .textColor(Palette.subtle)
@@ -203,7 +203,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("Fonts and Colours are this gallery's own windows: they change its font "
+        Text("Fonts and Colours are this gallery's own windows: they change its font "
             + "and accent, and close with it. A swatch window exists once per value, "
             + "its number lent to it as a binding. Another gallery is one more scene, "
             + "with windows and state of its own.")
@@ -214,7 +214,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// A line in the gallery's own font and accent - what its two windows
     /// change.
     private var preview: some View {
-        let line = Label("The quick brown fox jumps over the lazy dog.")
+        let line = Text("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
             .textColor(style.accent.color)
             .horizontalTextAlignment(.center)

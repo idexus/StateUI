@@ -13,7 +13,7 @@ struct CounterPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("count \(count)")
+            Text("count \(count)")
             Button("Add")
                 .onClicked { count += 1 }
         }
@@ -28,9 +28,9 @@ struct EnvironmentPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("locale \(locale.name) \(locale.timeZone)")
-            Label("battery \(battery.state)")
-            Label("network \(connectivity.networkAccess)")
+            Text("locale \(locale.name) \(locale.timeZone)")
+            Text("battery \(battery.state)")
+            Text("network \(connectivity.networkAccess)")
         }
     }
 }
@@ -40,7 +40,7 @@ struct DevicePage: ContentView {
     @Environment var device: DeviceInfo
 
     var content: some View {
-        Label("device \(device.name)")
+        Text("device \(device.name)")
     }
 }
 
@@ -63,7 +63,7 @@ final class AndroidRendererTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running { CounterPage() }
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["count 0"])
+            XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["count 0"])
             XCTAssertEqual(host.views(AndroidButtonView.self).map(\.text), ["Add"])
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
         }
@@ -78,7 +78,7 @@ final class AndroidRendererTests: XCTestCase {
             button.click()
             button.click()
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["count 2"])
+            XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["count 2"])
         }
     }
 
@@ -100,7 +100,7 @@ final class AndroidRendererTests: XCTestCase {
             let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
 
             XCTAssertEqual(second.runtime.tree.root?.children.filter { $0.type == .scene }.count, 1)
-            XCTAssertEqual(second.views(AndroidLabelView.self).map(\.text), ["count 1"])
+            XCTAssertEqual(second.views(AndroidTextView.self).map(\.text), ["count 1"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
         }
     }
@@ -116,7 +116,7 @@ final class AndroidRendererTests: XCTestCase {
             let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
 
             XCTAssertEqual(second.runtime.tree.root?.children.filter { $0.type == .scene }.count, 1)
-            XCTAssertEqual(second.views(AndroidLabelView.self).map(\.text), ["count 0"])
+            XCTAssertEqual(second.views(AndroidTextView.self).map(\.text), ["count 0"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
         }
     }
@@ -130,7 +130,7 @@ final class AndroidRendererTests: XCTestCase {
 
             _ = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
 
-            XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
+            XCTAssertTrue(HostBoundary.realizes(TextContract.self))
             XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
             XCTAssertFalse(HostBoundary.realizes(MapContract.self))
         }
@@ -144,7 +144,7 @@ final class AndroidRendererTests: XCTestCase {
             stateUIUseApp(OneWindowApplication(page: { DevicePage() }))
             let host = AndroidRenderer.start(context: TestContext.window, root: TestJava.root(), density: 2)
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["device \(named)"])
+            XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["device \(named)"])
         }
     }
 
@@ -167,7 +167,7 @@ final class AndroidRendererTests: XCTestCase {
     func testTheHostReportsTheLocaleTheBatteryAndTheNetwork() {
         onMainActor {
             let host = AndroidRenderer.running { EnvironmentPage() }
-            let texts = host.views(AndroidLabelView.self).map(\.text)
+            let texts = host.views(AndroidTextView.self).map(\.text)
 
             XCTAssertEqual(texts.count, 3)
             XCTAssertFalse(texts.first?.hasPrefix("locale  ") ?? true, "\(texts)")
@@ -195,6 +195,6 @@ private struct TitledWindowPage: ContentView {
     var content: some View {
         let window = self.window
         let title = self.title
-        return Label(title).onCreated { window.title = title }
+        return Text(title).onCreated { window.title = title }
     }
 }

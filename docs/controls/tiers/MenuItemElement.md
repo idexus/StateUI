@@ -7,7 +7,7 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 ```swift
 @State var saved = false
 
-Label(saved ? "Saved" : "Draft")
+Text(saved ? "Saved" : "Draft")
     .toolbar {
         ToolbarItem("Save")
             .icon("save.png")

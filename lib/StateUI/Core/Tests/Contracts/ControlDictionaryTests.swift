@@ -190,8 +190,8 @@ final class ControlDictionaryTests: XCTestCase {
             "TextField.submitted": HostVerdict(element: "TextField", member: "submitted", mark: .cannot("submit - Keys.")),
             "TextField.text": HostVerdict(element: "TextField", member: "text", mark: .waiting(on: "TextField.x")),
             "Map": HostVerdict(element: "Map", member: nil, mark: .notPlanned(reason: "No maps.")),
-            "Label": HostVerdict(element: "Label", member: nil, mark: .proven),
-        ], stale: ["Label"])
+            "Text": HostVerdict(element: "Text", member: nil, mark: .proven),
+        ], stale: ["Text"])
 
         XCTAssertEqual(column.mark(of: nil, on: "Button").mark, "✅")
         XCTAssertEqual(column.mark(of: "clicked", on: "Button").mark, "✅")
@@ -204,8 +204,8 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertEqual(column.mark(of: "submitted", on: "TextField").note, "cannot submit - Keys.")
         XCTAssertEqual(column.mark(of: "text", on: "TextField").mark, "⏸")
         XCTAssertEqual(column.mark(of: nil, on: "Map").mark, "–")
-        XCTAssertEqual(column.mark(of: nil, on: "Label").mark, "⌛")
-        XCTAssertEqual(column.mark(of: nil, on: "Label").note, "")
+        XCTAssertEqual(column.mark(of: nil, on: "Text").mark, "⌛")
+        XCTAssertEqual(column.mark(of: nil, on: "Text").note, "")
     }
 
     /// The revision the renderer reads a family at is the one `.scripts/Marks/revision.sh` prints, which Android's

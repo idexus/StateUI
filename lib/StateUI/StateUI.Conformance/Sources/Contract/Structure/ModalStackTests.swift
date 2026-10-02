@@ -58,7 +58,7 @@ func sheetsOver(_ page: SheetsPage, _ sheets: State<[Int]>) -> ModalStack {
         page
     } destination: { number in
         VStack {
-            Label("On sheet \(number)").id("sheet\(number)")
+            Text("On sheet \(number)").id("sheet\(number)")
             Button("Another").onClicked { sheets.wrappedValue.append(number + 1) }.id("another\(number)")
         }
     }
@@ -74,7 +74,7 @@ struct SheetsPage: ContentView {
     var content: some View {
         let (sheets, log, page) = (self.sheets, self.log, self.page)
         return VStack {
-            Label("beneath")
+            Text("beneath")
             Button("Present").onClicked { sheets.wrappedValue.append(1) }.id("present")
         }
         .onChanged(page.phase) { log.values.append("beneath \(page.phase)") }

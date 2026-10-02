@@ -13,7 +13,7 @@ private struct ChoosingPage: ContentView {
     @State private var chosen: Int? = 0
 
     var content: some View {
-        ItemsView(0..<3) { Label("Item \($0)").padding(12) }
+        ItemsView(0..<3) { Text("Item \($0)").padding(12) }
             .selection($chosen)
             .width(300).height(400)
     }

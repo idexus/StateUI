@@ -41,7 +41,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             let text: String
 
             var content: some View {
-                Label(text)
+                Text(text)
                     .textColor(.white)
                     .background(Palette.accent)
                     .padding(14, 8)
@@ -90,7 +90,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("`.horizontalAlignment` places a child across the room its stack gives it.")
+        Text("`.horizontalAlignment` places a child across the room its stack gives it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -101,7 +101,7 @@ private struct StackCell: ContentView {
     let text: String
 
     var content: some View {
-        Label(text)
+        Text(text)
             .fontSize(13)
             .textColor(.white)
             .background(Palette.accent)

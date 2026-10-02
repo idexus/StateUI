@@ -5,7 +5,7 @@
 One run of text inside a label, with its own colour, size and weight.
 
 ```swift
-Label()
+Text()
     .spans {
         TextSpan("Sold out")
             .textColor(.firebrick)

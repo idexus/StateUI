@@ -75,6 +75,6 @@
     ) -> any Page {
         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
             DeclaringPage(beside: beside.map { $0 }, key: key, items)
-        } destination: { _ in Label("Pushed") }
+        } destination: { _ in Text("Pushed") }
     }
 }

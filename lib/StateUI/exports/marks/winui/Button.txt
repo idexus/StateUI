@@ -8,4 +8,4 @@ Button.iconSpacing: ✅
 Button.lineBreak: ✅
 Button.pressed: ✅
 Button.released: ✅
-Label.text: ✅
+Text.text: ✅

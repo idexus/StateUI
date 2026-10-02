@@ -35,13 +35,6 @@ Image.tapped: ✓ tap on Image: the view's listening handed the recognizer's sta
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridRow: ✅
-Label.allowDrop: not realized
-Label.dragLeave: not realized
-Label.dragOver: not realized
-Label.drop: not realized
-Label.frameChanged: ✅
-Label.horizontalAlignment: ✅
-Label.verticalAlignment: ✅
 Line.pointerEntered: ✓ hover on Line: the view's listening handed the recognizer's states, no touch sent
 Line.pointerExited: ✓ hover on Line: the view's listening handed the recognizer's states, no touch sent
 Line.pointerMoved: ✓ hover on Line: the view's listening handed the recognizer's states, no touch sent
@@ -89,6 +82,13 @@ Stepper.swiped: ✓ pan on Stepper: the view's listening handed the recognizer's
 Switch.panTouchCount: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panUpdated: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panXChannel: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
+Text.allowDrop: not realized
+Text.dragLeave: not realized
+Text.dragOver: not realized
+Text.drop: not realized
+Text.frameChanged: ✅
+Text.horizontalAlignment: ✅
+Text.verticalAlignment: ✅
 TextEditor.frameChanged: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRowSpan: ✅

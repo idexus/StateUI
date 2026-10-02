@@ -35,9 +35,6 @@ Image.swiped: ✓ pan on Image: handed to the host's recognizer or handler, no N
 ItemsView.panTouchCount: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.panUpdated: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.panXChannel: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-Label.frameChanged: ✅
-Label.gridColumnSpan: ✅
-Label.gridRowSpan: ✅
 Line.area: ✅
 Line.frameChanged: ✅
 Map.canDrag: not realized
@@ -83,6 +80,9 @@ Stepper.dropCompleted: not realized
 Stepper.frameChanged: ✅
 Stepper.margin: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Text.frameChanged: ✅
+Text.gridColumnSpan: ✅
+Text.gridRowSpan: ✅
 TextEditor.panYChannel: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextField.tapCount: ✓ tap on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TextField.tapped: ✓ tap on TextField: handed to the host's recognizer or handler, no NSEvent sent

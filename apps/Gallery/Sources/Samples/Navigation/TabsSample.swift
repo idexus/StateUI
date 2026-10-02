@@ -96,21 +96,21 @@ struct TabsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("A `TabbedView` is a page, so a section of this gallery is one: the "
+            Text("A `TabbedView` is a page, so a section of this gallery is one: the "
                 + "button opens a section arranged as tabs rather than as a stack. The "
                 + "tabs are an array of your own type and the selection is a binding of "
                 + "it, so moving the tabs from code is an assignment.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The binding is two-way: tapping a tab writes it, and on Android so does "
+            Text("The binding is two-way: tapping a tab writes it, and on Android so does "
                 + "swiping between them. Each tab keeps its own place because each stack "
                 + "is its own array - push a page on the first tab, change tabs and come "
                 + "back, and the page is still on top.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Every tab page carries a panel that adds, inserts, closes and reverses "
+            Text("Every tab page carries a panel that adds, inserts, closes and reverses "
                 + "tabs while one is showing. The selection names a tab, not a position, "
                 + "so rearranging the list leaves it alone, and the panel warns the moment "
                 + "the binding and the tab on screen disagree. `Reverse the tabs` from the "
@@ -118,7 +118,7 @@ struct TabsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Closing the tab you are on is the one move with nothing left to keep "
+            Text("Closing the tab you are on is the one move with nothing left to keep "
                 + "showing: the first tab shows instead, and the binding follows it. The "
                 + "menu draws no row for this section, so every tab page carries a button "
                 + "back to the samples.")

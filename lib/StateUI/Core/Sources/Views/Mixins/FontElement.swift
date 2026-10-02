@@ -14,7 +14,7 @@ extension FontElement {
 
     /// Bold, italic, or both.
     ///
-    ///     Label("Total").fontAttributes([.bold, .italic])
+    ///     Text("Total").fontAttributes([.bold, .italic])
     public func fontAttributes(_ value: FontAttributes) -> Modified { setValue(FontElementContract.fontAttributes, value) }
 
     /// Whether the text grows with the system's text-size setting. On by

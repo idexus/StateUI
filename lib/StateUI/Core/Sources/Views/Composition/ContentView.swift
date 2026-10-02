@@ -12,7 +12,7 @@
 ///         }
 ///
 ///         var content: some View {
-///             Label(title).fontSize(28).fontAttributes(.bold)
+///             Text(title).fontSize(28).fontAttributes(.bold)
 ///         }
 ///     }
 ///

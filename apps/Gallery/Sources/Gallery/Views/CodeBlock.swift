@@ -50,11 +50,11 @@ struct CodeBlock: ContentView {
     /// per block rather than once per render.
     private var snippet: some View {
         VStack {
-            Label()
+            Text()
                 .spans {
                     // Matched by where each run sits: two runs may be the same
                     // words in the same colour, and the snippet never changes.
-                    // The size goes on every run rather than on the Label. A
+                    // The size goes on every run rather than on the Text. A
                     // span carries font properties of its own, and what an
                     // unset one falls back to is the platform's business - one
                     // property per run costs nothing and leaves nothing to it.

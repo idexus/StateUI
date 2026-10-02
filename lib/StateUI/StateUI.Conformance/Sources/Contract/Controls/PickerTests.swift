@@ -23,13 +23,13 @@
             },
             ConformanceCase("aUsersChoiceIsHeardAndTheProgramsIsNot", proves: [
                 Covered(PickerContract.selectedIndex), Covered(PickerContract.selectedIndexChanged),
-                Covered(TextElementContract.text, on: LabelContract.self),
+                Covered(TextElementContract.text, on: TextContract.self),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let size = State(wrappedValue: 1)
                 let heard = Received<String>()
                 s.start {
                     VStack {
-                        Label("size \(size.wrappedValue)").id("label")
+                        Text("size \(size.wrappedValue)").id("label")
                         Picker(["S", "M", "L"])
                             .selectedIndex(size.projectedValue)
                             .onSelectedIndexChanged { heard.values.append("chose \($0)") }

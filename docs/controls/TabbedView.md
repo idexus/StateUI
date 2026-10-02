@@ -10,7 +10,7 @@ struct Tab: ContentView {
     @Environment private var page: PageSession
 
     var content: some View {
-        Label("Nothing in \(name)").onCreated { page.title = name }
+        Text("Nothing in \(name)").onCreated { page.title = name }
     }
 }
 

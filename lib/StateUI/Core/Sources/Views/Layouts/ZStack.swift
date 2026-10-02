@@ -6,11 +6,11 @@
 ///     ZStack {
 ///         ColorBox(.cornflowerBlue)
 ///
-///         Label("Bottom right")
+///         Text("Bottom right")
 ///             .horizontalAlignment(.end)
 ///             .verticalAlignment(.end)
 ///
-///         Label("Right half")
+///         Text("Right half")
 ///             .area(.proportional(0.5, 0, 0.5, 1))
 ///     }
 ///     .height(160)

@@ -39,7 +39,7 @@
                 let entries = State(wrappedValue: ["Open"])
                 s.start {
                     VStack {
-                        Label("Row").contextMenu {
+                        Text("Row").contextMenu {
                             entries.wrappedValue.map { MenuItem($0).id($0) }
                         }.id("row")
                         Button("Empty").onClicked { entries.wrappedValue = [] }.id("empty")
@@ -66,7 +66,7 @@ struct MenuPage: ContentView {
     var content: some View {
         let (heard, canPaste, shares) = (self.heard, $canPaste, $shares)
         return VStack {
-            Label("Row").contextMenu {
+            Text("Row").contextMenu {
                 MenuItem("Copy").onClicked { heard.values.append("copy") }.id("copy")
                 MenuSeparator().id("separator")
                 MenuItem("Paste").isEnabled(canPaste.wrappedValue).onClicked { heard.values.append("paste") }.id("paste")

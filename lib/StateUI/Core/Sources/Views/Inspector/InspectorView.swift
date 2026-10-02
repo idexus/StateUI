@@ -35,7 +35,7 @@ struct InspectorView: ContentView {
             Grid { head(model) }
                 .gridRow(0)
 
-            Label(summary(passes, all: all.count, at: index))
+            Text(summary(passes, all: all.count, at: index))
                 .fontSize(11)
                 .textColor(Look.subtle)
                 .lineBreak(.tailTruncation)
@@ -103,7 +103,7 @@ struct InspectorView: ContentView {
 
         let actions = ScrollView {
             HStack {
-                Label("Inspector")
+                Text("Inspector")
                     .fontSize(15)
                     .fontAttributes(.bold)
                     .textColor(Look.ink)
@@ -210,7 +210,7 @@ struct InspectorView: ContentView {
                             Look.action("‹ Renders") { InspectorModel.shared.selected = nil }
                         }
 
-                        Label("Render #\(pass.number) · \(Look.road(pass.road))")
+                        Text("Render #\(pass.number) · \(Look.road(pass.road))")
                             .fontSize(13)
                             .fontAttributes(.bold)
                             .textColor(Look.ink)
@@ -249,7 +249,7 @@ struct InspectorView: ContentView {
             .rows(.auto, .fill)
             .rowSpacing(8)
         } else {
-            Label("Choose a render to see what it built.")
+            Text("Choose a render to see what it built.")
                 .fontSize(12)
                 .textColor(Look.subtle)
                 .verticalAlignment(.start)
@@ -281,7 +281,7 @@ private struct Branch: ContentView {
             }
         }()
 
-        return Label("\(mark) \(entry.view) — \(said)")
+        return Text("\(mark) \(entry.view) — \(said)")
             .fontSize(12)
             .textColor(colour)
             .lineBreak(.tailTruncation)

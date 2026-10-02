@@ -8,11 +8,11 @@ import UIKit
 import XCTest
 
 /// A label's own box on UIKit.
-final class UIKitLabelViewTests: XCTestCase {
+final class UIKitTextViewTests: XCTestCase {
     /// A label's background fills its whole box, the room around its words included - a colour, and a brush.
     @MainActor
-    func testALabelsBackgroundFillsItsBox() {
-        let label = UIKitLabelView()
+    func testATextsBackgroundFillsItsBox() {
+        let label = UIKitTextView()
         label.setText("Box")
         label.setPadding(Insets(12))
         label.frame = CGRect(x: 0, y: 0, width: 100, height: 60)

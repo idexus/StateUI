@@ -6,7 +6,7 @@ it, and every control wearing that tier inherits the modifier: opacity from
 `VisualElementProperties`, margin from `ViewProperties`, padding from
 `PaddingElement`, the font size from `FontElement`. A modifier is therefore
 offered on exactly the controls that carry the property - `.spacing()` on a
-stack, `.placeholder()` on a text field, and nothing on a Label that a Label
+stack, `.placeholder()` on a text field, and nothing on a Text that a Text
 does not carry. Each Swift tier has a tier contract under `Contracts/Tiers`
 or `Contracts/Mixins`, which declares its members for the hosts.
 
@@ -43,7 +43,7 @@ gesture or an `.id()` written on a style does not compile.
 
 Every modifier returns a modified copy. Nothing mutates in place, so a view is
 a value all the way down and a chain reads in one direction:
-`Label("Total").fontSize(20).textColor(.gray).margin(0, 8)`.
+`Text("Total").fontSize(20).textColor(.gray).margin(0, 8)`.
 
 ## Why events live on the element side
 
@@ -76,7 +76,7 @@ control that does not wear the tier is never offered its modifiers.
 ## Tiers a text run wears
 
 `PropertyContainer` sits below `VisualElement` because not everything that
-carries properties is a view. A `TextSpan`, one run of text inside a Label,
+carries properties is a view. A `TextSpan`, one run of text inside a Text,
 carries a text colour, a font size and a background colour, and has no
 opacity, margin or size. The text and font mixins are therefore written against
 `PropertyContainer`, where a `TextSpan` and a `Style` - which is not in the

@@ -6,8 +6,8 @@
 
 /// Whether text is drawn bold, italic, or both.
 ///
-///     Label("Total").fontAttributes(.bold)
-///     Label("Total").fontAttributes([.bold, .italic])
+///     Text("Total").fontAttributes(.bold)
+///     Text("Total").fontAttributes([.bold, .italic])
 ///
 /// Only the weight and the slant: the family is `.fontFamily` and the size
 /// `.fontSize`, each its own modifier as it is its own property.

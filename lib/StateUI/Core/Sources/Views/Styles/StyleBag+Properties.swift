@@ -34,7 +34,7 @@ extension StyleBag: TextFieldProperties where Target == TextField {}
 extension StyleBag: CanvasProperties where Target == Canvas {}
 extension StyleBag: GridProperties where Target == Grid {}
 extension StyleBag: ImageProperties where Target == Image {}
-extension StyleBag: LabelProperties where Target == Label {}
+extension StyleBag: TextProperties where Target == Text {}
 extension StyleBag: LineProperties where Target == Line {}
 extension StyleBag: MapProperties where Target == Map {}
 extension StyleBag: PathProperties where Target == Path {}

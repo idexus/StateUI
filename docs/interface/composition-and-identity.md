@@ -20,7 +20,7 @@ struct StatusBadge: ContentView {
             ColorBox(ready ? .green : .gray)
                 .width(8)
                 .height(8)
-            Label(title)
+            Text(title)
         }
         .spacing(8)
     }
@@ -51,7 +51,7 @@ struct Badge: ContentView {
     private var color = Color.cornflowerBlue
 
     var content: some View {
-        Label("New")
+        Text("New")
             .textColor(.white)
             .background(color)
     }
@@ -143,7 +143,7 @@ appears or disappears:
 
 VStack {
     if signedIn {
-        Label("Welcome")
+        Text("Welcome")
     }
 
     TextField($search)
@@ -166,7 +166,7 @@ let names = ["Ada", "Grace", "Linus"]
 
 VStack {
     ForEach(names) { name in
-        Label(name)
+        Text(name)
     }
 }
 ```
@@ -198,7 +198,7 @@ VStack {
     Button(visible ? "Hide" : "Show").onClicked { visible.toggle() }
 
     if visible {
-        Label("Draft")
+        Text("Draft")
             .onCreated { log.append("created") }
             .onDestroying { log.append("destroying") }
     }
@@ -225,7 +225,7 @@ carried in its previous description:
 @State var step = 0
 @State var direction = ""
 
-Label(direction)
+Text(direction)
     .onChanged(step) { old, new in
         direction = new > old ? "forward" : "back"
     }
@@ -250,9 +250,9 @@ struct BuildProbe: ContentView {
 
     var content: some View {
         VStack {
-            Label(debugInfo())
+            Text(debugInfo())
             Button("Build").onClicked { count += 1 }
-            Label("\(count)")
+            Text("\(count)")
         }
     }
 }

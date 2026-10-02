@@ -30,7 +30,7 @@ struct SwatchPage: ContentView {
                 .height(150)
                 .cornerRadius(12)
 
-            Label("Swatch \(number)")
+            Text("Swatch \(number)")
                 .fontSize(20)
                 .fontAttributes(.bold)
                 .horizontalAlignment(.center)

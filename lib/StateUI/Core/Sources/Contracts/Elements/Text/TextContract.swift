@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A read-only piece of text.
-public enum LabelContract: ElementContract {
+public enum TextContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = "Label"
+    public static let nodeType: NodeType = "Text"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
 
-    /// A label is a view of text in a font - aligned, spaced, decorated and
+    /// Text is a view of words in a font - aligned, spaced, decorated and
     /// padded.
     public static let tiers: [any Contract.Type] = [
         ViewContract.self, TextElementContract.self, FontElementContract.self,

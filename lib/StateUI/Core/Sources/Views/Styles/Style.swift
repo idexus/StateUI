@@ -131,7 +131,7 @@ extension StyleBag where Context == StyleBase {
 }
 
 /// A style whose target type has been forgotten - what a `StyleSheet`
-/// collects, made from a `Style<Label>()` and never by hand.
+/// collects, made from a `Style<Text>()` and never by hand.
 public struct AnyStyle {
     /// The node type this style is for - the target's own.
     let target: NodeType

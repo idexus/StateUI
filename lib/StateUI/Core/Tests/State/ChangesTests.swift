@@ -34,7 +34,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)") }
+            VStack { Text("\(value)") }
                 .onChanged(value) { log.lines.append("fired") }
                 .body
         }
@@ -50,7 +50,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)") }
+            VStack { Text("\(value)") }
                 .onChanged(value) { log.lines.append("fired") }
                 .body
         }
@@ -67,7 +67,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         renders.render(
-            VStack { Label("x") }
+            VStack { Text("x") }
                 .onChanged(7) { log.lines.append("fired") }
                 .body)
 
@@ -80,7 +80,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)") }
+            VStack { Text("\(value)") }
                 .onChanged(value) { old, new in log.lines.append("\(old) -> \(new)") }
                 .body
         }
@@ -96,7 +96,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         func tree(a: Int, b: String) -> Node {
-            VStack { Label(b) }
+            VStack { Text(b) }
                 .onChanged(a) { log.lines.append("a") }
                 .onChanged(b) { log.lines.append("b") }
                 .body
@@ -117,12 +117,12 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         renders.render(
-            VStack { Label("x") }.onChanged(1) { log.lines.append("fired") }.body)
+            VStack { Text("x") }.onChanged(1) { log.lines.append("fired") }.body)
 
         // A different node type at the same position replaces the control -
         // and a replaced element has nothing to have changed FROM.
         renders.render(
-            HStack { Label("x") }.onChanged(2) { log.lines.append("fired") }.body)
+            HStack { Text("x") }.onChanged(2) { log.lines.append("fired") }.body)
 
         XCTAssertTrue(log.lines.isEmpty, "a replaced element fired as though it continued")
     }
@@ -132,14 +132,14 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         renders.render(
-            VStack { Label("x") }
+            VStack { Text("x") }
                 .onChanged(1) { log.lines.append("first") }
                 .body)
 
         // An `.onChanged` written under an `if` appears and moves every slot
         // after it: the safe reading is "different watches", not "all changed".
         renders.render(
-            VStack { Label("x") }
+            VStack { Text("x") }
                 .onChanged("extra") { log.lines.append("extra") }
                 .onChanged(2) { log.lines.append("first") }
                 .body)
@@ -153,9 +153,9 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         renders.render(
-            VStack { Label("x") }.onChanged(1) { log.lines.append("fired") }.body)
+            VStack { Text("x") }.onChanged(1) { log.lines.append("fired") }.body)
         renders.render(
-            VStack { Label("x") }.onChanged("1") { log.lines.append("fired") }.body)
+            VStack { Text("x") }.onChanged("1") { log.lines.append("fired") }.body)
 
         XCTAssertTrue(log.lines.isEmpty,
             "a slot that changed its value type fired instead of starting over")
@@ -168,7 +168,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         struct Panel: ContentView {
-            var content: some View { Label("panel") }
+            var content: some View { Text("panel") }
         }
 
         func tree(_ value: Int) -> Node {
@@ -211,7 +211,7 @@ final class ChangesTests: XCTestCase {
         defer { _ = reader }
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)") }
+            VStack { Text("\(value)") }
                 .onChanged(value) { _, new in echo.wrappedValue = new }
                 .body
         }
@@ -236,7 +236,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)") }
+            VStack { Text("\(value)") }
                 .onChanged(value) { log.lines.append("fired") }
                 .body
         }
@@ -255,7 +255,7 @@ final class ChangesTests: XCTestCase {
     func testAWatchWrittenOnACarriedViewFiresWhenItsValueMoves() {
         struct Row: ContentView {
             let item: String
-            var content: some View { Label(item) }
+            var content: some View { Text(item) }
         }
 
         let renders = Renders()
@@ -314,7 +314,7 @@ final class ChangesTests: XCTestCase {
 
         func tree() -> Node {
             VStack {
-                ScrollView { Label("long") }
+                ScrollView { Text("long") }
                     .scrollOffset(offset.projectedValue)
             }
             .onChanged(offset.wrappedValue) { old, new in log.lines.append("\(old.y) -> \(new.y)") }
@@ -345,7 +345,7 @@ final class ChangesTests: XCTestCase {
         let offset = State(Point.zero)
         let reader = reading { _ = offset.get() }
 
-        renders.render(VStack { ScrollView { Label("long") }.scrollOffset(offset.projectedValue) }.body)
+        renders.render(VStack { ScrollView { Text("long") }.scrollOffset(offset.projectedValue) }.body)
 
         Renderer.shared.clearInvalidation()
         slid(offset.number, to: Point(0, 250))
@@ -363,7 +363,7 @@ final class ChangesTests: XCTestCase {
         let renders = Renders()
         let offset = State(Point.zero)
 
-        renders.render(VStack { ScrollView { Label("wide") }.scrollOffset(offset.projectedValue) }.body)
+        renders.render(VStack { ScrollView { Text("wide") }.scrollOffset(offset.projectedValue) }.body)
         slid(offset.number, to: Point(120, 40))
 
         XCTAssertEqual(offset.wrappedValue.x, 120, "the horizontal half did not reach its state")
@@ -381,11 +381,11 @@ final class ChangesTests: XCTestCase {
     @MainActor
     func testAChangeHandlerMayAwaitAnAct() async throws {
         let renders = Renders()
-        let card = Aim(Label.self)
+        let card = Aim(Text.self)
         let finished = State(false)
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)").id("card").aim(card) }
+            VStack { Text("\(value)").id("card").aim(card) }
                 .onChanged(value) { finished.wrappedValue = try await card.focus() }
                 .body
         }

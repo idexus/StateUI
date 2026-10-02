@@ -17,7 +17,7 @@ import XCTest
 final class MotionTests: XCTestCase {
     /// A panel of a stated opacity, which is a number with a half-way.
     private func panel(_ opacity: Double, id: String = "panel") -> Node {
-        ZStack { Label("x") }.opacity(opacity).id(id).body
+        ZStack { Text("x") }.opacity(opacity).id(id).body
     }
 
     // ---- What travels -------------------------------------------------------
@@ -46,9 +46,9 @@ final class MotionTests: XCTestCase {
     func testAColourTravels() {
         let renders = Renders()
 
-        renders.render(ZStack { Label("x") }.background(Color("#000000")).id("b").body)
+        renders.render(ZStack { Text("x") }.background(Color("#000000")).id("b").body)
         let patch = renders.render(
-            ZStack { Label("x") }.background(Color("#FFFFFF")).id("b").body)
+            ZStack { Text("x") }.background(Color("#FFFFFF")).id("b").body)
 
         XCTAssertNotNil(patch.transitions[.background])
     }
@@ -56,8 +56,8 @@ final class MotionTests: XCTestCase {
     func testEdgesTravel() {
         let renders = Renders()
 
-        renders.render(VStack { Label("x") }.padding(Insets(4)).id("s").body)
-        let patch = renders.render(VStack { Label("x") }.padding(Insets(16)).id("s").body)
+        renders.render(VStack { Text("x") }.padding(Insets(4)).id("s").body)
+        let patch = renders.render(VStack { Text("x") }.padding(Insets(16)).id("s").body)
 
         XCTAssertNotNil(patch.transitions[.padding])
     }
@@ -94,7 +94,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         renders.render(panel(1))
-        let patch = renders.render(Label("x").opacity(0.25).id("panel").body)
+        let patch = renders.render(Text("x").opacity(0.25).id("panel").body)
 
         XCTAssertTrue(patch.replace)
         XCTAssertTrue(patch.transitions.isEmpty)
@@ -103,8 +103,8 @@ final class MotionTests: XCTestCase {
     func testAViewToldToStayStillDoesNot() {
         let renders = Renders()
 
-        renders.render(ZStack { Label("x") }.opacity(1).motion(.none).id("p").body)
-        let patch = renders.render(ZStack { Label("x") }.opacity(0.25).motion(.none).id("p").body)
+        renders.render(ZStack { Text("x") }.opacity(1).motion(.none).id("p").body)
+        let patch = renders.render(ZStack { Text("x") }.opacity(0.25).motion(.none).id("p").body)
 
         XCTAssertEqual(patch.props[.opacity], .number(0.25))
         XCTAssertTrue(patch.transitions.isEmpty)
@@ -117,7 +117,7 @@ final class MotionTests: XCTestCase {
 
         func tree(_ opacity: Double) -> Node {
             VStack {
-                ZStack { Label("x") }.opacity(opacity).id("inner")
+                ZStack { Text("x") }.opacity(opacity).id("inner")
             }
             .motion(.none)
             .id("outer")
@@ -140,7 +140,7 @@ final class MotionTests: XCTestCase {
             let fade: Double
 
             var content: some View {
-                ZStack { Label("x") }.opacity(fade)
+                ZStack { Text("x") }.opacity(fade)
             }
         }
 
@@ -157,8 +157,8 @@ final class MotionTests: XCTestCase {
     func testAValueWithNoHalfWayArrives() {
         let renders = Renders()
 
-        renders.render(Label("one").id("l").body)
-        let patch = renders.render(Label("two").id("l").body)
+        renders.render(Text("one").id("l").body)
+        let patch = renders.render(Text("two").id("l").body)
 
         XCTAssertEqual(patch.props[.text], .string("two"))
         XCTAssertTrue(patch.transitions.isEmpty)
@@ -168,8 +168,8 @@ final class MotionTests: XCTestCase {
     func testAPlaceOrACountNeverTravels() {
         let renders = Renders()
 
-        renders.render(Label("x").gridRow(0).id("l").body)
-        let patch = renders.render(Label("x").gridRow(3).id("l").body)
+        renders.render(Text("x").gridRow(0).id("l").body)
+        let patch = renders.render(Text("x").gridRow(3).id("l").body)
 
         XCTAssertEqual(patch.props[.gridRow], .number(3))
         XCTAssertTrue(patch.transitions.isEmpty)
@@ -188,9 +188,9 @@ final class MotionTests: XCTestCase {
         for property in LibraryContracts.facts.filter({ !$0.value.travels }).keys.sorted() {
             let alone = Renders()
 
-            alone.render(Label("x").setValue(property, .number(0)).id("l").body)
+            alone.render(Text("x").setValue(property, .number(0)).id("l").body)
 
-            let moved = alone.render(Label("x").setValue(property, .number(3)).id("l").body)
+            let moved = alone.render(Text("x").setValue(property, .number(3)).id("l").body)
 
             XCTAssertEqual(
                 moved.props[property], .number(3),
@@ -208,7 +208,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func row(_ y: Double, _ opacity: Double) -> Node {
-            ZStack { Label("x") }
+            ZStack { Text("x") }
                 .area(.absolute(0, y, 1, 40))
                 .opacity(opacity)
                 .id("row")
@@ -227,15 +227,15 @@ final class MotionTests: XCTestCase {
     func testALayoutSaysHowItsChildrenTravelOnlyWhenItDiffers() {
         let renders = Renders()
 
-        let plain = renders.render(VStack { Label("x") }.id("s").body)
+        let plain = renders.render(VStack { Text("x") }.id("s").body)
         XCTAssertNil(plain.motion, "a layout that agrees says nothing")
 
         let told = renders.render(
-            VStack { Label("x") }.motion(.none).id("s").body)
+            VStack { Text("x") }.motion(.none).id("s").body)
 
         XCTAssertEqual(told.motion?.motion, Motion.none)
 
-        let back = renders.render(VStack { Label("x") }.id("s").body)
+        let back = renders.render(VStack { Text("x") }.id("s").body)
 
         XCTAssertEqual(
             back.motion?.motion, Motion.inherited,
@@ -247,7 +247,7 @@ final class MotionTests: XCTestCase {
     func testAViewWithNoMotionOfItsOwnSaysNothing() {
         let renders = Renders()
 
-        XCTAssertNil(renders.render(Label("x").id("l").body).motion)
+        XCTAssertNil(renders.render(Text("x").id("l").body).motion)
     }
 
     /// A view that ANSWERS for itself says so, whatever it is - because what
@@ -257,7 +257,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         XCTAssertEqual(
-            renders.render(Label("x").motion(.none).id("l").body).motion?.motion,
+            renders.render(Text("x").motion(.none).id("l").body).motion?.motion,
             Motion.none)
     }
 
@@ -292,7 +292,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func panel(_ width: Double, _ colour: Color) -> Node {
-            ZStack { Label("x") }
+            ZStack { Text("x") }
                 .width(width)
                 .background(colour)
                 .motion(.none, .size)
@@ -314,7 +314,7 @@ final class MotionTests: XCTestCase {
         let own = Motion.spring(response: 240)
 
         func panel(_ fade: Double, _ width: Double) -> Node {
-            ZStack { Label("x") }
+            ZStack { Text("x") }
                 .opacity(fade)
                 .width(width)
                 .motion(own, .opacity)
@@ -336,7 +336,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func panel(_ width: Double) -> Node {
-            ZStack { Label("x") }
+            ZStack { Text("x") }
                 .width(width)
                 .motion(.none, .size)
                 .motion(.eased(500), .width)
@@ -356,7 +356,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            VStack { Label("x") }.motion(.none, .size).id("s").body)
+            VStack { Text("x") }.motion(.none, .size).id("s").body)
 
         XCTAssertEqual(patch.lanes, .place, "the corner travels; the sides arrive")
     }
@@ -372,7 +372,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func room(_ width: Double) -> Node {
-            VStack { ZStack { Label("x") }.width(width).id("held") }
+            VStack { ZStack { Text("x") }.width(width).id("held") }
                 .onFrameChanged { _ in }
                 .id("room")
                 .body
@@ -389,7 +389,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func room(_ width: Double) -> Node {
-            VStack { ZStack { Label("x") }.width(width).id("held") }.id("room").body
+            VStack { ZStack { Text("x") }.width(width).id("held") }.id("room").body
         }
 
         renders.render(room(0))
@@ -404,7 +404,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func panel(_ height: Double) -> Node {
-            ZStack { Label("x") }.height(height).onFrameChanged { _ in }.id("p").body
+            ZStack { Text("x") }.height(height).onFrameChanged { _ in }.id("p").body
         }
 
         renders.render(panel(40))
@@ -422,8 +422,8 @@ final class MotionTests: XCTestCase {
 
         func room(_ width: Double) -> Node {
             VStack {
-                Label("measured").onFrameChanged { _ in }
-                ZStack { Label("x") }.width(width).id("beside")
+                Text("measured").onFrameChanged { _ in }
+                ZStack { Text("x") }.width(width).id("beside")
             }
             .id("room")
             .body
@@ -440,7 +440,7 @@ final class MotionTests: XCTestCase {
     func testAMeasuredLayoutsChildrenTravelOnlyByTheirPlace() {
         let renders = Renders()
 
-        let patch = renders.render(VStack { Label("x") }.onFrameChanged { _ in }.id("s").body)
+        let patch = renders.render(VStack { Text("x") }.onFrameChanged { _ in }.id("s").body)
 
         XCTAssertEqual(patch.lanes, .place)
     }
@@ -451,7 +451,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func panel(_ from: Color) -> Node {
-            VStack { Label("x") }
+            VStack { Text("x") }
                 .background(.linearGradient([
                     GradientStop(from, 0),
                     GradientStop(Color("#FFFFFF"), 1),
@@ -537,7 +537,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func tree(_ built: ViewTransform) -> Node {
-            stack([Label("x").transform(built).id("one").body], id: "root")
+            stack([Text("x").transform(built).id("one").body], id: "root")
         }
 
         let one = renders.render(tree(.rotate(90).translate(100, 0)))
@@ -572,7 +572,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func tree(_ built: ViewTransform) -> Node {
-            stack([Label("x").transform(built).id("one").body], id: "root")
+            stack([Text("x").transform(built).id("one").body], id: "root")
         }
 
         renders.render(tree(.identity))
@@ -597,7 +597,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(stack([
-            Label("x").transform(.rotate(45).scaleX(2)).id("one").body,
+            Text("x").transform(.rotate(45).scaleX(2)).id("one").body,
         ], id: "root"))
 
         let props = try XCTUnwrap(patch.child("one")?.props)
@@ -638,7 +638,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(stack([
-            Label("x").transform(.turn(60).tilt(60)).id("one").body,
+            Text("x").transform(.turn(60).tilt(60)).id("one").body,
         ], id: "root"))
 
         let props = patch.child("one")?.props
@@ -649,7 +649,7 @@ final class MotionTests: XCTestCase {
         // Past its own edge a view is showing its back, which is not a picture
         // this can make - so the turn stops there rather than folding through.
         let past = Renders().render(stack([
-            Label("x").transform(.turn(200)).id("one").body,
+            Text("x").transform(.turn(200)).id("one").body,
         ], id: "root"))
 
         XCTAssertEqual(past.child("one")?.props[.scaleX]?.number ?? 1, 0, accuracy: 0.0005)
@@ -664,7 +664,7 @@ final class MotionTests: XCTestCase {
 
         func tree(_ still: Bool) -> Node {
             let fan = PlacedLayout([1], id: \.self) { number in
-                Label("\(number)")
+                Text("\(number)")
             }
             .placement(run.projectedValue)
 

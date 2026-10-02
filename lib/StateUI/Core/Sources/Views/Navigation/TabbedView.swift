@@ -28,7 +28,7 @@
 ///         @Environment private var page: PageSession
 ///
 ///         var content: some View {
-///             Label("Nothing due.")
+///             Text("Nothing due.")
 ///                 .onCreated {
 ///                     page.title = "Today"           // the caption
 ///                     page.icon = "today.png"        // and the icon

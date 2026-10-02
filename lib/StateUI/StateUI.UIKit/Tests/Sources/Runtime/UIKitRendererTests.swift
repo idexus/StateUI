@@ -16,7 +16,7 @@ private struct Greeting: ContentView {
 
     var content: some View {
         VStack {
-            Label(name.isEmpty ? "Hello" : "Hello, \(name)")
+            Text(name.isEmpty ? "Hello" : "Hello, \(name)")
             TextField($name).maximumLength(5)
             Button("Clicked \(count)").onClicked { count += 1 }
         }
@@ -152,9 +152,9 @@ final class UIKitRendererTests: XCTestCase {
 
         field.text = "Pawel K."
         field.sendActions(for: .editingChanged)
-        host.settle { host.views(UIKitLabelView.self).first?.text != "Hello" }
+        host.settle { host.views(UIKitTextView.self).first?.text != "Hello" }
 
         XCTAssertEqual(field.text, "Pawel")
-        XCTAssertEqual(host.views(UIKitLabelView.self).first?.text, "Hello, Pawel")
+        XCTAssertEqual(host.views(UIKitTextView.self).first?.text, "Hello, Pawel")
     }
 }

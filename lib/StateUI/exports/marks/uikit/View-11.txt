@@ -35,11 +35,6 @@ ItemsView.drop: not realized
 ItemsView.frameChanged: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.verticalAlignment: ✅
-Label.pointerEntered: ✓ hover on Label: the view's listening handed the recognizer's states, no touch sent
-Label.pointerExited: ✓ hover on Label: the view's listening handed the recognizer's states, no touch sent
-Label.pointerMoved: ✓ hover on Label: the view's listening handed the recognizer's states, no touch sent
-Label.pointerPressed: ✓ hover on Label: the view's listening handed the recognizer's states, no touch sent
-Label.pointerReleased: ✓ hover on Label: the view's listening handed the recognizer's states, no touch sent
 Line.swipeDirection: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.swipeThreshold: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.swiped: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
@@ -85,6 +80,11 @@ Stepper.panXChannel: ✓ pan on Stepper: the view's listening handed the recogni
 Switch.frameChanged: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
+Text.pointerEntered: ✓ hover on Text: the view's listening handed the recognizer's states, no touch sent
+Text.pointerExited: ✓ hover on Text: the view's listening handed the recognizer's states, no touch sent
+Text.pointerMoved: ✓ hover on Text: the view's listening handed the recognizer's states, no touch sent
+Text.pointerPressed: ✓ hover on Text: the view's listening handed the recognizer's states, no touch sent
+Text.pointerReleased: ✓ hover on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.area: ✅
 TextEditor.frameChanged: ✅
 TextField.canDrag: not realized

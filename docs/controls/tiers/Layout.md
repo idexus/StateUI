@@ -6,7 +6,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 
 ```swift
 VStack {
-    Label("Edge to edge")
+    Text("Edge to edge")
 }
 .background(.steelBlue)
 .avoidsSafeArea(.none)

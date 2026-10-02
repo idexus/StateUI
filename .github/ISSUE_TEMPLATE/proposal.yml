@@ -18,7 +18,7 @@ body:
       label: What you want to add or change
       description: One paragraph, and the call site as you would like to write it.
       placeholder: |
-        Label("Hello").lineBreakMode(.tailTruncation)
+        Text("Hello").lineBreakMode(.tailTruncation)
     validations:
       required: true
 

@@ -14,7 +14,7 @@ struct CounterPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("count \(count)")
+            Text("count \(count)")
             Button("Add")
                 .onClicked { count += 1 }
         }
@@ -27,7 +27,7 @@ final class WinUIRendererTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running { CounterPage() }
 
-            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["count 0"])
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["count 0"])
             XCTAssertEqual(host.views(WinUIButtonView.self).map(\.text), ["Add"])
             XCTAssertNotNil(host.window?.content, "the window shows no page")
         }
@@ -55,7 +55,7 @@ final class WinUIRendererTests: XCTestCase {
             button.invoke()
             button.invoke()
 
-            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["count 2"])
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["count 2"])
         }
     }
 
@@ -83,12 +83,12 @@ final class WinUIRendererTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running { PhasePage() }
             let window = try XCTUnwrap(host.window)
-            let before = host.views(WinUILabelView.self).map(\.text)
+            let before = host.views(WinUITextView.self).map(\.text)
 
             window.close()
             for _ in 0..<10 { host.step() }
 
-            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), before, "no phase, no going")
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), before, "no phase, no going")
         }
     }
 
@@ -98,7 +98,7 @@ final class WinUIRendererTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running { PhasePage() }
             let window = try XCTUnwrap(host.window)
-            let said = { host.views(WinUILabelView.self).map(\.text).first ?? "" }
+            let said = { host.views(WinUITextView.self).map(\.text).first ?? "" }
 
             stateui_winui_window_show_as_user(window.handle, 6)
             host.settle(until: { said().hasSuffix("stopped") })
@@ -131,9 +131,9 @@ final class WinUIRendererTests: XCTestCase {
     func testThePageReadsTheScreenItStandsOn() {
         onUIThread {
             let host = WinUIRenderer.running { DisplayPage() }
-            host.settle { host.views(WinUILabelView.self).first?.text != "0 unknown" }
+            host.settle { host.views(WinUITextView.self).first?.text != "0 unknown" }
 
-            let words = host.views(WinUILabelView.self).first?.text.split(separator: " ") ?? []
+            let words = host.views(WinUITextView.self).first?.text.split(separator: " ") ?? []
             XCTAssertGreaterThan(Double(words.first ?? "") ?? 0, 0, "a width")
             XCTAssertEqual(words.last, "rotation0", "a screen standing as it is made")
         }
@@ -148,7 +148,7 @@ final class WinUIRendererTests: XCTestCase {
             _ = stateui_winui_facts(StateUIFactsTheme, nil, &bytes, 8)
             let dark = bytes[0] == 0x31
 
-            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["Windows desktop", dark ? "dark" : "light"])
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["Windows desktop", dark ? "dark" : "light"])
         }
     }
 }
@@ -159,7 +159,7 @@ private struct PhasePage: ContentView {
     @Environment private var window: WindowSession
 
     var content: some View {
-        Label("\(application.phase) \(window.phase)")
+        Text("\(application.phase) \(window.phase)")
     }
 }
 
@@ -188,7 +188,7 @@ private struct ToolOpeningPage: ContentView {
 }
 
 private struct ToolWindow: Window {
-    var page: any Page { Label("A tool") }
+    var page: any Page { Text("A tool") }
 }
 
 /// A page saying the screen's width and turn.
@@ -196,7 +196,7 @@ private struct DisplayPage: ContentView {
     @Environment private var display: DeviceDisplay
 
     var content: some View {
-        Label("\(Int(display.width)) \(display.rotation)")
+        Text("\(Int(display.width)) \(display.rotation)")
     }
 }
 
@@ -207,8 +207,8 @@ private struct EnvironmentPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("\(device.platform) \(device.formFactor)")
-            Label("\(app.requestedTheme)")
+            Text("\(device.platform) \(device.formFactor)")
+            Text("\(app.requestedTheme)")
         }
     }
 }

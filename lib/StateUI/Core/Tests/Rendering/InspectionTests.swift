@@ -19,14 +19,14 @@ private final class Counts {
 private struct Titled: ContentView {
     let text: String
 
-    var content: some View { Label(text) }
+    var content: some View { Text(text) }
 }
 
 /// A composed view that reads the model's count.
 private struct Reads: ContentView {
     let counts: Counts
 
-    var content: some View { Label("\(counts.count)") }
+    var content: some View { Text("\(counts.count)") }
 }
 
 /// A composed view holding both.
@@ -43,7 +43,7 @@ private struct Holds: ContentView {
 
 /// A page with nothing on it.
 private struct Blank: ContentView {
-    var content: some View { Label("blank") }
+    var content: some View { Text("blank") }
 }
 
 /// A scene's main window.
@@ -61,7 +61,7 @@ private let drawn = Drawn()
 
 /// A page that reads it, so a write to it has a reader.
 private struct Showing: ContentView {
-    var content: some View { Label("\(drawn.revision)") }
+    var content: some View { Text("\(drawn.revision)") }
 }
 
 private struct ShowingWindow: Window {
@@ -185,7 +185,7 @@ final class InspectionTests: XCTestCase {
     /// Every label's and button's text under a patch, and the word a drawn
     /// button says for itself, in walk order.
     private func words(in patch: HostPatch) -> [String] {
-        let text = patch.type == .label || patch.type == .button ? patch.props[.text]?.string : nil
+        let text = patch.type == .text || patch.type == .button ? patch.props[.text]?.string : nil
         let own = [text, patch.props[.accessibilityLabel]?.string].compactMap { $0 }
 
         return own + patch.children.flatMap { words(in: $0) }
@@ -351,8 +351,8 @@ final class InspectionTests: XCTestCase {
     // MARK: - The host's half
 
     func testTheHostsHalfLandsOnThePassItNames() {
-        _ = pass(generation: 6) { Renders().render(Label("six").body) }
-        _ = pass(generation: 7) { Renders().render(Label("seven").body) }
+        _ = pass(generation: 6) { Renders().render(Text("six").body) }
+        _ = pass(generation: 7) { Renders().render(Text("seven").body) }
 
         Inspection.applied(generation: 6, scene: 1, micros: 30)
         Inspection.applied(

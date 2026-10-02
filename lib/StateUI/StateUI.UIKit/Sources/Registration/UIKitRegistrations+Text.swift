@@ -7,10 +7,10 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension UIKitRegistrations {
-    /// A Label: its words in their case, or its spans' runs; their look, the space between the letters and the
+    /// A Text: its words in their case, or its spans' runs; their look, the space between the letters and the
     /// lines, and the lines under or through them; how they break and where they stand; the room around them.
     static func text(_ registry: Registry<UIView>) {
-        registry.add(LabelContract.self, create: { _ in UIKitLabelView() }) { label in
+        registry.add(TextContract.self, create: { _ in UIKitTextView() }) { label in
             label.applies(TextMembers.members) { view, values in
                 if let words = TextMembers.words(values) { view.setText(words) }
                 if let look = TextMembers.look(values) {
@@ -23,9 +23,9 @@ extension UIKitRegistrations {
                     view.setPadding(values[PaddingElementContract.padding])
                 }
             }
-            label.applies([LabelContract.lineBreak, LabelContract.maximumLines]) { view, values in
+            label.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
                 view.setLines(
-                    breaking: values[LabelContract.lineBreak] ?? .wordWrap, maximum: values[LabelContract.maximumLines])
+                    breaking: values[TextContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
             }
             label.applies([
                 TextAlignmentElementContract.horizontalTextAlignment,

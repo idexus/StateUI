@@ -88,7 +88,7 @@ struct SampleTabPage: ContentView {
     /// fills the rest of the page.
     private var held: Grid {
         Grid {
-            Label(sample.summary)
+            Text(sample.summary)
                 .fontSize(15)
                 .textColor(Palette.subtle)
 

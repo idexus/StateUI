@@ -35,11 +35,6 @@ ItemsView.drop: not realized
 ItemsView.frameChanged: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.verticalAlignment: ✅
-Label.pointerEntered: ✓ hover on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.pointerExited: ✓ hover on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.pointerMoved: ✓ hover on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.pointerPressed: ✓ hover on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.pointerReleased: ✓ hover on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.swipeDirection: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.swipeThreshold: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.swiped: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -85,6 +80,11 @@ Stepper.panXChannel: ✓ pan on Stepper: handed to the host's recognizer or hand
 Switch.frameChanged: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
+Text.pointerEntered: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.pointerExited: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.pointerMoved: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.pointerPressed: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.pointerReleased: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.area: ✅
 TextEditor.frameChanged: ✅
 TextField.canDrag: not realized

@@ -412,7 +412,7 @@ extension AndroidPagesTests {
             XCTAssertEqual(navigation.bar.content.foreground.flatMap(AndroidView.argb), Int32(bitPattern: 0xFFFF_FFFF))
             let page = try XCTUnwrap(host.views(AndroidSingleChildView.self).first)
             XCTAssertEqual(Self.colour(of: page), 0xFF00_00FF)
-            let words = try XCTUnwrap(host.views(AndroidLabelView.self).first)
+            let words = try XCTUnwrap(host.views(AndroidTextView.self).first)
             XCTAssertEqual(Java.callInt(words.reference, TestJava.getLeft), 16, "8 points in, at two pixels a point")
 
             path.wrappedValue = [1]
@@ -568,7 +568,7 @@ extension AndroidPagesTests {
             log.values = []
             stacked.wrappedValue = true
             host.runtime.pump.turn()
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["Root"])
+            XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["Root"])
             XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Root appearing"])
         }
     }
@@ -621,7 +621,7 @@ private struct FurnishedPage: ContentView {
         let title = self.title
         let back = hasBackButton
         let bar = hasNavigationBar
-        return Label(title).onCreated {
+        return Text(title).onCreated {
             page.title = title
             page.background = .blue
             page.padding = Insets(8)
@@ -639,7 +639,7 @@ private struct SearchingPage: ContentView {
     var content: some View {
         let page = self.page
         let query = $query
-        return Label("Results")
+        return Text("Results")
             .titleView { SearchField(query).placeholder("Search") }
             .onCreated { page.title = "Search" }
     }
@@ -696,7 +696,7 @@ private struct TitledPage: ContentView {
         let title = self.title
         let page = self.page
 
-        return Label(title)
+        return Text(title)
             .toolbar { actions }
             .onCreated {
                 page.title = title

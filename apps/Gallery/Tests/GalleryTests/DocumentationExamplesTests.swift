@@ -13,7 +13,7 @@ import XCTest
 ///
 /// A block is compiled as the BODY OF A FUNCTION, which is what lets a listing
 /// read as it would inside a page - `@State var counter = 0` beside a
-/// `Label("\(counter)")` - without every example carrying a `struct` around it:
+/// `Text("\(counter)")` - without every example carrying a `struct` around it:
 /// local types, local property wrappers, statements and `try await` are all
 /// allowed there. `private` is dropped first, because a local variable cannot
 /// wear it and a listing is not asked to know that. A block declaring what
@@ -199,7 +199,7 @@ final class DocumentationExamplesTests: XCTestCase {
         let stripped = kept.joined(separator: "\n")
             .replacingOccurrences(of: "fileprivate ", with: "")
             .replacingOccurrences(of: "private ", with: "")
-            .replacingOccurrences(of: "{ … }", with: "{ Label(\"…\") }")
+            .replacingOccurrences(of: "{ … }", with: "{ Text(\"…\") }")
         // The gallery's own module, for the listings that show the gallery's
         // code - its palette, its sample protocol. Testable, because the
         // gallery's types are internal, as an application's are; the guide's

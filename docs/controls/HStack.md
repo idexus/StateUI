@@ -7,7 +7,7 @@ Stacks its children left to right, each as wide as it asks to be.
 ```swift
 HStack {
     Image("home.png")
-    Label("Home")
+    Text("Home")
 }
 .spacing(8)
 ```

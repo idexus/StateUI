@@ -20,7 +20,7 @@ final class PropertyValuesTests: XCTestCase {
         ]
         var bindings = plain.mapValues { HostStateBinding(state: $0, mode: .out, kind: .plain) }
         bindings[.tint] = HostStateBinding(state: 817, mode: .out, kind: .property)
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.driven = .replace(bindings)
         runtime.tree.apply(label, complete: true)
         let tint = HostJourney(

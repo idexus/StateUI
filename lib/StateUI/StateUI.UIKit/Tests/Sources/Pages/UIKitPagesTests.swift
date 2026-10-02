@@ -44,10 +44,10 @@ final class UIKitPagesTests: XCTestCase {
         let query = State(wrappedValue: "")
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Label("Found \(query.wrappedValue)").titleView {
+                Text("Found \(query.wrappedValue)").titleView {
                     SearchField(query.projectedValue).placeholder("Search the list").id("query")
                 }
-            } destination: { _ in Label("Pushed") }
+            } destination: { _ in Text("Pushed") }
         }
         defer { host.finish() }
         let field = { (host.runtime.tree.root?.first(id: .manual("query"))?.native as? UIKitElement)?.view as? UITextField }
@@ -72,13 +72,13 @@ final class UIKitPagesTests: XCTestCase {
         let saves = State(wrappedValue: false)
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Label("Document").menuBar {
+                Text("Document").menuBar {
                     Menu("File") {
                         if saves.wrappedValue { MenuItem("Save").id("save") }
                     }
                     .id("file")
                 }
-            } destination: { _ in Label("Pushed") }
+            } destination: { _ in Text("Pushed") }
             .menuBar { Menu("File") { MenuItem("Save").id("save") }.id("file") }
         }
         defer { host.finish() }
@@ -99,13 +99,13 @@ final class UIKitPagesTests: XCTestCase {
     func testTheBarsGroupsStandAsThePathComposesThem() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Label("Root")
+                Text("Root")
                     .toolbar {
                         ToolbarItem("Save").accessibilityIdentifier("save")
                         ToolbarItem("Add").accessibilityIdentifier("add")
                     }
                     .toolbar(.leading) { ToolbarItem("Filter").accessibilityIdentifier("filter") }
-            } destination: { _ in Label("Pushed") }
+            } destination: { _ in Text("Pushed") }
             .toolbar { ToolbarItem("Home").accessibilityIdentifier("home") }
         }
         defer { host.finish() }
@@ -128,7 +128,7 @@ final class UIKitPagesTests: XCTestCase {
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 TitledPage(title: "Root")
-            } destination: { _ in Label("Pushed") }
+            } destination: { _ in Text("Pushed") }
                 .barBackgroundColor(dark.wrappedValue ? navy : yellow)
         }
         defer { host.finish() }
@@ -203,7 +203,7 @@ private struct TitledPage: ContentView {
     var content: some View {
         let title = self.title
         let page = self.page
-        return Label(title).onCreated { page.title = title }
+        return Text(title).onCreated { page.title = title }
     }
 }
 
@@ -213,6 +213,6 @@ private struct PaintedPage: ContentView {
 
     var content: some View {
         let page = self.page
-        return Label("Painted").onCreated { page.background = Color("#F7F5FC") }
+        return Text("Painted").onCreated { page.background = Color("#F7F5FC") }
     }
 }

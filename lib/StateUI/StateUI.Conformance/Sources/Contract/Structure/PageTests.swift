@@ -12,7 +12,7 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aWindowsPageShowsItsContent", proves: [Covered(PageContract.self)]) { s in
-                s.start { VStack { Label("On the page").id("label") } }
+                s.start { VStack { Text("On the page").id("label") } }
 
                 _ = try s.element(ofType: PageContract.nodeType)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("label")), true)
@@ -109,7 +109,7 @@
             let value = State(wrappedValue: first)
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
-                    Label("Root")
+                    Text("Root")
                 } destination: { _ in
                     SessionPage(beside: [Button("Change").onClicked { value.wrappedValue = second }.id("change")],
                                 key: "\(value.wrappedValue)") { page, _ in write(page, value.wrappedValue) }
@@ -143,7 +143,7 @@ struct PhasePage: ContentView {
 
     var content: some View {
         let (title, log, page) = (self.title, self.log, self.page)
-        return Label(title)
+        return Text(title)
             .onCreated { page.title = title }
             .onChanged(page.phase) { log.values.append("\(title) \(page.phase)") }
     }

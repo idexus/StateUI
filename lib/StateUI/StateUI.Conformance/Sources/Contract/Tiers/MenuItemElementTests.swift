@@ -58,10 +58,10 @@ enum Chosen {
                         ToolbarItem(off.0).isEnabled(false).onClicked { off.1() }.id(off.0),
                     ]
                 }
-            } destination: { _ in Label("Pushed") }
+            } destination: { _ in Text("Pushed") }
         }
         return VStack {
-            Label("Row").contextMenu {
+            Text("Row").contextMenu {
                 MenuItem(on.0).onClicked { on.1() }.id(on.0)
                 MenuItem(off.0).isEnabled(false).onClicked { off.1() }.id(off.0)
             }.id("row")

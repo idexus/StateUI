@@ -20,12 +20,12 @@ struct ConnectivitySample: SampleContent, ExampleContent {
                     // this closure.
                     DebugInfoLabel()
 
-                    Label(connectivity.networkAccess == .internet
+                    Text(connectivity.networkAccess == .internet
                         ? "online" : "offline · \\(connectivity.networkAccess)")
 
                     // A host may report one entry per ADAPTER, so repeats
                     // are collapsed for display.
-                    Label("via \\(Set(connectivity.connectionProfiles
+                    Text("via \\(Set(connectivity.connectionProfiles
                         .map { "\\($0)" }).sorted().joined(separator: ", "))")
 
                     Button("Save to the cloud")
@@ -47,14 +47,14 @@ struct ConnectivitySample: SampleContent, ExampleContent {
         return VStack {
             DebugInfoLabel()
 
-            Label(connectivity.networkAccess == .internet ? "online" : "offline")
+            Text(connectivity.networkAccess == .internet ? "online" : "offline")
                 .fontSize(34)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("access · \(connectivity.networkAccess)")
+            Text("access · \(connectivity.networkAccess)")
                 .fontSize(15)
-            Label("via · \(profiles.isEmpty ? "nothing reported" : profiles)")
+            Text("via · \(profiles.isEmpty ? "nothing reported" : profiles)")
                 .fontSize(15)
 
             Button("Save to the cloud")
@@ -70,7 +70,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The button above is enabled by a READ - "
+            Text("The button above is enabled by a READ - "
                 + "`connectivity.networkAccess == .internet` - so it follows the "
                 + "network with no handler anywhere. On a phone, flip airplane "
                 + "mode and watch this page change twice; on Android that is "
@@ -78,7 +78,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A desktop wired to Ethernet may never CHANGE, but the "
+            Text("A desktop wired to Ethernet may never CHANGE, but the "
                 + "values here are still the host's answer, pushed before "
                 + "the first render. A host that cannot observe reachability "
                 + "reports `.unknown` and no profiles.")

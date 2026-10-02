@@ -39,7 +39,7 @@ private struct PhasePage: ContentView {
     let stack: PhaseStack
 
     var content: some View {
-        Label("pushed").onChanged(page.phase) { stack.seen.append(page.phase) }
+        Text("pushed").onChanged(page.phase) { stack.seen.append(page.phase) }
     }
 }
 
@@ -48,7 +48,7 @@ private struct PhaseWindow: Window {
 
     var page: any Page {
         NavigationStack(stack.$path) {
-            Label("root")
+            Text("root")
         } destination: { _ in
             PhasePage(stack: stack)
         }

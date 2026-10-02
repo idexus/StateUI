@@ -83,7 +83,7 @@ private struct WebBrowserPart: ExampleContent {
                         }
                         .gridRow(1)
 
-                    Label(status)
+                    Text(status)
                         .gridRow(2)
 
                     Button("Title?")
@@ -92,7 +92,7 @@ private struct WebBrowserPart: ExampleContent {
                         }
                         .gridRow(3)
 
-                    Label(answer)
+                    Text(answer)
                         .gridRow(4)
                 }
                 .rows(.auto, .fill, .auto, .auto, .auto)
@@ -148,7 +148,7 @@ private struct WebBrowserPart: ExampleContent {
                 }
                 .gridRow(1)
 
-            Label(status)
+            Text(status)
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
@@ -162,7 +162,7 @@ private struct WebBrowserPart: ExampleContent {
                 }
                 .gridRow(3)
 
-            Label(answer)
+            Text(answer)
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .gridRow(4)
@@ -173,14 +173,14 @@ private struct WebBrowserPart: ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Follow the page's own link, and Back lights up: `canGoBack` and "
+            Text("Follow the page's own link, and Back lights up: `canGoBack` and "
                 + "`canGoForward` are reported into bindings after every navigation. "
                 + "Back, Forward, Reload and the title question are acts aimed at the "
                 + "view with `@Aim`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.onProcessTerminated` reports what no button here can provoke: the "
+            Text("`.onProcessTerminated` reports what no button here can provoke: the "
                 + "platform runs web content in a process of its own and ends it when "
                 + "memory runs short, which leaves the view blank. `reload()` brings the "
                 + "page back.")
@@ -209,7 +209,7 @@ private struct WrittenInPlacePart: ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("`source(html:)` shows HTML written in place, without the network. Web "
+        Text("`source(html:)` shows HTML written in place, without the network. Web "
             + "content scrolls itself, which is why this page holds still and the view "
             + "fills the height the window gives it.")
             .fontSize(12)

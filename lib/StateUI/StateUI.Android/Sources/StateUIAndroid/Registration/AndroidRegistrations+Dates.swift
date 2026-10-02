@@ -59,7 +59,7 @@ extension AndroidRegistrations {
         TextStyleElementContract.textColor,
     ]
 
-    private static func applyFont<Realized: ElementContract>(_ view: AndroidTextView, _ values: ElementValues<Realized>) {
+    private static func applyFont<Realized: ElementContract>(_ view: AndroidTextualView, _ values: ElementValues<Realized>) {
         if let look = TextMembers.look(values) { view.setLook(look) }
     }
 }

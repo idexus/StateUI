@@ -36,7 +36,7 @@
         ButtonContract.self, CanvasContract.self, CheckBoxContract.self,
         ColorBoxContract.self, ContextMenuContract.self, DatePickerContract.self,
         EllipseContract.self, GridContract.self, HStackContract.self, ImageContract.self, ItemsViewContract.self,
-        LabelContract.self,
+        TextContract.self,
         LineContract.self, MapContract.self, MenuBarContract.self,
         MenuContract.self, MenuItemContract.self, MenuSeparatorContract.self, ModalStackContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,

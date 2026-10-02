@@ -1,0 +1,6 @@
+# revision 1.1
+Text: ✅
+Text.frameChanged: ✅
+Text.lineBreak: ✅
+Text.maximumLines: ✅
+Text.text: ✅

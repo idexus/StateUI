@@ -23,7 +23,7 @@ private struct PickList: ExampleContent {
 
             // A Set binding: as many chosen as the user likes.
             ItemsView(0..<1_000) { number in
-                Label("Row \\(number)").padding(14, 10)
+                Text("Row \\(number)").padding(14, 10)
             }
             .selection($chosen)
             .aim(list)
@@ -32,7 +32,7 @@ private struct PickList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(2)
 
-            Label("\\(chosen.count) chosen")
+            Text("\\(chosen.count) chosen")
                 .gridRow(2)
         }
         .rows(.auto, .fill, .auto)
@@ -62,7 +62,7 @@ private struct PickList: ExampleContent {
             .gridRow(0)
 
             ItemsView(0..<1_000) { number in
-                Label("Row \(number)")
+                Text("Row \(number)")
                     .fontSize(14)
                     .padding(14, 10)
             }
@@ -73,7 +73,7 @@ private struct PickList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(2)
 
-            Label("\(chosen.count) chosen")
+            Text("\(chosen.count) chosen")
                 .fontSize(13)
                 .textColor(Palette.accent)
                 .gridRow(2)
@@ -83,7 +83,7 @@ private struct PickList: ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("Tap rows to choose several; Row 500 scrolls there.")
+        Text("Tap rows to choose several; Row 500 scrolls there.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

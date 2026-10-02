@@ -21,7 +21,7 @@ final class WinUIDirectionTests: XCTestCase {
             let direction = State(wrappedValue: LayoutDirection.rightToLeft)
             let host = WinUIRenderer.running {
                 VStack {
-                    Label("Words")
+                    Text("Words")
                     Button("Go")
                     TextField()
                     CheckBox()

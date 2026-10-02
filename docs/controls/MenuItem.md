@@ -7,7 +7,7 @@ One entry in a menu.
 ```swift
 @State var archived = false
 
-Label("Report.pdf")
+Text("Report.pdf")
     .contextMenu {
         MenuItem(archived ? "Unarchive" : "Archive")
             .icon("archive.png")

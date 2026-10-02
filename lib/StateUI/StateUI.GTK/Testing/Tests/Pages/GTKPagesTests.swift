@@ -319,8 +319,8 @@ final class GTKPagesTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 ModalStack(State(wrappedValue: [Int]()).projectedValue) {
-                    Label("under a painted bar")
-                } destination: { _ in Label("Sheet") }
+                    Text("under a painted bar")
+                } destination: { _ in Text("Sheet") }
                 .barBackgroundColor(Color("#00FF00"))
                 .barForegroundColor(Color("#FFFFFF"))
             }
@@ -389,7 +389,7 @@ struct TitledPage: ContentView {
         let title = self.title
         let page = self.page
 
-        return Label(title)
+        return Text(title)
             .toolbar { actions }
             .onCreated {
                 page.title = title
@@ -408,7 +408,7 @@ private struct SearchingPage: ContentView {
     var content: some View {
         let page = self.page
         let query = $query
-        return Label("Results")
+        return Text("Results")
             .titleView { TextField(query).placeholder("Search") }
             .onCreated { page.title = "Search" }
     }

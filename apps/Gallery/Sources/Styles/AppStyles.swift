@@ -30,14 +30,14 @@ enum AppStyles {
         StyleSheet {
             // MARK: Text
 
-            Style<Label>()
+            Style<Text>()
                 .textColor(Palette.text)
                 .background(.transparent)
                 .fontSize(15)                
 
             // A page's own name for itself. Tight tracking, because a large
             // size at the default spacing reads loose.
-            Style<Label>("Headline")
+            Style<Text>("Headline")
                 .textColor(Palette.text)
                 .fontSize(32)
                 .fontAttributes(.bold)
@@ -49,14 +49,14 @@ enum AppStyles {
             // about the shape of a quotation is stated once here, and
             // "QuoteLoud" adds the one property that makes it loud. The Styles
             // sample draws both, side by side.
-            Style<Label>("Quote")
+            Style<Text>("Quote")
                 .textColor(Palette.subtle)
                 .fontSize(17)
                 .fontAttributes(.italic)
                 .characterSpacing(0.3)
                 .horizontalTextAlignment(.center)
 
-            Style<Label>("QuoteLoud")
+            Style<Text>("QuoteLoud")
                 .basedOn("Quote")
                 .textColor(Palette.accent)
 
@@ -263,7 +263,7 @@ enum AppStyles {
                 .padding(18, 13)
                 .background(.transparent)
 
-            Style<Label>("MenuRowText")
+            Style<Text>("MenuRowText")
                 .fontSize(16)
                 .verticalAlignment(.center)
                 .textColor(Palette.subtle)

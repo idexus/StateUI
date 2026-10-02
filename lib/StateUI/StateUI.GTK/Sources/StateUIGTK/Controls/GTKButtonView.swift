@@ -136,7 +136,7 @@ final class GTKButtonView: GTKView {
         look.insert(into: list)
         gtk_label_set_attributes(label, list)
         pango_attr_list_unref(list)
-        GTKTextView.setLines(of: label, breaking: lineBreak ?? .noWrap, maximum: nil)
+        GTKTextualView.setLines(of: label, breaking: lineBreak ?? .noWrap, maximum: nil)
     }
 
     private static func isLabel(_ widget: GTKWidget) -> Bool {

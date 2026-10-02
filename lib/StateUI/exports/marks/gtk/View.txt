@@ -351,38 +351,6 @@ ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-Label.allowDrop: not realized
-Label.area: ✅
-Label.canDrag: not realized
-Label.dragLeave: not realized
-Label.dragOver: not realized
-Label.dragStarting: not realized
-Label.dragText: not realized
-Label.drop: not realized
-Label.dropCompleted: not realized
-Label.frameChanged: ✅
-Label.gridColumn: ✅
-Label.gridColumnSpan: ✅
-Label.gridRow: ✅
-Label.gridRowSpan: ✅
-Label.horizontalAlignment: ✅
-Label.margin: ✅
-Label.panTouchCount: ✅
-Label.panUpdated: ✅
-Label.panXChannel: ✅
-Label.panYChannel: ✅
-Label.pinchUpdated: ✓ pinch on Label: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Label.pointerEntered: ✅
-Label.pointerExited: ✅
-Label.pointerMoved: ✅
-Label.pointerPressed: ✅
-Label.pointerReleased: ✅
-Label.swipeDirection: ✅
-Label.swipeThreshold: ✅
-Label.swiped: ✅
-Label.tapCount: ✅
-Label.tapped: ✅
-Label.verticalAlignment: ✅
 Line.allowDrop: not realized
 Line.area: ✅
 Line.canDrag: not realized
@@ -831,6 +799,38 @@ Switch.swiped: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
 Switch.verticalAlignment: ✅
+Text.allowDrop: not realized
+Text.area: ✅
+Text.canDrag: not realized
+Text.dragLeave: not realized
+Text.dragOver: not realized
+Text.dragStarting: not realized
+Text.dragText: not realized
+Text.drop: not realized
+Text.dropCompleted: not realized
+Text.frameChanged: ✅
+Text.gridColumn: ✅
+Text.gridColumnSpan: ✅
+Text.gridRow: ✅
+Text.gridRowSpan: ✅
+Text.horizontalAlignment: ✅
+Text.margin: ✅
+Text.panTouchCount: ✅
+Text.panUpdated: ✅
+Text.panXChannel: ✅
+Text.panYChannel: ✅
+Text.pinchUpdated: ✓ pinch on Text: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Text.pointerEntered: ✅
+Text.pointerExited: ✅
+Text.pointerMoved: ✅
+Text.pointerPressed: ✅
+Text.pointerReleased: ✅
+Text.swipeDirection: ✅
+Text.swipeThreshold: ✅
+Text.swiped: ✅
+Text.tapCount: ✅
+Text.tapped: ✅
+Text.verticalAlignment: ✅
 TextEditor.allowDrop: not realized
 TextEditor.area: ✅
 TextEditor.canDrag: not realized

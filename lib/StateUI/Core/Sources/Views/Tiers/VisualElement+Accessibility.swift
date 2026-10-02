@@ -42,9 +42,9 @@ extension VisualElementProperties {
 
     /// That this view is a heading, and how deep.
     ///
-    ///     Label("Settings").fontSize(24).accessibilityHeadingLevel(.level1)
+    ///     Text("Settings").fontSize(24).accessibilityHeadingLevel(.level1)
     ///
-    /// A screen-reader user moves through a long page by its headings; a Label
+    /// A screen-reader user moves through a long page by its headings; a Text
     /// drawn big is not one until this says so.
     public func accessibilityHeadingLevel(_ value: HeadingLevel) -> Modified { setValue(VisualElementContract.accessibilityHeadingLevel, value) }
 }

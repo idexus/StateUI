@@ -10,7 +10,6 @@ Grid.accessibilityIdentifier: ✅
 HStack.accessibilityIdentifier: ✅
 Image.accessibilityIdentifier: ✅
 ItemsView.accessibilityIdentifier: ✅
-Label.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: ✅
 MenuItem.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.
@@ -31,6 +30,7 @@ SplitView.accessibilityIdentifier: ✅
 Stepper.accessibilityIdentifier: ✅
 Switch.accessibilityIdentifier: ✅
 TabbedView.accessibilityIdentifier: ✅
+Text.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅

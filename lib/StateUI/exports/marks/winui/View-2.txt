@@ -81,12 +81,6 @@ ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.verticalAlignment: ✅
-Label.frameChanged: ✅
-Label.gridColumn: ✅
-Label.gridRow: ✅
-Label.swipeDirection: ✅
-Label.swipeThreshold: ✅
-Label.swiped: ✅
 Line.frameChanged: ✅
 Line.margin: ✅
 Line.pointerEntered: ✅
@@ -189,6 +183,12 @@ Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
 Switch.panXChannel: ✅
 Switch.verticalAlignment: ✅
+Text.frameChanged: ✅
+Text.gridColumn: ✅
+Text.gridRow: ✅
+Text.swipeDirection: ✅
+Text.swipeThreshold: ✅
+Text.swiped: ✅
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅

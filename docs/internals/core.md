@@ -153,7 +153,7 @@ turns the nodes into the patch.
   ([Composition](../design/views/composition.md), [builders](../design/views/builders.md);
   [composition and identity](../interface/composition-and-identity.md))
 - **The library's views** - `Controls/` (`Button`, `Slider`, `Picker`, `Map`,
-  `WebView` and the rest), `Text/` (`Label`, `TextSpan`, `TextField`,
+  `WebView` and the rest), `Text/` (`Text`, `TextSpan`, `TextField`,
   `TextEditor`, `SearchField`), `Layouts/` (`VStack`, `HStack`, `Grid`,
   `ZStack`, `ScrollView`) and `Shapes/` (`Rectangle`, `Path`, `Canvas` and
   their kin) - are each a node written through its contract, with a
@@ -212,7 +212,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
   `Structure`, `Slots`, `Navigation`, `Menus`) are one enum per node type:
   its node type, its layer, the tiers it wears and each member with its
   value's type. An application writes and hears through them, as in
-  `setValue(LabelContract.maximumLines, 3)`, and a host registers them.
+  `setValue(TextContract.maximumLines, 3)`, and a host registers them.
   *Application* and *host.*
   ([One declaration per node type](../design/contracts/README.md#one-declaration-per-node-type),
   [structure elements](../design/contracts/structure.md))

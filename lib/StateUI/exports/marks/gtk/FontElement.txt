@@ -7,10 +7,6 @@ DatePicker.fontAttributes: ✅
 DatePicker.fontAutoScalingEnabled: not realized
 DatePicker.fontFamily: ✅
 DatePicker.fontSize: ✅
-Label.fontAttributes: ✅
-Label.fontAutoScalingEnabled: not realized
-Label.fontFamily: ✅
-Label.fontSize: ✅
 Picker.fontAttributes: ✅
 Picker.fontAutoScalingEnabled: not realized
 Picker.fontFamily: ✅
@@ -27,6 +23,10 @@ Span.fontAttributes: ✅
 Span.fontAutoScalingEnabled: not realized
 Span.fontFamily: ✅
 Span.fontSize: ✅
+Text.fontAttributes: ✅
+Text.fontAutoScalingEnabled: not realized
+Text.fontFamily: ✅
+Text.fontSize: ✅
 TextEditor.fontAttributes: ✅
 TextEditor.fontAutoScalingEnabled: not realized
 TextEditor.fontFamily: ✅

@@ -31,7 +31,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack {
-                Label("A property, carried")
+                Text("A property, carried")
                     .fontSize($captionSize)
                     .textColor($captionColor)
             }
@@ -82,7 +82,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
             ZStack {
                 Grid {
-                    Label("A property, carried")
+                    Text("A property, carried")
                         .fontSize($captionSize)
                         .textColor($captionColor)
                         .horizontalAlignment(.center)
@@ -148,12 +148,12 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Each button moves a bound property on host frames. The build "
+            Text("Each button moves a bound property on host frames. The build "
                 + "counter stays still while colour, size, padding and text move.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Size moves the panel between 90 and 160 points. Back restores "
+            Text("Size moves the panel between 90 and 160 points. Back restores "
                 + "the values that remain after their journeys.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

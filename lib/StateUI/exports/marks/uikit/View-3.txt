@@ -35,8 +35,6 @@ Image.panXChannel: ✓ pan on Image: the view's listening handed the recognizer'
 ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
-Label.area: ✅
-Label.frameChanged: ✅
 Line.canDrag: not realized
 Line.dragStarting: not realized
 Line.dragText: not realized
@@ -81,6 +79,8 @@ Slider.frameChanged: ✅
 Slider.margin: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the view's listening handed the recognizer's states, no touch sent
 Switch.panYChannel: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
+Text.area: ✅
+Text.frameChanged: ✅
 TextEditor.tapCount: ✓ tap on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.tapped: ✓ tap on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextField.frameChanged: ✅

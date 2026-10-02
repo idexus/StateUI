@@ -17,7 +17,7 @@
         GridTests.self,
         HStackTests.self,
         ImageTests.self,
-        LabelTests.self,
+        TextTests.self,
         LineTests.self,
         MapTests.self,
         PathTests.self,

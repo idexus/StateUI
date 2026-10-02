@@ -82,7 +82,7 @@ extension Journey {
     ///     @State private var offset = Point.zero
     ///
     ///     ScrollView { … }.scrollOffset($offset)
-    ///     Label($offset.journey.convert { "\(Int($0.value.y)) down" })
+    ///     Text($offset.journey.convert { "\(Int($0.value.y)) down" })
     ///
     /// `$offset.convert { … }` converts the state instead, which is the destination.
     ///
@@ -131,7 +131,7 @@ extension Journey {
     /// Two journeys converted into one value - the words for a point, the distance
     /// between two animated values - settled on every frame either moves.
     ///
-    ///     Label($liveX.journey.convert(with: $liveY.journey) { x, y in
+    ///     Text($liveX.journey.convert(with: $liveY.journey) { x, y in
     ///         "at \(Int(x.value)), \(Int(y.value))"
     ///     })
     ///
@@ -236,7 +236,7 @@ extension Binding where Value: StateValue {
     /// ratio, a caption from two numbers - by an engine following both.
     /// This library's own.
     ///
-    ///     Label().text($width.convert(with: $height) { w, h in "\(Int(w))×\(Int(h))" })
+    ///     Text().text($width.convert(with: $height) { w, h in "\(Int(w))×\(Int(h))" })
     ///
     /// - Parameters:
     ///   - other: the second state.

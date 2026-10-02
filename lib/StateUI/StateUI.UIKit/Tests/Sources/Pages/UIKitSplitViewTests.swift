@@ -16,7 +16,7 @@ final class UIKitSplitViewTests: XCTestCase {
     func testTheSidebarSlidesOverTheDetailInANarrowRoom() throws {
         let menuOpen = State(wrappedValue: false)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Label("Sidebar") } detail: { Label("Detail") }
+            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
         }
         defer { host.finish() }
         let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
@@ -46,12 +46,12 @@ final class UIKitSplitViewTests: XCTestCase {
         let path = State(wrappedValue: [1, 2])
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Label("Sidebar") } detail: { () -> any Page in
+            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: { () -> any Page in
                 guard tabbed.wrappedValue else {
-                    return NavigationStack(path.projectedValue) { Label("Stacked") }
-                        destination: { number in Label("Pushed \(number)") }
+                    return NavigationStack(path.projectedValue) { Text("Stacked") }
+                        destination: { number in Text("Pushed \(number)") }
                 }
-                return TabbedView([0, 1]) { tab in Label("Tab \(tab)") }
+                return TabbedView([0, 1]) { tab in Text("Tab \(tab)") }
             }
         }
         defer { host.finish() }
@@ -79,10 +79,10 @@ final class UIKitSplitViewTests: XCTestCase {
     func testTabsOfStacksStandUnderOneBar() throws {
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Label("Sidebar") } detail: {
+            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
                 TabbedView([0, 1]) { tab -> any Page in
-                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Label("Tab \(tab)") }
-                        destination: { number in Label("Pushed \(number)") }
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Tab \(tab)") }
+                        destination: { number in Text("Pushed \(number)") }
                 }
             }
         }

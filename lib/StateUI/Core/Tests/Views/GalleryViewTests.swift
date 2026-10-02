@@ -29,7 +29,7 @@ final class GalleryViewTests: XCTestCase {
     /// A gallery of numbered cards, each showing its own number.
     private func gallery(_ count: Int) -> GalleryView<Range<Int>, Int> {
         GalleryView(0..<count) { number in
-            Label("\(number)")
+            Text("\(number)")
         }
     }
 
@@ -229,7 +229,7 @@ final class GalleryViewTests: XCTestCase {
         func tree() -> Node {
             GalleryView(0..<6) { number in
                 built.count += 1
-                return Label("\(number)")
+                return Text("\(number)")
             }
             .position(standing.projectedValue)
             .body
@@ -696,7 +696,7 @@ final class GalleryViewTests: XCTestCase {
         var found: [PropValue] = []
 
         func walk(_ node: HostPatch) {
-            if node.type == .label, let scale = node.props[.scale] { found.append(scale) }
+            if node.type == .text, let scale = node.props[.scale] { found.append(scale) }
 
             node.children.forEach(walk)
         }
@@ -720,12 +720,12 @@ final class GalleryViewTests: XCTestCase {
     func testAnEmptyGalleryShowsWhatItWasGiven() {
         let renders = Renders()
         let patch = renders.render(
-            GalleryView([Int]()) { number in Label("\(number)") }
-                .emptyView(Label("nothing here"))
+            GalleryView([Int]()) { number in Text("\(number)") }
+                .emptyView(Text("nothing here"))
                 .body)
 
         XCTAssertNil(find(.zStack, in: patch))
-        XCTAssertEqual(find(.label, in: patch)?.props[.text], .string("nothing here"))
+        XCTAssertEqual(find(.text, in: patch)?.props[.text], .string("nothing here"))
     }
 
     // MARK: - What the host is told

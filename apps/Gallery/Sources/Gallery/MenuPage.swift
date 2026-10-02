@@ -89,13 +89,13 @@ struct MenuPage: ContentView {
                     .horizontalAlignment(.start)
             }
 
-            Label("StateUI")
+            Text("StateUI")
                 .fontSize(24)
                 .fontAttributes(.bold)
                 .characterSpacing(-0.5)
                 .textColor(Palette.onBrand)
 
-            Label("Native interfaces, written in Swift")
+            Text("Native interfaces, written in Swift")
                 .fontSize(12)
                 .textColor(Palette.onBrand)
                 .opacity(0.85)
@@ -149,7 +149,7 @@ struct MenuPage: ContentView {
     /// What is underneath: the platform compiled in, and the formFactor the host
     /// answered before the first render.
     private var footer: some View {
-        Label("native: \(stateUIPlatform()) · \(device.formFactor)")
+        Text("native: \(stateUIPlatform()) · \(device.formFactor)")
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)

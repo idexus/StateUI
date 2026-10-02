@@ -1,5 +1,4 @@
 # revision 1.1
-Label.text: ✅
 Slider: ✅
 Slider.dragCompleted: not realized
 Slider.dragStarted: not realized
@@ -8,3 +7,4 @@ Slider.maximum: ✅
 Slider.minimum: ✅
 Slider.value: ✅
 Slider.valueChanged: ✅
+Text.text: ✅

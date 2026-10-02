@@ -37,8 +37,6 @@ Image.scaleX: ✅
 ItemsView.ignoresInput: ✅
 ItemsView.layoutDirection: ✅
 ItemsView.translationY: ✅
-Label.rotation: ✅
-Label.style: ✅
 Line.accessibilityHeadingLevel: ✅
 Line.opacity: ✅
 Line.scale: ✅
@@ -91,6 +89,8 @@ Stepper.unfocus: ✅
 Switch.accessibilityHint: ✅
 Switch.isVisible: ✅
 Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
+Text.rotation: ✅
+Text.style: ✅
 TextEditor.automationExcludedWithChildren: ✅
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅

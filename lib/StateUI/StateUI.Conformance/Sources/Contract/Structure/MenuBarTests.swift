@@ -48,7 +48,7 @@
                 s.start {
                     NavigationStack(path.projectedValue) {
                         MenusPage(heard: Received())
-                    } destination: { _ in Label("Note") }
+                    } destination: { _ in Text("Note") }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
                 try s.settle { try s.menu(of: window) != "" }
@@ -65,9 +65,9 @@
                 let path = State(wrappedValue: [Int]())
                 s.start {
                     NavigationStack(path.projectedValue) {
-                        Label("Home")
+                        Text("Home")
                     } destination: { _ in
-                        Label("Document").menuBar {
+                        Text("Document").menuBar {
                             Menu("File") {
                                 MenuItem("Save document").id("save")
                                 MenuItem("Export")
@@ -102,11 +102,11 @@
             ]) { s in
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Label("Document").menuBar(order: -1) {
+                        Text("Document").menuBar(order: -1) {
                             Menu("File") { MenuItem("Open") }.id("file")
                             Menu("Go") { MenuItem("Back") }
                         }
-                    } destination: { _ in Label("Note") }
+                    } destination: { _ in Text("Note") }
                     .menuBar { Menu("File") { MenuItem("New") }.id("file") }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -120,7 +120,7 @@
 
 /// `page` as the first page of a stack, whose bar a host with menus on its bar puts them on.
 func onAStack(_ page: MenusPage) -> NavigationStack {
-    NavigationStack(State(wrappedValue: [Int]()).projectedValue) { page } destination: { _ in Label("Note") }
+    NavigationStack(State(wrappedValue: [Int]()).projectedValue) { page } destination: { _ in Text("Note") }
 }
 
 /// A page declaring its menus - File, with a submenu of what a state lists, and Edit - and saying what the user

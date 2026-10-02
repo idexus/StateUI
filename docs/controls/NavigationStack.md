@@ -12,7 +12,7 @@ struct MainWindow: Window {
         NavigationStack($path) {
             Button("Open note 1").onClicked { path.append(1) }
         } destination: { note in
-            Label("Note \(note)")
+            Text("Note \(note)")
         }
     }
 }

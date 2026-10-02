@@ -30,7 +30,7 @@ struct ReaderSample: SampleContent, ExampleContent {
             // 1. A GET in a container's braces: THIS stack is the reader.
             //    Every write builds its content again - and nothing outside.
             VStack {
-                Label("a get: \\(percent(value))")
+                Text("a get: \\(percent(value))")
                 DebugInfoLabel()                    // climbs: "N builds, for value"
             }
 
@@ -45,16 +45,16 @@ struct ReaderSample: SampleContent, ExampleContent {
             //    over the state, so this stack shows the value and reads
             //    nothing - a conversion handed on makes no reader.
             VStack {
-                Label($value.convert { percent($0) })
+                Text($value.convert { percent($0) })
                 DebugInfoLabel()                    // stays at one
             }
 
             // 4. A GET in a NESTED container: the inner stack is the reader,
             //    the outer one is not - the count outside the braces stands.
             VStack {
-                Label("outside the braces: " + debugInfo())     // stays at one
+                Text("outside the braces: " + debugInfo())     // stays at one
                 VStack {
-                    Label("inside: \\(percent(value))")
+                    Text("inside: \\(percent(value))")
                     DebugInfoLabel()                            // climbs
                 }
             }
@@ -76,7 +76,7 @@ struct ReaderSample: SampleContent, ExampleContent {
 
             var content: some View {
                 VStack {
-                    Label("a child that reads: \\(percent(value))")
+                    Text("a child that reads: \\(percent(value))")
                     DebugInfoLabel()                            // climbs
                 }
             }
@@ -99,7 +99,7 @@ struct ReaderSample: SampleContent, ExampleContent {
 
             var content: some View {
                 VStack {
-                    Label($said)
+                    Text($said)
                     DebugInfoLabel()                            // stays at one
                 }
                 .engine(following: $pulses) { _ in
@@ -131,7 +131,7 @@ struct ReaderSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             row("1 · a get in this row's braces") {
-                Label("value · \(percent(value))")
+                Text("value · \(percent(value))")
                     .fontSize(15)
                 DebugInfoLabel()
             }
@@ -147,19 +147,19 @@ struct ReaderSample: SampleContent, ExampleContent {
             }
 
             row("3 · a converted text") {
-                Label()
+                Text()
                     .text($value.convert { percent($0) })
                     .fontSize(15)
                 DebugInfoLabel()
             }
 
             row("4 · a get in a nested container") {
-                Label("outside the braces: " + BuildCount.of(debugInfo()))
+                Text("outside the braces: " + BuildCount.of(debugInfo()))
                     .fontSize(12)
                     .textColor(Palette.accent)
                 ZStack {
                     VStack {
-                        Label("inside: \(percent(value))")
+                        Text("inside: \(percent(value))")
                             .fontSize(15)
                         DebugInfoLabel()
                     }
@@ -182,7 +182,7 @@ struct ReaderSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("One state, `value`, written by the slider at the top and by +10%. "
+            Text("One state, `value`, written by the slider at the top and by +10%. "
                 + "Every row is a closure of its own and takes its own reading, so "
                 + "what a write costs is on the screen. `DebugInfoLabel` is this "
                 + "gallery's one-liner over the library's own `debugInfo()`, and where "
@@ -190,14 +190,14 @@ struct ReaderSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A get makes the closure it sits in a reader, and a write builds exactly "
+            Text("A get makes the closure it sits in a reader, and a write builds exactly "
                 + "that closure again: row 1, the inner stack in row 4 and not the row "
                 + "around it, and the child in row 5, which reads the value it borrowed. "
                 + "A handler is not a reader: it reads when it fires, not at build.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A binding makes no reader. Handed to a control, a child or an engine, "
+            Text("A binding makes no reader. Handed to a control, a child or an engine, "
                 + "the host carries the value on its own frames and renders nobody for it. "
                 + "Row 2 is a second slider on `$value`, and the host moves both thumbs; "
                 + "row 3 shows the value through a conversion without reading it; the "
@@ -205,7 +205,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Pulse writes a state no view reads, lent to the last row by `$pulses`. "
+            Text("Pulse writes a state no view reads, lent to the last row by `$pulses`. "
                 + "The row's engine names it in `following:`, which is what makes the "
                 + "engine follow it: the write wakes the engine, the engine writes a "
                 + "driven text, and neither side renders - the count stays at one while "
@@ -222,7 +222,7 @@ struct ReaderSample: SampleContent, ExampleContent {
     private func row<Content: Views>(_ caption: String, @ViewBuilder _ content: @escaping () -> Content) -> some View {
         ZStack {
             VStack {
-                Label(caption)
+                Text(caption)
                     .fontSize(11)
                     .textColor(Palette.subtle)
 
@@ -259,10 +259,10 @@ private struct Reading: ContentView {
     var content: some View {
         ZStack {
             VStack {
-                Label("5 · a child that reads the value it borrowed")
+                Text("5 · a child that reads the value it borrowed")
                     .fontSize(11)
                     .textColor(Palette.subtle)
-                Label("value · \(percent(value))")
+                Text("value · \(percent(value))")
                     .fontSize(15)
                 DebugInfoLabel()
             }
@@ -286,7 +286,7 @@ private struct Holding: ContentView {
     var content: some View {
         ZStack {
             VStack {
-                Label("6 · a child that only hands the binding on")
+                Text("6 · a child that only hands the binding on")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                 Slider($value)
@@ -316,10 +316,10 @@ private struct Pulsed: ContentView {
     var content: some View {
         ZStack {
             VStack {
-                Label("7 · a state by binding")
+                Text("7 · a state by binding")
                     .fontSize(11)
                     .textColor(Palette.subtle)
-                Label()
+                Text()
                     .text($said)
                     .fontSize(15)
                 DebugInfoLabel()

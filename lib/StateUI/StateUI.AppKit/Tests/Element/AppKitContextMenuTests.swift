@@ -27,7 +27,7 @@ final class AppKitContextMenuTests: XCTestCase {
         move.children = .arranged([top])
         var menu = HostPatch(id: .manual("context"), type: .contextMenu)
         menu.children = .arranged([duplicate, separator, move])
-        var label = HostPatch(id: .manual("row"), type: .label)
+        var label = HostPatch(id: .manual("row"), type: .text)
         label.properties[.text] = .string("Alpha")
         label.children = .arranged([menu])
 
@@ -53,7 +53,7 @@ final class AppKitContextMenuTests: XCTestCase {
         originalItem.events = .replace([.clicked: 50])
         var originalMenu = HostPatch(id: .manual("context"), type: .contextMenu)
         originalMenu.children = .arranged([originalItem])
-        var originalLabel = HostPatch(id: .manual("row"), type: .label)
+        var originalLabel = HostPatch(id: .manual("row"), type: .text)
         originalLabel.children = .arranged([originalMenu])
         renderer.applyForTesting(tree(originalLabel))
 
@@ -66,7 +66,7 @@ final class AppKitContextMenuTests: XCTestCase {
         changedItem.events = .replace([.clicked: 51])
         var changedMenu = HostPatch(id: .manual("context"), type: .contextMenu)
         changedMenu.children = .changed([changedItem])
-        var changedLabel = HostPatch(id: .manual("row"), type: .label)
+        var changedLabel = HostPatch(id: .manual("row"), type: .text)
         changedLabel.children = .changed([changedMenu])
         renderer.applyForTesting(changedTree(changedLabel))
 
@@ -75,7 +75,7 @@ final class AppKitContextMenuTests: XCTestCase {
         XCTAssertEqual(nativeItem.title, "Remove")
         nativeMenu.performActionForItem(at: 0)
 
-        var withoutMenu = HostPatch(id: .manual("row"), type: .label)
+        var withoutMenu = HostPatch(id: .manual("row"), type: .text)
         withoutMenu.children = .arranged([])
         renderer.applyForTesting(changedTree(withoutMenu))
         XCTAssertNil(native.menu)
@@ -103,7 +103,7 @@ final class AppKitContextMenuTests: XCTestCase {
         move.children = .arranged([top])
         var menu = HostPatch(id: .manual("context"), type: .contextMenu)
         menu.children = .arranged([delete, move])
-        var label = HostPatch(id: .manual("row"), type: .label)
+        var label = HostPatch(id: .manual("row"), type: .text)
         label.properties[.text] = .string("Alpha")
         label.children = .arranged([menu])
 

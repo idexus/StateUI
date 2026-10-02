@@ -7,7 +7,7 @@ import CStateUIGTK
 
 /// The view for a control this host does not present yet: its name in libadwaita's error colour, where it belongs.
 @MainActor
-final class GTKUnsupportedView: GTKTextView {
+final class GTKUnsupportedView: GTKTextualView {
     init(_ type: NodeType) {
         super.init()
         setText("GTK: unsupported \(type.name)")

@@ -165,7 +165,7 @@ struct WindowPhasePage: ContentView {
 
     var content: some View {
         let (log, window) = (self.log, self.window)
-        return Label("Window")
+        return Text("Window")
             .onCreated { log.values.append(window.phase) }
             .onChanged(window.phase) { log.values.append(window.phase) }
     }
@@ -213,5 +213,5 @@ struct NotesPage: ContentView {
 /// A note's window.
 struct NoteWindow: Window {
     let number: Int
-    var page: any Page { Label("Note \(number)") }
+    var page: any Page { Text("Note \(number)") }
 }

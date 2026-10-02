@@ -107,7 +107,7 @@ private struct Calling: ContentView {
                 }
             }
             Lamp().lit(true).onPulled { pulls in said = "pulled \(pulls)" }.aim(lamp)
-            Label(said)
+            Text(said)
         }
         .onCreated { heard = [HostEvents.on(InteropTestContract.spoke) { words in said = "heard \(words)" }] }
         .onDestroying {
@@ -152,7 +152,7 @@ final class UIKitInteropTests: XCTestCase {
     /// The last thing the page said.
     @MainActor
     private func said(_ host: UIKitRenderer) -> String? {
-        host.views(UIKitLabelView.self).last?.attributedText?.string
+        host.views(UIKitTextView.self).last?.attributedText?.string
     }
 
     /// An act the application registered is performed and answers the values its contract declares.

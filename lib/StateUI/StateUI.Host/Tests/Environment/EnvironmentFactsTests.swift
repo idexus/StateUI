@@ -80,7 +80,7 @@ final class EnvironmentFactsTests: XCTestCase {
     func testAChangedEnvironmentIsToldFollowedAndRendered() throws {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("root"), type: .vStack)
-        root.children = .arranged([HostPatch(id: .manual("label"), type: .label)])
+        root.children = .arranged([HostPatch(id: .manual("label"), type: .text)])
         runtime.tree.apply(root, complete: true)
         let rightToLeft = try XCTUnwrap(HostLocaleInfo(words: ["he", "IL", "he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
         let leftToRight = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))

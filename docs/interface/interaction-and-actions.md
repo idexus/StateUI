@@ -27,7 +27,7 @@ VStack {
             lastChange = "User chose \(newValue)"
         }
 
-    Label(lastChange)
+    Text(lastChange)
 }
 ```
 
@@ -49,7 +49,7 @@ half-configured recognizer remains in the tree.
 
 ```swift quote
 HStack {
-    Label("Open details")
+    Text("Open details")
 }
 .padding(12)
 .onTapped { path.append(.details) }
@@ -104,11 +104,11 @@ pointer hover; application behavior must not depend on hover as its sole route.
 Text is the portable drag payload:
 
 ```swift quote
-Label(item.title)
+Text(item.title)
     .draggable(text: item.id)
     .onDropCompleted { dragging = nil }
 
-ZStack { Label("Drop here") }
+ZStack { Text("Drop here") }
     .onDrop { text in receive(text) }
     .onDragOver { highlighted = true }
     .onDragLeave { highlighted = false }
@@ -281,7 +281,7 @@ event no head declared is said once, as a misspelled name would be.
 Accessibility modifiers describe meaning, not test-only metadata:
 
 ```swift
-Label("Order total")
+Text("Order total")
     .accessibilityLabel("Order total: 42 euros")
     .accessibilityHint("Updates after the cart changes")
     .accessibilityHeadingLevel(.level1)

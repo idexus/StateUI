@@ -20,11 +20,11 @@ struct CheckBoxSample: SampleContent, ExampleContent {
             HStack {
                 CheckBox($agreed)
 
-                Label("I have read the terms")
+                Text("I have read the terms")
                     .verticalAlignment(.center)
             }
 
-            Label(agreed ? "Ticked" : "Not ticked")
+            Text(agreed ? "Ticked" : "Not ticked")
 
             ForEach(Array(["Cheese", "Bacon", "Egg"].enumerated()), id: \\.offset) { pair in
                 let (index, name) = pair
@@ -32,13 +32,13 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                     CheckBox(extras[index])
                         .onToggled { ticked in extras[index] = ticked }
 
-                    Label(name)
+                    Text(name)
                         .verticalAlignment(.center)
                 }
                 .id(name)
             }
 
-            Label(chosen.isEmpty ? "Nothing extra" : "With \\(chosen.joined(separator: ", "))")
+            Text(chosen.isEmpty ? "Nothing extra" : "With \\(chosen.joined(separator: ", "))")
         }
 
         /// What is ticked, in the order the boxes are drawn.
@@ -57,13 +57,13 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Agreed")
                     .tint(Palette.accent)
 
-                Label("I have read the terms")
+                Text("I have read the terms")
                     .fontSize(15)
                     .verticalAlignment(.center)
             }
             .spacing(4)
 
-            Label(agreed ? "Ticked" : "Not ticked")
+            Text(agreed ? "Ticked" : "Not ticked")
                 .fontSize(15)
                 .textColor(agreed ? Palette.accent : Palette.subtle)
 
@@ -78,7 +78,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                         .tint(Palette.accent)
                         .onToggled { ticked in extras[index] = ticked }
 
-                    Label(name)
+                    Text(name)
                         .fontSize(15)
                         .verticalAlignment(.center)
                 }
@@ -86,7 +86,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                 .id(name)
             }
 
-            Label(chosen.isEmpty ? "Nothing extra" : "With \(chosen.joined(separator: ", "))")
+            Text(chosen.isEmpty ? "Nothing extra" : "With \(chosen.joined(separator: ", "))")
                 .fontSize(15)
         }
         .spacing(12)
@@ -94,13 +94,13 @@ struct CheckBoxSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("A `CheckBox` is the box and nothing else: it has no caption, so the words "
-                + "beside it are a `Label`. Tapping the words does nothing; that is the "
+            Text("A `CheckBox` is the box and nothing else: it has no caption, so the words "
+                + "beside it are a `Text`. Tapping the words does nothing; that is the "
                 + "platform's behaviour.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Boxes are independent - tick as many as you like. One choice out of "
+            Text("Boxes are independent - tick as many as you like. One choice out of "
                 + "several is a `RadioButton`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

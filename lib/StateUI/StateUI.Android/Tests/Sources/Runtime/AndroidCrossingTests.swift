@@ -19,7 +19,7 @@ final class AndroidCrossingTests: XCTestCase {
     func testAWriteThatChangesNothingCrossesNothing() {
         onMainActor {
             let host = AndroidRenderer.bare()
-            let label = AndroidLabelView()
+            let label = AndroidTextView()
             var transform = HostDrawingTransform.identity
             transform.translationX = 10
             label.setOpacity(0.5)

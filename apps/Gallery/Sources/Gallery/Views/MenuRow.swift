@@ -77,7 +77,7 @@ struct MenuRow: ContentView {
             // The style says what a row's caption is; the two lines under it
             // say what the CHOSEN one is. A control's own value wins over its
             // style, per property, which is what lets one style serve both.
-            Label(title)
+            Text(title)
                 .style("MenuRowText")
                 .textColor(chosen ? Palette.accent : Palette.subtle)
                 .fontAttributes(chosen ? .bold : .none)

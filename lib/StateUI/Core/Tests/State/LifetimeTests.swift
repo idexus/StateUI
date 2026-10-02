@@ -14,7 +14,7 @@ private struct Coming: ContentView {
     let name: String
 
     var content: some View {
-        Label(name)
+        Text(name)
             .onCreated { log.append("created \(name)") }
             .onDestroying { log.append("destroying \(name)") }
     }
@@ -26,7 +26,7 @@ private struct Arriving: ContentView {
     let name: String
 
     var content: some View {
-        Label(name)
+        Text(name)
             .onCreated { log.append("created \(name)") }
             .onDestroying { log.append("destroying \(name)") }
     }
@@ -273,7 +273,7 @@ final class LifetimeTests: XCTestCase {
     private func labels(in patch: HostPatch) -> [String] {
         var own: [String] = []
 
-        if patch.type == .label, case .string(let text)? = patch.props[.text] {
+        if patch.type == .text, case .string(let text)? = patch.props[.text] {
             own.append(text)
         }
 
@@ -296,7 +296,7 @@ private struct TitlingPage: ContentView {
     @Environment private var window: WindowSession
 
     var content: some View {
-        Label("hello").onCreated { window.title = "Titled" }
+        Text("hello").onCreated { window.title = "Titled" }
     }
 }
 
@@ -315,7 +315,7 @@ private struct ChainingPage: ContentView {
     @State private var count = 0
 
     var content: some View {
-        Label("\(count)")
+        Text("\(count)")
             .onCreated { count += 1 }
             .onChanged(count) { count += 1 }
     }
@@ -323,5 +323,5 @@ private struct ChainingPage: ContentView {
 
 /// A page with nothing on it, for a stack to hold.
 private struct LifetimePage: ContentView {
-    var content: some View { Label("page") }
+    var content: some View { Text("page") }
 }

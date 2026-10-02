@@ -15,7 +15,7 @@ private struct NotePage: ContentView {
     var content: some View {
         VStack {
             if shown {
-                Label("note")
+                Text("note")
             }
             Button("Hide")
                 .onClicked { shown = false }
@@ -44,9 +44,9 @@ final class UIKitLeaveTests: XCTestCase {
         let before = UIKitElement.liveViewCount
 
         autoreleasepool {
-            XCTAssertEqual(host.views(UIKitLabelView.self).count, 1)
+            XCTAssertEqual(host.views(UIKitTextView.self).count, 1)
             host.views(UIKitButtonView.self).first?.sendActions(for: .primaryActionTriggered)
-            host.settle { host.views(UIKitLabelView.self).isEmpty }
+            host.settle { host.views(UIKitTextView.self).isEmpty }
         }
 
         XCTAssertEqual(UIKitElement.liveViewCount, before - 1, "the label's view outlived its element")

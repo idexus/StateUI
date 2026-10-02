@@ -18,7 +18,7 @@ final class UIKitAccessibilityTests: XCTestCase {
                 DatePicker(State(wrappedValue: CalendarDate(year: 2026, month: 9, day: 28)).projectedValue)
                     .isAccessibilityHidden(true)
                 ActivityIndicator().isRunning(true).isAccessibilityHidden(true)
-                VStack { Label("Met") }.isAccessibilityHidden(true)
+                VStack { Text("Met") }.isAccessibilityHidden(true)
             }
         }
         defer { host.finish() }

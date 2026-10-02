@@ -11,7 +11,7 @@ extension WindowType {
 
 struct NoteWindow: Window {
     let title: String
-    var page: any Page { Label(title) }
+    var page: any Page { Text(title) }
 }
 
 struct NotesScene: Scene {

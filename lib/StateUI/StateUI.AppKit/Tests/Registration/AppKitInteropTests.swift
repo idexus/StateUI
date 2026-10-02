@@ -63,7 +63,7 @@ private struct Calling: ContentView {
                     }
                 }
 
-            Label(answer)
+            Text(answer)
         }
         .onCreated {
             heard = [
@@ -93,7 +93,7 @@ final class AppKitInteropTests: XCTestCase {
     /// The last thing the page said.
     @MainActor
     private func said(_ renderer: AppKitRenderer) -> String? {
-        renderer.nativeViews(AppKitLabelView.self).last?.textForTesting.string
+        renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string
     }
 
     /// An act the application registered is performed and answers the values
@@ -159,7 +159,7 @@ final class AppKitInteropTests: XCTestCase {
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }
 
-        XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
+        XCTAssertTrue(HostBoundary.realizes(TextContract.self))
         XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
         XCTAssertTrue(HostBoundary.realizes(WebViewContract.self))
         XCTAssertFalse(HostBoundary.realizes(DialContract.self))

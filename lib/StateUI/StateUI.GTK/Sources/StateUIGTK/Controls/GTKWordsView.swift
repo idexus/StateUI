@@ -12,5 +12,5 @@ protocol GTKWordsView: GTKView {
     func setLook(_ change: (inout TextLook) -> Void)
 }
 
-extension GTKTextView: GTKWordsView {}
+extension GTKTextualView: GTKWordsView {}
 extension GTKButtonView: GTKWordsView {}

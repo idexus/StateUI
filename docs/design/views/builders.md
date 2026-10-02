@@ -37,9 +37,9 @@ that path to the differ.
 
 ```text
   VStack {
-      Label("Title")                  0
+      Text("Title")                  0
       if signedIn {
-          Label("Welcome")            1.some
+          Text("Welcome")            1.some
       }
       if editing {
           TextField($name)            2.if
@@ -60,18 +60,18 @@ have only the index to go on:
 
 ```text
   VStack {
-      if signedIn { Label("Welcome") }
+      if signedIn { Text("Welcome") }
       TextField($search)
   }
 
   signed out:  [TextField]           the field is child 0
-  signed in:   [Label, TextField]    child 0 is the Label
+  signed in:   [Text, TextField]    child 0 is the Text
 ```
 
-Matched by index, signing in would match the new Label against the field: a
+Matched by index, signing in would match the new Text against the field: a
 changed type, so a replaced control, and the search field would lose its
 focus, its caret and its scroll on every sign-in and sign-out. With the path
-the Label is `0.some` and the field is `1` in both states, so the field is
+the Text is `0.some` and the field is `1` in both states, so the field is
 matched to itself and never moves.
 
 ## Two branches are two elements
@@ -125,7 +125,7 @@ whose length changes wants `ForEach` instead.
 A piece writes its segment onto the nodes its views build (`BuilderPath`), a
 composed view's placeholder included, which is where a key has to sit for the
 differ to see it; a `ForEach` writes its item's identity as the node's `id`. A
-Label, a composed view and a hand-written `Node` in `ModifiedContent(node:)`
+Text, a composed view and a hand-written `Node` in `ModifiedContent(node:)`
 take a segment the same way. A container asks for the nodes in its producer,
 so its views are built no earlier than before.
 

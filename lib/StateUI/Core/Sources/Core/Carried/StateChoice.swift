@@ -6,7 +6,7 @@
 ///
 ///     @State private var side = Alignment.start
 ///
-///     Label("Where am I?").horizontalAlignment($side)
+///     Text("Where am I?").horizontalAlignment($side)
 ///
 ///     side = .center                  // the host moves it; nothing is rebuilt
 ///

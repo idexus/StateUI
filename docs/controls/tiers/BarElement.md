@@ -10,9 +10,9 @@ struct MainWindow: Window {
 
     var page: any Page {
         NavigationStack($path) {
-            Label("Inbox")
+            Text("Inbox")
         } destination: { message in
-            Label("Message \(message)")
+            Text("Message \(message)")
         }
         .barTitle("Mail")
         .barBackgroundColor(.cornflowerBlue)

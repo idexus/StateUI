@@ -49,7 +49,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .onClicked { taps += 1 }
             }
 
-            Label(pressed ? "Held down" : "Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
+            Text(pressed ? "Held down" : "Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
 
             // Words and a picture: the picture on the side chosen, the gap
             // between them as the slider says.
@@ -100,7 +100,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            Label(pressed ? "Held down" : "Tapped \(taps) time\(taps == 1 ? "" : "s")")
+            Text(pressed ? "Held down" : "Tapped \(taps) time\(taps == 1 ? "" : "s")")
                 .fontSize(14)
                 .horizontalAlignment(.center)
 
@@ -125,13 +125,13 @@ struct IconButtonSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The picture is what gives it its purpose, so it goes in the initializer - "
+            Text("The picture is what gives it its purpose, so it goes in the initializer - "
                 + "and it can be drawn once per theme, like any other, which is what these "
                 + "two are.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("It is a button, not an `Image` with a tap recognizer on it: that gives no "
+            Text("It is a button, not an `Image` with a tap recognizer on it: that gives no "
                 + "pressed state, no outline and no shape.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

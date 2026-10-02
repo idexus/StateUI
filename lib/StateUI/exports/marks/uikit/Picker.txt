@@ -1,5 +1,4 @@
 # revision 1.1
-Label.text: ✅
 Picker: ✅
 Picker.closed: waits on Picker.isOpen
 Picker.frameChanged: ✅
@@ -9,3 +8,4 @@ Picker.options: ✓ read options of Picker: the host's own choice, not the menu'
 Picker.selectedIndex: ✓ choose on Picker: the host's choice called, not the menu's action
 Picker.selectedIndexChanged: ✓ choose on Picker: the host's choice called, not the menu's action
 Picker.title: ✓ choose on Picker: the host's choice called, not the menu's action
+Text.text: ✅

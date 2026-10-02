@@ -5,99 +5,59 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// A WinUI `TextBlock`: its words, how they break and stand, and the space between the letters and the lines.
-/// Design: docs/design/platforms/winui/controls.md#words
+/// A Text: a `TextBlock` - its words, or runs of them each in its own colour, size, weight, family, letter spacing
+/// and background - standing in a `Border`, which draws what the label is drawn over and stands the words across its
+/// height.
+/// Design: docs/design/platforms/winui/controls.md#runs-of-words
 @MainActor
-class WinUITextView: WinUIView {
-    override var takesDirection: Bool { true }
+final class WinUITextView: WinUITextualView {
+    /// The label's own words, and the runs shown in their place; nil while it shows its own.
+    private var ownText = ""
+    private var runs: [TextRun]?
 
-    /// The font's size, the space between the letters and the height of a line - what the spacing is measured
-    /// against, and what it is.
-    private(set) var look = TextLook()
-
-    /// Where the view's place is bound while it travels; nil where it stands.
-    private var bound: Rect?
-
-    /// The size WinUI draws body text at, in DIPs.
-    static let platformFontSize = 14.0
-
-    /// How much taller than its size a line of Segoe UI stands.
-    static let lineHeightOfFont = 4.0 / 3.0
-
-    init() {
-        super.init { _ in stateui_winui_text_make() }
+    override func setText(_ text: String) {
+        ownText = text
+        if runs == nil { super.setText(text) }
     }
 
-    /// The words shown.
-    func setText(_ text: String) {
-        stateui_winui_text_set_text(handle, text)
+    /// What the label is drawn over: a colour, a gradient, or nothing.
+    func setBackground(_ value: HostValue?) {
+        let brush = WinUIBrush(value)
+        paint("background", followsSize: brush.followsSize) { [handle] size in
+            brush.withRelayBrush(over: size) { stateui_winui_text_set_background(handle, $0) }
+        }
     }
 
-    /// The words the element shows now, read back from WinUI.
-    var text: String {
-        WinUIView.words(of: handle)
+    /// Where the words stand across the label's height.
+    func setVerticalAlignment(_ alignment: TextAlignment) {
+        stateui_winui_text_set_vertical(handle, alignment.rawValue)
     }
 
-    /// The font, remembering its size for the spacing measured against it.
-    func setTextFont(size: Double?, attributes: FontAttributes?, family: String?) {
-        setFont(size: size, attributes: attributes, family: family)
-        look.size = size.flatMap { $0 > 0 ? $0 : nil }
-        writeSpacing()
-    }
+    /// Runs of words shown in place of the label's own (`MountedElement.textRuns`), each in its own look over the
+    /// label's; nil shows its own words again.
+    func setRuns(_ runs: [TextRun]?) {
+        self.runs = runs
+        guard let runs else { return super.setText(ownText) }
 
-    /// How the words break - wrapped, on one line, or cut short - and the most lines; nil for any
-    /// (`LineBreak.lines`).
-    func setLines(breaking: LineBreak, maximum: Int?) {
-        stateui_winui_text_set_lines(
-            handle, breaking.wraps, Int32(breaking.lines(maximum: maximum) ?? 0), breaking.truncates)
-    }
-
-    /// Where the words stand across the label.
-    func setAlignment(horizontal: TextAlignment) {
-        stateui_winui_text_set_alignment(handle, horizontal.rawValue)
-    }
-
-    /// The space between the letters, in DIPs.
-    func setLetterSpacing(_ points: Double) {
-        look.letterSpacing = points
-        writeSpacing()
-    }
-
-    /// The height of a line, as a multiple of the font's own; nil for the font's.
-    func setLineHeight(_ multiple: Double?) {
-        look.lineHeight = multiple.flatMap { $0 > 0 ? $0 : nil }
-        writeSpacing()
-    }
-
-    /// A line under the words, or through them.
-    func setDecorations(_ decorations: TextDecorations?) {
-        stateui_winui_text_set_decorations(
-            handle, decorations?.contains(.underline) == true, decorations?.contains(.strikethrough) == true)
-    }
-
-    /// The words stand at the size the place is bound for, whole, while the place travels.
-    /// Design: docs/design/host/motion.md#words-at-their-destination
-    override func travels(to destination: Rect?) {
-        bound = destination
-    }
-
-    override var wordsRoom: Rect? { bound }
-
-    /// WinUI spaces letters in thousandths of an em and lines in DIPs: both measured against the font's size.
-    private func writeSpacing() {
-        let size = look.size ?? Self.platformFontSize
-        let thousandths = Int32((look.letterSpacing(inEmsOf: size) * 1000).rounded())
-        let line = look.lineHeight.map { $0 * size * Self.lineHeightOfFont } ?? 0
-        stateui_winui_text_set_spacing(handle, thousandths, line)
-    }
-}
-
-extension WinUIView {
-    /// The words a text block or a button's caption shows now, read back from WinUI.
-    static func words(of handle: StateUIObjectRef) -> String {
-        let length = Int(stateui_winui_text(handle, nil, 0))
-        var bytes = [CChar](repeating: 0, count: length + 1)
-        _ = stateui_winui_text(handle, &bytes, Int32(bytes.count))
-        return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+        WinUIStrings.withCStrings(runs.map(\.text)) { texts in
+            WinUIStrings.withCStrings(runs.map { $0.look.family ?? "" }) { families in
+                let words = runs.indices.map { index in
+                    let look = runs[index].look
+                    let color = look.color?.argb
+                    let background = look.background?.argb
+                    // The space between the letters in ems of the run's own size, its label's where it says none.
+                    let shown = look.over(self.look)
+                    let spacing = shown.letterSpacing(inEmsOf: shown.size ?? Self.platformFontSize)
+                    return StateUIWordsRun(
+                        text: texts[index], color: color ?? 0, background: background ?? 0, size: look.size ?? 0,
+                        hasColor: color != nil, hasBackground: background != nil,
+                        bold: look.attributes.contains(.bold), italic: look.attributes.contains(.italic),
+                        underline: look.decorations.contains(.underline),
+                        strikethrough: look.decorations.contains(.strikethrough), family: families[index],
+                        spacing: Int32((spacing * 1000).rounded()))
+                }
+                stateui_winui_text_set_runs(handle, words, Int32(words.count))
+            }
+        }
     }
 }

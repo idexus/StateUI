@@ -5,13 +5,13 @@
 How far apart the lines of text are.
 
 ```swift
-Label("A paragraph long enough to wrap onto several lines, read more easily with room between them.")
+Text("A paragraph long enough to wrap onto several lines, read more easily with room between them.")
     .lineHeight(1.4)
 ```
 
 Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [Label](../Label.md) · [Span](../Span.md)
+Worn by: [Span](../Span.md) · [Text](../Text.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/LineHeightElementContract.swift`.
 

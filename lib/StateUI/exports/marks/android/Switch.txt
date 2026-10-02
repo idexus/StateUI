@@ -1,6 +1,6 @@
 # revision 1.1
-Label.text: ✅
 Switch: ✅
 Switch.frameChanged: ✅
 Switch.isOn: ✅
 Switch.toggled: ✅
+Text.text: ✅

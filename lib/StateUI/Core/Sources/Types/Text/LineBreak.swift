@@ -13,7 +13,7 @@ public enum LineBreak: Int32, Sendable {
     /// One line, whatever it costs.
     case noWrap = 0
 
-    /// Wraps at spaces. The default for a Label.
+    /// Wraps at spaces. The default for a Text.
     case wordWrap = 1
 
     /// Wraps mid-word where a word does not fit.

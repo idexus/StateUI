@@ -140,7 +140,7 @@
         case "SearchField": dressing.dress(SearchField(words.projectedValue))
         case "TextEditor": dressing.dress(TextEditor(words.projectedValue))
         case "TextField": dressing.dress(TextField(words.projectedValue))
-        default: Label("no field of \(element)")
+        default: Text("no field of \(element)")
         }
         return ModifiedContent(node: field.body)
     }

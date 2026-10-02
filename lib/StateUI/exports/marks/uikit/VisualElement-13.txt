@@ -13,9 +13,6 @@ Grid.layoutDirection: ✅
 HStack.isAccessibilityHidden: ✅
 Image.accessibilityLabel: ✅
 ItemsView.frame: ✅
-Label.frameChanged: ✅
-Label.height: ✅
-Label.width: ✅
 Line.isVisible: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform, checked against the layer it composed itself
 Map.scale: ✓ read scale of Map: the host's own transform, checked against the layer it composed itself
@@ -34,6 +31,9 @@ SearchField.rotation: ✓ read rotation of SearchField: the host's own transform
 Slider.layoutDirection: ✅
 Stepper.isAccessibilityHidden: ✅
 Switch.accessibilityLabel: ✅
+Text.frameChanged: ✅
+Text.height: ✅
+Text.width: ✅
 TextEditor.frame: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅

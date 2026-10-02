@@ -32,13 +32,13 @@ struct HostTimeSample: SampleContent, ExampleContent {
             // closure once.
             DebugInfoLabel()
 
-            Label("Here: \\(zone)")
-            Label(season)
+            Text("Here: \\(zone)")
+            Text(season)
 
             ForEach(clocks, id: \\.0) { clock in
                 HStack {
-                    Label(clock.0)
-                    Label(clock.1)
+                    Text(clock.0)
+                    Text(clock.1)
                 }
             }
 
@@ -90,21 +90,21 @@ struct HostTimeSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("Here: \(zone.isEmpty ? "…" : zone)")
+            Text("Here: \(zone.isEmpty ? "…" : zone)")
                 .fontSize(17)
                 .fontAttributes(.bold)
 
-            Label(season)
+            Text(season)
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
             ForEach(clocks, id: \.0) { clock in
                 HStack {
-                    Label(clock.0)
+                    Text(clock.0)
                         .fontSize(14)
                         .horizontalAlignment(.start)
 
-                    Label(clock.1)
+                    Text(clock.1)
                         .fontSize(14)
                         .textColor(Palette.accent)
                         .horizontalAlignment(.end)
@@ -125,7 +125,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Every line above crossed the boundary as an act - `ClockTime.now()`, "
+            Text("Every line above crossed the boundary as an act - `ClockTime.now()`, "
                 + "`TimeZoneInfo.local()`, `TimeZoneInfo.utcOffset` - and came back as "
                 + "a `ClockTime` and a `Duration`, both of which this side owns. No "
                 + "Foundation is involved, which is why the answers are the same on every "
@@ -133,7 +133,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An offset is a whole number of minutes, so +05:30 is not a special case, "
+            Text("An offset is a whole number of minutes, so +05:30 is not a special case, "
                 + "and it is asked for a DAY - which is how the same zone answers "
                 + "differently in January than it does in August.")
                 .fontSize(12)

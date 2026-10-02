@@ -7,7 +7,7 @@ The menus a page or an arrangement declares for the menu bar, joining the menus 
 ```swift
 @State var saved = false
 
-Label(saved ? "Saved" : "Not saved")
+Text(saved ? "Saved" : "Not saved")
     .menuBar {
         Menu("File") {
             MenuItem("Save").onClicked { saved = true }

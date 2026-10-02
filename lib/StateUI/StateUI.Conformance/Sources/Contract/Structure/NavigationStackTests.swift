@@ -12,13 +12,13 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("standsAloneShowingItsRoot", proves: [
-                Covered(NavigationStackContract.self), Covered(ViewContract.frameChanged, on: "Label"),
+                Covered(NavigationStackContract.self), Covered(ViewContract.frameChanged, on: "Text"),
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Label("Root").onEvent(ViewContract.frameChanged) { frames.values.append($0) }
-                    } destination: { _ in Label("Pushed") }
+                        Text("Root").onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                    } destination: { _ in Text("Pushed") }
                 }
                 s.settle { Aspects.laidOut(frames) }
                 s.expect(Aspects.laidOut(frames), true, "its root laid out in the window")
@@ -46,8 +46,8 @@
                 let path = State(wrappedValue: [1, 2])
                 s.start {
                     NavigationStack(path.projectedValue) {
-                        Label("Root")
-                    } destination: { number in Label("Page \(number)") }
+                        Text("Root")
+                    } destination: { number in Text("Page \(number)") }
                 }
                 let stack = try s.element(ofType: NavigationStackContract.nodeType)
 

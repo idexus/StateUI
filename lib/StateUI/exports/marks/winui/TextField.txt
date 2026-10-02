@@ -1,5 +1,5 @@
 # revision 1.1
-Label.text: ✅
+Text.text: ✅
 TextField: ✅
 TextField.frameChanged: ✅
 TextField.isPassword: ☑️ A PasswordBox has no read-only state, alignment, case, caret or selection: a password field keeps none of these.

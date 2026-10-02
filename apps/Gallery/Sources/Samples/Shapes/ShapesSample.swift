@@ -313,7 +313,7 @@ struct ShapesSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Fill, stroke and everything about the stroke form one `Shape` protocol, "
+            Text("Fill, stroke and everything about the stroke form one `Shape` protocol, "
                 + "shared by all six outlines and every native host. A shape with no "
                 + "stroke width draws no outline and one with no fill has no inside - a "
                 + "`Line` has only the first, as there is nothing to fill. A `Rectangle` "
@@ -322,14 +322,14 @@ struct ShapesSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A `Path` is whatever you can write down: `M` moves the pen, `L` draws a "
+            Text("A `Path` is whatever you can write down: `M` moves the pen, `L` draws a "
                 + "line to a point, `Z` closes the figure back to where it started - the "
                 + "same SVG path vocabulary on every StateUI host. A `Polygon` closes its "
                 + "figure for you and a `Polyline` leaves it open.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Dashes and their offset are counted in stroke widths: `[3, 2]` at "
+            Text("Dashes and their offset are counted in stroke widths: `[3, 2]` at "
                 + "width 4 repeats every 20 points, so the lower line's offset of 2.5 "
                 + "shifts it half a pattern and its dashes stand under the upper line's gaps. "
                 + "A miter join carries the two outer edges on until they cross, and the "
@@ -339,7 +339,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The star is five points, each joined to the one two along, so its outline "
+            Text("The star is five points, each joined to the one two along, so its outline "
                 + "crosses itself and the middle is enclosed twice. A `fillRule` only says "
                 + "anything there: `.evenOdd` counts that middle as outside and empties it, "
                 + "`.nonzero` counts it as inside and fills it. Everywhere else the two "

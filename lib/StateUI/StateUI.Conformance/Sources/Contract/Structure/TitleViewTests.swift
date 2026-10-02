@@ -18,7 +18,7 @@
                 s.start {
                     NavigationStack(path.projectedValue) {
                         DeclaringPage(title: TextField(query.projectedValue).id("query"))
-                    } destination: { _ in Label("Result") }
+                    } destination: { _ in Text("Result") }
                 }
                 let field = try s.element("query")
                 try s.settle { try s.held(VisualElementContract.isVisible, on: field) == true }
@@ -37,9 +37,9 @@
                 let path = State(wrappedValue: [Int]())
                 s.start {
                     NavigationStack(path.projectedValue) {
-                        DeclaringPage(title: Label("Own").id("own"))
+                        DeclaringPage(title: Text("Own").id("own"))
                     } destination: { _ in DeclaringPage() }
-                    .titleView { Label("Shared").id("shared") }
+                    .titleView { Text("Shared").id("shared") }
                 }
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("own")) == true }
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("own")), true, "the page's own first")

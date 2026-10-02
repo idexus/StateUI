@@ -27,11 +27,11 @@ struct TabsExtraPage: ContentView {
             VStack {
                 SectionTitle("A tab the user added")
 
-                Label("Extra \(number)")
+                Text("Extra \(number)")
                     .fontSize(26)
                     .fontAttributes(.bold)
 
-                Label("This tab is `.extra(\(number))`, one value in the tabs array.")
+                Text("This tab is `.extra(\(number))`, one value in the tabs array.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 

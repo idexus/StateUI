@@ -16,7 +16,6 @@ Image.height: ✅
 Image.width: ✅
 ItemsView.isVisible: ✅
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform, checked against the layer it composed itself
-Label.scale: ✓ read scale of Label: the host's own transform, checked against the layer it composed itself
 Line.rotation: ✓ read rotation of Line: the host's own transform, checked against the layer it composed itself
 Map.layoutDirection: ✅
 Path.isAccessibilityHidden: ✅
@@ -36,6 +35,7 @@ Stepper.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.width: ✅
+Text.scale: ✓ read scale of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.isVisible: ✅
 TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself

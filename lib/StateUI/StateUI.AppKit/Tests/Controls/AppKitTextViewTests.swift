@@ -8,12 +8,12 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-final class AppKitLabelViewTests: XCTestCase {
+final class AppKitTextViewTests: XCTestCase {
     @MainActor
-    func testPlainLabelMapsTypographySpacingDecorationAndPadding() throws {
+    func testPlainTextMapsTypographySpacingDecorationAndPadding() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("StateUI"),
             .textCase: .enumeration(TextCase.uppercase.rawValue),
@@ -32,7 +32,7 @@ final class AppKitLabelViewTests: XCTestCase {
         renderer.applyForTesting(tree(label))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("label")) as? AppKitLabelView)
+            renderer.viewForTesting(id: .manual("label")) as? AppKitTextView)
         let attributes = native.attributedStringValue.attributes(at: 0, effectiveRange: nil)
         XCTAssertEqual(native.stringValue, "STATEUI")
         XCTAssertEqual((attributes[.font] as? NSFont)?.pointSize, 18)
@@ -52,12 +52,12 @@ final class AppKitLabelViewTests: XCTestCase {
     /// paragraph style inside that text, so a stored `.center` proves nothing
     /// on its own.
     @MainActor
-    func testALabelsTextAlignmentMovesTheWordsItDraws() throws {
+    func testATextsTextAlignmentMovesTheWordsItDraws() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                Label("short").horizontalTextAlignment(.start)
-                Label("short").horizontalTextAlignment(.center)
-                Label("short").horizontalTextAlignment(.end)
+                Text("short").horizontalTextAlignment(.start)
+                Text("short").horizontalTextAlignment(.center)
+                Text("short").horizontalTextAlignment(.end)
             }
         }
         defer { renderer.closeForTesting() }
@@ -65,7 +65,7 @@ final class AppKitLabelViewTests: XCTestCase {
         content.frame = NSRect(x: 0, y: 0, width: 400, height: 180)
         content.layoutSubtreeIfNeeded()
 
-        let labels = renderer.nativeViews(AppKitLabelView.self)
+        let labels = renderer.nativeViews(AppKitTextView.self)
         XCTAssertEqual(labels.count, 3)
         XCTAssertEqual(labels[1].bounds.width, 400, "a label fills the stack it sits in")
         let ink = try labels.map { try firstInkColumn(of: $0) }
@@ -85,12 +85,12 @@ final class AppKitLabelViewTests: XCTestCase {
     /// different question from the alignment across the width - and it is
     /// measured the same way, as ink.
     @MainActor
-    func testALabelsVerticalTextAlignmentMovesTheWordsItDraws() throws {
+    func testATextsVerticalTextAlignmentMovesTheWordsItDraws() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                Label("short").verticalTextAlignment(.start).height(60)
-                Label("short").verticalTextAlignment(.center).height(60)
-                Label("short").verticalTextAlignment(.end).height(60)
+                Text("short").verticalTextAlignment(.start).height(60)
+                Text("short").verticalTextAlignment(.center).height(60)
+                Text("short").verticalTextAlignment(.end).height(60)
             }
         }
         defer { renderer.closeForTesting() }
@@ -98,7 +98,7 @@ final class AppKitLabelViewTests: XCTestCase {
         content.frame = NSRect(x: 0, y: 0, width: 400, height: 220)
         content.layoutSubtreeIfNeeded()
 
-        let labels = renderer.nativeViews(AppKitLabelView.self)
+        let labels = renderer.nativeViews(AppKitTextView.self)
         XCTAssertEqual(labels.count, 3)
         XCTAssertEqual(labels[1].bounds.height, 60, "a label keeps the height it asked for")
         let ink = try labels.map { try firstInkRow(of: $0) }
@@ -131,14 +131,14 @@ final class AppKitLabelViewTests: XCTestCase {
         ]
         var formatted = HostPatch(id: .manual("formatted"), type: .spans)
         formatted.children = .arranged([first, second])
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties[.fontSize] = .number(15)
         label.children = .arranged([formatted])
 
         renderer.applyForTesting(tree(label))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("label")) as? AppKitLabelView)
+            renderer.viewForTesting(id: .manual("label")) as? AppKitTextView)
         XCTAssertEqual(native.stringValue, "let COUNTER")
         XCTAssertNotNil(native.attributedStringValue.attribute(
             .foregroundColor, at: 0, effectiveRange: nil) as? NSColor)
@@ -161,7 +161,7 @@ final class AppKitLabelViewTests: XCTestCase {
             red: 0, green: 0, blue: 255, alpha: 255)]
         var formatted = HostPatch(id: .manual("formatted"), type: .spans)
         formatted.children = .arranged([first, second])
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.children = .arranged([formatted])
         renderer.applyForTesting(tree(label))
 
@@ -170,12 +170,12 @@ final class AppKitLabelViewTests: XCTestCase {
             red: 255, green: 0, blue: 0, alpha: 255)
         var changedFormatted = HostPatch(id: .manual("formatted"), type: .spans)
         changedFormatted.children = .changed([changedSecond])
-        var changedLabel = HostPatch(id: .manual("label"), type: .label)
+        var changedLabel = HostPatch(id: .manual("label"), type: .text)
         changedLabel.children = .changed([changedFormatted])
         renderer.applyForTesting(changedTree(changedLabel))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("label")) as? AppKitLabelView)
+            renderer.viewForTesting(id: .manual("label")) as? AppKitTextView)
         XCTAssertEqual(native.stringValue, "AB")
         let firstColor = try XCTUnwrap((native.attributedStringValue.attribute(
             .foregroundColor, at: 0, effectiveRange: nil) as? NSColor)?.usingColorSpace(.sRGB))
@@ -187,7 +187,7 @@ final class AppKitLabelViewTests: XCTestCase {
 
     @MainActor
     func testVerticalAlignmentUsesThePaddedContentRectangle() {
-        let view = AppKitLabelView()
+        let view = AppKitTextView()
         view.frame = NSRect(x: 0, y: 0, width: 100, height: 80)
         view.apply(
             attributedText: NSAttributedString(
@@ -207,7 +207,7 @@ final class AppKitLabelViewTests: XCTestCase {
 
     @MainActor
     func testAWidthConstraintMeasuresWrappingWithoutInventingFill() {
-        let view = AppKitLabelView()
+        let view = AppKitTextView()
         view.apply(
             attributedText: NSAttributedString(
                 string: "short", attributes: [.font: NSFont.systemFont(ofSize: 13)]),
@@ -228,7 +228,7 @@ final class AppKitLabelViewTests: XCTestCase {
         let paragraph = NSMutableParagraphStyle()
         paragraph.minimumLineHeight = 30
         paragraph.maximumLineHeight = 30
-        let view = AppKitLabelView()
+        let view = AppKitTextView()
         view.apply(
             attributedText: NSAttributedString(
                 string: "one\ntwo\nthree",
@@ -247,10 +247,10 @@ final class AppKitLabelViewTests: XCTestCase {
 
     /// A label's font family reaches its native text.
     @MainActor
-    func testALabelsFontFamilyComesThroughTheHost() throws {
-        let renderer = AppKitRenderer.running { Label("Ada").fontFamily("Menlo") }
+    func testATextsFontFamilyComesThroughTheHost() throws {
+        let renderer = AppKitRenderer.running { Text("Ada").fontFamily("Menlo") }
         defer { renderer.closeForTesting() }
-        let label = try XCTUnwrap(renderer.nativeViews(AppKitLabelView.self).first)
+        let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
 
         let font = label.attributedStringValue.attribute(.font, at: 0, effectiveRange: nil)
         XCTAssertEqual((font as? NSFont)?.familyName, "Menlo")
@@ -260,20 +260,20 @@ final class AppKitLabelViewTests: XCTestCase {
     /// a cut shows one line whatever the count, and a wrap shows the count it
     /// was given. A label that says neither wraps without a limit.
     @MainActor
-    func testALabelsLineBreakAndMaximumLinesReachItsNativeText() throws {
+    func testATextsLineBreakAndMaximumLinesReachItsNativeText() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                Label("Plain")
-                Label("Clip").lineBreak(.noWrap).maximumLines(3)
-                Label("Words").lineBreak(.wordWrap).maximumLines(3)
-                Label("Characters").lineBreak(.characterWrap).maximumLines(3)
-                Label("Head").lineBreak(.headTruncation).maximumLines(3)
-                Label("Tail").lineBreak(.tailTruncation).maximumLines(3)
-                Label("Middle").lineBreak(.middleTruncation).maximumLines(3)
+                Text("Plain")
+                Text("Clip").lineBreak(.noWrap).maximumLines(3)
+                Text("Words").lineBreak(.wordWrap).maximumLines(3)
+                Text("Characters").lineBreak(.characterWrap).maximumLines(3)
+                Text("Head").lineBreak(.headTruncation).maximumLines(3)
+                Text("Tail").lineBreak(.tailTruncation).maximumLines(3)
+                Text("Middle").lineBreak(.middleTruncation).maximumLines(3)
             }
         }
         defer { renderer.closeForTesting() }
-        let texts = renderer.nativeViews(AppKitLabelView.self).map {
+        let texts = renderer.nativeViews(AppKitTextView.self).map {
             $0.subviews.compactMap { $0 as? NSTextField }.first
         }
 

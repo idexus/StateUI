@@ -92,7 +92,7 @@ final class VisibilityCrossingTests: XCTestCase {
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.layoutMotion.applicationMotion = .eased(200, .linear)
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [.isVisible: .bool(visible)]
         runtime.tree.apply(label, complete: true)
         return (runtime, clock, runtime.tree.root!)
@@ -100,7 +100,7 @@ final class VisibilityCrossingTests: XCTestCase {
 
     /// The label shown or hidden, as a patch says.
     private static func show(_ visible: Bool, in runtime: HostRuntime) {
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [.isVisible: .bool(visible)]
         runtime.tree.apply(label, complete: false)
     }

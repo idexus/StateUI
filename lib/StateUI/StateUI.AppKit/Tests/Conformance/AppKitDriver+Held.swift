@@ -74,7 +74,7 @@ extension AppKitDriver {
     private static func words(_ property: Prop, _ view: NSView) throws -> HostValue? {
         // A label draws its words in the attributes of its text; a control, in its own font and colour; a view
         // wrapping one, in its control's.
-        let label = (view as? AppKitLabelView)?.attributedStringValue
+        let label = (view as? AppKitTextView)?.attributedStringValue
         let attributes = label.flatMap { $0.length > 0 ? $0.attributes(at: 0, effectiveRange: nil) : nil }
         let presented = (view as? AppKitAccessibilityPresenting)?.presentedControl ?? view
         let control = presented as? NSControl

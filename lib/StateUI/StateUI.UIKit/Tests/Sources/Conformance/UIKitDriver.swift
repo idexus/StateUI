@@ -298,7 +298,7 @@ final class UIKitDriver: HostDriver {
         switch (property, view) {
         case (.selectedItems, let items as UIKitItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as UIKitItemsView): return items.modeForTesting.propValue
-        case (.text, let label as UIKitLabelView): return (label.text ?? "").propValue
+        case (.text, let label as UIKitTextView): return (label.text ?? "").propValue
         case (.text, let field as any UIKitInputView): return field.words.propValue
         case (.cursorPosition, let field as any UIKitInputView): return field.selection.start.propValue
         case (.selectionLength, let field as any UIKitInputView): return field.selection.length.propValue
@@ -368,7 +368,7 @@ final class UIKitDriver: HostDriver {
         case (.padding, let button as UIButton):
             guard let insets = button.configuration?.contentInsets else { return nil }
             return Insets(insets.leading, insets.top, insets.trailing, insets.bottom).propValue
-        case (.padding, let label as UIKitLabelView):
+        case (.padding, let label as UIKitTextView):
             return Insets(label.padding.left, label.padding.top, label.padding.right, label.padding.bottom).propValue
         case (_, let view?):
             if let held = try Self.viewHolds(property, view, element.native as? UIKitElement) { return held }

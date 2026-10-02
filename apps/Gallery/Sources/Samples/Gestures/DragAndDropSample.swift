@@ -30,7 +30,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             HStack {
                 ForEach(items) { item in
                     ZStack {
-                        Label(item)
+                        Text(item)
                             .padding(12, 8)
                     }
                     .style("Card")
@@ -46,16 +46,16 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 }
             }
 
-            Label(finished)
+            Text(finished)
 
             ZStack {
                 VStack {
-                    Label(over
+                    Text(over
                         ? "let go to drop it"
                         : (basket.isEmpty ? "nothing yet" : "\\(basket.count) dropped"))
 
                     ForEach(Array(basket.enumerated()), id: \\.offset) { pair in
-                        Label(pair.element)
+                        Text(pair.element)
                     }
                 }
                 .padding(24)
@@ -90,7 +90,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             HStack {
                 ForEach(items) { item in
                     ZStack {
-                        Label(item)
+                        Text(item)
                             .fontSize(14)
                             .padding(12, 8)
                     }
@@ -107,7 +107,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            Label(finished)
+            Text(finished)
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -116,14 +116,14 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             ZStack {
                 VStack {
-                    Label(over
+                    Text(over
                         ? "let go to drop it"
                         : (basket.isEmpty ? "nothing yet" : "\(basket.count) dropped"))
                         .fontSize(15)
                         .horizontalTextAlignment(.center)
 
                     ForEach(Array(basket.enumerated()), id: \.offset) { pair in
-                        Label(pair.element)
+                        Text(pair.element)
                             .fontSize(13)
                             .textColor(Palette.subtle)
                             .horizontalTextAlignment(.center)
@@ -159,26 +159,26 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("What travels is a STRING, decided before the drag starts: a native "
+            Text("What travels is a STRING, decided before the drag starts: a native "
                 + "drag session needs its payload at once, so `draggable(text:)` says it "
                 + "up front.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Reading what was dropped is asynchronous - it may be coming from "
+            Text("Reading what was dropped is asynchronous - it may be coming from "
                 + "another application - so the host reads it, and `onDrop` runs with the "
                 + "text when there is something to say.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`onDragOver` runs again and again while a drag is held over the "
+            Text("`onDragOver` runs again and again while a drag is held over the "
                 + "target, not once, so it SETS the highlight rather than counting; "
                 + "`onDragLeave` runs when the drag goes away without being let go. A "
                 + "drop is not a leave, so `onDrop` takes the highlight down as well.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both of those belong to a view that ACCEPTS a drop, and `onDrop` is "
+            Text("Both of those belong to a view that ACCEPTS a drop, and `onDrop` is "
                 + "what makes a view one - written without it, neither ever runs. "
                 + "`onDropCompleted` is the other end: it belongs to the view that was "
                 + "dragged, so it needs `draggable(text:)` beside it, and it runs when "

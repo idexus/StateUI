@@ -57,7 +57,7 @@ struct SearchSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("Type in the box on the navigation bar; these rows follow it.")
+            Text("Type in the box on the navigation bar; these rows follow it.")
                 .fontSize(14)
 
             VStack {
@@ -69,7 +69,7 @@ struct SearchSample: SampleContent, ExampleContent {
             }
             .spacing(2)
 
-            Label(matches.isEmpty
+            Text(matches.isEmpty
                 ? "Nothing matches \"\(query)\""
                 : "\(matches.count) of \(items.count) shown")
                 .fontSize(12)
@@ -97,19 +97,19 @@ struct SearchSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The box is a `SearchField` declared with `.titleView { }`, the bar's title "
+            Text("The box is a `SearchField` declared with `.titleView { }`, the bar's title "
                 + "slot, so it sits where this page's title would; the page a match pushes "
                 + "wears its own. The rows under it are drawn by this page from its own "
                 + "state, so they look like the app and do whatever choosing one should do.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A title view replaces the title while this page is showing, so use "
+            Text("A title view replaces the title while this page is showing, so use "
                 + "the slot only when the view has a job there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`OnScreenKeyboard.hide()` takes the focus off whatever holds it - the box on "
+            Text("`OnScreenKeyboard.hide()` takes the focus off whatever holds it - the box on "
                 + "the bar included. On iOS a focused search box takes over the bar, back "
                 + "button and all, and unfocusing it gives the bar back.")
                 .fontSize(12)

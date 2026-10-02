@@ -9,7 +9,7 @@ A box that is ticked or not.
 
 HStack {
     CheckBox($agreed)
-    Label("I agree to the terms")
+    Text("I agree to the terms")
 }
 .spacing(8)
 ```

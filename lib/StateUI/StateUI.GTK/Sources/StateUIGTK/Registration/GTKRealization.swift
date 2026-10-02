@@ -65,7 +65,7 @@ enum GTKRealization {
                  missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
-        .partial("Label", "background", missing: "A brush fills the box with its first colour alone."),
+        .partial("Text", "background", missing: "A brush fills the box with its first colour alone."),
         .notPlanned("MenuItem", "icon", reason: "GNOME's menus show words alone, no picture beside them."),
         .notPlanned("MenuItem", "isDestructive", reason: "GNOME's menus mark no entry as destroying something."),
         .complete("ModalStack", "popped"),

@@ -9,53 +9,93 @@ import XCTest
 final class AndroidTextViewTests: XCTestCase {
     static var allTests: [(String, (AndroidTextViewTests) -> () throws -> Void)] {
         [
-            ("testTextOutsideTheBasicPlaneComesBackWhole", testTextOutsideTheBasicPlaneComesBackWhole),
-            ("testAClearedSizePutsBackThePlatformsOwn", testAClearedSizePutsBackThePlatformsOwn),
-            ("testPaddingIsTheRoomAroundTheWordsWhateverTheBackground", testPaddingIsTheRoomAroundTheWordsWhateverTheBackground),
+            ("testATextsSpansAreRunsOfItsWords", testATextsSpansAreRunsOfItsWords),
+            ("testATextShowsAsManyLinesAsItsBreakAllows", testATextShowsAsManyLinesAsItsBreakAllows),
+            ("testATextsCaseAndLetterSpacingAreItsOwn", testATextsCaseAndLetterSpacingAreItsOwn),
+            ("testABackgroundBrushIsDrawnAcrossTheView", testABackgroundBrushIsDrawnAcrossTheView),
         ]
     }
 
-    override func setUp() {
-        onMainActor { _ = AndroidRenderer.running { VStack {} } }
-    }
-
-    /// Words cross as UTF-16: modified UTF-8 cannot hold a character outside the basic plane.
-    func testTextOutsideTheBasicPlaneComesBackWhole() {
+    /// The runs' words are the label's, one after another, and a larger run makes the line taller.
+    func testATextsSpansAreRunsOfItsWords() {
         onMainActor {
-            let label = AndroidLabelView()
-
-            label.setText("🙂 zażółć")
-
-            XCTAssertEqual(label.text, "🙂 zażółć")
-        }
-    }
-
-    func testAClearedSizePutsBackThePlatformsOwn() {
-        onMainActor {
-            let label = AndroidLabelView()
-            let platforms = Java.callFloat(label.reference, TestJava.getTextSize)
-
-            label.setFontSize(40)
-            XCTAssertNotEqual(Java.callFloat(label.reference, TestJava.getTextSize), platforms)
-            label.setFontSize(nil)
-
-            XCTAssertEqual(Java.callFloat(label.reference, TestJava.getTextSize), platforms)
-        }
-    }
-
-    /// A colour behind a button takes the padding its own background brought; the tree's padding stays.
-    func testPaddingIsTheRoomAroundTheWordsWhateverTheBackground() throws {
-        try onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Button("Styled").background(Color("#512BD4")).padding(16, 11)
+                    Text()
+                        .spans {
+                            TextSpan("small ").textColor(.red).fontSize(12)
+                            TextSpan("large").fontSize(36).fontAttributes(.bold)
+                        }
+                        .horizontalAlignment(.start)
+                    Text("small large").fontSize(12).horizontalAlignment(.start)
                 }
             }
-            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            host.layOut()
 
-            XCTAssertEqual(Java.callInt(button.reference, JavaAPI.getPaddingLeft), 32, "sixteen points at two pixels a point")
-            XCTAssertEqual(Java.callInt(button.reference, JavaAPI.getPaddingTop), 22)
-            XCTAssertEqual(Java.callInt(button.reference, JavaAPI.getPaddingRight), 32)
+            let labels = host.views(AndroidTextView.self)
+            XCTAssertEqual(labels[0].text, "small large")
+            XCTAssertGreaterThan(labels[0].frame.height, labels[1].frame.height * 3 / 2)
+        }
+    }
+
+    /// The same words, too long for one line: wrapping shows them all, two lines at most shows two, and a
+    /// truncated line one.
+    func testATextShowsAsManyLinesAsItsBreakAllows() {
+        onMainActor {
+            let words = "one two three four five six seven eight nine ten eleven twelve"
+            let host = AndroidRenderer.running {
+                VStack {
+                    Text(words).width(100)
+                    Text(words).width(100).maximumLines(2)
+                    Text(words).width(100).lineBreak(.tailTruncation)
+                }
+            }
+            host.layOut()
+
+            let lines = host.views(AndroidTextView.self).map { Java.callInt($0.reference, TestJava.getLineCount) }
+            XCTAssertGreaterThan(lines[0], 2)
+            let heights = host.views(AndroidTextView.self).map(\.frame.height)
+            XCTAssertGreaterThan(heights[0], heights[1])
+            XCTAssertGreaterThan(heights[1], heights[2])
+        }
+    }
+
+    /// Upper case throughout, and letter spacing in points drawn as Android's share of the text size.
+    func testATextsCaseAndLetterSpacingAreItsOwn() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Text("Hello").textCase(.uppercase).fontSize(20).characterSpacing(2)
+            }
+
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
+            XCTAssertEqual(label.text, "HELLO")
+            let size = Java.callFloat(label.reference, JavaAPI.getTextSize)
+            XCTAssertEqual(Java.callFloat(label.reference, TestJava.getLetterSpacing), 4 / size, accuracy: 0.0001)
+        }
+    }
+
+    /// A gradient runs across the whole view, from its first colour at the start point to its last at the end.
+    func testABackgroundBrushIsDrawnAcrossTheView() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Text("")
+                    .background(Brush.linearGradient(
+                        [GradientStop(Color("#FF0000"), 0), GradientStop(Color("#0000FF"), 1)],
+                        startPoint: Point(0, 0),
+                        endPoint: Point(1, 0)))
+                    .width(100)
+                    .height(20)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
+            let drawn = label.pixels(at: [(0, 20), (199, 20)])
+            XCTAssertGreaterThan(drawn[0] >> 16 & 0xFF, 0xF0, String(drawn[0], radix: 16))
+            XCTAssertLessThan(drawn[0] & 0xFF, 0x10, String(drawn[0], radix: 16))
+            XCTAssertLessThan(drawn[1] >> 16 & 0xFF, 0x10, String(drawn[1], radix: 16))
+            XCTAssertGreaterThan(drawn[1] & 0xFF, 0xF0, String(drawn[1], radix: 16))
         }
     }
 }

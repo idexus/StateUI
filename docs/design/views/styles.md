@@ -8,14 +8,14 @@ leaves.
 
 ```text
   application.styles = StyleSheet {             a value in the application session
-      Style<Label>().fontSize(14)               implicit: every Label
-      Style<Label>("Headline").fontSize(32)     keyed: asked for with .style("Headline")
+      Style<Text>().fontSize(14)               implicit: every Text
+      Style<Text>("Headline").fontSize(32)     keyed: asked for with .style("Headline")
   }
 
-  Label("Welcome").style("Headline")
+  Text("Welcome").style("Headline")
         │
         ▼  the differ, for every element it builds: styled(_:with:)
-  Label with the style's values under its own, and the states of both
+  Text with the style's values under its own, and the states of both
         │
         ▼
   the patch: a control with every value already on it; no style crosses
@@ -34,7 +34,7 @@ node, the host having no dictionary to look one up in.
 A style is written with the modifiers its control has, chained on the style
 itself. It conforms to the property half of its target's tiers and to nothing
 else (tiers.md, two halves), so after the dot an author is offered exactly what
-a style can carry: `Style<Label>().onTapped { }` and `Style<Label>().id("x")` do
+a style can carry: `Style<Text>().onTapped { }` and `Style<Text>().id("x")` do
 not compile. The conformances are one line per tier and one per control's own
 properties, and the modifiers themselves are written once for both.
 

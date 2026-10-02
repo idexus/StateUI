@@ -121,12 +121,12 @@ private struct KeptSectionPage: ContentView {
 
     var content: some View {
         KeptApplication.sections.append(section)
-        return Label("section \(section)")
+        return Text("section \(section)")
     }
 }
 
 private struct KeptNoteWindow: Window {
     let number: Int
 
-    var page: any Page { Label("note \(number)") }
+    var page: any Page { Text("note \(number)") }
 }

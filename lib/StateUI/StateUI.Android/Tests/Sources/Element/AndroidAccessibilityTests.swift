@@ -21,19 +21,19 @@ final class AndroidAccessibilityTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Label("Save")
+                    Text("Save")
                         .accessibilityIdentifier("save")
                         .accessibilityLabel("Save the file")
                         .accessibilityHint("Writes it to disk")
                         .accessibilityHeadingLevel(.level2)
-                    Label("Hidden").isAccessibilityHidden(true)
-                    Label("Met").isAccessibilityHidden(false)
-                    VStack { Label("Inside") }.automationExcludedWithChildren(true)
-                    Label("Plain")
+                    Text("Hidden").isAccessibilityHidden(true)
+                    Text("Met").isAccessibilityHidden(false)
+                    VStack { Text("Inside") }.automationExcludedWithChildren(true)
+                    Text("Plain")
                 }
             }
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(TestAccessibility.describe), [
+            XCTAssertEqual(host.views(AndroidTextView.self).map(TestAccessibility.describe), [
                 "id save, label Save the file, hint Writes it to disk, heading, met", "hidden", "met", "met", "met",
             ])
             XCTAssertEqual(host.views(AndroidStackView.self).map(TestAccessibility.describe), ["", "hidden with children"])
@@ -45,8 +45,8 @@ final class AndroidAccessibilityTests: XCTestCase {
         onMainActor {
             let said = State(wrappedValue: true)
             let host = AndroidRenderer.running {
-                if !said.wrappedValue { return Label("Save") }
-                return Label("Save")
+                if !said.wrappedValue { return Text("Save") }
+                return Text("Save")
                     .accessibilityIdentifier("save")
                     .accessibilityLabel("Save the file")
                     .accessibilityHint("Writes it to disk")
@@ -56,7 +56,7 @@ final class AndroidAccessibilityTests: XCTestCase {
             said.wrappedValue = false
             host.runtime.pump.turn()
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(TestAccessibility.describe), ["met"])
+            XCTAssertEqual(host.views(AndroidTextView.self).map(TestAccessibility.describe), ["met"])
         }
     }
 }

@@ -64,7 +64,7 @@ final class DiffTests: XCTestCase {
         let renders = Renders()
 
         func code(_ name: Color) -> Node {
-            Label()
+            Text()
                 .spans {
                     TextSpan("let ").textColor(.purple)
                     TextSpan("counter").textColor(name)
@@ -95,7 +95,7 @@ final class DiffTests: XCTestCase {
         let renders = Renders()
 
         func line(_ sold: Bool) -> Node {
-            Label()
+            Text()
                 .spans {
                     TextSpan("Sold")
 
@@ -120,12 +120,12 @@ final class DiffTests: XCTestCase {
     func testALostPropertyIsClearedRatherThanReplacingTheControl() {
         let renders = Renders()
 
-        renders.render(Node(type: "Label", id: "a", props: [
+        renders.render(Node(type: "Text", id: "a", props: [
             "text": .string("one"),
             "fontSize": .number(20),
         ]))
 
-        let patch = renders.render(Node(type: "Label", id: "a", props: ["text": .string("one")]))
+        let patch = renders.render(Node(type: "Text", id: "a", props: ["text": .string("one")]))
 
         XCTAssertFalse(patch.replace, "the control stays, with its handlers and everything under it")
         XCTAssertEqual(patch.cleared, ["fontSize"], "and the property that went away is named")
@@ -136,10 +136,10 @@ final class DiffTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Node(type: "Label", id: "a", props: ["fontSize": .number(20)]),
+            Node(type: "Text", id: "a", props: ["fontSize": .number(20)]),
         ]))
 
-        let patch = renders.render(stack([Node(type: "Label", id: "a")]))
+        let patch = renders.render(stack([Node(type: "Text", id: "a")]))
 
         // The label says nothing except that a property is gone. A patch is
         // dropped when it is empty, and one that clears is not empty - without
@@ -169,7 +169,7 @@ final class DiffTests: XCTestCase {
     func testAChangedTypeReplacesTheControl() {
         let renders = Renders()
 
-        renders.render(Node(type: "Label", id: "a", props: ["text": .string("one")]))
+        renders.render(Node(type: "Text", id: "a", props: ["text": .string("one")]))
         let patch = renders.render(Node(type: "Button", id: "a", props: ["text": .string("one")]))
 
         XCTAssertTrue(patch.replace)

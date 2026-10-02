@@ -15,10 +15,10 @@
 /// not compile: repeat views with `ForEach`, which keys each view by its item.
 ///
 ///     VStack {
-///         Label("Files")
+///         Text("Files")
 ///
 ///         ForEach(files, id: \.path) { file in
-///             Label(file.name)
+///             Text(file.name)
 ///         }
 ///     }
 ///

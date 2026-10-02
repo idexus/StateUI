@@ -13,8 +13,8 @@ struct OutlineSample: SampleContent, ExampleContent {
 
         VStack {
             VStack {
-                Label("A column")
-                Label("rounded, with a hairline")
+                Text("A column")
+                Text("rounded, with a hairline")
             }
             .padding(16)
             .stroke(Palette.outline)
@@ -22,8 +22,8 @@ struct OutlineSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(12))
 
             HStack {
-                Label("A row,")
-                Label("square and thicker")
+                Text("A row,")
+                Text("square and thicker")
             }
             .spacing(6)
             .padding(16)
@@ -32,7 +32,7 @@ struct OutlineSample: SampleContent, ExampleContent {
             .shape(.rectangle)
 
             ZStack {
-                Label("An ellipse")
+                Text("An ellipse")
             }
             .padding(24)
             .stroke(Palette.accent)
@@ -54,9 +54,9 @@ struct OutlineSample: SampleContent, ExampleContent {
     var content: some View {
         VStack {
             VStack {
-                Label("A column")
+                Text("A column")
                     .fontSize(15)
-                Label("rounded, with a hairline")
+                Text("rounded, with a hairline")
                     .fontSize(13)
                     .textColor(Palette.subtle)
             }
@@ -67,9 +67,9 @@ struct OutlineSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(12))
 
             HStack {
-                Label("A row,")
+                Text("A row,")
                     .fontSize(15)
-                Label("square and thicker")
+                Text("square and thicker")
                     .fontSize(15)
             }
             .spacing(6)
@@ -79,7 +79,7 @@ struct OutlineSample: SampleContent, ExampleContent {
             .shape(.rectangle)
 
             ZStack {
-                Label("An ellipse")
+                Text("An ellipse")
                     .fontSize(15)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
@@ -101,7 +101,7 @@ struct OutlineSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("The shape is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`: the layout's background is "
+        Text("The shape is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`: the layout's background is "
             + "painted to it and its outline follows it. `.clipsContent(true)` cuts what the layout holds to it too.")
             .fontSize(12)
             .textColor(Palette.subtle)

@@ -106,7 +106,7 @@ private struct Holder: ContentView {
 
     var content: some View {
         VStack {
-            Label(title)
+            Text(title)
             NameLabel(builds: reader).id("m")
         }
         .environment(session)

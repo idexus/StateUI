@@ -11,12 +11,12 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aLabelsSpansAreItsWordsRunByRun", proves: [
+            ConformanceCase("aTextsSpansAreItsWordsRunByRun", proves: [
                 Covered(SpanContract.self), Covered(TextElementContract.text, on: "Span"),
             ]) { s in
                 s.start {
                     VStack {
-                        Label().spans {
+                        Text().spans {
                             TextSpan("let ")
                             TextSpan("x")
                             TextSpan(" = 1")
@@ -33,7 +33,7 @@
                 let changed = State(wrappedValue: false)
                 s.start {
                     VStack {
-                        Label().spans {
+                        Text().spans {
                             TextSpan("let ")
                             TextSpan(changed.wrappedValue ? "y" : "x")
                         }.id("label")

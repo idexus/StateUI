@@ -21,7 +21,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testGrid() { conform(GridTests.self) }
     @MainActor func testHStack() { conform(HStackTests.self) }
     @MainActor func testImage() { conform(ImageTests.self) }
-    @MainActor func testLabel() { conform(LabelTests.self) }
+    @MainActor func testText() { conform(TextTests.self) }
     @MainActor func testLine() { conform(LineTests.self) }
     @MainActor func testMap() { conform(MapTests.self) }
     @MainActor func testPath() { conform(PathTests.self) }

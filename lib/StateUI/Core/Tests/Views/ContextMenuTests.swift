@@ -16,7 +16,7 @@ import XCTest
 private struct Card: ContentView {
     var content: some View {
         VStack {
-            Label("card")
+            Text("card")
         }
     }
 }
@@ -28,8 +28,8 @@ final class ContextMenuTests: XCTestCase {
 
     func testAMenuTravelsAsASlotAfterTheViewsOwnChildren() throws {
         let node = VStack {
-            Label("one")
-            Label("two")
+            Text("one")
+            Text("two")
         }
         .contextMenu {
             MenuItem("Rename")
@@ -41,7 +41,7 @@ final class ContextMenuTests: XCTestCase {
         // The view's own children keep the positions the differ gave them, and
         // the slot is appended - the rule a group's header and footer follow.
         XCTAssertEqual(node.children.map { $0.type },
-                       ["Label", "Label", "ContextMenu"])
+                       ["Text", "Text", "ContextMenu"])
 
         let flyout = try XCTUnwrap(node.children.last)
 
@@ -63,12 +63,12 @@ final class ContextMenuTests: XCTestCase {
             .body.built
 
         XCTAssertEqual(node.type, "VStack")
-        XCTAssertEqual(node.children.map { $0.type }, ["Label", "ContextMenu"])
+        XCTAssertEqual(node.children.map { $0.type }, ["Text", "ContextMenu"])
     }
 
     /// A leaf takes one too: any view can carry a menu.
     func testALeafViewTakesAMenu() throws {
-        let flyout = try XCTUnwrap(menu(Label("row").contextMenu { MenuItem("Copy") }))
+        let flyout = try XCTUnwrap(menu(Text("row").contextMenu { MenuItem("Copy") }))
 
         XCTAssertEqual(flyout.children.count, 1)
     }
@@ -80,7 +80,7 @@ final class ContextMenuTests: XCTestCase {
 
         func tree(_ caption: String) -> Node {
             VStack {
-                Label("row")
+                Text("row")
             }
             .contextMenu {
                 MenuItem("Rename")
@@ -104,7 +104,7 @@ final class ContextMenuTests: XCTestCase {
         let renders = Renders()
 
         func tree(_ deletable: Bool) -> Node {
-            Label("row")
+            Text("row")
                 .contextMenu {
                     MenuItem("Rename")
 
@@ -133,7 +133,7 @@ final class ContextMenuTests: XCTestCase {
 
         let patch = renders.render(
             VStack {
-                Label("one")
+                Text("one")
             }
             .contextMenu { MenuItem("Copy") }
             .body)

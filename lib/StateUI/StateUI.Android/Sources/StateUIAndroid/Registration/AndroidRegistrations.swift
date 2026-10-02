@@ -56,7 +56,7 @@ enum AndroidRegistrations {
     }
 
     /// Puts `TextMembers.members` on a text view: its words in their case, their look, and the room around them.
-    static func applyText<Realized: ElementContract>(_ view: AndroidTextView, _ values: ElementValues<Realized>) {
+    static func applyText<Realized: ElementContract>(_ view: AndroidTextualView, _ values: ElementValues<Realized>) {
         if let words = TextMembers.words(values) { view.setText(words) }
         if let look = TextMembers.look(values) { view.setLook(look) }
         if values.changed(PaddingElementContract.padding) {

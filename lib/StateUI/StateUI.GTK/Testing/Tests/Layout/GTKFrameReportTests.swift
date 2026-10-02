@@ -16,14 +16,14 @@ private struct FramesPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("said \(said)")
-            Label("room \(Int(room.width))x\(Int(room.height))")
+            Text("said \(said)")
+            Text("room \(Int(room.width))x\(Int(room.height))")
             ColorBox(.steelBlue)
                 .width(wide ? 200 : 120)
                 .height(60)
                 .frame($room)
                 .onFrameChanged { frame in said = "\(Int(frame.width))x\(Int(frame.height))" }
-            FrameReader { frame in Label("reader \(Int(frame.width))") }
+            FrameReader { frame in Text("reader \(Int(frame.width))") }
                 .width(90)
                 .height(20)
             Button("Widen").onClicked { wide = true }
@@ -42,7 +42,7 @@ private struct PlacedOnAPage: ContentView {
         let page = self.page
         let heard = self.heard
         return VStack {
-            Label("top").onFrameChanged(in: .global) { frame in heard.values.append("window \(Int(frame.y))") }
+            Text("top").onFrameChanged(in: .global) { frame in heard.values.append("window \(Int(frame.y))") }
         }
         .onFrameChanged(in: .safeArea) { frame in heard.values.append("page \(Int(frame.y))") }
         .onCreated { page.title = "Placed" }
@@ -55,9 +55,9 @@ final class GTKFrameReportTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running { FramesPage() }
             let expected = ["said 120x60", "room 120x60", "reader 90"]
-            host.settle { host.views(GTKLabelView.self).map(\.text) == expected }
+            host.settle { host.views(GTKTextView.self).map(\.text) == expected }
 
-            XCTAssertEqual(host.views(GTKLabelView.self).map(\.text), expected)
+            XCTAssertEqual(host.views(GTKTextView.self).map(\.text), expected)
         }
     }
 
@@ -84,12 +84,12 @@ final class GTKFrameReportTests: XCTestCase {
     func testAViewThatMovesSaysItAgain() throws {
         try onUIThread {
             let host = GTKRenderer.running { FramesPage() }
-            host.settle { host.views(GTKLabelView.self).first?.text == "said 120x60" }
+            host.settle { host.views(GTKTextView.self).first?.text == "said 120x60" }
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            host.settle { host.views(GTKLabelView.self).first?.text == "said 200x60" }
+            host.settle { host.views(GTKTextView.self).first?.text == "said 200x60" }
 
-            XCTAssertEqual(host.views(GTKLabelView.self).prefix(2).map(\.text), ["said 200x60", "room 200x60"])
+            XCTAssertEqual(host.views(GTKTextView.self).prefix(2).map(\.text), ["said 200x60", "room 200x60"])
         }
     }
 

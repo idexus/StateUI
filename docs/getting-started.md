@@ -193,7 +193,7 @@ struct NotesPage: ContentView {
 
     var content: some View {
         VStack {
-            Label(note.isEmpty ? "A new note" : note)
+            Text(note.isEmpty ? "A new note" : note)
             TextField($note).placeholder("Write something")
         }
         .spacing(12)
@@ -236,7 +236,7 @@ struct RegisteredWindow: Window {
 }
 
 struct RegisteredPage: ContentView {
-    var content: some View { Label("Hello, StateUI") }
+    var content: some View { Text("Hello, StateUI") }
 }
 
 @_cdecl("stateui_app_register")
@@ -323,7 +323,7 @@ are modifiers:
 @State var volume = 0.5
 
 VStack {
-    Label("Playback")
+    Text("Playback")
         .fontSize(24)
 
     Slider($volume)

@@ -21,11 +21,11 @@ struct HiddenPage: ContentView {
             VStack {
                 SectionTitle("A row that is not there")
 
-                Label("Not in the list")
+                Text("Not in the list")
                     .fontSize(26)
                     .fontAttributes(.bold)
 
-                Label("The menu lists this page only when the Split view sample's "
+                Text("The menu lists this page only when the Split view sample's "
                     + "switch says so.")
                     .fontSize(13)
                     .textColor(Palette.subtle)

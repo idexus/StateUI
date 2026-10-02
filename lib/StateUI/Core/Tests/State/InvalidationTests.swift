@@ -118,7 +118,7 @@ private struct TapCounter: ContentView {
     }
 }
 
-/// Its body's ROOT depends on its own state - a Button in one state, a Label
+/// Its body's ROOT depends on its own state - a Button in one state, a Text
 /// in the other. No stored class here: in the test package a handler closure
 /// capturing a plain class inside a `content` getter hops to MainActor
 /// silently, so state stays in `@State` boxes the way an application holds it.
@@ -130,7 +130,7 @@ private struct Switcher: ContentView {
         if editing {
             Button("done").onClicked { taps += 1 }
         } else {
-            Label("view \(taps)")
+            Text("view \(taps)")
         }
     }
 }
@@ -144,10 +144,10 @@ private struct Fields: ContentView {
     var content: some View {
         VStack {
             if editing {
-                Label("banner")
+                Text("banner")
             }
 
-            Label("sibling")
+            Text("sibling")
         }
     }
 }
@@ -159,7 +159,7 @@ private struct RowList: ContentView {
     var content: some View {
         VStack {
             ForEach(0..<n) { i in
-                Label("row \(i)").id("r\(i)")
+                Text("row \(i)").id("r\(i)")
             }
         }
     }
@@ -197,8 +197,8 @@ private struct Tabbed: ContentView {
 
     var content: some View {
         Grid {
-            Label("one").isVisible(showing == 0).gridRow(1).id("one")
-            Label("two").isVisible(showing == 1).gridRow(1).id("two")
+            Text("one").isVisible(showing == 0).gridRow(1).id("one")
+            Text("two").isVisible(showing == 1).gridRow(1).id("two")
         }
     }
 }
@@ -384,7 +384,7 @@ final class InvalidationTests: XCTestCase {
         let toButton = renders.revisit(changed: changed)
 
         XCTAssertEqual(toButton.child(.auto(1))?.replace, true,
-                       "a Label cannot become a Button by patching")
+                       "a Text cannot become a Button by patching")
         let id = toButton.child(.auto(1))?.events?["clicked"]
         XCTAssertNotNil(id)
 

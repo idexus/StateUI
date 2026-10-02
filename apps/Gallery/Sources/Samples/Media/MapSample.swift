@@ -93,7 +93,7 @@ struct MapSample: SampleContent, ExampleContent {
                 }
                 .height(300)
 
-            Label(said)
+            Text(said)
         }
         """
 
@@ -170,7 +170,7 @@ struct MapSample: SampleContent, ExampleContent {
                 }
                 .height(300)
 
-            Label(said)
+            Text(said)
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
@@ -180,13 +180,13 @@ struct MapSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("`Map` is drawn by the platform's own map where there is one - "
+            Text("`Map` is drawn by the platform's own map where there is one - "
                 + "`MKMapView` on Apple. Elsewhere the application registers its own map "
                 + "with the host, the pins as its children; the Web has no map element.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Where the map opens is the initializer's: that region is kept until the "
+            Text("Where the map opens is the initializer's: that region is kept until the "
                 + "platform's map has connected, while the same move from `.onCreated` can "
                 + "land an instant too early and be overwritten. Moving later is the act "
                 + "the buttons perform - `moveToRegion` through the map's `@Aim`, with the "

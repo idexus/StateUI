@@ -22,13 +22,13 @@ final class AndroidRegistrationTests: XCTestCase {
                 realization.elements,
                 [
                     "ActivityIndicator", "Button", "Canvas", "CheckBox", "ColorBox", "DatePicker", "Ellipse", "Grid",
-                    "HStack", "Image", "ItemsView", "Label", "Line", "Path", "Polygon", "Polyline", "Rectangle",
+                    "HStack", "Image", "ItemsView", "Text", "Line", "Path", "Polygon", "Polyline", "Rectangle",
                     "Picker", "ProgressBar", "RadioButton", "ScrollView", "SearchField", "Slider", "Stepper",
                     "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "WebView", "ZStack",
                 ])
             for member in [
                 HostRealizedMember(element: "Button", owner: "Button", member: "clicked"),
-                HostRealizedMember(element: "Label", owner: "TextElement", member: "text"),
+                HostRealizedMember(element: "Text", owner: "TextElement", member: "text"),
                 HostRealizedMember(element: "Switch", owner: "Switch", member: "toggled"),
                 HostRealizedMember(element: "CheckBox", owner: "CheckBox", member: "toggled"),
                 HostRealizedMember(element: "CheckBox", owner: "TintElement", member: "tint"),
@@ -37,8 +37,8 @@ final class AndroidRegistrationTests: XCTestCase {
                 HostRealizedMember(element: "TextField", owner: "InputView", member: "textChanged"),
                 HostRealizedMember(element: "TextField", owner: "TextField", member: "submitted"),
                 HostRealizedMember(element: "Grid", owner: "Grid", member: "rows"),
-                HostRealizedMember(element: "Label", owner: "View", member: "gridRow"),
-                HostRealizedMember(element: "Label", owner: "View", member: "area"),
+                HostRealizedMember(element: "Text", owner: "View", member: "gridRow"),
+                HostRealizedMember(element: "Text", owner: "View", member: "area"),
                 HostRealizedMember(element: "ZStack", owner: "BorderElement", member: "shape"),
                 HostRealizedMember(element: "Image", owner: "Image", member: "source"),
                 HostRealizedMember(element: "ColorBox", owner: "ColorBox", member: "cornerRadius"),

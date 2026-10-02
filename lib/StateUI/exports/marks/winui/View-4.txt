@@ -77,15 +77,6 @@ ItemsView.gridRow: ✅
 ItemsView.swipeDirection: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
-Label.frameChanged: ✅
-Label.margin: ✅
-Label.pointerEntered: ✅
-Label.pointerExited: ✅
-Label.pointerMoved: ✅
-Label.pointerPressed: ✅
-Label.pointerReleased: ✅
-Label.tapCount: ✅
-Label.tapped: ✅
 Line.allowDrop: not realized
 Line.area: ✅
 Line.dragLeave: not realized
@@ -185,6 +176,15 @@ Switch.gridRow: ✅
 Switch.swipeDirection: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
+Text.frameChanged: ✅
+Text.margin: ✅
+Text.pointerEntered: ✅
+Text.pointerExited: ✅
+Text.pointerMoved: ✅
+Text.pointerPressed: ✅
+Text.pointerReleased: ✅
+Text.tapCount: ✅
+Text.tapped: ✅
 TextEditor.frameChanged: ✅
 TextEditor.margin: ✅
 TextEditor.pointerEntered: ✅

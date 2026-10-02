@@ -22,7 +22,7 @@ private struct SheetsPage: ContentView {
     var content: some View {
         let (log, page, sheets) = (log, page, $sheets)
         return VStack {
-            Label("beneath")
+            Text("beneath")
             Button("Present").onClicked { sheets.wrappedValue.append(.first) }
         }
         .onChanged(page.phase) { log.values.append("beneath \(page.phase)") }
@@ -48,7 +48,7 @@ private struct SheetPage: ContentView {
         let page = page
         let name = name
         return VStack {
-            Label("on \(name)")
+            Text("on \(name)")
             Button("Another").onClicked { sheets.append(.second) }
         }
         .onCreated { page.title = name }

@@ -2,9 +2,9 @@ import StateUI
 
 /// The two layers of reactivity side by side, and then what each costs.
 ///
-/// Layer one is a GET: `Label("Counter \(counter)")` reads the value, which
+/// Layer one is a GET: `Text("Counter \(counter)")` reads the value, which
 /// makes the closure it is written in a reader, and a write builds that
-/// closure again. Layer two is a CHANNEL: `Label($counter.convert { … })`
+/// closure again. Layer two is a CHANNEL: `Text($counter.convert { … })`
 /// hands the state on, the host writes the words on its own frames, and
 /// nothing is built at all.
 struct TwoLayersSample: SampleContent {
@@ -36,14 +36,14 @@ private struct LayerRows: ExampleContent {
             // LAYER ONE - A GET. The value is read here, so this closure is
             // its reader and every press builds it again.
             VStack {
-                Label("Counter \\(counter)")
+                Text("Counter \\(counter)")
                 DebugInfoLabel()                    // climbs, "for counter"
             }
 
             // LAYER TWO - A CHANNEL. The state is handed on, the host writes
             // the words as it changes, and this closure is never built again.
             VStack {
-                Label($counter.convert { "Counter \\($0)" })
+                Text($counter.convert { "Counter \\($0)" })
                 DebugInfoLabel()                    // stays at one
             }
         }
@@ -65,14 +65,14 @@ private struct LayerRows: ExampleContent {
                 .onClicked { counter += 1 }
 
             boxed("Layer one · a get") {
-                Label("Counter \(counter)")
+                Text("Counter \(counter)")
                     .fontSize(20)
                     .fontAttributes(.bold)
                 DebugInfoLabel()
             }
 
             boxed("Layer two · a channel") {
-                Label($counter.convert { "Counter \($0)" })
+                Text($counter.convert { "Counter \($0)" })
                     .fontSize(20)
                     .fontAttributes(.bold)
                 DebugInfoLabel()
@@ -83,14 +83,14 @@ private struct LayerRows: ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Both rows show the same number. The first reads it, so every press "
+            Text("Both rows show the same number. The first reads it, so every press "
                 + "builds that row again, compares it and sends what changed. The second "
                 + "hands the state on and the host writes the words itself, so the row "
                 + "is built once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`$counter.convert { \"Counter \\($0)\" }` is what the channel says: a "
+            Text("`$counter.convert { \"Counter \\($0)\" }` is what the channel says: a "
                 + "second value the host carries, worked out from the first. Press +1 "
                 + "and watch the two build counts part.")
                 .fontSize(12)
@@ -104,7 +104,7 @@ private struct LayerRows: ExampleContent {
     private func boxed<Content: Views>(_ caption: String, @ViewBuilder _ content: @escaping () -> Content) -> some View {
         ZStack {
             VStack {
-                Label(caption)
+                Text(caption)
                     .fontSize(11)
                     .textColor(Palette.subtle)
 
@@ -155,9 +155,9 @@ private struct LayerCost: ExampleContent {
                     ColorBox().width(7).height(7)
                 }
 
-                Label("Counter \\(counter)")
+                Text("Counter \\(counter)")
 
-                Label(took(began, leaves))
+                Text(took(began, leaves))
                 DebugInfoLabel()                    // climbs on every press
             }
 
@@ -171,9 +171,9 @@ private struct LayerCost: ExampleContent {
                     ColorBox().width(7).height(7)
                 }
 
-                Label($counter.convert { "Counter \\($0)" })
+                Text($counter.convert { "Counter \\($0)" })
 
-                Label(took(began, leaves))
+                Text(took(began, leaves))
                 DebugInfoLabel()                    // stays at one
             }
         }
@@ -222,13 +222,13 @@ private struct LayerCost: ExampleContent {
             .spacing(10)
             .horizontalAlignment(.center)
 
-            Label("Layer one · a get")
+            Text("Layer one · a get")
                 .fontSize(11)
                 .textColor(Palette.subtle)
 
             Described(counter: $counter, leaves: leaves)
 
-            Label("Layer two · a channel")
+            Text("Layer two · a channel")
                 .fontSize(11)
                 .textColor(Palette.subtle)
 
@@ -239,20 +239,20 @@ private struct LayerCost: ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Two blocks of the same views, one number shown two ways. Each block "
+            Text("Two blocks of the same views, one number shown two ways. Each block "
                 + "reads the clock at the top of its closure and again at the bottom, so "
                 + "what it prints is what describing it cost.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Press +1: the first block is described again - every view in it - and "
+            Text("Press +1: the first block is described again - every view in it - and "
                 + "its build count and its microseconds climb. The second is not "
                 + "described at all, and its count stays at one. Raise the views to 400 "
                 + "and the difference grows with them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Reading is what a view that decides by a value needs; a channel is for "
+            Text("Reading is what a view that decides by a value needs; a channel is for "
                 + "a value that only moves.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -284,12 +284,12 @@ private struct Described: ContentView {
                     .id(index)
             }
 
-            Label("Counter \(counter)")
+            Text("Counter \(counter)")
                 .fontSize(13)
                 .fontAttributes(.bold)
                 .margin(6, 0)
 
-            Label(took(began, leaves))
+            Text(took(began, leaves))
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .height(15)
@@ -322,12 +322,12 @@ private struct Channelled: ContentView {
                     .id(index)
             }
 
-            Label($counter.convert { "Counter \($0)" })
+            Text($counter.convert { "Counter \($0)" })
                 .fontSize(13)
                 .fontAttributes(.bold)
                 .margin(6, 0)
 
-            Label(took(began, leaves))
+            Text(took(began, leaves))
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .height(15)

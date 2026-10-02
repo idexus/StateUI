@@ -7,7 +7,7 @@ An action in the page's native navigation or toolbar surface.
 ```swift
 @State var count = 0
 
-Label("\(count) items")
+Text("\(count) items")
     .toolbar {
         ToolbarItem("Add")
             .icon("add.png")

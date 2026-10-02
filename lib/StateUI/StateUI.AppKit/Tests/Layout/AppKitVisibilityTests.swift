@@ -14,7 +14,7 @@ import XCTest
 final class AppKitVisibilityTests: XCTestCase {
     /// A label, visible or not, crossing under `motion`.
     private func label(visible: Bool, motion: Motion = .eased(100, .linear)) -> HostPatch {
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties[.text] = .string("here")
         label.properties[.isVisible] = .bool(visible)
         label.motion = HostLayoutMotion(motion: motion, lanes: .all)

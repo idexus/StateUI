@@ -5,9 +5,9 @@
 /// it has them.
 ///
 ///     ItemsView(groups: shelves.map { shelf in
-///         ItemsGroup(shelf.items) { Label($0) }
+///         ItemsGroup(shelf.items) { Text($0) }
 ///             .id(shelf.name)
-///             .header(Label(shelf.name).fontAttributes(.bold))
+///             .header(Text(shelf.name).fontAttributes(.bold))
 ///     })
 ///
 /// Each group names itself with `.id`, so two groups may hold equal items; a

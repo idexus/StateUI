@@ -13,7 +13,6 @@ Grid.translationX: ✓ read translationX of Grid: the host's own transform, chec
 HStack.scale: ✓ read scale of HStack: the host's own transform, checked against the layer it composed itself
 Image.rotation: ✓ read rotation of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.layoutDirection: ✅
-Label.isAccessibilityHidden: ✅
 Line.accessibilityLabel: ✅
 Map.frame: ✅
 Path.frameChanged: ✅
@@ -34,6 +33,7 @@ Slider.isVisible: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform, checked against the layer it composed itself
 Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.rotation: ✓ read rotation of Switch: the host's own transform, checked against the layer it composed itself
+Text.isAccessibilityHidden: ✅
 TextEditor.layoutDirection: ✅
 TextField.isAccessibilityHidden: ✅
 TimePicker.accessibilityLabel: ✅

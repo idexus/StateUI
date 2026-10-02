@@ -24,11 +24,11 @@ struct TabsPage: ContentView {
             VStack {
                 SectionTitle("A section arranged as tabs")
 
-                Label("A TabbedView of two")
+                Text("A TabbedView of two")
                     .fontSize(26)
                     .fontAttributes(.bold)
 
-                Label("Push a page, change tabs, come back: it is still on top.")
+                Text("Push a page, change tabs, come back: it is still on top.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 
@@ -40,7 +40,7 @@ struct TabsPage: ContentView {
                     .horizontalAlignment(.center)
                     .onClicked { path.append(.level(1)) }
 
-                Label("Depth here: \(path.count)")
+                Text("Depth here: \(path.count)")
                     .fontSize(13)
                     .fontFamily("Menlo")
                     .textColor(Palette.accent)

@@ -30,7 +30,7 @@ final class AppKitMenuBarTests: XCTestCase {
     @MainActor
     func testAPagesMenusJoinTheBarByIdentity() throws {
         let renderer = AppKitRenderer.running {
-            Label("Page").menuBar {
+            Text("Page").menuBar {
                 Menu("Plik") {
                     MenuItem("Eksportuj").id("export")
                     MenuItem("Zapisz").isEnabled(false).id("save")

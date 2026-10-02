@@ -45,7 +45,7 @@ private struct Calling: ContentView {
                     answer = "thrown: \(error)"
                 }
             }
-            Label(answer)
+            Text(answer)
         }
         .onCreated { heard = [HostEvents.on(InteropTestContract.spoke) { said in answer = "heard \(said)" }] }
         .onDestroying {
@@ -129,7 +129,7 @@ private struct Pulling: ContentView {
                     said = "thrown: \(error)"
                 }
             }
-            Label(said)
+            Text(said)
         }
     }
 }
@@ -184,9 +184,9 @@ final class AndroidInteropTests: XCTestCase {
             let lamp = try XCTUnwrap(host.views(AndroidHostedView<LampControl>.self).first)
 
             lamp.control.pull()
-            host.settle { host.views(AndroidLabelView.self).last?.text != "-" }
+            host.settle { host.views(AndroidTextView.self).last?.text != "-" }
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).last?.text, "pulled 1")
+            XCTAssertEqual(host.views(AndroidTextView.self).last?.text, "pulled 1")
         }
     }
 
@@ -198,9 +198,9 @@ final class AndroidInteropTests: XCTestCase {
             let lamp = try XCTUnwrap(host.views(AndroidHostedView<LampControl>.self).first)
 
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
-            host.settle { host.views(AndroidLabelView.self).last?.text != "-" }
+            host.settle { host.views(AndroidTextView.self).last?.text != "-" }
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).last?.text, "flashed")
+            XCTAssertEqual(host.views(AndroidTextView.self).last?.text, "flashed")
             XCTAssertEqual(lamp.control.flashes, 1, "the performer was handed the aimed control itself")
         }
     }
@@ -213,9 +213,9 @@ final class AndroidInteropTests: XCTestCase {
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
-            host.settle { host.views(AndroidLabelView.self).first?.text != "-" }
+            host.settle { host.views(AndroidTextView.self).first?.text != "-" }
 
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["42"], "answered, typed both ways")
+            XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["42"], "answered, typed both ways")
         }
     }
 
@@ -225,9 +225,9 @@ final class AndroidInteropTests: XCTestCase {
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
-            host.settle { host.views(AndroidLabelView.self).first?.text != "-" }
+            host.settle { host.views(AndroidTextView.self).first?.text != "-" }
 
-            let said = host.views(AndroidLabelView.self).first?.text ?? ""
+            let said = host.views(AndroidTextView.self).first?.text ?? ""
             XCTAssertTrue(said.hasPrefix("thrown:") && said.contains("InteropTest.Unregistered"), said)
         }
     }
@@ -239,10 +239,10 @@ final class AndroidInteropTests: XCTestCase {
             let host = AndroidRenderer.running { Calling() }
 
             let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
-            host.settle { host.views(AndroidLabelView.self).first?.text != "-" }
+            host.settle { host.views(AndroidTextView.self).first?.text != "-" }
 
             XCTAssertEqual(heard, 1)
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["heard hello"])
+            XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["heard hello"])
         }
     }
 }

@@ -10,9 +10,9 @@ struct MainWindow: Window {
 
     var page: any Page {
         SplitView($showsFolders) {
-            Label("Folders")
+            Text("Folders")
         } detail: {
-            Label("Notes")
+            Text("Notes")
         }
     }
 }

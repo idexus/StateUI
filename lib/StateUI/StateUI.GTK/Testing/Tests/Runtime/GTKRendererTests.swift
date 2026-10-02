@@ -15,7 +15,7 @@ struct CounterPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("count \(count)")
+            Text("count \(count)")
             Button("Add")
                 .onClicked { count += 1 }
         }
@@ -28,7 +28,7 @@ final class GTKRendererTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running { CounterPage() }
 
-            XCTAssertEqual(host.views(GTKLabelView.self).map(\.text), ["count 0"])
+            XCTAssertEqual(host.views(GTKTextView.self).map(\.text), ["count 0"])
             XCTAssertEqual(host.views(GTKButtonView.self).map(\.text), ["Add"])
             XCTAssertNotNil(host.window?.content, "the window shows no page")
             XCTAssertEqual(gtk_widget_get_mapped(host.views(GTKButtonView.self)[0].widget), 1, "the button is not on screen")
@@ -45,7 +45,7 @@ final class GTKRendererTests: XCTestCase {
             button.click()
             button.click()
 
-            XCTAssertEqual(host.views(GTKLabelView.self).map(\.text), ["count 2"])
+            XCTAssertEqual(host.views(GTKTextView.self).map(\.text), ["count 2"])
         }
     }
 
@@ -76,7 +76,7 @@ final class GTKRendererTests: XCTestCase {
     /// The desktop's style, dark or light, is the application's theme.
     func testTheDesktopsStyleIsTheApplicationsTheme() {
         onUIThread {
-            _ = GTKRenderer.running { Label("styled") }
+            _ = GTKRenderer.running { Text("styled") }
             let dark = adw_style_manager_get_dark(adw_style_manager_get_default()) != 0
 
             XCTAssertEqual(StandardEnvironment.app.requestedTheme, dark ? .dark : .light)
@@ -101,7 +101,7 @@ private struct SizedPage: ContentView {
 
     var content: some View {
         let window = self.window
-        return Label("sized").onCreated {
+        return Text("sized").onCreated {
             window.width = 700
             window.height = 500
             window.minimumWidth = 400
@@ -115,13 +115,13 @@ extension GTKRendererTests {
         try onUIThread {
             let host = GTKRenderer.running { PhasePage() }
             let window = try XCTUnwrap(host.window)
-            host.settle { host.views(GTKLabelView.self).first?.text.hasSuffix("activated") == true }
-            let before = host.views(GTKLabelView.self).map(\.text)
+            host.settle { host.views(GTKTextView.self).first?.text.hasSuffix("activated") == true }
+            let before = host.views(GTKTextView.self).map(\.text)
 
             window.close()
             for _ in 0..<10 { host.step() }
 
-            XCTAssertEqual(host.views(GTKLabelView.self).map(\.text), before, "no phase, no going")
+            XCTAssertEqual(host.views(GTKTextView.self).map(\.text), before, "no phase, no going")
         }
     }
 
@@ -161,7 +161,7 @@ extension GTKRendererTests {
     func testAWindowTellsItsStateOnlyWhereItChanged() throws {
         try onUIThread {
             let host = GTKRenderer.running { ScenePhaseLabel() }
-            let phase = { host.views(GTKLabelView.self).last?.text }
+            let phase = { host.views(GTKTextView.self).last?.text }
             let controller = try XCTUnwrap(host.windows.first)
             let element = try XCTUnwrap(controller.element)
             // The window's own activation comes as the desktop gives it: waited for, then told as it stands.
@@ -182,7 +182,7 @@ extension GTKRendererTests {
     func testThePageReadsTheMachinesLocalePowerAndNetwork() throws {
         try onUIThread {
             let host = GTKRenderer.running { MachinePage() }
-            let said = try XCTUnwrap(host.views(GTKLabelView.self).first?.text).split(separator: " ").map(String.init)
+            let said = try XCTUnwrap(host.views(GTKTextView.self).first?.text).split(separator: " ").map(String.init)
             let language = g_get_language_names()?.pointee.map { String(cString: $0) } ?? ""
 
             XCTAssertEqual(said.count, 4, said.joined(separator: " "))
@@ -202,7 +202,7 @@ private struct MachinePage: ContentView {
     @Environment private var connectivity: Connectivity
 
     var content: some View {
-        Label("\(locale.name) \(locale.timeZone) \(battery.state) \(connectivity.networkAccess)")
+        Text("\(locale.name) \(locale.timeZone) \(battery.state) \(connectivity.networkAccess)")
     }
 }
 
@@ -212,7 +212,7 @@ private struct PhasePage: ContentView {
     @Environment private var window: WindowSession
 
     var content: some View {
-        Label("\(application.phase) \(window.phase)")
+        Text("\(application.phase) \(window.phase)")
     }
 }
 
@@ -246,7 +246,7 @@ private struct GoingPage: ContentView {
     var content: some View {
         let gone = self.gone
         let window = self.window
-        return Label("going")
+        return Text("going")
             .onChanged(window.phase) { if window.phase == .destroying { gone.values.append("window") } }
     }
 }
@@ -276,7 +276,7 @@ private struct ToolOpeningPage: ContentView {
 }
 
 private struct ToolWindow: Window {
-    var page: any Page { Label("A tool") }
+    var page: any Page { Text("A tool") }
 }
 
 /// A label reading its scene's phase, each phase it reads written down.
@@ -284,6 +284,6 @@ private struct ScenePhaseLabel: ContentView {
     @Environment private var scene: SceneSession
 
     var content: some View {
-        Label("\(scene.phase)")
+        Text("\(scene.phase)")
     }
 }

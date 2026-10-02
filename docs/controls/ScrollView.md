@@ -10,7 +10,7 @@ A scrollable container.
 ScrollView {
     VStack {
         ForEach(1...100) { row in
-            Label("Row \(row)")
+            Text("Row \(row)")
         }
     }
 }

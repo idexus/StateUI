@@ -16,7 +16,7 @@ struct NotePage: ContentView {
     var content: some View {
         VStack {
             if shown {
-                Label("note")
+                Text("note")
             }
             Button("Hide")
                 .onClicked { shown = false }
@@ -30,14 +30,14 @@ final class GTKLeaveTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running { NotePage() }
             let before = GTKView.liveCount
-            XCTAssertEqual(host.views(GTKLabelView.self).map(\.text), ["note"])
+            XCTAssertEqual(host.views(GTKTextView.self).map(\.text), ["note"])
             let stack = try XCTUnwrap(host.views(GTKStackView.self).first)
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
             // A view's deinit is MainActor's, and runs in the turn after the one it left in.
             _ = host.runtime.core.runJobs()
 
-            XCTAssertEqual(host.views(GTKLabelView.self).count, 0)
+            XCTAssertEqual(host.views(GTKTextView.self).count, 0)
             XCTAssertEqual(GTKView.liveCount, before - 1, "the label's view outlived its element")
             XCTAssertEqual(Self.children(of: stack.widget), 1, "the panel still holds the label's widget")
         }

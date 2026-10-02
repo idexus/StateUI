@@ -157,7 +157,7 @@ final class AppKitBarTests: XCTestCase {
 private extension AppKitBarTests {
     /// A window whose page is a stack declaring `bar` over a page titled "Page".
     func tree(_ bar: [Prop: HostValue], windowTitle: String? = nil) -> HostPatch {
-        var label = HostPatch(id: .manual("page-label"), type: .label)
+        var label = HostPatch(id: .manual("page-label"), type: .text)
         label.properties[.text] = .string("Page")
 
         var page = HostPatch(id: .manual("page"), type: .page)
@@ -196,7 +196,7 @@ private extension AppKitBarTests {
     /// A window whose page is a split view declaring `bar`: a menu beside a stack over a long scrolling page.
     func flyoutTree(_ bar: [Prop: HostValue]) -> HostPatch {
         let rows = (0..<30).map { index -> HostPatch in
-            var row = HostPatch(id: .manual("row-\(index)"), type: .label)
+            var row = HostPatch(id: .manual("row-\(index)"), type: .text)
             row.properties[.text] = .string("Row \(index)")
             return row
         }
@@ -211,7 +211,7 @@ private extension AppKitBarTests {
         var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
         navigation.children = .arranged([page])
 
-        var menuLabel = HostPatch(id: .manual("menu-label"), type: .label)
+        var menuLabel = HostPatch(id: .manual("menu-label"), type: .text)
         menuLabel.properties[.text] = .string("Menu")
         var menu = HostPatch(id: .manual("menu"), type: .page)
         menu.children = .arranged([menuLabel])

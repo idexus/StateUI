@@ -16,12 +16,12 @@ struct ModalPage: ContentView {
         VStack {
             SectionTitle("Over everything")
 
-            Label("Native modal page")
+            Text("Native modal page")
                 .fontSize(20)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("The host chooses the presentation that belongs to this platform.")
+            Text("The host chooses the presentation that belongs to this platform.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -39,7 +39,7 @@ struct ModalPage: ContentView {
                 .horizontalAlignment(.center)
                 .onClicked { nav.present(.page) }
 
-            Label("Depth: \(nav.sheets.count)")
+            Text("Depth: \(nav.sheets.count)")
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.subtle)

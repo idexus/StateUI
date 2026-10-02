@@ -35,7 +35,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     /// for: midway, its view is already as wide as it lands, so words that fit
     /// there on one line never break at the widths its place passes through.
     @MainActor
-    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+    func testATextsWordsStandAtTheWidthItTravelsTo() throws {
         var now = 0.0
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -47,7 +47,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
         func caption(_ text: String) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
             stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
-            var label = HostPatch(id: .manual("caption"), type: .label)
+            var label = HostPatch(id: .manual("caption"), type: .text)
             label.properties = [.text: .string(text), .horizontalAlignment: .enumeration(Alignment.start.rawValue)]
             stack.children = .arranged([label])
             return stack

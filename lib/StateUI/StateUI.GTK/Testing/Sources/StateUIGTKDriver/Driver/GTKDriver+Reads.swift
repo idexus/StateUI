@@ -21,7 +21,7 @@ extension GTKDriver {
         switch view {
         case let field as GTKTextFieldView: return fieldHolds(property, field)
         case let editor as GTKTextEditorView: return editorHolds(property, editor)
-        case let label as GTKTextView: return labelHolds(property, label.widget.opaque, label.widget)
+        case let label as GTKTextualView: return labelHolds(property, label.widget.opaque, label.widget)
         case let button as GTKButtonView: return button.captionLabel.flatMap { labelHolds(property, $0, button.widget) }
         case let check as GTKCheckView: return Self.label(in: check.widget).flatMap { labelHolds(property, $0.opaque, $0) }
         case let picker as GTKPickerView: return Self.label(in: picker.widget).flatMap { wordsHolds(property, $0) }
@@ -167,7 +167,7 @@ extension GTKDriver {
     /// The label a span runs in, and the bytes of its words there: the runs before it, each its words in their case.
     private static func run(of span: MountedElement) -> (OpaquePointer, Int, Int)? {
         var holder = span.parent
-        while let each = holder, !((each.native as? GTKElement)?.view is GTKTextView) { holder = each.parent }
+        while let each = holder, !((each.native as? GTKElement)?.view is GTKTextualView) { holder = each.parent }
         guard let holder, let label = (holder.native as? GTKElement)?.view?.widget.opaque, let runs = holder.textRuns,
               let index = span.parent?.children.filter({ $0.type == .span }).firstIndex(where: { $0 === span }),
               runs.indices.contains(index)

@@ -3,7 +3,7 @@
 
 /// Collects the runs of a label's text written as consecutive statements.
 ///
-///     Label().spans {
+///     Text().spans {
 ///         TextSpan("let ").textColor(.purple)
 ///
 ///         if showsName {

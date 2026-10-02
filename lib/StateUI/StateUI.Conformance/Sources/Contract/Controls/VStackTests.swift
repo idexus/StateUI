@@ -46,9 +46,9 @@
                 let (stack, line) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
                     VStack {
-                        VStack { Label(LabelTests.long).lineBreak(.wordWrap) }.width(100)
+                        VStack { Text(TextTests.long).lineBreak(.wordWrap) }.width(100)
                             .onEvent(ViewContract.frameChanged) { stack.values.append($0) }.id("stack")
-                        Label("Words").onEvent(ViewContract.frameChanged) { line.values.append($0) }.id("line")
+                        Text("Words").onEvent(ViewContract.frameChanged) { line.values.append($0) }.id("line")
                     }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)

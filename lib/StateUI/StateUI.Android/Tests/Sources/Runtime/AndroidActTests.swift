@@ -20,7 +20,7 @@ final class AndroidActTests: XCTestCase {
         onMainActor {
             let said = State(wrappedValue: "")
             let host = AndroidRenderer.running {
-                Label(said.wrappedValue).onCreated {
+                Text(said.wrappedValue).onCreated {
                     let time = try await ClockTime.now()
                     let zone = try await TimeZoneInfo.local()
                     said.wrappedValue = "\(time.hour) \(time.minute) \(zone)"

@@ -19,11 +19,6 @@ Image.accessibilityHint: ✅
 ItemsView.focus: ✅
 ItemsView.isFocusedChanged: ✅
 ItemsView.unfocus: ✅
-Label.frameChanged: ✅
-Label.maximumHeight: ✅
-Label.maximumWidth: ✅
-Label.minimumHeight: ✅
-Label.minimumWidth: ✅
 Line.opacity: ✅
 Line.translationY: ✓ read translationY of Line: the host's own transform, checked against the layer it composed itself
 Map.scaleX: ✓ read scaleX of Map: the host's own transform, checked against the layer it composed itself
@@ -46,6 +41,11 @@ SearchField.rotationX: ✓ read rotationX of SearchField: the host's own transfo
 Slider.pivotX: ✓ read pivotX of Slider: the host's own transform, checked against the layer it composed itself
 Stepper.automationExcludedWithChildren: ✅
 Switch.accessibilityHint: ✅
+Text.frameChanged: ✅
+Text.maximumHeight: ✅
+Text.maximumWidth: ✅
+Text.minimumHeight: ✅
+Text.minimumWidth: ✅
 TextEditor.focus: ✅
 TextEditor.isFocusedChanged: ✅
 TextEditor.unfocus: ✅

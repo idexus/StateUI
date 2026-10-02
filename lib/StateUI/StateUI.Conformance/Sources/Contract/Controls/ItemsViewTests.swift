@@ -122,7 +122,7 @@
                 let count = State(wrappedValue: 30)
                 s.start {
                     VStack {
-                        ItemsView(0..<count.wrappedValue) { Label("Item \($0)").padding(12) }
+                        ItemsView(0..<count.wrappedValue) { Text("Item \($0)").padding(12) }
                             .onEndReached(within: 5) { count.wrappedValue += 30 }
                             .width(300).height(300).id("list")
                     }
@@ -144,7 +144,7 @@
                 s.start {
                     VStack {
                         Button("Start over").onClicked { count.wrappedValue = 30 }.id("again")
-                        ItemsView(0..<count.wrappedValue) { Label("Item \($0)").padding(12) }
+                        ItemsView(0..<count.wrappedValue) { Text("Item \($0)").padding(12) }
                             .onEndReached(within: 5) {
                                 heard.values.append(count.wrappedValue)
                                 count.wrappedValue += 30
@@ -188,6 +188,6 @@
 
     /// A thousand numbered items, each words with room around them.
     static func numbers() -> ItemsView<Range<Int>, Int> {
-        ItemsView(0..<1_000) { Label("Item \($0)").padding(12) }
+        ItemsView(0..<1_000) { Text("Item \($0)").padding(12) }
     }
 }

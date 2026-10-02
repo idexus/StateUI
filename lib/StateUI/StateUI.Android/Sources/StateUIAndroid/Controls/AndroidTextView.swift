@@ -5,138 +5,120 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// An `android.widget.TextView` or a subclass: the words, their size, weight and colour.
+/// A Text: a `TextView` - its words, or runs of them each in its own colour, size and weight.
+/// Design: docs/design/platforms/android/controls.md#a-labels-words
 @MainActor
-class AndroidTextView: AndroidView {
-    private var made: (size: Float, colors: JavaObject)?
+final class AndroidTextView: AndroidTextualView {
+    /// The space between the letters, in points.
+    private var spacing = 0.0
 
-    /// Bold and italic, as last set.
-    private(set) var fontAttributes: FontAttributes?
+    /// Where the label's place travels: its words stand at that size meanwhile.
+    /// Design: docs/design/host/motion.md#words-at-their-destination
+    private var bound: Rect?
 
-    /// The family the words are drawn in; nil for the platform's.
-    private(set) var fontFamily: String?
-
-    /// The room around the words the tree describes; nil where the view keeps its own.
-    private var padding: Insets?
-    private var madePadding: (left: Int32, top: Int32, right: Int32, bottom: Int32)?
-
-    /// The words shown.
-    func setText(_ text: String) {
-        let string = Java.string(text)
-        Java.call(reference, JavaAPI.setText, .object(string))
-        Java.release(local: string)
+    override func travels(to destination: Rect?) {
+        bound = destination
     }
 
-    /// The words the view shows now, read back.
-    var text: String {
-        guard let sequence = Java.callObject(reference, JavaAPI.getText) else { return "" }
+    override var wordsRoom: Rect? { bound }
 
-        let string = Java.callObject(sequence, JavaAPI.toString)
-        defer {
-            Java.release(local: string)
-            Java.release(local: sequence)
+    init() {
+        super.init { _ in Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context)) }
+    }
+
+    /// The words as runs, each spanning its own part of them with how its look differs from the label's.
+    func setRuns(_ runs: [TextRun]) {
+        let scale = Self.fontScale
+        Java.frame {
+            let words = Java.new(JavaAPI.spannableBuilder, JavaAPI.newSpannableBuilder)
+            var start: Int32 = 0
+            for run in runs {
+                let end = start + Int32(run.text.utf16.count)
+                Java.release(local: Java.callObject(words.reference, JavaAPI.append, .object(Java.string(run.text))))
+                for span in spans(of: run, scale: scale) {
+                    Java.call(
+                        words.reference, JavaAPI.setSpan,
+                        .object(span.reference), .int(start), .int(end), .int(Self.exclusive))
+                }
+                start = end
+            }
+            withExtendedLifetime(words) { Java.call(reference, JavaAPI.setText, .object(words.reference)) }
         }
-        return Java.text(string)
+        setLetterSpacing(spacing)
     }
 
-    /// How the words look (`TextMembers.look`): their size, weight, slant, family and colour, each the
-    /// platform's own where the look says nothing.
-    func setLook(_ look: TextLook) {
-        setFontSize(look.size)
-        fontAttributes = look.attributes
-        fontFamily = look.family
-        applyTypeface()
-        setTextColor(look.color)
-    }
-
-    /// The size of the words, in points the user's font scale applies to; nil puts back the platform's.
-    func setFontSize(_ size: Double?) {
-        let made = madeWith
-        if let size {
-            Java.call(reference, JavaAPI.setTextSize, .int(ViewConstants.scaledPixels), .float(Float(size)))
-        } else {
-            Java.call(reference, JavaAPI.setTextSize, .int(ViewConstants.pixels), .float(made.size))
+    /// The Java spans that make a run differ from the label.
+    private func spans(of run: TextRun, scale: Double) -> [JavaObject] {
+        let look = run.look
+        var spans: [JavaObject] = []
+        if let argb = look.color.flatMap(Self.argb) {
+            spans.append(Java.new(JavaAPI.foregroundSpan, JavaAPI.newForegroundSpan, .int(argb)))
         }
-    }
-
-    /// Bold and italic, in the bits `FontAttributes` and `Typeface` share.
-    func setFontAttributes(_ attributes: FontAttributes?) {
-        fontAttributes = attributes
-        applyTypeface()
-    }
-
-    private func applyTypeface() {
-        let style = (fontAttributes?.rawValue ?? 0) & 3
-        let name = fontFamily.flatMap(Java.string)
-        let face = name.flatMap { Java.callStaticObject(JavaAPI.typeface, JavaAPI.createTypeface, .object($0), .int(style)) }
-        Java.call(reference, JavaAPI.setTypeface, .object(face), .int(style))
-        Java.release(local: face)
-        Java.release(local: name)
-    }
-
-    /// How the words break, and how many lines show: a line cut or truncated is one line, and only a
-    /// truncated one says so.
-    func setLines(breaking: LineBreak, maximum: Int?) {
-        let lines = breaking.lines(maximum: maximum).map { Int32(clamping: $0) } ?? Int32.max
-        Java.call(reference, JavaAPI.setMaxLines, .int(lines))
-        Java.call(reference, JavaAPI.setHorizontallyScrolling, .bool(breaking == .noWrap))
-
-        let truncation: String? = switch breaking {
-        case .headTruncation: "START"
-        case .middleTruncation: "MIDDLE"
-        case .tailTruncation: "END"
-        default: nil
+        if let size = look.size {
+            let pixels = Int32((size * density * scale).rounded())
+            spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(pixels), .bool(false)))
         }
-        let at = truncation.map { Java.staticObject(JavaAPI.truncateAt, $0, "Landroid/text/TextUtils$TruncateAt;") }
-        withExtendedLifetime(at) { Java.call(reference, JavaAPI.setEllipsize, .object(at?.reference)) }
-    }
-
-    /// The words' colour; nil puts back the platform's.
-    func setTextColor(_ color: HostValue?) {
-        let made = madeWith
-        if let argb = color.flatMap(Self.argb) {
-            let colors = Java.callStaticObject(
-                JavaAPI.views, JavaAPI.textColors, .object(AndroidRenderer.context), .int(argb))
-            Java.call(reference, JavaAPI.setTextColors, .object(colors))
-            Java.release(local: colors)
-        } else {
-            Java.call(reference, JavaAPI.setTextColors, .object(made.colors.reference))
+        let style = look.attributes.rawValue & 3
+        if style != 0 {
+            spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(style)))
         }
-    }
-
-    /// The room around the words, in points; nil puts back the platform's.
-    func setPadding(_ insets: Insets?) {
-        if madePadding == nil {
-            madePadding = (
-                Java.callInt(reference, JavaAPI.getPaddingLeft), Java.callInt(reference, JavaAPI.getPaddingTop),
-                Java.callInt(reference, JavaAPI.getPaddingRight), Java.callInt(reference, JavaAPI.getPaddingBottom))
+        if let argb = look.background.flatMap(Self.argb) {
+            spans.append(Java.new(JavaAPI.backgroundSpan, JavaAPI.newBackgroundSpan, .int(argb)))
         }
-        padding = insets
-        applyPadding()
+        if look.decorations.contains(.underline) {
+            spans.append(Java.new(JavaAPI.underlineSpan, JavaAPI.newUnderlineSpan))
+        }
+        if look.decorations.contains(.strikethrough) {
+            spans.append(Java.new(JavaAPI.strikethroughSpan, JavaAPI.newStrikethroughSpan))
+        }
+        return spans
     }
 
-    /// A new background brings its own padding; the tree's is put back over it.
-    /// Design: docs/design/platforms/android/controls.md#the-background-a-view-is-made-with
-    override func showBackground(_ drawable: JavaObject?) {
-        super.showBackground(drawable)
-        if padding != nil { applyPadding() }
+    /// Where the words stand in the label's room, across and down.
+    func setAlignment(horizontal: TextAlignment, vertical: TextAlignment) {
+        Java.call(
+            reference, JavaAPI.setGravity,
+            .int(ViewConstants.gravity(across: horizontal) | ViewConstants.gravity(down: vertical)))
     }
 
-    private func applyPadding() {
-        guard let made = madePadding else { return }
-
-        let sides = padding.map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? made
-        Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2), .int(sides.3))
+    /// The space between the letters in points, which Android counts in ems of the text's own size.
+    func setLetterSpacing(_ points: Double) {
+        spacing = points
+        var look = TextLook()
+        look.letterSpacing = points
+        let size = Double(Java.callFloat(reference, JavaAPI.getTextSize)) / density
+        Java.call(reference, JavaAPI.setLetterSpacing, .float(Float(look.letterSpacing(inEmsOf: size))))
     }
 
-    /// The size and colours the view was made with, read before the first change.
-    private var madeWith: (size: Float, colors: JavaObject) {
-        if let kept = made { return kept }
+    /// The height of a line, as a multiple of the font's own; nil for the font's.
+    func setLineHeight(_ multiple: Double?) {
+        Java.call(reference, JavaAPI.setLineSpacing, .float(0), .float(Float(multiple.flatMap { $0 > 0 ? $0 : nil } ?? 1)))
+    }
 
-        let kept = (
-            size: Java.callFloat(reference, JavaAPI.getTextSize),
-            colors: JavaObject(Java.callObject(reference, JavaAPI.getTextColors)!))
-        made = kept
-        return kept
+    /// A line under the words, or through them.
+    func setDecorations(_ decorations: TextDecorations?) {
+        var flags = Java.callInt(reference, JavaAPI.getPaintFlags) & ~(Self.underline | Self.strikethrough)
+        if decorations?.contains(.underline) == true { flags |= Self.underline }
+        if decorations?.contains(.strikethrough) == true { flags |= Self.strikethrough }
+        Java.call(reference, JavaAPI.setPaintFlags, .int(flags))
+    }
+
+    override func setFontSize(_ size: Double?) {
+        super.setFontSize(size)
+        setLetterSpacing(spacing)
+    }
+
+    /// `Spanned.SPAN_EXCLUSIVE_EXCLUSIVE`, and `Paint`'s underline and strike-through flags.
+    private static let exclusive: Int32 = 33
+    private static let underline: Int32 = 8
+    private static let strikethrough: Int32 = 16
+
+    /// The user's scale for text, which a run's size in points is drawn at, as the label's is.
+    private static var fontScale: Double {
+        Java.frame {
+            let resources = Java.callObject(AndroidRenderer.context, JavaAPI.getResources)!
+            let configuration = Java.callObject(resources, JavaAPI.getConfiguration)!
+            return Double(Java.float(configuration, JavaAPI.fontScale))
+        }
     }
 }

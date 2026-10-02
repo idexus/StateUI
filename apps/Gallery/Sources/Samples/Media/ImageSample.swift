@@ -36,7 +36,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .width(120)
                         .height(60)
 
-                    Label(".aspect(.fit)")
+                    Text(".aspect(.fit)")
                 }
 
                 VStack {
@@ -45,7 +45,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .width(120)
                         .height(60)
 
-                    Label(".aspect(.fill)")
+                    Text(".aspect(.fill)")
                 }
             }
 
@@ -56,7 +56,7 @@ struct ImageSample: SampleContent, ExampleContent {
                     .width(32)
                     .height(32)
 
-                Label("black artwork, always")
+                Text("black artwork, always")
                     .verticalAlignment(.center)
             }
 
@@ -65,7 +65,7 @@ struct ImageSample: SampleContent, ExampleContent {
                     .width(32)
                     .height(32)
 
-                Label("one per theme - switch the system between light and dark")
+                Text("one per theme - switch the system between light and dark")
                     .verticalAlignment(.center)
             }
         }
@@ -105,7 +105,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .height(60)
                         .background(Palette.surface)
 
-                    Label(".aspect(.fit)")
+                    Text(".aspect(.fit)")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -119,7 +119,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .height(60)
                         .background(Palette.surface)
 
-                    Label(".aspect(.fill)")
+                    Text(".aspect(.fill)")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -140,7 +140,7 @@ struct ImageSample: SampleContent, ExampleContent {
                     .width(32)
                     .height(32)
 
-                Label("black artwork, always")
+                Text("black artwork, always")
                     .fontSize(13)
                     .verticalAlignment(.center)
             }
@@ -151,7 +151,7 @@ struct ImageSample: SampleContent, ExampleContent {
                     .width(32)
                     .height(32)
 
-                Label("one per theme - switch the system between light and dark")
+                Text("one per theme - switch the system between light and dark")
                     .fontSize(13)
                     .verticalAlignment(.center)
             }
@@ -162,26 +162,26 @@ struct ImageSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The first row is the sidebar's own icons: SVGs in `Resources/Images`, "
+            Text("The first row is the sidebar's own icons: SVGs in `Resources/Images`, "
                 + "each asked for by its `.png` name. Where the build makes no PNG of that "
                 + "name, the host loads the SVG of the same name instead.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.aspect` is the choice between showing all of the picture and filling "
+            Text("`.aspect` is the choice between showing all of the picture and filling "
                 + "every corner: `.fit` keeps the whole picture and leaves room on "
                 + "two sides, `.fill` covers the box and crops what will not fit.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An `Image` has no tint, so a picture that has to read on both themes is "
+            Text("An `Image` has no tint, so a picture that has to read on both themes is "
                 + "two pictures. `ImageSource(light:dark:)` is picked the way "
                 + "`Color(light:dark:)` is - as the view is built - so a change of theme "
                 + "builds the views wearing one again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.isAnimating(true)` runs a picture that HAS frames - a GIF, an "
+            Text("`.isAnimating(true)` runs a picture that HAS frames - a GIF, an "
                 + "animated WebP - and does nothing at all to a still one, which is why "
                 + "no example above uses it: the gallery ships no animated artwork. It is "
                 + "a property rather than an act, so a paused animation is a state the "

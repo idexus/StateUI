@@ -80,11 +80,11 @@ struct Card: ContentView {
                     .verticalAlignment(.center)
 
                 VStack {
-                    Label(title)
+                    Text(title)
                         .fontSize(17)
                         .fontAttributes(.bold)
 
-                    Label(summary)
+                    Text(summary)
                         .fontSize(13)
                         .textColor(Palette.subtle)
                         .maximumLines(2)
@@ -94,18 +94,18 @@ struct Card: ContentView {
                 .horizontalAlignment(.fill)
                 .verticalAlignment(.center)
 
-                Label("›")
+                Text("›")
                     .gridColumn(2)
                     .fontSize(22)
                     .textColor(Palette.accent)
                     .verticalAlignment(.center)
             }
             .columnSpacing(14)
-            // The TEXT is the star column. An Auto column measures a Label at
+            // The TEXT is the star column. An Auto column measures a Text at
             // the width it would like - the whole summary on one line - so the
             // text ran under the chevron and out through the outline, with an
             // empty star column beside it holding the space it needed. A star
-            // column is given what the others left, and a Label given a width
+            // column is given what the others left, and a Text given a width
             // wraps to it.
             .columns(.auto, .fill, .auto)
             .padding(16, 14)
@@ -113,7 +113,7 @@ struct Card: ContentView {
         .style("Card")
         // A CARD IS A ZSTACK WITH A TAP ON IT, which no platform reads as a
         // control at all: the user who cannot see it would be handed a
-        // picture, two Labels and a chevron with nothing saying they act
+        // picture, two Texts and a chevron with nothing saying they act
         // together. So the card says what it is and where it goes, and the
         // handle is worked out from the title rather than written per card -
         // see Handle.swift.

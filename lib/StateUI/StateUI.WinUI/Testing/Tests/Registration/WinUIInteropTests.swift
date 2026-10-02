@@ -56,7 +56,7 @@ private struct Calling: ContentView {
                     }
                 }
 
-            Label(answer)
+            Text(answer)
         }
         .onCreated {
             heard = [
@@ -159,7 +159,7 @@ private struct Pulling: ContentView {
                     }
                 }
 
-            Label(said)
+            Text(said)
         }
     }
 }
@@ -287,6 +287,6 @@ final class WinUIInteropTests: XCTestCase {
 private extension WinUIRenderer {
     /// The last thing the page said.
     var said: String {
-        views(WinUILabelView.self).last?.text ?? ""
+        views(WinUITextView.self).last?.text ?? ""
     }
 }

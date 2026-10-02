@@ -39,7 +39,7 @@ extension NodeType {
     static let hStack = HStackContract.nodeType
     static let image = ImageContract.nodeType
     static let itemsView = ItemsViewContract.nodeType
-    static let label = LabelContract.nodeType
+    static let text = TextContract.nodeType
     static let line = LineContract.nodeType
     static let map = MapContract.nodeType
     static let menu = MenuContract.nodeType
@@ -175,7 +175,7 @@ extension NodeType {
     static let maximumHeight = VisualElementContract.maximumHeight.token
     static let maximumWidth = VisualElementContract.maximumWidth.token
     static let maximumLength = InputViewContract.maximumLength.token
-    static let maximumLines = LabelContract.maximumLines.token
+    static let maximumLines = TextContract.maximumLines.token
     static let minimum = SliderContract.minimum.token
     static let minimumDate = DatePickerContract.minimumDate.token
     static let minimumHeight = VisualElementContract.minimumHeight.token

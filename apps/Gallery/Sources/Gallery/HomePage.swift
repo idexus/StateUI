@@ -143,13 +143,13 @@ struct HomePage: ContentView {
                             .height(84)
                             .horizontalAlignment(.start)
 
-                        Label("StateUI Gallery")
+                        Text("StateUI Gallery")
                             .fontSize(34)
                             .fontAttributes(.bold)
                             .characterSpacing(-0.5)
                             .textColor(Palette.onBrand)
 
-                        Label("Native interfaces, written in Swift")
+                        Text("Native interfaces, written in Swift")
                             .fontSize(15)
                             .textColor(Palette.onBrand)
                             .opacity(0.85)
@@ -237,7 +237,7 @@ struct HomePage: ContentView {
             // runs short - an auto row keeps its height whatever is left, and
             // words that no longer fit would be drawn OVER what is above them.
             VStack {
-                Label("Every example here is described in Swift and rendered as real "
+                Text("Every example here is described in Swift and rendered as real "
                     + "native controls.")
                     .fontSize(15)
                     .textColor(Palette.subtle)
@@ -246,7 +246,7 @@ struct HomePage: ContentView {
                 // The platform is compiled in; the formFactor - phone, tablet,
                 // desktop - is the host's answer, which is what lets the
                 // catalog list desktop chrome only where it draws.
-                Label("native: \(stateUIPlatform()) · \(device.formFactor)")
+                Text("native: \(stateUIPlatform()) · \(device.formFactor)")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
@@ -506,12 +506,12 @@ private struct Caption: ContentView {
         // THE NAME IS NOT AMONG THEM: the card carries it, and saying it again
         // a card's width below reads as two things rather than one.
         return VStack {
-            Label("\(group.shown(on: formFactor).count) samples · tap the card to open")
+            Text("\(group.shown(on: formFactor).count) samples · tap the card to open")
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)
 
-            Label(group.summary)
+            Text(group.summary)
                 .fontSize(14)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -576,7 +576,7 @@ private struct GroupFace: ContentView {
                     .aspect(.fill)
 
                 Grid {
-                    Label(title)
+                    Text(title)
                         .fontSize(18)
                         .fontAttributes(.bold)
                         .textColor(Palette.onBrand)

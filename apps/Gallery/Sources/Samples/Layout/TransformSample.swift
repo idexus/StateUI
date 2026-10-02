@@ -39,7 +39,7 @@ struct TransformSample: SampleContent, ExampleContent {
             // costs. Each row of boxes below reads the switch in its own
             // braces, so each of them is a reader of its own.
             HStack {
-                Label(transformed ? "every transform on" : "plain squares")
+                Text(transformed ? "every transform on" : "plain squares")
 
                 DebugInfoLabel()
             }
@@ -133,7 +133,7 @@ struct TransformSample: SampleContent, ExampleContent {
             // costs. Each row of boxes below reads the switch in its own
             // braces, so each of them is a reader of its own.
             HStack {
-                Label(transformed ? "every transform on" : "plain squares")
+                Text(transformed ? "every transform on" : "plain squares")
                     .fontSize(12)
                     .textColor(Palette.subtle)
                     .verticalAlignment(.center)
@@ -197,20 +197,20 @@ struct TransformSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("One switch throws every example on the page at once. Each transform is "
+            Text("One switch throws every example on the page at once. Each transform is "
                 + "written as a choice between itself and none, and a changed transform "
                 + "travels - so the boxes fly to their turned, tipped, grown selves and back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.transform(_:)` is one transform in the order it is written, about the "
+            Text("`.transform(_:)` is one transform in the order it is written, about the "
                 + "view's centre: `.rotate(45).translate(28, 0)` moves the turned box a plain "
                 + "28 to the right, while `.translate(28, 0).rotate(45)` swings that move "
                 + "round with the turn. That is the orange row.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`rotation` turns a view within the plane of the screen, so a square stays "
+            Text("`rotation` turns a view within the plane of the screen, so a square stays "
                 + "square; `rotationX` and `rotationY` tip it out of that plane, so it becomes "
                 + "a trapezium. All of them pivot about the anchor, the middle until it is "
                 + "moved: 0 is the left edge or the top, 1 the right edge or the bottom. The "
@@ -218,7 +218,7 @@ struct TransformSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A transform happens after the layout: the view keeps the room it was "
+            Text("A transform happens after the layout: the view keeps the room it was "
                 + "given, and only what is drawn moves. `scale` is both axes at once and "
                 + "`scaleX` and `scaleY` one each; all three multiply the size the layout "
                 + "gave, so 1 is that size and 0.5 half of it. A scaled view overlaps its "
@@ -247,7 +247,7 @@ struct TransformSample: SampleContent, ExampleContent {
         VStack {
             view
 
-            Label(caption)
+            Text(caption)
                 .fontSize(11)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)

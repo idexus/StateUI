@@ -19,15 +19,15 @@ struct ToolbarLayerPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("Layer \(depth)")
+            Text("Layer \(depth)")
                 .fontSize(28)
                 .fontAttributes(.bold)
 
-            Label("Shared \(shared) time(s)")
+            Text("Shared \(shared) time(s)")
                 .fontSize(14)
                 .textColor(Palette.subtle)
 
-            Label("Go back and this page's actions leave with it.")
+            Text("Go back and this page's actions leave with it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -24,7 +24,7 @@
                 let changed = State(wrappedValue: false)
                 s.start {
                     VStack {
-                        Label("Row").contextMenu {
+                        Text("Row").contextMenu {
                             Menu(changed.wrappedValue ? "Send" : "Share") { MenuItem("Mail") }.isEnabled(!changed.wrappedValue)
                         }.id("row")
                         Button("Change").onClicked { changed.wrappedValue = true }.id("change")

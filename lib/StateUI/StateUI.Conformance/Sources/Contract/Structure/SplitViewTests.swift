@@ -12,13 +12,13 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("standsAloneShowingItsDetail", proves: [
-                Covered(SplitViewContract.self), Covered(ViewContract.frameChanged, on: "Label"),
+                Covered(SplitViewContract.self), Covered(ViewContract.frameChanged, on: "Text"),
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     SplitView(State(wrappedValue: true).projectedValue) {
-                        Label("Sidebar")
-                    } detail: { WideDetail(Label("Detail").onEvent(ViewContract.frameChanged) { frames.values.append($0) }) }
+                        Text("Sidebar")
+                    } detail: { WideDetail(Text("Detail").onEvent(ViewContract.frameChanged) { frames.values.append($0) }) }
                 }
                 s.settle { Aspects.laidOut(frames) }
                 s.expect(Aspects.laidOut(frames), true, "its detail laid out in the window")
@@ -28,8 +28,8 @@
             ]) { s in
                 s.start {
                     SplitView(State(wrappedValue: true).projectedValue) {
-                        Label("Sidebar").id("sidebar")
-                    } detail: { WideDetail(Label("Detail").id("detail")) }
+                        Text("Sidebar").id("sidebar")
+                    } detail: { WideDetail(Text("Detail").id("detail")) }
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
 
@@ -42,7 +42,7 @@
             ]) { s in
                 let open = State(wrappedValue: true)
                 s.start {
-                    SplitView(open.projectedValue) { Label("Sidebar") } detail: { WideDetail(Label("Detail")) }
+                    SplitView(open.projectedValue) { Text("Sidebar") } detail: { WideDetail(Text("Detail")) }
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
                 try s.settle { try s.held(SplitViewContract.isSidebarVisible, on: split) == true }
@@ -62,7 +62,7 @@
                 let open = State(wrappedValue: true)
                 s.start {
                     SplitView(open.projectedValue) {
-                        Label("Sidebar")
+                        Text("Sidebar")
                     } detail: {
                         WideDetail(VStack { Button("Hide").onClicked { open.wrappedValue = false }.id("hide") })
                     }

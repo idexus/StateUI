@@ -69,7 +69,7 @@ final class WindowPresentationTests: XCTestCase {
             node("window", .window, [
                 node("modal", .modalStack, [
                     node("stack", .navigationStack, [
-                        node("home", .page, [node("content", .vStack, [node("words", .label), overlay("home's")])]),
+                        node("home", .page, [node("content", .vStack, [node("words", .text), overlay("home's")])]),
                     ] + (pushed ? [node("detail", .page)] : []) + [overlay("stack's")]),
                     node("sheet", .page, [overlay("sheet's")]),
                 ]),

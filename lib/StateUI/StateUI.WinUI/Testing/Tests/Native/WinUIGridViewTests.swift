@@ -14,12 +14,12 @@ final class WinUIGridViewTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    Grid { Label("Waiting for the first render of this scene") }
-                    Grid { Label("Waiting for the first render of this scene").margin(8, 4) }
+                    Grid { Text("Waiting for the first render of this scene") }
+                    Grid { Text("Waiting for the first render of this scene").margin(8, 4) }
                 }
                 .horizontalAlignment(.start)
             }
-            let labels = host.views(WinUILabelView.self)
+            let labels = host.views(WinUITextView.self)
             XCTAssertEqual(labels.count, 2)
             XCTAssertEqual(labels[1].frame.height, labels[0].frame.height, "on one line")
             XCTAssertEqual(labels[1].frame.y, 4)
@@ -32,13 +32,13 @@ final class WinUIGridViewTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    Label("One line")
+                    Text("One line")
                     VStack {
                         Grid {
-                            Label("2026-10-02 17:03")
-                            Label("Korekta").gridColumn(1)
-                            Label("Anna Zając (5)").gridColumn(2)
-                            Label("Wadliwa: Uszkodzona (było: Czeka na decyzję)").gridColumn(3)
+                            Text("2026-10-02 17:03")
+                            Text("Korekta").gridColumn(1)
+                            Text("Anna Zając (5)").gridColumn(2)
+                            Text("Wadliwa: Uszkodzona (było: Czeka na decyzję)").gridColumn(3)
                         }
                         .columns(.fixed(140), .fixed(130), .proportional(2), .proportional(3))
                         .columnSpacing(12)
@@ -47,7 +47,7 @@ final class WinUIGridViewTests: XCTestCase {
                 }
                 .padding(24, 20)
             }
-            let labels = host.views(WinUILabelView.self)
+            let labels = host.views(WinUITextView.self)
             let words = try XCTUnwrap(labels.last)
             let line = labels[0].frame.height
             XCTAssertGreaterThan(words.frame.height, line * 1.5, "wrapped")

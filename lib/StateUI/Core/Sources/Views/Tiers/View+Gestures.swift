@@ -19,7 +19,7 @@ extension View {
 
     /// The same, for a double tap or more: `count` taps in a row.
     ///
-    ///     Label("Reset").onTapped(count: 2) { taps = 0 }
+    ///     Text("Reset").onTapped(count: 2) { taps = 0 }
     public func onTapped(
         count: Int,
         _ handler: @escaping EventHandler
@@ -182,7 +182,7 @@ extension View {
 
     /// Makes the view draggable, carrying `text` with it.
     ///
-    ///     Label(item)
+    ///     Text(item)
     ///         .draggable(text: item)
     ///
     /// Text is the portable drag payload. `onDragStarting` runs when the drag

@@ -52,7 +52,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
                 return VStack {
                     // A GET: this meter is a reader, and every report rebuilds it.
                     ProgressBar().progress(level)
-                    Label(count)
+                    Text(count)
                 }
             }
         }
@@ -66,8 +66,8 @@ struct BindingReaderSample: SampleContent, ExampleContent {
                 return VStack {
                     // A CONVERSION: the words are worked out by the host, on
                     // its own frames, and nothing here reads the value.
-                    Label($level.convert { "\\(Int(($0 * 100).rounded()))%" })
-                    Label(count)
+                    Text($level.convert { "\\(Int(($0 * 100).rounded()))%" })
+                    Text(count)
                 }
             }
         }
@@ -86,7 +86,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("One state, `level`, handed on as `$level` three times: to the knob, "
+            Text("One state, `level`, handed on as `$level` three times: to the knob, "
                 + "which drags it and sends it, and to two meters. Handing it on makes "
                 + "nobody a reader - the page around the three is never rebuilt for "
                 + "it - and what each meter costs is decided inside it. The first "
@@ -97,7 +97,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@Binding` is the same spelling at every depth: in a child, `level` "
+            Text("`@Binding` is the same spelling at every depth: in a child, `level` "
                 + "is the value and `$level` is the binding again, so `Slider($level)`, "
                 + "`following: $level` and `level = 1` are written as the owner writes "
                 + "them. Full and Empty are assignments, and the thumb travels under the "
@@ -105,7 +105,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A read in a body is the ONE thing that makes a reader, whether the "
+            Text("A read in a body is the ONE thing that makes a reader, whether the "
                 + "state is the view's own or borrowed. So a value a view must show is "
                 + "read where it is shown and costs that view's renders alone, and a "
                 + "value that only has to move is handed on and costs none.")
@@ -163,7 +163,7 @@ private struct ReadingMeter: ContentView {
                 .progress(level)
                 .tint(Palette.accent)
 
-            Label("a bar that reads the value — \(count)")
+            Text("a bar that reads the value — \(count)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -182,11 +182,11 @@ private struct ConvertedMeter: ContentView {
         return VStack {
             // The words are the host's own arithmetic over the state, worked
             // out on its frames - handing a conversion on reads nothing here.
-            Label()
+            Text()
                 .text($level.convert { "\(Int(($0 * 100).rounded()))%" })
                 .fontSize(17)
 
-            Label("a conversion of the same state — \(count)")
+            Text("a conversion of the same state — \(count)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

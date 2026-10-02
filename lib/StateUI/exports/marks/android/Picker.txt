@@ -1,5 +1,4 @@
 # revision 1.1
-Label.text: ✅
 Picker: ✅
 Picker.closed: cannot open on Picker - Android's driver has no path for it yet
 Picker.frameChanged: ✅
@@ -9,3 +8,4 @@ Picker.options: ✓ read options of Picker: the rows the relay keeps, not the sp
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅
 Picker.title: ✓ read title of Picker: the rows the relay keeps, not the spinner's
+Text.text: ✅

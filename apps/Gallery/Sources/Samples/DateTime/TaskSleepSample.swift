@@ -31,7 +31,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
             // The countdown is read here, so every step builds this closure.
             DebugInfoLabel()
 
-            Label("\\(remaining)")
+            Text("\\(remaining)")
 
             ProgressBar(total == 0 ? 0 : Double(remaining) / Double(total))
 
@@ -89,7 +89,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("\(remaining)")
+            Text("\(remaining)")
                 .fontSize(64)
                 .fontAttributes(.bold)
                 .textColor(remaining == 0 ? Palette.subtle : Palette.accent)
@@ -161,21 +161,21 @@ struct TaskSleepSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Foundation's `Timer` hangs off a RunLoop, and nothing turns one on "
+            Text("Foundation's `Timer` hangs off a RunLoop, and nothing turns one on "
                 + "Android or Windows - so a timer here is a loop that sleeps. The "
                 + "handler resumes on the thread the host draws on, which is what makes "
                 + "writing state from it ordinary.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Leaving the page stops it: .onDestroying clears the flag, and the visit "
+            Text("Leaving the page stops it: .onDestroying clears the flag, and the visit "
                 + "token retires a loop still asleep when the next one starts. Without one, "
                 + "coming back would start a second loop counting the same number down "
                 + "twice as fast.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A sleep of one second costs slightly MORE than one second, and a loop "
+            Text("A sleep of one second costs slightly MORE than one second, and a loop "
                 + "that sleeps for the interval adds every one of those up - the "
                 + "lateness accumulates lap after lap, and a sleeper aimed at a deadline "
                 + "avoids it. The Ticker sample beside this one is the same countdown "

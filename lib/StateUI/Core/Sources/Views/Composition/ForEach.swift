@@ -6,7 +6,7 @@
 ///
 ///     VStack {
 ///         ForEach(names) { name in
-///             Label(name)
+///             Text(name)
 ///         }
 ///     }
 ///
@@ -25,7 +25,7 @@ public struct ForEach: Views {
     /// One view per item, the item its identity.
     ///
     ///     ForEach(0..<5) { turn in
-    ///         Label("Turn \(turn)")
+    ///         Text("Turn \(turn)")
     ///     }
     ///
     /// A range works: its numbers are the items.
@@ -39,7 +39,7 @@ public struct ForEach: Views {
     /// One view per item, identified by the part of it `id` names.
     ///
     ///     ForEach(files, id: \.path) { file in
-    ///         Label(file.name)
+    ///         Text(file.name)
     ///     }
     ///
     /// For items that are not `Hashable` whole, or that repeat - an enumerated

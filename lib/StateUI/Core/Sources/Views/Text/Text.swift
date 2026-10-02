@@ -1,72 +1,72 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `Label`'s own properties, shared by the control and its `Style<Label>`.
-public protocol LabelProperties: PropertyContainer {}
+/// `Text`'s own properties, shared by the control and its `Style<Text>`.
+public protocol TextProperties: PropertyContainer {}
 
-extension LabelProperties {
+extension TextProperties {
     /// What happens to text too long for the space: wrap it, or cut it and say
     /// so.
     public func lineBreak(_ value: LineBreak) -> Modified {
-        setValue(LabelContract.lineBreak, value)
+        setValue(TextContract.lineBreak, value)
     }
 
     /// How many lines to show before the text is cut - what the cut LOOKS like
     /// is `lineBreak`'s business. A count of -1 means no limit, which is
     /// the default.
     public func maximumLines(_ value: Int) -> Modified {
-        setValue(LabelContract.maximumLines, value)
+        setValue(TextContract.maximumLines, value)
     }
 }
 
 /// A read-only piece of text.
 ///
-///     Label("Total")
+///     Text("Total")
 ///         .fontSize(20)
 ///         .fontAttributes(.bold)
 ///         .horizontalTextAlignment(.center)
-public struct Label: View, TextElement, FontElement, TextAlignmentElement,
-    PaddingElement, LineHeightElement, DecorableTextElement, LabelProperties {
+public struct Text: View, TextElement, FontElement, TextAlignmentElement,
+    PaddingElement, LineHeightElement, DecorableTextElement, TextProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Label>` is written against.
+    /// An empty one - what a `Style<Text>` is written against.
     public init() {
-        node = Node(contract: LabelContract.self)
+        node = Node(contract: TextContract.self)
     }
 
-    /// A label showing `text`.
+    /// Words showing `text`.
     public init(_ text: String) {
-        node = Node(contract: LabelContract.self)
+        node = Node(contract: TextContract.self)
         node.write(TextElementContract.text, text)
     }
 
-    /// A label whose text is carried from a state, written by the host as it
+    /// Words carried from a state, written by the host as it
     /// changes, at no render.
     ///
     /// - Parameter text: the state the words are read from.
     public init(_ text: Binding<String>) {
-        self = Label().text(text)
+        self = Text().text(text)
     }
 
     /// Text made of runs, each with a look of its own.
     ///
-    ///     Label()
+    ///     Text()
     ///         .spans {
     ///             TextSpan("let ").textColor(.purple)
     ///             TextSpan("counter").textColor(.steelBlue)
     ///             TextSpan(" = 0")
     ///         }
     ///
-    /// The one way to colour part of a label: text in two colours is two runs.
+    /// The one way to colour part of the words: text in two colours is two runs.
     /// A list of runs goes in whole, each matched by where it sits, since two
     /// tokens may read the same:
     ///
-    ///     Label().spans {
+    ///     Text().spans {
     ///         highlighted(code).map { TextSpan($0.text).textColor($0.colour) }
     ///     }
     ///
-    /// A Label given both runs and a `text` shows the runs.
+    /// A Text given both runs and a `text` shows the runs.
     public func spans(@SpanBuilder _ spans: () -> [TextSpan]) -> Self {
         modified {
             $0.children = [Node(contract: SpansContract.self, children: spans().map { $0.body })]
@@ -74,14 +74,14 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     }
 }
 
-/// One run of text inside a Label, with its own colour, size and weight.
+/// One run of text inside a Text, with its own colour, size and weight.
 ///
 ///     TextSpan("Sold out")
 ///         .textColor(.firebrick)
 ///         .fontAttributes(.bold)
 ///
 /// Not a view: a run has text and font properties and nothing else, and it
-/// goes only in a Label's `spans`.
+/// goes only in a Text's `spans`.
 public struct TextSpan: ModifiableElement, TextElement, FontElement,
     LineHeightElement, DecorableTextElement {
     /// The node this run describes.
@@ -104,7 +104,7 @@ public struct TextSpan: ModifiableElement, TextElement, FontElement,
     }
 }
 
-extension Label {
+extension Text {
     /// `maximumLines` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func maximumLines(_ state: Binding<Int>) -> Modified {

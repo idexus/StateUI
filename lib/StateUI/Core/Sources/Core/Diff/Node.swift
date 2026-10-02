@@ -212,7 +212,7 @@ public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat
 /// A type no host resolves draws the unknown-control marker rather than hiding
 /// the rest of the interface.
 public struct Node {
-    /// The element's StateUI type token, such as `.label`,
+    /// The element's StateUI type token, such as `.text`,
     /// `.vStack`, or an application's own registered type.
     public internal(set) var type: NodeType
 

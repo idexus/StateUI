@@ -62,7 +62,7 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("Pick None, then open another sample: nothing in the application travels.")
+            Text("Pick None, then open another sample: nothing in the application travels.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -88,13 +88,13 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The application's session holds what is the whole process's: its phase, its open "
+            Text("The application's session holds what is the whole process's: its phase, its open "
                 + "scenes, its styles, its motion and the keys it keeps. The scene's and the window's "
                 + "sessions are under Windows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A view nearer the value still answers first: `.motion(_:)` on a view, "
+            Text("A view nearer the value still answers first: `.motion(_:)` on a view, "
                 + "`@State(motion:)` on a state, `$state.journey.snap(to:)` on one write.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

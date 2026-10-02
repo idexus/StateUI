@@ -53,7 +53,7 @@ the member its contract declares, and the differ carries it to the host.
   PropValue                           .color(81, 43, 212, 255)   .numbers([24, 24, 24, 24])
                                       .enumeration(4)            .numbers([2026, 8, 2])
        |
-       |  setValue(LabelContract.lineBreak, .tailTruncation)
+       |  setValue(TextContract.lineBreak, .tailTruncation)
        |  a modifier writes through its member
        v
   Node.props   [Prop: PropValue]      what the element says this render

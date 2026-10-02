@@ -15,7 +15,7 @@ private struct AskingPage: ContentView {
 
     var content: some View {
         VStack {
-            Label(said)
+            Text(said)
             Button("Time").onClicked {
                 let time = try await ClockTime.now()
                 let zone = try await TimeZoneInfo.local()
@@ -51,7 +51,7 @@ private struct FocusPage: ContentView {
 
     var content: some View {
         VStack {
-            Label(said)
+            Text(said)
             TextField($words).aim(field)
             Button("Focus").onClicked { said = "took \(try await field.focus())" }
             Button("Unfocus").onClicked {
@@ -68,7 +68,7 @@ private struct QuestionsPage: ContentView {
 
     var content: some View {
         VStack {
-            Label(said)
+            Text(said)
             Button("Alert").onClicked {
                 try await Dialogs.alert("Saved", message: "The draft is kept")
                 said += "alerted; "
@@ -197,7 +197,7 @@ final class GTKActsTests: XCTestCase {
 private extension GTKRenderer {
     /// What the page's first label says.
     var said: String {
-        views(GTKLabelView.self).first?.text ?? ""
+        views(GTKTextView.self).first?.text ?? ""
     }
 
     /// Presses the button of that caption.

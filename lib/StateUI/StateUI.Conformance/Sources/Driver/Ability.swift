@@ -3,7 +3,7 @@
 
 import StateUI
 
-/// An ability as a driver names it, taken apart: "tap on Label" is the act "tap" done on a Label; a read or a fact -
+/// An ability as a driver names it, taken apart: "tap on Text" is the act "tap" done on a Text; a read or a fact -
 /// "read isOn of Switch" - has no element "on" it.
 @_spi(Host) public struct Ability: Equatable, Sendable {
     /// The act, or the whole of a read.

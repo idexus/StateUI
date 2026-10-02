@@ -106,7 +106,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .indicatorColor(Palette.outline)
                     .selectedIndicatorColor(Palette.accent)
 
-                Label("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
+                Text("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
                     + "card \\(shown + 1) of \\(cards.count) · \\(opened) · moved \\(moves)")
             }
             .gridRow(1)
@@ -154,7 +154,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     Image(ImageSource(card.art))
                         .aspect(.fill)
 
-                    Label(card.name)
+                    Text(card.name)
                         .verticalAlignment(.end)
                 }
                 .clipsContent(true)
@@ -204,7 +204,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .selectedIndicatorColor(Palette.accent)
                     .horizontalAlignment(.center)
 
-                Label("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
+                Text("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
                     + "card \(shown + 1) of \(Self.cards.count) · \(opened) · moved \(moves)")
                     .fontSize(13)
                     .textColor(Palette.subtle)
@@ -277,7 +277,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 Image(ImageSource(card.art))
                     .aspect(.fill)
 
-                Label(card.name)
+                Text(card.name)
                     .fontSize(18)
                     .fontAttributes(.bold)
                     .textColor(Palette.onBrand)
@@ -295,14 +295,14 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("`GalleryView` is a run of cards the user swipes through, with "
+            Text("`GalleryView` is a run of cards the user swipes through, with "
                 + "`.arrangement` choosing the shape they stand in - `.default` is a "
                 + "wheel, `.fan` a hand of cards, `.row` a strip. The cards TRAVEL "
                 + "between the three, so the shape button carries the whole run across.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Swipe, drag with the mouse or turn a wheel: the run settles on the "
+            Text("Swipe, drag with the mouse or turn a wheel: the run settles on the "
                 + "card it is nearest. WHICH of those the run answers is the platform's: "
                 + "a finger drags the run itself, so on a phone and a tablet that is the "
                 + "whole of it, while on a desktop - where a pointer scrolls nothing - "
@@ -314,14 +314,14 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Swipeable` is `.isSwipeEnabled(false)` - the user's "
+            Text("`Swipeable` is `.isSwipeEnabled(false)` - the user's "
                 + "hand is stopped and the buttons still move the run. A gallery is "
                 + "swiped to choose and tapped to open: `.onItemTapped` is handed the "
                 + "card in the MIDDLE, and a tap beside it answers nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Shaded` is `.shade(ColorBox(Color(\"#000000\")).cornerRadius(16))`: "
+            Text("`Shaded` is `.shade(ColorBox(Color(\"#000000\")).cornerRadius(16))`: "
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded. Turn it off and watch a far card go transparent - "
                 + "what shows through is the card behind it. The shade is a view because "
@@ -330,7 +330,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Nothing is described while the cards move: the one render is the "
+            Text("Nothing is described while the cards move: the one render is the "
                 + "card CHANGING. `.itemSize(width:height:)` says how big a card is, and "
                 + "the run scales down to fit a small window.")
                 .fontSize(12)

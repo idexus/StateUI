@@ -13,7 +13,7 @@ import AppKit
 /// Design: docs/design/platforms/appkit/conformance.md#what-the-driver-reads
 extension AppKitDriver {
     static func controlHolds(_ property: Prop, _ view: NSView) throws -> HostValue? {
-        if let label = view as? AppKitLabelView, let held = labelHolds(property, label) { return held }
+        if let label = view as? AppKitTextView, let held = labelHolds(property, label) { return held }
         if let held = fieldHolds(property, view) { return held }
         if let held = try boxHolds(property, view) { return held }
         if let button = view as? AppKitButtonView, let held = buttonHolds(property, button) { return held }
@@ -35,7 +35,7 @@ extension AppKitDriver {
     }
 
     /// A label's words as its text field holds and places them.
-    private static func labelHolds(_ property: Prop, _ label: AppKitLabelView) -> HostValue? {
+    private static func labelHolds(_ property: Prop, _ label: AppKitTextView) -> HostValue? {
         guard let field = label.subviews.lazy.compactMap({ $0 as? NSTextField }).first else { return nil }
         let words = field.attributedStringValue
         let attributes = words.length > 0 ? words.attributes(at: 0, effectiveRange: nil) : [:]

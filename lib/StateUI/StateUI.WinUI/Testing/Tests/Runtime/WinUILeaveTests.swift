@@ -15,7 +15,7 @@ struct NotePage: ContentView {
     var content: some View {
         VStack {
             if shown {
-                Label("note")
+                Text("note")
             }
             Button("Hide")
                 .onClicked { shown = false }
@@ -29,13 +29,13 @@ final class WinUILeaveTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running { NotePage() }
             let before = WinUIView.liveCount
-            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["note"])
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["note"])
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             // A view's deinit is MainActor's, and runs in the turn after the one it left in.
             _ = host.runtime.core.runJobs()
 
-            XCTAssertEqual(host.views(WinUILabelView.self).count, 0)
+            XCTAssertEqual(host.views(WinUITextView.self).count, 0)
             XCTAssertEqual(WinUIView.liveCount, before - 1, "the label's view outlived its element")
         }
     }
@@ -55,7 +55,7 @@ final class WinUILeaveTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     if shown.wrappedValue {
-                        ScrollView { VStack { Label("one"); Label("two") } }
+                        ScrollView { VStack { Text("one"); Text("two") } }
                     }
                     Button("Toggle").onClicked { shown.wrappedValue.toggle() }
                 }
@@ -82,7 +82,7 @@ final class WinUILeaveTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     if shown.wrappedValue {
-                        ItemsView(0..<1_000) { Label("Item \($0)") }.height(300)
+                        ItemsView(0..<1_000) { Text("Item \($0)") }.height(300)
                     }
                     Button("Toggle").onClicked { shown.wrappedValue.toggle() }
                 }
@@ -91,8 +91,8 @@ final class WinUILeaveTests: XCTestCase {
             let before = WinUIView.liveCount
 
             toggle.invoke()
-            host.settle(until: { host.views(WinUILabelView.self).count > 5 })
-            XCTAssertGreaterThan(host.views(WinUILabelView.self).count, 5, "the list shows its first items")
+            host.settle(until: { host.views(WinUITextView.self).count > 5 })
+            XCTAssertGreaterThan(host.views(WinUITextView.self).count, 5, "the list shows its first items")
             toggle.invoke()
             host.settle(until: { host.views(WinUIItemsView.self).isEmpty })
             _ = host.runtime.core.runJobs()
@@ -150,5 +150,5 @@ private struct LeavingOpeningPage: ContentView {
 }
 
 private struct LeavingToolWindow: Window {
-    var page: any Page { Label("A tool") }
+    var page: any Page { Text("A tool") }
 }

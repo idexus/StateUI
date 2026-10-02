@@ -35,12 +35,6 @@ Image.gridColumnSpan: ✅
 Image.gridRowSpan: ✅
 ItemsView.area: ✅
 ItemsView.frameChanged: ✅
-Label.canDrag: not realized
-Label.dragStarting: not realized
-Label.dragText: not realized
-Label.dropCompleted: not realized
-Label.frameChanged: ✅
-Label.margin: ✅
 Line.pinchUpdated: ✓ pinch on Line: handed to the host's recognizer or handler, no NSEvent sent
 Map.panYChannel: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Path.tapCount: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
@@ -81,6 +75,12 @@ Slider.pinchUpdated: ✓ pinch on Slider: handed to the host's recognizer or han
 Stepper.panYChannel: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Switch.tapCount: ✓ tap on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.tapped: ✓ tap on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Text.canDrag: not realized
+Text.dragStarting: not realized
+Text.dragText: not realized
+Text.dropCompleted: not realized
+Text.frameChanged: ✅
+Text.margin: ✅
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅

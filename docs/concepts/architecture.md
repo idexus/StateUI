@@ -76,13 +76,13 @@ struct Greeting: ContentView {
     var content: some View {
         VStack {
             TextField($name).placeholder("Name")
-            Label("Hello, \(name)")
+            Text("Hello, \(name)")
         }
     }
 }
 ```
 
-`Label` reads `name`, so an edit rebuilds `Greeting`. The resulting patch
+`Text` reads `name`, so an edit rebuilds `Greeting`. The resulting patch
 contains only values and descendants that actually changed. Reader sets are a
 function of the current tree: when a body no longer reads a state, that state
 no longer invalidates it.
@@ -111,7 +111,7 @@ struct Level: ContentView {
         VStack {
             Slider($level)
             ColorBox(.cornflowerBlue).scaleX($level)
-            Label($level.convert { "\(Int($0 * 100))%" })
+            Text($level.convert { "\(Int($0 * 100))%" })
         }
     }
 }
@@ -181,7 +181,7 @@ struct Fader: ContentView {
 
     var content: some View {
         VStack {
-            Label("Native motion").opacity($fade)
+            Text("Native motion").opacity($fade)
             Button("Fade").onClicked {
                 try await $fade.journey.move(to: 0.15, .eased(400, .cubicOut))
             }
@@ -309,7 +309,7 @@ struct HandbookPage: ContentView {
     @Environment private var page: PageSession
 
     var content: some View {
-        Label("Hello from StateUI")
+        Text("Hello from StateUI")
             .onCreated { page.title = "StateUI" }
     }
 }

@@ -71,7 +71,7 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
     }
 
     /// `2026-08-02` - the day as a line of text, for putting one in a label:
-    /// `Label("Due \(due.text)")`. A year before the first is written with a
+    /// `Text("Due \(due.text)")`. A year before the first is written with a
     /// minus, `-0005-03-01`, and reads back.
     ///
     /// One fixed shape, never a display format: a `DatePicker` writes a date

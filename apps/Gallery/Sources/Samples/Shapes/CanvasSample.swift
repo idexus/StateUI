@@ -88,7 +88,7 @@ private struct FollowsState: ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("The drawing is a list of instructions described in Swift. They travel to "
+        Text("The drawing is a list of instructions described in Swift. They travel to "
             + "the host, which draws them on the platform's canvas. The bars are read "
             + "inside the drawing, so new numbers draw it again.")
             .fontSize(12)
@@ -166,7 +166,7 @@ private struct FollowsAFinger: ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("Every point the finger reports is a write: the trail changes, the "
+        Text("Every point the finger reports is a write: the trail changes, the "
             + "drawing is described again, and the new instructions travel.")
             .fontSize(12)
             .textColor(Palette.subtle)

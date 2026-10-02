@@ -7,10 +7,6 @@ DatePicker.fontAttributes: ✅
 DatePicker.fontAutoScalingEnabled: not realized
 DatePicker.fontFamily: cannot read a family - Android's typeface keeps no family's name
 DatePicker.fontSize: ✅
-Label.fontAttributes: ✅
-Label.fontAutoScalingEnabled: not realized
-Label.fontFamily: cannot read a family - Android's typeface keeps no family's name
-Label.fontSize: ✅
 Picker.fontAttributes: cannot read fontAttributes of Picker - Android's driver has no path for it yet
 Picker.fontAutoScalingEnabled: not realized
 Picker.fontFamily: cannot read fontFamily of Picker - Android's driver has no path for it yet
@@ -27,6 +23,10 @@ Span.fontAttributes: cannot read fontAttributes of Span - Android's driver has n
 Span.fontAutoScalingEnabled: not realized
 Span.fontFamily: not realized
 Span.fontSize: cannot read fontSize of Span - Android's driver has no path for it yet
+Text.fontAttributes: ✅
+Text.fontAutoScalingEnabled: not realized
+Text.fontFamily: cannot read a family - Android's typeface keeps no family's name
+Text.fontSize: ✅
 TextEditor.fontAttributes: ✅
 TextEditor.fontAutoScalingEnabled: not realized
 TextEditor.fontFamily: cannot read a family - Android's typeface keeps no family's name

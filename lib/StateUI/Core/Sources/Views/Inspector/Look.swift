@@ -73,7 +73,7 @@ enum Look {
 
     /// One line of the chosen render's numbers.
     static func line(_ text: String) -> some View {
-        Label(text)
+        Text(text)
             .fontSize(11)
             .textColor(subtle)
             .lineBreak(.tailTruncation)

@@ -58,7 +58,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                     }
                     .height(92)
 
-                    Label("in concert")
+                    Text("in concert")
                         .opacity($breath)
                 }
             }
@@ -157,7 +157,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.center)
                     .height(92)
 
-                    Label("in concert")
+                    Text("in concert")
                         .opacity($breath)
                         .fontSize(15)
                         .textColor(Palette.onAccent)
@@ -216,7 +216,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("One press, and three things move at once for as long as it runs: "
+            Text("One press, and three things move at once for as long as it runs: "
                 + "the wash across the stage, the caption breathing, and the bars "
                 + "hopping one after another inside both. Every one of them is a DRIVEN "
                 + "state: the host reads the value off the state on its own frames, so "
@@ -227,21 +227,21 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The four bars are FOUR states, one each, because a driven state is "
+            Text("The four bars are FOUR states, one each, because a driven state is "
                 + "one image the host reads - a binding into an array of numbers has no "
                 + "image of its own, so there would be nothing to read a bar's place off. "
                 + "The list of bindings is what keeps the loop short.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A state holds both readings at once: `breath` is 0.25 on the "
+            Text("A state holds both readings at once: `breath` is 0.25 on the "
                 + "line after the movement starts, while `$breath.journey.value` is whatever is "
                 + "on the screen. That is what lets one movement follow another with "
                 + "nothing to put back afterwards.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Awaiting the two long ones at the BOTTOM is what keeps this a loop "
+            Text("Awaiting the two long ones at the BOTTOM is what keeps this a loop "
                 + "rather than a pile: a beat is over when the longest thing in it is "
                 + "over, so the next colour never starts over the one before it. Stop is "
                 + "stop() on each state, and each leaves its value where it stood - "

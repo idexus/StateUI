@@ -2,8 +2,8 @@
 Button.padding: ✅
 Grid.padding: ✅
 HStack.padding: ✅
-Label.padding: ✅
 RadioButton.padding: ✅
 ScrollView.padding: ✅
+Text.padding: ✅
 VStack.padding: ✅
 ZStack.padding: ✅

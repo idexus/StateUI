@@ -35,9 +35,6 @@ Image.pointerReleased: ✓ hover on Image: handed to the host's recognizer or ha
 ItemsView.swipeDirection: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.swiped: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-Label.panTouchCount: ✓ pan on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.panUpdated: ✓ pan on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.panXChannel: ✓ pan on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
@@ -85,6 +82,9 @@ Switch.dragText: not realized
 Switch.dropCompleted: not realized
 Switch.frameChanged: ✅
 Switch.margin: ✅
+Text.panTouchCount: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.panUpdated: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.panXChannel: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextField.panYChannel: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.tapCount: ✓ tap on TimePicker: handed to the host's recognizer or handler, no NSEvent sent

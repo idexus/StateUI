@@ -75,16 +75,6 @@ ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
 ItemsView.pinchUpdated: ✅
-Label.canDrag: not realized
-Label.dragStarting: not realized
-Label.dragText: not realized
-Label.dropCompleted: not realized
-Label.frameChanged: ✅
-Label.horizontalAlignment: ✅
-Label.panTouchCount: ✅
-Label.panUpdated: ✅
-Label.panXChannel: ✅
-Label.verticalAlignment: ✅
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
@@ -183,6 +173,16 @@ Switch.frameChanged: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
 Switch.pinchUpdated: ✅
+Text.canDrag: not realized
+Text.dragStarting: not realized
+Text.dragText: not realized
+Text.dropCompleted: not realized
+Text.frameChanged: ✅
+Text.horizontalAlignment: ✅
+Text.panTouchCount: ✅
+Text.panUpdated: ✅
+Text.panXChannel: ✅
+Text.verticalAlignment: ✅
 TextEditor.canDrag: not realized
 TextEditor.dragStarting: not realized
 TextEditor.dragText: not realized

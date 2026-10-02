@@ -105,23 +105,23 @@ final class ConformanceRunnerTests: XCTestCase {
     /// served is ✅.
     func testWhatACaseReachedOnlyThroughTheHostIsTheHostsOwn() {
         let driver = RegisterOnly(realizing: [
-            .complete("Switch", "isOn"), .complete("Switch", "toggled"), .complete("Label", "text"),
+            .complete("Switch", "isOn"), .complete("Switch", "toggled"), .complete("Text", "text"),
         ])
-        driver.own = ["read isOn of Switch": "a copy the host keeps", "tap on Label": "handed to the recognizer"]
+        driver.own = ["read isOn of Switch": "a copy the host keeps", "tap on Text": "handed to the recognizer"]
         let verdicts = run([
             ConformanceCase("reads", proves: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)]) { s in
                 s.note("read isOn of Switch", element: "Switch", member: "isOn")
                 s.note("read toggled of Switch", element: "Switch", member: "toggled")
             },
-            ConformanceCase("taps", proves: [Covered(LabelContract.self)]) { s in
-                s.note("tap on Label", element: "Label")
+            ConformanceCase("taps", proves: [Covered(TextContract.self)]) { s in
+                s.note("tap on Text", element: "Text")
             },
         ], on: driver)
 
         XCTAssertEqual(HostVerdict.text(verdicts), """
-            Label: ✓ tap on Label: handed to the recognizer
             Switch.isOn: ✓ read isOn of Switch: a copy the host keeps
             Switch.toggled: ✅
+            Text: ✓ tap on Text: handed to the recognizer
 
             """)
     }

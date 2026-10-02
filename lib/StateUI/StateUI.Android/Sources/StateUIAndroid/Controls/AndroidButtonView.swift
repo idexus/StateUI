@@ -7,7 +7,7 @@ import CStateUIAndroid
 
 /// A Button: an `android.widget.Button` whose click reaches Swift through its `StateUIListener`.
 @MainActor
-final class AndroidButtonView: AndroidTextView {
+final class AndroidButtonView: AndroidTextualView {
     /// What the button does when it is clicked.
     var onClicked: (() -> Void)?
 

@@ -8,7 +8,7 @@ The platform's own collection of items: StateUI says which items there are, in o
 @State var chosen: String? = nil
 
 ItemsView(["Apple", "Banana", "Cherry"]) { fruit in
-    Label(fruit).padding(14, 10)
+    Text(fruit).padding(14, 10)
 }
 .selection($chosen)
 .onItemActivated { fruit in chosen = fruit }

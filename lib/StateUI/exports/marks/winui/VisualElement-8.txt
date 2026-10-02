@@ -38,9 +38,6 @@ ItemsView.focus: ✅
 ItemsView.isFocusedChanged: ✅
 ItemsView.pivotY: ✅
 ItemsView.unfocus: ✅
-Label.accessibilityHint: ✅
-Label.isVisible: ✅
-Label.rotationY: ✓ read rotationY of Label: the host's own tip, checked against the projection it laid on the element
 Line.automationExcludedWithChildren: ✅
 Line.frameChanged: ✅
 Line.height: ✅
@@ -89,6 +86,9 @@ Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked ag
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
 Switch.scaleX: ✅
+Text.accessibilityHint: ✅
+Text.isVisible: ✅
+Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
 TextEditor.ignoresInput: ✅
 TextEditor.layoutDirection: ✅
 TextEditor.translationY: ✅

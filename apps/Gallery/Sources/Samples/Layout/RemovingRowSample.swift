@@ -33,7 +33,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
 
             ForEach(Self.rows, id: \\.self) { row in
                 Grid {
-                    Label(row).gridColumn(0)
+                    Text(row).gridColumn(0)
 
                     Button("Delete")
                         .gridColumn(1)
@@ -75,7 +75,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
 
                 ForEach(Self.rows, id: \.self) { row in
                     Grid {
-                        Label(row)
+                        Text(row)
                             .fontSize(15)
                             .verticalAlignment(.center)
                             .gridColumn(0)
@@ -119,21 +119,21 @@ struct RemovingRowSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Delete a row. It FADES where it stands and the rows under it "
+            Text("Delete a row. It FADES where it stands and the rows under it "
                 + "then close over the gap - a plain `VStack`, and not a line in "
                 + "the example ASKING for animation: the row is hidden, and the "
                 + "ones below it are given new places.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`The row fades first` chooses how the row itself leaves. "
+            Text("`The row fades first` chooses how the row itself leaves. "
                 + "Turned off, the row is told `.motion(.none)` and goes at "
                 + "once - the stack still closes over it, because where a "
                 + "child sits is always somewhere it travels to.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Bring them back` is the same thing the other way round: the "
+            Text("`Bring them back` is the same thing the other way round: the "
                 + "rows appear at nothing and come up while everything below "
                 + "them moves down to make room.")
                 .fontSize(12)

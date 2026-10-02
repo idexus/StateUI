@@ -8,9 +8,9 @@ What a page shows about itself where another container presents it as an item - 
 @State var path: [String] = []
 
 NavigationStack($path) {
-    Label("General")
+    Text("General")
 } destination: { section in
-    Label(section)
+    Text(section)
 }
 .title("Settings")
 .icon("settings.png")

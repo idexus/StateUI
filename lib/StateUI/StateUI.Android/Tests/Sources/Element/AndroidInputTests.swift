@@ -22,7 +22,7 @@ final class AndroidInputTests: XCTestCase {
             let taps = Received<Int>()
             let host = AndroidRenderer.running {
                 VStack {
-                    ZStack { Label("card") }.onTapped { taps.values.append(1) }
+                    ZStack { Text("card") }.onTapped { taps.values.append(1) }
                 }
             }
             let card = try XCTUnwrap(host.views(AndroidZStackView.self).first)
@@ -30,7 +30,7 @@ final class AndroidInputTests: XCTestCase {
             card.click()
             XCTAssertEqual(taps.values, [1])
 
-            let label = AndroidLabelView()
+            let label = AndroidTextView()
             label.setTapped {}
             XCTAssertTrue(Java.callBool(label.reference, TestJava.isClickable))
             label.setTapped(nil)
@@ -46,7 +46,7 @@ final class AndroidInputTests: XCTestCase {
                 Grid {
                     Button("behind").onClicked {}
                     VStack {
-                        ZStack { Label("over") }.onTapped {}
+                        ZStack { Text("over") }.onTapped {}
                     }
                     .ignoresInput(true)
                 }

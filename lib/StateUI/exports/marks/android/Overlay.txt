@@ -1,2 +1,2 @@
 # revision 2.1
-Overlay: ◐ cannot read what reaches Label - Android's driver has no path for it yet
+Overlay: ◐ cannot read what reaches Text - Android's driver has no path for it yet

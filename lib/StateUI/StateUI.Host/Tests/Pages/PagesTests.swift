@@ -194,7 +194,7 @@ final class PagesTests: XCTestCase {
                 node("home", .page, [.backButtonTitle: .string("Home")]),
                 node("detail", .page, [.title: .string("Detail")], children: [
                     node("items", .toolbarItems, children: [item("first", false), item("more", true), item("next", false)]),
-                    node("view", .titleView, children: [node("words", .label)]),
+                    node("view", .titleView, children: [node("words", .text)]),
                 ]),
             ]),
         ])) { _ in }
@@ -229,7 +229,7 @@ final class PagesTests: XCTestCase {
                 node("menu", .page),
                 node("stack", .navigationStack, children: [
                     node("home", .page),
-                    node("detail", .page, children: [node("content", .vStack, children: [node("words", .label)] + inner)]),
+                    node("detail", .page, children: [node("content", .vStack, children: [node("words", .text)] + inner)]),
                 ]),
             ] + outer),
         ])
@@ -413,9 +413,9 @@ final class PagesTests: XCTestCase {
             node("stack", .navigationStack, children: [
                 node("home", .page),
                 node("detail", .page, children: [
-                    node("content", .vStack, children: [node("view", .titleView, children: [node("own", .label)])]),
+                    node("content", .vStack, children: [node("view", .titleView, children: [node("own", .text)])]),
                 ]),
-                node("outer", .titleView, children: [node("shared", .label)]),
+                node("outer", .titleView, children: [node("shared", .text)]),
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
@@ -646,7 +646,7 @@ final class PagesTests: XCTestCase {
             let runtime = runtime(node("declarer", type, children: [
                 node("items", .toolbarItems),
                 node("view", .titleView, children: [node("field", .textField)]),
-                node("words", .label),
+                node("words", .text),
             ])) { _ in }
             let declarer = try XCTUnwrap(runtime.tree.root)
 

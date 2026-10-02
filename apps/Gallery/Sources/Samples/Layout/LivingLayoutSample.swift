@@ -35,7 +35,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
 
                 ForEach(rows, id: \\.self) { name in
-                    ZStack { Label(name) }.style("Card")
+                    ZStack { Text(name) }.style("Card")
                 }
             }
 
@@ -54,9 +54,9 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
             // new column, because a placement is a placement whoever worked it
             // out.
             Grid {
-                Label("one").gridColumn(0)
-                Label("two").gridColumn(1)
-                Label("three").gridColumn(2)
+                Text("one").gridColumn(0)
+                Text("two").gridColumn(1)
+                Text("three").gridColumn(2)
             }
             .columns(
                 wide ? .proportional(3) : .proportional(1),
@@ -74,7 +74,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
             // is counted by the reading inside their own stack.
             DebugInfoLabel()
 
-            Label("A stack")
+            Text("A stack")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
@@ -87,7 +87,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
 
                 ForEach(rows, id: \.self) { name in
                     ZStack {
-                        Label(name)
+                        Text(name)
                             .fontSize(15)
                             .verticalAlignment(.center)
                     }
@@ -114,7 +114,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            Label("A grid, its columns changing width")
+            Text("A grid, its columns changing width")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
@@ -140,7 +140,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
         _ text: String, _ colour: Color, at column: Int, faded: Bool = false
     ) -> some View {
         ZStack {
-            Label(text)
+            Text(text)
                 .fontSize(13)
                 .textColor(Palette.onBrand)
                 .horizontalAlignment(.center)
@@ -155,7 +155,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Add a row and the ones under it SLIDE down; remove one and "
+            Text("Add a row and the ones under it SLIDE down; remove one and "
                 + "they close up; shuffle and they cross past each other. The "
                 + "example says nothing about animation: it writes "
                 + "`rows.insert(…)`, and the layout works out where everything "
@@ -163,7 +163,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The grid is the same thing one level up. Its columns change "
+            Text("The grid is the same thing one level up. Its columns change "
                 + "width, so every child gets a new place - and a place a child "
                 + "is given is somewhere it travels to. A view that ARRIVES "
                 + "fades in; one that leaves goes at once and the gap closes "
@@ -171,7 +171,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A layout's own SIZE changing is different, and deliberately: "
+            Text("A layout's own SIZE changing is different, and deliberately: "
                 + "drag the window and the children track it exactly, because a "
                 + "resize is something a user is doing rather than something "
                 + "the interface decided.")

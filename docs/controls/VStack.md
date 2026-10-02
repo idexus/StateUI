@@ -6,8 +6,8 @@ Stacks its children top to bottom, each as tall as it asks to be.
 
 ```swift
 VStack {
-    Label("One")
-    Label("Two")
+    Text("One")
+    Text("Two")
 }
 .spacing(12)
 .padding(24)

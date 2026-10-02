@@ -21,13 +21,13 @@ struct BatterySample: SampleContent, ExampleContent {
                     // builds this closure - and nothing else on the page.
                     DebugInfoLabel()
 
-                    Label(battery.chargeLevel <= 0
+                    Text(battery.chargeLevel <= 0
                         ? "the host has not said"
                         : "\\(Int(battery.chargeLevel * 100))%")
 
-                    Label("state · \\(battery.state)")
-                    Label("source · \\(battery.powerSource)")
-                    Label("saver · \\(battery.energySaverStatus)")
+                    Text("state · \\(battery.state)")
+                    Text("source · \\(battery.powerSource)")
+                    Text("saver · \\(battery.energySaverStatus)")
                 }
             }
         }
@@ -37,18 +37,18 @@ struct BatterySample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label(battery.chargeLevel <= 0
+            Text(battery.chargeLevel <= 0
                 ? "the host has not said"
                 : "\(Int(battery.chargeLevel * 100))%")
                 .fontSize(34)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("state · \(battery.state)")
+            Text("state · \(battery.state)")
                 .fontSize(15)
-            Label("source · \(battery.powerSource)")
+            Text("source · \(battery.powerSource)")
                 .fontSize(15)
-            Label("saver · \(battery.energySaverStatus)")
+            Text("saver · \(battery.energySaverStatus)")
                 .fontSize(15)
         }
         .spacing(10)
@@ -56,14 +56,14 @@ struct BatterySample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Reading a property is the whole subscription: the host "
+            Text("Reading a property is the whole subscription: the host "
                 + "pushes each change the platform reports, and exactly the "
                 + "views that read the battery are rebuilt. On Android, try "
                 + "`adb shell dumpsys battery set level 50`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A host that cannot observe a battery leaves the level at -1, "
+            Text("A host that cannot observe a battery leaves the level at -1, "
                 + "read here as \"the host has not said\", and the other "
                 + "values at `.unknown`.")
                 .fontSize(12)

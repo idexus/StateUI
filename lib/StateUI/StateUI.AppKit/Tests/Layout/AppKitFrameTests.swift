@@ -47,7 +47,7 @@ final class AppKitFrameTests: XCTestCase {
         let shown = State(wrappedValue: false)
         let renderer = AppKitRenderer.running {
             VStack {
-                Label("above").height(20)
+                Text("above").height(20)
                 if shown.wrappedValue {
                     ColorBox(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
@@ -68,7 +68,7 @@ final class AppKitFrameTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var patch = HostPatch(id: .manual("measured"), type: .label)
+        var patch = HostPatch(id: .manual("measured"), type: .text)
         patch.properties = [.text: .string("Measured")]
         patch.events = .replace([.frameChanged: 50])
         renderer.applyForTesting(patch)
@@ -95,7 +95,7 @@ final class AppKitFrameTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var patch = HostPatch(id: .manual("measured"), type: .label)
+        var patch = HostPatch(id: .manual("measured"), type: .text)
         patch.events = .replace([.frameChanged: 51])
         renderer.applyForTesting(patch)
         let node = try XCTUnwrap(renderer.rootElementForTesting)

@@ -111,7 +111,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            Label()
+            Text()
                 .text(width.projectedValue.convert(with: height.projectedValue) { "\(Int($0 + $1))" })
                 .body)
 
@@ -140,7 +140,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            Label(Binding.multi(info.projectedValue, value.projectedValue).convert { "\($0) = \(Int($1))" })
+            Text(Binding.multi(info.projectedValue, value.projectedValue).convert { "\($0) = \(Int($1))" })
                 .body)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
@@ -173,7 +173,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            Label(Binding.multi(
+            Text(Binding.multi(
                 first.projectedValue,
                 rest[0].projectedValue,
                 rest[1].projectedValue,
@@ -209,7 +209,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         _ = renders.render(
-            Label(Binding.multi(info.projectedValue, value.projectedValue)
+            Text(Binding.multi(info.projectedValue, value.projectedValue)
                 .convert { "\($0) \(Int($1))" })
                 .body)
 

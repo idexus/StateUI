@@ -792,10 +792,10 @@ final class AppKitPageTests: XCTestCase {
         let searching = State(wrappedValue: true)
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Label("Page").titleView {
-                    if searching.wrappedValue { SearchField("").id("query") } else { Label("Title") }
+                Text("Page").titleView {
+                    if searching.wrappedValue { SearchField("").id("query") } else { Text("Title") }
                 }
-            } destination: { _ in Label("Pushed") }
+            } destination: { _ in Text("Pushed") }
         }
         defer { renderer.closeForTesting() }
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first?.toolbarForTesting)
@@ -818,7 +818,7 @@ final class AppKitPageTests: XCTestCase {
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var title = HostPatch(id: .manual("title-label"), type: .label)
+        var title = HostPatch(id: .manual("title-label"), type: .text)
         title.properties[.text] = .string("Search title")
         var titleSlot = HostPatch(id: .manual("title-slot"), type: .titleView)
         titleSlot.children = .arranged([title])
@@ -841,7 +841,7 @@ final class AppKitPageTests: XCTestCase {
 
         let chrome = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
         let customTitle = try XCTUnwrap(
-            chrome.itemForTesting(AppKitWindowToolbar.center)?.view as? AppKitLabelView)
+            chrome.itemForTesting(AppKitWindowToolbar.center)?.view as? AppKitTextView)
         XCTAssertEqual(customTitle.stringValue, "Search title")
         XCTAssertEqual(chrome.actionTitlesForTesting, ["Save"])
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -863,7 +863,7 @@ final class AppKitPageTests: XCTestCase {
         func details(_ words: [String]) -> HostPatch {
             var row = HostPatch(id: .manual("row"), type: .hStack)
             row.children = .arranged(words.map { word in
-                var label = HostPatch(id: .manual(word), type: .label)
+                var label = HostPatch(id: .manual(word), type: .text)
                 label.properties[.text] = .string(word)
                 return label
             })
@@ -1029,7 +1029,7 @@ final class AppKitPageTests: XCTestCase {
         let path = State(wrappedValue: [ChromeRoute]())
         let renderer = AppKitRenderer.running {
             NavigationStack(path.projectedValue) {
-                Label("Root")
+                Text("Root")
             } destination: { route in
                 ChromePage(route: route)
             }
@@ -1054,7 +1054,7 @@ final class AppKitPageTests: XCTestCase {
         let path = State(wrappedValue: [ChromeRoute]())
         let renderer = AppKitRenderer.running {
             NavigationStack(path.projectedValue) {
-                Label("Root")
+                Text("Root")
             } destination: { route in
                 ChromePage(route: route)
             }
@@ -1089,7 +1089,7 @@ private struct ChromePage: ContentView {
     let route: ChromeRoute
 
     var content: some View {
-        Label("Pushed").toolbar { ToolbarItem("Save") }.onCreated {
+        Text("Pushed").toolbar { ToolbarItem("Save") }.onCreated {
             switch route {
             case .plain: break
             case .withoutBackButton: page.hasBackButton = false
@@ -1163,7 +1163,7 @@ private extension AppKitPageTests {
     }
 
     func page(_ id: String, title: String? = nil, events base: Int32) -> HostPatch {
-        var label = HostPatch(id: .manual("label-\(id)"), type: .label)
+        var label = HostPatch(id: .manual("label-\(id)"), type: .text)
         label.properties[.text] = .string(id)
 
         var page = HostPatch(id: .manual(id), type: .page)

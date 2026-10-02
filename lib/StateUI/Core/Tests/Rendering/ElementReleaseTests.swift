@@ -33,7 +33,7 @@ private struct Held: ContentView {
         self.read = read
     }
 
-    var content: some View { read(); return Label("held") }
+    var content: some View { read(); return Text("held") }
 }
 
 /// An object a test provides to a subtree, or hands to a handler to capture.
@@ -184,7 +184,7 @@ final class ElementReleaseTests: XCTestCase {
             let fade = State(1.0)
 
             renders.render(stack([
-                Label().text(fade.projectedValue.convert { "\($0)" }).body,
+                Text().text(fade.projectedValue.convert { "\($0)" }).body,
             ], id: "root"))
             return fade.storage
         })
@@ -197,7 +197,7 @@ final class ElementReleaseTests: XCTestCase {
             let count = State(1)
 
             renders.render(stack([
-                Label().text(Binding.multi(name.projectedValue, count.projectedValue)
+                Text().text(Binding.multi(name.projectedValue, count.projectedValue)
                     .convert { "\($0) \($1)" }).body,
             ], id: "root"))
             return name.storage

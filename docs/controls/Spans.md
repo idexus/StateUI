@@ -5,7 +5,7 @@
 The runs a label is made of, in order.
 
 ```swift
-Label()
+Text()
     .spans {
         TextSpan("let ").textColor(.purple)
         TextSpan("count").fontAttributes(.bold)

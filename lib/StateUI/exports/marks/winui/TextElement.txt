@@ -1,14 +1,14 @@
 # revision 1.1
 Button.text: ✅
 Button.textCase: ✅
-Label.text: ✅
-Label.textCase: ✅
 RadioButton.text: ✅
 RadioButton.textCase: ✅
 SearchField.text: ✅
 SearchField.textCase: ✅
 Span.text: ✅
 Span.textCase: ✅
+Text.text: ✅
+Text.textCase: ✅
 TextEditor.text: ✅
 TextEditor.textCase: ✅
 TextField.text: ✅

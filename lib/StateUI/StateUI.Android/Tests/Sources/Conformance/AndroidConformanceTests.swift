@@ -23,7 +23,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testGrid", testGrid),
             ("testHStack", testHStack),
             ("testImage", testImage),
-            ("testLabel", testLabel),
+            ("testText", testText),
             ("testLine", testLine),
             ("testMap", testMap),
             ("testPath", testPath),
@@ -99,7 +99,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testGrid() throws { try conform(GridTests.self) }
     func testHStack() throws { try conform(HStackTests.self) }
     func testImage() throws { try conform(ImageTests.self) }
-    func testLabel() throws { try conform(LabelTests.self) }
+    func testText() throws { try conform(TextTests.self) }
     func testLine() throws { try conform(LineTests.self) }
     func testMap() throws { try conform(MapTests.self) }
     func testPath() throws { try conform(PathTests.self) }

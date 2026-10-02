@@ -25,13 +25,13 @@ final class AppKitPatchIntakeTests: XCTestCase {
     func testADriftedMessageIsRecoveredWithACompleteRender() throws {
         let renderer = AppKitRenderer.running { Counter() }
         defer { renderer.closeForTesting() }
-        let label = try XCTUnwrap(renderer.nativeViews(AppKitLabelView.self).first)
+        let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
         XCTAssertEqual(label.textForTesting.string, "0")
 
         renderer.forgetForTesting(label)
         try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
 
-        let recovered = try XCTUnwrap(renderer.nativeViews(AppKitLabelView.self).first)
+        let recovered = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
         let font = recovered.textForTesting.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
         XCTAssertEqual(recovered.textForTesting.string, "1")
         XCTAssertEqual(font?.pointSize, 24, "described whole, not from the sparse patch")
@@ -46,7 +46,7 @@ private struct Counter: ContentView {
 
     var content: some View {
         VStack {
-            Label("\(count)").fontSize(24)
+            Text("\(count)").fontSize(24)
             Button("Add").onClicked { count += 1 }
         }
     }

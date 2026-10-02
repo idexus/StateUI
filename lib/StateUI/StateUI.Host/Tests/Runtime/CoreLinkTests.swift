@@ -17,7 +17,7 @@ final class CoreLinkTests: XCTestCase {
     func testARuntimeRealizesTheLibrarysElementsButThoseItNames() {
         CoreLink().setRealization(
             HostRealization(
-                elements: ["Label", "Test.Lamp"],
+                elements: ["Text", "Test.Lamp"],
                 members: [HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")]),
             unrealized: ["Map"])
 

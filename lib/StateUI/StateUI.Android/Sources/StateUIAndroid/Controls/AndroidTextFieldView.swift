@@ -9,7 +9,7 @@ import CStateUIAndroid
 /// reaches Swift through its `StateUIListener`.
 /// Design: docs/design/platforms/android/controls.md#a-field-and-its-words
 @MainActor
-final class AndroidTextFieldView: AndroidTextView {
+final class AndroidTextFieldView: AndroidTextualView {
     /// Which of the three the field is.
     enum Kind {
         /// One line, its return key submitting it.

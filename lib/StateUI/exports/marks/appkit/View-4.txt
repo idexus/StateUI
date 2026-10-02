@@ -35,9 +35,6 @@ HStack.pinchUpdated: ✓ pinch on HStack: handed to the host's recognizer or han
 Image.panYChannel: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.tapCount: ✓ tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.tapped: ✓ tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-Label.frameChanged: ✅
-Label.gridColumn: ✅
-Label.gridRow: ✅
 Line.allowDrop: not realized
 Line.dragLeave: not realized
 Line.dragOver: not realized
@@ -89,6 +86,9 @@ Stepper.pointerReleased: ✓ hover on Stepper: handed to the host's recognizer o
 Switch.swipeDirection: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.swipeThreshold: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.swiped: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Text.frameChanged: ✅
+Text.gridColumn: ✅
+Text.gridRow: ✅
 TextEditor.panTouchCount: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.panUpdated: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.panXChannel: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent

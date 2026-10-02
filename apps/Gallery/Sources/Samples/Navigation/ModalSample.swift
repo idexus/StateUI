@@ -64,7 +64,7 @@ struct ModalSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked { nav.present(.page) }
 
-            Label(nav.sheets.isEmpty ? "Nothing presented" : "Depth: \(nav.sheets.count)")
+            Text(nav.sheets.isEmpty ? "Nothing presented" : "Depth: \(nav.sheets.count)")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)

@@ -66,11 +66,11 @@ private struct Nested: ContentView {
 
     var content: some View {
         VStack {
-            Label("count \(count)")
+            Text("count \(count)")
 
             // The differ runs this closure when it DESCENDS, not when the line
             // above it does, so the reading is taken then.
-            Label(seen())
+            Text(seen())
         }
     }
 
@@ -171,7 +171,7 @@ final class BuildsTests: XCTestCase {
 
         Renders().render(stack([Watched(said: said).body], id: "root"))
 
-        XCTAssertEqual(Label("x").debugInfo(), "nothing is being described here")
+        XCTAssertEqual(Text("x").debugInfo(), "nothing is being described here")
     }
 
     /// A reading taken inside a CONTAINER's closure answers about the view

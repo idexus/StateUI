@@ -38,7 +38,7 @@
         case .scrollView:
             return property == .padding || layoutBoxProperties.contains(property)
 
-        case .label:
+        case .text:
             return labelProperties.contains(property)
 
         case .span:
@@ -95,7 +95,7 @@
     private static let nativeViewTypes: Set<NodeType> = [
         .activityIndicator, .colorBox, .button,
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
-        .grid, .hStack, .image, .itemsView, .label, .line,
+        .grid, .hStack, .image, .itemsView, .text, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .scrollView, .searchField, .slider,
         .stepper, .switch, .timePicker, .vStack, .zStack,

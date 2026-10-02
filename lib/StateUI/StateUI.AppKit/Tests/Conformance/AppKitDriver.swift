@@ -218,7 +218,7 @@ final class AppKitDriver: HostDriver {
         case (.step, let stepper as AppKitStepperView): return stepper.increment.propValue
         case (.progress, let bar as AppKitProgressView): return bar.doubleValue.propValue
         case (.isRunning, let spinner as AppKitActivityIndicatorView): return spinner.isSpinning.propValue
-        case (.text, let label as AppKitLabelView): return label.stringValue.propValue
+        case (.text, let label as AppKitTextView): return label.stringValue.propValue
         case (.text, let field as AppKitTextFieldView): return field.textField.stringValue.propValue
         case (.text, let search as AppKitSearchFieldView): return search.stringValue.propValue
         case (.text, let editor as AppKitTextEditorView): return editor.textView.string.propValue

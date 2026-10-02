@@ -291,7 +291,7 @@ final class UIThreadTests: XCTestCase {
         Renderer.shared.clearStates()
 
         let fade = State(wrappedValue: 1.0)
-        Renders().render(Label("worn").opacity(fade.projectedValue).id("worn").body)
+        Renders().render(Text("worn").opacity(fade.projectedValue).id("worn").body)
 
         _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
         Renderer.shared.clearInvalidation()

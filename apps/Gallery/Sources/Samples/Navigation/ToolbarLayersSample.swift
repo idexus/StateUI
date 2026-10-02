@@ -22,7 +22,7 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
                 // The count is read here, so Refresh builds this closure.
                 DebugInfoLabel()
 
-                Label("Refreshed \\(refreshed) time(s)")
+                Text("Refreshed \\(refreshed) time(s)")
 
                 Button("Open a page with its own actions")
                     .onClicked { nav.push(.layer(1)) }
@@ -39,7 +39,7 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
             @State private var shared = 0
 
             var content: some View {
-                Label("Layer \\(depth)")
+                Text("Layer \\(depth)")
                     .toolbar {
                         ToolbarItem("Share").onClicked { shared += 1 }
                         ToolbarItem("Deeper").onClicked { path.append(.layer(depth + 1)) }
@@ -52,10 +52,10 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("Refreshed \(refreshed) time(s)")
+            Text("Refreshed \(refreshed) time(s)")
                 .fontSize(17)
 
-            Label("Open a page, look at the bar, then go back.")
+            Text("Open a page, look at the bar, then go back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -75,12 +75,12 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Every page declares its own actions where their state lives; the gallery "
+            Text("Every page declares its own actions where their state lives; the gallery "
                 + "declares Inspector and Home once, around every page.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A pushed page's actions stand nearer the title and the gallery's keep their "
+            Text("A pushed page's actions stand nearer the title and the gallery's keep their "
                 + "place at the edge; going back takes the page's away, and nothing is restored "
                 + "because nothing was overwritten.")
                 .fontSize(12)

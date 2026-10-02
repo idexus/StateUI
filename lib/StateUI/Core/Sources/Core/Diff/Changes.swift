@@ -65,7 +65,7 @@ extension ModifiableElement {
 
     /// The same, handed the value it was and the value it now is.
     ///
-    ///     Label(status)
+    ///     Text(status)
     ///         .onChanged(step) { old, new in
     ///             direction = new > old ? "forward" : "back"
     ///         }

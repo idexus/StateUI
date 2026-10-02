@@ -65,8 +65,8 @@ final class AppKitGestureTests: XCTestCase {
     func testAViewThatAnswersATapTakesTheFirstClick() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                HStack { Label("Fundamentals") }.onTapped {}
-                HStack { Label("Plain") }
+                HStack { Text("Fundamentals") }.onTapped {}
+                HStack { Text("Plain") }
             }
         }
         defer { renderer.closeForTesting() }

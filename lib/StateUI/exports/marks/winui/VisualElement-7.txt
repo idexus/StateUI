@@ -37,8 +37,6 @@ Image.width: ✅
 ItemsView.frame: ✅
 ItemsView.pivotX: ✅
 ItemsView.zIndex: not realized
-Label.accessibilityLabel: ✅
-Label.rotationX: ✓ read rotationX of Label: the host's own tip, checked against the projection it laid on the element
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: not realized
 Line.scaleX: ✅
@@ -85,6 +83,8 @@ Stepper.style: ✅
 Switch.accessibilityHeadingLevel: ✅
 Switch.opacity: ✅
 Switch.scale: ✅
+Text.accessibilityLabel: ✅
+Text.rotationX: ✓ read rotationX of Text: the host's own tip, checked against the projection it laid on the element
 TextEditor.background: not realized
 TextEditor.frameChanged: ✅
 TextEditor.maximumHeight: ✅

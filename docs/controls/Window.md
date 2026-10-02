@@ -13,7 +13,7 @@ struct MainPage: ContentView {
     @Environment private var window: WindowSession
 
     var content: some View {
-        Label("Hello")
+        Text("Hello")
             .onCreated {
                 window.title = "Notes"
                 window.minimumWidth = 480

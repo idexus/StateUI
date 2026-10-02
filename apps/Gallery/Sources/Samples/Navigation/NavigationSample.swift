@@ -74,8 +74,8 @@ struct NavigationSample: SampleContent, ExampleContent {
             .onClicked { path = [] }
 
         // Where am I? A question Swift answers, with no host in it:
-        Label("\\(path.count) page(s) on top of \\(section)")
-        Label("Arrived home \\(arrivals) time(s)")
+        Text("\\(path.count) page(s) on top of \\(section)")
+        Text("Arrived home \\(arrivals) time(s)")
         """
 
     var content: some View {
@@ -92,7 +92,7 @@ struct NavigationSample: SampleContent, ExampleContent {
 
             // No act, no await, no question asked of the host: the answer is
             // the state this page is reading.
-            Label(here)
+            Text(here)
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
@@ -106,7 +106,7 @@ struct NavigationSample: SampleContent, ExampleContent {
                     arrivals += 1
                 }
 
-            Label("Arrived home \(arrivals) time(s)")
+            Text("Arrived home \(arrivals) time(s)")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
@@ -120,19 +120,19 @@ struct NavigationSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The stack is this array, so where the gallery is can be read, written, "
+            Text("The stack is this array, so where the gallery is can be read, written, "
                 + "tested and serialized in Swift - and the platform's own back gesture "
                 + "writes it too, so the array is still the answer after a swipe.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Push the same route again from a pushed page and it builds another "
+            Text("Push the same route again from a pushed page and it builds another "
                 + "page: identity on a stack is the depth together with the route, so two "
                 + "`.level(2)` pages are two pages with `@State` of their own.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`home()` is three assignments - the section, the empty path and the "
+            Text("`home()` is three assignments - the section, the empty path and the "
                 + "closed menu - with nothing to await. `path = []` takes everything off, "
                 + "this page and the group page under it included, so you land on the "
                 + "home page. Assigning the state you want is the navigation, and the "

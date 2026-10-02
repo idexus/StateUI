@@ -13,7 +13,7 @@ final class UIKitEnvironmentTests: XCTestCase {
     @MainActor
     func testTheThemeIsTheScenes() throws {
         let scene = try XCTUnwrap(TestScene.scene)
-        let host = UIKitRenderer.running { Label("Themed") }
+        let host = UIKitRenderer.running { Text("Themed") }
         defer {
             scene.traitOverrides.remove(UITraitUserInterfaceStyle.self)
             host.finish()

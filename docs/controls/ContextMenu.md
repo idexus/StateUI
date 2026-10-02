@@ -7,7 +7,7 @@ The menu a view offers where the user asks for one - a secondary click, a long p
 ```swift
 @State var title = "Groceries"
 
-Label(title)
+Text(title)
     .contextMenu {
         MenuItem("Rename").onClicked { title = "Shopping" }
         MenuItem("Clear")

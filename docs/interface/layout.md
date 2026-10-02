@@ -17,7 +17,7 @@ platform matrix.
 Every eligible view can state requested, minimum, and maximum dimensions:
 
 ```swift
-Label("Summary")
+Text("Summary")
     .width(240)
     .minimumHeight(44)
     .horizontalAlignment(.center)
@@ -101,7 +101,7 @@ in the [platform matrix](../platform-contract.md#shared-view-members).
 
 ```swift
 VStack {
-    Label("Account")
+    Text("Account")
 
     HStack {
         Button("Cancel")
@@ -126,7 +126,7 @@ A grid owns row and column definitions; each child states its cell and spans:
 @State var name = ""
 
 Grid {
-    Label("Name")
+    Text("Name")
 
     TextField($name)
         .gridColumn(1)
@@ -172,7 +172,7 @@ the whole room within the stack's padding, or the rectangle it names with
 ZStack {
     ColorBox(.cornflowerBlue)
 
-    Label("Bottom right")
+    Text("Bottom right")
         .horizontalAlignment(.end)
         .verticalAlignment(.end)
 
@@ -209,7 +209,7 @@ every page of a window is declared with `.overlays { }` on the window's page
 ScrollView {
     VStack {
         ForEach(1...100) { row in
-            Label("Row \(row)")
+            Text("Row \(row)")
         }
     }
 }
@@ -393,7 +393,7 @@ native frame report supplies the measured rectangle:
 
 ```swift
 FrameReader { frame in
-    Label("\(Int(frame.width)) x \(Int(frame.height))")
+    Text("\(Int(frame.width)) x \(Int(frame.height))")
 }
 ```
 
@@ -412,8 +412,8 @@ wrap content in for a card - the layout holding the content is the card.
 
 ```swift
 VStack {
-    Label("Cheese")
-    Label("Aged twelve months")
+    Text("Cheese")
+    Text("Aged twelve months")
 }
 .padding(14)
 .background(Color("#F4F4F4"))
@@ -443,7 +443,7 @@ import StateUI
 struct Header: ContentView {
     var content: some View {
         VStack {
-            Label("StateUI")
+            Text("StateUI")
         }
         .padding(20, 60, 20, 20)
         .background(.steelBlue)

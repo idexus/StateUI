@@ -28,11 +28,11 @@ private struct Outer: ContentView {
         body.count += 1
 
         return VStack {
-            Label("still")
+            Text("still")
 
             HStack {
-                Label("x \(x)")
-                Label(seen())
+                Text("x \(x)")
+                Text(seen())
             }
         }
     }
@@ -57,7 +57,7 @@ private struct Direct: ContentView {
         let title = "x \(x)"
 
         return VStack {
-            Label(title)
+            Text(title)
         }
     }
 }

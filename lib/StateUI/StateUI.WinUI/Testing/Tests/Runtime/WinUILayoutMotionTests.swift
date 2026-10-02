@@ -15,7 +15,7 @@ final class WinUILayoutMotionTests: XCTestCase {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
         stack.children = .arranged(order.map { name in
-            var row = HostPatch(id: .manual(name), type: .label)
+            var row = HostPatch(id: .manual(name), type: .text)
             row.properties = [.text: .string(name), .width: .number(100), .height: .number(40)]
             row.properties[.isVisible] = .bool(!hidden.contains(name))
             row.motion = HostLayoutMotion(motion: .eased(100, .linear), lanes: .all)
@@ -143,11 +143,11 @@ final class WinUILayoutMotionTests: XCTestCase {
 
     /// A label whose width travels lays its words out at the width it is bound for: they keep the one line they fit
     /// there, never breaking at the widths its place passes through, and show whole.
-    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+    func testATextsWordsStandAtTheWidthItTravelsTo() throws {
         try onUIThread {
             let clock = TestClock()
             let host = WinUIRenderer.running(clock: clock) { LengtheningPage() }
-            let label = try XCTUnwrap(host.views(WinUILabelView.self).first)
+            let label = try XCTUnwrap(host.views(WinUITextView.self).first)
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             host.runtime.pump.turn()
@@ -175,7 +175,7 @@ private struct LengtheningPage: ContentView {
 
     var content: some View {
         VStack {
-            Label(long ? "Text & typing" : "Text").background(.red).horizontalAlignment(.start)
+            Text(long ? "Text & typing" : "Text").background(.red).horizontalAlignment(.start)
             Button("Longer").onClicked { long = true }
         }
         .motion(.eased(200, .linear))

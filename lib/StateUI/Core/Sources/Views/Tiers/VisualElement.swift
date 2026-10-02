@@ -12,7 +12,7 @@ extension VisualElement {
     /// How this view's values animate when they change.
     ///
     ///     VStack { … }.motion(.spring(response: 260))
-    ///     Label(count).motion(.none)
+    ///     Text(count).motion(.none)
     ///
     /// A changed value animates to its new setting by default; `.none` snaps,
     /// which is what a value rewritten every frame wants. It applies to this
@@ -60,11 +60,11 @@ extension VisualElement {
     ///
     ///     VStack {
     ///         ForEach(items, id: \.id) { item in
-    ///             Label(item.title)           // key from the loop
+    ///             Text(item.title)           // key from the loop
     ///         }
     ///
     ///         if showingTotal {
-    ///             Label("Total").id("total")  // key written by hand
+    ///             Text("Total").id("total")  // key written by hand
     ///         }
     ///     }
     ///
@@ -104,7 +104,7 @@ extension VisualElement {
     ///     @State private var shown = 1.0
     ///
     ///     VStack {
-    ///         Label("\(Int(shown * 100))%")
+    ///         Text("\(Int(shown * 100))%")
     ///     }
     ///     .opacity($fade)
     ///     .samples($fade, into: $shown, .every(100))
@@ -113,7 +113,7 @@ extension VisualElement {
     /// body rebuilds that body on every frame; this copies some of those frames
     /// into an ordinary state instead. It stops when the value lands, the last
     /// sample being where the value ended. A value that is only shown wants a
-    /// driven text (`Label($fade.journey.convert { … })`), which costs no render.
+    /// driven text (`Text($fade.journey.convert { … })`), which costs no render.
     ///
     /// - Parameters:
     ///   - source: the value the host is animating, `$x` of a `@State`.
@@ -168,7 +168,7 @@ extension VisualElement {
 
     /// The keyed style from the application's style sheet that this view wears.
     ///
-    ///     Label("Welcome").style("Headline")
+    ///     Text("Welcome").style("Headline")
     ///
     /// A style without a key applies to every control of its type by itself.
     public func style(_ key: String) -> Modified { setValue(VisualElementContract.style, Name(key)) }

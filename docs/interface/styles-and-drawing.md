@@ -13,7 +13,7 @@ every control of its target type. A keyed style is selected with `.style(...)`:
 enum HandbookStyles {
     static var sheet: StyleSheet {
         StyleSheet {
-            Style<Label>()
+            Style<Text>()
                 .fontSize(15)
                 .textColor(Color(light: .black, dark: .white))
 
@@ -198,7 +198,7 @@ let wash = Brush.linearGradient(
     endPoint: Point(1, 1))
 
 VStack {
-    Label("Gradient")
+    Text("Gradient")
         .textColor(.white)
 }
 .background(wash)

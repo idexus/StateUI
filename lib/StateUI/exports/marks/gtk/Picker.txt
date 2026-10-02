@@ -1,5 +1,4 @@
 # revision 1.1
-Label.text: ✅
 Picker: ✅
 Picker.closed: – GTK's drop-down tells no one its list opened or closed.
 Picker.frameChanged: ✅
@@ -9,3 +8,4 @@ Picker.options: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅
 Picker.title: – GTK's drop-down shows a choice or nothing: it has no words standing for none.
+Text.text: ✅

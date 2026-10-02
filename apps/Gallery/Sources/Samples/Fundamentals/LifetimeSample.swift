@@ -48,11 +48,11 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
             VStack {
                 if log.isEmpty {
-                    Label("nothing yet")
+                    Text("nothing yet")
                 }
 
                 ForEach(Array(log.suffix(6))) { line in
-                    Label(line)
+                    Text(line)
                 }
             }
         }
@@ -105,13 +105,13 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
             VStack {
                 if log.isEmpty {
-                    Label("nothing yet")
+                    Text("nothing yet")
                         .fontSize(14)
                         .textColor(Palette.subtle)
                 }
 
                 ForEach(Array(log.suffix(6))) { line in
-                    Label(line)
+                    Text(line)
                         .fontSize(14)
                         .fontFamily("Menlo")
                 }
@@ -123,7 +123,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Switch the card off and on: it is destroyed and created again - a new "
+            Text("Switch the card off and on: it is destroyed and created again - a new "
                 + "card, counting from nought. A new card does the same to the one on "
                 + "screen by giving it a new identity. Build this again builds the page "
                 + "once more, which carries the card, built with the same inputs, and "
@@ -132,7 +132,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Tap the card before it goes: what it says as it is destroyed is its "
+            Text("Tap the card before it goes: what it says as it is destroyed is its "
                 + "own count, because its state still answers - the place to save what it "
                 + "holds. Both are on every view and control and on the pages the library "
                 + "builds - a page of your own writes them on its content - and both run "

@@ -103,7 +103,6 @@ of its members each meets, and why a cell is empty.
 | [HStack](controls/HStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Image](controls/Image.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Label](controls/Label.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Map](controls/Map.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 |  |
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -132,6 +131,7 @@ of its members each meets, and why a cell is empty.
 | [Stepper](controls/Stepper.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TabbedView](controls/TabbedView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [Text](controls/Text.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -204,7 +204,7 @@ may still choose another class that preserves the same contract.
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | `StackPanel` | `GtkBox` | flexbox |
 | `Grid` | custom `NSView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `ScrollView` | `NSScrollView` | `UIScrollView` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `GtkScrolledWindow` | `overflow: auto` |
-| `Label` / `Spans` / `Span` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | `GtkLabel`; `PangoAttrList` runs | text element; `<span>` runs |
+| `Text` / `Spans` / `Span` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | `GtkLabel`; `PangoAttrList` runs | text element; `<span>` runs |
 | `Button` | `NSButton` | `UIButton` | `Button` | `Button` | `GtkButton` | `<button>` |
 | `Image` | `NSImageView` | `UIImageView` | `ImageView` | `Image` | `GtkPicture` | `<img>` |
 | `ColorBox` | custom `NSView` drawing | `UIView` + `CALayer` | `View` + `GradientDrawable` | `Border` | custom `GtkWidget` snapshot | `<div>` |
@@ -435,7 +435,6 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 74 | 30 ✅ · 25 ✓ · 3 – | 32 ✅ · 25 ✓ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 ✓ · 3 – | 45 ✅ · 11 ✓ · 4 – |  |
 | [Image](controls/Image.md) | 69 | 28 ✅ · 1 ☑️ · 25 ✓ · 3 – | 28 ✅ · 25 ✓ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 ✓ · 3 – | 42 ✅ · 11 ✓ · 4 – |  |
 | [ItemsView](controls/ItemsView.md) | 76 | 34 ✅ · 1 ☑️ · 29 ✓ | 31 ✅ · 29 ✓ · 3 – | 61 ✅ · 1 ☑️ · 1 ✓ | 62 ✅ · 2 ✓ | 52 ✅ · 11 ✓ · 1 – |  |
-| [Label](controls/Label.md) | 81 | 39 ✅ · 1 ☑️ · 25 ✓ · 4 – | 41 ✅ · 25 ✓ · 3 – | 62 ✅ · 1 ☑️ · 3 – | 65 ✅ · 2 ✓ · 3 – | 53 ✅ · 13 ✓ · 4 – |  |
 | [Line](controls/Line.md) | 80 | 30 ✅ · 1 ☑️ · 25 ✓ · 3 – | 32 ✅ · 25 ✓ · 3 – | 54 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 ✓ · 3 – | 49 ✅ · 11 ✓ · 4 – |  |
 | [Map](controls/Map.md) | 74 | 33 ✅ · 1 ☑️ · 26 ✓ · 3 – | 33 ✅ · 26 ✓ · 3 – | 74 🧩 | 74 🧩 | 74 🧩 |  |
 | [Path](controls/Path.md) | 77 | 27 ✅ · 1 ☑️ · 25 ✓ · 3 – | 29 ✅ · 25 ✓ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 ✓ · 3 – | 46 ✅ · 11 ✓ · 4 – |  |
@@ -450,6 +449,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Slider](controls/Slider.md) | 73 | 35 ✅ · 1 ☑️ · 25 ✓ | 32 ✅ · 27 ✓ · 3 – | 56 ✅ · 1 ☑️ · 3 – | 59 ✅ · 2 ✓ | 47 ✅ · 12 ✓ · 3 – |  |
 | [Stepper](controls/Stepper.md) | 71 | 32 ✅ · 1 ☑️ · 25 ✓ | 29 ✅ · 25 ✓ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 59 ✅ · 2 ✓ | 48 ✅ · 11 ✓ · 1 – |  |
 | [Switch](controls/Switch.md) | 69 | 32 ✅ · 1 ☑️ · 25 ✓ | 29 ✅ · 25 ✓ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ · 2 ✓ | 45 ✅ · 12 ✓ · 1 – |  |
+| [Text](controls/Text.md) | 81 | 39 ✅ · 1 ☑️ · 25 ✓ · 4 – | 41 ✅ · 25 ✓ · 3 – | 62 ✅ · 1 ☑️ · 3 – | 65 ✅ · 2 ✓ · 3 – | 53 ✅ · 13 ✓ · 4 – |  |
 | [TextEditor](controls/TextEditor.md) | 87 | 47 ✅ · 1 ☑️ · 26 ✓ · 1 – | 48 ✅ · 25 ✓ | 69 ✅ · 1 ☑️ · 1 – | 72 ✅ · 2 ✓ | 59 ✅ · 1 ☑️ · 12 ✓ · 1 – |  |
 | [TextField](controls/TextField.md) | 90 | 43 ✅ · 1 ☑️ · 26 ✓ · 3 – | 50 ✅ · 25 ✓ | 71 ✅ · 1 ☑️ · 2 – | 71 ✅ · 1 ☑️ · 2 ✓ | 61 ✅ · 12 ✓ · 1 – |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 35 ✅ · 1 ☑️ · 26 ✓ · 1 – | 32 ✅ · 25 ✓ | 59 ✅ · 1 ☑️ · 1 ✓ · 3 – | 60 ✅ · 2 ✓ | 51 ✅ · 12 ✓ · 1 – |  |
@@ -542,7 +542,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ |  |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ |  |
-| [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 |  |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ |  |
@@ -567,6 +566,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 2 ✅ | 2 ✅ |  | 5 ✅ | 5 ✅ |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ |  | 2 ✅ | 2 ✅ |  |
+| [Text](controls/Text.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 2 – | 4 ✅ | 3 ✅ · 1 – | 1 ☑️ | 2 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ |  |
@@ -593,11 +593,11 @@ realizes the element and each of its members.
 
 `ActivityIndicator`, `Application`, `Button`, `Canvas`, `CheckBox`, `ColorBox`,
 `ContextMenu`, `DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`, `ItemsView`,
-`Label`, `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`,
-`ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`,
-`Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `Scene`,
-`ScrollView`, `SearchField`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`,
-`Switch`, `TabbedView`, `TextEditor`, `TextField`, `TimePicker`, `TitleView`,
+`Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`,
+`NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`,
+`Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `Scene`, `ScrollView`,
+`SearchField`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `Switch`,
+`TabbedView`, `Text`, `TextEditor`, `TextField`, `TimePicker`, `TitleView`,
 `ToolbarItem`, `ToolbarItems`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties

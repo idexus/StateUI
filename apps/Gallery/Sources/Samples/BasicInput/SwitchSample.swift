@@ -18,7 +18,7 @@ struct SwitchSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             HStack {
-                Label("Sound")
+                Text("Sound")
                     .verticalAlignment(.center)
 
                 Switch($soundOn)
@@ -27,8 +27,8 @@ struct SwitchSample: SampleContent, ExampleContent {
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }
             }
 
-            Label(soundOn ? "on" : "off")
-            Label(said)
+            Text(soundOn ? "on" : "off")
+            Text(said)
         }
         """
 
@@ -37,7 +37,7 @@ struct SwitchSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             HStack {
-                Label("Sound")
+                Text("Sound")
                     .fontSize(16)
                     .verticalAlignment(.center)
 
@@ -50,11 +50,11 @@ struct SwitchSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            Label(soundOn ? "on" : "off")
+            Text(soundOn ? "on" : "off")
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
 
-            Label(said)
+            Text(said)
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -63,7 +63,7 @@ struct SwitchSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("`.onToggled` carries the value the switch now has, and runs after the "
+        Text("`.onToggled` carries the value the switch now has, and runs after the "
             + "binding has written it - so both hold what the switch is, not what this "
             + "side guessed.")
             .fontSize(12)

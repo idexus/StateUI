@@ -7,10 +7,6 @@ DatePicker.fontAttributes: ✅
 DatePicker.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 DatePicker.fontFamily: ✅
 DatePicker.fontSize: ✅
-Label.fontAttributes: ✅
-Label.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
-Label.fontFamily: ✅
-Label.fontSize: ✅
 Picker.fontAttributes: ✅
 Picker.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 Picker.fontFamily: ✅
@@ -27,6 +23,10 @@ Span.fontAttributes: cannot read fontAttributes of Span - AppKit's driver has no
 Span.fontAutoScalingEnabled: not realized
 Span.fontFamily: not realized
 Span.fontSize: not realized
+Text.fontAttributes: ✅
+Text.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+Text.fontFamily: ✅
+Text.fontSize: ✅
 TextEditor.fontAttributes: ✅
 TextEditor.fontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 TextEditor.fontFamily: ✅

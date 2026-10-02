@@ -10,7 +10,7 @@ import CStateUIAndroid
 /// only the user's opening and closing are heard (`PickerOpening`).
 /// Design: docs/design/platforms/android/controls.md#a-day-and-a-time
 @MainActor
-final class AndroidDateFieldView: AndroidTextView {
+final class AndroidDateFieldView: AndroidTextualView {
     /// What the field holds.
     enum Kind {
         case date

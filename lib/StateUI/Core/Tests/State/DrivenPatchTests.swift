@@ -71,7 +71,7 @@ final class DrivenPatchTests: XCTestCase {
 
         func card(enabled: Bool) throws -> (patch: HostPatch, card: HostPatch) {
             let page = try page(
-                ZStack { Label("dimmed") }
+                ZStack { Text("dimmed") }
                     .opacity(0.5)
                     .opacity(fade.projectedValue)
                     .isEnabled(enabled)
@@ -106,7 +106,7 @@ final class DrivenPatchTests: XCTestCase {
 
         let page = try page(
             VStack {
-                Label("bound")
+                Text("bound")
                     .fontSize(size.projectedValue)
                     .isVisible(shown.projectedValue)
                     .horizontalAlignment(side.projectedValue)
@@ -138,7 +138,7 @@ final class DrivenPatchTests: XCTestCase {
         let inset = State(wrappedValue: Insets(4))
 
         let card = ZStack {
-            Label("words")
+            Text("words")
                 .fontSize(number.projectedValue)
                 .textColor(colour.projectedValue)
                 .characterSpacing(number.projectedValue)
@@ -212,7 +212,7 @@ final class DrivenPatchTests: XCTestCase {
     func testDrivenTextRegistersTheTextChannel() throws {
         let caption = State(wrappedValue: "60%")
 
-        let page = try page(VStack { Label().text(caption.projectedValue); Button().text(caption.projectedValue) }.body)
+        let page = try page(VStack { Text().text(caption.projectedValue); Button().text(caption.projectedValue) }.body)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text))
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text))
@@ -296,7 +296,7 @@ final class DrivenPatchTests: XCTestCase {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
         let page = try page(
-            PlacedLayout(["a", "b"], id: \.self) { Label($0) }
+            PlacedLayout(["a", "b"], id: \.self) { Text($0) }
                 .shade(ColorBox(.black))
                 .placement(run.projectedValue)
                 .frame(room.projectedValue)
@@ -330,7 +330,7 @@ final class DrivenPatchTests: XCTestCase {
 
         _ = differ.reconcile(
             nil,
-            with: rooted(Label("x").translationX(moved.projectedValue).opacity(faded.projectedValue).body))
+            with: rooted(Text("x").translationX(moved.projectedValue).opacity(faded.projectedValue).body))
 
         XCTAssertEqual(faded.number, 1, "opacity sorts before translationX")
         XCTAssertEqual(moved.number, 2)

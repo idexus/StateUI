@@ -13,12 +13,12 @@ final class GTKStackViewTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    Label("one")
-                    Label("two")
+                    Text("one")
+                    Text("two")
                 }
                 .spacing(10)
             }
-            let labels = host.views(GTKLabelView.self).map(\.laidOutFrame)
+            let labels = host.views(GTKTextView.self).map(\.laidOutFrame)
 
             XCTAssertEqual(labels.count, 2)
             XCTAssertEqual(labels[0].y, 0)
@@ -32,13 +32,13 @@ final class GTKStackViewTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running {
                 HStack {
-                    Label("left")
-                    Label("right")
+                    Text("left")
+                    Text("right")
                 }
                 .spacing(6)
                 .padding(Insets(4))
             }
-            let labels = host.views(GTKLabelView.self).map(\.laidOutFrame)
+            let labels = host.views(GTKTextView.self).map(\.laidOutFrame)
 
             XCTAssertEqual(labels.count, 2)
             XCTAssertEqual(labels[0].x, 4, accuracy: 0.5)
@@ -53,14 +53,14 @@ final class GTKStackViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     Button("Tap")
-                    Label("below")
+                    Text("below")
                 }
             }
             let button = host.views(GTKButtonView.self)[0]
             let measured = button.measure(width: nil, height: nil)
 
             XCTAssertEqual(button.laidOutFrame.height, measured.height, accuracy: 0.5)
-            XCTAssertEqual(host.views(GTKLabelView.self)[0].laidOutFrame.y, measured.height, accuracy: 0.5)
+            XCTAssertEqual(host.views(GTKTextView.self)[0].laidOutFrame.y, measured.height, accuracy: 0.5)
         }
     }
 }

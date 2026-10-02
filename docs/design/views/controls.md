@@ -113,7 +113,7 @@ same on every host.
 
 ## Text runs
 
-A `TextSpan` is one run of text inside a Label, with its own colour, size and
+A `TextSpan` is one run of text inside a Text, with its own colour, size and
 weight; text in two colours is two runs. It is named `TextSpan` rather than
 `Span` because the standard library's `Span<Element>` is in scope in every file
 without an import: an application writing `Span("…")` would get "no exact

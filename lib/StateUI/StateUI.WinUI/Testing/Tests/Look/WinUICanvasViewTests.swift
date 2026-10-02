@@ -16,7 +16,7 @@ private struct PressPage: ContentView {
 
     var content: some View {
         VStack {
-            Label(said)
+            Text(said)
             if shown {
                 Canvas {
                     Draw.fillColor(Color("#FF0000"))

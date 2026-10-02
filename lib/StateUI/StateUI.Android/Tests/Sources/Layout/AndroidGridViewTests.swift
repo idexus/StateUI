@@ -20,9 +20,9 @@ final class AndroidGridViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 Grid {
-                    Label("A").width(50).height(20).horizontalAlignment(.start)
-                    Label("B").height(20).gridColumn(1)
-                    Label("C").width(30).height(40).gridRow(1).gridColumnSpan(2).horizontalAlignment(.end)
+                    Text("A").width(50).height(20).horizontalAlignment(.start)
+                    Text("B").height(20).gridColumn(1)
+                    Text("C").width(30).height(40).gridRow(1).gridColumnSpan(2).horizontalAlignment(.end)
                 }
                 .columns(.fixed(100), .fill)
                 .rows(.auto, .auto)
@@ -33,7 +33,7 @@ final class AndroidGridViewTests: XCTestCase {
 
             host.layOut(width: 1080, height: 1920)
 
-            let labels = host.views(AndroidLabelView.self)
+            let labels = host.views(AndroidTextView.self)
             XCTAssertEqual(labels.count, 3)
             XCTAssertTrue(labels[0].frame == (20, 20, 100, 40), "\(labels[0].frame)")
             XCTAssertTrue(labels[1].frame == (230, 20, 830, 40), "\(labels[1].frame)")
@@ -49,19 +49,19 @@ final class AndroidGridViewTests: XCTestCase {
                 VStack {
                     ZStack {
                         Grid {
-                            Label("one two three four five six seven eight nine ten eleven twelve").maximumLines(2)
-                            Label("›").gridColumn(1)
+                            Text("one two three four five six seven eight nine ten eleven twelve").maximumLines(2)
+                            Text("›").gridColumn(1)
                         }
                         .columns(.fill, .auto)
                     }
                     .width(150)
                     .horizontalAlignment(.start)
-                    Label("one").horizontalAlignment(.start)
+                    Text("one").horizontalAlignment(.start)
                 }
             }
             host.layOut()
 
-            let labels = host.views(AndroidLabelView.self)
+            let labels = host.views(AndroidTextView.self)
             let line = labels[2].frame.height
             XCTAssertGreaterThan(labels[0].frame.height, line * 3 / 2, "two lines, \(labels[0].frame)")
             XCTAssertLessThan(labels[0].frame.height, line * 5 / 2, "no more than two")
@@ -75,9 +75,9 @@ final class AndroidGridViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 Grid {
-                    Label("head").height(30)
+                    Text("head").height(30)
                     ColorBox(.red).gridRow(1)
-                    Label("foot").height(20).gridRow(2)
+                    Text("foot").height(20).gridRow(2)
                 }
                 .rows(.auto, .fill, .auto)
             }

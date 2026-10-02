@@ -16,11 +16,11 @@ private struct MenuStacksPage: ContentView {
     var content: some View {
         let entries = $entries
         return VStack {
-            HStack { Label("menu") }
+            HStack { Text("menu") }
                 .width(200)
                 .height(40)
                 .contextMenu { entries.wrappedValue.map { MenuItem($0).id($0) } }
-            HStack { Label("tapped") }
+            HStack { Text("tapped") }
                 .width(200)
                 .height(40)
                 .onTapped {}

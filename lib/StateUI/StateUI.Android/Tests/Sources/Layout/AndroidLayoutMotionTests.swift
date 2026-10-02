@@ -11,7 +11,7 @@ import XCTest
 final class AndroidLayoutMotionTests: XCTestCase {
     static var allTests: [(String, (AndroidLayoutMotionTests) -> () throws -> Void)] {
         [
-            ("testALabelsWordsStandAtTheWidthItTravelsTo", testALabelsWordsStandAtTheWidthItTravelsTo),
+            ("testATextsWordsStandAtTheWidthItTravelsTo", testATextsWordsStandAtTheWidthItTravelsTo),
             ("testAChildAPatchMovesTravelsToItsNewPlace", testAChildAPatchMovesTravelsToItsNewPlace),
             ("testAChildThatJoinsAStandingStackFadesIn", testAChildThatJoinsAStandingStackFadesIn),
             ("testWithLessMotionEveryChildArrives", testWithLessMotionEveryChildArrives),
@@ -25,7 +25,7 @@ final class AndroidLayoutMotionTests: XCTestCase {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
         stack.children = .arranged(order.map { name in
-            var row = HostPatch(id: .manual(name), type: .label)
+            var row = HostPatch(id: .manual(name), type: .text)
             row.properties = [.text: .string(name), .width: .number(100), .height: .number(40)]
             row.properties[.isVisible] = .bool(!hidden.contains(name))
             row.motion = HostLayoutMotion(motion: .eased(100, .linear), lanes: .all)
@@ -36,12 +36,12 @@ final class AndroidLayoutMotionTests: XCTestCase {
 
     /// A label whose width travels lays its words out at the width it is bound for: midway, its view is already as
     /// wide as it lands, so words that fit there on one line never break at the widths its place passes through.
-    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+    func testATextsWordsStandAtTheWidthItTravelsTo() throws {
         try onMainActor {
             func caption(_ text: String) -> HostPatch {
                 var stack = HostPatch(id: .manual("stack"), type: .vStack)
                 stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
-                var label = HostPatch(id: .manual("caption"), type: .label)
+                var label = HostPatch(id: .manual("caption"), type: .text)
                 label.properties = [.text: .string(text), .horizontalAlignment: .enumeration(Alignment.start.rawValue)]
                 stack.children = .arranged([label])
                 return stack

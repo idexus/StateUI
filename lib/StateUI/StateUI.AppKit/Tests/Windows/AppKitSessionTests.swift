@@ -484,7 +484,7 @@ final class AppKitSessionTests: XCTestCase {
         kind: String? = nil,
         eventBase: Int32? = nil
     ) -> HostPatch {
-        var label = HostPatch(id: .manual("label-\(id)"), type: .label)
+        var label = HostPatch(id: .manual("label-\(id)"), type: .text)
         label.properties[.text] = .string(id)
 
         var page = HostPatch(id: .manual("page-\(id)"), type: .page)
@@ -514,7 +514,7 @@ private extension WindowType {
 
 private struct AppKitSessionPage: ContentView {
     let caption: String
-    var content: some View { Label(caption) }
+    var content: some View { Text(caption) }
 }
 
 private struct AppKitSessionMainWindow: Window {

@@ -373,40 +373,6 @@ ItemsView.translationY: ✓ read translationY of ItemsView: the host's own trans
 ItemsView.unfocus: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: not realized
-Label.accessibilityHeadingLevel: ✅
-Label.accessibilityHint: ✅
-Label.accessibilityLabel: ✅
-Label.automationExcludedWithChildren: ✅
-Label.background: ✓ read background of Label: the class of the host's style sheet the widget wears: GTK reads back no background
-Label.focus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
-Label.frame: ✅
-Label.frameChanged: ✅
-Label.height: ✅
-Label.ignoresInput: not realized
-Label.isAccessibilityHidden: ✅
-Label.isEnabled: ✅
-Label.isFocusedChanged: – Label takes no keyboard focus here: it refuses it, and nothing is heard
-Label.isVisible: ✅
-Label.layoutDirection: ✅
-Label.maximumHeight: ✅
-Label.maximumWidth: ✅
-Label.minimumHeight: ✅
-Label.minimumWidth: ✅
-Label.opacity: ✅
-Label.pivotX: ✓ read pivotX of Label: the host's own transform: GTK reads back no part of one
-Label.pivotY: ✓ read pivotY of Label: the host's own transform: GTK reads back no part of one
-Label.rotation: ✓ read rotation of Label: the host's own transform: GTK reads back no part of one
-Label.rotationX: ✓ read rotationX of Label: the host's own transform: GTK reads back no part of one
-Label.rotationY: ✓ read rotationY of Label: the host's own transform: GTK reads back no part of one
-Label.scale: ✓ read scale of Label: the host's own transform: GTK reads back no part of one
-Label.scaleX: ✓ read scaleX of Label: the host's own transform: GTK reads back no part of one
-Label.scaleY: ✓ read scaleY of Label: the host's own transform: GTK reads back no part of one
-Label.style: ✅
-Label.translationX: ✓ read translationX of Label: the host's own transform: GTK reads back no part of one
-Label.translationY: ✓ read translationY of Label: the host's own transform: GTK reads back no part of one
-Label.unfocus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
-Label.width: ✅
-Label.zIndex: not realized
 Line.accessibilityHeadingLevel: ✅
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
@@ -883,6 +849,40 @@ Switch.translationY: ✓ read translationY of Switch: the host's own transform: 
 Switch.unfocus: ✅
 Switch.width: ✅
 Switch.zIndex: not realized
+Text.accessibilityHeadingLevel: ✅
+Text.accessibilityHint: ✅
+Text.accessibilityLabel: ✅
+Text.automationExcludedWithChildren: ✅
+Text.background: ✓ read background of Text: the class of the host's style sheet the widget wears: GTK reads back no background
+Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.frame: ✅
+Text.frameChanged: ✅
+Text.height: ✅
+Text.ignoresInput: not realized
+Text.isAccessibilityHidden: ✅
+Text.isEnabled: ✅
+Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.isVisible: ✅
+Text.layoutDirection: ✅
+Text.maximumHeight: ✅
+Text.maximumWidth: ✅
+Text.minimumHeight: ✅
+Text.minimumWidth: ✅
+Text.opacity: ✅
+Text.pivotX: ✓ read pivotX of Text: the host's own transform: GTK reads back no part of one
+Text.pivotY: ✓ read pivotY of Text: the host's own transform: GTK reads back no part of one
+Text.rotation: ✓ read rotation of Text: the host's own transform: GTK reads back no part of one
+Text.rotationX: ✓ read rotationX of Text: the host's own transform: GTK reads back no part of one
+Text.rotationY: ✓ read rotationY of Text: the host's own transform: GTK reads back no part of one
+Text.scale: ✓ read scale of Text: the host's own transform: GTK reads back no part of one
+Text.scaleX: ✓ read scaleX of Text: the host's own transform: GTK reads back no part of one
+Text.scaleY: ✓ read scaleY of Text: the host's own transform: GTK reads back no part of one
+Text.style: ✅
+Text.translationX: ✓ read translationX of Text: the host's own transform: GTK reads back no part of one
+Text.translationY: ✓ read translationY of Text: the host's own transform: GTK reads back no part of one
+Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.width: ✅
+Text.zIndex: not realized
 TextEditor.accessibilityHeadingLevel: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅

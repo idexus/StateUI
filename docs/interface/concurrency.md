@@ -129,7 +129,7 @@ struct Countdown: ContentView {
 
     var content: some View {
         VStack {
-            Label("\((ticker.limit ?? 0) - ticker.ticks)")
+            Text("\((ticker.limit ?? 0) - ticker.ticks)")
 
             Button(ticker.isRunning ? "Stop" : "Start")
                 .onClicked {
@@ -168,7 +168,7 @@ not overlap:
 @State private var status = "Waiting"
 @State private var poll = Ticker(every: .seconds(30), isRepeating: false)
 
-VStack { Label(status) }
+VStack { Text(status) }
     .onCreated {
         poll.onTick = {
             status = await service.status()

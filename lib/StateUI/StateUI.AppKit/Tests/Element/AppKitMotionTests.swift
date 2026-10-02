@@ -18,11 +18,11 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("label"), type: .label)
+        var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0.25)
         renderer.applyForTesting(initial)
 
-        var changed = HostPatch(id: .manual("label"), type: .label)
+        var changed = HostPatch(id: .manual("label"), type: .text)
         changed.properties[.opacity] = .number(0.75)
         changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(changed)
@@ -55,9 +55,9 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(HostPatch(id: .manual("label"), type: .label))
+        renderer.applyForTesting(HostPatch(id: .manual("label"), type: .text))
 
-        var changed = HostPatch(id: .manual("label"), type: .label)
+        var changed = HostPatch(id: .manual("label"), type: .text)
         changed.properties[.opacity] = .number(0)
         changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(changed)
@@ -80,9 +80,9 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(HostPatch(id: .manual("label"), type: .label))
+        renderer.applyForTesting(HostPatch(id: .manual("label"), type: .text))
 
-        var changed = HostPatch(id: .manual("label"), type: .label)
+        var changed = HostPatch(id: .manual("label"), type: .text)
         changed.properties[.translationX] = .number(10)
         changed.properties[.scale] = .number(2)
         changed.transitions[.translationX] = HostTransition(motion: .eased(200, .linear))
@@ -147,7 +147,7 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties[.opacity] = .number(0)
         label.properties[.translationX] = .number(0)
         var initial = HostPatch(id: .manual("stack"), type: .vStack)
@@ -156,7 +156,7 @@ final class AppKitMotionTests: XCTestCase {
         initial.children = .arranged([label])
         renderer.applyForTesting(initial)
 
-        var movingLabel = HostPatch(id: .manual("label"), type: .label)
+        var movingLabel = HostPatch(id: .manual("label"), type: .text)
         movingLabel.properties[.opacity] = .number(1)
         movingLabel.properties[.translationX] = .number(10)
         movingLabel.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
@@ -318,11 +318,11 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("label"), type: .label)
+        var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
         renderer.applyForTesting(initial)
 
-        var moving = HostPatch(id: .manual("label"), type: .label)
+        var moving = HostPatch(id: .manual("label"), type: .text)
         moving.properties[.opacity] = .number(1)
         moving.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(moving)
@@ -332,7 +332,7 @@ final class AppKitMotionTests: XCTestCase {
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
 
-        var unrelated = HostPatch(id: .manual("label"), type: .label)
+        var unrelated = HostPatch(id: .manual("label"), type: .text)
         unrelated.properties[.text] = .string("still moving")
         renderer.applyForTesting(unrelated)
         XCTAssertTrue(renderer.describedMotionActiveForTesting)
@@ -383,7 +383,7 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testReducedMotionAssignsThePropertyTargetImmediately() throws {
-        var initial = HostPatch(id: .manual("label"), type: .label)
+        var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -393,7 +393,7 @@ final class AppKitMotionTests: XCTestCase {
         defer { renderer.closeForTesting() }
         renderer.applyForTesting(initial)
 
-        var changed = HostPatch(id: .manual("label"), type: .label)
+        var changed = HostPatch(id: .manual("label"), type: .text)
         changed.properties[.opacity] = .number(1)
         changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(changed)
@@ -414,11 +414,11 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { reduced })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("label"), type: .label)
+        var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
         renderer.applyForTesting(initial)
 
-        var changed = HostPatch(id: .manual("label"), type: .label)
+        var changed = HostPatch(id: .manual("label"), type: .text)
         changed.properties[.opacity] = .number(1)
         changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(changed)
@@ -446,11 +446,11 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("label"), type: .label)
+        var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
         renderer.applyForTesting(initial)
 
-        var moving = HostPatch(id: .manual("label"), type: .label)
+        var moving = HostPatch(id: .manual("label"), type: .text)
         moving.properties[.opacity] = .number(1)
         moving.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(moving)
@@ -460,7 +460,7 @@ final class AppKitMotionTests: XCTestCase {
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
-        var snapped = HostPatch(id: .manual("label"), type: .label)
+        var snapped = HostPatch(id: .manual("label"), type: .text)
         snapped.properties[.opacity] = .number(0.25)
         renderer.applyForTesting(snapped)
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
@@ -481,11 +481,11 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("label"), type: .label)
+        var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0.2)
         renderer.applyForTesting(initial)
 
-        var moving = HostPatch(id: .manual("label"), type: .label)
+        var moving = HostPatch(id: .manual("label"), type: .text)
         moving.properties[.opacity] = .number(0.8)
         moving.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(moving)
@@ -495,7 +495,7 @@ final class AppKitMotionTests: XCTestCase {
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
-        var cleared = HostPatch(id: .manual("label"), type: .label)
+        var cleared = HostPatch(id: .manual("label"), type: .text)
         cleared.clearedProperties = [.opacity]
         renderer.applyForTesting(cleared)
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
@@ -516,11 +516,11 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("label"), type: .label)
+        var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
         renderer.applyForTesting(initial)
 
-        var first = HostPatch(id: .manual("label"), type: .label)
+        var first = HostPatch(id: .manual("label"), type: .text)
         first.properties[.opacity] = .number(1)
         first.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(first)
@@ -530,7 +530,7 @@ final class AppKitMotionTests: XCTestCase {
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
-        var second = HostPatch(id: .manual("label"), type: .label)
+        var second = HostPatch(id: .manual("label"), type: .text)
         second.properties[.opacity] = .number(0.2)
         second.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(second)
@@ -557,7 +557,7 @@ final class AppKitMotionTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         func label(opacity: Double) -> HostPatch {
-            var label = HostPatch(id: .manual("same"), type: .label)
+            var label = HostPatch(id: .manual("same"), type: .text)
             label.properties[.opacity] = .number(opacity)
             return label
         }
@@ -576,7 +576,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(initial)
 
         func changedLabel(opacity: Double) -> HostPatch {
-            var label = HostPatch(id: .manual("same"), type: .label)
+            var label = HostPatch(id: .manual("same"), type: .text)
             label.properties[.opacity] = .number(opacity)
             label.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
             return label
@@ -612,13 +612,13 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties[.opacity] = .number(0)
         var initial = HostPatch(id: .manual("root"), type: .vStack)
         initial.children = .arranged([label])
         renderer.applyForTesting(initial)
 
-        var movingLabel = HostPatch(id: .manual("label"), type: .label)
+        var movingLabel = HostPatch(id: .manual("label"), type: .text)
         movingLabel.properties[.opacity] = .number(1)
         movingLabel.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         var moving = HostPatch(id: .manual("root"), type: .vStack)
@@ -641,18 +641,18 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("label"), type: .label)
+        var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
         renderer.applyForTesting(initial)
         let original = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
 
-        var moving = HostPatch(id: .manual("label"), type: .label)
+        var moving = HostPatch(id: .manual("label"), type: .text)
         moving.properties[.opacity] = .number(1)
         moving.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(moving)
         XCTAssertTrue(renderer.describedMotionActiveForTesting)
 
-        var replacement = HostPatch(id: .manual("label"), type: .label)
+        var replacement = HostPatch(id: .manual("label"), type: .text)
         replacement.replace = true
         replacement.properties[.opacity] = .number(0.4)
         renderer.applyForTesting(replacement)

@@ -52,8 +52,8 @@ final class AppKitSharedMemberTests: XCTestCase {
     @MainActor
     func testEveryTextControlSetsItsTextInTheWrittenFont() throws {
         let controls: [(NodeType, [Prop: HostValue], @MainActor (NSView) -> NSFont?)] = [
-            (.label, [.text: .string("Text")], {
-                ($0 as? AppKitLabelView)?.attributedStringValue
+            (.text, [.text: .string("Text")], {
+                ($0 as? AppKitTextView)?.attributedStringValue
                     .attribute(.font, at: 0, effectiveRange: nil) as? NSFont
             }),
             (.button, [.text: .string("Text")], { ($0 as? NSButton)?.font }),
@@ -94,8 +94,8 @@ final class AppKitSharedMemberTests: XCTestCase {
             text?.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor
         }
         let controls: [(NodeType, [Prop: HostValue], @MainActor (NSView) -> NSColor?)] = [
-            (.label, [.text: .string("Text")], {
-                foreground(($0 as? AppKitLabelView)?.attributedStringValue)
+            (.text, [.text: .string("Text")], {
+                foreground(($0 as? AppKitTextView)?.attributedStringValue)
             }),
             (.button, [.text: .string("Text")], { foreground(($0 as? NSButton)?.attributedTitle) }),
             (.radioButton, [.text: .string("Text")], { foreground(($0 as? NSButton)?.attributedTitle) }),
@@ -131,7 +131,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     func testABackgroundColourPaintsEveryView() throws {
         let layered: [NodeType] = [
             .activityIndicator, .button, .canvas, .checkBox, .datePicker,
-            .ellipse, .grid, .hStack, .image, .label, .line, .path, .picker, .polygon,
+            .ellipse, .grid, .hStack, .image, .text, .line, .path, .picker, .polygon,
             .polyline, .progressBar, .radioButton, .rectangle, .scrollView,
             .slider, .stepper, .switch, .timePicker, .vStack, .zStack,
         ]
@@ -164,7 +164,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     func testAViewThatIgnoresInputIsNotHit() throws {
         let views: [NodeType] = [
             .canvas, .colorBox, .ellipse, .grid, .hStack, .image,
-            .label, .line, .path, .polygon, .polyline, .rectangle, .vStack, .zStack,
+            .text, .line, .path, .polygon, .polyline, .rectangle, .vStack, .zStack,
         ]
 
         for type in views {

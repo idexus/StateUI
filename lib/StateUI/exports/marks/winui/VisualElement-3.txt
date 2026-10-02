@@ -37,9 +37,6 @@ Image.rotationX: ✓ read rotationX of Image: the host's own tip, checked agains
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: not realized
 ItemsView.scaleX: ✅
-Label.ignoresInput: ✅
-Label.layoutDirection: ✅
-Label.translationY: ✅
 Line.rotation: ✅
 Line.style: ✅
 Map.accessibilityHeadingLevel: 🧩
@@ -91,6 +88,9 @@ Switch.focus: ✅
 Switch.isFocusedChanged: ✅
 Switch.pivotY: ✅
 Switch.unfocus: ✅
+Text.ignoresInput: ✅
+Text.layoutDirection: ✅
+Text.translationY: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.isVisible: ✅
 TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element

@@ -126,7 +126,7 @@ final class WinUIButtonViewTests: XCTestCase {
                             .padding(0, 0)
                             .width(40)
                             .height(40)
-                        Label("").width(40).height(40)
+                        Text("").width(40).height(40)
                     }
                     .spacing(0)
                     .horizontalAlignment(.start)

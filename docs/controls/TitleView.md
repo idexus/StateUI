@@ -7,7 +7,7 @@ The view a page shows in its bar in place of its title.
 ```swift
 @State var query = ""
 
-Label("Results for \(query)")
+Text("Results for \(query)")
     .titleView {
         SearchField($query).placeholder("Search")
     }

@@ -349,8 +349,8 @@ struct PlacedSample: SampleContent, ExampleContent {
                         .aspect(.fill)
 
                     VStack {
-                        Label(card.name)
-                        Label("Placed by arithmetic")
+                        Text(card.name)
+                        Text("Placed by arithmetic")
                     }
                     .verticalAlignment(.end)
                 }
@@ -533,13 +533,13 @@ struct PlacedSample: SampleContent, ExampleContent {
                 VStack {
                     // ONE LINE, whatever the card's width: a caption that
                     // wrapped would change the picture's height with it.
-                    Label(card.name)
+                    Text(card.name)
                         .fontSize(18)
                         .fontAttributes(.bold)
                         .textColor(Palette.onBrand)
                         .lineBreak(.tailTruncation)
 
-                    Label("Placed by arithmetic")
+                    Text("Placed by arithmetic")
                         .fontSize(10)
                         .textColor(Palette.onBrand)
                         .opacity(0.8)
@@ -627,7 +627,7 @@ struct PlacedSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("`PlacedLayout` builds one view per card from its closure; an engine of "
+            Text("`PlacedLayout` builds one view per card from its closure; an engine of "
                 + "yours works out a `Placement` for each - where the card goes, and how it "
                 + "is turned, scaled, faded and stacked - and writes them as a `PlacedRun` on "
                 + "the state `.placement(_:)` names, in the room `.frame(_:)` reports. That is "
@@ -637,7 +637,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Swipe left or right to turn the ring; it settles on the card it is "
+            Text("Swipe left or right to turn the ring; it settles on the card it is "
                 + "nearest, and `Back` and `Next` do the same without the hand. With `Turn by "
                 + "panning` on, the cards are taken hold of instead and follow the finger, "
                 + "with no scroller over them. Otherwise a `ScrollReader` lays an empty "
@@ -646,7 +646,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Every value that turns the ring is a `@State` no body reads. The two "
+            Text("Every value that turns the ring is a `@State` no body reads. The two "
                 + "numbers, the room and where each card goes are handed on with `$`, so "
                 + "writing them describes nothing, and `.engine(following:)` says which of "
                 + "them moving runs the arithmetic again. It runs on the display's own "
@@ -656,7 +656,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The trap is a label written from a driven value: it is built again every "
+            Text("The trap is a label written from a driven value: it is built again every "
                 + "time the value moves. A placement is not, which is why the cards shrink "
                 + "as they go round the back with no view rebuilt. The ring keeps its card "
                 + "through a change of geometry - turn the phone or resize the window, and "

@@ -20,7 +20,7 @@ struct ColoursPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("The accent this gallery's bars are painted in.")
+            Text("The accent this gallery's bars are painted in.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 

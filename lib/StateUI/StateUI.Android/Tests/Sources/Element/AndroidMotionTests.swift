@@ -21,11 +21,11 @@ final class AndroidMotionTests: XCTestCase {
         try onMainActor {
             let clock = TestClock()
             let host = AndroidRenderer.bare(clock: clock)
-            var initial = HostPatch(id: .manual("label"), type: .label)
+            var initial = HostPatch(id: .manual("label"), type: .text)
             initial.properties[.opacity] = .number(0.25)
             host.apply(initial)
 
-            var changed = HostPatch(id: .manual("label"), type: .label)
+            var changed = HostPatch(id: .manual("label"), type: .text)
             changed.properties[.opacity] = .number(0.75)
             changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
             host.apply(changed)
@@ -48,7 +48,7 @@ final class AndroidMotionTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Label("turned")
+                    Text("turned")
                         .translationX(10)
                         .rotation(30)
                         .scale(2)
@@ -57,7 +57,7 @@ final class AndroidMotionTests: XCTestCase {
                 }
             }
             host.layOut()
-            let label = try XCTUnwrap(host.views(AndroidLabelView.self).first)
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
 
             XCTAssertEqual(Java.callFloat(label.reference, TestJava.getTranslationX), 20, "ten points at two pixels a point")
             XCTAssertEqual(Java.callFloat(label.reference, TestJava.getRotation), 30)
@@ -73,12 +73,12 @@ final class AndroidMotionTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Label("tipped").width(100).height(100).rotationX(30)
-                    Label("turned").width(100).height(100).rotationY(30)
+                    Text("tipped").width(100).height(100).rotationX(30)
+                    Text("turned").width(100).height(100).rotationY(30)
                 }
             }
             host.layOut()
-            let labels = host.views(AndroidLabelView.self)
+            let labels = host.views(AndroidTextView.self)
 
             // A far edge is drawn shorter: its corners come in towards the middle.
             let tipped = labels[0].drawn([(0, 0), (0, 200)])
@@ -94,13 +94,13 @@ final class AndroidMotionTests: XCTestCase {
             let offset = State(wrappedValue: 0.0)
             let host = AndroidRenderer.running(clock: clock) {
                 VStack {
-                    Label("moving").translationX(offset.projectedValue)
+                    Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked {
                         try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear))
                     }
                 }
             }
-            let label = try XCTUnwrap(host.views(AndroidLabelView.self).first)
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
 
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
             clock.now = 100

@@ -6,13 +6,13 @@
 // reports into a state.
 // Design: docs/design/views/bindings.md#driven-text
 
-extension Label {
+extension Text {
     /// What the label says, carried from a state: the host writes the text as
     /// it changes, with no view rebuilt - only the label measured again.
     ///
     ///     @State private var caption = ""
     ///
-    ///     Label().text($caption)
+    ///     Text().text($caption)
     ///     …
     ///     .engine(following: $level) { _ in
     ///         caption = "\(Int($level.journey.value * 100))%"
@@ -20,13 +20,13 @@ extension Label {
     ///
     /// - Parameter state: the state the words are read from.
     /// - Returns: the label, with its text carried from that state.
-    public func text(_ state: Binding<String>) -> Label {
+    public func text(_ state: Binding<String>) -> Text {
         setValue(TextElementContract.text, on: state, mode: .out, kind: .text)
     }
 }
 
 extension Button {
-    /// What the button says, carried from a state; see `Label.text(_:)`.
+    /// What the button says, carried from a state; see `Text.text(_:)`.
     ///
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the button, with its caption carried from that state.

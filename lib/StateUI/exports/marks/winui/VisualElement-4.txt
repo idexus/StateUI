@@ -39,9 +39,6 @@ ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.scaleY: ✅
 ItemsView.width: ✅
-Label.frame: ✅
-Label.pivotX: ✅
-Label.zIndex: not realized
 Line.accessibilityLabel: ✅
 Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
 Map.isAccessibilityHidden: 🧩
@@ -87,6 +84,9 @@ Stepper.layoutDirection: ✅
 Stepper.translationY: ✅
 Switch.rotation: ✅
 Switch.style: ✅
+Text.frame: ✅
+Text.pivotX: ✅
+Text.zIndex: not realized
 TextEditor.accessibilityHeadingLevel: ✅
 TextEditor.opacity: ✅
 TextEditor.scale: ✅

@@ -37,13 +37,6 @@ Image.style: ✅
 ItemsView.accessibilityHeadingLevel: ✅
 ItemsView.opacity: ✅
 ItemsView.scale: ✅
-Label.background: ✅
-Label.frameChanged: ✅
-Label.maximumHeight: ✅
-Label.maximumWidth: ✅
-Label.minimumHeight: ✅
-Label.minimumWidth: ✅
-Label.translationX: ✅
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.pivotY: ✅
@@ -94,6 +87,13 @@ Stepper.width: ✅
 Switch.frame: ✅
 Switch.pivotX: ✅
 Switch.zIndex: not realized
+Text.background: ✅
+Text.frameChanged: ✅
+Text.maximumHeight: ✅
+Text.maximumWidth: ✅
+Text.minimumHeight: ✅
+Text.minimumWidth: ✅
+Text.translationX: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
 TextField.isAccessibilityHidden: ✅

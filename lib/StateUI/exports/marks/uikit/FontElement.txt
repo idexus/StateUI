@@ -7,10 +7,6 @@ DatePicker.fontAttributes: not realized
 DatePicker.fontAutoScalingEnabled: not realized
 DatePicker.fontFamily: not realized
 DatePicker.fontSize: not realized
-Label.fontAttributes: ✅
-Label.fontAutoScalingEnabled: not realized
-Label.fontFamily: ✅
-Label.fontSize: ✅
 Picker.fontAttributes: not realized
 Picker.fontAutoScalingEnabled: not realized
 Picker.fontFamily: not realized
@@ -27,6 +23,10 @@ Span.fontAttributes: cannot read fontAttributes of Span - UIKit's driver has no 
 Span.fontAutoScalingEnabled: not realized
 Span.fontFamily: cannot read fontFamily of Span - UIKit's driver has no path for it yet
 Span.fontSize: cannot read fontSize of Span - UIKit's driver has no path for it yet
+Text.fontAttributes: ✅
+Text.fontAutoScalingEnabled: not realized
+Text.fontFamily: ✅
+Text.fontSize: ✅
 TextEditor.fontAttributes: ✅
 TextEditor.fontAutoScalingEnabled: not realized
 TextEditor.fontFamily: ✅

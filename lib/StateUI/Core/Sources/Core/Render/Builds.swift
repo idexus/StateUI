@@ -98,7 +98,7 @@ enum BuildScope {
 extension Element {
     /// Why this view is being described, and how often. This library's own.
     ///
-    ///     Label(debugInfo())
+    ///     Text(debugInfo())
     ///
     /// Answers the view's name, how many times the closure this is written in has
     /// been described, and which state this description is for -

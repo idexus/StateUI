@@ -24,7 +24,7 @@ struct SwipeSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack {
-                Label("Swipe across this box")
+                Text("Swipe across this box")
                     .padding(32)
             }
             .style("Card")
@@ -36,10 +36,10 @@ struct SwipeSample: SampleContent, ExampleContent {
                 swipe = Self.name(of: direction)
             }
 
-            Label(swipe.isEmpty ? "nothing yet" : "Swiped \\(swipe)")
+            Text(swipe.isEmpty ? "nothing yet" : "Swiped \\(swipe)")
 
             ZStack {
-                Label("Left or right, and a long way")
+                Text("Left or right, and a long way")
                     .padding(32)
             }
             .style("Card")
@@ -51,7 +51,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                 narrowed = Self.name(of: direction)
             }
 
-            Label(narrowed.isEmpty ? "nothing yet" : "Swiped \\(narrowed)")
+            Text(narrowed.isEmpty ? "nothing yet" : "Swiped \\(narrowed)")
         }
 
         private static func name(of direction: SwipeDirection) -> String {
@@ -70,7 +70,7 @@ struct SwipeSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack {
-                Label("Swipe across this box")
+                Text("Swipe across this box")
                     .fontSize(15)
                     .padding(32)
                     .horizontalTextAlignment(.center)
@@ -83,12 +83,12 @@ struct SwipeSample: SampleContent, ExampleContent {
                 swipe = Self.name(of: direction)
             }
 
-            Label(swipe.isEmpty ? "nothing yet" : "Swiped \(swipe)")
+            Text(swipe.isEmpty ? "nothing yet" : "Swiped \(swipe)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
             ZStack {
-                Label("Left or right, and a long way")
+                Text("Left or right, and a long way")
                     .fontSize(15)
                     .padding(32)
                     .horizontalTextAlignment(.center)
@@ -103,7 +103,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                 narrowed = Self.name(of: direction)
             }
 
-            Label(narrowed.isEmpty ? "nothing yet" : "Swiped \(narrowed)")
+            Text(narrowed.isEmpty ? "nothing yet" : "Swiped \(narrowed)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
         }
@@ -111,7 +111,7 @@ struct SwipeSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("The first box says nothing about `direction`, and a recognizer that "
+        Text("The first box says nothing about `direction`, and a recognizer that "
             + "listens for nothing recognizes nothing - so it hears every way. The "
             + "second is narrowed to `.left` and `.right` with the threshold raised "
             + "to 150 device units: swipe up on it, or flick it short, and nothing "

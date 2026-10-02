@@ -46,7 +46,7 @@ final class StateCostTests: XCTestCase {
         struct Costly: ContentView {
             @State private var items = StateCostTests.counted()
 
-            var content: some View { Label("\(items)") }
+            var content: some View { Text("\(items)") }
         }
 
         _ = Costly()
@@ -68,8 +68,8 @@ final class StateCostTests: XCTestCase {
 
             var content: some View {
                 VStack {
-                    Label("shown \(shown)")
-                    Label("items \(items)")
+                    Text("shown \(shown)")
+                    Text("items \(items)")
                 }
             }
         }
@@ -150,7 +150,7 @@ final class StateCostTests: XCTestCase {
             _ name: KeyPath<Items.Element, String>
         ) -> Int {
             stateParts(in: PlacedLayout(items, id: name) { item in
-                Label(item[keyPath: name])
+                Text(item[keyPath: name])
             }).boxes.count
         }
 
@@ -163,7 +163,7 @@ final class StateCostTests: XCTestCase {
             _ name: KeyPath<Items.Element, String>
         ) -> Int {
             stateParts(in: GalleryView(items, id: name) { item in
-                Label(item[keyPath: name])
+                Text(item[keyPath: name])
             }).boxes.count
         }
 

@@ -8,5 +8,5 @@ protocol WinUIWordsView: WinUIView {
     func setText(_ text: String)
 }
 
-extension WinUITextView: WinUIWordsView {}
+extension WinUITextualView: WinUIWordsView {}
 extension WinUIButtonView: WinUIWordsView {}

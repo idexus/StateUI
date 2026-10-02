@@ -35,8 +35,6 @@ HStack.frameChanged: ✅
 HStack.margin: ✅
 Image.pinchUpdated: ✓ pinch on Image: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.panYChannel: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-Label.tapCount: ✓ tap on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.tapped: ✓ tap on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
@@ -88,6 +86,8 @@ Switch.pointerExited: ✓ hover on Switch: handed to the host's recognizer or ha
 Switch.pointerMoved: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.pointerPressed: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.pointerReleased: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Text.tapCount: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.tapped: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.swipeDirection: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.swipeThreshold: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.swiped: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent

@@ -80,13 +80,6 @@ ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
-Label.allowDrop: not realized
-Label.area: ✅
-Label.dragLeave: not realized
-Label.dragOver: not realized
-Label.drop: not realized
-Label.frameChanged: ✅
-Label.panYChannel: ✅
 Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
@@ -188,6 +181,13 @@ Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
+Text.allowDrop: not realized
+Text.area: ✅
+Text.dragLeave: not realized
+Text.dragOver: not realized
+Text.drop: not realized
+Text.frameChanged: ✅
+Text.panYChannel: ✅
 TextEditor.allowDrop: not realized
 TextEditor.area: ✅
 TextEditor.dragLeave: not realized

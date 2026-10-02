@@ -13,12 +13,12 @@
             Aspects.standsAlone("TextField"),
             ConformanceCase("eachKeystrokeReachesTheStateAndTheGreeting", proves: [
                 Covered(TextElementContract.text, on: TextFieldContract.self),
-                Covered(TextElementContract.text, on: LabelContract.self),
+                Covered(TextElementContract.text, on: TextContract.self),
             ]) { s in
                 let name = State(wrappedValue: "")
                 s.start {
                     VStack {
-                        Label(name.wrappedValue.isEmpty ? "Hello!" : "Hello, \(name.wrappedValue)!").id("greeting")
+                        Text(name.wrappedValue.isEmpty ? "Hello!" : "Hello, \(name.wrappedValue)!").id("greeting")
                         TextField(name.projectedValue).placeholder("Type your name").id("field")
                     }
                 }

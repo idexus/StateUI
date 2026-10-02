@@ -112,8 +112,8 @@ final class LibraryContractTests: XCTestCase {
         XCTAssertEqual(wrong, [])
     }
 
-    /// An element contract's node type is its own name - `LabelContract`
-    /// declares "Label" - so the name a host resolves is the contract's, and
+    /// An element contract's node type is its own name - `TextContract`
+    /// declares "Text" - so the name a host resolves is the contract's, and
     /// nothing is left to look up.
     func testEveryNodeTypeIsItsContractsName() {
         let wrong = LibraryContracts.elements.compactMap { contract -> String? in

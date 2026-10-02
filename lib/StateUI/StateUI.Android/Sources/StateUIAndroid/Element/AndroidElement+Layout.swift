@@ -15,7 +15,7 @@ extension AndroidElement {
     /// Hands a layout its children's items, in order, and a label the runs of its spans.
     func arrangeChildren() {
         if let items = view as? AndroidItemsView { return items.childrenChanged() }
-        if let label = view as? AndroidLabelView {
+        if let label = view as? AndroidTextView {
             return arrangeRuns(of: label)
         }
         let layout = view as? AndroidLayoutView
@@ -25,7 +25,7 @@ extension AndroidElement {
 
     /// A label's spans as runs of its words, as the host layer reads them; without spans, its own words, once they
     /// are gone.
-    private func arrangeRuns(of label: AndroidLabelView) {
+    private func arrangeRuns(of label: AndroidTextView) {
         guard let runs = element.textRuns else {
             if hasRuns {
                 hasRuns = false

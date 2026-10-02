@@ -52,7 +52,7 @@ extension ControlDictionary {
 
             HStack {
                 CheckBox($agreed)
-                Label("I agree to the terms")
+                Text("I agree to the terms")
             }
             .spacing(8)
             """#),
@@ -66,7 +66,7 @@ extension ControlDictionary {
         (ContextMenuContract.self, #"""
             @State var title = "Groceries"
 
-            Label(title)
+            Text(title)
                 .contextMenu {
                     MenuItem("Rename").onClicked { title = "Shopping" }
                     MenuItem("Clear")
@@ -94,7 +94,7 @@ extension ControlDictionary {
             @State var name = ""
 
             Grid {
-                Label("Name")
+                Text("Name")
                 TextField($name)
                     .gridColumn(1)
                 Button("Save")
@@ -109,7 +109,7 @@ extension ControlDictionary {
         (HStackContract.self, #"""
             HStack {
                 Image("home.png")
-                Label("Home")
+                Text("Home")
             }
             .spacing(8)
             """#),
@@ -125,14 +125,14 @@ extension ControlDictionary {
             @State var chosen: String? = nil
 
             ItemsView(["Apple", "Banana", "Cherry"]) { fruit in
-                Label(fruit).padding(14, 10)
+                Text(fruit).padding(14, 10)
             }
             .selection($chosen)
             .onItemActivated { fruit in chosen = fruit }
             """#),
 
-        (LabelContract.self, #"""
-            Label("A description long enough to wrap onto a second line, and stop there.")
+        (TextContract.self, #"""
+            Text("A description long enough to wrap onto a second line, and stop there.")
                 .maximumLines(2)
                 .lineBreak(.tailTruncation)
             """#),
@@ -156,7 +156,7 @@ extension ControlDictionary {
         (MenuContract.self, #"""
             @State var order = "Name"
 
-            Label("Sorted by \(order)")
+            Text("Sorted by \(order)")
                 .menuBar {
                     Menu("View") {
                         Menu("Sort by") {
@@ -170,7 +170,7 @@ extension ControlDictionary {
         (MenuBarContract.self, #"""
             @State var saved = false
 
-            Label(saved ? "Saved" : "Not saved")
+            Text(saved ? "Saved" : "Not saved")
                 .menuBar {
                     Menu("File") {
                         MenuItem("Save").onClicked { saved = true }
@@ -182,7 +182,7 @@ extension ControlDictionary {
         (MenuItemContract.self, #"""
             @State var archived = false
 
-            Label("Report.pdf")
+            Text("Report.pdf")
                 .contextMenu {
                     MenuItem(archived ? "Unarchive" : "Archive")
                         .icon("archive.png")
@@ -191,7 +191,7 @@ extension ControlDictionary {
             """#),
 
         (MenuSeparatorContract.self, #"""
-            Label("Report.pdf")
+            Text("Report.pdf")
                 .contextMenu {
                     MenuItem("Open")
                     MenuItem("Rename")
@@ -222,7 +222,7 @@ extension ControlDictionary {
                     NavigationStack($path) {
                         Button("Open note 1").onClicked { path.append(1) }
                     } destination: { note in
-                        Label("Note \(note)")
+                        Text("Note \(note)")
                     }
                 }
             }
@@ -234,7 +234,7 @@ extension ControlDictionary {
             Switch($offline)
                 .overlays {
                     if offline {
-                        Label("Working offline")
+                        Text("Working offline")
                             .horizontalAlignment(.center)
                             .verticalAlignment(.start)
                     }
@@ -246,7 +246,7 @@ extension ControlDictionary {
                 @Environment private var page: PageSession
 
                 var content: some View {
-                    Label("Nothing written yet.")
+                    Text("Nothing written yet.")
                         .onCreated {
                             page.title = "Note"
                             page.hasBackButton = true
@@ -328,7 +328,7 @@ extension ControlDictionary {
 
             struct NoteWindow: Window {
                 let title: String
-                var page: any Page { Label(title) }
+                var page: any Page { Text(title) }
             }
 
             struct NotesScene: Scene {
@@ -348,7 +348,7 @@ extension ControlDictionary {
             ScrollView {
                 VStack {
                     ForEach(1...100) { row in
-                        Label("Row \(row)")
+                        Text("Row \(row)")
                     }
                 }
             }
@@ -374,7 +374,7 @@ extension ControlDictionary {
             """#),
 
         (SpanContract.self, #"""
-            Label()
+            Text()
                 .spans {
                     TextSpan("Sold out")
                         .textColor(.firebrick)
@@ -384,7 +384,7 @@ extension ControlDictionary {
             """#),
 
         (SpansContract.self, #"""
-            Label()
+            Text()
                 .spans {
                     TextSpan("let ").textColor(.purple)
                     TextSpan("count").fontAttributes(.bold)
@@ -398,9 +398,9 @@ extension ControlDictionary {
 
                 var page: any Page {
                     SplitView($showsFolders) {
-                        Label("Folders")
+                        Text("Folders")
                     } detail: {
-                        Label("Notes")
+                        Text("Notes")
                     }
                 }
             }
@@ -428,7 +428,7 @@ extension ControlDictionary {
                 @Environment private var page: PageSession
 
                 var content: some View {
-                    Label("Nothing in \(name)").onCreated { page.title = name }
+                    Text("Nothing in \(name)").onCreated { page.title = name }
                 }
             }
 
@@ -466,7 +466,7 @@ extension ControlDictionary {
         (TitleViewContract.self, #"""
             @State var query = ""
 
-            Label("Results for \(query)")
+            Text("Results for \(query)")
                 .titleView {
                     SearchField($query).placeholder("Search")
                 }
@@ -475,7 +475,7 @@ extension ControlDictionary {
         (ToolbarItemContract.self, #"""
             @State var count = 0
 
-            Label("\(count) items")
+            Text("\(count) items")
                 .toolbar {
                     ToolbarItem("Add")
                         .icon("add.png")
@@ -505,8 +505,8 @@ extension ControlDictionary {
 
         (VStackContract.self, #"""
             VStack {
-                Label("One")
-                Label("Two")
+                Text("One")
+                Text("Two")
             }
             .spacing(12)
             .padding(24)
@@ -537,7 +537,7 @@ extension ControlDictionary {
                 @Environment private var window: WindowSession
 
                 var content: some View {
-                    Label("Hello")
+                    Text("Hello")
                         .onCreated {
                             window.title = "Notes"
                             window.minimumWidth = 480
@@ -549,7 +549,7 @@ extension ControlDictionary {
         (ZStackContract.self, #"""
             ZStack {
                 ColorBox(.cornflowerBlue)
-                Label("Bottom right")
+                Text("Bottom right")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
             }
@@ -576,7 +576,7 @@ extension ControlDictionary {
         (ViewContract.self, #"""
             @State var taps = 0
 
-            Label("Tapped \(taps) times")
+            Text("Tapped \(taps) times")
                 .margin(16, 8)
                 .horizontalAlignment(.center)
                 .onTapped { taps += 1 }
@@ -584,7 +584,7 @@ extension ControlDictionary {
 
         (LayoutContract.self, #"""
             VStack {
-                Label("Edge to edge")
+                Text("Edge to edge")
             }
             .background(.steelBlue)
             .avoidsSafeArea(.none)
@@ -623,31 +623,31 @@ extension ControlDictionary {
             """#),
 
         (TextStyleElementContract.self, #"""
-            Label("Overdue")
+            Text("Overdue")
                 .textColor(.firebrick)
                 .characterSpacing(1.5)
             """#),
 
         (FontElementContract.self, #"""
-            Label("Total")
+            Text("Total")
                 .fontSize(20)
                 .fontAttributes(.bold)
             """#),
 
         (TextAlignmentElementContract.self, #"""
-            Label("In the middle")
+            Text("In the middle")
                 .horizontalTextAlignment(.center)
                 .verticalTextAlignment(.center)
                 .height(80)
             """#),
 
         (LineHeightElementContract.self, #"""
-            Label("A paragraph long enough to wrap onto several lines, read more easily with room between them.")
+            Text("A paragraph long enough to wrap onto several lines, read more easily with room between them.")
                 .lineHeight(1.4)
             """#),
 
         (DecorableTextElementContract.self, #"""
-            Label("Was 20, now 15")
+            Text("Was 20, now 15")
                 .textDecorations(.strikethrough)
             """#),
 
@@ -658,8 +658,8 @@ extension ControlDictionary {
 
         (BorderElementContract.self, #"""
             VStack {
-                Label("Cheese")
-                Label("Aged twelve months")
+                Text("Cheese")
+                Text("Aged twelve months")
             }
             .padding(14)
             .shape(.roundedRectangle(8))
@@ -686,9 +686,9 @@ extension ControlDictionary {
 
                 var page: any Page {
                     NavigationStack($path) {
-                        Label("Inbox")
+                        Text("Inbox")
                     } destination: { message in
-                        Label("Message \(message)")
+                        Text("Message \(message)")
                     }
                     .barTitle("Mail")
                     .barBackgroundColor(.cornflowerBlue)
@@ -700,7 +700,7 @@ extension ControlDictionary {
         (MenuItemElementContract.self, #"""
             @State var saved = false
 
-            Label(saved ? "Saved" : "Draft")
+            Text(saved ? "Saved" : "Draft")
                 .toolbar {
                     ToolbarItem("Save")
                         .icon("save.png")
@@ -713,9 +713,9 @@ extension ControlDictionary {
             @State var path: [String] = []
 
             NavigationStack($path) {
-                Label("General")
+                Text("General")
             } destination: { section in
-                Label(section)
+                Text(section)
             }
             .title("Settings")
             .icon("settings.png")

@@ -26,7 +26,7 @@ final class WinUIBrushTests: XCTestCase {
                 VStack {
                     ZStack {}.background(circle).width(200).height(100)
                     Rectangle().fill(circle).width(200).height(100)
-                    Label("").background(circle).width(200).height(100)
+                    Text("").background(circle).width(200).height(100)
                     Button("").background(circle).width(200).height(100)
                 }
                 .horizontalAlignment(.start)
@@ -34,7 +34,7 @@ final class WinUIBrushTests: XCTestCase {
             }
             let painted: [WinUIView] = [
                 try XCTUnwrap(host.views(WinUIZStackView.self).first), try XCTUnwrap(host.views(WinUIPathView.self).first),
-                try XCTUnwrap(host.views(WinUILabelView.self).first), try XCTUnwrap(host.views(WinUIButtonView.self).first),
+                try XCTUnwrap(host.views(WinUITextView.self).first), try XCTUnwrap(host.views(WinUIButtonView.self).first),
             ]
             for view in painted {
                 XCTAssertEqual(view.pixels(at: [(100, 10), (30, 50)]), [red, blue], "\(type(of: view))")

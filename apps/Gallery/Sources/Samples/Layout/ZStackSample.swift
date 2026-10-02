@@ -49,7 +49,7 @@ private struct Areas: ExampleContent {
             let color: String
 
             var content: some View {
-                Label(text)
+                Text(text)
                     .textColor(.white)
                     .background(Color(color))
                     .padding(10, 6)
@@ -85,7 +85,7 @@ private struct Areas: ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("Resize the window: a proportional area follows the room, an absolute one stays put.")
+        Text("Resize the window: a proportional area follows the room, an absolute one stays put.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -156,7 +156,7 @@ private struct Marker: ContentView {
     let color: String
 
     var content: some View {
-        Label(text)
+        Text(text)
             .fontSize(12)
             .textColor(.white)
             .background(Color(color))

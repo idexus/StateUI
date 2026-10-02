@@ -8,4 +8,4 @@ Button.iconSpacing: cannot read iconSpacing of Button - Android's driver has no 
 Button.lineBreak: ✅
 Button.pressed: ✅
 Button.released: ✅
-Label.text: ✅
+Text.text: ✅

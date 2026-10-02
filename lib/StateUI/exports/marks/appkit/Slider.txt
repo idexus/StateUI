@@ -1,5 +1,4 @@
 # revision 1.1
-Label.text: ✅
 Slider: ✅
 Slider.dragCompleted: cannot drag on Slider - AppKit's driver has no path for it yet
 Slider.dragStarted: cannot drag on Slider - AppKit's driver has no path for it yet
@@ -8,3 +7,4 @@ Slider.maximum: ✅
 Slider.minimum: ✅
 Slider.value: ✅
 Slider.valueChanged: ✅
+Text.text: ✅

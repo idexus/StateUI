@@ -32,11 +32,11 @@ private struct EveryPropertyPage: ContentView {
     @Environment private var page: PageSession
 
     var content: some View {
-        Label("content")
+        Text("content")
             // What it declares for its bar, each saying everything ITS type can
             // say - a page is the only place a toolbar item is covered, there
             // being no control case for one.
-            .titleView { Label("stack title") }
+            .titleView { Text("stack title") }
             .toolbar {
                 ToolbarItem("Save")
                     .accessibilityIdentifier("bar.save")
@@ -131,7 +131,7 @@ private struct KnobPage: ContentView {
 
 /// A view that says nothing about the page it is shown on.
 private struct Plain: ContentView {
-    var content: some View { Label("plain") }
+    var content: some View { Text("plain") }
 }
 
 /// A view that names the page it is shown on, as it arrives.
@@ -140,7 +140,7 @@ private struct Named: ContentView {
     let name: String
 
     var content: some View {
-        Label(name).onCreated { page.title = name }
+        Text(name).onCreated { page.title = name }
     }
 }
 
@@ -247,8 +247,8 @@ final class PageTests: XCTestCase {
     /// the page in the next message.
     func testAPlainViewOnAPageFollowsItsParent() {
         let renders = Renders()
-        renders.settled(Node.page(Label("one")))
-        let second = renders.settled(Node.page(Label("two")))
+        renders.settled(Node.page(Text("one")))
+        let second = renders.settled(Node.page(Text("two")))
 
         XCTAssertEqual(second.children.first?.props[.text], .string("two"))
     }
@@ -259,7 +259,7 @@ final class PageTests: XCTestCase {
     func testWhatIsWrittenOnAViewStaysOnTheView() {
         let written: [any View] = [
             Plain().background(.red),
-            Label("plain").background(.red),
+            Text("plain").background(.red),
         ]
 
         for view in written {
@@ -477,7 +477,7 @@ final class PageTests: XCTestCase {
     func testEveryPageSlotRidesAsItsOwnNode() {
         let page = Self.arrived(EveryPropertyPage())
 
-        XCTAssertEqual(page.children.map { $0.type.name }, ["Label"], "the content alone")
+        XCTAssertEqual(page.children.map { $0.type.name }, ["Text"], "the content alone")
         XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarItems", "MenuBar"])
     }
 
@@ -592,7 +592,7 @@ final class PageTests: XCTestCase {
             let arrivals: Binding<Int>
 
             var content: some View {
-                Label("\(page.phase)")
+                Text("\(page.phase)")
                     .onChanged(page.phase) {
                         if page.phase == .appearing { arrivals.wrappedValue += 1 }
                     }
@@ -642,7 +642,7 @@ final class PageTests: XCTestCase {
             "padding": .numbers([4, 8, 12, 16]), "title": .string("Everything"),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
-        XCTAssertEqual(page.children.map(\.type), [.label])
+        XCTAssertEqual(page.children.map(\.type), [.text])
         let content = page.children[0]
         XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarItems, .menuBar])
 
@@ -684,6 +684,6 @@ private struct Created: ContentView {
     @Binding var log: [String]
 
     var content: some View {
-        Label(name).onCreated { log.append("created \(name)") }
+        Text(name).onCreated { log.append("created \(name)") }
     }
 }

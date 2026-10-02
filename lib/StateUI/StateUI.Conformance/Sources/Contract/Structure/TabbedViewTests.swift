@@ -12,12 +12,12 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("standsAloneShowingItsFirstTab", proves: [
-                Covered(TabbedViewContract.self), Covered(ViewContract.frameChanged, on: "Label"),
+                Covered(TabbedViewContract.self), Covered(ViewContract.frameChanged, on: "Text"),
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     TabbedView([0, 1]) { tab in
-                        tab == 0 ? Label("Tab 0").onEvent(ViewContract.frameChanged) { frames.values.append($0) } : Label("Tab 1")
+                        tab == 0 ? Text("Tab 0").onEvent(ViewContract.frameChanged) { frames.values.append($0) } : Text("Tab 1")
                     }
                 }
                 s.settle { Aspects.laidOut(frames) }
@@ -27,7 +27,7 @@
                 Covered(TabbedViewContract.currentPage),
             ]) { s in
                 s.start {
-                    TabbedView([0, 1]) { tab in Label("Tab \(tab)").id("tab\(tab)") }
+                    TabbedView([0, 1]) { tab in Text("Tab \(tab)").id("tab\(tab)") }
                         .selection(State(wrappedValue: 1).projectedValue)
                 }
                 let tabs = try s.element(ofType: TabbedViewContract.nodeType)
@@ -40,7 +40,7 @@
                 Covered(TabbedViewContract.currentPage), Covered(TabbedViewContract.currentPageChanged),
             ]) { s in
                 let tab = State(wrappedValue: 0)
-                s.start { TabbedView([0, 1]) { tab in Label("Tab \(tab)") }.selection(tab.projectedValue) }
+                s.start { TabbedView([0, 1]) { tab in Text("Tab \(tab)") }.selection(tab.projectedValue) }
                 let tabs = try s.element(ofType: TabbedViewContract.nodeType)
 
                 try s.perform(.choose(1), on: tabs)

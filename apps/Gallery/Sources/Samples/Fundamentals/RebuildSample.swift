@@ -29,12 +29,12 @@ struct RebuildSample: SampleContent, ExampleContent {
 
             var content: some View {
                 VStack {
-                    Label("\\(name) is \\(value)")
+                    Text("\\(name) is \\(value)")
 
                     // WHY THIS VIEW IS BEING DESCRIBED, on the screen it is
                     // about: the view's name, how many times, and the state
                     // this one is for.
-                    Label(debugInfo())
+                    Text(debugInfo())
 
                     Passenger()
                 }
@@ -45,7 +45,7 @@ struct RebuildSample: SampleContent, ExampleContent {
             // Reads nothing and is built with nothing, so every rebuild of the
             // panel carries it - it keeps saying `1 build, first time`.
             var content: some View {
-                Label(debugInfo())
+                Text(debugInfo())
             }
         }
         """
@@ -74,26 +74,26 @@ struct RebuildSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Every view can say why it is being described. `debugInfo()` "
+            Text("Every view can say why it is being described. `debugInfo()` "
                 + "answers the view's own name, how many times it has been "
                 + "described, and which piece of state THIS description is "
                 + "for - named by the property the author declared it as.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Change one of the two values. The panel that borrowed it "
+            Text("Change one of the two values. The panel that borrowed it "
                 + "names it and its count climbs; the other panel stands still, "
                 + "because a render rebuilds only the views whose reads moved.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The small line inside each panel reads nothing and is "
+            Text("The small line inside each panel reads nothing and is "
                 + "built with nothing: it is carried through every rebuild "
                 + "and keeps saying `1 build, first time`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Put it in a `Label` on the screen being worked on. Reading "
+            Text("Put it in a `Text` on the screen being worked on. Reading "
                 + "it causes no render of its own.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -111,12 +111,12 @@ private struct RebuildPanel: ContentView {
     var content: some View {
         ZStack {
             VStack {
-                Label("\(name) is \(value)")
+                Text("\(name) is \(value)")
                     .fontSize(15)
                     .fontAttributes(.bold)
                     .textColor(Palette.text)
 
-                Label(debugInfo())
+                Text(debugInfo())
                     .fontSize(13)
                     .textColor(Palette.accent)
 
@@ -137,7 +137,7 @@ private struct RebuildPanel: ContentView {
 /// panel above it carries it: its reading stays at the first build.
 private struct RebuildPassenger: ContentView {
     var content: some View {
-        Label(debugInfo())
+        Text(debugInfo())
             .fontSize(12)
             .textColor(Palette.subtle)
     }

@@ -52,7 +52,7 @@ struct SamplePage: ContentView {
     private var scrolling: ScrollView {
         ScrollView {
             VStack {
-                Label(sample.summary)
+                Text(sample.summary)
                     .fontSize(15)
                     .textColor(Palette.subtle)
 

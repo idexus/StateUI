@@ -31,7 +31,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
             // The two readings, off ONE journey: `destination` is where the
             // value is going and `value` where it has got to.
-            Label($width.journey.convert {
+            Text($width.journey.convert {
                 "going to \\(Int($0.destination)) — showing \\(Int($0.value))"
             })
 
@@ -65,7 +65,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack {
-                Label("")
+                Text("")
             }
             .style("Card")
             .width($width)
@@ -75,13 +75,13 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .strokeWidth(0)
             .horizontalAlignment(.start)
 
-            Label()
+            Text()
                 .text($width.journey.convert {
                     "going to \(Int($0.destination)) — showing \(Int($0.value))"
                 })
                 .fontSize(17)
 
-            Label("how far apart the two readings are")
+            Text("how far apart the two readings are")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -89,7 +89,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             // is going and where it is. It is widest the moment a button is
             // pressed and nought when the bar arrives.
             ZStack {
-                Label("")
+                Text("")
             }
             .style("Card")
             .width($width.journey.convert { abs($0.destination - $0.value) })
@@ -132,14 +132,14 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("One state, two readings. `width` is 300 the instant Grow is "
+            Text("One state, two readings. `width` is 300 the instant Grow is "
                 + "pressed; `$width.journey.value` is what the bar is actually showing this "
                 + "frame. The grey bar under the caption is the distance between them, "
                 + "widest at the start and nought on arrival.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both numbers, and the grey bar's width, are CONVERSIONS of the one "
+            Text("Both numbers, and the grey bar's width, are CONVERSIONS of the one "
                 + "state: `$width.journey.convert { … }` reads `destination` and `value` off it "
                 + "and the host works the answer out on its own frames. Nothing on this "
                 + "page reads `width` in a body, so a 1600ms journey costs no renders at "
@@ -148,14 +148,14 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Stop leaves the value where it stands and brings the destination to "
+            Text("Stop leaves the value where it stands and brings the destination to "
                 + "meet it, so the two readings agree again and the grey bar closes. "
                 + "Press Grow and then Stop half way: the caption's first number "
                 + "becomes the second.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("There is no cadence to choose. A conversion is worked out once a "
+            Text("There is no cadence to choose. A conversion is worked out once a "
                 + "frame, and what it answers is another driven state - so asking for "
                 + "a reading sixty times a second costs what asking for one twice a "
                 + "second would.")

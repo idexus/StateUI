@@ -115,7 +115,7 @@ final class PumpTests: XCTestCase {
         let runtime = TurnRuntime()
         runtime.pump.turn()
         runtime.expectsDrift = true
-        runtime.tree.root?.forgetForTesting { $0.type == .label }
+        runtime.tree.root?.forgetForTesting { $0.type == .text }
 
         runtime.pump.dispatch(runtime.add)
 
@@ -137,7 +137,7 @@ private struct CountingPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("count \(count)")
+            Text("count \(count)")
             Button("Add")
                 .onClicked { count += 1 }
             Button("Add and hide")
@@ -210,7 +210,7 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
     }
 
     var words: String {
-        tree.root?.first(type: .label)?.value(.text)?.string ?? ""
+        tree.root?.first(type: .text)?.value(.text)?.string ?? ""
     }
 
     var add: Int32 { buttons[0] }
@@ -249,7 +249,7 @@ private final class HeldNative: NativeElement {
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
-        if element.type == .label { runtime.applied() }
+        if element.type == .text { runtime.applied() }
     }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}

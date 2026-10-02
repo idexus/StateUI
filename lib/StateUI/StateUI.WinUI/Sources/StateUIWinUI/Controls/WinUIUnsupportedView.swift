@@ -6,7 +6,7 @@
 
 /// The view for a control this host does not present yet: its name in red, where it belongs.
 @MainActor
-final class WinUIUnsupportedView: WinUITextView {
+final class WinUIUnsupportedView: WinUITextualView {
     init(_ type: NodeType) {
         super.init()
         setText("WinUI: unsupported \(type.name)")

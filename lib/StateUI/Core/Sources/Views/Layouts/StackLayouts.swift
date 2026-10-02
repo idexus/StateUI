@@ -4,8 +4,8 @@
 /// Stacks its children top to bottom, each as tall as it asks to be.
 ///
 ///     VStack {
-///         Label("One")
-///         Label("Two")
+///         Text("One")
+///         Text("Two")
 ///     }
 ///     .spacing(12)
 ///     .padding(24)
@@ -41,7 +41,7 @@ public struct VStack: StackBase {
 ///
 ///     HStack {
 ///         Image("nav_home.png")
-///         Label("Home")
+///         Text("Home")
 ///     }
 ///     .spacing(8)
 ///

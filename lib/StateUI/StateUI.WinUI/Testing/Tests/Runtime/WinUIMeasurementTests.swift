@@ -9,14 +9,14 @@ import XCTest
 
 /// Words `depth` grids deep, each grid with words and a stack of its own beside them.
 private func nest(_ depth: Int, _ words: String) -> Node {
-    guard depth > 0 else { return Label(words).margin(2).body }
+    guard depth > 0 else { return Text(words).margin(2).body }
 
     return Grid {
         ModifiedContent(node: nest(depth - 1, words))
-        Label("beside \(depth)").gridRow(1)
+        Text("beside \(depth)").gridRow(1)
         VStack {
-            Label("a \(depth)")
-            Label("b \(depth)")
+            Text("a \(depth)")
+            Text("b \(depth)")
         }
         .gridColumn(1)
     }
@@ -38,7 +38,7 @@ final class WinUIMeasurementTests: XCTestCase {
 
             let before = WinUILayoutView.sizings
             words.wrappedValue = "words a good deal longer"
-            host.settle { host.views(WinUILabelView.self).contains { $0.text == "words a good deal longer" } }
+            host.settle { host.views(WinUITextView.self).contains { $0.text == "words a good deal longer" } }
             host.layOut()
 
             XCTAssertLessThanOrEqual(WinUILayoutView.sizings - before, 60, "a few for each grid above it, none beside")

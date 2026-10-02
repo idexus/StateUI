@@ -37,7 +37,7 @@ final class PatchShapeTests: XCTestCase {
             props["characterSpacing"] = .number(1.5)
         }
 
-        return Node(type: "Label", props: props)
+        return Node(type: "Text", props: props)
     }
 
     /// The window of that page, with the tree under it.
@@ -135,7 +135,7 @@ final class PatchShapeTests: XCTestCase {
             props: ["title": .string("StateUI")],
             children: [
                 Node(type: "Page", props: ["title": .string("Home")], children: [
-                    Node(type: "Label", props: ["text": .string("one")]),
+                    Node(type: "Text", props: ["text": .string("one")]),
                 ]),
             ],
             events: [

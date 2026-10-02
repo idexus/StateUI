@@ -51,26 +51,26 @@
         let others: [any View] = beside
         let stack = {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Label("Page")] + others }
-            } destination: { _ in Label("Pushed") }
+                VStack { [Text("Page")] + others }
+            } destination: { _ in Text("Pushed") }
         }
         switch element {
         case "SplitView":
             return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
-                Label("Sidebar")
+                Text("Sidebar")
             } detail: { stack() })
         case "TabbedView":
             return dressing.wear(TabbedView([0, 1]) { tab in
                 if tab == 0 {
                     stack()
                 } else {
-                    Label("Other")
+                    Text("Other")
                 }
             })
         case "ModalStack":
             return dressing.wear(ModalStack(State(wrappedValue: [Int]()).projectedValue) {
                 stack()
-            } destination: { _ in Label("Sheet") })
+            } destination: { _ in Text("Sheet") })
         default:
             return Specimens.page(element, worn, beside: beside)
         }

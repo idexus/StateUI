@@ -17,7 +17,6 @@ Grid.scaleX: ✓ read scaleX of Grid: the host's own transform, checked against 
 HStack.rotationX: ✓ read rotationX of HStack: the host's own transform, checked against the layer it composed itself
 Image.pivotX: ✓ read pivotX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.automationExcludedWithChildren: ✅
-Label.accessibilityHint: ✅
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
@@ -46,6 +45,7 @@ SearchField.translationY: ✓ read translationY of SearchField: the host's own t
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform, checked against the layer it composed itself
 Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.pivotX: ✓ read pivotX of Switch: the host's own transform, checked against the layer it composed itself
+Text.accessibilityHint: ✅
 TextEditor.automationExcludedWithChildren: ✅
 TextField.accessibilityHint: ✅
 TimePicker.focus: ✅

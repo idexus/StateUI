@@ -33,9 +33,9 @@ struct InteropEventsSample: SampleContent, ExampleContent {
             // this closure.
             DebugInfoLabel()
 
-            Label("battery: \\(battery)")
+            Text("battery: \\(battery)")
 
-            Label(log.isEmpty
+            Text(log.isEmpty
                 ? "Plug or unplug the power."
                 : log.suffix(4).joined(separator: "\\n"))
         }
@@ -378,10 +378,10 @@ struct InteropEventsSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("battery: \(battery)")
+            Text("battery: \(battery)")
                 .fontSize(17)
 
-            Label(log.isEmpty
+            Text(log.isEmpty
                 ? "Plug or unplug the power."
                 : log.suffix(4).joined(separator: "\n"))
                 .fontSize(13)
@@ -405,7 +405,7 @@ struct InteropEventsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The host calls `StateUIEvents.raise(event, values)` when the platform "
+            Text("The host calls `StateUIEvents.raise(event, values)` when the platform "
                 + "reports something, from any thread. Every `HostEvents.on` subscription "
                 + "to that member runs like a control's handler: on the library's "
                 + "executor, handed the values the contract declares, free to await and to "
@@ -415,14 +415,14 @@ struct InteropEventsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The subscriptions are made in `.onCreated` and cancelled in "
+            Text("The subscriptions are made in `.onCreated` and cancelled in "
                 + "`.onDestroying`, so the page listens while it is in the tree. A raise "
                 + "nobody hears is an ordinary answer, so the host wires its sources "
                 + "unconditionally.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A desktop with no battery reports nothing at all, and that is the "
+            Text("A desktop with no battery reports nothing at all, and that is the "
                 + "honest answer rather than a failure: this page then keeps saying it "
                 + "has not heard.")
                 .fontSize(12)

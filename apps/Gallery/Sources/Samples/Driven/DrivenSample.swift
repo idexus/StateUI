@@ -54,10 +54,10 @@ struct DrivenSample: SampleContent, ExampleContent {
             // A CONVERSION of the same driven value: the host works the words
             // out on its own frames, from where the marker HAS GOT TO, and
             // nothing here reads anything.
-            Label($offset.journey.convert { "\\(Int(($0.value / 240 * 100).rounded()))%" })
+            Text($offset.journey.convert { "\\(Int(($0.value / 240 * 100).rounded()))%" })
 
             // Off state: written twice a page, and described both times.
-            Label(law)
+            Text(law)
 
             HStack {
                 Button("Empty").onClicked { go(to: 0) }
@@ -116,13 +116,13 @@ struct DrivenSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(12))
             .horizontalAlignment(.center)
 
-            Label()
+            Text()
                 .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                 .fontSize(28)
                 .fontAttributes(.bold)
                 .horizontalAlignment(.center)
 
-            Label("Sent under \(law)")
+            Text("Sent under \(law)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalAlignment(.center)
@@ -142,7 +142,7 @@ struct DrivenSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The reading at the top says how many times this closure has been "
+            Text("The reading at the top says how many times this closure has been "
                 + "described and which value for. Press the buttons and watch the marker "
                 + "cross, the colour change and the percentage count up: the count does "
                 + "not move. Throw the switch, which changes one caption, and it goes up "
@@ -152,7 +152,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A value the host holds is worn by a property the way a plain value is: "
+            Text("A value the host holds is worn by a property the way a plain value is: "
                 + "`.translationX($offset)`, `.color($tint)`. Send it somewhere from a "
                 + "handler - `offset = 240`, under `$offset.journey.motion` - and the host "
                 + "walks the property there on the display's own frames, which the tree "
@@ -162,7 +162,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`$offset.journey` holds three things at once: `offset` itself is where "
+            Text("`$offset.journey` holds three things at once: `offset` itself is where "
                 + "the value is going, `$offset.journey.value` where it is, and "
                 + "`$offset.journey.velocity` how fast. Writing the state asks the host for "
                 + "a journey; writing `$offset.journey.value` puts it there at once, which "
@@ -173,7 +173,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A conversion rewrites one value as another; an engine is for arithmetic "
+            Text("A conversion rewrites one value as another; an engine is for arithmetic "
                 + "that keeps state of its own between frames, which Engine shows. The "
                 + "marker moves rather than resizing: a translation is a drawing field and "
                 + "costs nothing, while a width written per frame measures the layout again "

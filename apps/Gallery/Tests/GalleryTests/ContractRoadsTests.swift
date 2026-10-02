@@ -57,8 +57,8 @@ final class ContractRoadsTests: XCTestCase {
     private static let roads = [
         Road(
             name: "a property set by its token",
-            removed: #"_ = Label("Hi").setValue(Prop("fontSize"), .number(20))"#,
-            contract: #"_ = Label("Hi").setValue(FontElementContract.fontSize, 20)"#),
+            removed: #"_ = Text("Hi").setValue(Prop("fontSize"), .number(20))"#,
+            contract: #"_ = Text("Hi").setValue(FontElementContract.fontSize, 20)"#),
         Road(
             name: "a property driven from a state by its token",
             removed: """
@@ -133,8 +133,8 @@ final class ContractRoadsTests: XCTestCase {
                 """),
         Road(
             name: "the withdrawn SwipeView",
-            removed: #"_ = SwipeView { Label("Row") }"#,
-            contract: #"_ = Label("Row").onSwiped { _ in }"#),
+            removed: #"_ = SwipeView { Text("Row") }"#,
+            contract: #"_ = Text("Row").onSwiped { _ in }"#),
         Road(
             name: "the withdrawn SwipeAction",
             removed: #"_ = SwipeAction("Delete")"#,
@@ -145,8 +145,8 @@ final class ContractRoadsTests: XCTestCase {
             contract: #"_ = PersistentKey("notes.draft", of: String.self)"#),
         Road(
             name: "the withdrawn RefreshView",
-            removed: #"_ = RefreshView { ScrollView { Label("Rows") } }"#,
-            contract: #"_ = ScrollView { Label("Rows") }"#),
+            removed: #"_ = RefreshView { ScrollView { Text("Rows") } }"#,
+            contract: #"_ = ScrollView { Text("Rows") }"#),
         Road(
             name: "a button's withdrawn borderColor",
             removed: ##"_ = Button("Save").borderColor(Color("#888888"))"##,
@@ -169,20 +169,20 @@ final class ContractRoadsTests: XCTestCase {
             contract: "_ = PositionIndicator().count(3)"),
         Road(
             name: "the withdrawn Border",
-            removed: ##"_ = Border { Label("Card") }.stroke(Color("#888888"))"##,
-            contract: ##"_ = ZStack { Label("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),
+            removed: ##"_ = Border { Text("Card") }.stroke(Color("#888888"))"##,
+            contract: ##"_ = ZStack { Text("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),
         Road(
             name: "the withdrawn AbsoluteLayout",
-            removed: #"_ = AbsoluteLayout { Label("Corner") }"#,
-            contract: #"_ = ZStack { Label("Corner") }"#),
+            removed: #"_ = AbsoluteLayout { Text("Corner") }"#,
+            contract: #"_ = ZStack { Text("Corner") }"#),
         Road(
             name: "the withdrawn absolute bounds",
-            removed: #"_ = Label("Corner").absoluteLayoutBounds(Rect(0, 0, 120, 40))"#,
-            contract: #"_ = Label("Corner").area(.absolute(0, 0, 120, 40))"#),
+            removed: #"_ = Text("Corner").absoluteLayoutBounds(Rect(0, 0, 120, 40))"#,
+            contract: #"_ = Text("Corner").area(.absolute(0, 0, 120, 40))"#),
         Road(
             name: "the withdrawn proportions",
-            removed: #"_ = Label("Half").absoluteLayoutProportions(.all)"#,
-            contract: #"_ = Label("Half").area(.proportional(0.5, 0, 0.5, 1))"#),
+            removed: #"_ = Text("Half").absoluteLayoutProportions(.all)"#,
+            contract: #"_ = Text("Half").area(.proportional(0.5, 0, 0.5, 1))"#),
         Road(
             name: "a visual state by a name of the author's own",
             removed: #"_ = Button("Save").visualState(VisualState("Hovered")) { $0.opacity(0.5) }"#,
@@ -190,63 +190,63 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "the window's one overlay",
             removed: "WindowSession().overlay = nil",
-            contract: #"_ = Label("Notes").overlays { Label("Offline") }"#),
+            contract: #"_ = Text("Notes").overlays { Text("Offline") }"#),
         Road(
             name: "a window's overlays kept by key in its session",
             removed: #"WindowSession().overlays[OverlayKey("notice")] = nil"#,
-            contract: #"_ = Label("Notes").overlays { Label("Offline") }"#),
+            contract: #"_ = Text("Notes").overlays { Text("Offline") }"#),
         Road(
             name: "a window's modal stack written into its session",
             removed: #"WindowSession().modalStack = nil"#,
-            contract: #"_ = ModalStack(State(wrappedValue: [Int]()).projectedValue) { Label("Home") } destination: { _ in Label("Sheet") }"#),
+            contract: #"_ = ModalStack(State(wrappedValue: [Int]()).projectedValue) { Text("Home") } destination: { _ in Text("Sheet") }"#),
         Road(
             name: "an action standing in a stack",
             removed: #"_ = VStack { ToolbarItem("Save") }"#,
-            contract: #"_ = VStack { Label("Notes") }.toolbar { ToolbarItem("Save") }"#),
+            contract: #"_ = VStack { Text("Notes") }.toolbar { ToolbarItem("Save") }"#),
         Road(
             name: "an arrangement of pages standing in a stack",
-            removed: #"_ = VStack { NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Label("Home") } destination: { _ in Label("Next") } }"#,
-            contract: #"_ = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { VStack { Label("Home") } } destination: { _ in Label("Next") }"#),
+            removed: #"_ = VStack { NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Home") } destination: { _ in Text("Next") } }"#,
+            contract: #"_ = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { VStack { Text("Home") } } destination: { _ in Text("Next") }"#),
         Road(
             name: "a run of text standing in a stack",
             removed: #"_ = VStack { TextSpan("Hi") }"#,
-            contract: #"_ = VStack { Label().spans { TextSpan("Hi") } }"#),
+            contract: #"_ = VStack { Text().spans { TextSpan("Hi") } }"#),
         Road(
             name: "a page position that may show no page",
-            removed: "struct Lone: Window { var page: any Page { if Bool.random() { Label(\"a\") } } }",
-            contract: "struct Lone: Window { var page: any Page { if Bool.random() { Label(\"a\") } else { Label(\"b\") } } }"),
+            removed: "struct Lone: Window { var page: any Page { if Bool.random() { Text(\"a\") } } }",
+            contract: "struct Lone: Window { var page: any Page { if Bool.random() { Text(\"a\") } else { Text(\"b\") } } }"),
         Road(
             name: "a composed view's content as an existential",
-            removed: "struct Old: ContentView { var content: any View { Label(\"a\") } }",
-            contract: "struct New: ContentView { var content: some View { Label(\"a\") } }"),
+            removed: "struct Old: ContentView { var content: any View { Text(\"a\") } }",
+            contract: "struct New: ContentView { var content: some View { Text(\"a\") } }"),
         Road(
             name: "two views in the title's place",
-            removed: #"_ = Label("Notes").titleView { Button("Back"); Button("Next") }"#,
-            contract: #"_ = Label("Notes").titleView { HStack { Button("Back"); Button("Next") } }"#),
+            removed: #"_ = Text("Notes").titleView { Button("Back"); Button("Next") }"#,
+            contract: #"_ = Text("Notes").titleView { HStack { Button("Back"); Button("Next") } }"#),
         Road(
             name: "two views as a composed view's content",
-            removed: "struct Pair: ContentView { var content: some View { Label(\"a\"); Label(\"b\") } }",
-            contract: "struct Pair: ContentView { var content: some View { VStack { Label(\"a\"); Label(\"b\") } } }"),
+            removed: "struct Pair: ContentView { var content: some View { Text(\"a\"); Text(\"b\") } }",
+            contract: "struct Pair: ContentView { var content: some View { VStack { Text(\"a\"); Text(\"b\") } } }"),
         Road(
             name: "a view standing among a label's runs",
-            removed: #"_ = Label().spans { Label("Hi") }"#,
-            contract: #"_ = Label().spans { TextSpan("Hi") }"#),
+            removed: #"_ = Text().spans { Text("Hi") }"#,
+            contract: #"_ = Text().spans { TextSpan("Hi") }"#),
         Road(
             name: "a view standing among a map's pins",
-            removed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Label("Castle") }"#,
+            removed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Text("Castle") }"#,
             contract: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Pin("Castle") }"#),
         Road(
             name: "a window's title bar written into its session",
             removed: #"WindowSession().titleBar = nil"#,
-            contract: #"_ = SplitView(State(wrappedValue: true).projectedValue) { Label("Menu") } detail: { Label("Home") }.barTitle("Notes")"#),
+            contract: #"_ = SplitView(State(wrappedValue: true).projectedValue) { Text("Menu") } detail: { Text("Home") }.barTitle("Notes")"#),
         Road(
             name: "the withdrawn TitleBar element",
             removed: #"_ = TitleBar("Notes").subtitle("Drafts")"#,
-            contract: #"_ = ModalStack(State(wrappedValue: [Int]()).projectedValue) { Label("Home") } destination: { _ in Label("Sheet") }.barSubtitle("Drafts")"#),
+            contract: #"_ = ModalStack(State(wrappedValue: [Int]()).projectedValue) { Text("Home") } destination: { _ in Text("Sheet") }.barSubtitle("Drafts")"#),
         Road(
             name: "a title bar's withdrawn slot",
             removed: "_ = Node(contract: TrailingContentContract.self)",
-            contract: #"_ = Label("Notes").toolbar { ToolbarItem("Account") }"#),
+            contract: #"_ = Text("Notes").toolbar { ToolbarItem("Account") }"#),
         Road(
             name: "a stack's own bar foreground",
             removed: "_ = NavigationStackContract.barForegroundColor",
@@ -254,27 +254,27 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "a page's actions written into its session",
             removed: #"PageSession().toolbarItems = [ToolbarItem("Save")]"#,
-            contract: #"_ = Label("Notes").toolbar { ToolbarItem("Save") }"#),
+            contract: #"_ = Text("Notes").toolbar { ToolbarItem("Save") }"#),
         Road(
             name: "a page's title view written into its session",
-            removed: #"PageSession().titleView = Label("Search")"#,
-            contract: #"_ = Label("Notes").titleView { Label("Search") }"#),
+            removed: #"PageSession().titleView = Text("Search")"#,
+            contract: #"_ = Text("Notes").titleView { Text("Search") }"#),
         Road(
             name: "a page's menus written into its session",
             removed: #"PageSession().menuBar = [Menu("File") { MenuItem("New") }]"#,
-            contract: #"_ = Label("Notes").menuBar { Menu("File") { MenuItem("New") } }"#),
+            contract: #"_ = Text("Notes").menuBar { Menu("File") { MenuItem("New") } }"#),
         Road(
             name: "a view standing on the menu bar",
-            removed: #"_ = Label("Notes").menuBar { Label("File") }"#,
-            contract: #"_ = Label("Notes").menuBar { Menu("File") { MenuItem("New") } }"#),
+            removed: #"_ = Text("Notes").menuBar { Text("File") }"#,
+            contract: #"_ = Text("Notes").menuBar { Menu("File") { MenuItem("New") } }"#),
         Road(
             name: "a view standing in a menu",
-            removed: #"_ = Menu("File") { Label("New") }"#,
+            removed: #"_ = Menu("File") { Text("New") }"#,
             contract: #"_ = Menu("File") { MenuItem("New") }"#),
         Road(
             name: "an item's withdrawn priority",
             removed: #"_ = ToolbarItem("Save").priority(1)"#,
-            contract: #"_ = Label("Notes").toolbar(order: 1) { ToolbarItem("Save") }"#),
+            contract: #"_ = Text("Notes").toolbar(order: 1) { ToolbarItem("Save") }"#),
         Road(
             name: "the withdrawn resting state",
             removed: "_ = RadioButton.restingVisualState",
@@ -289,8 +289,8 @@ final class ContractRoadsTests: XCTestCase {
             contract: #"_ = Button("Save").visualState(.focused) { $0.opacity(1) }"#),
         Road(
             name: "the withdrawn selected state",
-            removed: #"_ = Label("Row").visualState(.selected) { $0.opacity(0.5) }"#,
-            contract: #"_ = Label("Row").visualState(.pointerOver) { $0.opacity(0.5) }"#),
+            removed: #"_ = Text("Row").visualState(.selected) { $0.opacity(0.5) }"#,
+            contract: #"_ = Text("Row").visualState(.pointerOver) { $0.opacity(0.5) }"#),
         Road(
             name: "the host's withdrawn visual state report",
             removed: #"_ = Button("Save").onEvent(VisualElementContract.visualStateChanged) { _ in }"#,
@@ -303,6 +303,14 @@ final class ContractRoadsTests: XCTestCase {
             name: "the withdrawn Setters node",
             removed: "_ = Node(contract: SettersContract.self)",
             contract: #"_ = Button("Save").visualState(.disabled) { $0.opacity(0.5) }"#),
+        Road(
+            name: "words shown as a Label",
+            removed: #"_ = Label("Total")"#,
+            contract: #"_ = Text("Total")"#),
+        Road(
+            name: "the Label contract",
+            removed: "_ = LabelContract.maximumLines",
+            contract: "_ = TextContract.maximumLines"),
     ]
 
     func testEveryUntypedRoadIsClosedAndItsContractRoadOpen() throws {

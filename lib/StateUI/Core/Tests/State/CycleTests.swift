@@ -31,7 +31,7 @@ private struct Doubler: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("doubler").engine(following: $input) { cycle in
+        Text("doubler").engine(following: $input) { cycle in
             ran.note("doubler", cycle)
             output = input * 2
         }
@@ -46,7 +46,7 @@ private struct Ordered: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("ordered")
+        Text("ordered")
             .engine(following: $value, priority: 10) { cycle in ran.note("late", cycle) }
             .engine(following: $value, priority: 1) { cycle in ran.note("early", cycle) }
     }
@@ -64,7 +64,7 @@ private struct Overhearing: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("overhearing").engine { cycle in
+        Text("overhearing").engine { cycle in
             ran.note("overhearing", cycle)
             out = mode == .a ? level : -level
             return .wait
@@ -79,7 +79,7 @@ private struct Ticking: ContentView {
     let stopAfter: Int
 
     var content: some View {
-        Label("ticking").engine { cycle in
+        Text("ticking").engine { cycle in
             ran.note("ticking", cycle)
             count += 1
             return Int(count) >= stopAfter ? .wait : .again
@@ -96,7 +96,7 @@ private struct Pairing: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("pairing").engine(following: $left, $right) { cycle in
+        Text("pairing").engine(following: $left, $right) { cycle in
             ran.note("pairing", cycle)
             sum = left + right
         }
@@ -114,7 +114,7 @@ private struct Stepping: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("stepping").engine(following: $step) { cycle in
+        Text("stepping").engine(following: $step) { cycle in
             ran.note("stepping \(step)", cycle)
 
             switch step {
@@ -139,7 +139,7 @@ private struct Selfish: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("selfish").engine(following: $mark) { cycle in
+        Text("selfish").engine(following: $mark) { cycle in
             ran.note("selfish", cycle)
             mark += 1
         }
@@ -156,7 +156,7 @@ private struct Relaying: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("relaying")
+        Text("relaying")
             .engine(following: $relay, priority: -1) { cycle in
                 ran.note("before", cycle)
                 early = relay
@@ -182,7 +182,7 @@ private struct Serving: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("\(shown)").engine(following: $shown, $quiet) { cycle in
+        Text("\(shown)").engine(following: $shown, $quiet) { cycle in
             ran.note("serving", cycle)
             worn = Double(shown + quiet)
         }
@@ -200,7 +200,7 @@ private struct Quiet: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("\(shown)").engine(following: $idle) { cycle in
+        Text("\(shown)").engine(following: $idle) { cycle in
             ran.note("quiet", cycle)
             output = hidden
         }
@@ -217,7 +217,7 @@ private struct Choosing: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("choosing").engine(following: byFirst ? $first : $second) { cycle in
+        Text("choosing").engine(following: byFirst ? $first : $second) { cycle in
             ran.note("choosing", cycle)
         }
     }
@@ -240,7 +240,7 @@ private struct Borrowing: ContentView {
     let ran: Ran
 
     var content: some View {
-        Label("borrowing").engine(following: $step) { cycle in
+        Text("borrowing").engine(following: $step) { cycle in
             ran.note("borrowing \(step)", cycle)
         }
     }
@@ -354,7 +354,7 @@ final class CycleTests: XCTestCase {
         let shown = Renders()
         let said = State(wrappedValue: "")
 
-        shown.render(VStack { TextField(said.projectedValue); Label(said.wrappedValue) }.body)
+        shown.render(VStack { TextField(said.projectedValue); Text(said.wrappedValue) }.body)
         Renderer.shared.clearInvalidation()
 
         typed(said.number, "Ada")
@@ -749,7 +749,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
-        renders.render(Label("room").frame(room.projectedValue).engine(following: room.projectedValue) { cycle in
+        renders.render(Text("room").frame(room.projectedValue).engine(following: room.projectedValue) { cycle in
             ran.note("room", cycle)
         }.body)
         board.cycle(now: 0, reducesMotion: false)
@@ -774,7 +774,7 @@ final class CycleTests: XCTestCase {
         let source = State(wrappedValue: 1.0)
         let words = source.projectedValue.convert { "\(Int($0))" }
 
-        renders.render(stack([Slider(source.projectedValue).body, Label().text(words).body]))
+        renders.render(stack([Slider(source.projectedValue).body, Text().text(words).body]))
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(words.wrappedValue, "1")
@@ -924,7 +924,7 @@ final class CycleTests: XCTestCase {
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1)
 
-        renders.render(VStack { Label("gone") }.body)
+        renders.render(VStack { Text("gone") }.body)
 
         view.input = 9
         board.cycle(now: 32, reducesMotion: false)

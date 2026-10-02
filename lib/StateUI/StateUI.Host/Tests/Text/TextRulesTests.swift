@@ -15,13 +15,13 @@ final class TextRulesTests: XCTestCase {
             .text: .string("Save"), .textCase: TextCase.uppercase.propValue, .fontSize: .number(17),
             .textColor: Color(red: 255, green: 0, blue: 0).propValue,
         ]
-        let changed = ElementValues<LabelContract>(changed: [.text, .fontSize], reading: { held[$0] })
+        let changed = ElementValues<TextContract>(changed: [.text, .fontSize], reading: { held[$0] })
         XCTAssertEqual(TextMembers.words(changed), "SAVE")
         let look = try XCTUnwrap(TextMembers.look(changed))
         XCTAssertEqual(look.size, 17)
         XCTAssertEqual(look.color, Color(red: 255, green: 0, blue: 0).propValue)
 
-        let still = ElementValues<LabelContract>(changed: [.padding], reading: { held[$0] })
+        let still = ElementValues<TextContract>(changed: [.padding], reading: { held[$0] })
         XCTAssertNil(TextMembers.words(still))
         XCTAssertNil(TextMembers.look(still))
         XCTAssertEqual(TextMembers.look(of: still), look, "the whole look, changed or not")

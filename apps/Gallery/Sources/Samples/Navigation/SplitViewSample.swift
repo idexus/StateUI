@@ -79,7 +79,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
 
     var content: some View {
         VStack {
-            Label("Open the menu: every row in it is a view.")
+            Text("Open the menu: every row in it is a view.")
                 .fontSize(14)
 
             SwitchRow("Menu open", nav.$menuOpen)
@@ -90,7 +90,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
                     .accessibilityIdentifier("splitview.hiddenRow")
                     .accessibilityLabel("Show the row that is not in the list")
 
-                Label(nav.listsHiddenRow
+                Text(nav.listsHiddenRow
                     ? "The menu lists \"Not in the list\""
                     : "The menu does not list it")
                     .fontSize(14)
@@ -108,13 +108,13 @@ struct SplitViewSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The pane is an ordinary page. Every row is a view whose action chooses "
+            Text("The pane is an ordinary page. Every row is a view whose action chooses "
                 + "a section and closes the menu, and a row the app does not want is an "
                 + "`if` around it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`SplitView($menuOpen)` is two-way. The native host adapts the pane; "
+            Text("`SplitView($menuOpen)` is two-way. The native host adapts the pane; "
                 + "when it keeps both sides visible, the binding settles on `true`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

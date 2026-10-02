@@ -35,9 +35,6 @@ ItemsView.pointerExited: ✓ hover on ItemsView: handed to the host's recognizer
 ItemsView.pointerMoved: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.pointerPressed: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.pointerReleased: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-Label.swipeDirection: ✓ pan on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.swipeThreshold: ✓ pan on Label: handed to the host's recognizer or handler, no NSEvent sent
-Label.swiped: ✓ pan on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.panTouchCount: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.panUpdated: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.panXChannel: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -82,6 +79,9 @@ Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅
 Switch.area: ✅
 Switch.frameChanged: ✅
+Text.swipeDirection: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.swipeThreshold: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.swiped: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.canDrag: not realized
 TextEditor.dragStarting: not realized
 TextEditor.dragText: not realized

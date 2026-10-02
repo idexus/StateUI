@@ -23,7 +23,7 @@ private struct Caption: ContentView {
 
     var content: some View {
         builds.count += 1
-        return Label(text)
+        return Text(text)
     }
 }
 
@@ -46,7 +46,7 @@ private struct Shown: ContentView {
 
     var content: some View {
         builds.count += 1
-        return Label(text)
+        return Text(text)
     }
 }
 
@@ -77,7 +77,7 @@ final class CarriedViewTests: XCTestCase {
 
         func tree(_ n: Int) -> Node {
             VStack {
-                Label("n \(n)")
+                Text("n \(n)")
                 Caption(text: "fixed", builds: builds)
             }.body
         }
@@ -98,7 +98,7 @@ final class CarriedViewTests: XCTestCase {
 
         func tree(_ n: Int) -> Node {
             VStack {
-                Label("n \(n)")
+                Text("n \(n)")
                 Caption(text: "caption \(n)", builds: builds)
             }.body
         }
@@ -115,7 +115,7 @@ final class CarriedViewTests: XCTestCase {
 
         func tree(_ n: Int) -> Node {
             VStack {
-                Label("n \(n)")
+                Text("n \(n)")
                 Pressed(text: "fixed", builds: builds) {}
             }.body
         }
@@ -137,7 +137,7 @@ final class CarriedViewTests: XCTestCase {
 
         func tree() -> Node {
             VStack {
-                Label("other \(other.wrappedValue)")
+                Text("other \(other.wrappedValue)")
                 Shown(text: text.projectedValue, builds: builds)
             }.body
         }
@@ -168,7 +168,7 @@ final class CarriedViewTests: XCTestCase {
 
         func tree() -> Node {
             VStack {
-                Label("other \(other.wrappedValue)")
+                Text("other \(other.wrappedValue)")
                 Typed(text: text.projectedValue, builds: builds)
             }.body
         }
@@ -194,7 +194,7 @@ final class CarriedViewTests: XCTestCase {
 
         func tree(_ n: Int) -> Node {
             VStack {
-                Label("n \(n)")
+                Text("n \(n)")
                 Caption(text: "fixed", builds: builds)
                     .onTapped { heard.append(n) }
             }.body

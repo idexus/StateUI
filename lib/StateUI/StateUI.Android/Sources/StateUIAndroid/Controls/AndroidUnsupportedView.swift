@@ -7,7 +7,7 @@ import CStateUIAndroid
 
 /// The view for a control this host does not present yet: its name in red, where it belongs.
 @MainActor
-final class AndroidUnsupportedView: AndroidTextView {
+final class AndroidUnsupportedView: AndroidTextualView {
     init(_ type: NodeType) {
         super.init { _ in Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context)) }
         setText("Android: unsupported \(type.name)")

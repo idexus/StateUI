@@ -382,7 +382,7 @@ private struct Handing: ContentView {
         let shown = "\(tag)"
 
         return VStack {
-            Label(shown)
+            Text(shown)
             Handed(panel: panel, builds: builds)
         }
     }

@@ -24,8 +24,8 @@
         case "Grid": return dressing.dress(Grid())
         case "HStack": return dressing.dress(HStack())
         case "Image": return dressing.dress(Image())
-        case "ItemsView": return dressing.dress(ItemsView(0..<20) { Label("Item \($0)") }.width(240).height(160))
-        case "Label": return dressing.dress(Label())
+        case "ItemsView": return dressing.dress(ItemsView(0..<20) { Text("Item \($0)") }.width(240).height(160))
+        case "Text": return dressing.dress(Text())
         case "Line": return dressing.dress(Line())
         case "Map": return dressing.dress(Map())
         case "Path": return dressing.dress(Path())
@@ -54,7 +54,7 @@
     /// the case finding it by its id then fails on.
     public static func view(_ element: String, _ worn: [any Worn] = [], id: String = "specimen") -> ModifiedContent {
         // Chosen by name, so held as `any View` and handed on as its node.
-        let view: any View = make(element, Dressing(worn, id: id)) ?? Label("no specimen of \(element)")
+        let view: any View = make(element, Dressing(worn, id: id)) ?? Text("no specimen of \(element)")
         return ModifiedContent(node: view.body)
     }
 
@@ -66,29 +66,29 @@
         let others: [any View] = beside
         switch element {
         case "Span":
-            return VStack { [Label().spans { dressing.wear(TextSpan("Some words")) }] + others }
+            return VStack { [Text().spans { dressing.wear(TextSpan("Some words")) }] + others }
         case "MenuItem":
             return VStack {
-                [Label("Row").contextMenu { dressing.wear(MenuItem("Copy")).id(dressing.id) }.id("row")] + others
+                [Text("Row").contextMenu { dressing.wear(MenuItem("Copy")).id(dressing.id) }.id("row")] + others
             }
         case "ToolbarItem":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarItem("Save")).id(dressing.id)] }
-            } destination: { _ in Label("Pushed") }
+            } destination: { _ in Text("Pushed") }
         case "NavigationStack":
             return dressing.wear(NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Label("Root")] + others }
-            } destination: { _ in Label("Pushed") })
+                VStack { [Text("Root")] + others }
+            } destination: { _ in Text("Pushed") })
         case "SplitView":
             return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
-                Label("Sidebar")
-            } detail: { VStack { [Label("Detail")] + others } })
+                Text("Sidebar")
+            } detail: { VStack { [Text("Detail")] + others } })
         case "ModalStack":
             return dressing.wear(ModalStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Label("Root")] + others }
-            } destination: { _ in Label("Sheet") })
+                VStack { [Text("Root")] + others }
+            } destination: { _ in Text("Sheet") })
         case "TabbedView":
-            return dressing.wear(TabbedView([0, 1]) { tab in VStack { [Label("Tab \(tab)")] + (tab == 0 ? others : []) } })
+            return dressing.wear(TabbedView([0, 1]) { tab in VStack { [Text("Tab \(tab)")] + (tab == 0 ? others : []) } })
         default:
             return VStack { [view(element, worn)] + others }
         }
@@ -128,7 +128,7 @@ public struct SessionPage: ContentView {
 
     public var content: some View {
         let (write, page, window) = (self.write, self.page, self.window)
-        return VStack { [Label("Page")] + beside }
+        return VStack { [Text("Page")] + beside }
             .onCreated { write(page, window) }
             .onChanged(key) { write(page, window) }
     }
@@ -175,7 +175,7 @@ public struct DeclaringPage: ContentView {
     }
 
     public var content: some View {
-        let (items, words) = (self.items, VStack { [Label("Page")] + beside })
+        let (items, words) = (self.items, VStack { [Text("Page")] + beside })
         let grouped = group.map { words.toolbar(side, id: $0, order: order) { items() } }
             ?? words.toolbar(side, order: order) { items() }
         guard let title else { return grouped }

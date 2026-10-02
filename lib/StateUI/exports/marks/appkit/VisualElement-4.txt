@@ -16,7 +16,6 @@ HStack.width: ✅
 Image.isVisible: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.scale: ✓ read scale of ItemsView: the host's own transform, checked against the layer it composed itself
-Label.rotation: ✓ read rotation of Label: the host's own transform, checked against the layer it composed itself
 Line.layoutDirection: ✅
 Map.isAccessibilityHidden: ✅
 Path.accessibilityLabel: ✅
@@ -37,6 +36,7 @@ Stepper.height: ✅
 Stepper.width: ✅
 Switch.isVisible: ✅
 Switch.translationX: ✓ read translationX of Switch: the host's own transform, checked against the layer it composed itself
+Text.rotation: ✓ read rotation of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.scale: ✓ read scale of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.rotation: ✓ read rotation of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.layoutDirection: ✅

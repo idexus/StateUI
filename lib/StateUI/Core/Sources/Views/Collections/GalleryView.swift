@@ -161,7 +161,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     ///     @State private var shown = 0
     ///
     ///     GalleryView(albums) { … }.position($shown)
-    ///     Label(albums[shown].title)
+    ///     Text(albums[shown].title)
     ///
     /// Assigning it moves the run. A gallery nobody lends a binding to keeps
     /// the card itself and still settles on one.

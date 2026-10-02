@@ -35,12 +35,6 @@ Image.gridColumnSpan: ✅
 Image.gridRowSpan: ✅
 ItemsView.area: ✅
 ItemsView.frameChanged: ✅
-Label.canDrag: not realized
-Label.dragStarting: not realized
-Label.dragText: not realized
-Label.dropCompleted: not realized
-Label.frameChanged: ✅
-Label.margin: ✅
 Line.pinchUpdated: ✓ pinch on Line: the view's listening handed the recognizer's states, no touch sent
 Map.panYChannel: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Path.tapCount: ✓ tap on Path: the view's listening handed the recognizer's states, no touch sent
@@ -81,6 +75,12 @@ Slider.pinchUpdated: ✓ pinch on Slider: the view's listening handed the recogn
 Stepper.panYChannel: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Switch.tapCount: ✓ tap on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.tapped: ✓ tap on Switch: the view's listening handed the recognizer's states, no touch sent
+Text.canDrag: not realized
+Text.dragStarting: not realized
+Text.dragText: not realized
+Text.dropCompleted: not realized
+Text.frameChanged: ✅
+Text.margin: ✅
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅

@@ -18,7 +18,7 @@ extension CheckBoxProperties {
 ///     …
 ///     HStack {
 ///         CheckBox($agreed).tint(.firebrick)
-///         Label("I agree").verticalAlignment(.center)
+///         Text("I agree").verticalAlignment(.center)
 ///     }
 ///
 /// Given a binding it shows what the binding holds and writes every tick back.
@@ -26,7 +26,7 @@ extension CheckBoxProperties {
 /// a tick reaches anywhere.
 ///
 /// No caption of its own - a CheckBox is the box and nothing else. Put a
-/// Label beside it, as above.
+/// Text beside it, as above.
 public struct CheckBox: View, TintElement, CheckBoxProperties {
     /// The node this control describes.
     public var node: Node

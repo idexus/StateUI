@@ -114,7 +114,7 @@ private struct Reader: ContentView {
 
     var content: some View {
         read(debugInfo())
-        return Label("reader")
+        return Text("reader")
     }
 }
 

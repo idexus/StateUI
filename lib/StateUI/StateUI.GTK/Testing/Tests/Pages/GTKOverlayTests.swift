@@ -20,7 +20,7 @@ private struct OverlaidPage: ContentView {
             .verticalAlignment(.fill)
             .overlays {
                 if notice.wrappedValue {
-                    Label("Offline").horizontalAlignment(.center).verticalAlignment(.start)
+                    Text("Offline").horizontalAlignment(.center).verticalAlignment(.start)
                 }
             }
     }
@@ -48,7 +48,7 @@ final class GTKOverlayTests: XCTestCase {
             let notice = State(wrappedValue: false)
             let host = GTKRenderer.running { OverlaidPage(notice: notice) }
             let beneath = try XCTUnwrap(host.views(GTKButtonView.self).first)
-            let offline = { host.views(GTKLabelView.self).first { $0.text == "Offline" } }
+            let offline = { host.views(GTKTextView.self).first { $0.text == "Offline" } }
             XCTAssertNil(offline())
 
             notice.wrappedValue = true

@@ -32,7 +32,7 @@ private func sheetsOver(_ sheets: State<[Int]>, menus: State<Bool>, scenes: Rece
     ModalStack(sheets.projectedValue) {
         OverlaidPage(menus: menus, scenes: scenes)
     } destination: { number in
-        Label("Sheet \(number)")
+        Text("Sheet \(number)")
     }
 }
 

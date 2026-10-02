@@ -11,7 +11,6 @@ Grid.rotationY: ✓ read rotationY of Grid: the host's own transform, checked ag
 HStack.pivotY: ✓ read pivotY of HStack: the host's own transform, checked against the layer it composed itself
 Image.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 ItemsView.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
-Label.style: ✅
 Line.ignoresInput: ✅
 Map.isEnabled: not realized
 Map.zIndex: not realized
@@ -28,6 +27,7 @@ SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, ch
 Slider.rotationY: ✓ read rotationY of Slider: the host's own transform, checked against the layer it composed itself
 Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+Text.style: ✅
 TextEditor.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 TextField.style: ✅
 TimePicker.ignoresInput: ✅

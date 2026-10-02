@@ -253,7 +253,7 @@ final class NavigationStackTests: XCTestCase {
         XCTAssertEqual(page.props["backButtonTitle"], .string("Up"))
         XCTAssertEqual(page.props["hasBackButton"], .bool(false))
         XCTAssertEqual(page.props["hasNavigationBar"], .bool(false))
-        XCTAssertEqual(page.children.map(\.type), [.label])
+        XCTAssertEqual(page.children.map(\.type), [.text])
         let content = try XCTUnwrap(page.children.first)
         XCTAssertEqual(content.children.map(\.type), [.titleView])
         XCTAssertEqual(content.children.last?.children.first?.props["text"], .string("on the bar"))

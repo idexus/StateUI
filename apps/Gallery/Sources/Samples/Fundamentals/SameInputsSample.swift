@@ -48,7 +48,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
 
             var content: some View {
                 VStack {
-                    Label("built with \\(caption): \\(value)")
+                    Text("built with \\(caption): \\(value)")
                     DebugInfoLabel()
                 }
             }
@@ -59,7 +59,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
 
             var content: some View {
                 VStack {
-                    Label("reads the count: \\(count)")
+                    Text("reads the count: \\(count)")
                     DebugInfoLabel()
                 }
             }
@@ -70,7 +70,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
 
             var content: some View {
                 VStack {
-                    Label(item)
+                    Text(item)
                     DebugInfoLabel()
                 }
             }
@@ -99,7 +99,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
             // time, and reading it.
             Reads(count: $counter, tint: Palette.brand)
 
-            Label("Rows built with their item")
+            Text("Rows built with their item")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -117,14 +117,14 @@ struct SameInputsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Press the button and read the three counts: the first block stands "
+            Text("Press the button and read the three counts: the first block stands "
                 + "still and the other two move, each for a reason of its own. The rows "
                 + "under them are built with their item alone, so the button builds none "
                 + "of them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A composed view - a ContentView of your own - is built again in two "
+            Text("A composed view - a ContentView of your own - is built again in two "
                 + "cases and no other: when what it was built with changed, or when a "
                 + "state it read changed. Otherwise it is carried whole, with its state, "
                 + "its handlers and everything under it, however often the view around it "
@@ -132,7 +132,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("What it was built with is its stored properties. A value counts as "
+            Text("What it was built with is its stored properties. A value counts as "
                 + "the same when it is equal; a state lent to it - a Binding - when it is "
                 + "the same state, whatever the value in it; an object when it is the same "
                 + "object. A closure handed to a view always counts as changed: nothing "
@@ -140,7 +140,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The third block shows the other half of the rule. Its one input is the "
+            Text("The third block shows the other half of the rule. Its one input is the "
                 + "same state every time, so by its inputs alone it would be carried - "
                 + "but it READS that state, and whoever reads a value is built again when "
                 + "it changes.")
@@ -161,12 +161,12 @@ private struct Block: ContentView {
 
     var content: some View {
         VStack {
-            Label("Built with \(caption)")
+            Text("Built with \(caption)")
                 .fontSize(12)
                 .fontAttributes(.bold)
                 .textColor(tint)
 
-            Label(value)
+            Text(value)
                 .fontSize(20)
                 .fontAttributes(.bold)
 
@@ -184,12 +184,12 @@ private struct Reads: ContentView {
 
     var content: some View {
         VStack {
-            Label("Reads the count")
+            Text("Reads the count")
                 .fontSize(12)
                 .fontAttributes(.bold)
                 .textColor(tint)
 
-            Label("\(count)")
+            Text("\(count)")
                 .fontSize(20)
                 .fontAttributes(.bold)
 
@@ -206,7 +206,7 @@ private struct Row: ContentView {
 
     var content: some View {
         VStack {
-            Label(item)
+            Text(item)
                 .fontSize(15)
 
             DebugInfoLabel()

@@ -24,7 +24,7 @@ protocol EnvironmentSlot: AnyObject {
 ///         @Environment var basket: Basket
 ///
 ///         var content: some View {
-///             Label("\(basket.items.count) item(s)")
+///             Text("\(basket.items.count) item(s)")
 ///         }
 ///     }
 ///

@@ -94,7 +94,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     }
 
     /// `09:30:00` - the time as a line of text, for putting one in a label:
-    /// `Label("Alarm at \(alarm.text)")`.
+    /// `Text("Alarm at \(alarm.text)")`.
     ///
     /// One fixed shape, 24-hour and without the millisecond, never a display
     /// format: a `TimePicker` writes a time for the user with `.format(…)`,

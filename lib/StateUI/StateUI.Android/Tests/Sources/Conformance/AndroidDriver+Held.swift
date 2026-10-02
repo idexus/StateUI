@@ -31,7 +31,7 @@ extension AndroidDriver {
         case (.isRunning, let spinner as AndroidActivityIndicatorView):
             // A spinner that runs is visible; one that stopped is invisible, and the host keeps no other trace.
             return (Java.callInt(spinner.reference, JavaAPI.getVisibility) == 0).propValue
-        case (.text, let text as AndroidTextView): return text.text.propValue
+        case (.text, let text as AndroidTextualView): return text.text.propValue
         // The return key as the field asks the keyboard for it: EditorInfo's actions, as the host writes them.
         case (.returnKey, let field as AndroidTextFieldView):
             let action = Java.callInt(field.reference, Self.getImeOptions) & 0xff
@@ -47,12 +47,12 @@ extension AndroidDriver {
         // Read only: the field offers a keyboard nothing to edit.
         case (.isReadOnly, let field as AndroidTextFieldView):
             return (!Java.callBool(field.reference, Self.onCheckIsTextEditor)).propValue
-        case (.fontSize, let text as AndroidTextView):
+        case (.fontSize, let text as AndroidTextualView):
             return Double(Java.callStaticFloat(Self.testText, Self.points, .object(text.reference))).rounded().propValue
-        case (.fontAttributes, let text as AndroidTextView):
+        case (.fontAttributes, let text as AndroidTextualView):
             return FontAttributes(rawValue: Java.callStaticInt(Self.testText, Self.style, .object(text.reference)) & 3)
                 .propValue
-        case (.textColor, let text as AndroidTextView):
+        case (.textColor, let text as AndroidTextualView):
             return Self.color(UInt32(bitPattern: Java.callInt(text.reference, Self.getCurrentTextColor))).propValue
         case (.background, let view?):
             let held = Java.callStaticLong(Self.testPixels, Self.background, .object(view.reference))
@@ -63,7 +63,7 @@ extension AndroidDriver {
         case (.selectedIndex, let picker as AndroidPickerView):
             // The title's row stands first: it is no choice.
             return (Int(Java.callInt(picker.reference, Self.getSelectedItemPosition)) - 1).propValue
-        case (.fontFamily, _ as AndroidTextView):
+        case (.fontFamily, _ as AndroidTextualView):
             throw DriverCannot("read a family", because: "Android's typeface keeps no family's name")
         case (_, let view?):
             if let held = try Self.viewHolds(property, view) { return held }

@@ -41,7 +41,7 @@ scrolling them.
 
 ## A label's words
 
-A Label is UIKit's label showing its words - or its spans' runs, each its
+A Text is UIKit's label showing its words - or its spans' runs, each its
 own look over the label's - as attributed text: the font, the colour, what
 stands behind the words, the space between the letters, a line's height and
 the lines under or through them. Its padding is room it keeps around the

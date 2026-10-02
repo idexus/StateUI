@@ -74,7 +74,7 @@ public struct Covered: Hashable, Sendable, CustomStringConvertible {
         self.tier = tier
     }
 
-    /// "Label.text", or "Label" for the element itself.
+    /// "Text.text", or "Text" for the element itself.
     public var description: String {
         member.map { "\(element).\($0)" } ?? element
     }

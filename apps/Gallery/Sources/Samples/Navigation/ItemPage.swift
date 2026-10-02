@@ -25,12 +25,12 @@ struct ItemPage: ContentView {
             VStack {
                 SectionTitle("Pushed page")
 
-                Label(item.isEmpty ? "Nothing selected" : item)
+                Text(item.isEmpty ? "Nothing selected" : item)
                     .fontSize(28)
                     .fontAttributes(.bold)
                     .horizontalTextAlignment(.center)
 
-                Label("Pushed by `path.append(.item(\"\(item)\"))`.")
+                Text("Pushed by `path.append(.item(\"\(item)\"))`.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)

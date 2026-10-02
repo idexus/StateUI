@@ -28,15 +28,15 @@ struct MenuBarSample: SampleContent, ExampleContent {
                 // this closure.
                 DebugInfoLabel()
 
-                Label("Saved \\(saved) time(s), exported \\(exported)")
+                Text("Saved \\(saved) time(s), exported \\(exported)")
 
                 HStack {
                     Switch($pageSaves)
-                    Label("This page saves")
+                    Text("This page saves")
                 }
                 HStack {
                     Switch($ownMenu)
-                    Label("A menu of its own")
+                    Text("A menu of its own")
                 }
             }
             // File, joined by its identity with the platform's own where it has
@@ -70,10 +70,10 @@ struct MenuBarSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("Saved \(saved) time(s), exported \(exported)")
+            Text("Saved \(saved) time(s), exported \(exported)")
                 .fontSize(17)
 
-            Label("Open the File menu - on Android, in the bar's overflow.")
+            Text("Open the File menu - on Android, in the bar's overflow.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -114,7 +114,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier(id)
                 .accessibilityLabel(words)
 
-            Label(words)
+            Text(words)
                 .fontSize(14)
                 .verticalAlignment(.center)
         }
@@ -123,13 +123,13 @@ struct MenuBarSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("This page declares File: Save while it saves, and Export…. On the Mac it joins the "
+            Text("This page declares File: Save while it saves, and Export…. On the Mac it joins the "
                 + "system's own File menu, its entries a section after a line. Going to another page "
                 + "takes them away.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A menu of its own stands after File, before the platform's Window and "
+            Text("A menu of its own stands after File, before the platform's Window and "
                 + "Help. File is joined by `.id(StandardMenu.file)`, never by its caption. Android "
                 + "puts the menus behind the bar's overflow; an iPhone shows none.")
                 .fontSize(12)

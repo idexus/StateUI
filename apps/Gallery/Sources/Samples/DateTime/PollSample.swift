@@ -27,8 +27,8 @@ struct PollSample: SampleContent, ExampleContent {
             // builds this closure once.
             DebugInfoLabel()
 
-            Label(status)
-            Label("\\(rounds) round(s)")
+            Text(status)
+            Text("\\(rounds) round(s)")
 
             ActivityIndicator(checking)
 
@@ -76,12 +76,12 @@ struct PollSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label(status)
+            Text(status)
                 .fontSize(20)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("\(rounds) round(s)")
+            Text("\(rounds) round(s)")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -136,7 +136,7 @@ struct PollSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("A repeating timer would fire again while the work of the last round "
+            Text("A repeating timer would fire again while the work of the last round "
                 + "was still going, and two checks would overlap. This one does not "
                 + "repeat: it ticks once, the tick does the work, and the tick starts "
                 + "the next round when that work is done - so the gap is measured from "
@@ -144,7 +144,7 @@ struct PollSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The last tick of a run stops the ticker BEFORE running its closure, "
+            Text("The last tick of a run stops the ticker BEFORE running its closure, "
                 + "which is what makes that possible: start() on a ticker that is still "
                 + "running does nothing, so the round would be lost in silence. Reading "
                 + "isRunning therefore says whether another tick is coming, not whether "
@@ -152,7 +152,7 @@ struct PollSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The work runs on a task of its own and the restart comes back from "
+            Text("The work runs on a task of its own and the restart comes back from "
                 + "there, off the thread the host draws on. `Ticker` keeps its state "
                 + "behind a lock for exactly this: `start`, `stop` and `reset` are safe "
                 + "from any thread.")

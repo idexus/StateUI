@@ -35,9 +35,6 @@ Image.pointerReleased: ✓ hover on Image: the view's listening handed the recog
 ItemsView.swipeDirection: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swiped: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
-Label.panTouchCount: ✓ pan on Label: the view's listening handed the recognizer's states, no touch sent
-Label.panUpdated: ✓ pan on Label: the view's listening handed the recognizer's states, no touch sent
-Label.panXChannel: ✓ pan on Label: the view's listening handed the recognizer's states, no touch sent
 Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
@@ -85,6 +82,9 @@ Switch.dragText: not realized
 Switch.dropCompleted: not realized
 Switch.frameChanged: ✅
 Switch.margin: ✅
+Text.panTouchCount: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
+Text.panUpdated: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
+Text.panXChannel: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextField.panYChannel: ✓ pan on TextField: the view's listening handed the recognizer's states, no touch sent
 TimePicker.tapCount: ✓ tap on TimePicker: the view's listening handed the recognizer's states, no touch sent

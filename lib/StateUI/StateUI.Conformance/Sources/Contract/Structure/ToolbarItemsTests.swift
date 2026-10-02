@@ -62,7 +62,7 @@
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         DeclaringPage { [ToolbarItem("Save").id("save")] }
-                    } destination: { _ in Label("Pushed") }
+                    } destination: { _ in Text("Pushed") }
                     .toolbar(order: 1) { ToolbarItem("Later").id("later") }
                     .toolbar { ToolbarItem("Home").id("home") }
                 }
@@ -75,7 +75,7 @@
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         DeclaringPage(side: .leading) { [ToolbarItem("Filter").id("filter")] }
-                    } destination: { _ in Label("Pushed") }
+                    } destination: { _ in Text("Pushed") }
                     .toolbar { ToolbarItem("Home").id("home") }
                 }
                 let bar = { try s.bar(of: try shownPage(s)) }
@@ -91,7 +91,7 @@
                         DeclaringPage(group: "window") {
                             [ToolbarItem("Help").id("help"), ToolbarItem("Save here").isEnabled(false).id("save")]
                         }
-                    } destination: { _ in Label("Pushed") }
+                    } destination: { _ in Text("Pushed") }
                     .toolbar(id: "window") {
                         ToolbarItem("Home").id("home")
                         ToolbarItem("Save").id("save")

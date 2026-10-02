@@ -69,7 +69,7 @@ struct ColorBoxSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("A ColorBox draws the colour its initializer takes, which is its `.color`. "
+        Text("A ColorBox draws the colour its initializer takes, which is its `.color`. "
             + "`.background` is a second surface behind it that the corner radius "
             + "does not round. A one-pixel ColorBox is also the usual divider.")
             .fontSize(12)

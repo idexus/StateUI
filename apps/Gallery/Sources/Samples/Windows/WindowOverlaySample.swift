@@ -36,11 +36,11 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
             VStack {
                 HStack {
                     Switch($notice)
-                    Label("Over every page")
+                    Text("Over every page")
                 }
                 HStack {
                     Switch($onThisPage)
-                    Label("Over this page")
+                    Text("Over this page")
                 }
             }
             .overlays {
@@ -74,7 +74,7 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
             Switch(value)
                 .accessibilityIdentifier(id)
                 .accessibilityLabel(words)
-            Label(words).verticalAlignment(.center)
+            Text(words).verticalAlignment(.center)
         }
         .spacing(8)
     }
@@ -89,7 +89,7 @@ struct WindowNotice: ContentView {
 
     var content: some View {
         HStack {
-            Label(words)
+            Text(words)
                 .textColor(.white)
                 .verticalAlignment(.center)
             Button("Dismiss")

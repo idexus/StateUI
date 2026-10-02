@@ -35,7 +35,6 @@ Image.dropCompleted: not realized
 Image.frameChanged: ✅
 Image.margin: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-Label.panYChannel: ✓ pan on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.tapCount: ✓ tap on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.tapped: ✓ tap on Line: handed to the host's recognizer or handler, no NSEvent sent
 Map.frameChanged: ✅
@@ -84,6 +83,7 @@ Switch.drop: not realized
 Switch.frameChanged: ✅
 Switch.horizontalAlignment: ✅
 Switch.verticalAlignment: ✅
+Text.panYChannel: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pointerEntered: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pointerExited: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pointerMoved: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent

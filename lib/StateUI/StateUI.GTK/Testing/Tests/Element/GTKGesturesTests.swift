@@ -16,14 +16,14 @@ private struct TapsPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("taps \(taps)")
+            Text("taps \(taps)")
             if shown {
-                HStack { Label("row") }
+                HStack { Text("row") }
                     .width(200)
                     .height(40)
                     .onTapped(count: count) { taps += 1 }
             }
-            HStack { Label("plain") }
+            HStack { Text("plain") }
                 .width(200)
                 .height(40)
             Button("Hide").onClicked { shown = false }
@@ -40,7 +40,7 @@ private struct DragPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("x \(Int(x)) \(said)")
+            Text("x \(Int(x)) \(said)")
             ColorBox(.steelBlue)
                 .width(100)
                 .height(100)
@@ -213,7 +213,7 @@ final class GTKGesturesTests: XCTestCase {
 private extension GTKRenderer {
     /// The words every label shows, in order.
     var texts: [String] {
-        views(GTKLabelView.self).map(\.text)
+        views(GTKTextView.self).map(\.text)
     }
 }
 

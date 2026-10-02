@@ -61,7 +61,7 @@ final class HostRegisterTests: XCTestCase {
     func testATiersRecordReachesEveryWearer() {
         let register = HostRegister(records: [.complete("TextElement", "text")], unrealized: [], viewless: [])
 
-        XCTAssertTrue(register.realizes("text", on: "Label", from: "TextElement"))
+        XCTAssertTrue(register.realizes("text", on: "Text", from: "TextElement"))
         XCTAssertTrue(register.realizes("text", on: "Button", from: "TextElement"))
     }
 
@@ -94,13 +94,13 @@ final class HostRegisterTests: XCTestCase {
     /// tier declaring it is recorded on those alone, and one it realizes on all of them on the tier.
     func testAMemberRealizedOnSomeWearersIsRecordedOnThoseAlone() {
         let declaration = HostDeclaration(elements: [
-            "Label": HostDeclaration.Element(members: ["text", "textCase"]),
+            "Text": HostDeclaration.Element(members: ["text", "textCase"]),
             "TextField": HostDeclaration.Element(members: ["text"]),
         ])
         let records = Set(HostRegister.records(of: declaration).map { "\($0.owner).\($0.member)" })
 
         XCTAssertTrue(records.contains("TextElement.text"), "\(records.sorted())")
-        XCTAssertTrue(records.contains("Label.textCase"), "\(records.sorted())")
+        XCTAssertTrue(records.contains("Text.textCase"), "\(records.sorted())")
         XCTAssertFalse(records.contains("TextElement.textCase"), "\(records.sorted())")
     }
 
@@ -111,8 +111,8 @@ final class HostRegisterTests: XCTestCase {
         let register = HostRegister(
             records: [
                 .complete("Button", "text"), .complete("Button", "text"), .complete("Button", "wings"),
-                .complete("TextElement", "textCase"), .partial("Label", "maximumLines", missing: ""),
-                .notPlanned("Label", "lineBreak", reason: ""), .unrealized("Label", "textCase", why: ""),
+                .complete("TextElement", "textCase"), .partial("Text", "maximumLines", missing: ""),
+                .notPlanned("Text", "lineBreak", reason: ""), .unrealized("Text", "textCase", why: ""),
                 .unrealized("TextElement", "text", why: "Not here."),
             ],
             unrealized: ["Map"], viewless: [], notPlanned: ["Map": "No maps.", "MenuBar": ""])
@@ -120,9 +120,9 @@ final class HostRegisterTests: XCTestCase {
         XCTAssertEqual(register.problems, [
             "Button.text is recorded twice",
             "Button.wings names what no contract of Button declares",
-            "Label.maximumLines is partial and says nothing is missing",
-            "Label.lineBreak is never and says no reason",
-            "Label.textCase is unrealized and says no reason",
+            "Text.maximumLines is partial and says nothing is missing",
+            "Text.lineBreak is never and says no reason",
+            "Text.textCase is unrealized and says no reason",
             "TextElement.text is unrealized on a tier, which only an element's record says",
             "Map is both unrealized and never",
             "MenuBar is never and says no reason",

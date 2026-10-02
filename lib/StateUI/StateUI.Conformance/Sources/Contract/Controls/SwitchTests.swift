@@ -34,13 +34,13 @@
             },
             ConformanceCase("aUsersTurnReachesTheStateAndTheHandlerOnce", proves: [
                 Covered(SwitchContract.isOn), Covered(SwitchContract.toggled),
-                Covered(TextElementContract.text, on: LabelContract.self),
+                Covered(TextElementContract.text, on: TextContract.self),
             ]) { s in
                 let on = State(wrappedValue: false)
                 let heard = Received<Bool>()
                 s.start {
                     VStack {
-                        Label(on.wrappedValue ? "on" : "off").id("label")
+                        Text(on.wrappedValue ? "on" : "off").id("label")
                         Switch(on.projectedValue).onToggled { heard.values.append($0) }.id("switch")
                     }
                 }

@@ -69,7 +69,7 @@ private final class LastFrame: @unchecked Sendable {
 /// A container whose content is built from the space it was given.
 ///
 ///     FrameReader { frame in
-///         Label("half of \(Int(frame.width)) is \(Int(frame.width / 2))")
+///         Text("half of \(Int(frame.width)) is \(Int(frame.width / 2))")
 ///             .width(frame.width / 2)
 ///     }
 ///

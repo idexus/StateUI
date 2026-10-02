@@ -10,9 +10,9 @@ import XCTest
 /// A page under the numbered sheets one state lists.
 private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
     ModalStack(sheets.projectedValue) {
-        Label("beneath")
+        Text("beneath")
     } destination: { number in
-        Label("On sheet \(number)")
+        Text("On sheet \(number)")
     }
 }
 

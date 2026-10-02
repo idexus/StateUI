@@ -15,7 +15,7 @@ final class HostRenderTests: XCTestCase {
     }
 
     func testAHostPatchCarriesTheWholeSparseChange() throws {
-        var child = HostPatch(id: .auto(8), type: .label)
+        var child = HostPatch(id: .auto(8), type: .text)
         child.fresh = true
         child.properties[.text] = .string("Ready")
 
@@ -62,7 +62,7 @@ final class HostRenderTests: XCTestCase {
         }
         let carriedChild = try XCTUnwrap(children.first)
         XCTAssertEqual(carriedChild.id, .auto(8))
-        XCTAssertEqual(carriedChild.type, .label)
+        XCTAssertEqual(carriedChild.type, .text)
         XCTAssertEqual(carriedChild.properties[.text], .string("Ready"))
     }
 
@@ -96,7 +96,7 @@ final class HostRenderTests: XCTestCase {
         XCTAssertTrue(children.isEmpty)
 
         var sparse = HostPatch(id: .auto(1), type: .button)
-        sparse.children = .changed([HostPatch(id: .auto(2), type: .label)])
+        sparse.children = .changed([HostPatch(id: .auto(2), type: .text)])
 
         guard case .changed(let changed) = sparse.children else {
             return XCTFail("expected only the changed descendant")
@@ -123,10 +123,10 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostRefusesAReportThroughAnOutOnlyAttachment() throws {
         let caption = State("Waiting")
         let renders = Renders()
-        let patch = renders.render(Label().text(caption.projectedValue).body)
+        let patch = renders.render(Text().text(caption.projectedValue).body)
 
         guard case .replace(let driven)? = patch.driven else {
-            return XCTFail("expected the Label's state attachment")
+            return XCTFail("expected the Text's state attachment")
         }
 
         let binding = try XCTUnwrap(driven[.text])
@@ -139,10 +139,10 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostCyclePublishesAnApplicationStateWrite() throws {
         let caption = State("Waiting")
         let renders = Renders()
-        let patch = renders.render(Label().text(caption.projectedValue).body)
+        let patch = renders.render(Text().text(caption.projectedValue).body)
 
         guard case .replace(let driven)? = patch.driven else {
-            return XCTFail("expected the Label's state attachment")
+            return XCTFail("expected the Text's state attachment")
         }
 
         let binding = try XCTUnwrap(driven[.text])
@@ -225,7 +225,7 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostReportsOnlyTheJourneyGroupsItWalked() throws {
         let fade = State(wrappedValue: 0.0, motion: .eased(400, .linear))
         let renders = Renders()
-        let patch = renders.render(Label("moving").opacity(fade.projectedValue).body)
+        let patch = renders.render(Text("moving").opacity(fade.projectedValue).body)
 
         guard case .replace(let driven)? = patch.driven else {
             return XCTFail("expected the opacity state attachment")

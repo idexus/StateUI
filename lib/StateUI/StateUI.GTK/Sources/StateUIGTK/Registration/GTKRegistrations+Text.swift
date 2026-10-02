@@ -5,15 +5,15 @@
 @_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
-    /// A Label: a `GtkLabel` - its words, how they break and stand across and down it, the space between the
+    /// A Text: a `GtkLabel` - its words, how they break and stand across and down it, the space between the
     /// letters and the lines, and what fills its box.
     static func text(_ registry: Registry<GTKView>) {
-        registry.add(LabelContract.self, create: { _ in GTKLabelView() }) { label in
+        registry.add(TextContract.self, create: { _ in GTKTextView() }) { label in
             label.applies(TextMembers.members) { view, values in applyText(view, values) }
-            label.applies([LabelContract.lineBreak, LabelContract.maximumLines]) { view, values in
+            label.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
                 view.setLines(
-                    breaking: values[LabelContract.lineBreak] ?? .wordWrap,
-                    maximum: values[LabelContract.maximumLines])
+                    breaking: values[TextContract.lineBreak] ?? .wordWrap,
+                    maximum: values[TextContract.maximumLines])
             }
             label.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)

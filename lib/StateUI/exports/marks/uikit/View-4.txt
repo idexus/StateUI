@@ -35,9 +35,6 @@ HStack.pinchUpdated: ✓ pinch on HStack: the view's listening handed the recogn
 Image.panYChannel: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.tapCount: ✓ tap on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.tapped: ✓ tap on ItemsView: the view's listening handed the recognizer's states, no touch sent
-Label.frameChanged: ✅
-Label.gridColumn: ✅
-Label.gridRow: ✅
 Line.allowDrop: not realized
 Line.dragLeave: not realized
 Line.dragOver: not realized
@@ -89,6 +86,9 @@ Stepper.pointerReleased: ✓ hover on Stepper: the view's listening handed the r
 Switch.swipeDirection: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.swipeThreshold: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.swiped: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
+Text.frameChanged: ✅
+Text.gridColumn: ✅
+Text.gridRow: ✅
 TextEditor.panTouchCount: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.panUpdated: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.panXChannel: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent

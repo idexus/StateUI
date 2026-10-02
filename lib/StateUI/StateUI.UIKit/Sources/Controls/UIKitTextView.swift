@@ -6,11 +6,11 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A Label: a `UILabel` showing its words - or its spans' runs, each its own look over the label's - with their
+/// A Text: a `UILabel` showing its words - or its spans' runs, each its own look over the label's - with their
 /// look as attributes, standing across and down its room within its padding as the tree says.
 /// Design: docs/design/platforms/uikit/controls.md#a-labels-words
 @MainActor
-final class UIKitLabelView: UILabel {
+final class UIKitTextView: UILabel {
     private var words = ""
     private var look = TextLook()
     private var runs: [TextRun]?
@@ -38,7 +38,7 @@ final class UIKitLabelView: UILabel {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("UIKitLabelView is made in code")
+        fatalError("UIKitTextView is made in code")
     }
 
     /// The words, in their case.

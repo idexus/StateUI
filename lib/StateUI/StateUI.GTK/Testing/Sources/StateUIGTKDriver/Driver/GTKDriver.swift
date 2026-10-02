@@ -201,7 +201,7 @@ final class GTKDriver: HostDriver {
         case (.value, let stepper as GTKStepperView): return stepper.value.propValue
         case (.progress, let bar as GTKProgressBarView): return bar.progress.propValue
         case (.isRunning, let spinner as GTKActivityIndicatorView): return spinner.isRunning.propValue
-        case (.text, let label as GTKTextView): return label.text.propValue
+        case (.text, let label as GTKTextualView): return label.text.propValue
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
         case (.text, let button as GTKButtonView): return button.text.propValue

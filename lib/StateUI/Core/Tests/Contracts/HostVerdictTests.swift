@@ -17,8 +17,8 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "TextField", member: "submitted", mark: .cannot("submit on TextField - The keyboard's.")),
             HostVerdict(element: "SplitView", member: nil, mark: .waiting(on: "SplitView.isSidebarVisible")),
             HostVerdict(element: "Switch", member: "toggled", mark: .failed("true expected, false came")),
-            HostVerdict(element: "Label", member: "text", mark: .partly("cannot read text of Label - Hidden.")),
-            HostVerdict(element: "Label", member: "tapped", mark: .byHost("tap on Label: the recognizer is handed it")),
+            HostVerdict(element: "Text", member: "text", mark: .partly("cannot read text of Text - Hidden.")),
+            HostVerdict(element: "Text", member: "tapped", mark: .byHost("tap on Text: the recognizer is handed it")),
             HostVerdict(element: "Pin", member: "label", mark: .byApplication),
         ]
 
@@ -56,27 +56,27 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "SplitView", member: nil, mark: .proven),
             HostVerdict(element: "Stepper", member: nil, mark: .notRealized),
             HostVerdict(element: "Stepper", member: nil, mark: .waiting(on: "Stepper.step")),
-            HostVerdict(element: "Label", member: nil, mark: .proven),
-            HostVerdict(element: "Label", member: nil, mark: .proven),
-            HostVerdict(element: "Label", member: "tapped", mark: .byHost("tap on Label: handed")),
-            HostVerdict(element: "Label", member: "tapped", mark: .proven),
-            HostVerdict(element: "Label", member: "text", mark: .byHost("read text of Label: kept")),
-            HostVerdict(element: "Label", member: "text", mark: .byHost("read text of Label: kept")),
-            HostVerdict(element: "Label", member: "opacity", mark: .byHost("read opacity of Label: kept")),
-            HostVerdict(element: "Label", member: "opacity", mark: .cannot("read opacity of Label - No path.")),
+            HostVerdict(element: "Text", member: nil, mark: .proven),
+            HostVerdict(element: "Text", member: nil, mark: .proven),
+            HostVerdict(element: "Text", member: "tapped", mark: .byHost("tap on Text: handed")),
+            HostVerdict(element: "Text", member: "tapped", mark: .proven),
+            HostVerdict(element: "Text", member: "text", mark: .byHost("read text of Text: kept")),
+            HostVerdict(element: "Text", member: "text", mark: .byHost("read text of Text: kept")),
+            HostVerdict(element: "Text", member: "opacity", mark: .byHost("read opacity of Text: kept")),
+            HostVerdict(element: "Text", member: "opacity", mark: .cannot("read opacity of Text - No path.")),
         ])
 
         XCTAssertEqual(text, """
             Button.icon: cannot read icon of Button - Hidden.
             Button.text: ☑️ No wrap.
-            Label: ✅
-            Label.opacity: ◐ cannot read opacity of Label - No path.
-            Label.tapped: ✅
-            Label.text: ✓ read text of Label: kept
             SplitView: ◐ waits on SplitView.isSidebarVisible
             Stepper: waits on Stepper.step
             Switch.isOn: ◐ cannot read isOn of Switch - Hidden.
             Switch.toggled: ❌ true expected, false came
+            Text: ✅
+            Text.opacity: ◐ cannot read opacity of Text - No path.
+            Text.tapped: ✅
+            Text.text: ✓ read text of Text: kept
 
             """)
     }
@@ -84,15 +84,15 @@ final class HostVerdictTests: XCTestCase {
     /// A run's text says, over its verdicts, the revision of its family the run was made at; reading it gives both
     /// back, and a text without the line gives no revision.
     func testARunsTextCarriesItsRevision() throws {
-        let verdicts = [HostVerdict(element: "Label", member: nil, mark: .proven)]
+        let verdicts = [HostVerdict(element: "Text", member: nil, mark: .proven)]
         let text = HostVerdict.text(verdicts, revision: "2.1")
 
-        XCTAssertEqual(text, "# revision 2.1\nLabel: ✅\n")
+        XCTAssertEqual(text, "# revision 2.1\nText: ✅\n")
         XCTAssertEqual(HostVerdict.read(text), verdicts)
         XCTAssertEqual(HostVerdict.revision(of: text), "2.1")
-        XCTAssertEqual(HostVerdict.withoutRevision(text), "Label: ✅\n")
+        XCTAssertEqual(HostVerdict.withoutRevision(text), "Text: ✅\n")
         XCTAssertNil(HostVerdict.revision(of: HostVerdict.text(verdicts)))
-        XCTAssertNil(HostVerdict.read("# something else\nLabel: ✅\n"), "a comment other than the revision is no verdict")
+        XCTAssertNil(HostVerdict.read("# something else\nText: ✅\n"), "a comment other than the revision is no verdict")
     }
 
     /// A family's revision on a host is its own on every host, then the host's own, each 1 where no line names it;
@@ -108,7 +108,7 @@ final class HostVerdictTests: XCTestCase {
         XCTAssertEqual(HostVerdict.revision(of: "Slider", on: "winui", in: revisions), "2.3")
         XCTAssertEqual(HostVerdict.revision(of: "Slider", on: "gtk", in: revisions), "2.1")
         XCTAssertEqual(HostVerdict.revision(of: "Button", on: "appkit", in: revisions), "1.4")
-        XCTAssertEqual(HostVerdict.revision(of: "Label", on: "winui", in: revisions), "1.1")
+        XCTAssertEqual(HostVerdict.revision(of: "Text", on: "winui", in: revisions), "1.1")
 
         let held = "# revision 2.1\nSlider: ✅\n"
         XCTAssertFalse(HostVerdict.isStale(held, family: "Slider", on: "gtk", in: revisions))
@@ -125,7 +125,7 @@ final class HostVerdictTests: XCTestCase {
         ]
 
         XCTAssertEqual(
-            marks.map { HostVerdict(element: "Label", member: "text", mark: $0).meets },
+            marks.map { HostVerdict(element: "Text", member: "text", mark: $0).meets },
             [true, false, true, false, false, false, false, false, false, true])
     }
 }

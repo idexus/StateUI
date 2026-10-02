@@ -14,7 +14,7 @@ final class GTKScrollViewTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 ScrollView {
-                    VStack { Label("tall").height(2000) }.padding(10)
+                    VStack { Text("tall").height(2000) }.padding(10)
                 }
             }
             let scroll = try XCTUnwrap(host.views(GTKScrollView.self).first).frame
@@ -45,13 +45,13 @@ final class GTKScrollViewTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 ScrollView {
-                    Label("wide").width(3000).height(40)
+                    Text("wide").width(3000).height(40)
                 }
                 .orientation(.horizontal)
                 .height(100)
             }
 
-            let label = try XCTUnwrap(host.views(GTKLabelView.self).first)
+            let label = try XCTUnwrap(host.views(GTKTextView.self).first)
             XCTAssertTrue(label.frame == (0, 30, 3000, 40), "\(label.frame)")
         }
     }
@@ -65,7 +65,7 @@ final class GTKScrollViewTests: XCTestCase {
                 VStack {
                     Button("Down").onClicked { offset.wrappedValue = Point(0, 300) }
                     Button("Past").onClicked { offset.wrappedValue = Point(0, 5000) }
-                    ScrollView { Label("tall").height(2000) }
+                    ScrollView { Text("tall").height(2000) }
                         .scrollOffset(offset.projectedValue)
                         .onEvent(ScrollViewContract.scrollYChanged) { y in heard.values.append(y) }
                         .height(500)
@@ -95,7 +95,7 @@ final class GTKScrollViewTests: XCTestCase {
             let heard = Received<Double>()
             let rests = Received<Int>()
             let host = GTKRenderer.running(clock: clock) {
-                ScrollView { Label("tall").height(2000) }
+                ScrollView { Text("tall").height(2000) }
                     .scrollOffset(offset.projectedValue)
                     .onEvent(ScrollViewContract.scrollYChanged) { y in heard.values.append(y) }
                     .onScrollStopped { rests.values.append(1) }
@@ -134,7 +134,7 @@ final class GTKScrollViewTests: XCTestCase {
                 VStack {
                     Button("Hide").onClicked { shown.wrappedValue = false }
                     if shown.wrappedValue {
-                        ScrollView { Label("inside").height(400) }.height(100)
+                        ScrollView { Text("inside").height(400) }.height(100)
                     }
                 }
             }

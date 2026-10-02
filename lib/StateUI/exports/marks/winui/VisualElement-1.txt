@@ -37,11 +37,6 @@ Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothin
 ItemsView.accessibilityHint: ✅
 ItemsView.isVisible: ✅
 ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own tip, checked against the projection it laid on the element
-Label.automationExcludedWithChildren: ✅
-Label.frameChanged: ✅
-Label.height: ✅
-Label.scaleY: ✅
-Label.width: ✅
 Line.frame: ✅
 Line.pivotX: ✅
 Line.zIndex: not realized
@@ -88,6 +83,11 @@ Stepper.scaleX: ✅
 Switch.ignoresInput: ✅
 Switch.layoutDirection: ✅
 Switch.translationY: ✅
+Text.automationExcludedWithChildren: ✅
+Text.frameChanged: ✅
+Text.height: ✅
+Text.scaleY: ✅
+Text.width: ✅
 TextEditor.rotation: ✅
 TextEditor.style: ✅
 TextField.accessibilityHeadingLevel: ✅

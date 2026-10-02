@@ -25,7 +25,7 @@ private struct ListPage: ContentView {
     @State private var chosen: Int?
 
     var content: some View {
-        ItemsView(0..<100) { Label("\($0)") }
+        ItemsView(0..<100) { Text("\($0)") }
             .selection($chosen)
             .onItemActivated { Heard.opened.append($0) }
             .onEndReached(within: 5) { Heard.ends += 1 }
@@ -84,7 +84,7 @@ final class ItemsCellsTests: XCTestCase {
         let cell = Cell()
         cells.hold("42", in: cell)
         let item = try XCTUnwrap(cell.shown, "built while the cell waits")
-        XCTAssertEqual(item.type, .label)
+        XCTAssertEqual(item.type, .text)
         XCTAssertEqual(item.value(.text), .string("42"))
         XCTAssertNotNil(cells.item("34"))
         XCTAssertNotNil(cells.item("50"))

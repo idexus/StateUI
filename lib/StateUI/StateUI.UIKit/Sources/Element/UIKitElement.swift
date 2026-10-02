@@ -141,7 +141,7 @@ extension UIKitElement: PlacedView {
     }
 
     func travels(to destination: Rect?) {
-        if type == .label { wordsRoom = destination }
+        if type == .text { wordsRoom = destination }
     }
 }
 

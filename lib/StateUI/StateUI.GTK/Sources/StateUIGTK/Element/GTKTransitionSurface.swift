@@ -17,7 +17,7 @@ enum GTKTransitionSurface {
     /// What a class of the host's style sheet paints - a class a value, which a value on its way would add every
     /// frame - and a window's place and size, which the desktop keeps.
     static let atRest: [NodeType: Set<Prop>] = [
-        .label: [.padding, .background],
+        .text: [.padding, .background],
         .button: [.padding, .background, .stroke, .strokeWidth, .shape],
         .radioButton: [.padding],
         .textField: [.fontSize, .textColor, .placeholderColor],

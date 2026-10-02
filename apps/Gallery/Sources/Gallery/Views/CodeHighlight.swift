@@ -1,7 +1,7 @@
 // Colouring a listing, in the language it is written in.
 //
-// A Label has one text colour, so text in six colours is six spans - which is
-// what `Label.spans` is for. This file turns a snippet into those runs.
+// A Text has one text colour, so text in six colours is six spans - which is
+// what `Text.spans` is for. This file turns a snippet into those runs.
 //
 // ASCII only, on purpose. Deciding what is a letter with `Character.isLetter`
 // would work, but the whole question of which Unicode tables that reaches is one
@@ -36,7 +36,7 @@ enum CodeHighlight {
         /// `let`, `func`, `if` - the words the language owns.
         static let keyword = Color(light: Color("#AF00DB"), dark: Color("#C586C0"))
 
-        /// `Label`, `Basket` - anything starting with a capital.
+        /// `Text`, `Basket` - anything starting with a capital.
         static let type = Color(light: Color("#267F99"), dark: Color("#4EC9B0"))
 
         /// Everything between quotes, the quotes included.

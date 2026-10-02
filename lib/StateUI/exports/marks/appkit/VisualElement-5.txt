@@ -22,7 +22,6 @@ HStack.minimumWidth: ✅
 Image.opacity: ✅
 Image.translationY: ✓ read translationY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself
-Label.rotationX: ✓ read rotationX of Label: the host's own transform, checked against the layer it composed itself
 Line.pivotX: ✓ read pivotX of Line: the host's own transform, checked against the layer it composed itself
 Map.automationExcludedWithChildren: ✅
 Path.accessibilityHint: ✅
@@ -51,6 +50,7 @@ Stepper.minimumHeight: ✅
 Stepper.minimumWidth: ✅
 Switch.opacity: ✅
 Switch.translationY: ✓ read translationY of Switch: the host's own transform, checked against the layer it composed itself
+Text.rotationX: ✓ read rotationX of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.pivotX: ✓ read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself

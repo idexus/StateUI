@@ -112,10 +112,10 @@ final class AppKitContainerTests: XCTestCase {
     }
 
     @MainActor
-    func testHStackGivesAPaddedLabelItsCompleteNativeTextWidth() throws {
+    func testHStackGivesAPaddedTextItsCompleteNativeTextWidth() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("One"),
             .fontSize: .number(13),
@@ -128,7 +128,7 @@ final class AppKitContainerTests: XCTestCase {
         let nativeStack = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
         let nativeLabel = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("label")) as? AppKitLabelView)
+            renderer.viewForTesting(id: .manual("label")) as? AppKitTextView)
         nativeStack.frame = NSRect(origin: .zero, size: nativeStack.intrinsicContentSize)
         nativeStack.layoutSubtreeIfNeeded()
 
@@ -142,7 +142,7 @@ final class AppKitContainerTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string(String(repeating: "A line that must wrap inside its card. ", count: 8)),
             .fontSize: .number(13),
@@ -221,7 +221,7 @@ final class AppKitContainerTests: XCTestCase {
     func testANegativeSizeRequestMeansNoExplicitNativeExtent() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("Measured by AppKit"),
             .width: .number(-1),
@@ -249,7 +249,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAnExplicitExtentIsClampedToItsAuthoredBounds() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("Bounded"),
             .width: .number(200),
@@ -276,7 +276,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAFillAlignmentStillRespectsAMaximumExtent() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("Maximum"),
             .maximumWidth: .number(80),
@@ -329,7 +329,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAMinimumExtentRaisesTheNativeMeasuredSize() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var label = HostPatch(id: .manual("label"), type: .label)
+        var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("Minimum"),
             .minimumHeight: .number(44),
@@ -688,7 +688,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                ScrollView { Label("code") }
+                ScrollView { Text("code") }
                     .orientation(.horizontal)
                     .background(Color("#00FF00"))
                     .stroke(Color("#FF0000"))

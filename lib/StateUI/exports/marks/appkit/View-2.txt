@@ -35,13 +35,6 @@ Image.tapped: ✓ tap on Image: handed to the host's recognizer or handler, no N
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridRow: ✅
-Label.allowDrop: not realized
-Label.dragLeave: not realized
-Label.dragOver: not realized
-Label.drop: not realized
-Label.frameChanged: ✅
-Label.horizontalAlignment: ✅
-Label.verticalAlignment: ✅
 Line.pointerEntered: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.pointerExited: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.pointerMoved: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -89,6 +82,13 @@ Stepper.swiped: ✓ pan on Stepper: handed to the host's recognizer or handler, 
 Switch.panTouchCount: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.panUpdated: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.panXChannel: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Text.allowDrop: not realized
+Text.dragLeave: not realized
+Text.dragOver: not realized
+Text.drop: not realized
+Text.frameChanged: ✅
+Text.horizontalAlignment: ✅
+Text.verticalAlignment: ✅
 TextEditor.frameChanged: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRowSpan: ✅

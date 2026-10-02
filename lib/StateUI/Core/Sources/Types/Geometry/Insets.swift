@@ -4,7 +4,7 @@
 /// Space on the four sides of something.
 ///
 ///     VStack { … }.padding(24)
-///     Label("Total").margin(0, 8, 0, 16)
+///     Text("Total").margin(0, 8, 0, 16)
 ///
 /// `.padding` keeps it INSIDE the control, between its edge and its content;
 /// `.margin` keeps it OUTSIDE, between the control and its neighbours. A

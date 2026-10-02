@@ -30,7 +30,7 @@ final class AppKitActsTests: XCTestCase {
         defer { renderer.closeForTesting() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
         let field = try XCTUnwrap(renderer.nativeViews(NSTextField.self).first { $0.isEditable })
-        let answer = { renderer.nativeViews(AppKitLabelView.self).last?.textForTesting.string }
+        let answer = { renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string }
         XCTAssertEqual(buttons.count, 3)
 
         buttons[0].clickForTesting()
@@ -63,7 +63,7 @@ final class AppKitActsTests: XCTestCase {
         let renderer = AppKitRenderer.running { EnablingAndFocusing() }
         defer { renderer.closeForTesting() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
-        let answer = { renderer.nativeViews(AppKitLabelView.self).last?.textForTesting.string }
+        let answer = { renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string }
 
         button.clickForTesting()
         settle(renderer) { answer() != "-" }
@@ -89,7 +89,7 @@ private struct Focusing: ContentView {
             Button("Hide").onClicked {
                 answer = try await OnScreenKeyboard.hide() ? "hid" : "nothing"
             }
-            Label(answer)
+            Text(answer)
         }
     }
 }
@@ -108,7 +108,7 @@ private struct EnablingAndFocusing: ContentView {
                 enabled = true
                 answer = try await field.focus() ? "took" : "refused"
             }
-            Label(answer)
+            Text(answer)
         }
     }
 }

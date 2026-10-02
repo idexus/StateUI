@@ -1,5 +1,5 @@
 # revision 2.1
-Label.frameChanged: ✅
 NavigationStack: ✅
 NavigationStack.popped: ✅
 Page.title: ✅
+Text.frameChanged: ✅

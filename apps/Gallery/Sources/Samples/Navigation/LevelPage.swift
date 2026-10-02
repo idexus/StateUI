@@ -51,17 +51,17 @@ struct LevelPage: ContentView {
         VStack {
             SectionTitle("Pushed page")
 
-            Label("Level \(level)")
+            Text("Level \(level)")
                 .fontSize(32)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("appeared \(arrivals)× · disappeared \(departures)×")
+            Text("appeared \(arrivals)× · disappeared \(departures)×")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
-            Label("navigated to \(navigatedTo)× · leaving \(leaving)× · left \(left)×")
+            Text("navigated to \(navigatedTo)× · leaving \(leaving)× · left \(left)×")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -82,7 +82,7 @@ struct LevelPage: ContentView {
             SwitchRow("Bar", $showsBar)
             SwitchRow("Way back", $offersBack)
 
-            Label("Go deeper and come back: the same page counts a second arrival.")
+            Text("Go deeper and come back: the same page counts a second arrival.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)

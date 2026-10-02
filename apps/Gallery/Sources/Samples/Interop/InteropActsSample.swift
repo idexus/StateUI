@@ -94,7 +94,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
                     status = "flashed \\(stars)"
                 }
 
-            Label(status)
+            Text(status)
         }
         """
 
@@ -462,7 +462,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
                     status = "flashed \(stars)"
                 }
 
-            Label(status)
+            Text(status)
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
         }
@@ -471,21 +471,21 @@ struct InteropActsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("`StateUIActs.add` registers a function under an act the "
+            Text("`StateUIActs.add` registers a function under an act the "
                 + "application's contract declares, with what it takes and answers. "
                 + "`stateUICall` calls it from any handler: typed arguments in, typed "
                 + "values back, and the compiler refuses a performer of another shape." + InteropHost.awaiting)
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A performer that throws, a name nothing registered, and an answer of "
+            Text("A performer that throws, a name nothing registered, and an answer of "
                 + "another shape than the contract's resume the handler by throwing "
                 + "`StateUIError` with the reason. Prefix the names with the application's "
                 + "own, so they never meet the library's.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An act of a control's own is declared in the control's contract and "
+            Text("An act of a control's own is declared in the control's contract and "
                 + "called through its aim: `call` puts the control's identity in argument "
                 + "0, and the host turns it back into the \(InteropHost.made) it made - so the performer "
                 + "is handed that \(InteropHost.made) itself.")

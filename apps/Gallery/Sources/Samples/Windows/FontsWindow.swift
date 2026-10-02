@@ -24,7 +24,7 @@ struct FontsPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("The font this gallery's preview is set in.")
+            Text("The font this gallery's preview is set in.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 

@@ -22,7 +22,7 @@ final class AndroidMenusTests: XCTestCase {
         try onMainActor {
             let heard = Received<String>()
             let host = AndroidRenderer.running {
-                Label("Row").contextMenu {
+                Text("Row").contextMenu {
                     MenuItem("Duplicate").onClicked { heard.values.append("duplicate") }
                     Menu("Move") {
                         MenuItem("To the top").isEnabled(false).onClicked { heard.values.append("top") }
@@ -32,7 +32,7 @@ final class AndroidMenusTests: XCTestCase {
                     MenuItem("Erase").isDestructive(true).isEnabled(false).onClicked { heard.values.append("erase") }
                 }
             }
-            let label = try XCTUnwrap(host.views(AndroidLabelView.self).first)
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
             XCTAssertTrue(Java.callBool(label.reference, JavaAPI.isLongClickable))
 
             let menu = TestMenus.empty()
@@ -50,14 +50,14 @@ final class AndroidMenusTests: XCTestCase {
         try onMainActor {
             let offers = State(wrappedValue: true)
             let host = AndroidRenderer.running {
-                if offers.wrappedValue { return Label("Row").contextMenu { MenuItem("Duplicate") } }
-                return Label("Row")
+                if offers.wrappedValue { return Text("Row").contextMenu { MenuItem("Duplicate") } }
+                return Text("Row")
             }
-            let label = try XCTUnwrap(host.views(AndroidLabelView.self).first)
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
 
             offers.wrappedValue = false
             host.runtime.pump.turn()
-            XCTAssertTrue(host.views(AndroidLabelView.self).first === label, "the same view")
+            XCTAssertTrue(host.views(AndroidTextView.self).first === label, "the same view")
             XCTAssertFalse(Java.callBool(label.reference, JavaAPI.isLongClickable))
             let menu = TestMenus.empty()
             label.menuOpening(menu.reference)

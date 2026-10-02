@@ -41,7 +41,7 @@ That is why `PropertyContainer.Modified` is an associated type rather than
 `Self`.
 
 `ModifiedContent` offers what every view has - margin, opacity, grid placement
-- and nothing only some views have: what is inside might be a Label or a stack,
+- and nothing only some views have: what is inside might be a Text or a stack,
 and `.fontSize()` on one would be a promise the library cannot keep. Because
 those modifiers return a `ModifiedContent`, a composed view's own modifiers
 come first in a chain, and an aim is written directly on the initializer's

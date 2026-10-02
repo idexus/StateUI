@@ -15,8 +15,6 @@ Image.frame: ✅
 ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.width: ✅
-Label.isVisible: ✅
-Label.translationX: ✓ read translationX of Label: the host's own transform, checked against the layer it composed itself
 Line.scale: ✓ read scale of Line: the host's own transform, checked against the layer it composed itself
 Map.rotation: ✓ read rotation of Map: the host's own transform, checked against the layer it composed itself
 Path.layoutDirection: ✅
@@ -34,6 +32,8 @@ SearchField.layoutDirection: ✅
 Slider.isAccessibilityHidden: ✅
 Stepper.accessibilityLabel: ✅
 Switch.frame: ✅
+Text.isVisible: ✅
+Text.translationX: ✓ read translationX of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.width: ✅

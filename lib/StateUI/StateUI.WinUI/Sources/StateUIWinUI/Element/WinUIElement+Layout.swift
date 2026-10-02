@@ -15,7 +15,7 @@ extension WinUIElement {
     /// a label the runs of its spans.
     func arrangeChildren() {
         if let items = view as? WinUIItemsView { return items.childrenChanged() }
-        if let label = view as? WinUILabelView {
+        if let label = view as? WinUITextView {
             return arrangeRuns(of: label)
         }
         let arranged = element.arrangedChildren.map(\.winUI)
@@ -26,7 +26,7 @@ extension WinUIElement {
 
     /// A label's spans as runs of its words (`MountedElement.textRuns`); without spans, its own words, once the runs
     /// are gone.
-    private func arrangeRuns(of label: WinUILabelView) {
+    private func arrangeRuns(of label: WinUITextView) {
         guard let runs = element.textRuns else {
             if hasRuns {
                 hasRuns = false

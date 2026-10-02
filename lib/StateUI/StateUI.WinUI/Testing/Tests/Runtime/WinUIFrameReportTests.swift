@@ -36,7 +36,7 @@ final class WinUIFrameReportTests: XCTestCase {
             let shown = State(wrappedValue: false)
             let host = WinUIRenderer.running {
                 VStack {
-                    Label("above").height(20)
+                    Text("above").height(20)
                     if shown.wrappedValue {
                         ColorBox(.steelBlue).width(120).height(60)
                             .onEvent(ViewContract.frameChanged) { heard.values.append($0) }

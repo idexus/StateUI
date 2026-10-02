@@ -5,7 +5,7 @@
 Where text sits inside the space its own element was given.
 
 ```swift
-Label("In the middle")
+Text("In the middle")
     .horizontalTextAlignment(.center)
     .verticalTextAlignment(.center)
     .height(80)
@@ -13,7 +13,7 @@ Label("In the middle")
 
 Wears: [VisualElement](VisualElement.md)
 
-Worn by: [Label](../Label.md) · [Picker](../Picker.md) · [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
+Worn by: [Picker](../Picker.md) · [SearchField](../SearchField.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/TextAlignmentElementContract.swift`.
 

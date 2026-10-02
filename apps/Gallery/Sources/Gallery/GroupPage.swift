@@ -25,11 +25,11 @@ struct GroupPage: ContentView {
     var content: some View {
         ScrollView {
             VStack {
-                Label(group.title)
+                Text(group.title)
                     .fontSize(28)
                     .fontAttributes(.bold)
 
-                Label(group.summary)
+                Text(group.summary)
                     .fontSize(14)
                     .textColor(Palette.subtle)
 

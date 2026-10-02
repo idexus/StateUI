@@ -18,7 +18,7 @@ struct MainPage: ContentView {
                 .height(120)
                 .horizontalAlignment(.center)
 
-            Label(name.isEmpty ? "Hello, StateUI!" : "Hello, \(name)!")
+            Text(name.isEmpty ? "Hello, StateUI!" : "Hello, \(name)!")
                 .fontSize(28)
                 .fontAttributes(.bold)
                 .horizontalAlignment(.center)

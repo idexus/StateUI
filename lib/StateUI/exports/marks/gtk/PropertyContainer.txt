@@ -10,7 +10,6 @@ Grid.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a Gtk
 HStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Image.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 ItemsView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
-Label.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Line.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Map.accessibilityIdentifier: 🧩
 MenuItem.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
@@ -31,6 +30,7 @@ SplitView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier 
 Stepper.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Switch.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 TabbedView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+Text.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 TextEditor.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 TextField.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 TimePicker.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.

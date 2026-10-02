@@ -1,5 +1,4 @@
 # revision 1.1
-Label.text: ✅
 Slider: ✅
 Slider.dragCompleted: – GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.
 Slider.dragStarted: – GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.
@@ -8,3 +7,4 @@ Slider.maximum: ✅
 Slider.minimum: ✅
 Slider.value: ✅
 Slider.valueChanged: ✅
+Text.text: ✅

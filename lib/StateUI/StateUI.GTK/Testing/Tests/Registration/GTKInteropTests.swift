@@ -56,7 +56,7 @@ private struct Calling: ContentView {
                     }
                 }
 
-            Label(answer)
+            Text(answer)
         }
         .onCreated {
             heard = [
@@ -154,7 +154,7 @@ private struct Pulling: ContentView {
                     }
                 }
 
-            Label(said)
+            Text(said)
         }
     }
 }
@@ -282,6 +282,6 @@ final class GTKInteropTests: XCTestCase {
 private extension GTKRenderer {
     /// The last thing the page said.
     var said: String {
-        views(GTKLabelView.self).last?.text ?? ""
+        views(GTKTextView.self).last?.text ?? ""
     }
 }

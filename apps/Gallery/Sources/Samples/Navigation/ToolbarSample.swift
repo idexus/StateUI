@@ -41,24 +41,24 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 // builds this closure.
                 DebugInfoLabel()
 
-                Label("Saved \\(saved) time(s)")
-                Label(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
+                Text("Saved \\(saved) time(s)")
+                Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
 
                 HStack {
                     Switch($afterGallery)
-                    Label("After the gallery's actions")
+                    Text("After the gallery's actions")
                 }
                 HStack {
                     Switch($inGallery)
-                    Label("In the gallery's group")
+                    Text("In the gallery's group")
                 }
                 HStack {
                     Switch($atLeading)
-                    Label("At the leading edge")
+                    Text("At the leading edge")
                 }
                 HStack {
                     Switch($addWords)
-                    Label("Add's words beside its picture")
+                    Text("Add's words beside its picture")
                 }
             }
             // The page's actions, declared where their state lives: they
@@ -116,14 +116,14 @@ struct ToolbarSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("Saved \(saved) time(s)")
+            Text("Saved \(saved) time(s)")
                 .fontSize(17)
 
-            Label(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
+            Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Press Save and Add on the bar; Clear is in its overflow.")
+            Text("Press Save and Add on the bar; Clear is in its overflow.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -193,7 +193,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier(id)
                 .accessibilityLabel(words)
 
-            Label(words)
+            Text(words)
                 .fontSize(14)
                 .verticalAlignment(.center)
         }
@@ -202,23 +202,23 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Save and Add are on the page's bar. Clear is a destructive item in the "
+            Text("Save and Add are on the page's bar. Clear is a destructive item in the "
                 + "native overflow, enabled once something is saved.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The gallery's own actions stand at the edge on every page; the sample's "
+            Text("The gallery's own actions stand at the edge on every page; the sample's "
                 + "come in from the title's side. `order: 1` moves its group after them, "
                 + "`id: \"gallery\"` joins their group, `.leading` takes it to the other edge.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Add shows its picture alone, its words in its tip; `.showsText(true)` "
+            Text("Add shows its picture alone, its words in its tip; `.showsText(true)` "
                 + "puts them beside it where the platform's bar can.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Recent files live in the desktop File menu, after Save: "
+            Text("Recent files live in the desktop File menu, after Save: "
                 + "Add puts one there, choosing one removes it, and an empty submenu disables "
                 + "itself.")
                 .fontSize(12)

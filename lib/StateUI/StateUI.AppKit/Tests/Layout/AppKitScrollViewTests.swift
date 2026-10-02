@@ -250,9 +250,9 @@ final class AppKitScrollViewTests: XCTestCase {
     func testAVerticalScrollersBarVisibilityReachesItsNativeScroller() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                ScrollView { Label("Default") }
-                ScrollView { Label("Never") }.verticalScrollBarVisibility(.never)
-                ScrollView { Label("Always") }.verticalScrollBarVisibility(.always)
+                ScrollView { Text("Default") }
+                ScrollView { Text("Never") }.verticalScrollBarVisibility(.never)
+                ScrollView { Text("Always") }.verticalScrollBarVisibility(.always)
             }
         }
         defer { renderer.closeForTesting() }
@@ -268,12 +268,12 @@ final class AppKitScrollViewTests: XCTestCase {
     func testAHorizontalScrollersBarVisibilityReachesItsNativeScroller() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                ScrollView { Label("Default") }
+                ScrollView { Text("Default") }
                     .orientation(.horizontal)
-                ScrollView { Label("Never") }
+                ScrollView { Text("Never") }
                     .orientation(.horizontal)
                     .horizontalScrollBarVisibility(.never)
-                ScrollView { Label("Always") }
+                ScrollView { Text("Always") }
                     .orientation(.horizontal)
                     .horizontalScrollBarVisibility(.always)
             }
@@ -318,7 +318,7 @@ final class AppKitScrollViewTests: XCTestCase {
     func testATrackpadPushPastHalfACardTurnsTheRun() throws {
         let positions = Received<Int>()
         let renderer = AppKitRenderer.running {
-            GalleryView(0..<7) { number in Label("\(number)") }
+            GalleryView(0..<7) { number in Text("\(number)") }
                 .onPositionChanged { positions.values.append($0) }
                 .onItemTapped { _ in }
         }
@@ -381,7 +381,7 @@ final class AppKitScrollViewTests: XCTestCase {
         let renderer = AppKitRenderer.running { BoundStrip() }
         defer { renderer.closeForTesting() }
         let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
-        let reading = try XCTUnwrap(renderer.nativeViews(AppKitLabelView.self).first)
+        let reading = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
         scroller.window?.contentView?.layoutSubtreeIfNeeded()
         XCTAssertFalse(renderer.frameClockRunningForTesting, "a still page keeps no clock")
 
@@ -458,7 +458,7 @@ private struct BoundStrip: ContentView {
             .scrollOffset($offset)
             .height(300)
 
-            Label("\(Int($offset.journey.value.y)) down")
+            Text("\(Int($offset.journey.value.y)) down")
         }
     }
 }

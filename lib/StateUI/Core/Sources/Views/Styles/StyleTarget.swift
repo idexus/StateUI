@@ -11,7 +11,7 @@ public protocol StyleTarget: VisualElement {
     init()
 }
 
-extension Label: StyleTarget {}
+extension Text: StyleTarget {}
 extension Button: StyleTarget {}
 extension TextField: StyleTarget {}
 extension TextEditor: StyleTarget {}

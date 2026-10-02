@@ -23,9 +23,9 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("application · \\(application.phase)")   // active, inactive or background
-            Label("this gallery · \\(scene.phase)")        // active, inactive or background
-            Label("this window · \\(window.phase)")        // from created to destroying
+            Text("application · \\(application.phase)")   // active, inactive or background
+            Text("this gallery · \\(scene.phase)")        // active, inactive or background
+            Text("this window · \\(window.phase)")        // from created to destroying
         }
         """
 
@@ -39,7 +39,7 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
             PhaseRow(name: "this gallery", value: "\(scene.phase)")
             PhaseRow(name: "this window", value: "\(window.phase)")
 
-            Label(verdict)
+            Text(verdict)
                 .fontSize(14)
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)
@@ -73,13 +73,13 @@ private struct PhaseRow: ContentView {
 
     var content: some View {
         HStack {
-            Label(name)
+            Text(name)
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .width(110)
                 .verticalAlignment(.center)
 
-            Label(value)
+            Text(value)
                 .fontSize(24)
                 .fontAttributes(.bold)
                 .verticalAlignment(.center)

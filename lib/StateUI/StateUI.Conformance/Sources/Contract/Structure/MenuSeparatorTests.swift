@@ -17,7 +17,7 @@
                 let parted = State(wrappedValue: true)
                 s.start {
                     VStack {
-                        Label("Row").contextMenu {
+                        Text("Row").contextMenu {
                             MenuItem("Cut")
                             if parted.wrappedValue { MenuSeparator() }
                             MenuItem("Delete")

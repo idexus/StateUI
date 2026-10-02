@@ -35,8 +35,6 @@ HStack.frameChanged: ✅
 HStack.margin: ✅
 Image.pinchUpdated: ✓ pinch on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.panYChannel: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
-Label.tapCount: ✓ tap on Label: the view's listening handed the recognizer's states, no touch sent
-Label.tapped: ✓ tap on Label: the view's listening handed the recognizer's states, no touch sent
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
@@ -88,6 +86,8 @@ Switch.pointerExited: ✓ hover on Switch: the view's listening handed the recog
 Switch.pointerMoved: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.pointerPressed: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.pointerReleased: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
+Text.tapCount: ✓ tap on Text: the view's listening handed the recognizer's states, no touch sent
+Text.tapped: ✓ tap on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.swipeDirection: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.swipeThreshold: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.swiped: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent

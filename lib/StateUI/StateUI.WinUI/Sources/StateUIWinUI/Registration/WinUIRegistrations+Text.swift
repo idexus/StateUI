@@ -5,15 +5,15 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A Label: a `TextBlock` in a `Border` - its words, how they break and stand across it and down it, the space
+    /// A Text: a `TextBlock` in a `Border` - its words, how they break and stand across it and down it, the space
     /// between the letters and the lines, and what it is drawn over.
     static func text(_ registry: Registry<WinUIView>) {
-        registry.add(LabelContract.self, create: { _ in WinUILabelView() }) { label in
+        registry.add(TextContract.self, create: { _ in WinUITextView() }) { label in
             label.applies(TextMembers.members) { view, values in applyText(view, values) }
-            label.applies([LabelContract.lineBreak, LabelContract.maximumLines]) { view, values in
+            label.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
                 view.setLines(
-                    breaking: values[LabelContract.lineBreak] ?? .wordWrap,
-                    maximum: values[LabelContract.maximumLines])
+                    breaking: values[TextContract.lineBreak] ?? .wordWrap,
+                    maximum: values[TextContract.maximumLines])
             }
             label.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
@@ -39,7 +39,7 @@ extension WinUIRegistrations {
     static func applyText<Realized: ElementContract>(_ view: WinUIView, _ values: ElementValues<Realized>) {
         if let words = TextMembers.words(values) { (view as? WinUIWordsView)?.setText(words) }
         if let look = TextMembers.look(values) {
-            if let text = view as? WinUITextView {
+            if let text = view as? WinUITextualView {
                 text.setTextFont(size: look.size, attributes: look.attributes, family: look.family)
             } else {
                 view.setFont(size: look.size, attributes: look.attributes, family: look.family)

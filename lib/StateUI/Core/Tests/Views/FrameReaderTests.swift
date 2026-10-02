@@ -28,7 +28,7 @@ final class FrameReaderTests: XCTestCase {
 
         let patch = renders.render(
             VStack {
-                Label("content")
+                Text("content")
             }
             .onFrameChanged(in: space) { heard.frames.append($0) }
             .body)
@@ -163,7 +163,7 @@ final class FrameReaderTests: XCTestCase {
             Node(type: "Window", children: [
                 VStack {
                     FrameReader { frame in
-                        Label("\(Int(frame.width)) wide")
+                        Text("\(Int(frame.width)) wide")
                     }
                 }.body,
             ])
@@ -199,10 +199,10 @@ final class FrameReaderTests: XCTestCase {
             Node(type: "Window", children: [
                 VStack {
                     FrameReader { frame in
-                        Label("\(Int(frame.width)) wide")
+                        Text("\(Int(frame.width)) wide")
                     }
 
-                    Label("sibling")
+                    Text("sibling")
                 }.body,
             ])
         }
@@ -222,7 +222,7 @@ final class FrameReaderTests: XCTestCase {
         }
 
         let touched = names(in: patch)
-        XCTAssertTrue(touched.contains("Label"), "the reader's content was not rebuilt")
+        XCTAssertTrue(touched.contains("Text"), "the reader's content was not rebuilt")
         XCTAssertFalse(
             patch.children.first?.children.contains { $0.props["text"] == .string("sibling") } ?? false,
             "the sibling was rebuilt for a measurement it never read")

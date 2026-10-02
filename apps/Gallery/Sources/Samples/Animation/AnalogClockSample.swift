@@ -301,7 +301,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The time comes from the platform - `ClockTime.now()` - and the wait is "
+            Text("The time comes from the platform - `ClockTime.now()` - and the wait is "
                 + "plain `Task.sleep`, which resumes on time on every platform. Every tick "
                 + "sleeps to the NEXT whole second rather than for a fixed while - the "
                 + "reading carries milliseconds, so the spring lands just past each "
@@ -309,14 +309,14 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Each hand is a box whose bottom sits at the face's centre - "
+            Text("Each hand is a box whose bottom sits at the face's centre - "
                 + "the bottom margin equals its length, so centring the margin "
                 + "box puts the foot on the middle - and pivotY(1) makes that "
                 + "foot the pivot.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A hand's rotation is DRIVEN - .rotation($sAngle) over a state "
+            Text("A hand's rotation is DRIVEN - .rotation($sAngle) over a state "
                 + "the host moves - so a tick is that state being sent somewhere "
                 + "and the hand springs there on the display's own frames, with "
                 + "nothing described in between. sAngle answers where "
@@ -326,7 +326,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Leaving this page stops the loop, and coming back starts a "
+            Text("Leaving this page stops the loop, and coming back starts a "
                 + "fresh one. The hands are drawn wherever the angles were left, "
                 + "because the angles are state, and the first reading ASSIGNS "
                 + "the time instead of flying to it - each journey's `value` is "

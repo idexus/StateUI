@@ -78,10 +78,6 @@ ItemsView.dragOver: not realized
 ItemsView.drop: not realized
 ItemsView.frameChanged: ✅
 ItemsView.panYChannel: ✅
-Label.frameChanged: ✅
-Label.gridColumnSpan: ✅
-Label.gridRowSpan: ✅
-Label.pinchUpdated: ✅
 Line.canDrag: not realized
 Line.dragStarting: not realized
 Line.dragText: not realized
@@ -186,6 +182,10 @@ Switch.dragOver: not realized
 Switch.drop: not realized
 Switch.frameChanged: ✅
 Switch.panYChannel: ✅
+Text.frameChanged: ✅
+Text.gridColumnSpan: ✅
+Text.gridRowSpan: ✅
+Text.pinchUpdated: ✅
 TextEditor.frameChanged: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRowSpan: ✅

@@ -6,8 +6,8 @@ What an element draws of its own box: the shape its background, its outline and 
 
 ```swift
 VStack {
-    Label("Cheese")
-    Label("Aged twelve months")
+    Text("Cheese")
+    Text("Aged twelve months")
 }
 .padding(14)
 .shape(.roundedRectangle(8))

@@ -19,7 +19,7 @@ struct ButtonSample: SampleContent, ExampleContent {
             Button("Increment")
                 .onClicked { counter += 1 }
 
-            Label("Clicked \\(counter) time(s)")
+            Text("Clicked \\(counter) time(s)")
 
             Button("Outlined")
                 .background(.transparent)
@@ -44,7 +44,7 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
-            Label("Clicked \(counter) time(s)")
+            Text("Clicked \(counter) time(s)")
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
 
@@ -67,7 +67,7 @@ struct ButtonSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("Also `.onPressed` and `.onReleased`, for the moment the button goes "
+        Text("Also `.onPressed` and `.onReleased`, for the moment the button goes "
             + "down and comes up.")
             .fontSize(12)
             .textColor(Palette.subtle)

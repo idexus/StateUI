@@ -11,7 +11,7 @@ private struct LoadingList: ExampleContent {
 
         Grid {
             HStack {
-                Label(loading ? "Loading" : "\\(count) items")
+                Text(loading ? "Loading" : "\\(count) items")
                 Button("Start over")
                     .isEnabled(count > 30)
                     .onClicked { count = 30 }
@@ -22,7 +22,7 @@ private struct LoadingList: ExampleContent {
                 .gridRow(0)
 
             ItemsView(0..<count) { number in
-                Label("Item \\(number + 1)").padding(14, 10)
+                Text("Item \\(number + 1)").padding(14, 10)
             }
             // Within five items of the end, thirty more - once each time.
             .onEndReached(within: 5) {
@@ -41,7 +41,7 @@ private struct LoadingList: ExampleContent {
     var content: some View {
         Grid {
             HStack {
-                Label(loading ? "Loading" : "\(count) items")
+                Text(loading ? "Loading" : "\(count) items")
                     .fontSize(13)
                     .textColor(Palette.accent)
                     .verticalAlignment(.center)
@@ -59,7 +59,7 @@ private struct LoadingList: ExampleContent {
                 .gridRow(0)
 
             ItemsView(0..<count) { number in
-                Label("Item \(number + 1)")
+                Text("Item \(number + 1)")
                     .fontSize(14)
                     .padding(14, 10)
             }
@@ -78,7 +78,7 @@ private struct LoadingList: ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("Scroll towards the end: thirty more arrive, up to three hundred.")
+        Text("Scroll towards the end: thirty more arrive, up to three hundred.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

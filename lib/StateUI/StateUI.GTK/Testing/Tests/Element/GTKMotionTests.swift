@@ -11,14 +11,14 @@ import XCTest
 final class GTKMotionTests: XCTestCase {
     func testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
         onUIThread {
-            XCTAssertTrue(GTKTransitionSurface.presents(.opacity, on: .label))
+            XCTAssertTrue(GTKTransitionSurface.presents(.opacity, on: .text))
             XCTAssertTrue(GTKTransitionSurface.presents(.translationX, on: .button))
             XCTAssertTrue(GTKTransitionSurface.presents(.value, on: .slider))
             XCTAssertTrue(GTKTransitionSurface.presents(.spacing, on: .vStack))
-            XCTAssertFalse(GTKTransitionSurface.presents(.value, on: .label))
+            XCTAssertFalse(GTKTransitionSurface.presents(.value, on: .text))
             XCTAssertTrue(GTKTransitionSurface.presents(.opacity, on: .switch), "every registered view")
             XCTAssertFalse(GTKTransitionSurface.presents(.opacity, on: .map))
-            XCTAssertFalse(GTKTransitionSurface.presents(Prop("custom"), on: .label))
+            XCTAssertFalse(GTKTransitionSurface.presents(Prop("custom"), on: .text))
         }
     }
 
@@ -26,11 +26,11 @@ final class GTKMotionTests: XCTestCase {
         try onUIThread {
             let clock = TestClock()
             let host = GTKRenderer.bare(clock: clock)
-            var initial = HostPatch(id: .manual("label"), type: .label)
+            var initial = HostPatch(id: .manual("label"), type: .text)
             initial.properties[.opacity] = .number(0.25)
             host.apply(initial)
 
-            var changed = HostPatch(id: .manual("label"), type: .label)
+            var changed = HostPatch(id: .manual("label"), type: .text)
             changed.properties[.opacity] = .number(0.75)
             changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
             host.apply(changed)
@@ -52,11 +52,11 @@ final class GTKMotionTests: XCTestCase {
     func testLessMotionPutsThePropertyAtItsValueAtOnce() throws {
         try onUIThread {
             let host = GTKRenderer.bare(clock: TestClock(), reducesMotion: true)
-            var initial = HostPatch(id: .manual("label"), type: .label)
+            var initial = HostPatch(id: .manual("label"), type: .text)
             initial.properties[.opacity] = .number(0.25)
             host.apply(initial)
 
-            var changed = HostPatch(id: .manual("label"), type: .label)
+            var changed = HostPatch(id: .manual("label"), type: .text)
             changed.properties[.opacity] = .number(0.75)
             changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
             host.apply(changed)
@@ -74,7 +74,7 @@ final class GTKMotionTests: XCTestCase {
             let arrived = State(wrappedValue: false)
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
-                    Label(arrived.wrappedValue ? "arrived" : "away")
+                    Text(arrived.wrappedValue ? "arrived" : "away")
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
                     Button("Go").onClicked {
@@ -96,7 +96,7 @@ final class GTKMotionTests: XCTestCase {
             XCTAssertEqual(sliders.map(\.value), [1, 1])
 
             host.settle { arrived.wrappedValue }
-            XCTAssertEqual(host.views(GTKLabelView.self).map(\.text), ["arrived"])
+            XCTAssertEqual(host.views(GTKTextView.self).map(\.text), ["arrived"])
         }
     }
 
@@ -107,7 +107,7 @@ final class GTKMotionTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    Label("turned")
+                    Text("turned")
                         .width(100)
                         .height(40)
                         .translationX(10)
@@ -117,7 +117,7 @@ final class GTKMotionTests: XCTestCase {
                         .pivotX(0)
                 }
             }
-            let label = try XCTUnwrap(host.views(GTKLabelView.self).first)
+            let label = try XCTUnwrap(host.views(GTKTextView.self).first)
             let place = try XCTUnwrap(label.placed)
             let pivot = label.drawn((0, 20))
             let along = label.drawn((1, 20))
@@ -139,13 +139,13 @@ final class GTKMotionTests: XCTestCase {
             let offset = State(wrappedValue: 0.0)
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
-                    Label("moving").translationX(offset.projectedValue)
+                    Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked {
                         try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear))
                     }
                 }
             }
-            let label = try XCTUnwrap(host.views(GTKLabelView.self).first)
+            let label = try XCTUnwrap(host.views(GTKTextView.self).first)
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
             let place = try XCTUnwrap(label.placed)

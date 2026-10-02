@@ -269,5 +269,5 @@ private struct PhasesApplication: Application {
 }
 
 private struct PhasesWindow: Window {
-    var page: any Page { Label("phases") }
+    var page: any Page { Text("phases") }
 }

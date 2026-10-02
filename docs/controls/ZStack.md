@@ -7,7 +7,7 @@ Lays its children one over another, each in the whole room or in the area it nam
 ```swift
 ZStack {
     ColorBox(.cornflowerBlue)
-    Label("Bottom right")
+    Text("Bottom right")
         .horizontalAlignment(.end)
         .verticalAlignment(.end)
 }

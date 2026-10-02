@@ -147,9 +147,9 @@ final class HostContractTests: XCTestCase {
         let path = State<[Int]>([])
         let sidebar = State(false)
         let arrangements: [any Page] = [
-            NavigationStack(path.projectedValue) { Label("root") } destination: { _ in Label("page") },
-            TabbedView([0, 1]) { _ in Label("tab") },
-            SplitView(sidebar.projectedValue) { Label("sidebar") } detail: { Label("detail") },
+            NavigationStack(path.projectedValue) { Text("root") } destination: { _ in Text("page") },
+            TabbedView([0, 1]) { _ in Text("tab") },
+            SplitView(sidebar.projectedValue) { Text("sidebar") } detail: { Text("detail") },
         ]
 
         for arrangement in arrangements {
@@ -321,7 +321,7 @@ final class HostContractTests: XCTestCase {
 
         let files = try SourceTree.allSources().map(\.path)
             .filter { $0.hasPrefix("Views/") || $0.hasPrefix("Types/") }
-        XCTAssertTrue(files.contains { $0.hasSuffix("/Label.swift") }, "the views are read")
+        XCTAssertTrue(files.contains { $0.hasSuffix("/Text.swift") }, "the views are read")
         for file in files {
             let source = try SourceTree.text(in: file)
             for name in former + ["contextFlyout"] {

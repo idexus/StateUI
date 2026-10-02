@@ -84,21 +84,21 @@ struct MotionSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("A change that travels")
+            Text("A change that travels")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
 
             panel(travels: true)
 
-            Label("The same, told to stay still")
+            Text("The same, told to stay still")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
 
             panel(travels: false)
 
-            Label("The same, holding only its size still")
+            Text("The same, holding only its size still")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
@@ -140,12 +140,12 @@ struct MotionSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Press Size or Colour. The first panel travels, the second "
+            Text("Press Size or Colour. The first panel travels, the second "
                 + "arrives immediately, and the third holds only its size still.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Change the law to compare eased, spring, slow and immediate "
+            Text("Change the law to compare eased, spring, slow and immediate "
                 + "motion. StateUI sends destinations; the host supplies the frames.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

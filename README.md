@@ -58,7 +58,7 @@ struct CounterPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("Tapped \(count) times")
+            Text("Tapped \(count) times")
             Button("Tap me").onClicked { count += 1 }
         }
     }

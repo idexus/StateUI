@@ -26,20 +26,20 @@ struct TabsControls: ContentView {
             }
             .spacing(4)
 
-            Label("currentPage sent to the host · \(sentToTheHost)")
+            Text("currentPage sent to the host · \(sentToTheHost)")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
 
             if agrees {
-                Label(verdict)
+                Text(verdict)
                     .fontSize(12)
                     .textColor(Palette.subtle)
             } else {
                 HStack {
                     WarningMark()
 
-                    Label(verdict)
+                    Text(verdict)
                         .fontSize(12)
                         .fontAttributes(.bold)
                         .textColor(Palette.accent)
@@ -59,7 +59,7 @@ struct TabsControls: ContentView {
 
             move("Reset") { nav.resetTabs() }
 
-            Label("last move · \(nav.tabsNote)")
+            Text("last move · \(nav.tabsNote)")
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.subtle)
@@ -74,18 +74,18 @@ struct TabsControls: ContentView {
     /// page, so there would be nothing left to press.
     private func row(index: Int, tab: DemoTab) -> some View {
         HStack {
-            Label("\(index)")
+            Text("\(index)")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.subtle)
                 .width(24)
 
-            Label(tab.caption)
+            Text(tab.caption)
                 .fontSize(13)
                 .textColor(tab == nav.tab ? Palette.accent : Palette.text)
                 .width(90)
 
-            Label(tab == nav.tab ? "◀ selected" : " ")
+            Text(tab == nav.tab ? "◀ selected" : " ")
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .width(80)

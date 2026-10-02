@@ -57,8 +57,8 @@ Everything a builder collects is an `Element`: something that answers `body`, a
 `Node` read afresh on every render.
 
 ```text
-  a control              struct Label: View { var node: Node }
-    Label("Total")         body is its node: Node(Label, props: [text: "Total"])
+  a control              struct Text: View { var node: Node }
+    Text("Total")         body is its node: Node(Text, props: [text: "Total"])
 
   a container            VStack { … }
                            Node(VStack) whose content closure runs only when
@@ -117,12 +117,12 @@ through those members, never through spelled tokens.
 
 ```text
   Contracts/Elements, Contracts/Tiers, Contracts/Mixins
-    LabelContract: ElementContract
-      nodeType "Label", layer, tiers [View, TextElement, FontElement, …]
+    TextContract: ElementContract
+      nodeType "Text", layer, tiers [View, TextElement, FontElement, …]
       members: lineBreak, maximumLines         ElementProperty / ElementEvent / ElementAct
          │
-         ├─ Node(contract: LabelContract.self)           the control's node type
-         ├─ setValue(LabelContract.maximumLines, 3)      a property: its token, a typed value
+         ├─ Node(contract: TextContract.self)           the control's node type
+         ├─ setValue(TextContract.maximumLines, 3)      a property: its token, a typed value
          ├─ onEvent(ButtonContract.clicked) { … }        an event: a typed payload, or none
          └─ aim.call(MapContract.moveToRegion, …)        an act, called through an aim
          │

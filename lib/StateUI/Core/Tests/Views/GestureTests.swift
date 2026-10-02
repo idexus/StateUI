@@ -215,12 +215,12 @@ final class GestureTests: XCTestCase {
 
         let patch = renders.render(
             VStack {
-                Label("Alpha")
+                Text("Alpha")
                     .draggable(text: "Alpha")
                     .id("source")
 
                 ZStack {
-                    Label("Drop here")
+                    Text("Drop here")
                 }
                 .onDrop { dropped.append($0) }
                 .id("target")

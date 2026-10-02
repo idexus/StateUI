@@ -19,7 +19,7 @@ extension AppKitElement {
         let items = element.arrangedChildren.map(\.appKit).compactMap(\.layoutItem)
         (view as? AppKitDirectedLayout)?.direction = element.layoutDirection
 
-        if let label = view as? AppKitLabelView {
+        if let label = view as? AppKitTextView {
             label.apply(
                 attributedText: attributedLabelText(),
                 padding: insets(.padding),

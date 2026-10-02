@@ -530,7 +530,7 @@ enum SourceTree {
     }()
 
     /// Every node type a source file describes: each node it builds, built
-    /// through its contract - `Node(contract: LabelContract.self)` - the one
+    /// through its contract - `Node(contract: TextContract.self)` - the one
     /// road a library source builds a node by
     /// (`testEveryNodeIsBuiltThroughItsContract`). A contract is named for its
     /// node type with `Contract` after it (`testEveryNodeTypeIsItsContractsName`),
@@ -567,7 +567,7 @@ enum SourceTree {
 
     /// One of the library's own source files, read as text - found by its name
     /// wherever it sits, the names being unique across the sources, or by its
-    /// path under the sources, `Views/Text/Label.swift`.
+    /// path under the sources, `Views/Text/Text.swift`.
     static func text(in file: String) throws -> String {
         let found = try allSources().filter { $0.path == file || $0.path.hasSuffix("/" + file) }
         guard found.count == 1, let source = found.first else {
@@ -584,7 +584,7 @@ enum SourceTree {
 
     /// The names one vocabulary's tokens stand for, read off Tokens.swift:
     /// a token stands under its member's name, and a node type's is that name
-    /// capitalized - `"Prop"` answers `fontSize`, `"NodeType"` answers `Label`.
+    /// capitalized - `"Prop"` answers `fontSize`, `"NodeType"` answers `Text`.
     static func tokenNames(of vocabulary: String) throws -> Set<String> {
         tokenNames(of: vocabulary, in: try text(in: "Tokens.swift"))
     }
@@ -731,10 +731,10 @@ enum SourceTree {
     /// one, so they have no case and no style. Their modifiers are exercised
     /// by `PageBarTests`, which is where a page is described.
     ///
-    /// A Span is one run of text inside a Label - text and a font, and no
+    /// A Span is one run of text inside a Text - text and a font, and no
     /// opacity, no margin, no size - so it can neither be built alone nor
     /// styled. Spans is the collection holding the runs. Both are exercised by
-    /// the Label case, which builds them.
+    /// the Text case, which builds them.
     ///
     /// ContextMenu is the one written by a MODIFIER rather than by a type:
     /// `.contextMenu` on any view appends it. It is a menu, not a view - and
@@ -900,7 +900,7 @@ extension ElementId: CustomStringConvertible {
 
 /// A label, as short as the tests need one.
 func label(_ text: String, id: String? = nil) -> Node {
-    Node(type: "Label", id: id, props: ["text": .string(text)])
+    Node(type: "Text", id: id, props: ["text": .string(text)])
 }
 
 /// A button with a click handler, for the tests about handler ids.

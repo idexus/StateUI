@@ -373,40 +373,6 @@ ItemsView.translationY: ✅
 ItemsView.unfocus: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: not realized
-Label.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
-Label.accessibilityHint: ✅
-Label.accessibilityLabel: ✅
-Label.automationExcludedWithChildren: ✅
-Label.background: ✅
-Label.focus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
-Label.frame: ✅
-Label.frameChanged: ✅
-Label.height: ✅
-Label.ignoresInput: not realized
-Label.isAccessibilityHidden: ✅
-Label.isEnabled: not realized
-Label.isFocusedChanged: – Label takes no keyboard focus here: it refuses it, and nothing is heard
-Label.isVisible: ✅
-Label.layoutDirection: ✅
-Label.maximumHeight: ✅
-Label.maximumWidth: ✅
-Label.minimumHeight: ✅
-Label.minimumWidth: ✅
-Label.opacity: ✅
-Label.pivotX: ✅
-Label.pivotY: ✅
-Label.rotation: ✅
-Label.rotationX: ✅
-Label.rotationY: ✅
-Label.scale: ✅
-Label.scaleX: ✅
-Label.scaleY: ✅
-Label.style: ✅
-Label.translationX: ✅
-Label.translationY: ✅
-Label.unfocus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
-Label.width: ✅
-Label.zIndex: not realized
 Line.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
@@ -883,6 +849,40 @@ Switch.translationY: ✅
 Switch.unfocus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
 Switch.width: ✅
 Switch.zIndex: not realized
+Text.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
+Text.accessibilityHint: ✅
+Text.accessibilityLabel: ✅
+Text.automationExcludedWithChildren: ✅
+Text.background: ✅
+Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.frame: ✅
+Text.frameChanged: ✅
+Text.height: ✅
+Text.ignoresInput: not realized
+Text.isAccessibilityHidden: ✅
+Text.isEnabled: not realized
+Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.isVisible: ✅
+Text.layoutDirection: ✅
+Text.maximumHeight: ✅
+Text.maximumWidth: ✅
+Text.minimumHeight: ✅
+Text.minimumWidth: ✅
+Text.opacity: ✅
+Text.pivotX: ✅
+Text.pivotY: ✅
+Text.rotation: ✅
+Text.rotationX: ✅
+Text.rotationY: ✅
+Text.scale: ✅
+Text.scaleX: ✅
+Text.scaleY: ✅
+Text.style: ✅
+Text.translationX: ✅
+Text.translationY: ✅
+Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.width: ✅
+Text.zIndex: not realized
 TextEditor.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅

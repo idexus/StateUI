@@ -23,7 +23,7 @@ struct Counter: ContentView {
 
     var content: some View {
         HStack {
-            Label("Count: \(count)")
+            Text("Count: \(count)")
             Button("Add").onClicked { count += 1 }
         }
     }
@@ -63,7 +63,7 @@ struct DownloadCount: ContentView {
     @State private var completed = 0
 
     var content: some View {
-        Label("Completed: \(completed)")
+        Text("Completed: \(completed)")
             .onCreated {
                 await withTaskGroup(of: Void.self) { group in
                     for _ in 0..<4 {
@@ -111,7 +111,7 @@ struct ProfileCard: ContentView {
     var content: some View {
         VStack {
             TextField(profile.$name)
-            Label("\(profile.name) · \(profile.visits) visit(s)")
+            Text("\(profile.name) · \(profile.visits) visit(s)")
             Button("Visit").onClicked { profile.visits += 1 }
         }
     }
@@ -184,7 +184,7 @@ struct AccountForm: ContentView {
     var content: some View {
         VStack {
             NameEditor(name: $name)
-            Label(name.isEmpty ? "Choose a name" : "Hello, \(name)")
+            Text(name.isEmpty ? "Choose a name" : "Hello, \(name)")
         }
     }
 }
@@ -368,7 +368,7 @@ struct SceneSidebar: ContentView {
             Button("Previous").onClicked {
                 selectedSection = max(0, selectedSection - 1)
             }
-            Label("Section \(selectedSection)")
+            Text("Section \(selectedSection)")
             Button("Next").onClicked { selectedSection += 1 }
         }
     }
@@ -400,9 +400,9 @@ VStack {
         .convertBack { $0 / 100 })
         .maximum(100)
 
-    Label($volume.convert { "\(Int($0 * 100))%" })
+    Text($volume.convert { "\(Int($0 * 100))%" })
 
-    Label($width.convert(with: $height) { width, height in
+    Text($width.convert(with: $height) { width, height in
         "\(Int(width)) × \(Int(height))"
     })
 }
@@ -419,7 +419,7 @@ Use `.multi` for a forward conversion of two through ten states:
 @State var width = 120.0
 @State var height = 80.0
 
-Label(.multi($name, $width, $height).convert { name, width, height in
+Text(.multi($name, $width, $height).convert { name, width, height in
     "\(name): \(Int(width)) × \(Int(height))"
 })
 ```
@@ -442,8 +442,8 @@ VStack {
         .width($width)
         .height(24)
 
-    Label($width.convert { "Target: \(Int($0))" })
-    Label($width.journey.convert { journey in
+    Text($width.convert { "Target: \(Int($0))" })
+    Text($width.journey.convert { journey in
         "Now: \(Int(journey.value))"
     })
 }
@@ -483,7 +483,7 @@ struct SampledProgress: ContentView {
     var content: some View {
         VStack {
             ProgressBar().progress($progress)
-            Label("Shown: \(Int(shown * 100))%")
+            Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
                 try await $progress.journey.move(
                     to: 1,

@@ -51,7 +51,7 @@ extension Binding where Value: StateValue {
     /// 2 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b).convert { ... })
+    ///     Text(.multi($a, $b).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.
@@ -68,7 +68,7 @@ extension Binding where Value: StateValue {
     /// 3 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b, $c).convert { ... })
+    ///     Text(.multi($a, $b, $c).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.
@@ -86,7 +86,7 @@ extension Binding where Value: StateValue {
     /// 4 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b, $c, $d).convert { ... })
+    ///     Text(.multi($a, $b, $c, $d).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.
@@ -105,7 +105,7 @@ extension Binding where Value: StateValue {
     /// 5 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b, $c, $d, $e).convert { ... })
+    ///     Text(.multi($a, $b, $c, $d, $e).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.
@@ -125,7 +125,7 @@ extension Binding where Value: StateValue {
     /// 6 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b, $c, $d, $e, $f).convert { ... })
+    ///     Text(.multi($a, $b, $c, $d, $e, $f).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.
@@ -146,7 +146,7 @@ extension Binding where Value: StateValue {
     /// 7 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b, $c, $d, $e, $f, $g).convert { ... })
+    ///     Text(.multi($a, $b, $c, $d, $e, $f, $g).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.
@@ -168,7 +168,7 @@ extension Binding where Value: StateValue {
     /// 8 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b, $c, $d, $e, $f, $g, $h).convert { ... })
+    ///     Text(.multi($a, $b, $c, $d, $e, $f, $g, $h).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.
@@ -191,7 +191,7 @@ extension Binding where Value: StateValue {
     /// 9 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b, $c, $d, $e, $f, $g, $h, $i).convert { ... })
+    ///     Text(.multi($a, $b, $c, $d, $e, $f, $g, $h, $i).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.
@@ -215,7 +215,7 @@ extension Binding where Value: StateValue {
     /// 10 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
-    ///     Label(.multi($a, $b, $c, $d, $e, $f, $g, $h, $i, $j).convert { ... })
+    ///     Text(.multi($a, $b, $c, $d, $e, $f, $g, $h, $i, $j).convert { ... })
     ///
     /// - Parameters:
     ///   - a: source 1.

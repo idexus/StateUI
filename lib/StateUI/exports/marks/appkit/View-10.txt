@@ -35,7 +35,6 @@ ItemsView.dragText: not realized
 ItemsView.dropCompleted: not realized
 ItemsView.frameChanged: ✅
 ItemsView.margin: ✅
-Label.pinchUpdated: ✓ pinch on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.panYChannel: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Map.tapCount: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.tapped: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
@@ -78,6 +77,7 @@ Stepper.tapped: ✓ tap on Stepper: handed to the host's recognizer or handler, 
 Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridRow: ✅
+Text.pinchUpdated: ✓ pinch on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.allowDrop: not realized
 TextEditor.dragLeave: not realized
 TextEditor.dragOver: not realized

@@ -14,7 +14,7 @@ final class GTKItemsViewTests: XCTestCase {
     func testARowStandsAsTallAsItsEntry() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                VStack { ItemsView(0..<100) { Label("Item \($0)").padding(12) }.width(300).height(300) }
+                VStack { ItemsView(0..<100) { Text("Item \($0)").padding(12) }.width(300).height(300) }
             }
             let list = try XCTUnwrap(host.views(GTKItemsView.self).first)
             host.settle { list.shownRows.contains(42) }
@@ -32,8 +32,8 @@ extension GTKItemsViewTests {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    ItemsView(0..<1) { Label("Item \($0)").padding(12) }.width(300).height(200)
-                    ItemsView(0..<1) { Label("Tile \($0)").padding(12) }.itemsLayout(.grid(minimumItemWidth: 100)).width(300).height(200)
+                    ItemsView(0..<1) { Text("Item \($0)").padding(12) }.width(300).height(200)
+                    ItemsView(0..<1) { Text("Tile \($0)").padding(12) }.itemsLayout(.grid(minimumItemWidth: 100)).width(300).height(200)
                 }
             }
             let collections = host.views(GTKItemsView.self)
@@ -53,9 +53,9 @@ extension GTKItemsViewTests {
             let (row, tile) = (State<Int?>(wrappedValue: 1), State<Int?>(wrappedValue: 1))
             let host = GTKRenderer.running {
                 VStack {
-                    ItemsView(0..<3) { Label("Item \($0)").padding(12) }.selection(row.projectedValue)
+                    ItemsView(0..<3) { Text("Item \($0)").padding(12) }.selection(row.projectedValue)
                         .width(300).height(200)
-                    ItemsView(0..<3) { Label("Tile \($0)").padding(12) }.selection(tile.projectedValue)
+                    ItemsView(0..<3) { Text("Tile \($0)").padding(12) }.selection(tile.projectedValue)
                         .itemsLayout(.grid(minimumItemWidth: 100)).width(300).height(200)
                 }
             }
@@ -76,7 +76,7 @@ extension GTKItemsViewTests {
     func testARowIsNamedByWhatItsEntrySays() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                VStack { ItemsView(0..<3) { Label("Item \($0)").padding(12) }.width(300).height(300) }
+                VStack { ItemsView(0..<3) { Text("Item \($0)").padding(12) }.width(300).height(300) }
             }
             let list = try XCTUnwrap(host.views(GTKItemsView.self).first)
             let names = {

@@ -18,7 +18,6 @@ HStack.opacity: ✅
 HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
 Image.scaleX: ✓ read scaleX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own transform, checked against the layer it composed itself
-Label.pivotX: ✓ read pivotX of Label: the host's own transform, checked against the layer it composed itself
 Line.automationExcludedWithChildren: ✅
 Map.accessibilityHint: ✅
 Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
@@ -47,6 +46,7 @@ Slider.minimumWidth: ✅
 Stepper.opacity: ✅
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.scaleX: ✓ read scaleX of Switch: the host's own transform, checked against the layer it composed itself
+Text.pivotX: ✓ read pivotX of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.pivotX: ✓ read pivotX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.automationExcludedWithChildren: ✅

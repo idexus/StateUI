@@ -60,7 +60,7 @@ enum Palette {
 
     // MARK: Text
 
-    /// Ordinary text. The implicit Label style sets this; it is here for the
+    /// Ordinary text. The implicit Text style sets this; it is here for the
     /// places that need to say it again - over a filled panel, say.
     static let text = Color(light: AppColors.ink, dark: AppColors.inkDark)
 

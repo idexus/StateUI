@@ -41,10 +41,6 @@ ItemsView.maximumWidth: ✅
 ItemsView.minimumHeight: ✅
 ItemsView.minimumWidth: ✅
 ItemsView.translationX: ✅
-Label.focus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
-Label.isFocusedChanged: – Label takes no keyboard focus here: it refuses it, and nothing is heard
-Label.pivotY: ✅
-Label.unfocus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Line.accessibilityHint: ✅
 Line.isVisible: ✅
 Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
@@ -93,6 +89,10 @@ Stepper.pivotX: ✅
 Stepper.zIndex: not realized
 Switch.accessibilityLabel: ✅
 Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
+Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.pivotY: ✅
+Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
 TextEditor.scaleX: ✅

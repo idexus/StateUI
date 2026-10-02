@@ -30,12 +30,12 @@ struct MissingPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("No sample called \"\(id)\"")
+            Text("No sample called \"\(id)\"")
                 .fontSize(20)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("The route asked for a sample the catalog does not have. Every sample "
+            Text("The route asked for a sample the catalog does not have. Every sample "
                 + "is named in Gallery/Catalog.swift; this id is not one of them.")
                 .fontSize(13)
                 .textColor(Palette.subtle)

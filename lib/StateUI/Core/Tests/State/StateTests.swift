@@ -91,7 +91,7 @@ private struct QueryPage: ContentView {
     @State var query = ""
 
     var content: some View {
-        Label(query)
+        Text(query)
             .titleView { SearchField($query).placeholder("Type here") }
             .onCreated { page.title = "Results: \(query)" }
             .onChanged(query) { page.title = "Results: \(query)" }
@@ -130,7 +130,7 @@ private struct Shown: ContentView {
 
     var content: some View {
         read()
-        return Label("shown")
+        return Text("shown")
     }
 }
 
@@ -374,7 +374,7 @@ final class StateTests: XCTestCase {
         let second = renders.settled(Node.page(QueryPage()), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["title"], .string("Results: alpha"))
-        XCTAssertEqual(second.children.first { $0.type == "Label" }?.props["text"],
+        XCTAssertEqual(second.children.first { $0.type == "Text" }?.props["text"],
                        .string("alpha"))
     }
 
@@ -592,7 +592,7 @@ extension StateTests {
         let renders = Renders()
 
         renders.render(stack([
-            Label("walked").opacity(fade.projectedValue).body,
+            Text("walked").opacity(fade.projectedValue).body,
             Shown { destination.count += 1; _ = fade.get() }.body,
             Shown { journey.count += 1; _ = fade.projectedValue.journey.value }.body,
         ], id: "root"))
@@ -632,7 +632,7 @@ extension StateTests {
         let renders = Renders()
 
         renders.render(stack([
-            Label("walked").opacity(fade.projectedValue).body,
+            Text("walked").opacity(fade.projectedValue).body,
             Shown { _ = shown.get() }
                 .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
                 .body,
@@ -657,7 +657,7 @@ extension StateTests {
         let renders = Renders()
 
         renders.render(stack([
-            Label("walked").opacity(fade.projectedValue).body,
+            Text("walked").opacity(fade.projectedValue).body,
             Shown { _ = shown.get() }
                 .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
                 .body,
@@ -684,7 +684,7 @@ extension StateTests {
         let renders = Renders()
 
         renders.render(stack([
-            Label("walked").opacity(fade.projectedValue).body,
+            Text("walked").opacity(fade.projectedValue).body,
             Shown { _ = shown.get() }
                 .samples(fade.projectedValue, into: shown.projectedValue, .every(30))
                 .body,
@@ -749,7 +749,7 @@ extension StateTests {
 
         func tree() -> Node {
             stack([
-                Label("walked").opacity(fade.projectedValue).body,
+                Text("walked").opacity(fade.projectedValue).body,
                 Shown { _ = shown.get() }
                     .samples(fade.projectedValue, into: shown.projectedValue, .every(100_000))
                     .body,
@@ -783,7 +783,7 @@ extension StateTests {
         let renders = Renders()
 
         renders.render(stack([
-            Label("walked").opacity(fade.projectedValue).body,
+            Text("walked").opacity(fade.projectedValue).body,
             Shown { _ = quick.get() }
                 .samples(fade.projectedValue, into: quick.projectedValue, .every(0))
                 .body,

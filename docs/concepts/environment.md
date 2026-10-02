@@ -24,7 +24,7 @@ struct AccountBadge: ContentView {
     @Environment private var account: Account
 
     var content: some View {
-        Label("\(account.name) · \(account.visits) visit(s)")
+        Text("\(account.name) · \(account.visits) visit(s)")
     }
 }
 
@@ -164,10 +164,10 @@ struct RuntimeSummary: ContentView {
 
     var content: some View {
         VStack {
-            Label("\(app.name) \(app.versionString)")
-            Label("\(device.platform) · \(device.formFactor)")
-            Label("\(Int(display.width / max(display.density, 1))) points wide")
-            Label("\(locale.language)-\(locale.region) · \(locale.timeZone)")
+            Text("\(app.name) \(app.versionString)")
+            Text("\(device.platform) · \(device.formFactor)")
+            Text("\(Int(display.width / max(display.density, 1))) points wide")
+            Text("\(locale.language)-\(locale.region) · \(locale.timeZone)")
         }
     }
 }
@@ -205,8 +205,8 @@ struct WindowHeading: ContentView {
 
     var content: some View {
         VStack {
-            Label(window.title ?? "Untitled")
-            Label("\(application.scenes.count) scene(s)")
+            Text(window.title ?? "Untitled")
+            Text("\(application.scenes.count) scene(s)")
         }
     }
 }
@@ -232,7 +232,7 @@ let alarm = ClockTime(hour: 7, minute: 30)
 VStack {
     DatePicker(due)
     TimePicker(alarm)
-    Label("Due \(due.text) at \(alarm.text)")
+    Text("Due \(due.text) at \(alarm.text)")
 }
 ```
 
@@ -265,8 +265,8 @@ let winterOffset = try await TimeZoneInfo.utcOffset(
     of: zone,
     on: CalendarDate(year: 2027, month: 1, day: 15))
 
-Label("\(zone) · \(now.text) · \(localOffset.components.seconds) seconds from UTC")
-Label("Winter: \(winterOffset.components.seconds) seconds from UTC")
+Text("\(zone) · \(now.text) · \(localOffset.components.seconds) seconds from UTC")
+Text("Winter: \(winterOffset.components.seconds) seconds from UTC")
 ```
 
 `TimeZoneInfo.local()` returns an IANA identifier. `utcOffset(of:on:)`

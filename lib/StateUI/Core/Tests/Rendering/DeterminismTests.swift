@@ -39,7 +39,7 @@ private enum Route: Hashable { case detail(String) }
 private struct Counter: ContentView {
     @Binding var count: Int
 
-    var content: some View { Label("Count: \(count)").fontSize(20) }
+    var content: some View { Text("Count: \(count)").fontSize(20) }
 }
 
 /// The stack's root. Every page of the session names itself as it comes into
@@ -56,7 +56,7 @@ private struct HomePage: ContentView {
         VStack {
             Counter(count: count)
             Button("Open").onClicked {}
-            Label("themed").textColor(Color(light: .black, dark: .white))
+            Text("themed").textColor(Color(light: .black, dark: .white))
         }
         .spacing(12)
         .onCreated {
@@ -70,7 +70,7 @@ private struct DetailPage: ContentView {
     @Environment private var page: PageSession
     let name: String
 
-    var content: some View { Label(name).onCreated { page.title = name } }
+    var content: some View { Text(name).onCreated { page.title = name } }
 }
 
 private struct SettingsPage: ContentView {
@@ -78,7 +78,7 @@ private struct SettingsPage: ContentView {
 
     var content: some View {
         VStack {
-            Label("Settings").fontAttributes(.bold)
+            Text("Settings").fontAttributes(.bold)
             Switch(true).onToggled { _ in }
         }
         .onCreated {
@@ -150,7 +150,7 @@ final class DeterminismTests: XCTestCase {
         let count = State<Int>(0)
 
         let styles = StyleSheet {
-            Style<Label>().fontSize(14).textColor(Color(light: .black, dark: .white))
+            Style<Text>().fontSize(14).textColor(Color(light: .black, dark: .white))
             Style<Button>().background(Color("#512BD4")).textColor(.white)
         }
 
@@ -275,7 +275,7 @@ final class DeterminismTests: XCTestCase {
         ]
 
         func written(_ order: [(Prop, PropValue)], _ handlers: [Event]) -> String {
-            var node = Node(type: .label)
+            var node = Node(type: .text)
 
             for (key, value) in order {
                 node.props[key] = value

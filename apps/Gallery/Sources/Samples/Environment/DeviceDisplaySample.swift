@@ -20,17 +20,17 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
                     // this closure.
                     DebugInfoLabel()
 
-                    Label("\\(Int(display.width)) × \\(Int(display.height)) px")
+                    Text("\\(Int(display.width)) × \\(Int(display.height)) px")
 
-                    Label(display.density > 0
+                    Text(display.density > 0
                         ? "\\(Int(display.width / display.density)) × "
                             + "\\(Int(display.height / display.density)) pt "
                             + "at \\(display.density)x"
                         : "density not said")
 
-                    Label("\\(display.orientation) · \\(display.rotation)")
+                    Text("\\(display.orientation) · \\(display.rotation)")
 
-                    Label(display.refreshRate > 0
+                    Text(display.refreshRate > 0
                         ? "\\(Int(display.refreshRate)) Hz"
                         : "refresh not said")
                 }
@@ -42,23 +42,23 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("\(Int(display.width)) × \(Int(display.height)) px")
+            Text("\(Int(display.width)) × \(Int(display.height)) px")
                 .fontSize(28)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label(display.density > 0
+            Text(display.density > 0
                 ? "\(Int(display.width / display.density)) × "
                     + "\(Int(display.height / display.density)) pt at "
                     + "\(display.density)x"
                 : "density not said")
                 .fontSize(15)
 
-            Label("orientation · \(display.orientation)")
+            Text("orientation · \(display.orientation)")
                 .fontSize(15)
-            Label("rotation · \(display.rotation)")
+            Text("rotation · \(display.rotation)")
                 .fontSize(15)
-            Label(display.refreshRate > 0
+            Text(display.refreshRate > 0
                 ? "refresh · \(Int(display.refreshRate)) Hz"
                 : "refresh · not said")
                 .fontSize(15)
@@ -67,7 +67,7 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Label("The host measures the screen in PIXELS; a layout speaks "
+        Text("The host measures the screen in PIXELS; a layout speaks "
             + "points, which is width divided by density. Rotate a phone "
             + "and every number above moves in one push - orientation, "
             + "rotation, and the width and height swapping places. A "

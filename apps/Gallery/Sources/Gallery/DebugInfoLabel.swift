@@ -18,17 +18,17 @@ import StateUI
 ///
 ///         VStack {
 ///             DebugInfoLabel()                // this one: built whenever `volume` moves
-///             Label("Volume \(volume)")
+///             Text("Volume \(volume)")
 ///         }
 ///     }
 ///
 /// - Returns: the count and the reason - `41 builds, for volume` - as a label
 ///   the caller may go on modifying, which is what a grid cell needs.
-func DebugInfoLabel() -> Label {
+func DebugInfoLabel() -> Text {
     // ANY element can be asked. The sentence is about the description that is
     // running, never about the view it is asked through, which is what lets
     // this be a function at all rather than a view.
-    Label(BuildCount.of(Label("").debugInfo()))
+    Text(BuildCount.of(Text("").debugInfo()))
         .fontSize(12)
         .textColor(Palette.accent)
         .horizontalAlignment(.end)

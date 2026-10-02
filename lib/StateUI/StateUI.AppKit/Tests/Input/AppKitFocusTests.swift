@@ -30,7 +30,7 @@ final class AppKitFocusTests: XCTestCase {
         let buttons = renderer.nativeViews(AppKitButtonView.self)
         let field = try XCTUnwrap(renderer.nativeViews(NSTextField.self).first { $0.isEditable })
         let window = try XCTUnwrap(field.window)
-        let shown = { renderer.nativeViews(AppKitLabelView.self).last?.textForTesting.string }
+        let shown = { renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string }
         XCTAssertEqual(shown(), "idle")
 
         buttons[0].clickForTesting()
@@ -62,7 +62,7 @@ private struct Watching: ContentView {
             TextField($name).aim(field).isFocused($editing)
             Button("Focus").onClicked { try await field.focus() }
             Button("Unfocus").onClicked { try await field.unfocus() }
-            Label(editing ? "editing" : "idle")
+            Text(editing ? "editing" : "idle")
         }
     }
 }

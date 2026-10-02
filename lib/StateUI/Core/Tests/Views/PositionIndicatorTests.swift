@@ -74,9 +74,9 @@ final class PositionIndicatorTests: XCTestCase {
     /// Items are their own marks: one each, the current one whole and the others faded.
     func testItemsAreTheirOwnMarks() {
         let patch = Renders().render(VStack {
-            PositionIndicator(["one", "two", "three"]) { name in Label(name) }.position(1)
+            PositionIndicator(["one", "two", "three"]) { name in Text(name) }.position(1)
         }.body)
-        let marks = nodes(.label, in: patch)
+        let marks = nodes(.text, in: patch)
 
         XCTAssertEqual(marks.map { $0.properties[.text] }, ["one", "two", "three"].map { .string($0) })
         XCTAssertEqual(marks.map { $0.properties[.opacity] }, [.number(0.4), .number(1), .number(0.4)])

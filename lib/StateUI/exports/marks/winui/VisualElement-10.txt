@@ -36,9 +36,6 @@ Image.pivotX: ✅
 Image.zIndex: not realized
 ItemsView.accessibilityLabel: ✅
 ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own tip, checked against the projection it laid on the element
-Label.isAccessibilityHidden: ✅
-Label.isEnabled: not realized
-Label.scaleX: ✅
 Line.ignoresInput: not realized
 Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Line.translationY: ✅
@@ -89,6 +86,9 @@ Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
 Switch.minimumWidth: ✅
 Switch.translationX: ✅
+Text.isAccessibilityHidden: ✅
+Text.isEnabled: not realized
+Text.scaleX: ✅
 TextEditor.focus: ✅
 TextEditor.isFocusedChanged: ✅
 TextEditor.pivotY: ✅

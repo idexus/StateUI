@@ -14,7 +14,7 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("anApplicationRunsItsSceneWindowAndPage", proves: [Covered(ApplicationContract.self)]) { s in
-                s.start { VStack { Label("Running").id("label") } }
+                s.start { VStack { Text("Running").id("label") } }
 
                 _ = try s.element(ofType: ApplicationContract.nodeType)
                 _ = try s.element(ofType: SceneContract.nodeType)

@@ -13,9 +13,9 @@ final class GTKGridViewTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 Grid {
-                    Label("A").width(50).height(20).horizontalAlignment(.start)
-                    Label("B").height(20).gridColumn(1)
-                    Label("C").width(30).height(40).gridRow(1).gridColumnSpan(2).horizontalAlignment(.end)
+                    Text("A").width(50).height(20).horizontalAlignment(.start)
+                    Text("B").height(20).gridColumn(1)
+                    Text("C").width(30).height(40).gridRow(1).gridColumnSpan(2).horizontalAlignment(.end)
                 }
                 .columns(.fixed(100), .fill)
                 .rows(.auto, .auto)
@@ -25,7 +25,7 @@ final class GTKGridViewTests: XCTestCase {
             }
             let width = try XCTUnwrap(host.views(GTKGridView.self).first).frame.width
 
-            let labels = host.views(GTKLabelView.self)
+            let labels = host.views(GTKTextView.self)
             XCTAssertEqual(labels.count, 3)
             XCTAssertTrue(labels[0].frame == (10, 10, 50, 20), "\(labels[0].frame)")
             XCTAssertTrue(labels[1].frame == (115, 10, width - 125, 20), "\(labels[1].frame)")
@@ -39,12 +39,12 @@ final class GTKGridViewTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    Grid { Label("Waiting for the first render of this scene") }
-                    Grid { Label("Waiting for the first render of this scene").margin(8, 4) }
+                    Grid { Text("Waiting for the first render of this scene") }
+                    Grid { Text("Waiting for the first render of this scene").margin(8, 4) }
                 }
                 .horizontalAlignment(.start)
             }
-            let labels = host.views(GTKLabelView.self)
+            let labels = host.views(GTKTextView.self)
             XCTAssertEqual(labels.count, 2)
             XCTAssertEqual(labels[1].frame.height, labels[0].frame.height, "on one line")
             XCTAssertEqual(labels[1].frame.y, 4)
@@ -56,9 +56,9 @@ final class GTKGridViewTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 Grid {
-                    Label("head").height(30)
+                    Text("head").height(30)
                     ColorBox(.red).gridRow(1)
-                    Label("foot").height(20).gridRow(2)
+                    Text("foot").height(20).gridRow(2)
                 }
                 .rows(.auto, .fill, .auto)
             }
@@ -75,8 +75,8 @@ final class GTKGridViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 Grid {
                     ColorBox(.red).gridRowSpan(2)
-                    Label("one").height(20).gridColumn(1)
-                    Label("two").height(30).gridRow(1).gridColumn(1)
+                    Text("one").height(20).gridColumn(1)
+                    Text("two").height(30).gridRow(1).gridColumn(1)
                 }
                 .columns(.fixed(20), .fill)
                 .rows(.auto, .auto)

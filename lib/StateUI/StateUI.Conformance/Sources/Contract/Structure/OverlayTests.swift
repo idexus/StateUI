@@ -35,8 +35,8 @@
                 let path = State(wrappedValue: [Int]())
                 s.start {
                     NavigationStack(path.projectedValue) {
-                        Label("Home").overlays { Label("Home's").width(80).height(20).id("home's") }
-                    } destination: { _ in Label("Pushed") }
+                        Text("Home").overlays { Text("Home's").width(80).height(20).id("home's") }
+                    } destination: { _ in Text("Pushed") }
                 }
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("home's")) == true }
 
@@ -54,13 +54,13 @@
             ]) { s in
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Label("Home").overlays {
-                            Label("Inner").width(80).height(40).horizontalAlignment(.start).verticalAlignment(.start)
+                        Text("Home").overlays {
+                            Text("Inner").width(80).height(40).horizontalAlignment(.start).verticalAlignment(.start)
                                 .id("inner")
                         }
-                    } destination: { _ in Label("Pushed") }
+                    } destination: { _ in Text("Pushed") }
                     .overlays {
-                        Label("Outer").width(80).height(40).horizontalAlignment(.start).verticalAlignment(.start)
+                        Text("Outer").width(80).height(40).horizontalAlignment(.start).verticalAlignment(.start)
                             .id("outer")
                     }
                 }
@@ -89,7 +89,7 @@ struct OverlaidPage: ContentView {
         .verticalAlignment(.start)
         .overlays {
             if notice.wrappedValue {
-                Label("Offline").width(80).height(20).horizontalAlignment(.end).verticalAlignment(.start).id("notice")
+                Text("Offline").width(80).height(20).horizontalAlignment(.end).verticalAlignment(.start).id("notice")
             }
         }
     }

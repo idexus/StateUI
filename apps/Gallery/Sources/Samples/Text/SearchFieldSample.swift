@@ -24,12 +24,12 @@ struct SearchFieldSample: SampleContent, ExampleContent {
 
             VStack {
                 ForEach(matches) { item in
-                    Label(item)
+                    Text(item)
                         .id(item)
                 }
             }
 
-            Label(searched.isEmpty
+            Text(searched.isEmpty
                 ? "Type to narrow the list, then press the keyboard's search key."
                 : "Searched for: \\(searched)")
 
@@ -62,7 +62,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
 
             VStack {
                 ForEach(matches) { item in
-                    Label(item)
+                    Text(item)
                         .fontSize(15)
                         .padding(8, 4)
                         .id(item)
@@ -70,7 +70,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
             }
             .spacing(4)
 
-            Label(searched.isEmpty
+            Text(searched.isEmpty
                 ? "Type to narrow the list, then press the keyboard's search key."
                 : "Searched for: \(searched)")
                 .fontSize(12)
@@ -89,26 +89,26 @@ struct SearchFieldSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("Two events: `.onTextChanged` on every edit - which runs after the binding "
+            Text("Two events: `.onTextChanged` on every edit - which runs after the binding "
                 + "has landed the words on `query` - and `.onSubmitted` when the "
                 + "user says they mean it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The same query, drawn twice: the first field is left as the platform "
+            Text("The same query, drawn twice: the first field is left as the platform "
                 + "draws it, and the second tints the two icons the platform puts in every "
                 + "search box. Type something to bring the clear button out - it only "
                 + "appears once there is text to clear.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Those two colours are all a `SearchField` offers over the artwork: the "
+            Text("Those two colours are all a `SearchField` offers over the artwork: the "
                 + "icons themselves are the platform's, and there is no picture to put in "
                 + "their place.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("This is the box that lives IN a page. The same control goes ON the "
+            Text("This is the box that lives IN a page. The same control goes ON the "
                 + "navigation bar as a page's title view - see Search, in the Navigation "
                 + "group.")
                 .fontSize(12)

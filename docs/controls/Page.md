@@ -9,7 +9,7 @@ struct NotePage: ContentView {
     @Environment private var page: PageSession
 
     var content: some View {
-        Label("Nothing written yet.")
+        Text("Nothing written yet.")
             .onCreated {
                 page.title = "Note"
                 page.hasBackButton = true

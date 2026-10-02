@@ -30,7 +30,7 @@
             let value = State(wrappedValue: first)
             s.start {
                 TabbedView([0, 1]) { tab -> any Page in
-                    guard tab == 0 else { return Label("Other") }
+                    guard tab == 0 else { return Text("Other") }
                     return Presented.page(element, member, value.wrappedValue, beside: [
                         Button("Change").onClicked { value.wrappedValue = second }.id("change"),
                     ])
@@ -82,14 +82,14 @@ enum Presented {
         switch element {
         case "NavigationStack":
             return written.worn(by: NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Label("Root")] + others }
-            } destination: { _ in Label("Pushed") })
+                VStack { [Text("Root")] + others }
+            } destination: { _ in Text("Pushed") })
         case "SplitView":
             return written.worn(by: SplitView(State(wrappedValue: true).projectedValue) {
-                Label("Sidebar")
-            } detail: { VStack { [Label("Detail")] + others } })
+                Text("Sidebar")
+            } detail: { VStack { [Text("Detail")] + others } })
         case "TabbedView":
-            return written.worn(by: TabbedView([0]) { _ in VStack { [Label("Inner")] + others } })
+            return written.worn(by: TabbedView([0]) { _ in VStack { [Text("Inner")] + others } })
         default:
             return SessionPage(beside: others, key: "\(value)") { page, _ in
                 if let title = value as? String, member.name == PageElementContract.title.name { page.title = title }
