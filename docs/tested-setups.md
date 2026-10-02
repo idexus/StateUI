@@ -49,6 +49,33 @@ Xcode's own Swift 6.4 is a different build from swift.org's and cannot read
 the Swift SDK's modules; the Android build picks the swift.org toolchain by
 itself.
 
+## A Windows machine: WinUI 3
+
+Last verified 2026-10-02.
+
+| | |
+| --- | --- |
+| Machine | a Parallels virtual machine on Apple silicon: ARM64, 4 cores, 16 GB |
+| System | Windows 11 Pro 25H2 (build 26200.9457) |
+| Swift | the swift.org toolchain `swift-6.4-RELEASE` (6.4.0, Asserts), ARM64, with its Embedded Python 3.10.1 for LLDB |
+| C++ | Visual Studio Community 2026 18.10.2, MSVC 14.51, the ARM64 C++ tools |
+| Windows SDK | 10.0.26100 |
+| Editor | VS Code 1.140.0; the StateUI extension 0.5.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.7.20261001 |
+| Node.js | 24.21.0, for building and testing the extension |
+| Git | 2.54.0 |
+
+### WinUI 3
+
+| | |
+| --- | --- |
+| Windows App SDK | 1.8: `microsoft.windowsappsdk.winui` 1.8.260528001, `foundation` 1.8.260527000, `interactiveexperiences` 1.8.260525001 |
+| C++/WinRT | 3.0.260818.1 |
+| WebView2 | the runtime 154.0.4258.48, for the web view's backend; the SDK package 1.0.3179.45 |
+
+The build scripts fetch the Windows App SDK, C++/WinRT and the WebView2 SDK
+from nuget.org at these versions, pinned in `.scripts/WinUI/tools.ps1`, and
+lay the Windows App SDK beside each executable: nothing of it is installed.
+
 ## A Linux machine: GTK 4
 
 Last verified 2026-10-02.
