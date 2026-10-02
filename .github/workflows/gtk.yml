@@ -26,7 +26,8 @@ jobs:
   # written against, drawn on Xvfb with a session bus. A label is measured in
   # the font GNOME gives this platform's desktop, so a verdict that reads a
   # frame holds here as it was written. gdk-pixbuf reads an SVG only through
-  # librsvg's loader, which an install without recommends leaves out.
+  # librsvg's loader, which an install without recommends leaves out. The web
+  # view's backend links WebKitGTK 6.0, which the host's tests register.
   gtk:
     name: GTK
     runs-on: ubuntu-24.04
@@ -35,11 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - name: GTK 4, libadwaita, a screen and the desktop's font
+      - name: GTK 4, libadwaita, WebKitGTK, a screen and the desktop's font
         run: |
           apt-get update
           apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev \
-            librsvg2-common xvfb xauth dbus fonts-ubuntu
+            libwebkitgtk-6.0-dev librsvg2-common xvfb xauth dbus fonts-ubuntu
           mkdir -p "$HOME/.config/gtk-4.0"
           printf '[Settings]\ngtk-font-name=Ubuntu Sans 11\n' > "$HOME/.config/gtk-4.0/settings.ini"
 
