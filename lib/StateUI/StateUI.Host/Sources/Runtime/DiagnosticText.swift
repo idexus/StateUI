@@ -23,6 +23,9 @@ import CRT
     /// Whether every pass the inspector records is written as text.
     public let inspects: Bool
 
+    /// How many of its own views the host holds alive, written beside the elements alive; nil where it counts none.
+    public var views: (() -> Int)?
+
     private let output: (String) -> Void
     private var applies = 0
     private var nodes = 0
@@ -71,6 +74,7 @@ import CRT
     private func line(_ core: HostTally) -> String {
         "StateUI tally: applies \(applies)  nodes \(nodes)  made \(made)  kept \(nodes - made)  "
             + "renders \(core.renders)  empty \(core.empty)  refused \(core.refused)  alive \(core.alive)  "
+            + (views.map { "views \($0())  " } ?? "")
             + "apply \(Self.milliseconds(applyMicros / Double(applies))) ms avg / "
             + "\(Self.milliseconds(longestMicros)) ms worst / \(Self.milliseconds(applyMicros)) ms total\n"
     }

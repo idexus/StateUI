@@ -49,7 +49,9 @@ whoever reads its log rather than its screen, on the standard error - which an
 Android runtime sends to logcat. `STATEUI_TALLY=1` writes the running totals:
 the messages applied, the elements they walked, made and kept, the core's
 renders, empty renders, refused writes and live elements (the core's tally),
-and the apply's average, worst and total time. The totals run from the start,
+the host's own views alive where the host counts them (`views`, which
+`HostRuntime` takes - a view outliving its element shows there while the
+elements' count comes back), and the apply's average, worst and total time. The totals run from the start,
 so a run is read as the difference between two lines. A line is written after
 a message that stands alone - a third of a second after the one before it,
 which is what one action earns - and at most every tenth of a second in a

@@ -24,7 +24,8 @@ final class WinUIRenderer {
     /// the turn - each element's WinUI half a `WinUIElement`.
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
-        makeNative: { [unowned self] element in WinUIElement(element, host: self) }, log: { WinUIRenderer.log.error($0) })
+        makeNative: { [unowned self] element in WinUIElement(element, host: self) }, log: { WinUIRenderer.log.error($0) },
+        views: { WinUIView.liveCount })
 
     /// What is kept of the scenes for the next start: Windows restores no windows.
     let scenes = SceneKeeper()
