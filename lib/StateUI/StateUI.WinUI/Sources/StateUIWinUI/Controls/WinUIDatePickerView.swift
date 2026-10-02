@@ -17,15 +17,22 @@ final class WinUIDatePickerView: WinUIView {
 
     private var showing = PickerOpening()
 
+    /// The day the tree gave, and the range the calendar offers, as the host layer reads them.
+    private var asked: CalendarDate?
+    private var range: (earliest: CalendarDate?, latest: CalendarDate?) = (nil, nil)
+
     init() {
         super.init { number in stateui_winui_date_make(number) }
     }
 
-    /// The day shown; nil for none.
+    /// The day shown, within the range (`CalendarArithmetic`); nil for none. A day not in the calendar leaves the
+    /// day shown.
     func setDate(_ date: CalendarDate?) {
+        asked = date
+        guard let date else { return stateui_winui_date_set(handle, false, 0, 0, 0) }
+        guard let held = CalendarArithmetic.held(date, earliest: range.earliest, latest: range.latest) else { return }
         stateui_winui_date_set(
-            handle, date != nil, Int32(clamping: date?.year ?? 0), Int32(clamping: date?.month ?? 0),
-            Int32(clamping: date?.day ?? 0))
+            handle, true, Int32(clamping: held.year), Int32(clamping: held.month), Int32(clamping: held.day))
     }
 
     /// The earliest and the latest day the calendar offers; nil for WinUI's own.
@@ -33,10 +40,12 @@ final class WinUIDatePickerView: WinUIView {
         func parts(_ date: CalendarDate?) -> [Int32]? {
             date.map { [Int32(clamping: $0.year), Int32(clamping: $0.month), Int32(clamping: $0.day)] }
         }
-        let first = parts(earliest), last = parts(latest)
+        range = CalendarArithmetic.range(earliest, latest)
+        let first = parts(range.earliest), last = parts(range.latest)
         first.withOptionalBuffer { first in
             last.withOptionalBuffer { last in stateui_winui_date_set_range(handle, first, last) }
         }
+        if asked != nil { setDate(asked) }
     }
 
     /// How the day is written: "D" the long form, anything else the short.

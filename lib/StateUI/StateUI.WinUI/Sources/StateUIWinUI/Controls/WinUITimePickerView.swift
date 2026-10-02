@@ -16,10 +16,11 @@ final class WinUITimePickerView: WinUIView {
         super.init { number in stateui_winui_time_make(number) }
     }
 
-    /// The time shown; nil for none.
+    /// The time shown, added up from midnight around the day (`CalendarArithmetic`); nil for none.
     func setTime(_ time: ClockTime?) {
+        let clock = time.map(CalendarArithmetic.clock)
         stateui_winui_time_set(
-            handle, time != nil, Int32(clamping: time?.hour ?? 0), Int32(clamping: time?.minute ?? 0))
+            handle, clock != nil, Int32(clamping: clock?.hour ?? 0), Int32(clamping: clock?.minute ?? 0))
     }
 
     /// The time WinUI shows; nil for none.
