@@ -13,7 +13,7 @@ enum WinUIRealization {
 
     /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.
-    static let byApplication: Set<String> = ["Map", "Pin"]
+    static let byApplication: Set<String> = ["Map", "Marker"]
 
     /// The entries a backend realizes on this host - a package of its own, for a library WinUI does not ship - which
     /// the application's head registers: WebView2's web view. Realized none of until it is registered.

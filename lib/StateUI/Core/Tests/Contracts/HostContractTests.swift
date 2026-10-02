@@ -213,7 +213,7 @@ final class HostContractTests: XCTestCase {
 
     func testProviderSurfaceDoesNotBecomeABaseHostRequirement() {
         XCTAssertEqual(Self.layer(of: NodeType.map), .provider)
-        XCTAssertEqual(Self.layer(of: NodeType.pin), .provider)
+        XCTAssertEqual(Self.layer(of: NodeType.marker), .provider)
         XCTAssertEqual(Self.layer(of: Prop.mapType), .provider)
         XCTAssertEqual(Self.layer(of: Prop.region), .provider)
         XCTAssertEqual(Self.layer(of: Event.mapClicked), .provider)
@@ -668,7 +668,7 @@ final class HostContractTests: XCTestCase {
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertTrue(events.isSuperset(of: [
-            "dateChanged", "timeChanged", "pinClicked", "pinDetailsClicked",
+            "dateChanged", "timeChanged", "selected", "detailsClicked",
         ]))
         XCTAssertTrue(
             events.isDisjoint(with: [

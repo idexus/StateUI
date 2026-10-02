@@ -27,8 +27,8 @@ final class ContractRoadsTests: XCTestCase {
     /// An application's own control, acts and event - what every listing leans
     /// on, declared the way an application declares them.
     private static let declarations = """
-        enum MarkerContract: ElementContract {
-            static let nodeType: NodeType = "Maps.Marker"
+        enum BeaconContract: ElementContract {
+            static let nodeType: NodeType = "Maps.Beacon"
             static let tiers: [any Contract.Type] = [ViewContract.self]
 
             static let title = ElementProperty<Self, String>("title")
@@ -38,8 +38,8 @@ final class ContractRoadsTests: XCTestCase {
             static let members: [any ContractMember] = [title, level, tapped]
         }
 
-        struct Marker: ElementView {
-            var node = Node(contract: MarkerContract.self)
+        struct Beacon: ElementView {
+            var node = Node(contract: BeaconContract.self)
         }
 
         enum NotesContract: ApplicationTier {
@@ -63,16 +63,16 @@ final class ContractRoadsTests: XCTestCase {
             name: "a property driven from a state by its token",
             removed: """
                 @State var level = 0.5
-                _ = Marker().setValue(Prop("level"), on: $level, mode: .inOut, kind: .property)
+                _ = Beacon().setValue(Prop("level"), on: $level, mode: .inOut, kind: .property)
                 """,
             contract: """
                 @State var level = 0.5
-                _ = Marker().setValue(MarkerContract.level, on: $level, mode: .inOut, kind: .property)
+                _ = Beacon().setValue(BeaconContract.level, on: $level, mode: .inOut, kind: .property)
                 """),
         Road(
             name: "an event heard by its token",
-            removed: #"_ = Marker().onEvent(Event("tapped")) { payload in _ = payload }"#,
-            contract: "_ = Marker().onEvent(MarkerContract.tapped) { index in _ = index }"),
+            removed: #"_ = Beacon().onEvent(Event("tapped")) { payload in _ = payload }"#,
+            contract: "_ = Beacon().onEvent(BeaconContract.tapped) { index in _ = index }"),
         Road(
             name: "an act called by its token",
             removed: #"_ = try await stateUICall(Act("Notes.Export"), [.string("draft")])"#,
@@ -91,32 +91,32 @@ final class ContractRoadsTests: XCTestCase {
             contract: "try await Aim(TextField.self).call(VisualElementContract.unfocus)"),
         Road(
             name: "a node of a type named by hand",
-            removed: #"_ = Node(type: "Maps.Marker")"#,
-            contract: "_ = Node(contract: MarkerContract.self)"),
+            removed: #"_ = Node(type: "Maps.Beacon")"#,
+            contract: "_ = Node(contract: BeaconContract.self)"),
         Road(
             name: "a property written into a node by its token",
             removed: """
-                var node = Node(contract: MarkerContract.self)
+                var node = Node(contract: BeaconContract.self)
                 node.props[Prop("title")] = .string("Harbour")
                 _ = node
                 """,
-            contract: #"_ = Marker().setValue(MarkerContract.title, "Harbour")"#),
+            contract: #"_ = Beacon().setValue(BeaconContract.title, "Harbour")"#),
         Road(
             name: "a node's type written over",
             removed: """
-                var node = Node(contract: MarkerContract.self)
-                node.type = "Maps.Pin"
+                var node = Node(contract: BeaconContract.self)
+                node.type = "Maps.Marker"
                 _ = node
                 """,
-            contract: "_ = Node(contract: MarkerContract.self).type"),
+            contract: "_ = Node(contract: BeaconContract.self).type"),
         Road(
             name: "a handler put into a node by its token",
             removed: """
-                var node = Node(contract: MarkerContract.self)
+                var node = Node(contract: BeaconContract.self)
                 node.events[Event("tapped")] = {}
                 _ = node
                 """,
-            contract: "_ = Marker().onEvent(MarkerContract.tapped) { _ in }"),
+            contract: "_ = Beacon().onEvent(BeaconContract.tapped) { _ in }"),
         Road(
             name: "the withdrawn name ControlContract",
             removed: """
@@ -232,9 +232,9 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = Text().spans { Text("Hi") }"#,
             contract: #"_ = Text().spans { TextSpan("Hi") }"#),
         Road(
-            name: "a view standing among a map's pins",
-            removed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Text("Castle") }"#,
-            contract: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Pin("Castle") }"#),
+            name: "a view standing among a map's markers",
+            removed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).markers { Text("Castle") }"#,
+            contract: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).markers { Marker("Castle") }"#),
         Road(
             name: "a window's title bar written into its session",
             removed: #"WindowSession().titleBar = nil"#,
@@ -567,6 +567,34 @@ final class ContractRoadsTests: XCTestCase {
             name: "insets by unnamed numbers",
             removed: "_ = Insets(16, 8)",
             contract: "_ = Insets(horizontal: 16, vertical: 8)"),
+        Road(
+            name: "a marker as a Pin",
+            removed: #"_ = Pin("Harbour")"#,
+            contract: #"_ = Marker("Harbour")"#),
+        Road(
+            name: "a marker's second line as an address",
+            removed: #"_ = Pin("Harbour").address("Quay 1")"#,
+            contract: #"_ = Marker("Harbour").subtitle("Quay 1")"#),
+        Road(
+            name: "a marker's choice as pinClicked",
+            removed: "_ = PinContract.pinClicked",
+            contract: "_ = MarkerContract.selected"),
+        Road(
+            name: "a marker's callout as pinDetailsClicked",
+            removed: "_ = PinContract.pinDetailsClicked",
+            contract: "_ = MarkerContract.detailsClicked"),
+        Road(
+            name: "a saved marker as savedPin",
+            removed: "_ = PinType.savedPin",
+            contract: "_ = MarkerType.saved"),
+        Road(
+            name: "a map's markers as pins",
+            removed: #"_ = Map().pins { Pin("A") }"#,
+            contract: #"_ = Map().markers { Marker("A") }"#),
+        Road(
+            name: "the plain map as a street map",
+            removed: "_ = MapType.street",
+            contract: "_ = MapType.standard"),
         Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,

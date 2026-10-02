@@ -1,18 +1,18 @@
 <!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
-# Pin
+# Marker
 
-A pin on the map.
+A marker on the map.
 
 ```swift
 @State var chosen = ""
 
 Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
-    .pins {
-        Pin("Royal Castle")
-            .address("Plac Zamkowy 4")
+    .markers {
+        Marker("Royal Castle")
+            .subtitle("Plac Zamkowy 4")
             .location(latitude: 52.2479, longitude: 21.0155)
-            .onPinClicked { chosen = "castle" }
+            .onSelected { chosen = "castle" }
     }
 ```
 
@@ -50,22 +50,22 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
-Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PinContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/MarkerContract.swift`.
 
-## Pin's own members
+## Marker's own members
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>address</code></td><td>property</td><td><code>String</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDetailsClicked</code> (<code>detailsClicked</code>)</td><td>event</td><td></td><td>provider</td><td align="center">✅</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: open on Marker: the map's delegate told of the callout's button, no touch<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>label</code></td><td>property</td><td><code>String</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>location</code></td><td>property</td><td><code>Location</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPinClicked</code> (<code>pinClicked</code>)</td><td>event</td><td></td><td>provider</td><td align="center">✅</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
-<tr><td colspan="9">UIKit: only through the host's own: open on Pin: the map's delegate told of the callout's button, no touch<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPinDetailsClicked</code> (<code>pinDetailsClicked</code>)</td><td>event</td><td></td><td>provider</td><td align="center">✅</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
-<tr><td colspan="9">UIKit: only through the host's own: open on Pin: the map's delegate told of the callout's button, no touch<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>type</code></td><td>property</td><td><code>PinType</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onSelected</code> (<code>selected</code>)</td><td>event</td><td></td><td>provider</td><td align="center">✅</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: open on Marker: the map's delegate told of the callout's button, no touch<br>Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>subtitle</code></td><td>property</td><td><code>String</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
+<tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>type</code></td><td>property</td><td><code>MarkerType</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td></td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4: the application registers its own control</td></tr></tbody>
 </table>

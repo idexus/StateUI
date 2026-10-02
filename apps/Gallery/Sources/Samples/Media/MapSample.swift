@@ -1,11 +1,11 @@
 import StateUI
 
-/// The platform's own map, with pins, a region to move to, and what it draws.
+/// The platform's own map, with markers, a region to move to, and what it draws.
 struct MapSample: SampleContent, ExampleContent {
     @State private var said = "tap the map, a pin, or its details"
 
     @Aim(Map.self) private var map
-    @State private var kind = MapType.street
+    @State private var kind = MapType.standard
     @State private var traffic = false
     @State private var showsMe = false
     @State private var locked = false
@@ -22,7 +22,7 @@ struct MapSample: SampleContent, ExampleContent {
         @State private var said = "tap the map, a pin, or its details"
 
         @Aim(Map.self) private var map
-        @State private var kind = MapType.street
+        @State private var kind = MapType.standard
         @State private var traffic = false
         @State private var showsMe = false
         @State private var locked = false
@@ -46,10 +46,10 @@ struct MapSample: SampleContent, ExampleContent {
                     }
 
                 // What it DRAWS, cycled so all three can be seen.
-                Button(kind == .street ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
+                Button(kind == .standard ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
                     .onClicked {
-                        kind = kind == .street ? .satellite
-                            : kind == .satellite ? .hybrid : .street
+                        kind = kind == .standard ? .satellite
+                            : kind == .satellite ? .hybrid : .standard
                     }
             }
 
@@ -72,21 +72,21 @@ struct MapSample: SampleContent, ExampleContent {
                 .showsUserLocation(showsMe)
                 .isZoomEnabled(!locked)
                 .isScrollEnabled(!locked)
-                .pins {
-                    Pin("Wawel Castle")
-                        .address("Wawel 5")
-                        // What the pin stands for, which is what decides the
+                .markers {
+                    Marker("Wawel Castle")
+                        .subtitle("Wawel 5")
+                        // What the marker stands for, which is what decides the
                         // icon the platform draws for it.
                         .type(.place)
                         .location(latitude: 50.0540, longitude: 19.9354)
-                        .onPinClicked { said = "pin: Wawel Castle" }
-                        .onPinDetailsClicked { said = "details: Wawel Castle" }
+                        .onSelected { said = "pin: Wawel Castle" }
+                        .onDetailsClicked { said = "details: Wawel Castle" }
 
-                    Pin("Main Market Square")
-                        .address("Main Market Square 1/3")
+                    Marker("Main Market Square")
+                        .subtitle("Main Market Square 1/3")
                         .type(.searchResult)
                         .location(latitude: 50.0617, longitude: 19.9373)
-                        .onPinClicked { said = "pin: Main Market Square" }
+                        .onSelected { said = "pin: Main Market Square" }
                 }
                 .onMapClicked { location in
                     said = "map: \\(location.latitude), \\(location.longitude)"
@@ -116,13 +116,13 @@ struct MapSample: SampleContent, ExampleContent {
                             latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
                     }
 
-                Button(kind == .street ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
+                Button(kind == .standard ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
                     .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         kind =
-                            kind == .street
+                            kind == .standard
                             ? .satellite
-                            : kind == .satellite ? .hybrid : .street
+                            : kind == .satellite ? .hybrid : .standard
                     }
             }
             .spacing(8)
@@ -151,19 +151,19 @@ struct MapSample: SampleContent, ExampleContent {
                 .showsUserLocation(showsMe)
                 .isZoomEnabled(!locked)
                 .isScrollEnabled(!locked)
-                .pins {
-                    Pin("Wawel Castle")
-                        .address("Wawel 5")
+                .markers {
+                    Marker("Wawel Castle")
+                        .subtitle("Wawel 5")
                         .type(.place)
                         .location(latitude: 50.0540, longitude: 19.9354)
-                        .onPinClicked { said = "pin: Wawel Castle" }
-                        .onPinDetailsClicked { said = "details: Wawel Castle" }
+                        .onSelected { said = "pin: Wawel Castle" }
+                        .onDetailsClicked { said = "details: Wawel Castle" }
 
-                    Pin("Main Market Square")
-                        .address("Main Market Square 1/3")
+                    Marker("Main Market Square")
+                        .subtitle("Main Market Square 1/3")
                         .type(.searchResult)
                         .location(latitude: 50.0617, longitude: 19.9373)
-                        .onPinClicked { said = "pin: Main Market Square" }
+                        .onSelected { said = "pin: Main Market Square" }
                 }
                 .onMapClicked { location in
                     said = "map: \(rounded(location.latitude)), \(rounded(location.longitude))"

@@ -158,7 +158,7 @@ final class UIKitDriver: HostDriver {
     }
 
     private func performing(_ act: UserAct, on element: MountedElement) throws {
-        if element.type == .pin { return try performOnPin(act, element) }
+        if element.type == .marker { return try performOnMarker(act, element) }
         let view = (element.native as? UIKitElement)?.view
         switch (act, view) {
         case (.tap(let count), let map as UIKitMapView):
@@ -289,7 +289,7 @@ final class UIKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
-        if element.type == .pin { return try pinHolds(property, element) }
+        if element.type == .marker { return try markerHolds(property, element) }
         if let map = (element.native as? UIKitElement)?.view as? UIKitMapView, let held = mapHolds(property, map) {
             return held
         }

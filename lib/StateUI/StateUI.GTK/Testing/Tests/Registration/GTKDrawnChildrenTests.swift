@@ -15,7 +15,7 @@ private enum ShelfContract: ElementContract {
     static let members: [any ContractMember] = []
 }
 
-/// A book on a shelf, wearing no tier - as a map's pin.
+/// A book on a shelf, wearing no tier - as a map's marker.
 private enum BookContract: ElementContract {
     static let nodeType: NodeType = "DrawnTest.Book"
 

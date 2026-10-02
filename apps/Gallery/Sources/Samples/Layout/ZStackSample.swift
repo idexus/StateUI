@@ -31,11 +31,11 @@ private struct Areas: ExampleContent {
                     .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                 // Its natural size, where its alignments put it.
-                Marker(text: "start", color: "#E53935")
+                Badge(text: "start", color: "#E53935")
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
 
-                Marker(text: "end", color: "#00897B")
+                Badge(text: "end", color: "#00897B")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
             }
@@ -44,7 +44,7 @@ private struct Areas: ExampleContent {
             SwitchRow("Proportional area", $proportional)
         }
 
-        private struct Marker: View {
+        private struct Badge: View {
             let text: String
             let color: String
 
@@ -68,11 +68,11 @@ private struct Areas: ExampleContent {
                 ColorBox(Color("#1E88E5"))
                     .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
-                Marker(text: "start", color: "#E53935")
+                Badge(text: "start", color: "#E53935")
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
 
-                Marker(text: "end", color: "#00897B")
+                Badge(text: "end", color: "#00897B")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
             }
@@ -149,9 +149,9 @@ private struct Layers: ExampleContent {
     var notes: (any View)? { nil }
 }
 
-/// One labelled marker, so the sample says what is being positioned rather than
+/// One labelled badge, so the sample says what is being positioned rather than
 /// how it is drawn.
-private struct Marker: View {
+private struct Badge: View {
     let text: String
     let color: String
 

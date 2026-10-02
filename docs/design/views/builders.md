@@ -4,7 +4,7 @@ A result builder turns the statements of a closure into what a container
 holds, or into one view. StateUI has one for views, one for the page a page
 position shows (`PageBuilder`: one page, an `if`/`else` or `switch` keying
 each branch, no `if` without `else`), and one each for menu entries, toolbar
-items, text runs, pins, windows, window groups and styles. The
+items, text runs, markers, windows, window groups and styles. The
 view builder also gives every view it collects a key.
 
 ## The result says what was written
@@ -17,7 +17,7 @@ of `any View` an array. Everything a container holds is `Views`: every view is
 one, and so is each of these. A composed view's `body` and a one-view slot
 take a `View`, so two statements or an `if` with no `else` there do not compile,
 and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text, a
-pin and an arrangement of pages each go where they belong. A modifier on a view
+marker and an arrangement of pages each go where they belong. A modifier on a view
 gives back a view (`View where Modified: View`), so a chain goes on on
 `any View` as on a view of a known type.
 
@@ -92,7 +92,7 @@ The builders have no `buildArray`, so a plain `for` does not compile in them. A 
 number is its position: a collection that gains a row at the top renumbers
 every turn below it, and every view would be rebuilt as though it had changed.
 `ForEach` is where repetition is written, and it keys each view by its item;
-where views are not what is repeated - menu entries, toolbar items, runs, pins -
+where views are not what is repeated - menu entries, toolbar items, runs, markers -
 an array of them stands for the loop, each matched by its `.id()`.
 
 ## ForEach keys are text
@@ -137,8 +137,8 @@ in a menu does not compile. `if` and `if/else` work in a menu, and a plain `for`
 does not. It records no path. An entry is matched by its `.id()` and otherwise
 by its position, so an `if` whose entry comes and goes re-matches every entry
 below it against a different one. An entry standing beside a conditional, and
-each of a list of entries that changes, wants an id. `MenuBarBuilder`, `ToolbarBuilder`, `TextSpanBuilder` and `PinBuilder`
-collect one type each - a `Menu`, a `ToolbarItem`, a `TextSpan`, a `Pin` - the
+each of a list of entries that changes, wants an id. `MenuBarBuilder`, `ToolbarBuilder`, `TextSpanBuilder` and `MarkerBuilder`
+collect one type each - a `Menu`, a `ToolbarItem`, a `TextSpan`, a `Marker` - the
 same way, an array of them standing for a loop.
 
 ## Windows and styles

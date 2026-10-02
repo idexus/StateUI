@@ -16,7 +16,7 @@ and this table maps the two.
 | member | property, event or method | a property, an event or an act an element declares |
 | wear (a tier) | adopt, conform to | an element contract taking a tier's members |
 | layer (`ElementLayer`) | implementation source | who realizes a node type or a member: the platform, an adaptation, StateUI, the structure or a provider |
-| `Text` (the element) | label | words shown and not edited; in a comment "a label" is a `Text`, while a member named `label` - `accessibilityLabel`, `Pin.label` - is a caption naming something else |
+| `Text` (the element) | label | words shown and not edited; in a comment "a label" is a `Text`, while a member named `label` - `accessibilityLabel`, `Marker.label` - is a caption naming something else |
 | slot | named placeholder | a structural child that holds authored content in a known place: `TitleView` |
 | slot child | auxiliary child | a child a modifier appends after the laid-out ones: a context menu |
 | watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |

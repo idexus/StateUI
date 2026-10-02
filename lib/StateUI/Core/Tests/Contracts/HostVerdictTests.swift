@@ -19,7 +19,7 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "Switch", member: "toggled", mark: .failed("true expected, false came")),
             HostVerdict(element: "Text", member: "text", mark: .partly("cannot read text of Text - Hidden.")),
             HostVerdict(element: "Text", member: "tapped", mark: .byHost("tap on Text: the recognizer is handed it")),
-            HostVerdict(element: "Pin", member: "label", mark: .byApplication),
+            HostVerdict(element: "Marker", member: "label", mark: .byApplication),
         ]
 
         for verdict in verdicts {

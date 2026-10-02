@@ -1,8 +1,0 @@
-# revision 1.1
-Pin: ✅
-Pin.address: ✅
-Pin.label: ✅
-Pin.location: ✅
-Pin.pinClicked: ✅
-Pin.pinDetailsClicked: ✅
-Pin.type: ✅

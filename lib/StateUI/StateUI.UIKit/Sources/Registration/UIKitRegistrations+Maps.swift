@@ -8,7 +8,7 @@ import UIKit
 
 extension UIKitRegistrations {
     /// A Map: MapKit's own map - the region it opens on, the kind of map, what the user may do with it, a tap on
-    /// it - and its pins as MapKit's markers.
+    /// it - and its markers as MapKit's markers.
     static func maps(_ registry: Registry<UIView>) {
         registry.add(MapContract.self, create: { reports in
             let map = UIKitMapView()
@@ -19,15 +19,15 @@ extension UIKitRegistrations {
                 if let region { view.show(region, sliding: false) }
             }
             map.applies([MapContract.mapType, MapContract.showsTraffic]) { view, values in
-                view.style(values[MapContract.mapType] ?? .street, traffic: values[MapContract.showsTraffic] ?? false)
+                view.style(values[MapContract.mapType] ?? .standard, traffic: values[MapContract.showsTraffic] ?? false)
             }
             map.property(MapContract.isScrollEnabled) { view, on in view.isScrollEnabled = on ?? true }
             map.property(MapContract.isZoomEnabled) { view, on in view.isZoomEnabled = on ?? true }
             map.property(MapContract.showsUserLocation) { view, on in view.showUser(on ?? false) }
             map.raises(MapContract.mapClicked)
-            map.children(PinContract.self, members: [
-                PinContract.label, PinContract.address, PinContract.type, PinContract.location,
-                PinContract.pinClicked, PinContract.pinDetailsClicked,
+            map.children(MarkerContract.self, members: [
+                MarkerContract.label, MarkerContract.subtitle, MarkerContract.type, MarkerContract.location,
+                MarkerContract.selected, MarkerContract.detailsClicked,
             ]) { view, pins in
                 view.show(pins)
             }

@@ -108,6 +108,13 @@ Map
   showsTraffic
   showsUserLocation
   mapClicked()
+Marker
+  label
+  location
+  subtitle
+  type
+  detailsClicked()
+  selected()
 Path
   contentMode
   dash
@@ -128,13 +135,6 @@ Picker
   closed()
   opened()
   selectedIndexChanged()
-Pin
-  address
-  label
-  location
-  type
-  pinClicked()
-  pinDetailsClicked()
 Polygon
   contentMode
   dash

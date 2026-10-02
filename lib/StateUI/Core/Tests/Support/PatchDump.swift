@@ -194,7 +194,7 @@ enum PatchDump {
         case Prop.iconPosition.name:
             return spelled(member, as: IconPosition.self)
         case Prop.type.name:
-            return spelled(member, as: PinType.self)
+            return spelled(member, as: MarkerType.self)
         case Prop.avoidsSafeArea.name:
             return spelled(member, as: SafeArea.self)
         case Prop.layoutDirection.name:

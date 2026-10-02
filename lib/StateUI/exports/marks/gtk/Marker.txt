@@ -1,0 +1,8 @@
+# revision 1.1
+Marker: 🧩
+Marker.detailsClicked: 🧩
+Marker.label: 🧩
+Marker.location: 🧩
+Marker.selected: 🧩
+Marker.subtitle: 🧩
+Marker.type: 🧩

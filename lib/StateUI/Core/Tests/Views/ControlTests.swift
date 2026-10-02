@@ -304,7 +304,7 @@ final class ControlTests: XCTestCase {
                     .onEndReached(within: 5) {}
                     .node.built),
 
-            // Both halves of a map: the control, and the pins on it. A Pin is
+            // Both halves of a map: the control, and the markers on it. A Marker is
             // not a control of its own - it is a marker on the map - so this
             // case is where its modifiers are exercised as well. Where the
             // map LOOKS is an act (moveToRegion), checked with the other acts
@@ -316,15 +316,15 @@ final class ControlTests: XCTestCase {
                     .isZoomEnabled(true)
                     .showsTraffic(false)
                     .showsUserLocation(false)
-                    .pins {
-                        Pin("Royal Castle")
-                            .address("Plac Zamkowy 4")
+                    .markers {
+                        Marker("Royal Castle")
+                            .subtitle("Plac Zamkowy 4")
                             .type(.place)
                             .location(latitude: 52.2479, longitude: 21.0155)
-                            .onPinClicked {}
-                            .onPinDetailsClicked {}
+                            .onSelected {}
+                            .onDetailsClicked {}
 
-                        Pin("Second")
+                        Marker("Second")
                             .label("Lazienki Park")
                             .location(latitude: 52.2151, longitude: 21.0355)
                     }
@@ -501,7 +501,7 @@ final class ControlTests: XCTestCase {
                 }
                 .spacing(12)
                 // The safe strip is the LAYOUT tier's one property of its own;
-                // the four-value form pins its full spelling in the patch.
+                // the four-value form markers its full spelling in the patch.
                 .avoidsSafeArea(.none, .keyboard, .container, .all)
                 .clipsContent(true)
                 .letsInputThrough(true)
@@ -1118,7 +1118,7 @@ final class ControlTests: XCTestCase {
     /// The same promise on the non-view items, which each carry their typed
     /// event modifier by hand: one that ASSIGNED the handler would let a
     /// second silently replace the first while "every typed event modifier
-    /// composes" stood written on Button. A ToolbarItem and a Pin
+    /// composes" stood written on Button. A ToolbarItem and a Marker
     /// stand for the family - MenuItem is the same two lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {
         var seen: [String] = []
@@ -1136,12 +1136,12 @@ final class ControlTests: XCTestCase {
 
         seen = []
         let pin = renders.render(
-            Pin("Office")
-                .onPinClicked { seen.append("first") }
-                .onPinClicked { seen.append("second") }
+            Marker("Office")
+                .onSelected { seen.append("first") }
+                .onSelected { seen.append("second") }
                 .node)
 
-        renders.fire(handler(pin, "pinClicked"))
+        renders.fire(handler(pin, "selected"))
 
         XCTAssertEqual(seen, ["first", "second"])
     }

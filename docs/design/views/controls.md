@@ -78,9 +78,9 @@ platform's map is ready, while the act lands an instant after the native map
 exists and the platform's own opening region overwrites it. Moving a map that
 is already up is the act `moveToRegion`.
 
-A pin, a map, a web page and a navigation report what happened; handlers on
+A marker, a map, a web page and a navigation report what happened; handlers on
 them observe. A handler runs a boundary away, after the platform has already
-decided: a pin's tap handler cannot keep the callout shut, and a web view's
+decided: a marker's tap handler cannot keep the callout shut, and a web view's
 `onNavigating` cannot cancel the navigation - a page that must not be left is a
 page not navigated to.
 
@@ -135,7 +135,7 @@ is a state the tree describes and a rebuild cannot lose.
 
 ## Items that are not views
 
-A menu, a menu entry, a separator, a toolbar item and a map pin are elements
+A menu, a menu entry, a separator, a toolbar item and a map marker are elements
 but not views: each has a caption, a picture or a point and something to run,
 and no layout of its own. They take none of the modifiers a view has, belong
 in one place - a page's session, a menu, a map - and are matched by their

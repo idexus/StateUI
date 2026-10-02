@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// One child element a registered view draws itself - a map's pin: what it is read and reported through. The host
+/// One child element a registered view draws itself - a map's marker: what it is read and reported through. The host
 /// keeps one for as long as the child lives, so a child is the same object every time its parent's view is handed it.
 @_spi(Host) public final class HostChild {
     /// The child's current value for a key, as the host presents it.

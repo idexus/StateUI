@@ -52,7 +52,7 @@ extension NodeType {
     static let overlay = OverlayContract.nodeType
     static let path = PathContract.nodeType
     static let picker = PickerContract.nodeType
-    static let pin = PinContract.nodeType
+    static let marker = MarkerContract.nodeType
     static let polygon = PolygonContract.nodeType
     static let polyline = PolylineContract.nodeType
     static let progressBar = ProgressBarContract.nodeType
@@ -80,7 +80,7 @@ extension NodeType {
     static let accessibilityHint = VisualElementContract.accessibilityHint.token
     static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
-    static let address = PinContract.address.token
+    static let subtitle = MarkerContract.subtitle.token
     static let allowsDrop = ViewContract.allowsDrop.token
     static let area = ViewContract.area.token
     static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
@@ -163,10 +163,10 @@ extension NodeType {
     static let isZoomEnabled = MapContract.isZoomEnabled.token
     static let options = PickerContract.options.token
     static let inputPurpose = TextInputContract.inputPurpose.token
-    static let label = PinContract.label.token
+    static let label = MarkerContract.label.token
     static let lineBreak = ButtonContract.lineBreak.token
     static let lineHeight = LineHeightElementContract.lineHeight.token
-    static let location = PinContract.location.token
+    static let location = MarkerContract.location.token
     static let mapType = MapContract.mapType.token
     static let margin = ViewContract.margin.token
     static let maximum = SliderContract.maximum.token
@@ -231,7 +231,7 @@ extension NodeType {
     static let title = PageElementContract.title.token
     static let translationX = VisualElementContract.translationX.token
     static let translationY = VisualElementContract.translationY.token
-    static let type = PinContract.type.token
+    static let type = MarkerContract.type.token
     static let userAgent = WebViewContract.userAgent.token
 
     static let value = SliderContract.value.token
@@ -260,8 +260,8 @@ extension NodeType {
     static let dateChanged = DatePickerContract.dateChanged.token
     static let endReached = ItemsViewContract.endReached.token
     static let itemActivated = ItemsViewContract.itemActivated.token
-    static let pinClicked = PinContract.pinClicked.token
-    static let pinDetailsClicked = PinContract.pinDetailsClicked.token
+    static let selected = MarkerContract.selected.token
+    static let detailsClicked = MarkerContract.detailsClicked.token
     static let realizedChanged = ItemsViewContract.realizedChanged.token
     static let selectedItemsChanged = ItemsViewContract.selectedItemsChanged.token
     static let submitted = SearchFieldContract.submitted.token

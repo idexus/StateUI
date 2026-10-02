@@ -269,15 +269,15 @@ extension ControlDictionary {
                 .placeholder("Size")
             """#),
 
-        (PinContract.self, #"""
+        (MarkerContract.self, #"""
             @State var chosen = ""
 
             Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
-                .pins {
-                    Pin("Royal Castle")
-                        .address("Plac Zamkowy 4")
+                .markers {
+                    Marker("Royal Castle")
+                        .subtitle("Plac Zamkowy 4")
                         .location(latitude: 52.2479, longitude: 21.0155)
-                        .onPinClicked { chosen = "castle" }
+                        .onSelected { chosen = "castle" }
                 }
             """#),
 
@@ -733,8 +733,8 @@ extension ControlDictionary {
          #"""
             StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
                 map.property(MapContract.region) { control, region in … }
-                map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { control, pins in
-                    // each pin: its typed values, and its own reports to raise pinClicked on it
+                map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, pins in
+                    // each marker: its typed values, and its own reports to raise selected on it
                 }
             }
             """#),

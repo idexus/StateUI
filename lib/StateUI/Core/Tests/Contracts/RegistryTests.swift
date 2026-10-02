@@ -432,7 +432,7 @@ private enum LampContract: ElementContract {
     static let members: [any ContractMember] = [signal, caption, emphasis, unrealized, lampTapped, signalChanged]
 }
 
-/// A child the lamp's view draws itself, wearing no tier - as a map's pin.
+/// A child the lamp's view draws itself, wearing no tier - as a map's marker.
 private enum BulbContract: ElementContract {
     static let nodeType: NodeType = "Test.Bulb"
 

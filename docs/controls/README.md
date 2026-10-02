@@ -78,6 +78,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Application](Application.md) | 12 | 7 ✅ · 5 ✓ | 6 ✅ · 5 ✓ | 4 ✅ · 4 ✓ | 12 ✅ | 11 ✅ · 1 ✓ |  |
 | [ContextMenu](ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Divider](Divider.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [Marker](Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 |  |
 | [Menu](Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [MenuBar](MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ | 3 ✅ · 3 – |  |
@@ -85,7 +86,6 @@ The scene, the window and the page an application is made of, the arrangements a
 | [NavigationStack](NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [Page](Page.md) | 12 | 8 ✅ | 12 ✅ | 7 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – |  |
-| [Pin](Pin.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 |  |
 | [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
 | [TabView](TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |

@@ -13,7 +13,7 @@ enum GTKRealization {
 
     /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.
-    static let byApplication: Set<String> = ["Map", "Pin"]
+    static let byApplication: Set<String> = ["Map", "Marker"]
 
     /// The entries a backend realizes on this host - a package of its own, for a library GTK does not ship - which
     /// the application's head registers: WebKitGTK's web view. Realized none of until it is registered.

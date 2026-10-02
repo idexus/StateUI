@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A map of the world, with pins on it.
+/// A map of the world, with markers on it.
 public enum MapContract: ElementContract {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "Map"
@@ -21,7 +21,7 @@ public enum MapContract: ElementContract {
     /// Whether a pinch zooms it.
     public static let isZoomEnabled = ElementProperty<Self, Bool>("isZoomEnabled", layer: .provider)
 
-    /// The map itself was tapped - not a pin - at a place.
+    /// The map itself was tapped - not a marker - at a place.
     public static let mapClicked = ElementEvent<Self, Location>("mapClicked", layer: .provider)
 
     /// How the world is drawn - streets, photography from above, or both.

@@ -2,7 +2,7 @@
 
 # Map
 
-A map of the world, with pins on it.
+A map of the world, with markers on it.
 
 ```swift
 @State var tapped = "nowhere yet"
@@ -17,8 +17,8 @@ A host with no map of its own shows the one the application registers with it - 
 ```swift quote
 StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
     map.property(MapContract.region) { control, region in … }
-    map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { control, pins in
-        // each pin: its typed values, and its own reports to raise pinClicked on it
+    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, pins in
+        // each marker: its typed values, and its own reports to raise selected on it
     }
 }
 ```

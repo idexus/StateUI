@@ -90,13 +90,13 @@
         wholes.append((keys: keys, apply: apply))
     }
 
-    /// The children of one contract the view draws itself - a map's pins - handed over whole, in the tree's order,
+    /// The children of one contract the view draws itself - a map's markers - handed over whole, in the tree's order,
     /// whenever the element's children change: one being added, moved, taken away, or given another value. A child
     /// registered so has no view of its own. `members` are what the view realizes of each child - a property or an
     /// event of the child's contract or of a tier it wears; anything else is left out, and said once.
     ///
-    ///     registration.children(PinContract.self, members: [PinContract.label, PinContract.pinClicked]) { map, pins in
-    ///         map.show(pins.map { ($0, $0.value(PinContract.label) ?? "") })
+    ///     registration.children(MarkerContract.self, members: [MarkerContract.label, MarkerContract.selected]) { map, markers in
+    ///         map.show(markers.map { ($0, $0.value(MarkerContract.label) ?? "") })
     ///     }
     ///
     /// - Parameters:

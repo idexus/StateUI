@@ -4,9 +4,9 @@
 // A closed vocabulary, numbered by StateUI: append a case, never insert one.
 // Design: docs/design/types/vocabularies.md#written-out-and-appended
 
-/// What a map pin stands for - what `.type` takes, and what decides the icon
+/// What a map marker stands for - what `.type` takes, and what decides the icon
 /// the platform draws.
-public enum PinType: Int32, Sendable {
+public enum MarkerType: Int32, Sendable {
     /// Somewhere on the map, with no more said. The default.
     case generic = 0
 
@@ -14,10 +14,10 @@ public enum PinType: Int32, Sendable {
     case place = 1
 
     /// One the user saved.
-    case savedPin = 2
+    case saved = 2
 
     /// One a search turned up.
     case searchResult = 3
 }
 
-extension PinType: HostRepresentable {}
+extension MarkerType: HostRepresentable {}

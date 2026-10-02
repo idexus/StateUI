@@ -201,11 +201,11 @@ public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat
 /// an `Element`, so one goes into any builder - which is how an application
 /// describes a control it registered with a host:
 ///
-///     struct Marker: ElementView {
-///         var node = Node(contract: MarkerContract.self)
+///     struct Beacon: ElementView {
+///         var node = Node(contract: BeaconContract.self)
 ///
 ///         func title(_ value: String) -> Self {
-///             setValue(MarkerContract.title, value)
+///             setValue(BeaconContract.title, value)
 ///         }
 ///     }
 ///

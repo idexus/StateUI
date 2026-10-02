@@ -57,7 +57,7 @@ final class GTKConformanceTests: XCTestCase {
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }
     func testPage() { conform(PageTests.self) }
-    func testPin() { conform(PinTests.self) }
+    func testMarker() { conform(MarkerTests.self) }
     func testScene() { conform(SceneTests.self) }
     func testTextSpan() { conform(TextSpanTests.self) }
     func testTextSpans() { conform(TextSpansTests.self) }

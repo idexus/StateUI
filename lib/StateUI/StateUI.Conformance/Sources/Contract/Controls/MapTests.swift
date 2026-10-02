@@ -57,7 +57,7 @@
                 s.settle { !heard.values.isEmpty }
                 s.expect(heard.values.count, 1, "heard once")
             },
-            Aspects.holds(MapContract.mapType, on: "Map", .street, then: .satellite),
+            Aspects.holds(MapContract.mapType, on: "Map", .standard, then: .satellite),
             Aspects.holds(MapContract.isScrollEnabled, on: "Map", true, then: false),
             Aspects.holds(MapContract.isZoomEnabled, on: "Map", true, then: false),
             Aspects.holds(MapContract.showsTraffic, on: "Map", false, then: true),

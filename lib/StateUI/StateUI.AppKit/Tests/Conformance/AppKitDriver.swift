@@ -187,7 +187,7 @@ final class AppKitDriver: HostDriver {
         layOutWindows()
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
-        if element.type == .pin { return try pinHolds(property, element) }
+        if element.type == .marker { return try markerHolds(property, element) }
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held
         }

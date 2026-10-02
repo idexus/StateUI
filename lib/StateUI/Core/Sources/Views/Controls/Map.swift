@@ -34,14 +34,14 @@ extension MapProperties {
     }
 }
 
-/// A map of the world, with pins on it.
+/// A map of the world, with markers on it.
 ///
 ///     Map()
-///         .pins {
-///             Pin("Royal Castle")
-///                 .address("Plac Zamkowy 4")
+///         .markers {
+///             Marker("Royal Castle")
+///                 .subtitle("Plac Zamkowy 4")
 ///                 .location(latitude: 52.2479, longitude: 21.0155)
-///                 .onPinClicked { chosen = "castle" }
+///                 .onSelected { chosen = "castle" }
 ///         }
 ///
 /// The map pans, so give it room of its own - a grid row, a page that holds
@@ -79,16 +79,16 @@ public struct Map: ElementView, MapProperties {
         node.write(MapContract.region, MapRegion(latitude: latitude, longitude: longitude, radiusMeters: radiusMeters))
     }
 
-    // MARK: The pins
+    // MARK: The markers
 
-    /// The pins on it, replacing whatever was pinned before. A `Pin` is not a
+    /// The markers on it, replacing whatever markers it held before. A `Marker` is not a
     /// view, and goes here and nowhere else.
-    public func pins(@PinBuilder _ content: () -> [Pin]) -> Self {
+    public func markers(@MarkerBuilder _ content: () -> [Marker]) -> Self {
         var copy = self
 
-        // The pins go before the context menu's slot, which stays last.
+        // The markers go before the context menu's slot, which stays last.
         // Design: docs/design/views/modifiers.md#slot-children
-        copy.node.children.removeAll { $0.type == .pin }
+        copy.node.children.removeAll { $0.type == .marker }
         let slots = copy.node.children.filter { $0.type == .contextMenu }
         copy.node.children.removeAll { $0.type == .contextMenu }
         copy.node.children += content().map { $0.node } + slots
@@ -98,75 +98,75 @@ public struct Map: ElementView, MapProperties {
 
     // MARK: Events
 
-    /// Fires when the map itself is tapped - not a pin - with where.
+    /// Fires when the map itself is tapped - not a marker - with where.
     public func onMapClicked(_ handler: @escaping ValueEventHandler<Location>) -> Self {
         onEvent(MapContract.mapClicked, handler)
     }
 }
 
-/// A pin on the map.
+/// A marker on the map.
 ///
-///     Pin("Royal Castle")
-///         .address("Plac Zamkowy 4")
+///     Marker("Royal Castle")
+///         .subtitle("Plac Zamkowy 4")
 ///         .location(latitude: 52.2479, longitude: 21.0155)
 ///
-/// Tapping the pin shows its label and address in the platform's own
-/// callout; `.onPinClicked` is the tap on the pin, `.onPinDetailsClicked`
+/// Tapping the marker shows its label and address in the platform's own
+/// callout; `.onSelected` is the tap on the marker, `.onDetailsClicked`
 /// the tap on that callout - its details.
-public struct Pin: Element {
-    /// The node this pin describes.
+public struct Marker: Element {
+    /// The node this marker describes.
     public var node: Node
 
-    /// A pin labelled `label` - what the callout shows in bold. Give it a
+    /// A marker labelled `label` - what the callout shows in bold. Give it a
     /// `.location`, or it stands at zero-zero in the Atlantic.
     public init(_ label: String) {
-        node = Node(contract: PinContract.self)
-        node.write(PinContract.label, label)
+        node = Node(contract: MarkerContract.self)
+        node.write(MarkerContract.label, label)
     }
 
     /// The callout's first line, in bold. The initializer takes the same
-    /// value and is where a pin usually gets it.
+    /// value and is where a marker usually gets it.
     public func label(_ value: String) -> Self {
         var copy = self
-        copy.node.write(PinContract.label, value)
+        copy.node.write(MarkerContract.label, value)
         return copy
     }
 
     /// The line under the label in the callout.
-    public func address(_ value: String) -> Self {
+    public func subtitle(_ value: String) -> Self {
         var copy = self
-        copy.node.write(PinContract.address, value)
+        copy.node.write(MarkerContract.subtitle, value)
         return copy
     }
 
-    /// What the pin stands for, which is what decides the icon the platform
+    /// What the marker stands for, which is what decides the icon the platform
     /// draws for it.
-    public func type(_ value: PinType) -> Self {
+    public func type(_ value: MarkerType) -> Self {
         var copy = self
-        copy.node.write(PinContract.type, value)
+        copy.node.write(MarkerContract.type, value)
         return copy
     }
 
     /// Where it stands.
     public func location(latitude: Double, longitude: Double) -> Self {
         var copy = self
-        copy.node.write(PinContract.location, Location(latitude: latitude, longitude: longitude))
+        copy.node.write(MarkerContract.location, Location(latitude: latitude, longitude: longitude))
         return copy
     }
 
-    /// Fires when the pin is tapped. Observing only: it cannot keep the
+    /// Fires when the marker is tapped. Observing only: it cannot keep the
     /// callout shut.
-    public func onPinClicked(_ handler: @escaping EventHandler) -> Self {
+    public func onSelected(_ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(PinContract.pinClicked, handler)
+        copy.node.addHandler(MarkerContract.selected, handler)
         return copy
     }
 
-    /// Fires when the callout above the pin - its details - is tapped: the
+    /// Fires when the callout above the marker - its details - is tapped: the
     /// place a navigation usually goes.
-    public func onPinDetailsClicked(_ handler: @escaping EventHandler) -> Self {
+    public func onDetailsClicked(_ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(PinContract.pinDetailsClicked, handler)
+        copy.node.addHandler(MarkerContract.detailsClicked, handler)
         return copy
     }
 }
@@ -174,7 +174,7 @@ public struct Pin: Element {
 /// How the world is drawn.
 public enum MapType: Int32, Sendable, HostRepresentable {
     /// Roads and their names - the default.
-    case street = 0
+    case standard = 0
 
     /// Photography from above, no names on it.
     case satellite = 1

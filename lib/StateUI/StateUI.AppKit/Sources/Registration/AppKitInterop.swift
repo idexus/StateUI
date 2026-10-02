@@ -139,7 +139,7 @@ public enum StateUIEvents {
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a view of its own:
     /// how the view is made, and which of the element's members it takes and
-    /// raises. A library element this host does not realize - a `Map`, its pins
+    /// raises. A library element this host does not realize - a `Map`, its markers
     /// drawn through `children` - is added the same way.
     ///
     /// The Swift half is the application's already - a contract, and a `View`
@@ -261,13 +261,13 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
         registration.raises(event)
     }
 
-    /// The children of one contract the view draws itself - a map's pins - handed over whole, in the tree's
+    /// The children of one contract the view draws itself - a map's markers - handed over whole, in the tree's
     /// order, whenever the element's children change: one added, moved, taken away, or given another value. Such a
     /// child has no view of its own. `members` are what the view realizes of each child - a property or an
     /// event of the child's contract or of a tier it wears; anything else is left out, and said once.
     ///
-    ///     map.children(PinContract.self, members: [PinContract.location, PinContract.pinClicked]) { view, pins in
-    ///         view.show(pins)
+    ///     map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { view, markers in
+    ///         view.show(markers)
     ///     }
     ///
     /// - Parameters:
@@ -285,7 +285,7 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     }
 }
 
-/// A child element the view draws itself - a map's pin: its values as the types its contract declares, and the
+/// A child element the view draws itself - a map's marker: its values as the types its contract declares, and the
 /// reports its events leave through. Two are equal when they are the same child, for as long as it lives, so a
 /// view keeps what it drew for one by it.
 public struct AppKitChild<Child: ElementContract>: Hashable {

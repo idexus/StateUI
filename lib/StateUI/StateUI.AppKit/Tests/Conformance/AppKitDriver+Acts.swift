@@ -19,7 +19,7 @@ extension AppKitDriver {
 
     private func performing(_ act: UserAct, on element: MountedElement) throws {
         layOutWindows()
-        if element.type == .pin { return try performOnPin(act, element) }
+        if element.type == .marker { return try performOnMarker(act, element) }
         let native = element.native as? AppKitElement
         let view = native?.view
         switch (act, view) {

@@ -40,7 +40,7 @@
         LineContract.self, MapContract.self, MenuBarContract.self,
         MenuContract.self, MenuItemContract.self, DividerContract.self, ModalStackContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,
-        PickerContract.self, PinContract.self, PolygonContract.self, PolylineContract.self,
+        PickerContract.self, MarkerContract.self, PolygonContract.self, PolylineContract.self,
         ProgressBarContract.self, RadioButtonContract.self,
         RectangleContract.self, SceneContract.self, ScrollViewContract.self,
         SearchFieldContract.self, SliderContract.self, TextSpanContract.self,

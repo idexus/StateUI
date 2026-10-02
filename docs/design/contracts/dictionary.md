@@ -92,7 +92,7 @@ a host writes by hand and what its runtime registers - and by the case:
   Button.clicked: ✅               a passing case proved it
   DatePicker.format: ☑️ <missing>  proved, while the register says what is missing
   Map: – <why>                     the host's family never has it
-  Pin.label: 🧩                    the host leaves it to the application, which
+  Marker.label: 🧩                    the host leaves it to the application, which
                                    registers its own control for it
   Line.x1: not realized            empty: the host has no realization yet
   TextField.submitted: cannot ...  empty: the driver cannot do or read it, and why

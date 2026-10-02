@@ -366,22 +366,22 @@ draws](../hosts/gtk.md#children-a-control-draws), on each host's page); the
 platform matrix marks it 🧩 there.
 
 A map opens on the region its initializer gives: a centre and a radius in
-meters, the circle the map shows whole whatever its proportions. Its pins are
-its children, and a tap is heard where it fell - on the map itself, on a pin,
-or on a pin's details:
+meters, the circle the map shows whole whatever its proportions. Its markers are
+its children, and a tap is heard where it fell - on the map itself, on a marker,
+or on a marker's details:
 
 ```swift
-@State var said = "tap the map or a pin"
+@State var said = "tap the map or a marker"
 
 Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
     .mapType(.hybrid)
-    .pins {
-        Pin("Wawel Castle")
-            .address("Wawel 5")
+    .markers {
+        Marker("Wawel Castle")
+            .subtitle("Wawel 5")
             .type(.place)
             .location(latitude: 50.0540, longitude: 19.9354)
-            .onPinClicked { said = "the castle" }
-            .onPinDetailsClicked { said = "the castle's details" }
+            .onSelected { said = "the castle" }
+            .onDetailsClicked { said = "the castle's details" }
     }
     .onMapClicked { place in said = "\(place.latitude), \(place.longitude)" }
     .height(300)

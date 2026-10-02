@@ -49,7 +49,7 @@
         NavigationStackTests.self,
         OverlayTests.self,
         PageTests.self,
-        PinTests.self,
+        MarkerTests.self,
         SceneTests.self,
         TextSpanTests.self,
         TextSpansTests.self,

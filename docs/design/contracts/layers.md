@@ -12,7 +12,7 @@ dictionary prints it beside every row.
 | `adaptive` | every base host, by its platform's conventions, keeping StateUI's state contract | ModalStack, NavigationStack, Page, SplitView, TabView |
 | `stateUI` | StateUI, composed from smaller primitives before a host receives the tree | CheckBox, Ellipse, Grid, Line, Path, Polygon, Polyline, RadioButton, Rectangle |
 | `structure` | nobody draws it: it carries structure or protocol data | Application, Scene, Window, the menus, the slots and collections, TextSpan |
-| `provider` | an optional provider: a package, or the application that registers it | Map, Pin, and an application's own elements |
+| `provider` | an optional provider: a package, or the application that registers it | Map, Marker, and an application's own elements |
 
 An application's own contract is `provider` unless it says otherwise, for the
 element and for each member.

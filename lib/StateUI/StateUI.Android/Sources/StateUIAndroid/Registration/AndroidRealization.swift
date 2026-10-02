@@ -13,7 +13,7 @@ enum AndroidRealization {
 
     /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.
-    static let byApplication: Set<String> = ["Map", "Pin"]
+    static let byApplication: Set<String> = ["Map", "Marker"]
 
     /// What the running host realizes none of: what it never makes, and what it leaves to the application.
     static var unmade: Set<String> {

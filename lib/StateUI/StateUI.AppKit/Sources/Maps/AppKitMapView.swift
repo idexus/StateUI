@@ -8,16 +8,16 @@ import MapKit
 @_spi(Host) import StateUIHost
 
 /// A Map: MapKit's own map. It shows the region the tree gives it or an act slides it to, the kind of map and what
-/// the user may do with it, and its pins as MapKit's markers; a click on the map itself is heard where it fell, a
-/// click on a pin or on its details on the pin.
+/// the user may do with it, and its markers as MapKit's markers; a click on the map itself is heard where it fell, a
+/// click on a marker or on its details on the marker.
 /// Design: docs/design/host/maps.md
 @MainActor
 final class AppKitMapView: MKMapView, MKMapViewDelegate {
-    /// What the view does when the user clicks the map itself, not a pin, at a place.
+    /// What the view does when the user clicks the map itself, not a marker, at a place.
     var onClicked: ((Location) -> Void)?
 
-    /// The pins shown, each kept by its child for as long as it lives.
-    private var pins: [ChildElement<PinContract>: AppKitMapPin] = [:]
+    /// The markers shown, each kept by its child for as long as it lives.
+    private var pins: [ChildElement<MarkerContract>: AppKitMapMarker] = [:]
 
     /// Whether a click is the map's: a delegate of its own, as the map answers MapKit's own recognizers.
     /// Design: docs/design/host/maps.md#a-tap-on-the-map
@@ -56,7 +56,7 @@ final class AppKitMapView: MKMapView, MKMapViewDelegate {
     /// Draws the world as `type` says, the roads coloured by traffic where `traffic` and the map has roads.
     func style(_ type: MapType, traffic: Bool) {
         switch type {
-        case .street:
+        case .standard:
             let configuration = MKStandardMapConfiguration()
             configuration.showsTraffic = traffic
             preferredConfiguration = configuration
@@ -76,7 +76,7 @@ final class AppKitMapView: MKMapView, MKMapViewDelegate {
     }
 
     /// Shows `children` as markers: one kept for each child for as long as it lives, its values taken again.
-    func show(_ children: [ChildElement<PinContract>]) {
+    func show(_ children: [ChildElement<MarkerContract>]) {
         let kept = Set(children)
         for (child, pin) in pins where !kept.contains(child) {
             removeAnnotation(pin)
@@ -87,7 +87,7 @@ final class AppKitMapView: MKMapView, MKMapViewDelegate {
                 pin.take()
                 if let marker = view(for: pin) as? MKMarkerAnnotationView { Self.dress(marker, as: pin.type) }
             } else {
-                let pin = AppKitMapPin(child)
+                let pin = AppKitMapMarker(child)
                 pin.take()
                 pins[child] = pin
                 addAnnotation(pin)
@@ -111,7 +111,7 @@ final class AppKitMapView: MKMapView, MKMapViewDelegate {
         switch preferredConfiguration {
         case is MKImageryMapConfiguration: .satellite
         case is MKHybridMapConfiguration: .hybrid
-        default: .street
+        default: .standard
         }
     }
 
@@ -124,8 +124,8 @@ final class AppKitMapView: MKMapView, MKMapViewDelegate {
         }
     }
 
-    /// The pin MapKit holds for `child`.
-    func pin(of child: ChildElement<PinContract>) -> AppKitMapPin? {
+    /// The marker MapKit holds for `child`.
+    func pin(of child: ChildElement<MarkerContract>) -> AppKitMapMarker? {
         pins[child]
     }
 
@@ -142,7 +142,7 @@ final class AppKitMapView: MKMapView, MKMapViewDelegate {
     }
 
     func mapView(_ map: MKMapView, viewFor annotation: any MKAnnotation) -> MKAnnotationView? {
-        guard let pin = annotation as? AppKitMapPin,
+        guard let pin = annotation as? AppKitMapMarker,
               let marker = map.dequeueReusableAnnotationView(withIdentifier: Self.marker, for: pin)
                 as? MKMarkerAnnotationView
         else { return nil }
@@ -158,22 +158,22 @@ final class AppKitMapView: MKMapView, MKMapViewDelegate {
     }
 
     func mapView(_ map: MKMapView, didSelect view: MKAnnotationView) {
-        (view.annotation as? AppKitMapPin)?.child.reports.raise(PinContract.pinClicked)
+        (view.annotation as? AppKitMapMarker)?.child.reports.raise(MarkerContract.selected)
     }
 
     @objc private func detailsClicked(_ button: AppKitPinDetailsButton) {
-        button.pin?.child.reports.raise(PinContract.pinDetailsClicked)
+        button.pin?.child.reports.raise(MarkerContract.detailsClicked)
     }
 
-    /// Gives `marker` the colour and symbol of a pin's kind.
-    static func dress(_ marker: MKMarkerAnnotationView, as type: PinType) {
-        let look = AppKitMapPin.look(of: type)
+    /// Gives `marker` the colour and symbol of a marker's kind.
+    static func dress(_ marker: MKMarkerAnnotationView, as type: MarkerType) {
+        let look = AppKitMapMarker.look(of: type)
         marker.markerTintColor = look.tint
         marker.glyphImage = look.symbol.flatMap { NSImage(systemSymbolName: $0, accessibilityDescription: nil) }
     }
 }
 
-/// Whether a click is the map's own: one on a pin, or on what a pin opened, is the pin's.
+/// Whether a click is the map's own: one on a marker, or on what a marker opened, is the marker's.
 @MainActor
 private final class AppKitMapClicks: NSObject, NSGestureRecognizerDelegate {
     weak var map: AppKitMapView?

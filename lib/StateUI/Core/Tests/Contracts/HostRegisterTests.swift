@@ -132,11 +132,11 @@ final class HostRegisterTests: XCTestCase {
     /// An element left to the application is neither unrealized nor never, and is one the library declares.
     func testWhatIsLeftToTheApplicationIsNamedOnce() {
         let register = HostRegister(
-            records: [], unrealized: ["Map"], viewless: [], notPlanned: ["Pin": "No pins."],
-            byApplication: ["Map", "Pin", "Globe"])
+            records: [], unrealized: ["Map"], viewless: [], notPlanned: ["Marker": "No pins."],
+            byApplication: ["Map", "Marker", "Globe"])
 
         XCTAssertEqual(register.problems, [
-            "Pin is both the application's and never",
+            "Marker is both the application's and never",
             "Globe is left to the application, and the library declares no such element",
             "Map is both unrealized and the application's",
         ])

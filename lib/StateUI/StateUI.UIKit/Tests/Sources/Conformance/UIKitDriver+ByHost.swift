@@ -23,7 +23,7 @@ extension UIKitDriver {
             return "the navigation delegate told, no web process ended"
         case "choose" where taken.element == "ItemsView", "activate" where taken.element == "an item of ItemsView":
             return "the collection's delegate told, no touch"
-        case "open" where taken.element == "Pin":
+        case "open" where taken.element == "Marker":
             return "the map's delegate told of the callout's button, no touch"
         default: break
         }

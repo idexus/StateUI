@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-/// The children a registered view draws itself - a map's pins - handed to it alike on every host.
+/// The children a registered view draws itself - a map's markers - handed to it alike on every host.
 /// Design: docs/design/host/tree.md#children-a-view-draws
 extension MountedElement {
     /// The one the host keeps for this element as a child its parent's view draws: its values read, its events
