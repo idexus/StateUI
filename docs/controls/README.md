@@ -87,10 +87,10 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Page](Page.md) | 12 | 8 ✅ | 12 ✅ | 7 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – |  |
 | [Pin](Pin.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 |  |
 | [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
-| [Span](Span.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
-| [Spans](Spans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
 | [TabView](TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
+| [TextSpan](TextSpan.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
+| [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |

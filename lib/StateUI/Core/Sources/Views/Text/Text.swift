@@ -67,9 +67,9 @@ public struct Text: ElementView, TextElement, FontElement, TextAlignmentElement,
     ///     }
     ///
     /// A Text given both runs and a `text` shows the runs.
-    public func spans(@SpanBuilder _ spans: () -> [TextSpan]) -> Self {
+    public func spans(@TextSpanBuilder _ spans: () -> [TextSpan]) -> Self {
         modified {
-            $0.children = [Node(contract: SpansContract.self, children: spans().map { $0.node })]
+            $0.children = [Node(contract: TextSpansContract.self, children: spans().map { $0.node })]
         }
     }
 }
@@ -89,18 +89,18 @@ public struct TextSpan: ModifiableElement, TextElement, FontElement,
 
     /// An empty one, for a run built up by modifiers.
     public init() {
-        node = Node(contract: SpanContract.self)
+        node = Node(contract: TextSpanContract.self)
     }
 
     /// A run showing `text`.
     public init(_ text: String) {
-        node = Node(contract: SpanContract.self)
+        node = Node(contract: TextSpanContract.self)
         node.write(TextElementContract.text, text)
     }
 
     /// What is drawn behind this run - a highlight over part of a line.
     public func background(_ value: Color) -> Self {
-        setValue(SpanContract.background, value)
+        setValue(TextSpanContract.background, value)
     }
 }
 

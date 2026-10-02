@@ -9,13 +9,13 @@ RadioButton.textColor: ✅
 RadioButton.tracking: not realized
 SearchField.textColor: ✅
 SearchField.tracking: not realized
-Span.textColor: not realized
-Span.tracking: not realized
 Text.textColor: ✅
 Text.tracking: ✅
 TextEditor.textColor: ✅
 TextEditor.tracking: not realized
 TextField.textColor: ✅
 TextField.tracking: not realized
+TextSpan.textColor: not realized
+TextSpan.tracking: not realized
 TimePicker.textColor: ✅
 TimePicker.tracking: not realized

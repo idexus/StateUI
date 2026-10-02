@@ -19,10 +19,6 @@ SearchField.fontAttributes: ✅
 SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
 SearchField.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
-Span.fontAttributes: cannot read fontAttributes of Span - AppKit's driver has no path for it yet
-Span.fontFamily: not realized
-Span.fontSize: not realized
-Span.isFontAutoScalingEnabled: not realized
 Text.fontAttributes: ✅
 Text.fontFamily: ✅
 Text.fontSize: ✅
@@ -35,6 +31,10 @@ TextField.fontAttributes: ✅
 TextField.fontFamily: ✅
 TextField.fontSize: ✅
 TextField.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - AppKit's driver has no path for it yet
+TextSpan.fontFamily: not realized
+TextSpan.fontSize: not realized
+TextSpan.isFontAutoScalingEnabled: not realized
 TimePicker.fontAttributes: ✅
 TimePicker.fontFamily: ✅
 TimePicker.fontSize: ✅

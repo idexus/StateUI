@@ -67,9 +67,9 @@ final class HostRegisterTests: XCTestCase {
 
     /// A viewless element takes only its own records: no tier's reaches it.
     func testAViewlessElementTakesNoTiersRecord() {
-        let register = HostRegister(records: [.complete("VisualElement", "opacity")], unrealized: [], viewless: ["Span"])
+        let register = HostRegister(records: [.complete("VisualElement", "opacity")], unrealized: [], viewless: ["TextSpan"])
 
-        XCTAssertFalse(register.realizes("opacity", on: "Span", from: "VisualElement"))
+        XCTAssertFalse(register.realizes("opacity", on: "TextSpan", from: "VisualElement"))
         XCTAssertTrue(register.realizes("opacity", on: "Button", from: "VisualElement"))
     }
 

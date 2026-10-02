@@ -5,11 +5,11 @@ RadioButton.text: ✅
 RadioButton.textCase: ✅
 SearchField.text: ✅
 SearchField.textCase: ✅
-Span.text: cannot read text of Span - UIKit's driver has no path for it yet
-Span.textCase: cannot read text of Span - UIKit's driver has no path for it yet
 Text.text: ✅
 Text.textCase: ✅
 TextEditor.text: ✅
 TextEditor.textCase: ✅
 TextField.text: ✅
 TextField.textCase: ✅
+TextSpan.text: cannot read text of TextSpan - UIKit's driver has no path for it yet
+TextSpan.textCase: cannot read text of TextSpan - UIKit's driver has no path for it yet

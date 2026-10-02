@@ -528,6 +528,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = ToolbarItemsContract.side",
             contract: "_ = ToolbarItemGroupContract.side"),
         Road(
+            name: "a run of text's contract as Span",
+            removed: "_ = SpanContract.background",
+            contract: "_ = TextSpanContract.background"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

@@ -60,8 +60,8 @@ final class WinUIConformanceTests: XCTestCase {
     func testPage() { conform(PageTests.self) }
     func testPin() { conform(PinTests.self) }
     func testScene() { conform(SceneTests.self) }
-    func testSpan() { conform(SpanTests.self) }
-    func testSpans() { conform(SpansTests.self) }
+    func testTextSpan() { conform(TextSpanTests.self) }
+    func testTextSpans() { conform(TextSpansTests.self) }
     func testSplitView() { conform(SplitViewTests.self) }
     func testTabView() { conform(TabViewTests.self) }
     func testTitleView() { conform(TitleViewTests.self) }

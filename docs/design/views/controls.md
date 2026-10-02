@@ -115,10 +115,10 @@ same on every host.
 
 A `TextSpan` is one run of text inside a Text, with its own colour, size and
 weight; text in two colours is two runs. It is named `TextSpan` rather than
-`Span` because the standard library's `Span<Element>` is in scope in every file
-without an import: an application writing `Span("…")` would get "no exact
-matches in call to initializer", and a plain `[Span]` "reference to generic
-type 'Span' requires arguments". The node in the patch is `Span` all the same,
+`TextSpan` because the standard library's `TextSpan<Element>` is in scope in every file
+without an import: an application writing `TextSpan("…")` would get "no exact
+matches in call to initializer", and a plain `[TextSpan]` "reference to generic
+type 'TextSpan' requires arguments". The node in the patch is `TextSpan` all the same,
 the vocabulary's name for a run.
 
 ## Images

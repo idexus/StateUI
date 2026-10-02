@@ -134,8 +134,8 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The Swift type is `TextSpan`, not `Span`: Swift's own standard library has "
-                + "a `Span` in scope in every file, and it wins - `Span(\"…\")` does not "
+            Text("The Swift type is `TextSpan`, not `TextSpan`: Swift's own standard library has "
+                + "a `TextSpan` in scope in every file, and it wins - `TextSpan(\"…\")` does not "
                 + "compile.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

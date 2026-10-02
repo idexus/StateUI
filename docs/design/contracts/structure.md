@@ -23,7 +23,7 @@ own.
   ContextMenu                        the menu a view offers where the user asks for one
   ToolbarItemGroup, ToolbarItem          a page's actions in its bar or toolbar
   TitleView                          the view a page shows in its bar in place of its title
-  Spans, Span                        the runs of text a label is made of
+  TextSpans, TextSpan                        the runs of text a label is made of
 ```
 
 ## Slots
@@ -36,7 +36,7 @@ again when that state moves.
 ## Collections as one node
 
 A page's toolbar items hang off it as one `ToolbarItemGroup` node holding them
-all, its menus as one `MenuBar`, and a label's runs as one `Spans`. The host
+all, its menus as one `MenuBar`, and a label's runs as one `TextSpans`. The host
 has a list to keep in step, and a list needs a parent of its own to be matched
 against. Where the host
 puts an item of such a collection - a toolbar item's placement - is a value no default answers for, so its member is not cleared; see

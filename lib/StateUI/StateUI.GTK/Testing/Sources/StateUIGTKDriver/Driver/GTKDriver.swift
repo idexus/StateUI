@@ -67,7 +67,7 @@ final class GTKDriver: HostDriver {
     func byHost(_ ability: String) -> String? {
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
         // A span's look is its run's Pango attributes, which GTK reads back.
-        if !ability.hasSuffix(" of Span"), let member = Self.recordedMembers.first(where: { ability.hasPrefix("read \($0) of ") }) {
+        if !ability.hasSuffix(" of TextSpan"), let member = Self.recordedMembers.first(where: { ability.hasPrefix("read \($0) of ") }) {
             return "the class of the host's style sheet the widget wears: GTK reads back no \(member)"
         }
         return Self.byHostReasons[ability] ?? Self.byHostReasons[Ability(ability).act]

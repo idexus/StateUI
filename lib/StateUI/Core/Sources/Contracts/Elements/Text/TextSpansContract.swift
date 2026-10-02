@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The runs a label is made of, in order.
-public enum SpansContract: ElementContract {
+public enum TextSpansContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = "Spans"
+    public static let nodeType: NodeType = "TextSpans"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

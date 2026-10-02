@@ -1,6 +1,6 @@
 <!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
-# Span
+# TextSpan
 
 One run of text inside a label, with its own colour, size and weight.
 
@@ -45,14 +45,14 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
-Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SpanContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextSpanContract.swift`.
 
-## Span's own members
+## TextSpan's own members
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read background of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read background of Span - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read background of TextSpan - UIKit's driver has no path for it yet<br>Android Views: cannot read background of TextSpan - Android's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -72,9 +72,9 @@ What every element showing words has: the words, and the case they are drawn in.
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read text of Span - AppKit's driver has no path for it yet<br>UIKit: cannot read text of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read text of Span - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: cannot read text of TextSpan - AppKit's driver has no path for it yet<br>UIKit: cannot read text of TextSpan - UIKit's driver has no path for it yet<br>Android Views: cannot read text of TextSpan - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read text of Span - AppKit's driver has no path for it yet<br>UIKit: cannot read text of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read text of Span - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: cannot read text of TextSpan - AppKit's driver has no path for it yet<br>UIKit: cannot read text of TextSpan - UIKit's driver has no path for it yet<br>Android Views: cannot read text of TextSpan - Android's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
@@ -86,7 +86,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 <tbody><tr></tr><tr><td rowspan="2"><code>tracking</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit, Android Views: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>textColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read textColor of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read textColor of Span - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read textColor of TextSpan - UIKit's driver has no path for it yet<br>Android Views: cannot read textColor of TextSpan - Android's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [FontElement](tiers/FontElement.md)
@@ -96,13 +96,13 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read fontAttributes of Span - AppKit's driver has no path for it yet<br>UIKit: cannot read fontAttributes of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read fontAttributes of Span - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: cannot read fontAttributes of TextSpan - AppKit's driver has no path for it yet<br>UIKit: cannot read fontAttributes of TextSpan - UIKit's driver has no path for it yet<br>Android Views: cannot read fontAttributes of TextSpan - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td></td></tr>
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit, Android Views: not realized<br>UIKit: cannot read fontFamily of Span - UIKit's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit, Android Views: not realized<br>UIKit: cannot read fontFamily of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read fontSize of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read fontSize of Span - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read fontSize of TextSpan - UIKit's driver has no path for it yet<br>Android Views: cannot read fontSize of TextSpan - Android's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
@@ -122,5 +122,5 @@ The lines drawn through or under text.
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>textDecorations</code></td><td>property</td><td><code>TextDecorations</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read textDecorations of Span - UIKit's driver has no path for it yet<br>Android Views: cannot read textDecorations of Span - Android's driver has no path for it yet</td></tr></tbody>
+<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read textDecorations of TextSpan - UIKit's driver has no path for it yet<br>Android Views: cannot read textDecorations of TextSpan - Android's driver has no path for it yet</td></tr></tbody>
 </table>

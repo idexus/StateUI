@@ -4,15 +4,15 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `SpanContract` on a host: a span is its label's words, run by run, each changing as the tree changes it, behind
+/// `TextSpanContract` on a host: a span is its label's words, run by run, each changing as the tree changes it, behind
 /// the colour the tree gives it.
-@_spi(Host) public enum SpanTests: ConformanceFamily {
-    public static let name = "Span"
+@_spi(Host) public enum TextSpanTests: ConformanceFamily {
+    public static let name = "TextSpan"
 
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aTextsSpansAreItsWordsRunByRun", proves: [
-                Covered(SpanContract.self), Covered(TextElementContract.text, on: "Span"),
+                Covered(TextSpanContract.self), Covered(TextElementContract.text, on: "TextSpan"),
             ]) { s in
                 s.start {
                     VStack {
@@ -25,10 +25,10 @@
                 }
 
                 s.expect(try s.held(TextElementContract.text, on: s.element("label")), "let x = 1")
-                s.expect(s.elements(ofType: SpanContract.nodeType).count, 3, "a span a run")
+                s.expect(s.elements(ofType: TextSpanContract.nodeType).count, 3, "a span a run")
             },
             ConformanceCase("aSpanTheTreeChangesChangesItsRun", proves: [
-                Covered(TextElementContract.text, on: "Span"),
+                Covered(TextElementContract.text, on: "TextSpan"),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {
@@ -46,7 +46,7 @@
                 try s.settle { try s.held(TextElementContract.text, on: label) == "let y" }
                 s.expect(try s.held(TextElementContract.text, on: label), "let y")
             },
-            Aspects.holds(SpanContract.background, on: "Span", .yellow, then: .cyan),
+            Aspects.holds(TextSpanContract.background, on: "TextSpan", .yellow, then: .cyan),
         ]
     }
 }

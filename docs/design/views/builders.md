@@ -137,7 +137,7 @@ in a menu does not compile. `if` and `if/else` work in a menu, and a plain `for`
 does not. It records no path. An entry is matched by its `.id()` and otherwise
 by its position, so an `if` whose entry comes and goes re-matches every entry
 below it against a different one. An entry standing beside a conditional, and
-each of a list of entries that changes, wants an id. `MenuBarBuilder`, `ToolbarBuilder`, `SpanBuilder` and `PinBuilder`
+each of a list of entries that changes, wants an id. `MenuBarBuilder`, `ToolbarBuilder`, `TextSpanBuilder` and `PinBuilder`
 collect one type each - a `Menu`, a `ToolbarItem`, a `TextSpan`, a `Pin` - the
 same way, an array of them standing for a loop.
 

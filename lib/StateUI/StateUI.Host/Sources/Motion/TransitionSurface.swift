@@ -41,7 +41,7 @@
         case .text:
             return labelProperties.contains(property)
 
-        case .span:
+        case .textSpan:
             return spanProperties.contains(property)
 
         case .button:

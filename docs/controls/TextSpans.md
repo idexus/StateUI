@@ -1,6 +1,6 @@
 <!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
-# Spans
+# TextSpans
 
 The runs a label is made of, in order.
 
@@ -44,8 +44,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
 
-Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SpansContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextSpansContract.swift`.
 
-## Spans's own members
+## TextSpans's own members
 
-Spans declares no members of its own.
+TextSpans declares no members of its own.

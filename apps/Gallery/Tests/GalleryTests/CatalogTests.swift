@@ -167,7 +167,7 @@ private func shownTexts(in node: Node) -> [String] {
     func walk(_ node: Node) {
         let node = node.built
 
-        if node.type == "Spans" {
+        if node.type == "TextSpans" {
             said.append(node.children.compactMap(text).joined())
         } else if let value = text(node) {
             said.append(value)
@@ -1674,7 +1674,7 @@ final class CatalogTests: XCTestCase {
                 }
 
                 if let value = text(node) { return value }
-                guard node.type == "Spans" else { return nil }
+                guard node.type == "TextSpans" else { return nil }
 
                 return node.children.compactMap(text).joined()
             }

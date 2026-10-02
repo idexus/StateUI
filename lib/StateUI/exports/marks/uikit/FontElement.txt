@@ -19,10 +19,6 @@ SearchField.fontAttributes: ✅
 SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
 SearchField.isFontAutoScalingEnabled: not realized
-Span.fontAttributes: cannot read fontAttributes of Span - UIKit's driver has no path for it yet
-Span.fontFamily: cannot read fontFamily of Span - UIKit's driver has no path for it yet
-Span.fontSize: cannot read fontSize of Span - UIKit's driver has no path for it yet
-Span.isFontAutoScalingEnabled: not realized
 Text.fontAttributes: ✅
 Text.fontFamily: ✅
 Text.fontSize: ✅
@@ -35,6 +31,10 @@ TextField.fontAttributes: ✅
 TextField.fontFamily: ✅
 TextField.fontSize: ✅
 TextField.isFontAutoScalingEnabled: not realized
+TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - UIKit's driver has no path for it yet
+TextSpan.fontFamily: cannot read fontFamily of TextSpan - UIKit's driver has no path for it yet
+TextSpan.fontSize: cannot read fontSize of TextSpan - UIKit's driver has no path for it yet
+TextSpan.isFontAutoScalingEnabled: not realized
 TimePicker.fontAttributes: not realized
 TimePicker.fontFamily: not realized
 TimePicker.fontSize: not realized

@@ -24,7 +24,6 @@ Rectangle.accessibilityIdentifier: ✅
 ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅
 Slider.accessibilityIdentifier: ✅
-Span.accessibilityIdentifier: not realized
 SplitView.accessibilityIdentifier: ✅
 Stepper.accessibilityIdentifier: ✅
 Switch.accessibilityIdentifier: ✅
@@ -32,6 +31,7 @@ TabView.accessibilityIdentifier: ✅
 Text.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
+TextSpan.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: ✅
 ToolbarItem.accessibilityIdentifier: ✅
 VStack.accessibilityIdentifier: ✅

@@ -125,8 +125,6 @@ of its members each meets, and why a cell is empty.
 | [ScrollView](controls/ScrollView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [SearchField](controls/SearchField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Slider](controls/Slider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Span](controls/Span.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Spans](controls/Spans.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Stepper](controls/Stepper.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -134,6 +132,8 @@ of its members each meets, and why a cell is empty.
 | [Text](controls/Text.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [TextSpan](controls/TextSpan.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [TextSpans](controls/TextSpans.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | structure | ✓ | ✅ | ✅ | ✅ | ✅ |  |
@@ -204,7 +204,7 @@ may still choose another class that preserves the same contract.
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | `StackPanel` | `GtkBox` | flexbox |
 | `Grid` | custom `NSView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `ScrollView` | `NSScrollView` | `UIScrollView` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `GtkScrolledWindow` | `overflow: auto` |
-| `Text` / `Spans` / `Span` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | `GtkLabel`; `PangoAttrList` runs | text element; `<span>` runs |
+| `Text` / `TextSpans` / `TextSpan` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | `GtkLabel`; `PangoAttrList` runs | text element; `<span>` runs |
 | `Button` | `NSButton` | `UIButton` | `Button` | `Button` | `GtkButton` | `<button>` |
 | `Image` | `NSImageView` | `UIImageView` | `ImageView` | `Image` | `GtkPicture` | `<img>` |
 | `ColorBox` | custom `NSView` drawing | `UIView` + `CALayer` | `View` + `GradientDrawable` | `Border` | custom `GtkWidget` snapshot | `<div>` |
@@ -478,10 +478,10 @@ Every control, and every part an application, its windows and its pages are made
 | [Page](controls/Page.md) | 12 | 8 ✅ | 12 ✅ | 7 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – |  |
 | [Pin](controls/Pin.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
-| [Span](controls/Span.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
-| [Spans](controls/Spans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [SplitView](controls/SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
 | [TabView](controls/TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
+| [TextSpan](controls/TextSpan.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
+| [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
@@ -561,7 +561,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollIndicator` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 2 ✅ | 7 ✅ | 7 ✅ |  |
 | [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 1 ✅ | 1 ✅ |  |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 4 ✅ | 4 ✅ | 4 ✅ · 2 – |  |
-| [Span](controls/Span.md) | `background` | 1 |  |  |  | 1 ✅ | 1 ✅ |  |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged` | 2 | 2 ✅ | 2 ✅ | 2 ✓ | 2 ✅ | 2 ✅ |  |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 2 ✅ | 2 ✅ |  | 5 ✅ | 5 ✅ |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
@@ -569,6 +568,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Text](controls/Text.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 2 – | 4 ✅ | 3 ✅ · 1 – | 1 ☑️ | 2 ✅ |  |
+| [TextSpan](controls/TextSpan.md) | `background` | 1 |  |  |  | 1 ✅ | 1 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
@@ -596,8 +596,8 @@ realizes the element and each of its members.
 `ItemsView`, `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `ModalStack`,
 `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`,
 `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `Scene`, `ScrollView`,
-`SearchField`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `Switch`,
-`TabView`, `Text`, `TextEditor`, `TextField`, `TimePicker`, `TitleView`,
+`SearchField`, `Slider`, `SplitView`, `Stepper`, `Switch`, `TabView`, `Text`,
+`TextEditor`, `TextField`, `TextSpan`, `TextSpans`, `TimePicker`, `TitleView`,
 `ToolbarItem`, `ToolbarItemGroup`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties

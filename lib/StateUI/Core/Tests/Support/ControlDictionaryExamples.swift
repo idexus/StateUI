@@ -373,7 +373,7 @@ extension ControlDictionary {
                 .maximum(100)
             """#),
 
-        (SpanContract.self, #"""
+        (TextSpanContract.self, #"""
             Text()
                 .spans {
                     TextSpan("Sold out")
@@ -383,7 +383,7 @@ extension ControlDictionary {
                 }
             """#),
 
-        (SpansContract.self, #"""
+        (TextSpansContract.self, #"""
             Text()
                 .spans {
                     TextSpan("let ").textColor(.purple)

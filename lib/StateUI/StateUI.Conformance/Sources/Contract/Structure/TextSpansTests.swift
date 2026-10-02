@@ -4,15 +4,15 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `SpansContract` on a host: a label given spans shows their words in place of its own, and its own again once the
+/// `TextSpansContract` on a host: a label given spans shows their words in place of its own, and its own again once the
 /// tree takes them away.
-@_spi(Host) public enum SpansTests: ConformanceFamily {
-    public static let name = "Spans"
+@_spi(Host) public enum TextSpansTests: ConformanceFamily {
+    public static let name = "TextSpans"
 
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aTextsSpansStandInPlaceOfItsOwnWords", proves: [
-                Covered(SpansContract.self),
+                Covered(TextSpansContract.self),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let spanned = State(wrappedValue: true)
                 s.start {

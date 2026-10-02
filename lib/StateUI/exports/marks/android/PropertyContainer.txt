@@ -25,7 +25,6 @@ Rectangle.accessibilityIdentifier: ✅
 ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅
 Slider.accessibilityIdentifier: ✅
-Span.accessibilityIdentifier: not realized
 SplitView.accessibilityIdentifier: ✅
 Stepper.accessibilityIdentifier: ✅
 Switch.accessibilityIdentifier: ✅
@@ -33,6 +32,7 @@ TabView.accessibilityIdentifier: ✅
 Text.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
+TextSpan.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: ✅
 ToolbarItem.accessibilityIdentifier: – An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.
 VStack.accessibilityIdentifier: ✅

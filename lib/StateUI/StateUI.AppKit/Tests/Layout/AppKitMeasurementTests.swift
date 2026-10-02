@@ -130,19 +130,19 @@ final class AppKitMeasurementTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var span = HostPatch(id: .manual("span"), type: .span)
+        var span = HostPatch(id: .manual("span"), type: .textSpan)
         span.properties[.text] = .string("Sold out")
         span.properties[.textColor] = .color(red: 0, green: 0, blue: 0, alpha: 255)
-        var formatted = HostPatch(id: .manual("formatted"), type: .spans)
+        var formatted = HostPatch(id: .manual("formatted"), type: .textSpans)
         formatted.children = .arranged([span])
         var label = HostPatch(id: .manual("label"), type: .text)
         label.children = .arranged([formatted])
         renderer.applyForTesting(label)
 
-        var red = HostPatch(id: .manual("span"), type: .span)
+        var red = HostPatch(id: .manual("span"), type: .textSpan)
         red.properties[.textColor] = .color(red: 255, green: 0, blue: 0, alpha: 255)
         red.transitions[.textColor] = HostTransition(motion: .eased(200, .linear))
-        var formattedPath = HostPatch(id: .manual("formatted"), type: .spans)
+        var formattedPath = HostPatch(id: .manual("formatted"), type: .textSpans)
         formattedPath.children = .changed([red])
         var labelPath = HostPatch(id: .manual("label"), type: .text)
         labelPath.children = .changed([formattedPath])

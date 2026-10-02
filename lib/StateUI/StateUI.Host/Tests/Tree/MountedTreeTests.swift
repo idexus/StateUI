@@ -305,11 +305,11 @@ final class MountedTreeTests: XCTestCase {
         }
         var hidden = label("hidden", "gone")
         hidden.properties[.isVisible] = .bool(false)
-        var first = HostPatch(id: .manual("first"), type: .span)
+        var first = HostPatch(id: .manual("first"), type: .textSpan)
         first.properties = [.text: .string("Big ")]
-        var second = HostPatch(id: .manual("second"), type: .span)
+        var second = HostPatch(id: .manual("second"), type: .textSpan)
         second.properties = [.text: .string("news")]
-        var spans = HostPatch(id: .manual("spans"), type: .spans)
+        var spans = HostPatch(id: .manual("spans"), type: .textSpans)
         spans.children = .arranged([first, second])
         var runs = label("runs", "")
         runs.children = .arranged([spans])
@@ -533,11 +533,11 @@ final class MountedTreeTests: XCTestCase {
     func testATextsSpansAreRunsOfItsWords() {
         let (tree, _) = Self.tree()
         func span(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
-            var span = HostPatch(id: .manual(id), type: .span)
+            var span = HostPatch(id: .manual(id), type: .textSpan)
             span.properties = properties
             return span
         }
-        var spans = HostPatch(id: .manual("spans"), type: .spans)
+        var spans = HostPatch(id: .manual("spans"), type: .textSpans)
         spans.children = .arranged([
             span("one", [
                 .text: .string("Big "), .fontSize: .number(20), .fontFamily: .name("Menlo"), .lineHeight: .number(1.5),

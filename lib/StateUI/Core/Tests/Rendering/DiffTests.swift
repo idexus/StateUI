@@ -75,16 +75,16 @@ final class DiffTests: XCTestCase {
         renders.render(code(.steelBlue))
         let patch = renders.render(code(.firebrick))
 
-        // The Spans is the label's one child, and it is on the path
+        // The TextSpans is the label's one child, and it is on the path
         // to the run rather than a thing that changed itself.
         let runs = try XCTUnwrap(patch.children.first)
-        XCTAssertEqual(runs.type, "Spans")
+        XCTAssertEqual(runs.type, "TextSpans")
         XCTAssertTrue(runs.props.isEmpty)
         XCTAssertFalse(runs.arranged, "the arrangement of the runs did not change")
 
         let changed = try XCTUnwrap(runs.children.first)
         XCTAssertEqual(runs.children.count, 1, "only the run whose colour moved")
-        XCTAssertEqual(changed.type, "Span")
+        XCTAssertEqual(changed.type, "TextSpan")
         XCTAssertEqual(changed.props, ["textColor": Color("#B22222").propValue],
                        "the colour alone - not the text it still shows")
     }

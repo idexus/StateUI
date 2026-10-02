@@ -1,0 +1,4 @@
+# revision 1.1
+TextSpan: ✅
+TextSpan.background: ✅
+TextSpan.text: ✅

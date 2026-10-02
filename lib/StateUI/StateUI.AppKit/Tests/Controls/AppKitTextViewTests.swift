@@ -117,19 +117,19 @@ final class AppKitTextViewTests: XCTestCase {
     func testFormattedSpansBecomeOneAttributedNativeString() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var first = HostPatch(id: .manual("first"), type: .span)
+        var first = HostPatch(id: .manual("first"), type: .textSpan)
         first.properties = [
             .text: .string("let "),
             .textColor: .color(red: 128, green: 0, blue: 128, alpha: 255),
             .fontAttributes: .enumeration(FontAttributes.bold.rawValue),
         ]
-        var second = HostPatch(id: .manual("second"), type: .span)
+        var second = HostPatch(id: .manual("second"), type: .textSpan)
         second.properties = [
             .text: .string("counter"),
             .background: .color(red: 240, green: 230, blue: 140, alpha: 255),
             .textCase: .enumeration(TextCase.uppercase.rawValue),
         ]
-        var formatted = HostPatch(id: .manual("formatted"), type: .spans)
+        var formatted = HostPatch(id: .manual("formatted"), type: .textSpans)
         formatted.children = .arranged([first, second])
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties[.fontSize] = .number(15)
@@ -153,22 +153,22 @@ final class AppKitTextViewTests: XCTestCase {
     func testSparseSpanPatchLeavesEveryOtherRunUnchanged() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var first = HostPatch(id: .manual("first"), type: .span)
+        var first = HostPatch(id: .manual("first"), type: .textSpan)
         first.properties = [.text: .string("A"), .textColor: .color(
             red: 0, green: 0, blue: 0, alpha: 255)]
-        var second = HostPatch(id: .manual("second"), type: .span)
+        var second = HostPatch(id: .manual("second"), type: .textSpan)
         second.properties = [.text: .string("B"), .textColor: .color(
             red: 0, green: 0, blue: 255, alpha: 255)]
-        var formatted = HostPatch(id: .manual("formatted"), type: .spans)
+        var formatted = HostPatch(id: .manual("formatted"), type: .textSpans)
         formatted.children = .arranged([first, second])
         var label = HostPatch(id: .manual("label"), type: .text)
         label.children = .arranged([formatted])
         renderer.applyForTesting(tree(label))
 
-        var changedSecond = HostPatch(id: .manual("second"), type: .span)
+        var changedSecond = HostPatch(id: .manual("second"), type: .textSpan)
         changedSecond.properties[.textColor] = .color(
             red: 255, green: 0, blue: 0, alpha: 255)
-        var changedFormatted = HostPatch(id: .manual("formatted"), type: .spans)
+        var changedFormatted = HostPatch(id: .manual("formatted"), type: .textSpans)
         changedFormatted.children = .changed([changedSecond])
         var changedLabel = HostPatch(id: .manual("label"), type: .text)
         changedLabel.children = .changed([changedFormatted])

@@ -25,7 +25,6 @@ Rectangle.accessibilityIdentifier: – GTK 4 gives an accessible the identifier 
 ScrollView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 SearchField.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Slider.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
-Span.accessibilityIdentifier: not realized
 SplitView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Stepper.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Switch.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
@@ -33,6 +32,7 @@ TabView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a 
 Text.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 TextEditor.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 TextField.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
+TextSpan.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 ToolbarItem.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 VStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.

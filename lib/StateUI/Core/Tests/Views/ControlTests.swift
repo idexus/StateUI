@@ -96,7 +96,7 @@ final class ControlTests: XCTestCase {
                     .maximumLines(2)
                     .textDecorations([.underline, .strikethrough])
                     // The runs go here rather than in a case of their own: a
-                    // Span is not a view, so it has no case, and Text.swift
+                    // TextSpan is not a view, so it has no case, and Text.swift
                     // is the file that declares it.
                     .spans {
                         TextSpan("let ")

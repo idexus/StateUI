@@ -94,9 +94,9 @@ extension MountedElement {
     /// A label's spans as runs of its words, each in its case - its own, else the label's - and its look; nil
     /// where the label holds no spans.
     public var textRuns: [TextRun]? {
-        guard let spans = children.first(where: { $0.type == .spans }) else { return nil }
+        guard let spans = children.first(where: { $0.type == .textSpans }) else { return nil }
         let labelCase = value(.textCase)
-        return spans.children.filter { $0.type == .span }.map { span in
+        return spans.children.filter { $0.type == .textSpan }.map { span in
             var look = span.textLook
             look.background = span.value(.background)
             let textCase = (span.value(.textCase) ?? labelCase)?.enumeration.flatMap(TextCase.init(rawValue:))

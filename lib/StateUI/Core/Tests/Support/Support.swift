@@ -731,9 +731,9 @@ enum SourceTree {
     /// one, so they have no case and no style. Their modifiers are exercised
     /// by `PageBarTests`, which is where a page is described.
     ///
-    /// A Span is one run of text inside a Text - text and a font, and no
+    /// A TextSpan is one run of text inside a Text - text and a font, and no
     /// opacity, no margin, no size - so it can neither be built alone nor
-    /// styled. Spans is the collection holding the runs. Both are exercised by
+    /// styled. TextSpans is the collection holding the runs. Both are exercised by
     /// the Text case, which builds them.
     ///
     /// ContextMenu is the one written by a MODIFIER rather than by a type:
@@ -745,7 +745,7 @@ enum SourceTree {
     /// cannot be built alone or styled, and its modifiers are exercised by the
     /// Map case, which builds both.
     static let notViews: Set<String> = [
-        "Spans", "Span",
+        "TextSpans", "TextSpan",
         "ToolbarItemGroup", "ToolbarItem", "TitleView", "MenuBar", "Menu", "Overlay",
         "MenuItem", "Divider",
         "ContextMenu",

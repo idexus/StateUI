@@ -5,11 +5,11 @@ RadioButton.text: ✅
 RadioButton.textCase: ✅
 SearchField.text: ✅
 SearchField.textCase: ✅
-Span.text: ✅
-Span.textCase: ✅
 Text.text: ✅
 Text.textCase: ✅
 TextEditor.text: ✅
 TextEditor.textCase: ✅
 TextField.text: ✅
 TextField.textCase: ✅
+TextSpan.text: ✅
+TextSpan.textCase: ✅

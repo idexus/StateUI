@@ -353,7 +353,7 @@ final class HostContractTests: XCTestCase {
             "keyboard", "returnType", "clearButtonVisibility", "autoSize",
         ]
 
-        XCTAssertTrue(controls.isSuperset(of: ["TextField", "TextEditor", "SearchField", "Spans"]))
+        XCTAssertTrue(controls.isSuperset(of: ["TextField", "TextEditor", "SearchField", "TextSpans"]))
         XCTAssertTrue(
             controls.isDisjoint(with: ["Entry", "Editor", "SearchBar", "FormattedString"]),
             "a text control keeps its former name")

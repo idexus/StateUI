@@ -65,7 +65,7 @@
         let dressing = Dressing(worn)
         let others: [any View] = beside
         switch element {
-        case "Span":
+        case "TextSpan":
             return VStack { [Text().spans { dressing.wear(TextSpan("Some words")) }] + others }
         case "MenuItem":
             return VStack {

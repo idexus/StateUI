@@ -33,7 +33,7 @@ extension NodeType {
     static let ellipse = EllipseContract.nodeType
     static let textField = TextFieldContract.nodeType
     static let splitView = SplitViewContract.nodeType
-    static let spans = SpansContract.nodeType
+    static let textSpans = TextSpansContract.nodeType
     static let canvas = CanvasContract.nodeType
     static let grid = GridContract.nodeType
     static let hStack = HStackContract.nodeType
@@ -62,7 +62,7 @@ extension NodeType {
     static let scrollView = ScrollViewContract.nodeType
     static let searchField = SearchFieldContract.nodeType
     static let slider = SliderContract.nodeType
-    static let span = SpanContract.nodeType
+    static let textSpan = TextSpanContract.nodeType
     static let stepper = StepperContract.nodeType
     static let `switch` = SwitchContract.nodeType
     static let tabView = TabViewContract.nodeType

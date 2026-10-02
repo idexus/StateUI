@@ -9,13 +9,13 @@ RadioButton.textColor: ✅
 RadioButton.tracking: not realized
 SearchField.textColor: ✅
 SearchField.tracking: not realized
-Span.textColor: cannot read textColor of Span - UIKit's driver has no path for it yet
-Span.tracking: not realized
 Text.textColor: ✅
 Text.tracking: ✅
 TextEditor.textColor: ✅
 TextEditor.tracking: not realized
 TextField.textColor: ✅
 TextField.tracking: not realized
+TextSpan.textColor: cannot read textColor of TextSpan - UIKit's driver has no path for it yet
+TextSpan.tracking: not realized
 TimePicker.textColor: not realized
 TimePicker.tracking: not realized

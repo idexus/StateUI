@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// One run of text inside a label, with its own colour, size and weight.
-public enum SpanContract: ElementContract {
+public enum TextSpanContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = "Span"
+    public static let nodeType: NodeType = "TextSpan"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

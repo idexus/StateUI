@@ -13,7 +13,7 @@ enum AppKitRealization {
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
     /// tier's record reaches them: only a member the entry's own records name is realized.
-    static let viewless: Set<String> = ["Span"]
+    static let viewless: Set<String> = ["TextSpan"]
 
     /// The entries the Mac will not have; none.
     static let notPlanned: [String: String] = [:]
@@ -99,9 +99,9 @@ enum AppKitRealization {
         .complete("ScrollView", "scrollXChanged"),
         .complete("ScrollView", "scrollYChanged"),
         .notPlanned("SearchField", "background", reason: "AppKit draws its own rounded search field, which takes no fill colour."),
-        .complete("Span", "fontAttributes"),
-        .complete("Span", "text"),
-        .complete("Span", "textCase"),
+        .complete("TextSpan", "fontAttributes"),
+        .complete("TextSpan", "text"),
+        .complete("TextSpan", "textCase"),
         .complete("SplitView", "showsSidebarChanged"),
         .complete("TabView", "accessibilityIdentifier"),
         .complete("TabView", "selectedTab"),

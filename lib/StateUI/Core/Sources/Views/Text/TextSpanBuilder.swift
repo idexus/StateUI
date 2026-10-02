@@ -16,7 +16,7 @@
 /// An `if`, an `if/else` and an array of runs work in one, and a plain `for`
 /// does not. A run is matched by its position.
 @resultBuilder
-public enum SpanBuilder {
+public enum TextSpanBuilder {
     /// A single run written as a statement.
     public static func buildExpression(_ expression: TextSpan) -> [TextSpan] {
         [expression]

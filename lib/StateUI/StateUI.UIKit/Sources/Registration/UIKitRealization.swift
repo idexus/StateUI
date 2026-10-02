@@ -14,7 +14,7 @@ enum UIKitRealization {
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
     /// tier's record reaches them: only a member the entry's own records name is realized.
-    static let viewless: Set<String> = ["Span"]
+    static let viewless: Set<String> = ["TextSpan"]
 
     /// The entries an iPhone and an iPad will not have; none.
     static let notPlanned: [String: String] = [:]
@@ -69,14 +69,14 @@ enum UIKitRealization {
         .complete("Scene", "destroying"),
         .complete("Scene", "stopped"),
         .complete("Scene", "windowClosed"),
-        .complete("Span", "background"),
-        .complete("Span", "fontAttributes"),
-        .complete("Span", "fontFamily"),
-        .complete("Span", "fontSize"),
-        .complete("Span", "text"),
-        .complete("Span", "textCase"),
-        .complete("Span", "textColor"),
-        .complete("Span", "textDecorations"),
+        .complete("TextSpan", "background"),
+        .complete("TextSpan", "fontAttributes"),
+        .complete("TextSpan", "fontFamily"),
+        .complete("TextSpan", "fontSize"),
+        .complete("TextSpan", "text"),
+        .complete("TextSpan", "textCase"),
+        .complete("TextSpan", "textColor"),
+        .complete("TextSpan", "textDecorations"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
         .complete("TabView", "selectedTab"),

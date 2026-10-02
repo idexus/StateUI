@@ -11,7 +11,7 @@ Text("A paragraph long enough to wrap onto several lines, read more easily with 
 
 Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [Span](../Span.md) · [Text](../Text.md)
+Worn by: [Text](../Text.md) · [TextSpan](../TextSpan.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/LineHeightElementContract.swift`.
 

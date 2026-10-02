@@ -11,7 +11,7 @@ Text("Was 20, now 15")
 
 Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [Span](../Span.md) · [Text](../Text.md)
+Worn by: [Text](../Text.md) · [TextSpan](../TextSpan.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/DecorableTextElementContract.swift`.
 

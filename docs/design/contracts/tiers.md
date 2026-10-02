@@ -46,7 +46,7 @@ Swift protocols behind them refine each other.
   MenuItemElement    MenuItem, ToolbarItem
   PageElement        Page, NavigationStack, TabView, SplitView
   BarElement         NavigationStack, TabView, SplitView, ModalStack
-  text tiers only    Span
+  text tiers only    TextSpan
   no tier            Application, Scene, Window, Menu, Divider, ContextMenu,
                      Overlay, and the slots and collections
 ```
@@ -69,7 +69,7 @@ write each other's key.
 
 ## Wearing without a view
 
-A tier is worn by whatever carries its values, not only by views. A `Span`,
+A tier is worn by whatever carries its values, not only by views. A `TextSpan`,
 one run of text inside a label, wears the text tiers and no view. A `Style`
 is a property container, so it can carry any member a control can. A page
 and a page arrangement say their title and icon under the same keys, so both

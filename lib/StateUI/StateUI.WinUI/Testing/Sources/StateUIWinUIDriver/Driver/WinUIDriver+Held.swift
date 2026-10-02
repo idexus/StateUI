@@ -16,7 +16,7 @@ extension WinUIDriver {
         let view = (element.native as? WinUIElement)?.view
         let cannot = DriverCannot(reading: property, of: element)
         switch element.type {
-        case .span:
+        case .textSpan:
             if let held = try spanHolds(property.name, element) { return held }
             throw cannot
         case .menuItem, .menu:

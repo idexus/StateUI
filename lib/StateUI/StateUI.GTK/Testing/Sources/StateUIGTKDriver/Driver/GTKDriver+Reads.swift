@@ -15,7 +15,7 @@ import CStateUIGTK
 extension GTKDriver {
     /// What `element` holds of `property`, read from its widget; nil for a member this does not read.
     func reads(_ property: Prop, on element: MountedElement, view: GTKView?) -> HostValue?? {
-        if element.type == .span { return spanHolds(property, element) }
+        if element.type == .textSpan { return spanHolds(property, element) }
         if let assisted = accessibilityHolds(property, element, view) { return assisted }
         if property == .title, let tab = tabTitle(of: element) { return .some(tab.propValue) }
         switch view {
@@ -169,7 +169,7 @@ extension GTKDriver {
         var holder = span.parent
         while let each = holder, !((each.native as? GTKElement)?.view is GTKTextualView) { holder = each.parent }
         guard let holder, let label = (holder.native as? GTKElement)?.view?.widget.opaque, let runs = holder.textRuns,
-              let index = span.parent?.children.filter({ $0.type == .span }).firstIndex(where: { $0 === span }),
+              let index = span.parent?.children.filter({ $0.type == .textSpan }).firstIndex(where: { $0 === span }),
               runs.indices.contains(index)
         else { return nil }
         let start = runs[..<index].reduce(0) { $0 + $1.text.utf8.count }
