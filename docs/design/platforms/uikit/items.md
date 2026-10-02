@@ -44,6 +44,12 @@ the cell taking it, so nothing is measured again for it.
 The list itself asks for its width and no height: its room is what its
 layout gives it - a height, or a row of a grid that fills.
 
+A cell at rest is clear, and the page shows through the list as it does on
+every host; the list cell's own colour comes only with the user's choice, a
+touch or the focus. The list cell's look at rest is the system background,
+which a page of another colour - or the dark theme's black against a grey
+page - shows as a block.
+
 ## One cell an entry
 
 The cell provider, `willDisplay` and `didEndDisplaying` - of an item and of a
