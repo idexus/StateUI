@@ -89,7 +89,7 @@ final class MotionLawTests: XCTestCase {
                 }
             }
 
-            let landed = Self.sample(animation, at: motion.law == .eased ? Double(motion.millis) : HostMotionLaw.longest)
+            let landed = Self.sample(animation, at: motion.law == .eased ? Double(motion.milliseconds) : HostMotionLaw.longest)
             XCTAssertEqual(
                 landed,
                 HostMotionSample(
@@ -100,7 +100,7 @@ final class MotionLawTests: XCTestCase {
             for instant in animation.instants {
                 let sample = Self.sample(animation, at: instant)
                 if motion.law == .eased {
-                    XCTAssertEqual(sample.rested, instant >= Double(motion.millis), "\(named) at \(instant)")
+                    XCTAssertEqual(sample.rested, instant >= Double(motion.milliseconds), "\(named) at \(instant)")
                 }
                 if sample.rested {
                     XCTAssertEqual(sample.value, animation.destination, "\(named) stays at rest")
@@ -114,7 +114,7 @@ final class MotionLawTests: XCTestCase {
     /// round before the longest walk ends it.
     func testASpringRingsOnlyBelowCriticalDamping() {
         for animation in Self.animations
-        where animation.motion.law == .spring && Double(animation.motion.millis) < HostMotionLaw.longest {
+        where animation.motion.law == .spring && Double(animation.motion.milliseconds) < HostMotionLaw.longest {
             let passes = stride(from: 0.0, through: HostMotionLaw.longest, by: 5).contains { instant in
                 let sample = Self.sample(animation, at: instant)
                 return animation.from.indices.contains { lane in

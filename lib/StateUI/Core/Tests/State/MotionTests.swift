@@ -710,10 +710,10 @@ final class MotionTests: XCTestCase {
     // ---- The vocabulary itself ---------------------------------------------
 
     func testTheLawsCarryTheNumbersTheyNeed() {
-        XCTAssertEqual(Motion.eased(400, .cubicIn).millis, 400)
+        XCTAssertEqual(Motion.eased(400, .cubicIn).milliseconds, 400)
         XCTAssertEqual(Motion.eased(400, .cubicIn).curve, .cubicIn)
 
-        XCTAssertEqual(Motion.spring(response: 260, damping: 0.7).millis, 260)
+        XCTAssertEqual(Motion.spring(response: 260, damping: 0.7).milliseconds, 260)
         XCTAssertEqual(Motion.spring(response: 260, damping: 0.7).factor, 0.7)
     }
 

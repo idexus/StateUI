@@ -78,7 +78,7 @@ merged over that plan.
 | Group | Meaning |
 | --- | --- |
 | `.opacity` | opacity |
-| `.colour` | every color-valued property |
+| `.color` | every color-valued property |
 | `.width` | requested, minimum, maximum, or host-reported width |
 | `.height` | requested, minimum, maximum, or host-reported height |
 | `.size` | width and height plus outline and corner sizes |

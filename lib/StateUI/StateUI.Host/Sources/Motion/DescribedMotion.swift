@@ -88,7 +88,7 @@
               !motion.isCustom,
               motion.factor.isFinite,
               !reducesMotion,
-              !(motion.law == .eased && motion.millis == 0),
+              !(motion.law == .eased && motion.milliseconds == 0),
               let plan = MotionValuePlan(
                 from: source,
                 destination: target,

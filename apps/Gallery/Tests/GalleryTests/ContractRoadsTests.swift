@@ -328,6 +328,18 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = WebViewSource.html("<p>Hi</p>", baseUrl: nil)"#,
             contract: #"_ = WebViewSource.html("<p>Hi</p>", baseURL: nil)"#),
         Road(
+            name: "motion values spelled colour",
+            removed: "_ = MotionValues.colour",
+            contract: "_ = MotionValues.color"),
+        Road(
+            name: "a motion's length as millis",
+            removed: "_ = Motion.eased(400, .cubicOut).millis",
+            contract: "_ = Motion.eased(400, .cubicOut).milliseconds"),
+        Road(
+            name: "the back curves named for springs",
+            removed: "_ = Easing.springOut",
+            contract: "_ = Easing.backOut"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

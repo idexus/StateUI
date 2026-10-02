@@ -135,7 +135,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let toHour = atHour + (hour - atHour).forwardTurn
 
                     async let s: Bool = $sAngle.journey.move(to:
-                        toSecond, .eased(260, .springOut))
+                        toSecond, .eased(260, .backOut))
                     async let m: Bool = $mAngle.journey.move(to:
                         toMinute, .eased(300, .cubicOut))
                     async let h: Bool = $hAngle.journey.move(to:
@@ -272,7 +272,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let toHour = atHour + (hour - atHour).forwardTurn
 
                     async let s: Bool = $sAngle.journey.move(to:
-                        toSecond, .eased(260, .springOut))
+                        toSecond, .eased(260, .backOut))
                     async let m: Bool = $mAngle.journey.move(to:
                         toMinute, .eased(300, .cubicOut))
                     async let h: Bool = $hAngle.journey.move(to:

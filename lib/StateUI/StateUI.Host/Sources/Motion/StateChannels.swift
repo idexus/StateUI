@@ -367,7 +367,7 @@ private final class StateChannel {
             began: now)
         velocity = animation.velocity.map { $0 * 1_000 }
 
-        let instant = motion.law == .eased && motion.millis == 0
+        let instant = motion.law == .eased && motion.milliseconds == 0
 
         if instant || reducesMotion || animation.arrives {
             animator.halt(target)

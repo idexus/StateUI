@@ -63,7 +63,7 @@ public enum PropValue: Equatable, Sendable {
     /// Which kind of value this is where the value itself says: a colour.
     var kind: MotionValues {
         switch self {
-        case .color, .values: .colour
+        case .color, .values: .color
         default: []
         }
     }

@@ -160,7 +160,7 @@ extension Color: StateValue {
     public static var lanes: Int { 4 }
 
     /// A colour, which is what only the value can say.
-    public static var moving: MotionValues { .colour }
+    public static var moving: MotionValues { .color }
 }
 
 extension String: StateValue {

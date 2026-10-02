@@ -74,7 +74,7 @@ import CRT
         switch motion.law {
         case .eased:
             return eased(
-                length: Double(motion.millis),
+                length: Double(motion.milliseconds),
                 curve: motion.curve,
                 elapsed: elapsed,
                 from: from,
@@ -82,7 +82,7 @@ import CRT
                 velocity: velocity)
         case .spring:
             return spring(
-                response: Double(max(motion.millis, 1)),
+                response: Double(max(motion.milliseconds, 1)),
                 damping: max(motion.factor, 0.01),
                 elapsed: elapsed,
                 from: from,
@@ -237,9 +237,9 @@ import CRT
             return bounceOut(value)
         case .bounceIn:
             return 1 - bounceOut(1 - value)
-        case .springIn:
+        case .backIn:
             return value * value * ((2.70158 * value) - 1.70158)
-        case .springOut:
+        case .backOut:
             let shifted = value - 1
             return (shifted * shifted * ((2.70158 * shifted) + 1.70158)) + 1
         }

@@ -99,7 +99,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             switch curve {
             case 1: return .cubicInOut
             case 2: return .bounceOut
-            case 3: return .springOut
+            case 3: return .backOut
             default: return .linear
             }
         }
@@ -231,7 +231,7 @@ struct AnimationSample: SampleContent, ExampleContent {
         switch curve {
         case 1: return .cubicInOut
         case 2: return .bounceOut
-        case 3: return .springOut
+        case 3: return .backOut
         default: return .linear
         }
     }

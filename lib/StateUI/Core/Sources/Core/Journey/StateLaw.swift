@@ -29,11 +29,11 @@ enum StateLaw {
     static func lanes(of motion: Motion) -> [Double] {
         if motion.isInherited { return [StateLaw.inherited, 0, 0] }
         if motion.isCustom { return [StateLaw.custom, 0, 0] }
-        if motion.millis == 0 && motion.law == .eased { return [0, 0, 0] }
+        if motion.milliseconds == 0 && motion.law == .eased { return [0, 0, 0] }
 
         return motion.law == .spring
-            ? [3, Double(motion.millis), motion.factor]
-            : [2, Double(motion.millis), Double(motion.curve.rawValue)]
+            ? [3, Double(motion.milliseconds), motion.factor]
+            : [2, Double(motion.milliseconds), Double(motion.curve.rawValue)]
     }
 
     /// And back.

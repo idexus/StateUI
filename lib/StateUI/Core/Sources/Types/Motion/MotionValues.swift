@@ -30,7 +30,7 @@ public struct MotionValues: OptionSet, Sendable {
 
     /// Every colour it wears - a background, a text colour, a track, a thumb -
     /// known from the value itself.
-    public static let colour = MotionValues(rawValue: 1 << 1)
+    public static let color = MotionValues(rawValue: 1 << 1)
 
     /// How wide it is: `.width`, `.minimumWidth`, `.maximumWidth`, and on a
     /// layout the widths it gives its children.

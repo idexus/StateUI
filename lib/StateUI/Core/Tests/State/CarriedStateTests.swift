@@ -619,7 +619,7 @@ final class CarriedStateTests: XCTestCase {
         let tint = State(wrappedValue: Color("#102030"))
         let renders = Renders()
 
-        renders.render(Text("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
+        renders.render(Text("x").motion(.none).motion(.eased(640, .cubicIn), .color)
             .background(tint.projectedValue).id("one").node)
 
         XCTAssertEqual(

@@ -40,10 +40,10 @@ final class HostRenderTests: XCTestCase {
         XCTAssertEqual(patch.properties[.text], .string("Save"))
         XCTAssertEqual(patch.clearedProperties, [.margin])
         XCTAssertEqual(patch.motion?.motion.law, .spring)
-        XCTAssertEqual(patch.motion?.motion.millis, 240)
+        XCTAssertEqual(patch.motion?.motion.milliseconds, 240)
         XCTAssertEqual(patch.motion?.motion.factor, 0.8)
         XCTAssertEqual(patch.motion?.lanes, [.x, .height])
-        XCTAssertEqual(patch.transitions[.opacity]?.motion.millis, 120)
+        XCTAssertEqual(patch.transitions[.opacity]?.motion.milliseconds, 120)
 
         guard case .replace(let driven)? = patch.driven else {
             return XCTFail("expected a complete driven-state replacement")

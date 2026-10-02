@@ -175,7 +175,7 @@ extension PlacedView {
     /// Whether a timing animates anything: neither a snap nor an engine's own.
     private static func moves(_ motion: Motion) -> Bool {
         !motion.isInherited && !motion.isCustom && motion.factor.isFinite
-            && !(motion.law == .eased && motion.millis == 0)
+            && !(motion.law == .eased && motion.milliseconds == 0)
     }
 
     private static func isReal(_ rect: Rect) -> Bool {

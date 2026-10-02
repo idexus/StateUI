@@ -119,16 +119,16 @@ enum PatchDump {
         }
 
         switch motion.law {
-        case .spring: return said + " moves on a spring over \(motion.millis)ms"
-        case .eased: return said + (motion.millis == 0 ? " moves at once" : " moves over \(motion.millis)ms \(motion.curve)")
+        case .spring: return said + " moves on a spring over \(motion.milliseconds)ms"
+        case .eased: return said + (motion.milliseconds == 0 ? " moves at once" : " moves over \(motion.milliseconds)ms \(motion.curve)")
         }
     }
 
     /// How one property travels to the value the line above it states.
     private static func travelling(_ motion: Motion) -> String {
         switch motion.law {
-        case .spring: "springs over \(motion.millis)ms, damping \(motion.factor)"
-        case .eased: "travels over \(motion.millis)ms \(motion.curve)(\(motion.curve.rawValue))"
+        case .spring: "springs over \(motion.milliseconds)ms, damping \(motion.factor)"
+        case .eased: "travels over \(motion.milliseconds)ms \(motion.curve)(\(motion.curve.rawValue))"
         }
     }
 

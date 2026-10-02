@@ -44,11 +44,11 @@ public enum Easing: Int32, Sendable {
     /// Bounces before it sets off.
     case bounceIn = 8
 
-    /// Pulls back before it sets off, the way a spring loads.
-    case springIn = 9
+    /// Pulls back a little before it sets off.
+    case backIn = 9
 
     /// Overshoots the target and comes back to it.
-    case springOut = 10
+    case backOut = 10
 
     var propValue: PropValue { .enumeration(rawValue) }
 }

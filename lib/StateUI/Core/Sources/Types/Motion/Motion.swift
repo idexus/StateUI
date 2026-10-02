@@ -33,7 +33,7 @@ public struct Motion: Equatable, Sendable {
     public let law: Law
 
     /// Milliseconds: how long an eased motion takes, or a spring's response.
-    public let millis: UInt32
+    public let milliseconds: UInt32
 
     /// The curve an eased motion follows.
     public let curve: Easing
@@ -55,11 +55,11 @@ public struct Motion: Equatable, Sendable {
     /// What a write means when it names no motion, so a plain assignment and
     /// `move(to:)` agree about the motion and differ only in being awaited.
     public static let inherited = Motion(
-        law: .eased, millis: 0, curve: .cubicOut, factor: 0, isInherited: true, isCustom: false)
+        law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: true, isCustom: false)
 
     /// No animation: the change is applied at once.
     public static let none = Motion(
-        law: .eased, millis: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: false)
+        law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: false)
 
     /// The animation is yours: a write moves only the destination, the host
     /// animates nothing, and an engine of your own writes where the value is
@@ -84,7 +84,7 @@ public struct Motion: Equatable, Sendable {
     ///
     /// Design: docs/design/types/motion.md#custom-animates-in-an-engine
     public static let custom = Motion(
-        law: .eased, millis: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: true)
+        law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: true)
 
     /// An animation of a stated duration on a stated curve.
     ///
@@ -102,7 +102,7 @@ public struct Motion: Equatable, Sendable {
     public static func eased(_ length: UInt, _ curve: Easing = .cubicOut) -> Motion {
         Motion(
             law: .eased,
-            millis: UInt32(truncatingIfNeeded: length),
+            milliseconds: UInt32(truncatingIfNeeded: length),
             curve: curve,
             factor: 0,
             isInherited: false,
@@ -127,7 +127,7 @@ public struct Motion: Equatable, Sendable {
     public static func spring(response: UInt = 300, damping: Double = 1) -> Motion {
         Motion(
             law: .spring,
-            millis: UInt32(truncatingIfNeeded: max(response, 1)),
+            milliseconds: UInt32(truncatingIfNeeded: max(response, 1)),
             curve: .linear,
             factor: max(damping, 0.05),
             isInherited: false,
@@ -136,7 +136,7 @@ public struct Motion: Equatable, Sendable {
 
     /// Whether this motion animates nothing - the value simply arrives.
     var isNothing: Bool {
-        !isInherited && !isCustom && law == .eased && millis == 0
+        !isInherited && !isCustom && law == .eased && milliseconds == 0
     }
 
     /// This motion, or `fallback` where this is the inherited one.
