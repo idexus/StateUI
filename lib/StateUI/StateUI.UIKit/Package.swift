@@ -5,7 +5,7 @@ import PackageDescription
 // StateUI runtime into the application instead of copying StateUI's object files into a second library.
 let package = Package(
     name: "StateUIUIKit",
-    platforms: [.iOS(.v26)],
+    platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(name: "StateUIUIKit", type: .dynamic, targets: ["StateUIUIKit"]),
     ],
@@ -20,7 +20,7 @@ let package = Package(
                 .product(name: "StateUIHost", package: "StateUIHost")],
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")],
-            linkerSettings: [.linkedFramework("UIKit")]
+            linkerSettings: [.linkedFramework("UIKit", .when(platforms: [.iOS]))]
         ),
     ]
 )
