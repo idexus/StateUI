@@ -75,14 +75,15 @@ final class AppKitItemCellView: NSView {
     var resized: (() -> Void)?
     weak var holding: AppKitItemHolding?
 
-    /// Whether the cell's item is chosen, drawn as AppKit draws a chosen item - in the accent while the list holds the
-    /// keyboard.
+    /// Whether the cell's item is chosen.
     var chosen = false {
         didSet { if chosen != oldValue { needsDisplay = true } }
     }
 
-    var emphasized = true {
-        didSet { if emphasized != oldValue { needsDisplay = true } }
+    /// What the cell lays over the page: the platform's accent at a fifth of its strength where its item is chosen,
+    /// as every host's list shows the user's choice; nothing at rest.
+    var fill: NSColor? {
+        chosen ? NSColor.controlAccentColor.withAlphaComponent(0.2) : nil
     }
 
     override var isFlipped: Bool { true }
@@ -93,9 +94,8 @@ final class AppKitItemCellView: NSView {
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        guard chosen else { return }
-        (emphasized ? NSColor.selectedContentBackgroundColor : NSColor.unemphasizedSelectedContentBackgroundColor)
-            .setFill()
+        guard let fill else { return }
+        fill.setFill()
         NSBezierPath(roundedRect: bounds, xRadius: 6, yRadius: 6).fill()
     }
 }

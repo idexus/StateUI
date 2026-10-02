@@ -19,8 +19,8 @@ private struct ChoosingPage: ContentView {
 }
 
 final class UIKitItemsViewTests: XCTestCase {
-    /// A cell at rest shows the page through it, as every host's list does; a chosen one still shows the user's
-    /// choice in UIKit's own colour.
+    /// A cell at rest shows the page through it, as every host's list does; a chosen one shows the user's choice in
+    /// the platform's accent, UIKit's tint, laid over the page.
     @MainActor
     func testACellAtRestHasNoBackgroundOfItsOwn() throws {
         let host = UIKitRenderer.running { ChoosingPage() }
@@ -37,6 +37,9 @@ final class UIKitItemsViewTests: XCTestCase {
             return alpha
         }
         XCTAssertGreaterThan(alpha(cells[0]), 0, "the chosen item shows the choice")
+        XCTAssertEqual(
+            cells[0].backgroundConfiguration?.backgroundColor, cells[0].tintColor.withAlphaComponent(0.2),
+            "the choice in the accent")
         XCTAssertEqual(alpha(cells[1]), 0, "an item at rest draws a background")
         XCTAssertEqual(alpha(cells[2]), 0, "an item at rest draws a background")
     }

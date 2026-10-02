@@ -72,8 +72,9 @@ final class UIKitItemHolding: ItemsHolding {
     }
 }
 
-/// A cell of an ItemsView, holding one item - UIKit's own list cell, which shows the user's choice and touch, and
-/// at rest the page through it, as every host's list does.
+/// A cell of an ItemsView, holding one item - UIKit's own list cell: the user's choice and touch in the platform's
+/// accent over the page, and at rest the page through it, as every host's list shows them.
+/// Design: docs/design/platforms/uikit/items.md#a-cell
 @MainActor
 final class UIKitItemCell: UICollectionViewCell {
     private(set) lazy var holding = UIKitItemHolding(in: contentView, of: self)
@@ -84,8 +85,17 @@ final class UIKitItemCell: UICollectionViewCell {
 
     override func updateConfiguration(using state: UICellConfigurationState) {
         var background = UIBackgroundConfiguration.listCell().updated(for: state)
-        if !state.isSelected, !state.isHighlighted, !state.isFocused { background.backgroundColor = .clear }
+        if state.isSelected || state.isHighlighted {
+            background.backgroundColor = tintColor.withAlphaComponent(0.2)
+        } else if !state.isFocused {
+            background.backgroundColor = .clear
+        }
         backgroundConfiguration = background
+    }
+
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+        setNeedsUpdateConfiguration()
     }
 
     @available(*, unavailable)
