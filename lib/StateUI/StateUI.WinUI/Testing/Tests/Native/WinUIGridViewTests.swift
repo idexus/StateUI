@@ -25,4 +25,40 @@ final class WinUIGridViewTests: XCTestCase {
             XCTAssertEqual(labels[1].frame.y, 4)
         }
     }
+
+    /// Words wrapping in one of two proportional columns settle in one pass: the grid offered less than its natural
+    /// width wraps them, and so it does as its window narrows from wide, step by step.
+    func testWordsWrapInOneOfTwoProportionalColumns() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    Label("One line")
+                    VStack {
+                        Grid {
+                            Label("2026-10-02 17:03")
+                            Label("Korekta").gridColumn(1)
+                            Label("Anna Zając (5)").gridColumn(2)
+                            Label("Wadliwa: Uszkodzona (było: Czeka na decyzję)").gridColumn(3)
+                        }
+                        .columns(.fixed(140), .fixed(130), .proportional(2), .proportional(3))
+                        .columnSpacing(12)
+                    }
+                    .padding(14, 12)
+                }
+                .padding(24, 20)
+            }
+            let labels = host.views(WinUILabelView.self)
+            let words = try XCTUnwrap(labels.last)
+            let line = labels[0].frame.height
+            XCTAssertGreaterThan(words.frame.height, line * 1.5, "wrapped")
+
+            let window = try XCTUnwrap(host.window)
+            for width in stride(from: 1400.0, through: 480, by: -23) {
+                window.request(WindowFrame(width: width, height: 440))
+                host.step()
+                host.layOut()
+            }
+            XCTAssertGreaterThan(words.frame.height, line * 1.5, "wrapped again")
+        }
+    }
 }

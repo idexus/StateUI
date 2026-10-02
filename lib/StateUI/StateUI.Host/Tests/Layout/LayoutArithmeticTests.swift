@@ -171,6 +171,35 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(size.width, 320, "its natural width is still its words on one line")
     }
 
+    /// A grid stands words wrapped as it measured them: in two proportional columns of unlike shares, offered a
+    /// room narrower or wider than its natural width, and placed at that room or at its natural width, each row is
+    /// as tall as the words it holds at the width they stand.
+    @MainActor
+    func testAGridPlacesItsWordsAtTheWidthItMeasuredThem() {
+        var name = Child(width: 95, height: 20)
+        name.wraps = true
+        name.values.column = 1
+        var words = Child(width: 300, height: 20)
+        words.wraps = true
+        words.values.column = 2
+        let items = [Child(width: 100, height: 20), name, words]
+        let columns: [GridLength] = [.fixed(140), .proportional(2), .proportional(3)]
+
+        for room in stride(from: 400.0, through: 900, by: 25) {
+            let size = GridArithmetic.size(
+                of: items, rows: [.auto], columns: columns,
+                rowSpacing: 0, columnSpacing: 0, padding: Insets(0), width: room)
+            for width in [room, min(room, size.width)] {
+                let places = GridArithmetic.places(
+                    of: items, rows: [.auto], columns: columns, rowSpacing: 0, columnSpacing: 0,
+                    padding: Insets(0), in: Rect(0, 0, width, size.height), direction: .leftToRight)
+                XCTAssertEqual(
+                    places.compactMap { $0?.height }.max(), size.height,
+                    "offered \(room), placed at \(width): words as tall as measured")
+            }
+        }
+    }
+
     /// A ZStack stands each child in its area - the room within the padding, a rectangle in points, or one
     /// in fractions of the room - by the child's own alignments; a hidden one has no place.
     @MainActor

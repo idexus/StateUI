@@ -159,18 +159,19 @@
             if case .proportional(let share) = definition { return weight + max(share, 0.000_001) }
             return weight
         }
-        let remainder = max(0, (available ?? fixed) - fixed)
+        // With no room given, the remainder is the least whose shares hold each track's largest one-track child.
+        var remainder = max(0, (available ?? fixed) - fixed)
+        if available == nil {
+            remainder = (0..<count).reduce(0.0) { least, index in
+                guard case .proportional(let share) = definitions[index], share > 0 else { return least }
+                let largest = items.filter { track($0) == (index, 1) && $0.isShown }.map(extent).max() ?? 0
+                return max(least, largest * starWeight / share)
+            }
+        }
 
         for index in 0..<count {
             guard case .proportional(let share) = definitions[index] else { continue }
-            if available == nil {
-                sizes[index] = items
-                    .filter { track($0) == (index, 1) && $0.isShown }
-                    .map(extent)
-                    .max() ?? 0
-            } else {
-                sizes[index] = remainder * max(share, 0.000_001) / starWeight
-            }
+            sizes[index] = remainder * max(share, 0.000_001) / starWeight
         }
 
         return sizes

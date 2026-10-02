@@ -150,6 +150,10 @@ Grid {
 | `.fill` | one share of remaining room |
 | `.proportional(2)` | two shares of remaining room |
 
+A grid's own width, where its room does not decide it, is the least at which
+each proportional track holds its content at its share: shares stand as
+written, and words that fit in their column stand on one line.
+
 An omitted row or column is zero. An omitted span is one. Several children may
 occupy the same cell; they overlap and `zIndex` decides drawing order.
 

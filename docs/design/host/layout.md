@@ -101,9 +101,16 @@ spans.
 A fixed track is its length. An automatic track is as large as its largest
 child that spans that track alone. A proportional track divides what the
 fixed and automatic tracks and the spacing leave, by its share; measured with
-no room given, a proportional track is as large as its largest one-track
-child, so the grid's natural size holds every child. A share of nothing still
-counts as a sliver, so no division is by zero.
+no room given, the proportional tracks share the least remainder whose shares
+hold each one's largest one-track child, so the grid placed at its natural
+size, or wider, holds every child at the width it was measured for. A share of
+nothing still counts as a sliver, so no division is by zero, and asks for no
+room.
+
+The trap is a natural size taken track by track: two shares of 95 beside three
+of 300 make a remainder of 395, which placement shares as 158 and 237, and the
+words measured on one line at 300 stand wrapped at 237 - on WinUI a layout
+cycle that ends the application.
 
 The columns are settled first, and a row measures each of its children at
 the width of the columns it stands in, so words that wrap in a column make
