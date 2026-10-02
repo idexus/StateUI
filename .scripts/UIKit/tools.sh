@@ -67,7 +67,7 @@ uikit_bundle () {
   plutil -insert CFBundleInfoDictionaryVersion -string 6.0 "$plist"
   plutil -insert CFBundleName -string "$name" "$plist"
   plutil -insert CFBundlePackageType -string APPL "$plist"
-  plutil -insert CFBundleShortVersionString -string 0.4.0 "$plist"
+  plutil -insert CFBundleShortVersionString -string 0.5.0 "$plist"
   plutil -insert CFBundleVersion -string 1 "$plist"
   plutil -insert CFBundleSupportedPlatforms -array "$plist"
   plutil -insert CFBundleSupportedPlatforms.0 -string "$platform" "$plist"

@@ -401,7 +401,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             const group = path.join(location, name);
 
             // Where its StateUI comes from: a release cloned into the group, or the local checkout.
-            const minimum = vscode.workspace.getConfiguration("stateui").get<string>("minimumRelease", "0.4.0");
+            const minimum = vscode.workspace.getConfiguration("stateui").get<string>("minimumRelease", "0.5.0");
             let release = given?.release;
             let checkout = given?.checkout;
             if (!release && !checkout) {

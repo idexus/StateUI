@@ -8,8 +8,9 @@ final class ReleaseTests: XCTestCase {
     /// Every place that names the release names the one the editor
     /// extension's `package.json` states, the release's only home: the
     /// published-package line in the root's Package.swift, each Android head's
-    /// version, the Gallery's AppKit bundle and the bug report's example. A
-    /// reader copying any of them gets this release, not the one before.
+    /// version, the Gallery's AppKit bundle, every UIKit bundle and the bug
+    /// report's example. A reader copying any of them gets this release, not
+    /// the one before.
     func testEveryMentionOfTheReleaseNamesThisOne() throws {
         let manifest = try JSONSerialization.jsonObject(
             with: Data(contentsOf: SourceTree.repository.appendingPathComponent("lib/StateUI.VSCode/package.json")))
@@ -20,6 +21,7 @@ final class ReleaseTests: XCTestCase {
             ("Package.swift", "exact: \"", "\""),
             (".github/ISSUE_TEMPLATE/bug.yml", "placeholder: StateUI ", ","),
             (".scripts/AppKit/build-gallery-appkit.sh", "CFBundleShortVersionString -string ", " "),
+            (".scripts/UIKit/tools.sh", "CFBundleShortVersionString -string ", " "),
             ("lib/StateUI/StateUI.Android/Tests/Platforms/Android/build.gradle.kts", "versionName = \"", "\""),
         ]
 

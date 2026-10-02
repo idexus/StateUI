@@ -61,7 +61,7 @@ git clone --depth 1 --branch <release> https://github.com/idexus/StateUI.git Sta
 | Setting | What it holds |
 | --- | --- |
 | `stateui.checkout` | the local checkout a group builds with - set on this machine, so it is not asked for |
-| `stateui.minimumRelease` | the oldest release offered, `0.4.1` - the first that builds into `.build/<host>` and reads `STATEUI_HOST`, as the extension does; until it is published, a group builds with the local checkout |
+| `stateui.minimumRelease` | the oldest release offered, `0.5.0` - the first that builds into `.build/<host>` and reads `STATEUI_HOST`, as the extension does; until it is published, a group builds with the local checkout |
 
 ## The host
 

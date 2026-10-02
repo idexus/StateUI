@@ -504,11 +504,11 @@ export async function run(): Promise<void> {
             const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"));
             const setting = manifest.contributes.configuration.properties;
             check("the palette has New Project Group; New Application in apps/ shows where a folder keeps apps/; "
-                + "stateui.checkout is this machine's, stateui.minimumRelease 0.4.1",
+                + "stateui.checkout is this machine's, stateui.minimumRelease 0.5.0",
                 commands.includes("stateui.newProjectGroup")
                 && manifest.contributes.commands.some((each: { command: string; enablement?: string }) =>
                     each.command === "stateui.newApplicationInApps" && each.enablement === "stateui.hasApps")
-                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.4.1");
+                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.5.0");
             check("an application's Package.swift names its checkout: HelloWorld's ../.. is this one",
                 fs.realpathSync(checkoutNamedBy(path.join(apps, "HelloWorld")) ?? "/") === fs.realpathSync(root.uri.fsPath)
                 && findApplications(root.uri.fsPath).every((each) => each.checkout !== undefined));
@@ -524,7 +524,7 @@ export async function run(): Promise<void> {
                     === `-c advice.detachedHead=false clone --depth 1 --branch 0.4.0 https://github.com/idexus/StateUI.git ${path.join("/Groups/Mine", "StateUI")}`);
         }
         // 7a. A project group, made by the command itself with its questions answered: one building with this checkout,
-        //     one with the 0.4.0 release cloned into it. Each application names its StateUI in its Package.swift, New
+        //     one with the newest release offered cloned into it. Each application names its StateUI in its Package.swift, New
         //     Application in apps/ makes another the same way there, and every one of them builds.
         {
             const location = process.env.STATEUI_TEST_GROUPS ?? fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "stateui-groups-")));
