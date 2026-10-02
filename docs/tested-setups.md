@@ -48,3 +48,28 @@ Settings included; the iPad Air stands in for it.
 Xcode's own Swift 6.4 is a different build from swift.org's and cannot read
 the Swift SDK's modules; the Android build picks the swift.org toolchain by
 itself.
+
+## A Linux machine: GTK 4
+
+Last verified 2026-10-02.
+
+| | |
+| --- | --- |
+| Machine | a Parallels virtual machine on Apple silicon: aarch64, 2 cores, 16 GB |
+| System | Ubuntu 24.04.5 LTS, Linux 7.0.0; GNOME Shell 46 on Wayland |
+| Swift | the swift.org toolchain `swift-6.4-RELEASE`, installed by swiftly |
+| Editor | VS Code 1.140.0; the StateUI extension 0.5.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
+| Node.js | 22.23.3, for building and testing the extension |
+
+### GTK 4
+
+| | |
+| --- | --- |
+| GTK | 4.14.5 |
+| libadwaita | 1.5.0 |
+| WebKitGTK | 2.52.6 (`webkitgtk-6.0`), for the web view's backend |
+| Pictures | gdk-pixbuf 2.42.10, with librsvg 2.58.0's SVG loader |
+| GLib | 2.80.0 |
+
+Ubuntu 24.04's own Node.js is 18, below the extension's 20; Node.js 22 from
+nodejs.org stands first on the user's `PATH`.
