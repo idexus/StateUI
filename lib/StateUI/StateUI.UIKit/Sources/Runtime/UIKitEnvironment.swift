@@ -138,7 +138,7 @@ final class UIKitEnvironment {
         @unknown default: .unknown
         }
         let kinds: [(NWInterface.InterfaceType, ConnectionProfile)] = [
-            (.cellular, .cellular), (.wiredEthernet, .ethernet), (.wifi, .wiFi),
+            (.cellular, .cellular), (.wiredEthernet, .ethernet), (.wifi, .wifi),
         ]
         core.setConnectivityInfo(HostConnectivityInfo(
             networkAccess: access,

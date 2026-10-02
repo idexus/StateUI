@@ -34,7 +34,7 @@ final class EnvironmentFactsTests: XCTestCase {
     func testTheNetworkIsItsAccessAndABitAConnection() {
         let network = HostConnectivityInfo(access: NetworkAccess.internet.rawValue, connections: 4 | 8)
         XCTAssertEqual(network.networkAccess, .internet)
-        XCTAssertEqual(network.connectionProfiles, [.ethernet, .wiFi])
+        XCTAssertEqual(network.connectionProfiles, [.ethernet, .wifi])
         XCTAssertEqual(HostConnectivityInfo(access: 99, connections: 0).networkAccess, .unknown)
     }
 

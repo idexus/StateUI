@@ -139,7 +139,7 @@ The closed vocabulary used by these fields is:
 | `BatteryPowerSource` | `unknown`, `battery`, `ac`, `usb`, `wireless` |
 | `EnergySaverStatus` | `unknown`, `on`, `off` |
 | `NetworkAccess` | `unknown`, `none`, `local`, `constrainedInternet`, `internet` |
-| `ConnectionProfile` | `unknown`, `bluetooth`, `cellular`, `ethernet`, `wiFi` |
+| `ConnectionProfile` | `unknown`, `bluetooth`, `cellular`, `ethernet`, `wifi` |
 | `DisplayOrientation` | `unknown`, `portrait`, `landscape` |
 | `DisplayRotation` | `unknown`, `rotation0`, `rotation90`, `rotation180`, `rotation270` |
 | `Weekday` | `sunday` through `saturday` |

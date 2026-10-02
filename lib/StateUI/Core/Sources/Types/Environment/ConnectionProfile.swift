@@ -19,5 +19,5 @@ public enum ConnectionProfile: Int32, Sendable {
     case ethernet = 3
 
     /// Wi-Fi.
-    case wiFi = 4
+    case wifi = 4
 }

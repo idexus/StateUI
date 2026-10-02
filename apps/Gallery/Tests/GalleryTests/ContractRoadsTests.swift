@@ -340,6 +340,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = Easing.springOut",
             contract: "_ = Easing.backOut"),
         Road(
+            name: "Wi-Fi spelled wiFi",
+            removed: "_ = ConnectionProfile.wiFi",
+            contract: "_ = ConnectionProfile.wifi"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

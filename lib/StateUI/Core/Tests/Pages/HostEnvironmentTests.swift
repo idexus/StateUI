@@ -155,7 +155,7 @@ final class HostEnvironmentTests: XCTestCase {
         let renders = Renders()
         renders.render(stack([BatteryLabel().node], id: "root"))
         let battery = HostBatteryInfo(chargeLevel: 0.5, state: .charging, powerSource: .usb, energySaverStatus: .off)
-        let network = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.wiFi])
+        let network = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.wifi])
         let locale = HostLocaleInfo(
             language: "ar", region: "EG", name: "ar-EG", timeZone: "Africa/Cairo", uses24HourClock: false,
             firstDayOfWeek: .saturday, isMetric: true, layoutDirection: .rightToLeft)
@@ -256,9 +256,9 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.battery.energySaverStatus, .off)
 
         HostBoundary.setConnectivityInfo(HostConnectivityInfo(
-            networkAccess: .constrainedInternet, connectionProfiles: [.wiFi, .ethernet]))
+            networkAccess: .constrainedInternet, connectionProfiles: [.wifi, .ethernet]))
         XCTAssertEqual(StandardEnvironment.connectivity.networkAccess, .constrainedInternet)
-        XCTAssertEqual(StandardEnvironment.connectivity.connectionProfiles, [.wiFi, .ethernet])
+        XCTAssertEqual(StandardEnvironment.connectivity.connectionProfiles, [.wifi, .ethernet])
 
         HostBoundary.setDisplayInfo(HostDisplayInfo(
             width: 2_400, height: 1_080, density: 2,

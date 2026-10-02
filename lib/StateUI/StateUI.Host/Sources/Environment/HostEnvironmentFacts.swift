@@ -34,7 +34,7 @@ extension HostConnectivityInfo {
     /// cellular, 4 Ethernet, 8 Wi-Fi.
     public init(access: Int32, connections bits: Int32) {
         let kinds: [(bit: Int32, profile: ConnectionProfile)] = [
-            (1, .bluetooth), (2, .cellular), (4, .ethernet), (8, .wiFi),
+            (1, .bluetooth), (2, .cellular), (4, .ethernet), (8, .wifi),
         ]
         self.init(
             networkAccess: NetworkAccess(rawValue: access) ?? .unknown,

@@ -74,7 +74,7 @@ enum AndroidEnvironment {
                 default: .unknown
                 }
                 let kinds: [(bit: Int32, profile: ConnectionProfile)] = [
-                    (1, .bluetooth), (2, .cellular), (4, .ethernet), (8, .wiFi),
+                    (1, .bluetooth), (2, .cellular), (4, .ethernet), (8, .wifi),
                 ]
                 core.setConnectivityInfo(HostConnectivityInfo(
                     networkAccess: access, connectionProfiles: kinds.filter { network[1] & $0.bit != 0 }.map(\.profile)))
