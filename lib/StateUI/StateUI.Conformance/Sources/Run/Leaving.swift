@@ -21,8 +21,9 @@
                 let tree = driver.start(clock: nil, reducesMotion: false) { ComingAndGoing(element: element, worn: worn) }
                 let once = try toggle(tree, on: driver)
                 _ = try toggle(tree, on: driver)
-                if let once, let twice = try toggle(tree, on: driver), twice != once {
-                    outlived.append("\(said): \(twice - once) views")
+                if let once, let twice = try toggle(tree, on: driver), twice > once {
+                    let left = settled(above: once, on: driver)
+                    if left > once { outlived.append("\(said): \(left - once) views") }
                 }
             }
         }
@@ -53,6 +54,19 @@
             + on(TintElementContract.self, [Write(TintElementContract.tint, .red)])
             + on(PaddingElementContract.self, [Write(PaddingElementContract.padding, Insets(4))])
             + on(BorderElementContract.self, border)
+    }
+
+    /// The views alive once the host let go of what it may keep a while after it left - MapKit on the Mac keeps a
+    /// map five seconds: stepping the host until no more than `once` are, at most ten seconds.
+    /// Design: docs/design/host/conformance.md#nothing-left-behind
+    private static func settled(above once: Int, on driver: any HostDriver) -> Int {
+        let end = ContinuousClock.now + .seconds(10)
+        var alive = driver.liveViews ?? once
+        while alive > once, ContinuousClock.now < end {
+            driver.step()
+            alive = driver.liveViews ?? once
+        }
+        return alive
     }
 
     /// Clicks the page's toggle and steps the host until the specimen came or went: the views it then holds alive.

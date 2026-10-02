@@ -177,6 +177,11 @@ first time - the count its tally writes (`HostDriver.liveViews`). The first
 time is the measure, not the page before it: a toolkit may make a view of
 its own the first time a control is drawn, and keep it.
 
+A toolkit may let go of a view a while after it leaves - MapKit on the Mac
+keeps a map five seconds - so where more views are alive the second time,
+the walk steps the host up to ten seconds for them to go: a view a toolkit
+only keeps a while comes back to the count, one held for good never does.
+
 Each element walks twice: bare, then dressed - a look from every tier it
 wears and an ear for every gesture. A host answers a font, a colour or a
 gesture with a closure of its own, and a closure that holds its view keeps
