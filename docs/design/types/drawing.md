@@ -49,7 +49,7 @@ holds, as `HostDrawing` lays it out in three flat lists:
 ```text
   Draw.fillColor(.red)                      ints     [0, #FFFF0000, 13, 17, 1, 0, 0]
   Draw.fillRoundedRectangle(0, 0, 90, 30, 8)   numbers  [0, 0, 90, 30, 8, 0, 0, 90, 30]
-  Draw.drawText("Go", 0, 0, 90, 30, .center)   strings  ["Go"]
+  Draw.text("Go", 0, 0, 90, 30, .center)   strings  ["Go"]
 ```
 
 A path's arcs arrive as the shared parser's cubic curves, so no relay parses
@@ -80,7 +80,7 @@ compiles: a chart draws a bar per value that way.
 
 ## Text in a box
 
-`drawText` places text in a box rather than at a point. The box is what the
+`Draw.text` places text in a box rather than at a point. The box is what the
 two alignments place the text in and what clips it, and its top is the top
 of the box, not a baseline. `.start` and `.end` mean the box's left and
 right, or top and bottom: a canvas draws in its own coordinates, not in a

@@ -17,15 +17,15 @@ final class AppKitCanvasViewTests: XCTestCase {
             Draw.textColor(.white)
             Draw.strokeWidth(2)
             Draw.fontSize(14)
-            Draw.alpha(0.8)
-            Draw.drawLine(x1: 0, y1: 0, x2: 10, y2: 10)
-            Draw.drawRectangle(x: 0, y: 0, width: 10, height: 10)
-            Draw.drawRoundedRectangle(x: 0, y: 0, width: 10, height: 10, cornerRadius: 2)
-            Draw.drawEllipse(x: 0, y: 0, width: 10, height: 10)
-            Draw.drawArc(
+            Draw.opacity(0.8)
+            Draw.strokeLine(x1: 0, y1: 0, x2: 10, y2: 10)
+            Draw.strokeRectangle(x: 0, y: 0, width: 10, height: 10)
+            Draw.strokeRoundedRectangle(x: 0, y: 0, width: 10, height: 10, cornerRadius: 2)
+            Draw.strokeEllipse(x: 0, y: 0, width: 10, height: 10)
+            Draw.strokeArc(
                 x: 0, y: 0, width: 10, height: 10,
                 startAngle: 0, endAngle: 90, clockwise: true, closed: false)
-            Draw.drawPath("M0 0 L10 10")
+            Draw.strokePath("M0 0 L10 10")
             Draw.fillRectangle(x: 0, y: 0, width: 10, height: 10)
             Draw.fillRoundedRectangle(x: 0, y: 0, width: 10, height: 10, cornerRadius: 2)
             Draw.fillEllipse(x: 0, y: 0, width: 10, height: 10)
@@ -33,10 +33,10 @@ final class AppKitCanvasViewTests: XCTestCase {
                 x: 0, y: 0, width: 10, height: 10,
                 startAngle: 0, endAngle: 90, clockwise: true)
             Draw.fillPath("M0 0 L10 0 L10 10 Z")
-            Draw.drawText("text", x: 0, y: 0, width: 20, height: 10)
-            Draw.translate(dx: 2, dy: 3)
-            Draw.rotate(30)
-            Draw.scale(sx: 2, sy: 2)
+            Draw.text("text", x: 0, y: 0, width: 20, height: 10)
+            Draw.translateBy(x: 2, y: 3)
+            Draw.rotate(by: 30)
+            Draw.scaleBy(x: 2, y: 2)
             Draw.saveState()
             Draw.restoreState()
         }

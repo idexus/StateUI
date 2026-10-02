@@ -15,16 +15,16 @@ final class CanvasRulesTests: XCTestCase {
         let drawing = [
             Draw.fillColor(.red), Draw.strokeWidth(3),
             Draw.fillRoundedRectangle(x: 1, y: 2, width: 30, height: 40, cornerRadius: 5),
-            Draw.drawText("Go", x: 0, y: 0, width: 90, height: 30, horizontalAlignment: .center),
-            Draw.drawArc(x: 0, y: 0, width: 10, height: 10, startAngle: 0, endAngle: 90, clockwise: true, closed: false),
-            broken, Draw.saveState(), Draw.rotate(45), Draw.restoreState(),
+            Draw.text("Go", x: 0, y: 0, width: 90, height: 30, horizontalAlignment: .center),
+            Draw.strokeArc(x: 0, y: 0, width: 10, height: 10, startAngle: 0, endAngle: 90, clockwise: true, closed: false),
+            broken, Draw.saveState(), Draw.rotate(by: 45), Draw.restoreState(),
         ]
 
         XCTAssertEqual(CanvasInstruction.instructions(drawing), [
             .fillColor(Color.red.propValue), .strokeWidth(3),
             .fillRoundedRectangle(Rect(x: 1, y: 2, width: 30, height: 40), radius: 5),
-            .drawText("Go", in: Rect(x: 0, y: 0, width: 90, height: 30), horizontal: .center, vertical: .start),
-            .drawArc(Rect(x: 0, y: 0, width: 10, height: 10), start: 0, end: 90, clockwise: true, closed: false),
+            .text("Go", in: Rect(x: 0, y: 0, width: 90, height: 30), horizontal: .center, vertical: .start),
+            .strokeArc(Rect(x: 0, y: 0, width: 10, height: 10), start: 0, end: 90, clockwise: true, closed: false),
             .saveState, .rotate(degrees: 45), .restoreState,
         ])
     }
@@ -36,13 +36,13 @@ final class CanvasRulesTests: XCTestCase {
         XCTAssertTrue(pen.take(.strokeWidth(-2)))
         XCTAssertEqual(pen.strokeWidth, 0, "never below nothing")
         XCTAssertTrue(pen.take(.saveState))
-        XCTAssertTrue(pen.take(.alpha(2)))
+        XCTAssertTrue(pen.take(.opacity(2)))
         XCTAssertTrue(pen.take(.fillColor(Color.blue.propValue)))
         XCTAssertEqual(pen.alpha, 1, "never past whole")
         XCTAssertTrue(pen.take(.restoreState))
         XCTAssertEqual(pen.fill, Color.red.propValue)
         XCTAssertEqual(pen.savedDepth, 0)
-        XCTAssertFalse(pen.take(.drawEllipse(Rect(x: 0, y: 0, width: 1, height: 1))), "a drawing is no setting")
+        XCTAssertFalse(pen.take(.strokeEllipse(Rect(x: 0, y: 0, width: 1, height: 1))), "a drawing is no setting")
     }
 
     /// An arc begins and ends where its angles say, clockwise down from the right; a whole turn draws the ellipse

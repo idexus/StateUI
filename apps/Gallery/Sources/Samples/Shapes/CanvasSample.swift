@@ -42,7 +42,7 @@ private struct FollowsState: ExampleContent {
 
                             Draw.textColor(Palette.text)
                             Draw.fontSize(11)
-                            Draw.drawText(
+                            Draw.text(
                                 "\\(Int(value * 100))", x: x, y: 104, width: 32, height: 14,
                                 horizontalAlignment: .center)
                         }
@@ -71,7 +71,7 @@ private struct FollowsState: ExampleContent {
 
                     Draw.textColor(Palette.text)
                     Draw.fontSize(11)
-                    Draw.drawText(
+                    Draw.text(
                         "\(Int(value * 100))", x: x, y: 104, width: 32, height: 14,
                         horizontalAlignment: .center)
                 }
@@ -115,7 +115,7 @@ private struct FollowsAFinger: ExampleContent {
                     Canvas {
                         Draw.strokeColor(Palette.outline)
                         Draw.strokeWidth(1)
-                        Draw.drawRoundedRectangle(
+                        Draw.strokeRoundedRectangle(
                             x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
 
                         Draw.fillColor(Palette.accent)
@@ -143,7 +143,7 @@ private struct FollowsAFinger: ExampleContent {
             Canvas {
                 Draw.strokeColor(Palette.outline)
                 Draw.strokeWidth(1)
-                Draw.drawRoundedRectangle(x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
+                Draw.strokeRoundedRectangle(x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
 
                 Draw.fillColor(Palette.accent)
                 for point in trail {

@@ -10,7 +10,7 @@ extension CanvasProperties {
     ///     .drawing {
     ///         Draw.strokeColor(.firebrick)
     ///         Draw.strokeWidth(2)
-    ///         Draw.drawLine(x1: 0, y1: 0, x2: 120, y2: 0)
+    ///         Draw.strokeLine(x1: 0, y1: 0, x2: 120, y2: 0)
     ///     }
     ///
     /// Usually given in the initializer instead; this is how a `Style<Canvas>`
@@ -28,7 +28,7 @@ extension CanvasProperties {
 ///
 ///         Draw.textColor(.white)
 ///         Draw.fontSize(15)
-///         Draw.drawText(
+///         Draw.text(
 ///             "Drawn, not built",
 ///             x: 0, y: 0, width: 160, height: 48,
 ///             horizontalAlignment: .center, verticalAlignment: .center)

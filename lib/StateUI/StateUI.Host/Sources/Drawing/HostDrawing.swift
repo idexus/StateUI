@@ -26,11 +26,11 @@
     /// The numbers the kinds cross as, which a relay switches on.
     private enum Kind {
         static let fillColor: Int32 = 0, strokeColor: Int32 = 1, textColor: Int32 = 2
-        static let strokeWidth: Int32 = 3, fontSize: Int32 = 4, alpha: Int32 = 5
-        static let drawLine: Int32 = 6, drawRectangle: Int32 = 7, drawRoundedRectangle: Int32 = 8
-        static let drawEllipse: Int32 = 9, drawPath: Int32 = 11
+        static let strokeWidth: Int32 = 3, fontSize: Int32 = 4, opacity: Int32 = 5
+        static let strokeLine: Int32 = 6, strokeRectangle: Int32 = 7, strokeRoundedRectangle: Int32 = 8
+        static let strokeEllipse: Int32 = 9, strokePath: Int32 = 11
         static let fillRectangle: Int32 = 12, fillRoundedRectangle: Int32 = 13, fillEllipse: Int32 = 14
-        static let fillPath: Int32 = 16, drawText: Int32 = 17
+        static let fillPath: Int32 = 16, text: Int32 = 17
         static let translate: Int32 = 18, rotate: Int32 = 19, scale: Int32 = 20
         static let saveState: Int32 = 21, restoreState: Int32 = 22
     }
@@ -42,15 +42,15 @@
         case .textColor(let color): colour(Kind.textColor, color)
         case .strokeWidth(let width): record(Kind.strokeWidth, [width])
         case .fontSize(let size): record(Kind.fontSize, [size])
-        case .alpha(let alpha): record(Kind.alpha, [alpha])
-        case .drawLine(let from, let to): record(Kind.drawLine, [from.x, from.y, to.x, to.y])
-        case .drawRectangle(let rect): record(Kind.drawRectangle, Self.numbers(rect))
-        case .drawRoundedRectangle(let rect, let radius): record(Kind.drawRoundedRectangle, Self.numbers(rect) + [radius])
-        case .drawEllipse(let rect): record(Kind.drawEllipse, Self.numbers(rect))
-        case .drawArc(let rect, let start, let end, let clockwise, let closed):
-            path(Kind.drawPath, CanvasArithmetic.arc(
+        case .opacity(let alpha): record(Kind.opacity, [alpha])
+        case .strokeLine(let from, let to): record(Kind.strokeLine, [from.x, from.y, to.x, to.y])
+        case .strokeRectangle(let rect): record(Kind.strokeRectangle, Self.numbers(rect))
+        case .strokeRoundedRectangle(let rect, let radius): record(Kind.strokeRoundedRectangle, Self.numbers(rect) + [radius])
+        case .strokeEllipse(let rect): record(Kind.strokeEllipse, Self.numbers(rect))
+        case .strokeArc(let rect, let start, let end, let clockwise, let closed):
+            path(Kind.strokePath, CanvasArithmetic.arc(
                 in: rect, start: start, end: end, clockwise: clockwise, closed: closed, wedge: false))
-        case .drawPath(let curves): path(Kind.drawPath, curves)
+        case .strokePath(let curves): path(Kind.strokePath, curves)
         case .fillRectangle(let rect): record(Kind.fillRectangle, Self.numbers(rect))
         case .fillRoundedRectangle(let rect, let radius): record(Kind.fillRoundedRectangle, Self.numbers(rect) + [radius])
         case .fillEllipse(let rect): record(Kind.fillEllipse, Self.numbers(rect))
@@ -58,8 +58,8 @@
             path(Kind.fillPath, CanvasArithmetic.arc(
                 in: rect, start: start, end: end, clockwise: clockwise, closed: true, wedge: true))
         case .fillPath(let curves): path(Kind.fillPath, curves)
-        case .drawText(let text, let rect, let horizontal, let vertical):
-            ints += [Kind.drawText, horizontal.rawValue, vertical.rawValue, Int32(strings.count)]
+        case .text(let text, let rect, let horizontal, let vertical):
+            ints += [Kind.text, horizontal.rawValue, vertical.rawValue, Int32(strings.count)]
             numbers += Self.numbers(rect)
             strings.append(text)
         case .translate(let x, let y): record(Kind.translate, [x, y])

@@ -67,18 +67,18 @@ final class UIKitCanvasView: UIView {
 
     private func draw(_ instruction: CanvasInstruction, pen: CanvasPen, in context: CGContext) {
         switch instruction {
-        case .drawLine(let from, let to):
+        case .strokeLine(let from, let to):
             let path = CGMutablePath()
             path.move(to: CGPoint(x: from.x, y: from.y))
             path.addLine(to: CGPoint(x: to.x, y: to.y))
             stroke(path, pen, context)
-        case .drawRectangle(let room): stroke(CGPath(rect: Self.rect(room), transform: nil), pen, context)
-        case .drawRoundedRectangle(let room, let radius): stroke(Self.rounded(room, radius), pen, context)
-        case .drawEllipse(let room): stroke(CGPath(ellipseIn: Self.rect(room), transform: nil), pen, context)
-        case .drawArc(let room, let start, let end, let clockwise, let closed):
+        case .strokeRectangle(let room): stroke(CGPath(rect: Self.rect(room), transform: nil), pen, context)
+        case .strokeRoundedRectangle(let room, let radius): stroke(Self.rounded(room, radius), pen, context)
+        case .strokeEllipse(let room): stroke(CGPath(ellipseIn: Self.rect(room), transform: nil), pen, context)
+        case .strokeArc(let room, let start, let end, let clockwise, let closed):
             stroke(UIKitShapeView.path(CanvasArithmetic.arc(
                 in: room, start: start, end: end, clockwise: clockwise, closed: closed, wedge: false)), pen, context)
-        case .drawPath(let curves): stroke(UIKitShapeView.path(curves), pen, context)
+        case .strokePath(let curves): stroke(UIKitShapeView.path(curves), pen, context)
         case .fillRectangle(let room): fill(CGPath(rect: Self.rect(room), transform: nil), pen, context)
         case .fillRoundedRectangle(let room, let radius): fill(Self.rounded(room, radius), pen, context)
         case .fillEllipse(let room): fill(CGPath(ellipseIn: Self.rect(room), transform: nil), pen, context)
@@ -86,7 +86,7 @@ final class UIKitCanvasView: UIView {
             fill(UIKitShapeView.path(CanvasArithmetic.arc(
                 in: room, start: start, end: end, clockwise: clockwise, closed: true, wedge: true)), pen, context)
         case .fillPath(let curves): fill(UIKitShapeView.path(curves), pen, context)
-        case .drawText(let text, let room, let across, let down): write(text, in: room, across, down, pen, context)
+        case .text(let text, let room, let across, let down): write(text, in: room, across, down, pen, context)
         case .translate(let x, let y): context.translateBy(x: x, y: y)
         case .rotate(let degrees): context.rotate(by: degrees * .pi / 180)
         case .scale(let x, let y): context.scaleBy(x: x, y: y)

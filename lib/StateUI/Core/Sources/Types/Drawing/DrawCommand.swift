@@ -17,15 +17,15 @@ public struct DrawCommand: Equatable, Sendable {
         case textColor = 2
         case strokeWidth = 3
         case fontSize = 4
-        case alpha = 5
+        case opacity = 5
 
         // Outlines.
-        case drawLine = 6
-        case drawRectangle = 7
-        case drawRoundedRectangle = 8
-        case drawEllipse = 9
-        case drawArc = 10
-        case drawPath = 11
+        case strokeLine = 6
+        case strokeRectangle = 7
+        case strokeRoundedRectangle = 8
+        case strokeEllipse = 9
+        case strokeArc = 10
+        case strokePath = 11
 
         // Solid shapes.
         case fillRectangle = 12
@@ -35,7 +35,7 @@ public struct DrawCommand: Equatable, Sendable {
         case fillPath = 16
 
         // Text.
-        case drawText = 17
+        case text = 17
 
         // Where the canvas draws.
         case translate = 18

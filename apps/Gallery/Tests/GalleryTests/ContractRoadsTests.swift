@@ -416,6 +416,30 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = CanvasContract.drawable",
             contract: "_ = CanvasContract.drawing"),
         Road(
+            name: "a line drawn by draw",
+            removed: "_ = Draw.drawLine(x1: 0, y1: 0, x2: 10, y2: 10)",
+            contract: "_ = Draw.strokeLine(x1: 0, y1: 0, x2: 10, y2: 10)"),
+        Road(
+            name: "words drawn by drawText",
+            removed: #"_ = Draw.drawText("Hi", x: 0, y: 0, width: 40, height: 20)"#,
+            contract: #"_ = Draw.text("Hi", x: 0, y: 0, width: 40, height: 20)"#),
+        Road(
+            name: "a drawing's alpha",
+            removed: "_ = Draw.alpha(0.5)",
+            contract: "_ = Draw.opacity(0.5)"),
+        Road(
+            name: "a drawing moved by dx",
+            removed: "_ = Draw.translate(dx: 4, dy: 2)",
+            contract: "_ = Draw.translateBy(x: 4, y: 2)"),
+        Road(
+            name: "a drawing scaled by sx",
+            removed: "_ = Draw.scale(sx: 2, sy: 2)",
+            contract: "_ = Draw.scaleBy(x: 2, y: 2)"),
+        Road(
+            name: "a drawing turned with no label",
+            removed: "_ = Draw.rotate(45)",
+            contract: "_ = Draw.rotate(by: 45)"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

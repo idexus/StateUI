@@ -38,7 +38,7 @@
         case .textColor(let color): text = color
         case .strokeWidth(let width): strokeWidth = max(0, width)
         case .fontSize(let size): fontSize = max(0, size)
-        case .alpha(let value): alpha = min(max(value, 0), 1)
+        case .opacity(let value): alpha = min(max(value, 0), 1)
         case .saveState: saved.append(self)
         case .restoreState:
             guard let last = saved.popLast() else { return true }

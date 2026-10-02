@@ -260,7 +260,7 @@ Canvas {
 
     Draw.textColor(.white)
     Draw.fontSize(15)
-    Draw.drawText(
+    Draw.text(
         "Ready",
         x: 0,
         y: 0,

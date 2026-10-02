@@ -88,15 +88,15 @@ final class GTKCanvasView: GTKPanelView {
 
     private func draw(_ instruction: CanvasInstruction, pen: CanvasPen, on snapshot: OpaquePointer) {
         switch instruction {
-        case .drawLine(let from, let to):
+        case .strokeLine(let from, let to):
             stroke(Self.path(of: [.move(from), .line(to)]), pen, on: snapshot)
-        case .drawRectangle(let room): stroke(Self.rounded(room, radius: 0), pen, on: snapshot)
-        case .drawRoundedRectangle(let room, let radius): stroke(Self.rounded(room, radius: radius), pen, on: snapshot)
-        case .drawEllipse(let room): stroke(Self.oval(room), pen, on: snapshot)
-        case .drawArc(let room, let start, let end, let clockwise, let closed):
+        case .strokeRectangle(let room): stroke(Self.rounded(room, radius: 0), pen, on: snapshot)
+        case .strokeRoundedRectangle(let room, let radius): stroke(Self.rounded(room, radius: radius), pen, on: snapshot)
+        case .strokeEllipse(let room): stroke(Self.oval(room), pen, on: snapshot)
+        case .strokeArc(let room, let start, let end, let clockwise, let closed):
             stroke(Self.path(of: CanvasArithmetic.arc(
                 in: room, start: start, end: end, clockwise: clockwise, closed: closed, wedge: false)), pen, on: snapshot)
-        case .drawPath(let curves): stroke(Self.path(of: curves), pen, on: snapshot)
+        case .strokePath(let curves): stroke(Self.path(of: curves), pen, on: snapshot)
         case .fillRectangle(let room): fill(Self.rounded(room, radius: 0), pen, on: snapshot)
         case .fillRoundedRectangle(let room, let radius): fill(Self.rounded(room, radius: radius), pen, on: snapshot)
         case .fillEllipse(let room): fill(Self.oval(room), pen, on: snapshot)
@@ -104,7 +104,7 @@ final class GTKCanvasView: GTKPanelView {
             fill(Self.path(of: CanvasArithmetic.arc(
                 in: room, start: start, end: end, clockwise: clockwise, closed: true, wedge: true)), pen, on: snapshot)
         case .fillPath(let curves): fill(Self.path(of: curves), pen, on: snapshot)
-        case .drawText(let text, let room, let across, let down):
+        case .text(let text, let room, let across, let down):
             write(text, in: room, horizontal: across, vertical: down, pen: pen, on: snapshot)
         case .translate(let x, let y):
             var by = graphene_point_t(x: Float(x), y: Float(y))

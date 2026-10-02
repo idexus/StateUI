@@ -385,16 +385,16 @@ final class ControlTests: XCTestCase {
                     Draw.strokeWidth(2)
                     Draw.textColor(.white)
                     Draw.fontSize(14)
-                    Draw.alpha(0.9)
+                    Draw.opacity(0.9)
 
-                    Draw.drawLine(x1: 0, y1: 0, x2: 40, y2: 40)
-                    Draw.drawRectangle(x: 0, y: 0, width: 20, height: 10)
-                    Draw.drawRoundedRectangle(x: 0, y: 0, width: 20, height: 10, cornerRadius: 4)
-                    Draw.drawEllipse(x: 0, y: 0, width: 20, height: 20)
-                    Draw.drawArc(
+                    Draw.strokeLine(x1: 0, y1: 0, x2: 40, y2: 40)
+                    Draw.strokeRectangle(x: 0, y: 0, width: 20, height: 10)
+                    Draw.strokeRoundedRectangle(x: 0, y: 0, width: 20, height: 10, cornerRadius: 4)
+                    Draw.strokeEllipse(x: 0, y: 0, width: 20, height: 20)
+                    Draw.strokeArc(
                         x: 0, y: 0, width: 20, height: 20,
                         startAngle: 0, endAngle: 90, clockwise: true, closed: false)
-                    Draw.drawPath("M 0,0 L 10,10 Z")
+                    Draw.strokePath("M 0,0 L 10,10 Z")
 
                     Draw.fillRectangle(x: 0, y: 0, width: 20, height: 10)
                     Draw.fillRoundedRectangle(x: 0, y: 0, width: 20, height: 10, cornerRadius: 4)
@@ -406,14 +406,14 @@ final class ControlTests: XCTestCase {
 
                     // A comma in the text: the string carries its own length,
                     // so it is text and never a separator.
-                    Draw.drawText(
+                    Draw.text(
                         "Hello, world", x: 10, y: 20, width: 80, height: 16,
                         horizontalAlignment: .center, verticalAlignment: .end)
 
                     Draw.saveState()
-                    Draw.translate(dx: 4, dy: 4)
-                    Draw.rotate(45)
-                    Draw.scale(sx: 2, sy: 2)
+                    Draw.translateBy(x: 4, y: 4)
+                    Draw.rotate(by: 45)
+                    Draw.scaleBy(x: 2, y: 2)
                     Draw.restoreState()
                 }
                 .onPressed { _ in }

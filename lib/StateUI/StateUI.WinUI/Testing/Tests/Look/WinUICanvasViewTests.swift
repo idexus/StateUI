@@ -80,7 +80,7 @@ final class WinUICanvasViewTests: XCTestCase {
         let colours = try drawn(width: 100, height: 20, at: [(5, 10), (45, 10), (85, 10), (25, 10)]) {
             Draw.fillColor(Color("#FF0000"))
             Draw.saveState()
-            Draw.translate(dx: 40, dy: 0)
+            Draw.translateBy(x: 40, y: 0)
             Draw.fillColor(Color("#0000FF"))
             Draw.fillRectangle(x: 0, y: 0, width: 10, height: 20)
             Draw.restoreState()
@@ -125,7 +125,7 @@ final class WinUICanvasViewTests: XCTestCase {
         let outline = try drawn(width: 40, height: 40, at: [(20, 1), (20, 20)]) {
             Draw.strokeColor(Color("#0000FF"))
             Draw.strokeWidth(4)
-            Draw.drawEllipse(x: 0, y: 0, width: 40, height: 40)
+            Draw.strokeEllipse(x: 0, y: 0, width: 40, height: 40)
         }
         XCTAssertEqual(outline, [Self.blue, 0])
     }
@@ -136,7 +136,7 @@ final class WinUICanvasViewTests: XCTestCase {
         let set = try drawn(width: 100, height: 20, at: row) {
             Draw.textColor(Color("#000000"))
             Draw.fontSize(16)
-            Draw.drawText("WW", x: 0, y: 0, width: 100, height: 20, horizontalAlignment: .end)
+            Draw.text("WW", x: 0, y: 0, width: 100, height: 20, horizontalAlignment: .end)
         }
         XCTAssertTrue(set[0..<50].allSatisfy { $0 == 0 }, "set to its end, the text leaves the start empty")
         XCTAssertTrue(set[50..<100].contains { $0 != 0 }, "and is written at the end")
@@ -145,7 +145,7 @@ final class WinUICanvasViewTests: XCTestCase {
         let wrapped = try drawn(width: 40, height: 40, at: lines) {
             Draw.textColor(Color("#000000"))
             Draw.fontSize(16)
-            Draw.drawText("WWW WWW WWW", x: 0, y: 0, width: 40, height: 20)
+            Draw.text("WWW WWW WWW", x: 0, y: 0, width: 40, height: 20)
         }
         XCTAssertTrue(wrapped[0..<40].contains { $0 != 0 }, "the first line is written in its box")
         XCTAssertTrue(wrapped[40..<80].allSatisfy { $0 == 0 }, "the lines wrapped past the box are cut")

@@ -17,12 +17,12 @@ final class HostDrawingTests: XCTestCase {
             Draw.fillColor(Color(red: 255, green: 0, blue: 0)),
             Draw.strokeWidth(2),
             Draw.fillRoundedRectangle(x: 1, y: 2, width: 30, height: 40, cornerRadius: 5),
-            Draw.drawArc(x: 0, y: 0, width: 10, height: 20, startAngle: 0, endAngle: 90, clockwise: true, closed: false),
+            Draw.strokeArc(x: 0, y: 0, width: 10, height: 20, startAngle: 0, endAngle: 90, clockwise: true, closed: false),
             Draw.fillArc(x: 0, y: 0, width: 10, height: 20, startAngle: 90, endAngle: 0, clockwise: false),
-            Draw.drawText("one", x: 0, y: 0, width: 50, height: 20, horizontalAlignment: .center),
+            Draw.text("one", x: 0, y: 0, width: 50, height: 20, horizontalAlignment: .center),
             Draw.saveState(),
-            Draw.translate(dx: 3, dy: 4),
-            Draw.drawText("two", x: 5, y: 6, width: 7, height: 8, verticalAlignment: .end),
+            Draw.translateBy(x: 3, y: 4),
+            Draw.text("two", x: 5, y: 6, width: 7, height: 8, verticalAlignment: .end),
             Draw.restoreState(),
         ])
 
@@ -58,7 +58,7 @@ final class HostDrawingTests: XCTestCase {
             short,
             Draw.fillRectangle(x: .infinity, y: 0, width: 1, height: 1),
             untold,
-            Draw.rotate(45),
+            Draw.rotate(by: 45),
         ])
 
         XCTAssertEqual(drawing.ints, [19])
@@ -71,7 +71,7 @@ final class HostDrawingTests: XCTestCase {
     func testAPathCrossesAsItsCurves() throws {
         let data = "M 0 0 L 10 0 A 10 10 0 0 1 20 10 Z"
         let curves = try XCTUnwrap(HostPath(svg: data)).arcsAsCubics
-        let drawing = HostDrawing([Draw.fillPath(data), Draw.drawPath("not a path")])
+        let drawing = HostDrawing([Draw.fillPath(data), Draw.strokePath("not a path")])
 
         XCTAssertEqual(drawing.ints, [16, Int32(curves.count)])
         XCTAssertEqual(Array(drawing.numbers.prefix(6)), [0, 0, 0, 1, 10, 0])

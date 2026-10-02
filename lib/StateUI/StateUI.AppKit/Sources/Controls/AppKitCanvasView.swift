@@ -57,18 +57,18 @@ final class AppKitCanvasView: AppKitHitTestView {
 
     private func draw(_ instruction: CanvasInstruction, pen: CanvasPen, in context: CGContext) {
         switch instruction {
-        case .drawLine(let from, let to):
+        case .strokeLine(let from, let to):
             let path = NSBezierPath()
             path.move(to: NSPoint(x: from.x, y: from.y))
             path.line(to: NSPoint(x: to.x, y: to.y))
             stroke(path, pen)
-        case .drawRectangle(let room): stroke(NSBezierPath(rect: Self.rect(room)), pen)
-        case .drawRoundedRectangle(let room, let radius): stroke(Self.rounded(room, radius), pen)
-        case .drawEllipse(let room): stroke(NSBezierPath(ovalIn: Self.rect(room)), pen)
-        case .drawArc(let room, let start, let end, let clockwise, let closed):
+        case .strokeRectangle(let room): stroke(NSBezierPath(rect: Self.rect(room)), pen)
+        case .strokeRoundedRectangle(let room, let radius): stroke(Self.rounded(room, radius), pen)
+        case .strokeEllipse(let room): stroke(NSBezierPath(ovalIn: Self.rect(room)), pen)
+        case .strokeArc(let room, let start, let end, let clockwise, let closed):
             stroke(Self.path(CanvasArithmetic.arc(
                 in: room, start: start, end: end, clockwise: clockwise, closed: closed, wedge: false)), pen)
-        case .drawPath(let curves): stroke(Self.path(curves), pen)
+        case .strokePath(let curves): stroke(Self.path(curves), pen)
         case .fillRectangle(let room): fill(NSBezierPath(rect: Self.rect(room)), pen)
         case .fillRoundedRectangle(let room, let radius): fill(Self.rounded(room, radius), pen)
         case .fillEllipse(let room): fill(NSBezierPath(ovalIn: Self.rect(room)), pen)
@@ -79,7 +79,7 @@ final class AppKitCanvasView: AppKitHitTestView {
             let path = Self.path(curves)
             path.windingRule = .nonZero
             fill(path, pen)
-        case .drawText(let text, let room, let across, let down):
+        case .text(let text, let room, let across, let down):
             draw(text: text, in: Self.rect(room), horizontal: across, vertical: down, pen: pen)
         case .translate(let x, let y): context.translateBy(x: x, y: y)
         case .rotate(let degrees): context.rotate(by: degrees * .pi / 180)

@@ -27,7 +27,7 @@ final class AndroidCanvasViewTests: XCTestCase {
                 Canvas {
                     Draw.fillColor(.red)
                     Draw.fillRectangle(x: 0, y: 0, width: 15, height: 10)
-                    Draw.translate(dx: 10, dy: 0)
+                    Draw.translateBy(x: 10, y: 0)
                     Draw.fillColor(.blue)
                     Draw.fillRectangle(x: 0, y: 0, width: 10, height: 10)
                 }

@@ -18,20 +18,20 @@
     /// The text's size in points from here.
     case fontSize(Double)
     /// How opaque everything is drawn from here, from nothing to whole.
-    case alpha(Double)
+    case opacity(Double)
     /// Outlines a line between two points.
-    case drawLine(from: Point, to: Point)
+    case strokeLine(from: Point, to: Point)
     /// Outlines a rectangle.
-    case drawRectangle(Rect)
+    case strokeRectangle(Rect)
     /// Outlines a rectangle with its corners rounded by the radius.
-    case drawRoundedRectangle(Rect, radius: Double)
+    case strokeRoundedRectangle(Rect, radius: Double)
     /// Outlines the ellipse a rectangle holds.
-    case drawEllipse(Rect)
+    case strokeEllipse(Rect)
     /// Outlines an arc of the ellipse a rectangle holds, from one angle to another in degrees - closed back to its
     /// start where it says so.
-    case drawArc(Rect, start: Double, end: Double, clockwise: Bool, closed: Bool)
+    case strokeArc(Rect, start: Double, end: Double, clockwise: Bool, closed: Bool)
     /// Outlines a path.
-    case drawPath([HostCurveCommand])
+    case strokePath([HostCurveCommand])
     /// Fills a rectangle.
     case fillRectangle(Rect)
     /// Fills a rectangle with its corners rounded by the radius.
@@ -43,7 +43,7 @@
     /// Fills a path.
     case fillPath([HostCurveCommand])
     /// Writes text in a rectangle, placed across and down it as the alignments say.
-    case drawText(String, in: Rect, horizontal: TextAlignment, vertical: TextAlignment)
+    case text(String, in: Rect, horizontal: TextAlignment, vertical: TextAlignment)
     /// Moves what is drawn from here by a distance.
     case translate(x: Double, y: Double)
     /// Turns what is drawn from here by degrees.
@@ -79,17 +79,17 @@
         case 2: guard let color = values.first, color.color != nil else { return nil }; self = .textColor(color)
         case 3: guard let n = numbers(1) else { return nil }; self = .strokeWidth(n[0])
         case 4: guard let n = numbers(1) else { return nil }; self = .fontSize(n[0])
-        case 5: guard let n = numbers(1) else { return nil }; self = .alpha(n[0])
+        case 5: guard let n = numbers(1) else { return nil }; self = .opacity(n[0])
         case 6:
             guard let n = numbers(4) else { return nil }
-            self = .drawLine(from: Point(x: n[0], y: n[1]), to: Point(x: n[2], y: n[3]))
-        case 7: guard let r = rect() else { return nil }; self = .drawRectangle(r)
-        case 8: guard let r = rect(), let n = numbers(5) else { return nil }; self = .drawRoundedRectangle(r, radius: n[4])
-        case 9: guard let r = rect() else { return nil }; self = .drawEllipse(r)
+            self = .strokeLine(from: Point(x: n[0], y: n[1]), to: Point(x: n[2], y: n[3]))
+        case 7: guard let r = rect() else { return nil }; self = .strokeRectangle(r)
+        case 8: guard let r = rect(), let n = numbers(5) else { return nil }; self = .strokeRoundedRectangle(r, radius: n[4])
+        case 9: guard let r = rect() else { return nil }; self = .strokeEllipse(r)
         case 10:
             guard let r = rect(), let n = numbers(6), let clockwise = flag(6), let closed = flag(7) else { return nil }
-            self = .drawArc(r, start: n[4], end: n[5], clockwise: clockwise, closed: closed)
-        case 11: guard let c = curves() else { return nil }; self = .drawPath(c)
+            self = .strokeArc(r, start: n[4], end: n[5], clockwise: clockwise, closed: closed)
+        case 11: guard let c = curves() else { return nil }; self = .strokePath(c)
         case 12: guard let r = rect() else { return nil }; self = .fillRectangle(r)
         case 13: guard let r = rect(), let n = numbers(5) else { return nil }; self = .fillRoundedRectangle(r, radius: n[4])
         case 14: guard let r = rect() else { return nil }; self = .fillEllipse(r)
@@ -101,7 +101,7 @@
             guard let r = rect(), values.count >= 7, let across = values[4].enumeration, let down = values[5].enumeration,
                   let text = values[6].string
             else { return nil }
-            self = .drawText(
+            self = .text(
                 text, in: r, horizontal: TextAlignment(rawValue: across) ?? .start,
                 vertical: TextAlignment(rawValue: down) ?? .start)
         case 18: guard let n = numbers(2) else { return nil }; self = .translate(x: n[0], y: n[1])
