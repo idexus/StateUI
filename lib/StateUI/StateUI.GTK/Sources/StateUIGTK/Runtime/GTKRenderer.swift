@@ -27,7 +27,8 @@ final class GTKRenderer {
     /// the turn - each element's GTK half a `GTKElement`.
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
-        makeNative: { [unowned self] element in GTKElement(element, host: self) }, log: { GTKRenderer.log.error($0) })
+        makeNative: { [unowned self] element in GTKElement(element, host: self) }, log: { GTKRenderer.log.error($0) },
+        views: { GTKView.liveCount })
 
     /// GTK's part of the acts: the clock, the dialogs, the screen reader, the focus, the kept values.
     private(set) lazy var actToolkit = GTKActToolkit(renderer: self)

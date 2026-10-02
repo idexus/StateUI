@@ -32,7 +32,7 @@ final class AndroidRenderer {
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
         makeNative: { [unowned self] element in AndroidElement(element, host: self) },
-        log: { AndroidRenderer.log.error($0) })
+        log: { AndroidRenderer.log.error($0) }, views: { AndroidView.liveCount })
 
     private let context: JavaObject
 

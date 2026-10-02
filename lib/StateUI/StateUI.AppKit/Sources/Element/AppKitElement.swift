@@ -58,8 +58,16 @@ final class AppKitElement: NSObject, NativeElement {
         super.init()
 
         view = makeView()
+        if let view { Self.views.add(view) }
         drawing = view.map { AppKitViewDrawing($0) }
     }
+
+    /// The views made for elements, held weakly: what outlives its element stays counted.
+    private static let views = NSHashTable<NSView>.weakObjects()
+
+    /// How many views made for elements are alive - what the tally writes and a test counts to see each let go. The
+    /// array AppKit hands back is drained at once, so counting holds no view.
+    static var liveViewCount: Int { autoreleasepool { views.allObjects.count } }
 
     // MARK: - The element's tree, read through its mounted element
 

@@ -49,11 +49,19 @@ final class UIKitElement: NativeElement {
         self.host = host
         controller = makeController()
         view = controller.map(\.view) ?? makeView()
+        if let view { Self.views.add(view) }
         if type == .page { controller = UIKitPageController(page: self) }
         // What StateUI shows takes a press, as a label and a picture of UIKit's do not of themselves.
         view?.isUserInteractionEnabled = true
         drawing = view.map(UIKitViewDrawing.init)
     }
+
+    /// The views made for elements, held weakly: what outlives its element stays counted.
+    private static let views = NSHashTable<UIView>.weakObjects()
+
+    /// How many views made for elements are alive - what the tally writes and a test counts to see each let go. The
+    /// array UIKit hands back is drained at once, so counting holds no view.
+    static var liveViewCount: Int { autoreleasepool { views.allObjects.count } }
 
     // MARK: - The element's tree, read through its mounted element
 

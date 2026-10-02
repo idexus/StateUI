@@ -291,9 +291,9 @@ Set `STATEUI_INSPECT=1` in the host process to emit the same render record as
 diagnostic text from the first pass. Use this for automated runs or a problem
 that happens before the inspector can be opened. `STATEUI_TALLY=1` writes the
 running totals instead: messages applied, controls made and kept, renders, the
-elements alive and, where the host counts them, its native views alive - the
-numbers that tell a page left in memory from one let go. Both go to the standard error, which an Android application sends to
-logcat; `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the
+elements alive and the host's native views alive - the numbers that tell a page
+left in memory from one let go. Both go to the standard error, which an Android
+application sends to logcat; `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the
 shell that runs it to the application:
 
 ```bash

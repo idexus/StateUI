@@ -31,7 +31,7 @@ final class UIKitRenderer {
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
         makeNative: { [unowned self] element in UIKitElement(element, host: self) },
-        log: { UIKitRenderer.log.error($0) })
+        log: { UIKitRenderer.log.error($0) }, views: { UIKitElement.liveViewCount })
 
     /// Every StateUI window with the controller showing it.
     let roster = WindowRoster<UIKitWindowController>()
