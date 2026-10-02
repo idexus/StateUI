@@ -43,8 +43,8 @@ struct PinchSample: SampleContent, ExampleContent {
 
                 // Scale is what changed since the LAST report, so a view being
                 // pinched MULTIPLIES rather than assigns - and nothing here
-                // waits for .started, which a platform need not send.
-                if update.phase == .running {
+                // waits for .began, which a platform need not send.
+                if update.phase == .changed {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
@@ -97,10 +97,10 @@ struct PinchSample: SampleContent, ExampleContent {
                 reports += 1
 
                 // Multiplying needs no scale captured at the start, and that
-                // is what makes it the version to write: .started is not
-                // guaranteed, and a trackpad magnification may send .running
-                // and .completed and nothing else.
-                if update.phase == .running {
+                // is what makes it the version to write: .began is not
+                // guaranteed, and a trackpad magnification may send .changed
+                // and .ended and nothing else.
+                if update.phase == .changed {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
@@ -157,8 +157,8 @@ struct PinchSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The four statuses are not a promise. A trackpad magnification may "
-                + "arrive as .running then .completed, and .started never comes at all. "
-                + "A pinch that only works when it has seen .started works on a phone and "
+                + "arrive as .changed then .ended, and .began never comes at all. "
+                + "A pinch that only works when it has seen .began works on a phone and "
                 + "not on a laptop.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

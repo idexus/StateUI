@@ -53,8 +53,8 @@
 
     /// The scale since the last step of a pinch standing at `scale` in `phase`: 1 as it begins and ends.
     public mutating func step(_ phase: GesturePhase, scale: Double) -> Double {
-        let step = phase == .running && last > 0 ? scale / last : 1
-        last = phase == .running ? scale : 1
+        let step = phase == .changed && last > 0 ? scale / last : 1
+        last = phase == .changed ? scale : 1
         return step
     }
 

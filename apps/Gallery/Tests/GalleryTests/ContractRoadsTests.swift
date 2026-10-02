@@ -344,6 +344,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = ConnectionProfile.wiFi",
             contract: "_ = ConnectionProfile.wifi"),
         Road(
+            name: "a gesture's phases named started to canceled",
+            removed: "_ = GesturePhase.started",
+            contract: "_ = GesturePhase.began"),
+        Road(
             name: "a view composed as a ContentView",
             removed: #"struct Card: ContentView { var content: some View { Text("Total") } }"#,
             contract: #"struct Card: View { var body: some View { Text("Total") } }"#),

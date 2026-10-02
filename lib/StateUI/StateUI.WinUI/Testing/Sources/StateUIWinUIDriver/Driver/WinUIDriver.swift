@@ -135,9 +135,9 @@ final class WinUIDriver: HostDriver {
             view.heardPress(phase: 1, at: Point(x: 100 + offset.x, y: 100 + offset.y))
             view.heardPress(phase: 2, at: Point(x: 100 + offset.x, y: 100 + offset.y))
         case (.pinch(let scale, let point), let view?) where view.hearing.contains(.pinches):
-            view.heard(.pinch(.started, scale: 1, at: point))
-            view.heard(.pinch(.running, scale: scale, at: point))
-            view.heard(.pinch(.completed, scale: 1, at: point))
+            view.heard(.pinch(.began, scale: 1, at: point))
+            view.heard(.pinch(.changed, scale: scale, at: point))
+            view.heard(.pinch(.ended, scale: 1, at: point))
         case (.scroll(let offset), let scroll as WinUIScrollView): scroll.scroller.move(to: offset)
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)

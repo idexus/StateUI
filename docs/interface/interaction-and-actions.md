@@ -82,10 +82,10 @@ ColorBox(.cornflowerBlue)
     .translationX(x)
     .scale(scale)
     .onPanUpdated { update in
-        if update.phase == .running { x = update.totalX }
+        if update.phase == .changed { x = update.totalX }
     }
     .onPinchUpdated { update in
-        if update.phase == .running { scale *= update.scale }
+        if update.phase == .changed { scale *= update.scale }
     }
 ```
 

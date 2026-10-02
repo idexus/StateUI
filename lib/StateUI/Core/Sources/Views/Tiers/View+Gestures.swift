@@ -97,7 +97,7 @@ extension View {
     ///     ColorBox(.cornflowerBlue)
     ///         .translationX(offsetX)
     ///         .onPanUpdated { pan in
-    ///             if pan.phase == .running { offsetX = pan.totalX }
+    ///             if pan.phase == .changed { offsetX = pan.totalX }
     ///         }
     ///
     /// The totals are measured from where the pan began.

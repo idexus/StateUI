@@ -53,14 +53,14 @@ struct PanSample: SampleContent, ExampleContent {
                     .translationY($liveY)
                     .onPanUpdated { update in
                         switch update.phase {
-                        case .running:
+                        case .changed:
                             follow(panX + update.totalX, panY + update.totalY)
-                        case .completed:
+                        case .ended:
                             panX = $liveX.journey.value
                             panY = $liveY.journey.value
-                        case .canceled:
+                        case .cancelled:
                             follow(panX, panY)
-                        case .started:
+                        case .began:
                             break
                         }
                     }
@@ -125,14 +125,14 @@ struct PanSample: SampleContent, ExampleContent {
                     .translationY($liveY)
                     .onPanUpdated { update in
                         switch update.phase {
-                        case .running:
+                        case .changed:
                             follow(panX + update.totalX, panY + update.totalY)
-                        case .completed:
+                        case .ended:
                             panX = $liveX.journey.value
                             panY = $liveY.journey.value
-                        case .canceled:
+                        case .cancelled:
                             follow(panX, panY)
-                        case .started:
+                        case .began:
                             break
                         }
                     }
@@ -191,8 +191,8 @@ struct PanSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("The totals are measured from where the pan BEGAN, not from "
-                + "the last report - which is why the running case adds them to "
-                + "where the view was, and the completed case is what commits "
+                + "the last report - which is why the changed case adds them to "
+                + "where the view was, and the ended case is what commits "
                 + "the move.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

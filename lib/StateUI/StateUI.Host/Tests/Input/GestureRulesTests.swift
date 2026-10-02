@@ -38,10 +38,10 @@ final class GestureRulesTests: XCTestCase {
     /// view, its middle where the toolkit says no point.
     func testAPinchSaysEachStepsScaleSinceTheLast() {
         var pinch = PinchStep()
-        XCTAssertEqual(pinch.step(.started, scale: 1), 1)
-        XCTAssertEqual(pinch.step(.running, scale: 2), 2)
-        XCTAssertEqual(pinch.step(.running, scale: 3), 1.5)
-        XCTAssertEqual(pinch.step(.completed, scale: 3), 1)
+        XCTAssertEqual(pinch.step(.began, scale: 1), 1)
+        XCTAssertEqual(pinch.step(.changed, scale: 2), 2)
+        XCTAssertEqual(pinch.step(.changed, scale: 3), 1.5)
+        XCTAssertEqual(pinch.step(.ended, scale: 3), 1)
         XCTAssertEqual(PinchStep.share(of: Point(x: 50, y: 10), width: 100, height: 40), Point(x: 0.5, y: 0.25))
         XCTAssertEqual(PinchStep.share(of: nil, width: 100, height: 40), Point(x: 0.5, y: 0.5))
     }

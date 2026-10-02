@@ -1742,10 +1742,10 @@ final class CatalogTests: XCTestCase {
         XCTAssertNil(scaled.first?.events["pinchUpdated"])
     }
 
-    /// The pinch works on a platform that never sends `.started`.
+    /// The pinch works on a platform that never sends `.began`.
     ///
-    /// A native trackpad magnification may arrive as `.running` followed by
-    /// `.completed`, with no `.started`. Multiplying by each report's change
+    /// A native trackpad magnification may arrive as `.changed` followed by
+    /// `.ended`, with no `.began`. Multiplying by each report's change
     /// keeps the interaction independent of that optional phase.
     func testThePinchSampleDoesNotWaitForAStatusThatMayNeverCome() throws {
         // The sample owns its state now, so the test goes through a render the
@@ -1758,19 +1758,19 @@ final class CatalogTests: XCTestCase {
 
         // Exactly what the platform sent, in the order it sent it.
         renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
+            .enumeration(GesturePhase.changed.rawValue), .number(1.02), .numbers([0.5, 0.45]),
         ])
         renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.completed.rawValue), .number(1), .numbers([0, 0]),
+            .enumeration(GesturePhase.ended.rawValue), .number(1), .numbers([0, 0]),
         ])
 
         let second = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: second)), 1.02, accuracy: 0.0001,
-                       "the scale did not follow a pinch that never said .started")
+                       "the scale did not follow a pinch that never said .began")
 
         // And a second gesture goes on from where the first left off.
         renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
+            .enumeration(GesturePhase.changed.rawValue), .number(1.02), .numbers([0.5, 0.45]),
         ])
 
         let third = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)

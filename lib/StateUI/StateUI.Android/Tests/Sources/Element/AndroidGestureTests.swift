@@ -92,7 +92,7 @@ final class AndroidGestureTests: XCTestCase {
             let (host, box) = try Self.box {
                 $0.onPinchUpdated { pinch in
                     phases.values.append("\(pinch.phase) \(pinch.scaleOrigin.x) \(pinch.scaleOrigin.y)")
-                    if pinch.phase == .running { scales.values.append(pinch.scale) }
+                    if pinch.phase == .changed { scales.values.append(pinch.scale) }
                 }
             }
 

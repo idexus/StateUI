@@ -130,12 +130,12 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     @objc func pinched(_ recognizer: UIPinchGestureRecognizer) {
         let phase: GesturePhase
         switch recognizer.state {
-        case .began: phase = .started
-        case .changed: phase = .running
-        case .ended, .cancelled, .failed: phase = .completed
+        case .began: phase = .began
+        case .changed: phase = .changed
+        case .ended, .cancelled, .failed: phase = .ended
         default: return
         }
-        let step = pinch.step(phase, scale: phase == .running ? recognizer.scale : 1)
+        let step = pinch.step(phase, scale: phase == .changed ? recognizer.scale : 1)
         let size = view?.bounds.size ?? .zero
         let at = PinchStep.share(of: location(of: recognizer), width: size.width, height: size.height)
         tell(.pinch(phase, scale: step, at: at))

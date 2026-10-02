@@ -62,10 +62,10 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
         // AppKit's translation grows upward in a view drawn from the bottom.
         let down = recognizer.view?.isFlipped == false ? -moved.y : moved.y
         let phase: GesturePhase? = switch recognizer.state {
-        case .began: .started
-        case .changed: .running
-        case .ended: .completed
-        case .cancelled, .failed: .canceled
+        case .began: .began
+        case .changed: .changed
+        case .ended: .ended
+        case .cancelled, .failed: .cancelled
         default: nil
         }
         guard let phase else { return }
@@ -104,10 +104,10 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
 
     private func recognized(_ recognizer: NSMagnificationGestureRecognizer) {
         let phase: GesturePhase? = switch recognizer.state {
-        case .began: .started
-        case .changed: .running
-        case .ended: .completed
-        case .cancelled, .failed: .canceled
+        case .began: .began
+        case .changed: .changed
+        case .ended: .ended
+        case .cancelled, .failed: .cancelled
         default: nil
         }
         guard let phase else { return }

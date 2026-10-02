@@ -36,9 +36,9 @@ extension GTKDriver {
         // zoom would hand it - ✓.
         case .pinch(let scale, let at):
             guard view.hearing.contains(.pinches) else { return false }
-            view.heard(.pinch(.started, scale: 1, at: at))
-            view.heard(.pinch(.running, scale: scale, at: at))
-            view.heard(.pinch(.completed, scale: 1, at: at))
+            view.heard(.pinch(.began, scale: 1, at: at))
+            view.heard(.pinch(.changed, scale: scale, at: at))
+            view.heard(.pinch(.ended, scale: 1, at: at))
         case .hover(let point):
             guard let motion = controllers(.pointer).first else { return false }
             GTKTestHost.emit(motion, "enter", [point.x, point.y])

@@ -21,9 +21,9 @@ member of a closed vocabulary as StateUI's number for it.
 
 `GesturePhase` numbers its cases by StateUI's declaration order, so a
 platform release cannot reinterpret a stored or transported report. A
-platform that reports no distinct beginning starts a gesture at `.running`,
+platform that reports no distinct beginning starts a gesture at `.changed`,
 so a handler reads the values each report carries rather than relying on
-catching `.started`.
+catching `.began`.
 
 ## Swipe directions
 

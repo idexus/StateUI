@@ -451,15 +451,15 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         if device.formFactor == .desktop {
             reader = reader.onPanUpdated { pan in
                 switch pan.phase {
-                case .started:
+                case .began:
                     drags.wrappedValue = offset.projectedValue.journey.value.x
 
-                case .running:
+                case .changed:
                     // The offset is written, not the scroller: the drag is
                     // measured inside the content the scroller would move.
                     offset.projectedValue.journey.snap(to: Point(drags.wrappedValue - pan.totalX, 0))
 
-                case .completed, .canceled:
+                case .ended, .cancelled:
                     let stood = offset.projectedValue.journey.value.x
                     let card = min(max(Int((stood / step).rounded()), 0), count - 1)
 

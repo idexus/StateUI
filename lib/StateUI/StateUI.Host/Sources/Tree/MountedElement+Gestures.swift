@@ -52,21 +52,21 @@ extension MountedElement {
     private func dragged(_ phase: GesturePhase, x: Double, y: Double, in runtime: HostRuntime) {
         let across = channel(.panXChannel)
         let down = channel(.panYChannel)
-        if phase == .started {
+        if phase == .began {
             dragStart = Point(
                 x: across.flatMap(runtime.standingGestureValue(state:)) ?? 0,
                 y: down.flatMap(runtime.standingGestureValue(state:)) ?? 0)
         }
         runtime.performUserTransaction {
-            if phase == .running {
+            if phase == .changed {
                 if let across { runtime.takeGestureValue(dragStart.x + x, state: across) }
                 if let down { runtime.takeGestureValue(dragStart.y + y, state: down) }
             }
-            let moved = phase == .running ? (x, y) : (0, 0)
+            let moved = phase == .changed ? (x, y) : (0, 0)
             send(.panUpdated, [.enumeration(phase.rawValue), .number(moved.0), .number(moved.1)], in: runtime)
         }
 
-        guard phase == .completed, handler(.swiped) != nil else { return }
+        guard phase == .ended, handler(.swiped) != nil else { return }
         let listening = SwipeDirection(rawValue: value(.swipeDirection)?.enumeration ?? SwipeDirection.all.rawValue)
         if let direction = SwipeDirection.swiped(x: x, y: y, listening: listening, threshold: number(.swipeThreshold) ?? 40) {
             send(.swiped, [.enumeration(direction.rawValue)], in: runtime)

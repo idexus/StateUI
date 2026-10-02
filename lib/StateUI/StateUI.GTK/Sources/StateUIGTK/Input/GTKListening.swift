@@ -216,19 +216,19 @@ final class GTKListening {
         connectSignal(UnsafeMutableRawPointer(zoom), "begin", number: number) { (gesture, _: UnsafeMutableRawPointer?, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
-            MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .started, scale: 1) }
+            MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .began, scale: 1) }
         }
         connectSignal(UnsafeMutableRawPointer(zoom), "scale-changed", number: number) { (gesture, scale: Double, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
             MainActor.assumeIsolated {
-                GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .running, scale: scale)
+                GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .changed, scale: scale)
             }
         }
         connectSignal(UnsafeMutableRawPointer(zoom), "end", number: number) { (gesture, _: UnsafeMutableRawPointer?, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
-            MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .completed, scale: 1) }
+            MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .ended, scale: 1) }
         }
         return zoom
     }
@@ -236,7 +236,7 @@ final class GTKListening {
     /// A pinch's step: its scale since the last, and where, as shares of the view's size. Begun, it is claimed,
     /// so no scroller around the view pans with its fingers.
     private func pinched(_ gesture: OpaquePointer?, phase: GesturePhase, scale: Double) {
-        if phase == .started, let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
+        if phase == .began, let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
         let step = pinch.step(phase, scale: scale)
 
         var x = 0.0

@@ -75,13 +75,13 @@ extension AppKitDriver {
             // A quick run of clicks, each told with its place in the run, as AppKit's click recognizer tells them.
             for run in 1...max(count, 1) { native?.tapRecognizer?.clicked(run: run) }
         case (.pan(let offset), _) where native?.panRecognizer != nil:
-            native?.panRecognizer?.dragged(.started, x: 0, y: 0)
-            native?.panRecognizer?.dragged(.running, x: offset.x, y: offset.y)
-            native?.panRecognizer?.dragged(.completed, x: offset.x, y: offset.y)
+            native?.panRecognizer?.dragged(.began, x: 0, y: 0)
+            native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y)
+            native?.panRecognizer?.dragged(.ended, x: offset.x, y: offset.y)
         case (.pinch(let scale, let point), _) where native?.pinchRecognizer != nil:
-            native?.pinchRecognizer?.pinched(.started, scale: 1, at: point)
-            native?.pinchRecognizer?.pinched(.running, scale: scale, at: point)
-            native?.pinchRecognizer?.pinched(.completed, scale: scale, at: point)
+            native?.pinchRecognizer?.pinched(.began, scale: 1, at: point)
+            native?.pinchRecognizer?.pinched(.changed, scale: scale, at: point)
+            native?.pinchRecognizer?.pinched(.ended, scale: scale, at: point)
         case (.scroll(let offset), let scroll as AppKitScrollView):
             // A live scroll: its start, the user's move, and its rest.
             scroll.beginMovementForTesting()

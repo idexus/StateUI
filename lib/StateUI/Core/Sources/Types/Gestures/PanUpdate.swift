@@ -9,7 +9,7 @@
 ///     ColorBox(.cornflowerBlue)
 ///         .translationX(offsetX)
 ///         .onPanUpdated { pan in
-///             if pan.phase == .running { offsetX = pan.totalX }
+///             if pan.phase == .changed { offsetX = pan.totalX }
 ///         }
 ///
 /// One of these arrives per movement, each carrying `phase` and how far the

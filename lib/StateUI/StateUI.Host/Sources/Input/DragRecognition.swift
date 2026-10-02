@@ -52,12 +52,12 @@
         guard let start else { return [] }
 
         moved = Point(x: point.x - start.x, y: point.y - start.y)
-        let running = HeardInput.drag(.running, x: moved.x, y: moved.y)
+        let running = HeardInput.drag(.changed, x: moved.x, y: moved.y)
         if isDragging { return [running] }
         guard distance.isPassed(by: moved) else { return [] }
 
         isDragging = true
-        return [.drag(.started, x: 0, y: 0), running]
+        return [.drag(.began, x: 0, y: 0), running]
     }
 
     /// The press let go, or the platform took it away: the drag's end, where the press was one.
@@ -68,6 +68,6 @@
         }
         guard isDragging else { return nil }
 
-        return .drag(letGo ? .completed : .canceled, x: moved.x, y: moved.y)
+        return .drag(letGo ? .ended : .cancelled, x: moved.x, y: moved.y)
     }
 }
