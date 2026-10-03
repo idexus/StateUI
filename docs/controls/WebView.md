@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 1 ☑️ · 26 ✓</td><td><code>WKWebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 26 ✓</td><td><code>WKWebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 3 –</td><td><code>WebView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>44 ✅ · 3 ✓ · 18 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>45 ✅ · 3 ✓ · 18 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 12 ✓ · 1 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;iframe&gt;</code> (?)</td></tr>
 <tr><td colspan="3">no host yet</td></tr></tbody>
@@ -78,7 +78,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td></td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
 <tr><td colspan="9">GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr></tbody>
 </table>
 
