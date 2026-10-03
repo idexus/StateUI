@@ -51,7 +51,7 @@ itself.
 
 ## A Windows machine: WinUI 3
 
-Last verified 2026-10-02.
+Last verified 2026-10-03.
 
 | | |
 | --- | --- |
@@ -60,7 +60,7 @@ Last verified 2026-10-02.
 | Swift | the swift.org toolchain `swift-6.4-RELEASE` (6.4.0, Asserts), ARM64, with its Embedded Python 3.10.1 for LLDB |
 | C++ | Visual Studio Community 2026 18.10.2, MSVC 14.51, the ARM64 C++ tools |
 | Windows SDK | 10.0.26100 |
-| Editor | VS Code 1.140.0; the StateUI extension 0.5.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.7.20261001 |
+| Editor | VS Code 1.140.0; the StateUI extension 0.5.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.7.20261002 |
 | Node.js | 24.21.0, for building and testing the extension |
 | Git | 2.54.0 |
 
@@ -70,7 +70,7 @@ Last verified 2026-10-02.
 | --- | --- |
 | Windows App SDK | 1.8: `microsoft.windowsappsdk.winui` 1.8.260528001, `foundation` 1.8.260527000, `interactiveexperiences` 1.8.260525001 |
 | C++/WinRT | 3.0.260818.1 |
-| WebView2 | the runtime 154.0.4258.48, for the web view's backend; the SDK package 1.0.3179.45 |
+| WebView2 | the runtime 154.0.4258.53, for the web view's backend; the SDK package 1.0.3179.45 |
 | Architectures | ARM64 heads, built, run and debugged; x64 heads built here and run under Windows' emulation, unattached to a debugger |
 | A deployed head | the Swift runtime of its architecture from the Swift installer's `Redistributables\6.4.0\rtl.shared.{arm64,amd64}.msm`; Visual Studio's app-local C++ runtime 14.51.36231 (`Microsoft.VC145.CRT`) |
 
