@@ -16,7 +16,7 @@ extension GTKDriver {
     func recorded(_ property: Prop, on element: MountedElement, view: GTKView?) throws -> HostValue?? {
         if element.type == .window, property == .windowType || property == .windowValue {
             let kept = try keptWindow(element)
-            return property == .windowType ? .some(.name(kept.kind)) : .some(kept.value.map { .string($0) })
+            return property == .windowType ? .some(kept.kind.map { .name($0) }) : .some(kept.value.map { .string($0) })
         }
         guard let view else { return nil }
         if MountedElement.transformProperties.contains(property) { return .some(Self.transform(property, of: view)) }
@@ -107,8 +107,8 @@ extension GTKDriver {
     private func keptWindow(_ element: MountedElement) throws -> KeptScenes.Window {
         let scenes = element.enclosing(type: .application)?.children.filter { $0.type == .scene } ?? []
         guard let scene = element.enclosing(type: .scene), let sceneIndex = scenes.firstIndex(where: { $0 === scene }),
-              let index = scene.windows.dropFirst().firstIndex(where: { $0 === element }).map({ $0 - 1 })
-        else { throw DriverCannot("find what is kept of a window of no kind of its own") }
+              let index = scene.windows.firstIndex(where: { $0 === element })
+        else { throw DriverCannot("find the scene holding the window") }
         let kept = GTKKeptValues.readScenes(applicationID: "").scenes
         guard kept.indices.contains(sceneIndex), kept[sceneIndex].windows.indices.contains(index) else {
             throw DriverCannot("find the window among the scenes kept")

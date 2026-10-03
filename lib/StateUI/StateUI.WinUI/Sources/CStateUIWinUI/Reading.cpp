@@ -153,7 +153,7 @@ namespace {
                 if (!run) continue;
                 values += first ? "" : "\x1f";
                 if (what == "runSpacings") values += std::to_string(run.CharacterSpacing());
-                else if (run.ReadLocalValue(documents::TextualElement::FontFamilyProperty())
+                else if (run.ReadLocalValue(documents::TextElement::FontFamilyProperty())
                          != xaml::DependencyProperty::UnsetValue()) {
                     values += narrow(run.FontFamily().Source());
                 }

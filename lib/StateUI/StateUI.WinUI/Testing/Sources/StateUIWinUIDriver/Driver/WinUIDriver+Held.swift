@@ -52,7 +52,7 @@ extension WinUIDriver {
         let window = try window(of: element)
         if name == "windowType" || name == "windowValue" {
             let kept = try keptWindow(element)
-            return name == "windowType" ? .name(kept.kind) : kept.value.map { .string($0) }
+            return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
         }
         if name == "title" {
             let length = stateui_winui_window_system_title(window.handle, nil, 0)
@@ -71,12 +71,12 @@ extension WinUIDriver {
         return place < 8 ? .number(values[place].rounded()) : .bool(values[place] == 1)
     }
 
-    /// The window of a kind of its own `element` is, as the host keeps it for the next start.
+    /// The window `element` is, as the host keeps it for the next start.
     private func keptWindow(_ element: MountedElement) throws -> KeptScenes.Window {
         let scenes = element.enclosing(type: .application)?.children.filter { $0.type == .scene } ?? []
         guard let scene = element.enclosing(type: .scene), let sceneIndex = scenes.firstIndex(where: { $0 === scene }),
-              let index = scene.windows.dropFirst().firstIndex(where: { $0 === element }).map({ $0 - 1 })
-        else { throw DriverCannot("find what is kept of a window of no kind of its own") }
+              let index = scene.windows.firstIndex(where: { $0 === element })
+        else { throw DriverCannot("find the scene holding the window") }
         let kept = WinUIPersistence.readScenes().scenes
         guard kept.indices.contains(sceneIndex), kept[sceneIndex].windows.indices.contains(index) else {
             throw DriverCannot("find the window among the scenes kept")
