@@ -13,6 +13,9 @@ import XCTest
 enum TestScene {
     static var scene: UIWindowScene?
 
+    /// Where a scene iOS connects after the tests' own goes: to the host of the test that asked for it.
+    static var connecting: ((UIWindowScene) -> Void)?
+
     /// Where the tests' hosts keep values, apart from the application's own.
     static let preferences = UserDefaults(suiteName: "StateUI.UIKitTests")!
 
@@ -69,6 +72,21 @@ extension UIKitRenderer {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
             runtime.pump.turn()
             layOut()
+        }
+    }
+
+    /// Closes every window standing in a scene other than the tests' own, the tests' scene brought in front first: an
+    /// application left with no window in front goes to the background, where iOS stops it, and the run with it.
+    func closeTheOtherScenes() {
+        TestScene.connecting = nil
+        ownsScenes = false
+        guard let scene = TestScene.scene else { return }
+        UIApplication.shared.activateSceneSession(for: UISceneSessionActivationRequest(session: scene.session))
+        for _ in 0..<500 where scene.activationState != .foregroundActive {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+        }
+        for (_, controller) in roster.windows where controller.window?.windowScene !== scene {
+            controller.close()
         }
     }
 

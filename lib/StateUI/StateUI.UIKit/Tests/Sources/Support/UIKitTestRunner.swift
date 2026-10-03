@@ -106,11 +106,16 @@ final class UIKitTestApplicationDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-/// The first scene iOS connects is the one the tests' windows stand in; the run begins with it.
+/// The first scene iOS connects is the one the tests' windows stand in; the run begins with it. A later one goes to
+/// the test that asked for it; one no test asked for - kept from an earlier run - is let go.
 @MainActor
 final class UIKitTestSceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options: UIScene.ConnectionOptions) {
-        guard let scene = scene as? UIWindowScene, TestScene.scene == nil else { return }
-        UIKitTestRunner.begin(in: scene)
+        guard let scene = scene as? UIWindowScene else { return }
+        guard TestScene.scene != nil else { return UIKitTestRunner.begin(in: scene) }
+        guard let connecting = TestScene.connecting else {
+            return UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
+        }
+        connecting(scene)
     }
 }
