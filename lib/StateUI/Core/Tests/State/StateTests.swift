@@ -83,34 +83,26 @@ private struct Shelf: View {
 }
 
 /// A page whose state is read BESIDE its content - the title hangs off the
-/// page, not under it - written into the page's session as it comes into the
-/// tree and again whenever the query moves, while the view on the bar it
+/// page, not under it - said from the query, while the view on the bar it
 /// declares holds the query's own binding.
 private struct QueryPage: View {
-    @Environment private var page: PageSession
     @State var query = ""
 
     var body: some View {
         Text(query)
             .titleView { SearchField($query).placeholder("Type here") }
-            .onCreated { page.title = "Results: \(query)" }
-            .onChanged(query) { page.title = "Results: \(query)" }
+            .title("Results: \(query)")
     }
 }
 
-/// A page whose title is written from what it was given - as it comes into the
-/// tree, and again when that moves - and written nil once it has held a value:
-/// the shape EVERY optional property of a page and a window has,
-/// `title.map { … }`, and the one whose clearing must not take the state under
-/// it down.
+/// A page whose view names it from what it was given, and names it nothing once it has: the title goes, and the
+/// counter under it - the same view either way - keeps its state.
 private struct TitledPage: View {
-    @Environment private var page: PageSession
     let titled: Bool
 
     var body: some View {
-        Counter()
-            .onCreated { page.title = titled ? "Named" : nil }
-            .onChanged(titled) { page.title = titled ? "Named" : nil }
+        let counter = ModifiedContent(node: Counter().node)
+        return titled ? ModifiedContent(node: counter.title("Named").node) : counter
     }
 }
 

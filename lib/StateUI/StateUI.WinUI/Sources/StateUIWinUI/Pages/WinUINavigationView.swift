@@ -16,11 +16,11 @@ final class WinUINavigationView: WinUILayoutView {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        SingleChildArithmetic.size(of: items.last, padding: Insets(0), width: width)
+        SingleChildArithmetic.size(of: items.last, width: width)
     }
 
     override func arrange(in bounds: Rect) {
         guard let page = items.last else { return }
-        page.view.layout(SingleChildArithmetic.place(of: page, in: bounds, padding: Insets(0), direction: direction))
+        page.view.layout(SingleChildArithmetic.place(of: page, in: bounds, direction: direction))
     }
 }

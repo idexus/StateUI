@@ -89,9 +89,6 @@ final class RenderedNode {
     /// What `.onDestroying` runs as it leaves: its last build's closures.
     var destroying: [EventHandler] = []
 
-    /// What the element holds for its life, where it asked for one.
-    var session: AnyObject?
-
     /// The numbers its engines are registered under, in written order; the closures
     /// live on the board.
     var engines: [Int] = []
@@ -99,6 +96,9 @@ final class RenderedNode {
     /// Whether its sizes arrive at once because its layout is measured - kept for
     /// the clean walk.
     var sizesArrive = false
+
+    /// What the view a page shows says of its page, for the page to take on every description of it.
+    var pageValues: PageValues?
 
     /// The properties driven to a state, as the host was told them.
     var driven: [Prop: StateEntry] = [:]

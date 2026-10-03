@@ -108,35 +108,32 @@
     }
 }
 
-/// A page that writes its page's and its window's sessions - a title, a size - as it is made and
-/// again whenever what it writes changes, over words and what stands beside them.
-public struct SessionPage: View {
+/// A page that writes its window's session - a title, a size - as it is made and again whenever what it writes
+/// changes, over words and what stands beside them.
+public struct WindowSessionPage: View {
     /// What stands beside its words.
     let beside: [any View]
 
-    /// What it writes, said as words: a change in them writes the sessions again.
+    /// What it writes, said as words: a change in them writes the session again.
     let key: String
 
     /// What it writes.
-    let write: @Sendable (PageSession, WindowSession) -> Void
+    let write: @Sendable (WindowSession) -> Void
 
-    @Environment private var page: PageSession
     @Environment private var window: WindowSession
 
-    /// A page writing its sessions as `write` says - again whenever `key` changes - `beside` its words.
-    public init(
-        beside: [any View] = [], key: String = "", _ write: @escaping @Sendable (PageSession, WindowSession) -> Void
-    ) {
+    /// A page writing its window's session as `write` says - again whenever `key` changes - `beside` its words.
+    public init(beside: [any View] = [], key: String = "", _ write: @escaping @Sendable (WindowSession) -> Void) {
         self.beside = beside
         self.key = key
         self.write = write
     }
 
     public var body: some View {
-        let (write, page, window) = (self.write, self.page, self.window)
+        let (write, window) = (self.write, self.window)
         return VStack { [Text("Page")] + beside }
-            .onCreated { write(page, window) }
-            .onChanged(key) { write(page, window) }
+            .onCreated { write(window) }
+            .onChanged(key) { write(window) }
     }
 }
 

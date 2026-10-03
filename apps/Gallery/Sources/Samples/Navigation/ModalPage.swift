@@ -9,9 +9,6 @@ struct ModalPage: View {
     /// is a member of, exactly as a pushed page pops itself.
     let nav: Navigation
 
-    /// The page itself.
-    @Environment private var page: PageSession
-
     var body: some View {
         VStack {
             SectionTitle("Over everything")
@@ -48,9 +45,6 @@ struct ModalPage: View {
         .spacing(16)
         .padding(24)
         .verticalAlignment(.center)
-        .onCreated {
-            page.title = "Presented"
-            page.background = Palette.surface
-        }
+        .galleryPage("Presented")
     }
 }

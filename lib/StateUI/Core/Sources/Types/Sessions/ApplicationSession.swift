@@ -12,10 +12,9 @@
 ///
 /// A session is one opening of something declared: the application from its
 /// start to the end of its process, a scene from its first window opening to
-/// its last closing, a window from `.created` to `.destroying`, a content page
-/// for as long as its element lives. Each is in the environment of everything
-/// under it - `ApplicationSession`, `SceneSession`, `WindowSession`,
-/// `PageSession` - so a view acts on the one it is in, from a handler, an
+/// its last closing, a window from `.created` to `.destroying`. Each is in the
+/// environment of everything under it - `ApplicationSession`, `SceneSession`,
+/// `WindowSession` - so a view acts on the one it is in, from a handler, an
 /// engine or a task alike.
 ///
 /// Design: docs/design/types/sessions.md#one-opening-of-something-declared

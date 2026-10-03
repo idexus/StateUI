@@ -114,9 +114,7 @@
         .margin,
     ]
 
-    private static let contentPageProperties: Set<Prop> = [
-        .background, .padding,
-    ]
+    private static let contentPageProperties: Set<Prop> = [.background]
 
     private static let stackProperties: Set<Prop> = [.padding, .spacing]
 

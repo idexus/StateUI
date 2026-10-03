@@ -32,7 +32,6 @@ struct SplitViewSample: SampleContent, ExampleContent {
             let listsHiddenRow: Bool
 
             @Environment private var device: DeviceInfo
-            @Environment private var page: PageSession
 
             var body: some View {
                 VStack {
@@ -64,7 +63,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
                     // its own - so a phase change builds that and nothing else.
                     WindowPhaseLog(log: log)
                 }
-                .onCreated { page.title = "StateUI" }
+                .title("StateUI")
             }
         }
 

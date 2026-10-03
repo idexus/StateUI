@@ -39,7 +39,7 @@ enum Palette {
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
     /// Text that reads on `brand`, and on the bar. White in both, which is what
-    /// lets one toolbar icon be right on both - see `PageSession.gallery` in
+    /// lets one toolbar icon be right on both - see `View.galleryPage` in
     /// Gallery/GalleryPage.swift.
     static let onBrand = AppColors.white
 

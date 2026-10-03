@@ -64,8 +64,6 @@ extension UIKitElement {
                 case .avoidsSafeArea:
                     // A page's content standing against the safe area otherwise: its page stands again.
                     (parent?.controller as? UIKitPageController)?.view.setNeedsLayout()
-                case .padding where type == .page:
-                    (view as? UIKitSingleChildView)?.padding = element.insets(.padding)
                 default: break
                 }
             }

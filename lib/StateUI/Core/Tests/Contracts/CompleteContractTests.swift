@@ -213,13 +213,13 @@ final class CompleteContractTests: XCTestCase {
 
     /// The sources that write for an element they neither build nor extend:
     /// the window's properties, which the scenes and the window's session
-    /// write, the page's, which its session keeps, the placed layout's, a
+    /// write, the page's, which the view a page shows says, the placed layout's, a
     /// composition over a `ZStack` placing its children, and every
     /// visual element's style key, which the style sheet reads and takes off.
     private static let describing: [String: [String]] = [
         "SceneElement.swift": ["Window"],
         "WindowSession.swift": ["Window"],
-        "PageSession.swift": ["Page"],
+        "View+PageValues.swift": ["Page"],
         "PlacedLayout.swift": ["ZStack"],
         "StyleSheet.swift": ["VisualElement"],
     ]

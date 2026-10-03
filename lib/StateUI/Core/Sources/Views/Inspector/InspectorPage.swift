@@ -9,13 +9,10 @@ struct InspectorPage: View {
     /// The window it is the page of.
     @Environment private var window: WindowSession
 
-    /// The page itself.
-    @Environment private var page: PageSession
-
     var body: some View {
         InspectorView(scene: scene, place: .window, wide: true)
+            .pageBackground(Look.ground)
             .onCreated {
-                page.background = Look.ground
                 window.title = "Inspector"
                 window.width = 900           // the renders and the one chosen, side by side
                 window.height = 760          // a tree of some depth

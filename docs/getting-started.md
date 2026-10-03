@@ -175,8 +175,9 @@ Application -> Scene -> WindowGroup, Window -> View
 ```
 
 Each declares what it is made of in its `body`. Runtime properties such as
-styles, window title, geometry, and page title belong to session objects in
-the environment.
+styles, window title and geometry belong to session objects in the
+environment; what the page is - its title - the view it shows says by
+modifier.
 
 ```swift
 struct NotesApp: Application {
@@ -186,7 +187,6 @@ struct NotesApp: Application {
 }
 
 struct NotesPage: View {
-    @Environment private var page: PageSession
     @State private var note = ""
 
     var body: some View {
@@ -196,7 +196,7 @@ struct NotesPage: View {
         }
         .spacing(12)
         .padding(24)
-        .onCreated { page.title = "Notes" }
+        .title("Notes")
     }
 }
 ```

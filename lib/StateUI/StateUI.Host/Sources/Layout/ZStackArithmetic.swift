@@ -34,7 +34,7 @@
         return items.map { item in
             guard item.isShown else { return nil }
             let area = rectangle(of: item.values.area, in: content)
-            let place = SingleChildArithmetic.place(of: item, in: area, padding: Insets(0), direction: .leftToRight)
+            let place = SingleChildArithmetic.place(of: item, in: area, direction: .leftToRight)
             return direction.places(place, in: room)
         }
     }

@@ -4,8 +4,6 @@
 /// An action in the page's native navigation or toolbar surface.
 ///
 ///     struct NotesPage: View {
-///         @Environment private var page: PageSession
-///
 ///         var body: some View {
 ///             VStack { … }
 ///                 .toolbar {
@@ -17,7 +15,7 @@
 ///                         .isDestructive(true)
 ///                         .onClicked { delete() }
 ///                 }
-///                 .onCreated { page.title = "Notes" }
+///                 .title("Notes")
 ///         }
 ///     }
 ///

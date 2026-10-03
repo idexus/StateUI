@@ -24,9 +24,6 @@ struct HomePage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
-
     let catalog: Catalog
 
     /// Where the gallery is - a card switches the section.
@@ -338,7 +335,7 @@ struct HomePage: View {
         .opacity($shown)
         // No home button: this is it. The inspector stays, as it does on
         // every page - what each render cost is a question about any of them.
-        .onCreated { page.gallery("Home") }
+        .galleryPage("Home")
     }
 
     /// Where the page is in coming in.

@@ -76,7 +76,10 @@ extension UIKitElement {
             if let controller { chrome.show(on: controller.navigationItem) }
             (controller as? UIKitTabBarController)?.showsTheStacksBar = element.showsTheStacksBar
             children.forEach { $0.composeChrome() }
-        case .navigationStack, .splitView:
+        case .navigationStack:
+            (controller as? UIKitNavigationController)?.showTopsBar()
+            children.forEach { $0.composeChrome() }
+        case .splitView:
             children.forEach { $0.composeChrome() }
         default:
             break

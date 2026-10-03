@@ -30,9 +30,6 @@ struct MenuPage: View {
     /// The device's facts, for the line at the bottom.
     @Environment private var device: DeviceInfo
 
-    /// The page itself.
-    @Environment private var page: PageSession
-
     /// The window the menu stands in - whether the desktop shows through it.
     @Environment private var window: WindowSession
 
@@ -59,15 +56,11 @@ struct MenuPage: View {
         // navigation bar beside it does. Every LAYOUT insets itself, so the
         // header says it too.
         .avoidsSafeArea(.none)
-        .onCreated {
-            page.title = "StateUI"
-
-            // The image hosts use for the pane's navigation affordance.
-            page.icon = "nav_menu_dark.png"
-            page.background = surface
-        }
+        .title("StateUI")
+        // The image hosts use for the pane's navigation affordance.
+        .icon("nav_menu_dark.png")
         // A window the desktop shows through shows it through the menu as well.
-        .onChanged(window.isTranslucent) { page.background = surface }
+        .pageBackground(surface)
     }
 
     /// What the menu is drawn on: the sidebar's own tone - and, where the

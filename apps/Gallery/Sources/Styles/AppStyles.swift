@@ -13,7 +13,7 @@
 //   - No font family. The gallery ships no fonts, and naming a family that is
 //     not installed is a way to get a different font on every platform.
 //   - Nothing a Style cannot NAME: a shadow is a property of the view that
-//     casts it, a page's appearance is its `PageSession`'s, and the bars of
+//     casts it, a page's appearance is what its view says of it, and the bars of
 //     NavigationStack and TabView are written on the arrangement itself -
 //     see MainPage.detail.
 

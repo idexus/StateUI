@@ -332,9 +332,9 @@ final class MountedTreeTests: XCTestCase {
     @MainActor
     func testFourSidesAreReadAsTheTreeGivesThem() throws {
         let (tree, _) = Self.tree(viewless: [])
-        var page = HostPatch(id: .manual("page"), type: .page)
-        page.properties = [.padding: .numbers([1, 2, 3, 4]), .margin: .numbers([5, 6])]
-        tree.apply(page, complete: true)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.properties = [.padding: .numbers([1, 2, 3, 4]), .margin: .numbers([5, 6])]
+        tree.apply(stack, complete: true)
         let element = try XCTUnwrap(tree.root)
 
         XCTAssertEqual(element.insets(.padding), Insets(left: 1, top: 2, right: 3, bottom: 4))
@@ -366,6 +366,32 @@ final class MountedTreeTests: XCTestCase {
 
         let bar = tree.present(states: [:], properties: [barsMount: [.barBackgroundColor]])
         XCTAssertTrue(bar.windowChrome, "a bar's colour is the window's chrome")
+    }
+
+    /// A value said from a state crosses as lanes and is read as the type its member declares: every Boolean member
+    /// of every contract as a Boolean, every colour as a colour, every closed vocabulary as its case.
+    @MainActor
+    func testAStatesLanesReadAsTheTypeTheirMemberDeclares() {
+        let booleans: Set = [ObjectIdentifier(Bool.self), ObjectIdentifier(Bool?.self)]
+        let colours: Set = [ObjectIdentifier(Color.self), ObjectIdentifier(Color?.self)]
+
+        for contract in LibraryContracts.elements.flatMap({ $0.worn }) {
+            for member in contract.members {
+                guard let type = declaredType(of: member) else { continue }
+                let named = "\(contract.name).\(member.name)"
+                if booleans.contains(type) {
+                    XCTAssertEqual(MountedElement.value(of: Prop(member.name), lanes: [0]), .bool(false), named)
+                }
+                if colours.contains(type) {
+                    XCTAssertEqual(
+                        MountedElement.value(of: Prop(member.name), lanes: [1, 0, 0, 1]),
+                        .color(red: 255, green: 0, blue: 0, alpha: 255), named)
+                }
+                if declaresAVocabulary(member) {
+                    XCTAssertEqual(MountedElement.value(of: Prop(member.name), lanes: [1]), .enumeration(1), named)
+                }
+            }
+        }
     }
 
     /// A grid's and a ZStack's children stand in the order they are drawn: by `zIndex`, ties in the order
@@ -733,4 +759,16 @@ private struct TwoScenes: Application {
         WindowGroup { Text("first") }
         Window(WindowType("tree.second")) { Text("second") }
     }
+}
+
+/// Whether a property member's value is a closed vocabulary, crossing as its case's number.
+private func declaresAVocabulary(_ member: any ContractMember) -> Bool {
+    guard let property = member as? any PropertyMember else { return false }
+    return property.valueType is any RawRepresentable.Type
+}
+
+/// The type a property member's value is declared as; nil for any other member.
+private func declaredType(of member: any ContractMember) -> ObjectIdentifier? {
+    guard let property = member as? any PropertyMember else { return nil }
+    return ObjectIdentifier(property.valueType)
 }

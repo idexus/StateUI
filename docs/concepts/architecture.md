@@ -288,13 +288,13 @@ They do not await, call controls, or create another thread-bound UI model.
 The structural path is:
 
 ```text
-Application -> Scene -> Window -> Page -> View
+Application -> Scene -> WindowGroup, Window -> View
 ```
 
-Each structural protocol has one composition property. A window's page is
-any `Page` - every view is one, and so is each arrangement - and the page a
-container puts a view on holds that view's `PageSession`. Runtime values
-belong to identity-bearing sessions and are obtained with `@Environment`.
+Each structural protocol has one composition property. A window shows a view,
+which stands on a page - an arrangement is the page itself - and says what
+that page is by modifier. Runtime values belong to identity-bearing sessions
+and are obtained with `@Environment`.
 
 ```swift
 struct HandbookApp: Application {
@@ -304,11 +304,9 @@ struct HandbookApp: Application {
 }
 
 struct HandbookPage: View {
-    @Environment private var page: PageSession
-
     var body: some View {
         Text("Hello from StateUI")
-            .onCreated { page.title = "StateUI" }
+            .title("StateUI")
     }
 }
 ```

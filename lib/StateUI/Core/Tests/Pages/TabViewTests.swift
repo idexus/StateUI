@@ -18,17 +18,15 @@ private enum Tab: Hashable, CaseIterable {
     case settings
 }
 
-/// A tab's page, which says its own caption and picture - written into its
-/// session as it comes into the tree, which is the message that brings it.
+/// A tab's page, whose view says its caption and picture - in the message that
+/// brings it.
 private struct TabPage: View {
-    @Environment private var page: PageSession
     let tab: Tab
 
     var body: some View {
-        ModifiedContent(node: label("\(tab)")).onCreated {
-            page.title = "\(tab)"
-            page.icon = ImageSource("\(tab).png")
-        }
+        ModifiedContent(node: label("\(tab)"))
+            .title("\(tab)")
+            .icon(ImageSource("\(tab).png"))
     }
 }
 
@@ -47,7 +45,7 @@ final class TabViewTests: XCTestCase {
     // MARK: - What goes out
 
     /// The tabs ARE the children, in order, each identified by its own value -
-    /// and each arrives with the caption its page wrote on the way in.
+    /// and each arrives with the caption its page's view says.
     func testTheTabsAreTheChildrenOfTheNode() {
         let selection = State<Tab>(.home)
         let patch = Renders().settled(tabs(selection.projectedValue).node)
@@ -60,8 +58,7 @@ final class TabViewTests: XCTestCase {
     }
 
     /// A tab's caption and its picture are the PAGE's, which is where a host
-    /// reads them from - so a page written for a tab says them itself, into
-    /// its session as it comes into the tree.
+    /// reads them from - so the view a tab shows says them itself.
     func testATabsCaptionAndIconAreThePages() {
         let selection = State<Tab>(.home)
         let patch = Renders().settled(tabs(selection.projectedValue).node)
@@ -153,13 +150,13 @@ final class TabViewTests: XCTestCase {
     }
 
     /// The ordinary shape of a tabbed application: every tab holds a stack of
-    /// its own, and the tab's caption is the STACK's, given by modifier since a
-    /// constructed page has no properties to answer with.
-    func testATabCanHoldAWholeStack() {
+    /// its own, and the tab's caption is the STACK's - which, standing where a
+    /// page stands, takes the title and the icon written on it.
+    func testATabCanHoldAWholeStack() throws {
         let selection = State<Tab>(.home)
         let path = State<[Int]>([1])
 
-        let node = TabView([Tab.home]) { _ in
+        let patch = Renders().render(TabView([Tab.home]) { _ in
             NavigationStack(path.projectedValue) {
                 TabPage(tab: .home)
             } destination: { _ in
@@ -169,13 +166,12 @@ final class TabViewTests: XCTestCase {
             .icon("house.png")
         }
         .selection(selection.projectedValue)
-        .node
-        .built
+        .node)
 
-        let stack = node.children[0].built
+        let stack = try XCTUnwrap(patch.children.first)
 
         XCTAssertEqual(stack.type, "NavigationStack")
-        XCTAssertEqual(stack.id, "home", "the tab names the page in it")
+        XCTAssertEqual(stack.id, .manual("home"), "the tab names the page in it")
         XCTAssertEqual(stack.props["title"], .string("Home"))
         XCTAssertEqual(stack.props["icon"], ImageSource("house.png").propValue)
         XCTAssertEqual(stack.children.count, 2, "the root and the one route")
@@ -258,7 +254,7 @@ final class TabViewTests: XCTestCase {
         .node
 
         // As the message that brings the tabs carries them - with the caption
-        // and picture each page wrote into its session on the way in.
+        // and picture each page's view says.
         let tabs = Renders().settled(tree)
 
         XCTAssertEqual(tabs.props, [

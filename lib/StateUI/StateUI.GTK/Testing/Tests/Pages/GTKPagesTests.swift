@@ -382,34 +382,24 @@ struct TitledPage: View {
     var hidesBar = false
     var hidesBack = false
 
-    @Environment private var page: PageSession
-
     var body: some View {
-        let log = self.log
-        let title = self.title
-        let page = self.page
-
-        return Text(title)
+        Text(title)
             .toolbar { actions }
-            .onCreated {
-                page.title = title
-                if hidesBar { page.showsNavigationBar = false }
-                if hidesBack { page.showsBackButton = false }
-            }
-            .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
+            .title(title)
+            .showsNavigationBar(!hidesBar)
+            .showsBackButton(!hidesBack)
+            .loggingPhases(log, as: title)
     }
 }
 
 /// A page whose title view is a search field.
 private struct SearchingPage: View {
-    @Environment private var page: PageSession
     @State private var query = ""
 
     var body: some View {
-        let page = self.page
         let query = $query
         return Text("Results")
             .titleView { TextField(query).placeholder("Search") }
-            .onCreated { page.title = "Search" }
+            .title("Search")
     }
 }

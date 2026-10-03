@@ -32,10 +32,7 @@ final class UIKitNavigationController: UINavigationController, UINavigationContr
 
     /// Shows `pages`, the last on top: moving there as a push or a pop where one page came or went.
     func setPages(_ pages: [UIViewController], animated: Bool) {
-        defer {
-            let hidden = !(viewControllers.last.map(showsBar) ?? true)
-            if hidden != isNavigationBarHidden { setNavigationBarHidden(hidden, animated: false) }
-        }
+        defer { showTopsBar() }
         guard !pages.elementsEqual(self.pages, by: ===) || !viewControllers.elementsEqual(pages, by: ===) else {
             return
         }
@@ -43,6 +40,12 @@ final class UIKitNavigationController: UINavigationController, UINavigationContr
             && zip(pages, viewControllers).allSatisfy { $0 === $1 }
         self.pages = pages
         setViewControllers(pages, animated: animated && moved && view.window != nil)
+    }
+
+    /// Shows the bar or hides it, as the page on top says.
+    func showTopsBar() {
+        let hidden = !(viewControllers.last.map(showsBar) ?? true)
+        if hidden != isNavigationBarHidden { setNavigationBarHidden(hidden, animated: false) }
     }
 
     func navigationController(

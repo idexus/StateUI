@@ -77,7 +77,6 @@ enum GTKRealization {
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
-        .complete("Page", "padding"),
         .notPlanned("Picker", "closed", reason: "GTK's drop-down tells no one its list opened or closed."),
         .notPlanned("Picker", "horizontalTextAlignment", reason: "GTK's drop-down draws its choice with the factory "
             + "that draws its list: the choice alone takes no alignment without redrawing GNOME's list."),

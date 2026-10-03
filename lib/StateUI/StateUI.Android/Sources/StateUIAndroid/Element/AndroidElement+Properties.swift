@@ -63,8 +63,6 @@ extension AndroidElement {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
                 case .background: view.setBackground(value(.background))
-                case .padding where type == .page:
-                    (view as? AndroidSingleChildView)?.padding = element.insets(.padding)
                 default: break
                 }
             }

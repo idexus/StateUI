@@ -18,44 +18,36 @@ private enum Route: Hashable {
     case level(Int)
 }
 
-/// The root, named as it comes into the tree - which is the message that brings
-/// it, so a stack arrives with its titles.
+/// The root, named by its view - in the message that brings it, so a stack
+/// arrives with its titles.
 private struct Root: View {
-    @Environment private var page: PageSession
-
     var body: some View {
-        ModifiedContent(node: label("home")).onCreated { page.title = "Home" }
+        ModifiedContent(node: label("home")).title("Home")
     }
 }
 
 /// A pushed page, named for the route it stands for.
 private struct Destination: View {
-    @Environment private var page: PageSession
     let name: String
 
     var body: some View {
-        ModifiedContent(node: label(name)).onCreated { page.title = name }
+        ModifiedContent(node: label(name)).title(name)
     }
 }
 
-/// A pushed page that asks the STACK for everything a page can ask of it,
-/// written into its session as it comes into the tree.
+/// A pushed page whose view asks the STACK for everything a page can ask of it.
 private struct DressedDestination: View {
-    @Environment private var page: PageSession
     let depth: Int
 
     var body: some View {
         ModifiedContent(node: label("level \(depth)"))
             .titleView { ModifiedContent(node: label("on the bar")) }
-            .onCreated {
-                page.title = "Level \(depth)"
-
-                // Non-default values prove that the host must apply the branch;
-                // an assertion agreeing with a default could pass without it.
-                page.showsNavigationBar = false
-                page.showsBackButton = false
-                page.backButtonTitle = "Up"
-            }
+            .title("Level \(depth)")
+            // Non-default values prove that the host must apply the branch; an assertion agreeing with a default
+            // could pass without it.
+            .showsNavigationBar(false)
+            .showsBackButton(false)
+            .backButtonTitle("Up")
     }
 }
 
@@ -237,7 +229,7 @@ final class NavigationStackTests: XCTestCase {
         .node
 
         // As the message that brings the pages carries them - with what each
-        // wrote into its session on the way in.
+        // one's view says of it.
         let stack = Renders().settled(tree)
         let dressed = ElementID.manual("1/level(2)")
 
@@ -247,7 +239,7 @@ final class NavigationStackTests: XCTestCase {
         XCTAssertEqual(stack.eventNames, ["popped"])
         XCTAssertEqual(stack.arrangement, [.manual("root"), .manual("0/detail(\"one\")"), dressed])
         XCTAssertEqual(stack.children.map { $0.props["title"] }, [.string("Home"), .string("one"), .string("Level 2")])
-        XCTAssertTrue(stack.children.allSatisfy { $0.eventNames == HostPatch.pageEvents })
+        XCTAssertTrue(stack.children.allSatisfy { $0.eventNames.isEmpty }, "a page hears what its view hears: nothing here")
 
         let page = try XCTUnwrap(stack.at(dressed))
         XCTAssertEqual(page.props["backButtonTitle"], .string("Up"))

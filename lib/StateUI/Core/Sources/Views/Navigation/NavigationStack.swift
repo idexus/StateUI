@@ -28,12 +28,11 @@
 ///
 ///     struct HomePage: View {
 ///         @Binding var path: [Route]
-///         @Environment private var page: PageSession
 ///
 ///         var body: some View {
 ///             Button("Open the first")
 ///                 .onClicked { path.append(.details("first")) }
-///                 .onCreated { page.title = "Home" }
+///                 .title("Home")
 ///         }
 ///     }
 ///
@@ -64,7 +63,7 @@
 /// `.onChanged(path)` observes every committed arrival and departure. The
 /// title on the bar belongs to the top page; `.title` and `.icon` on the
 /// stack name the whole stack where another container presents it.
-public struct NavigationStack: ElementView, Arrangement, BarElement, PageElement {
+public struct NavigationStack: ElementView, Arrangement, BarElement {
     /// The node this page describes.
     public var node: Node
 

@@ -5,10 +5,6 @@ import StateUI
 /// A page is a value rebuilt on every render, and the `@State` on it survives
 /// that - which is the whole of what makes the counter below work.
 struct MainPage: View {
-    /// The page as it runs - what it is called, and the rest of what it
-    /// says about itself.
-    @Environment private var page: PageSession
-
     @State private var count = 0
     @State private var name = ""
 
@@ -36,7 +32,7 @@ struct MainPage: View {
         .spacing(16)
         .verticalAlignment(.center)
         .padding(30)
-        .onCreated { page.title = "HelloWorld" }
+        .title("HelloWorld")
     }
 
     /// What the button says once it has been clicked `count` times.

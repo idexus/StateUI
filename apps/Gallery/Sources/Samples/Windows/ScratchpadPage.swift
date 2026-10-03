@@ -15,9 +15,6 @@ struct ScratchpadPage: View {
     /// The window this is the page of - what it is called, how big, and closed from here.
     @Environment private var window: WindowSession
 
-    /// The page itself - its padding.
-    @Environment private var page: PageSession
-
     var body: some View {
         VStack {
             Text("Write anything: every scratchpad window shows this one text, and keeps it.")
@@ -49,9 +46,8 @@ struct ScratchpadPage: View {
             .horizontalAlignment(.end)
         }
         .spacing(10)
+        .padding(16)
         .onCreated {
-            page.padding = Insets(16)
-
             window.title = "Scratchpad"
             window.width = 420
             window.height = 340

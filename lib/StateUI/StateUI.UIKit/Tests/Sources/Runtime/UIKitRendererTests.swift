@@ -10,7 +10,6 @@ import XCTest
 
 /// A page that counts clicks and greets whoever types a name.
 private struct Greeting: View {
-    @Environment private var page: PageSession
     @State private var count = 0
     @State private var name = ""
 
@@ -20,7 +19,7 @@ private struct Greeting: View {
             TextField($name).maximumLength(5)
             Button("Clicked \(count)").onClicked { count += 1 }
         }
-        .onCreated { page.title = "Greeting" }
+        .title("Greeting")
     }
 }
 

@@ -17,9 +17,6 @@ struct MissingPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
-
     let id: String
 
     let nav: Navigation
@@ -48,6 +45,6 @@ struct MissingPage: View {
         }
         .spacing(16)
         .padding(24)
-        .onCreated { page.gallery("Not found") }
+        .galleryPage("Not found")
     }
 }

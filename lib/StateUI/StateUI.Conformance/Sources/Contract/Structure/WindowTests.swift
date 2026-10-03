@@ -155,8 +155,8 @@
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
-                SessionPage(beside: [Button("Change").onClicked { value.wrappedValue = second }.id("change")],
-                            key: "\(value.wrappedValue)") { _, window in write(window, value.wrappedValue) }
+                WindowSessionPage(beside: [Button("Change").onClicked { value.wrappedValue = second }.id("change")],
+                                  key: "\(value.wrappedValue)") { window in write(window, value.wrappedValue) }
             }
             let window = try s.element(ofType: WindowContract.nodeType)
             try s.settle { try s.held(member, on: window) == first }

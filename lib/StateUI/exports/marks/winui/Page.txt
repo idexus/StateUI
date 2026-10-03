@@ -7,6 +7,5 @@ Page.disappearing: ✅
 Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
-Page.padding: ✅
 Page.showsBackButton: not realized
 Page.showsNavigationBar: ✅

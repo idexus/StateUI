@@ -61,7 +61,6 @@ enum UIKitRealization {
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
-        .complete("Page", "padding"),
         .complete("Page", "title"),
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),

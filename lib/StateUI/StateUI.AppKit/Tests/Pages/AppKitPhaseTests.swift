@@ -8,9 +8,9 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-/// Every phase the platform reports is a state the application sees: the host
-/// renders after each one, so a push that reports a page's arrival and its
-/// navigation in one native move still shows both.
+/// Every phase the platform reports runs the handler the page's view gave it,
+/// so a push that reports a page's arrival and its navigation in one native
+/// move runs both.
 final class AppKitPhaseTests: XCTestCase {
     @MainActor
     func testAPushedPageSeesItsArrivalAndItsNavigation() {
@@ -23,23 +23,24 @@ final class AppKitPhaseTests: XCTestCase {
         stack.path = [1]
         renderer.runtime.pump.turn()
 
-        XCTAssertEqual(stack.seen, [.appearing, .navigatedTo])
+        XCTAssertEqual(stack.seen, ["appearing", "navigatedTo"])
     }
 }
 
 /// The stack the test pushes onto, and what its pushed page saw of its life.
 private final class PhaseStack {
     @State var path: [Int] = []
-    var seen: [PagePhase] = []
+    var seen: [String] = []
 }
 
-/// A page that writes down every phase it sees.
+/// A page that writes down its arrival and its navigation.
 private struct PhasePage: View {
-    @Environment private var page: PageSession
     let stack: PhaseStack
 
     var body: some View {
-        Text("pushed").onChanged(page.phase) { stack.seen.append(page.phase) }
+        Text("pushed")
+            .onAppearing { stack.seen.append("appearing") }
+            .onNavigatedTo { stack.seen.append("navigatedTo") }
     }
 }
 

@@ -74,7 +74,7 @@ final class AndroidTabView: AndroidLayoutView {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        let page = SingleChildArithmetic.size(of: selectedItem, padding: Insets(0), width: width)
+        let page = SingleChildArithmetic.size(of: selectedItem, width: width)
         return RowEdge.size(page: page, row: rowHeight(width: width))
     }
 
@@ -84,7 +84,7 @@ final class AndroidTabView: AndroidLayoutView {
         row.layout(rowRoom)
         guard let page = selectedItem else { return }
 
-        page.view.layout(SingleChildArithmetic.place(of: page, in: room, padding: Insets(0), direction: direction))
+        page.view.layout(SingleChildArithmetic.place(of: page, in: room, direction: direction))
     }
 
     private func rowHeight(width: Double?) -> Double {

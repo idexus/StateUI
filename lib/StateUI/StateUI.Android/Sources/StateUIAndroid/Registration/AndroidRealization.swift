@@ -73,7 +73,6 @@ enum AndroidRealization {
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
-        .complete("Page", "padding"),
         .partial("Picker", "isOpen", missing: "Android closes the list only when the user does: `false` does not close it."),
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),

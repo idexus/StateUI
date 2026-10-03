@@ -32,3 +32,5 @@ android WebView 3
 winui WebView 2
 DatePicker 2
 TimePicker 2
+Page 2
+PageElement 2

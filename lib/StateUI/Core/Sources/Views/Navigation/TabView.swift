@@ -25,20 +25,16 @@
 ///     }
 ///
 ///     struct TodayPage: View {
-///         @Environment private var page: PageSession
-///
 ///         var body: some View {
 ///             Text("Nothing due.")
-///                 .onCreated {
-///                     page.title = "Today"           // the caption
-///                     page.icon = "today.png"        // and the icon
-///                 }
+///                 .title("Today")                    // the caption
+///                 .icon("today.png")                 // and the icon
 ///         }
 ///     }
 ///
-/// A tab's caption and icon come from its page, through `title` and `icon`. A
-/// `NavigationStack` inside a tab is given them by modifier, `.title("Home")`,
-/// and keeps its own path while the user is on another tab.
+/// A tab's caption and icon are what its view says of its page, `.title` and
+/// `.icon`. A `NavigationStack` inside a tab takes them the same way and keeps
+/// its own path while the user is on another tab.
 ///
 /// Moving between tabs from code is assigning the binding, `tab = .settings`;
 /// a tab the user chooses is written back into it. Tabs are data: describing
@@ -48,7 +44,7 @@
 /// Each tab must be a distinct value whose values describe differently
 /// (`String(describing:)`). A page is keyed by its tab alone, so tabs can be
 /// reordered without their pages being rebuilt.
-public struct TabView: ElementView, Arrangement, BarElement, PageElement {
+public struct TabView: ElementView, Arrangement, BarElement {
     /// The node this page describes.
     public var node: Node
 

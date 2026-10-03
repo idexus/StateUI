@@ -113,7 +113,7 @@ of its members each meets, and why a cell is empty.
 | [ModalStack](controls/ModalStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ |  |
-| [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Picker](controls/Picker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Polygon](controls/Polygon.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -474,22 +474,22 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuBar](controls/MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ | 3 ✅ · 3 – |  |
 | [ModalStack](controls/ModalStack.md) | 7 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ | 4 ✅ · 3 – |  |
-| [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
+| [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – |  |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ |  |
-| [Page](controls/Page.md) | 12 | 8 ✅ | 12 ✅ | 7 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – |  |
+| [Page](controls/Page.md) | 11 | 7 ✅ | 11 ✅ | 8 ✅ · 1 – |  |  |  |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ |  |  |  |
-| [SplitView](controls/SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
-| [TabView](controls/TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
+| [SplitView](controls/SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 8 ✅ | 5 ✅ · 3 – |  |
+| [TabView](controls/TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 8 ✅ | 5 ✅ · 3 – |  |
 | [TextSpan](controls/TextSpan.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](controls/Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ |  |  |  |
-| ✅ |  | 68 | 71 | 41 | 85 | 64 |  |
+| ✅ |  | 67 | 70 | 42 | 69 | 53 |  |
 | ✓ |  | 15 | 12 | 10 | 0 | 1 |  |
-| – |  | 0 | 8 | 13 | 0 | 20 |  |
-| **Met** | 123 | **83** | **91** | **64** | **85** | **85** |  |
+| – |  | 0 | 8 | 13 | 0 | 16 |  |
+| **Met** | 122 | **82** | **90** | **65** | **69** | **70** |  |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 <!-- dictionary:end -->
 
@@ -549,7 +549,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [ModalStack](controls/ModalStack.md) | `popped` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ |  | 1 ✅ | 1 ✅ |  |
-| [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `showsBackButton`, `showsNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 8 ✅ | 10 ✅ | 7 ✅ · 1 – | 8 ✅ | 7 ✅ |  |
+| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `background`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsNavigationBar`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 9 | 7 ✅ | 9 ✅ | 8 ✅ · 1 – |  |  |  |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`) | 7 | 3 ✅ · 1 ✓ | 1 ✅ · 3 ✓ | 3 ✅ · 1 ✓ | 7 ✅ | 3 ✅ · 4 – |  |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |

@@ -56,9 +56,6 @@ struct SampleTabPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and what is on its bar.
-    @Environment private var page: PageSession
-
     let sample: Sample
 
     let tab: SampleTab
@@ -75,13 +72,9 @@ struct SampleTabPage: View {
         }
         // Dressed as every page of the gallery is, and named and pictured for
         // its tab: the tab's caption and icon. The window takes the sample's
-        // name from the tabs (`SamplePage.shown`). What a sample adds to the bar
-        // it writes from its own `.onCreated`, which runs after this one,
-        // being further in.
-        .onCreated {
-            page.gallery(sample.caption(of: tab))
-            page.icon = sample.icon(of: tab)
-        }
+        // name from the tabs (`SamplePage.shown`).
+        .galleryPage(sample.caption(of: tab))
+        .icon(sample.icon(of: tab))
     }
 
     /// The line under the title over what the tab shows, in one cell that

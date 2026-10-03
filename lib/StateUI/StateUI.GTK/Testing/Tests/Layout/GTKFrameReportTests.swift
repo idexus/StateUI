@@ -36,16 +36,14 @@ private struct FramesPage: View {
 /// A page under its header bar: a stack at the top of its content, and a label at the stack's top.
 private struct PlacedOnAPage: View {
     let heard: Received<String>
-    @Environment private var page: PageSession
 
     var body: some View {
-        let page = self.page
         let heard = self.heard
         return VStack {
             Text("top").onFrameChanged(in: .global) { frame in heard.values.append("window \(Int(frame.y))") }
         }
         .onFrameChanged(in: .safeArea) { frame in heard.values.append("page \(Int(frame.y))") }
-        .onCreated { page.title = "Placed" }
+        .title("Placed")
     }
 }
 

@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 NavigationStack.icon: cannot read icon of NavigationStack - AppKit's driver has no path for it yet
 NavigationStack.title: cannot read title of NavigationStack - AppKit's driver has no path for it yet
 Page.icon: cannot read icon of Page - AppKit's driver has no path for it yet

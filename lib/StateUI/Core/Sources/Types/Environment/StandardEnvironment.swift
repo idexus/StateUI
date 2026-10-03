@@ -18,10 +18,9 @@ enum StandardEnvironment {
     /// The application's session: one per process, its phase pushed by the host.
     nonisolated(unsafe) static let application = ApplicationSession()
 
-    // What a view outside every scene, window or page reads; each of those offers its own, nearer.
+    // What a view outside every scene or window reads; each of those offers its own, nearer.
     nonisolated(unsafe) static let scene = SceneSession()
     nonisolated(unsafe) static let window = WindowSession()
-    nonisolated(unsafe) static let page = PageSession()
 
     /// What every render starts its scope with, keyed as `.environment()` keys.
     nonisolated(unsafe) static let scope: [(key: ObjectIdentifier, object: AnyObject)] = [
@@ -34,7 +33,6 @@ enum StandardEnvironment {
         (key: ObjectIdentifier(ApplicationSession.self), object: application),
         (key: ObjectIdentifier(SceneSession.self), object: scene),
         (key: ObjectIdentifier(WindowSession.self), object: window),
-        (key: ObjectIdentifier(PageSession.self), object: page),
     ]
 
     /// The standard provider of a type: what an unfilled `@Environment` slot answers,

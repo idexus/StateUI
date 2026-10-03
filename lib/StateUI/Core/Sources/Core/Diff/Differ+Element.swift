@@ -58,6 +58,10 @@ extension Differ {
     ) -> (node: RenderedNode, patch: HostPatch) {
         var node = node
 
+        // Whether this is the view a page shows (PageValues.swift).
+        let atPageRoot = describesPageRoot
+        describesPageRoot = false
+
         // Whether an inspector's frame is open for this element
         // (Inspection.swift).
         var inspected = false
@@ -93,20 +97,6 @@ extension Differ {
         var pushed = node.environments.count
         scope.append(contentsOf: node.environments)
         defer { scope.removeLast(pushed) }
-
-        // What the element holds for its life - a page's session - handed back on every
-        // build (ElementSession.swift).
-        var session: AnyObject?
-
-        if let request = node.session {
-            let same = rendered?.views.first?.type == node.stateful?.viewType
-            let object = (same ? rendered?.session : nil) ?? request.make()
-
-            request.object = object
-            session = object
-            scope.append((key: request.type, object: object))
-            pushed += 1
-        }
 
         // And which views this element enters, for the containers under it.
         var entered = 0
@@ -233,6 +223,15 @@ extension Differ {
             break
         }
 
+        // What the view says of its page: the page takes it where this is the view it shows, an arrangement standing
+        // where a page stands its title and icon; anywhere else it says nothing.
+        // Design: docs/design/views/pages.md#what-a-view-says-of-its-page
+        let pageValues = node.pageValues
+        node.pageValues = nil
+        if let pageValues, !atPageRoot {
+            node.takeAsArrangement(pageValues)
+        }
+
         // An arrangement keeps what its contract declares (Differ+Arrangements.swift).
         node.keepingDeclared()
 
@@ -267,6 +266,25 @@ extension Differ {
             guard let within else { return shallow() }
 
             return BuildScope.within(within, shallow)
+        }
+
+        // A page describes the view it shows first, and says what that view says of it; it reads all that view's
+        // own build read, so a write the view's page values follow describes the page again.
+        // Design: docs/design/views/pages.md#what-a-view-says-of-its-page
+        var described: (children: [RenderedNode], patch: HostPatch)?
+        if node.type == .page {
+            let reshaped = rendered.map { $0.type != node.type || Self.kinds($0.views) != Self.kinds(views) } ?? false
+            var holder = HostPatch(id: id, type: node.type)
+            describesPageRoot = true
+            let children = reconcileChildren(
+                of: reshaped ? nil : rendered, node: node, into: &holder, sizesArrive: node.childSizesArrive)
+            describesPageRoot = false
+
+            if let root = children.first {
+                reads.formUnion(root.reads)
+                if let said = root.pageValues { node.take(said) }
+            }
+            described = (children, holder)
         }
 
         // An aim on the root of a composed view's content is the same element.
@@ -499,8 +517,13 @@ extension Differ {
             patch.driven = .replace(driven.mapValues(HostStateBinding.init))
         }
 
-        let children = reconcileChildren(
-            of: previous, node: node, into: &patch, sizesArrive: node.childSizesArrive)
+        let children: [RenderedNode]
+        if let described {
+            children = described.children
+            patch.children = described.patch.children
+        } else {
+            children = reconcileChildren(of: previous, node: node, into: &patch, sizesArrive: node.childSizesArrive)
+        }
 
         let result = RenderedNode(
             id: id,
@@ -527,9 +550,11 @@ extension Differ {
         result.visualInput = visualInput
         result.visualState = visualState
 
+        // What it says of the page it is the view of.
+        result.pageValues = atPageRoot ? pageValues : nil
+
         // What it runs as it leaves: this build's closures, the newest.
         result.destroying = node.destroying
-        result.session = session
 
         return (result, patch)
     }
@@ -608,6 +633,15 @@ extension Differ {
 
     /// Whether the parent wrote the same things on a composed view as last render.
     /// Design: docs/design/core/identity-and-diffing.md#what-the-parent-wrote
+    /// Whether two writings say the same of their page.
+    private func samePageValues(_ fresh: PageValues?, _ kept: PageValues?) -> Bool {
+        switch (fresh, kept) {
+        case (nil, nil): return true
+        case let (fresh?, kept?): return sameWriting(fresh.node, as: kept.node)
+        default: return false
+        }
+    }
+
     private func sameWriting(_ node: Node, as kept: Node) -> Bool {
         guard node.props == kept.props,
             node.motion == kept.motion,
@@ -619,7 +653,8 @@ extension Differ {
             node.created.count == kept.created.count,
             node.destroying.count == kept.destroying.count,
             node.environments.count == kept.environments.count,
-            node.driven.count == kept.driven.count
+            node.driven.count == kept.driven.count,
+            samePageValues(node.pageValues, kept.pageValues)
         else { return false }
 
         for (fresh, old) in zip(node.watches, kept.watches)

@@ -39,7 +39,7 @@ An application declares types; the tree under a window is views.
           ┌──────────────────────────────────────────────────────────┤
           │ an arrangement - NavigationStack, TabView, SplitView -  │ any other view
           │ written there or built by the view's body - is the     │ goes on a page element
-          ▼ page itself, and keys the pages it holds                 ▼ that holds its PageSession
+          ▼ page itself, and keys the pages it holds                 ▼ that says what it says of it
       pages (each a view on a page element, or another arrangement)
 ```
 

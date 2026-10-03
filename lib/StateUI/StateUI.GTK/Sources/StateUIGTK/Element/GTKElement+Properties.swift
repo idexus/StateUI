@@ -61,8 +61,6 @@ extension GTKElement {
             case .isEnabled: view.setEnabled(value(.isEnabled)?.bool ?? true)
             case .isVisible: view.setShown(isShown)
             case .background: (view as? GTKLayoutView)?.setBackground(value(.background))
-            case .padding where type == .page:
-                (view as? GTKSingleChildView)?.padding = element.insets(.padding)
             default: break
             }
         }

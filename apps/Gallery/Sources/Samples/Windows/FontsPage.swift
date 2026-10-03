@@ -11,9 +11,6 @@ struct FontsPage: View {
     /// The window this is the page of - what it is called, and how big.
     @Environment private var window: WindowSession
 
-    /// The page itself - what it is called, and its padding.
-    @Environment private var page: PageSession
-
     /// Families every desktop this gallery runs on has; empty is the
     /// platform's own.
     static let families = ["", "Georgia", "Courier New", "Trebuchet MS"]
@@ -47,10 +44,9 @@ struct FontsPage: View {
                 .onClicked { try await window.close() }
         }
         .spacing(10)
+        .padding(16)
+        .title("Fonts")
         .onCreated {
-            page.title = "Fonts"
-            page.padding = Insets(16)
-
             window.title = "Fonts"
             window.width = 320
             window.height = 380

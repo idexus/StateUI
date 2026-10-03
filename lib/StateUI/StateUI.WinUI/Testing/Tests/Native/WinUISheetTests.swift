@@ -17,15 +17,14 @@ private enum Sheet: Hashable {
 private struct SheetsPage: View {
     let log: Received<String>
     @Binding var sheets: [Sheet]
-    @Environment private var page: PageSession
 
     var body: some View {
-        let (log, page, sheets) = (log, page, $sheets)
+        let sheets = $sheets
         return VStack {
             Text("beneath")
             Button("Present").onClicked { sheets.wrappedValue.append(.first) }
         }
-        .onChanged(page.phase) { log.values.append("beneath \(page.phase)") }
+        .loggingPhases(log, as: "beneath")
     }
 }
 
@@ -42,16 +41,13 @@ private func sheetsOver(_ sheets: State<[Sheet]>, log: Received<String>) -> Moda
 private struct SheetPage: View {
     let name: String
     @Binding var sheets: [Sheet]
-    @Environment private var page: PageSession
 
     var body: some View {
-        let page = page
-        let name = name
-        return VStack {
+        VStack {
             Text("on \(name)")
             Button("Another").onClicked { sheets.append(.second) }
         }
-        .onCreated { page.title = name }
+        .title(name)
     }
 }
 

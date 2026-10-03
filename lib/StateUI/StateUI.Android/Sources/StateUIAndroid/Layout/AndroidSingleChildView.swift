@@ -4,21 +4,16 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A page, or a container like it: its one child within its padding.
+/// A page, or a container like it: its one child in its room.
 @MainActor
 class AndroidSingleChildView: AndroidLayoutView {
-    /// The room inside the view's own edge, in points.
-    var padding = Insets(0) {
-        didSet { if padding != oldValue { invalidateMeasurements() } }
-    }
-
     override func contentSize(width: Double?) -> LayoutSize {
-        SingleChildArithmetic.size(of: items.first, padding: padding, width: width)
+        SingleChildArithmetic.size(of: items.first, width: width)
     }
 
     override func arrange(in bounds: Rect) {
         guard let item = items.first, item.isShown else { return }
 
-        item.view.layout(SingleChildArithmetic.place(of: item, in: bounds, padding: padding, direction: direction))
+        item.view.layout(SingleChildArithmetic.place(of: item, in: bounds, direction: direction))
     }
 }

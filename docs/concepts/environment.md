@@ -186,16 +186,15 @@ and `connectionProfiles` may contain more than one active transport.
 
 ## Runtime sessions are environments
 
-Four session types are available by the same mechanism:
+Three session types are available by the same mechanism:
 
 | Session | Lifetime and ownership |
 | --- | --- |
 | `ApplicationSession` | one process; styles, default motion, persistent keys and storage, application phase, and open scenes |
 | `SceneSession` | one application scene; scene phase, its windows, and scene/window operations |
 | `WindowSession` | one native window; lifecycle, title, geometry requests, chrome, modal stack, and close operation |
-| `PageSession` | one content-page element; title, toolbar, menus, and page presentation state |
 
-Each scene, window, and page provides its own session nearer than the inert
+Each scene and window provides its own session nearer than the inert
 fallback instance. A descendant therefore acts on the session it is inside:
 
 ```swift

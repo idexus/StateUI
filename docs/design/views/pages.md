@@ -3,8 +3,9 @@
 An application declares its structure as types and builders. An
 `Application`'s body is its scene, a `Scene`'s body its windows - a
 `WindowGroup` and the windows beside it - and each window shows a view, which
-stands on a page. Each declares only what it is made of; what each one is while
-it runs lives in its session.
+stands on a page. Each declares only what it is made of; what the application,
+a scene and a window are while they run lives in their sessions, and what a
+page is, its view says.
 
 ## Application scene window page
 
@@ -12,17 +13,17 @@ it runs lives in its session.
   Application ──body──▶ Scene ──body──▶ WindowGroup ──▶ view ──▶ page ──▶ view tree
                                    └──▶ Window, WindowGroup(for:) ──▶ view
 
-  ApplicationSession    SceneSession        WindowSession             PageSession
-  styles, motion,       open and close      title, frame,             title, padding, background,
-  kept values           its windows         lifecycle                 bar requests, lifecycle
+  ApplicationSession    SceneSession        WindowSession             said by its view
+  styles, motion,       open and close      title, frame,             title, background,
+  kept values           its windows         lifecycle                 bar requests, phases
 ```
 
 `Application` and `Scene` are protocols with one composition getter each,
 `body`, built by `ApplicationBuilder` and `SceneBuilder`. A window shows a
 view: an arrangement stands there as the page itself, any other view on a page
 element around it. The sessions are objects in the environment of everything
-under them, written like any state - usually from the `.onCreated` of what is
-shown - so the tree is steered by `@State` and `@Environment` alone.
+under them, written like any state, and a page is what its view says of it by
+modifier, so the tree is steered by `@State` and `@Environment` alone.
 
 ## Scenes
 
@@ -124,20 +125,48 @@ can differ between two instances within one run.
 ## A page around a view
 
 A view shown as a screen gets a page element around it (`Node.page`). The page
-holds the view's `PageSession` for its life: kept while the same view stands
-there - the same kind under the same explicit id, from the same branch - and
-made afresh for another. A page position takes its view through `ViewBuilder`,
+is kept while the same view stands there - the same kind under the same
+explicit id, from the same branch - and made afresh for another. A page position takes its view through `ViewBuilder`,
 so an `if`/`else` or a `switch` there keys each branch (`Either`), and two
 branches of the same view are two pages, as two branches in a container are
 two elements.
 The view stays the element it is, one level down, with its state, its inputs
-and whatever was written on it, so a write to the session builds the page again
-and carries the view whole.
+and whatever was written on it.
 
 The content comes first among the page's children, so a page that gains a
 title view does not look to the differ as though its content moved. The view
 is held as a node - interface, not an input anything compares - so the page is
 built with its parent and the view is compared on its own.
+
+## What a view says of its page
+
+What a screen is - its title and icon, its background, whether the navigation
+bar and the way back show, the back button's words, the phases it hears - is
+said by modifiers on the view a page shows: `.title`, `.icon`,
+`.pageBackground`, `.showsNavigationBar`, `.showsBackButton`,
+`.backButtonTitle`, `.onAppearing`, `.onDisappearing`, `.onNavigatedTo`,
+`.onNavigatingFrom`, `.onNavigatedFrom`. Each takes a value, and a value one
+takes from a state, `$x`, is a channel the host follows without a view being
+built again.
+
+They are held apart from the view's own values (`PageValues`, `pageSays`): the
+page's background never meets the view's `.background`, and the page has no
+padding of its own - the view's `.padding` is the space inside it. Written on a
+composed view, they stand over what its `body` says, as any modifier written on
+a view stands over its body (`Stateful.expand(over:)`).
+
+The differ describes a page's view before the page itself and the page takes
+what the view said: its values, its channels and its handlers. The page takes
+the view's reads too, so a write to a state the values read describes the page
+again although the page itself read nothing. A page carries only the phases its
+view hears; a host raises a phase for which the page carries a handler.
+
+The place decides, not the type, since any view may stand on a page. An
+arrangement standing where a page stands is the page, and takes the title and
+the icon itself, for where it is shown as an item of something else, such as a
+tab; anything else said of a page there is said once (`complain`) and left out.
+Written on a view no page shows - inside a layout, deeper in a body - what a
+view says of its page says nothing, and is said once.
 
 ## An arrangement is a view
 
@@ -159,11 +188,11 @@ arrangement fills where it stands, so it keeps what its contract declares - its
 bar, its title and icon, its own state - and leaves out, said once, what a
 view's modifier writes on it: a width, a margin, a gesture.
 
-What a screen is - its title, its buttons - is its page's session. An
+What a screen is - its title, its buttons - its view says of its page. An
 arrangement's bar belongs to the arrangement (`BarElement`) and looks the same
-whichever page it shows. An arrangement is told its own title and icon by
-modifier (`PageElement`), for where it is shown as an item of something else,
-such as a tab.
+whichever page it shows. An arrangement standing where a page stands takes its
+own title and icon from the same modifiers, for where it is shown as an item
+of something else, such as a tab.
 
 ## The stack is the state
 
@@ -288,7 +317,8 @@ the stack's own (`popped`), with how many remain.
 - No separate push and pop notifications: the state is the one channel, and
   `.onChanged(path)` observes every committed arrival and departure.
 - No page look on a stack: a `NavigationStack` draws its bar and the page on
-  top, and that page carries its own padding, background and safe-area inset.
+  top; that page carries its own background and safe-area inset, and its view
+  its own padding.
 - No builder of tab pages: a builder hands back an anonymous list whose only
   identity is position.
 - No sidebar item type, template, header or footer: the sidebar is a page, and

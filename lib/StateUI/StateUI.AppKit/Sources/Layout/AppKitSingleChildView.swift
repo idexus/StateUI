@@ -14,9 +14,6 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     var direction = LayoutDirection.leftToRight {
         didSet { if direction != oldValue { needsLayout = true } }
     }
-    var padding = NSEdgeInsets() {
-        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
-    }
 
     /// Whether the child keeps out of the part of this view that the window's
     /// title bar and toolbar cover.
@@ -46,8 +43,7 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     }
 
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
-        NSSize(SingleChildArithmetic.size(
-            of: item, padding: Insets(padding), width: availableWidth.map(Double.init)))
+        NSSize(SingleChildArithmetic.size(of: item, width: availableWidth.map(Double.init)))
     }
 
     override func layout() {
@@ -55,8 +51,7 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         guard let item, item.isShown else { return }
 
         let room = (insetsBySafeArea ? safeAreaRect : bounds).placed
-        item.view.frame = NSRect(
-            placed: SingleChildArithmetic.place(of: item, in: room, padding: Insets(padding), direction: direction))
+        item.view.frame = NSRect(placed: SingleChildArithmetic.place(of: item, in: room, direction: direction))
     }
 }
 

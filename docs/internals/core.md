@@ -203,7 +203,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
 | `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
 | `Environment/` | the standard providers - `Battery`, `Connectivity`, `DeviceDisplay`, `DeviceInfo`, `LocaleInfo`, `AppInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
-| `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, `PageSession`, their phases, `WindowOverlays` | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
+| `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases, `WindowOverlays` | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
 | `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarItemPlacement`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
 
 ## Contracts
@@ -252,18 +252,15 @@ type's extensions in its folder as `Type+Responsibility.swift`
   owner - and a part of one through dynamic member lookup. *Application.*
   ([Bindings](../design/core/state.md#bindings))
 - **`Environment`** resolves the nearest provided object by its type; the
-  standard providers and the four sessions are there with nothing provided.
+  standard providers and the three sessions are there with nothing provided.
   *Application.* ([The environment](../design/core/state.md#the-environment);
   [environment](../concepts/environment.md))
 - **`PersistentKey`**, **`PersistentValue`** and **`PersistentKind`** are kept
   state, hydrated by the host before the first render (`PersistentStore`,
   internal). *Application.* ([Kept state](../design/core/state.md#kept-state);
   [persistent state](../concepts/state-and-reactivity.md#persistent-state))
-- **`ElementSession`** is an object an element keeps for its life - how a
-  page holds its `PageSession`. *Internal.* An `@Observable` model held in a
-  `@State` is deprecated, since nothing arms its tracking.
-  ([Element sessions](../design/core/state.md#element-sessions),
-  [an observable model](../design/core/state.md#an-observable-model))
+- An `@Observable` model held in a `@State` is deprecated, since nothing arms
+  its tracking. ([An observable model](../design/core/state.md#an-observable-model))
 
 ### Carried values
 

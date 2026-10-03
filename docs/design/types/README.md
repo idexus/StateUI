@@ -14,7 +14,7 @@ pictures, shapes, strokes and the canvas; `Text` names and the text and
 keyboard vocabularies; `Time` days, times of day and zones; `Motion` the
 timing laws and their groups; `Gestures` what a gesture reports;
 `Environment` the standard providers and their vocabularies; `Sessions` the
-application, scene, window and page sessions; `Controls` the vocabularies one
+application, scene and window sessions; `Controls` the vocabularies one
 control takes.
 
 ## The notes

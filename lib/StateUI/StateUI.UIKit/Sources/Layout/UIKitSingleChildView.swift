@@ -6,24 +6,16 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A page or an overlay: its one child within its padding (`SingleChildArithmetic`).
+/// A page or an overlay: its one child in its room (`SingleChildArithmetic`).
 @MainActor
 final class UIKitSingleChildView: UIKitLayoutView {
-    var padding = Insets(0) {
-        didSet {
-            guard padding != oldValue else { return }
-            forgetMeasurements()
-            setNeedsLayout()
-        }
-    }
-
     override func contentSize(width: Double?) -> LayoutSize {
-        SingleChildArithmetic.size(of: items.first, padding: padding, width: width)
+        SingleChildArithmetic.size(of: items.first, width: width)
     }
 
     override func arrange(in bounds: Rect) {
         guard let item = items.first else { return }
-        place(item, at: SingleChildArithmetic.place(of: item, in: bounds, padding: padding, direction: direction))
+        place(item, at: SingleChildArithmetic.place(of: item, in: bounds, direction: direction))
     }
 }
 #endif

@@ -10,9 +10,6 @@ struct ItemPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
-
     let item: String
 
     let nav: Navigation
@@ -49,8 +46,6 @@ struct ItemPage: View {
         .stroke(.transparent)
         .shape(.roundedRectangle(12))
         .verticalAlignment(.center)
-        .onCreated {
-            page.gallery(item.isEmpty ? "Item" : item)
-        }
+        .galleryPage(item.isEmpty ? "Item" : item)
     }
 }

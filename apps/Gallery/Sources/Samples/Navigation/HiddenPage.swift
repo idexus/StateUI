@@ -11,9 +11,6 @@ struct HiddenPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
-
     let nav: Navigation
 
     var body: some View {
@@ -41,6 +38,6 @@ struct HiddenPage: View {
             .spacing(14)
             .padding(24)
         }
-        .onCreated { page.gallery("Not in the list") }
+        .galleryPage("Not in the list")
     }
 }

@@ -1316,7 +1316,8 @@ final class CatalogTests: XCTestCase {
     /// state the window owns.
     ///
     /// The first tab holds a whole navigation stack, and its caption and picture
-    /// are the STACK's.
+    /// are the STACK's. What a view says of its page - the stack's title and
+    /// icon, a written page's - is on the message that brings it.
     func testTheTabsSectionIsATabViewWithAStackInsideIt() throws {
         let place = Place()
         place.section.wrappedValue = .tabs
@@ -1329,19 +1330,14 @@ final class CatalogTests: XCTestCase {
                         "a tab tapped - or swiped, on Android - would not reach the binding")
         XCTAssertEqual(detail.children.count, DemoTab.opening.count)
 
-        let stack = try XCTUnwrap(detail.children.first)
-
-        XCTAssertEqual(stack.type, "NavigationStack")
-        XCTAssertEqual(stack.props["title"], .string("Stack"))
-        XCTAssertNotNil(stack.props["icon"], "a tab with no picture")
-
-        // A written page's caption and picture are its SESSION's, written as
-        // it comes in - so they are read off the message that brings it.
         let shown = firstPatch(mainPage(place.nav))
         let tabbed = try XCTUnwrap(shown.children.first?.children.first?.children.first { $0.type == "TabView" })
+        let stack = try XCTUnwrap(tabbed.children.first)
         let second = try XCTUnwrap(tabbed.children.last)
 
-        XCTAssertEqual(tabbed.type, "TabView")
+        XCTAssertEqual(stack.type, "NavigationStack")
+        XCTAssertEqual(prop(stack, .title), .string("Stack"))
+        XCTAssertNotNil(prop(stack, .icon), "a tab with no picture")
         XCTAssertEqual(prop(second, .title), .string("Second"))
         XCTAssertNotNil(prop(second, .icon))
     }

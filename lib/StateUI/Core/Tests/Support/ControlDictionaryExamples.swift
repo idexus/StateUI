@@ -243,14 +243,10 @@ extension ControlDictionary {
 
         (PageContract.self, #"""
             struct NotePage: View {
-                @Environment private var page: PageSession
-
                 var body: some View {
                     Text("Nothing written yet.")
-                        .onCreated {
-                            page.title = "Note"
-                            page.showsBackButton = true
-                        }
+                        .title("Note")
+                        .showsBackButton(true)
                 }
             }
             """#),
@@ -422,10 +418,9 @@ extension ControlDictionary {
         (TabViewContract.self, #"""
             struct Tab: View {
                 let name: String
-                @Environment private var page: PageSession
 
                 var body: some View {
-                    Text("Nothing in \(name)").onCreated { page.title = name }
+                    Text("Nothing in \(name)").title(name)
                 }
             }
 

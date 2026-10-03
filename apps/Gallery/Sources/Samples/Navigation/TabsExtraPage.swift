@@ -11,9 +11,6 @@ struct TabsExtraPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
-
     /// Where the gallery is, and the moves that change the tab list.
     let nav: Navigation
 
@@ -45,9 +42,7 @@ struct TabsExtraPage: View {
             .spacing(14)
             .padding(24)
         }
-        .onCreated {
-            page.gallery("Extra \(number)")
-            page.icon = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
-        }
+        .galleryPage("Extra \(number)")
+        .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
     }
 }

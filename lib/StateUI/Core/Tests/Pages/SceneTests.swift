@@ -544,26 +544,13 @@ final class SceneTests: XCTestCase {
         XCTAssertFalse(studio.windowSession("fonts 2") === open)
     }
 
-    /// No application or view says what its session holds. One declared with a `title`, a style sheet or a
-    /// lifecycle handler of its own compiles - a property is a property - and does NOTHING, which is the one failure
-    /// this library refuses; so the sources are read for one, the README and the gallery's listings included.
-    func testNoApplicationOrViewSaysWhatItsSessionHolds() throws {
-        // A page's are read off its session, so a value added there is looked for here the day it arrives.
-        let pageSession = try SourceTree.text(in: "PageSession.swift")
-
-        let onPage = pageSession.split(separator: "\n").compactMap { line -> String? in
-            guard let declared = line.range(of: "@State public var \\w+", options: .regularExpression)
-            else { return nil }
-
-            return line[declared].split(separator: " ").last.map(String.init)
-        }
-
-        XCTAssertTrue(onPage.contains("title"), "PageSession's values were not found to look for")
-
-        // What each kind of type is told through its session.
+    /// No application says what its session holds. One declared with a style sheet of its own compiles - a property
+    /// is a property - and does NOTHING, which is the one failure this library refuses; so the sources are read for
+    /// one, the README and the gallery's listings included.
+    func testNoApplicationSaysWhatItsSessionHolds() throws {
+        // What an application is told through its session.
         let held: [(kind: String, names: [String])] = [
             ("Application", ["styles", "motion", "persistentKeys"]),
-            ("View", onPage + ["onAppearing", "onDisappearing", "onNavigatedTo", "onNavigatingFrom", "onNavigatedFrom"]),
         ]
 
         var files = [SourceTree.repository.appendingPathComponent("README.md")]
@@ -592,8 +579,7 @@ final class SceneTests: XCTestCase {
 
         XCTAssertTrue(
             found.isEmpty,
-            "a type says what its session holds - write it on the session, in " +
-            ".onCreated or a handler, or watch its phase:\n" +
+            "an application says what its session holds - write it on the session, in its init:\n" +
             found.joined(separator: "\n"))
     }
 

@@ -17,11 +17,6 @@ struct SamplePage: View {
 
     let nav: Navigation
 
-    /// The page itself - what it is called, and what is on its bar. A sample
-    /// with something of its own for the bar - a search box, buttons, a menu
-    /// - writes it into this same session.
-    @Environment private var page: PageSession
-
     /// The page a sample is shown on: this scrolling page, or - for a sample
     /// whose examples hold the page still - its tabs, which a window shows as
     /// its own, on a bar in `bar`, the colour of the stack they are pushed onto.
@@ -42,10 +37,8 @@ struct SamplePage: View {
 
     var body: some View {
         // Dressed as every page of the gallery is. What a sample adds to the
-        // bar it writes from its own `.onCreated`, which runs AFTER this one,
-        // being further in - so its buttons go before these and its title
-        // view, a page having one, replaces the gallery's.
-        scrolling.onCreated { page.gallery(sample.title) }
+        // bar - its buttons, its title view - it declares on its own views.
+        scrolling.galleryPage(sample.title)
     }
 
     /// Everything in one scroller: the summary, then each example with its

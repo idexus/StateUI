@@ -218,8 +218,9 @@ inspector stands over every overlay.
 
 ## Page titles and navigation furniture
 
-A view shown as a page changes its `PageSession`. An arrangement is a page
-already, with no session of its own, so it is told what it is by modifier:
+A view shown as a page says what its page is by modifier - `.title("Notes")`
+([What a view says of its page](application-and-sessions.md#what-a-view-says-of-its-page)).
+An arrangement is a page already, and takes its title and icon the same way:
 
 ```swift quote
 NavigationStack($settingsPath) {
@@ -233,7 +234,7 @@ NavigationStack($settingsPath) {
 
 The container's title and icon describe it when it is an item in another
 container, such as a tab. The title shown for the top page of a navigation
-stack comes from that page's own `PageSession`.
+stack is the one its own view says.
 
 A view such as `SearchField` can stand in the page's title slot, declared where
 the state it follows lives:

@@ -10,9 +10,6 @@ struct ColoursPage: View {
     /// The window this is the page of - what it is called, and how big.
     @Environment private var window: WindowSession
 
-    /// The page itself - what it is called, and its padding.
-    @Environment private var page: PageSession
-
     var body: some View {
         VStack {
             Text("The accent this gallery's bars are painted in.")
@@ -37,10 +34,9 @@ struct ColoursPage: View {
                 .onClicked { try await window.close() }
         }
         .spacing(10)
+        .padding(16)
+        .title("Colours")
         .onCreated {
-            page.title = "Colours"
-            page.padding = Insets(16)
-
             window.title = "Colours"
             window.width = 320
             window.height = 340

@@ -7,7 +7,7 @@ import XCTest
 
 /// What a host moves frame by frame: the properties its views present and whose values travel, and nothing else.
 final class TransitionSurfaceTests: XCTestCase {
-    /// A colour box's colour, size and corners travel, as a view's opacity, a page's padding, a line's transform, a
+    /// A colour box's colour, size and corners travel, as a view's opacity, a page's background, a line's transform, a
     /// window's place and a title bar's colours do; a turn about a flat view's axis, a stepper's value, an indicator's
     /// opacity and a property no host knows arrive at once.
     func testTheSurfaceIsClosedAroundWhatAViewPresents() {
@@ -15,7 +15,7 @@ final class TransitionSurfaceTests: XCTestCase {
             XCTAssertTrue(TransitionSurface.presents(property, on: .colorBox), "\(property)")
         }
         XCTAssertTrue(TransitionSurface.presents(.opacity, on: .text))
-        XCTAssertTrue(TransitionSurface.presents(.padding, on: .page))
+        XCTAssertTrue(TransitionSurface.presents(.background, on: .page))
         XCTAssertTrue(TransitionSurface.presents(.geometryTransform, on: .line))
         XCTAssertTrue(TransitionSurface.presents(.x, on: .window))
         XCTAssertTrue(TransitionSurface.presents(.barBackgroundColor, on: .splitView))

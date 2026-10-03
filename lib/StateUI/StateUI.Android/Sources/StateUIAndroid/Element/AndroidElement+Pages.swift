@@ -70,6 +70,11 @@ extension AndroidElement {
     /// the page the user sees now.
     private func selectTab(from previous: Int, to selected: Int) {
         host?.runtime.tabChosen(element, from: previous, to: selected)
+        refreshStacksBar()
+    }
+
+    /// The bar of the stack this page or arrangement stands in shows again, and the system's back follows it.
+    func refreshStacksBar() {
         host?.refreshBack()
 
         var stack = parent

@@ -5,18 +5,14 @@
 //
 // Both are lists of things that are NOT views, so they have no case in
 // ControlTests - this is where every modifier they declare is covered. A page
-// declares its toolbar groups where their state lives and writes its menus
-// into its session; what it says as it comes into the tree is in the message
-// that brings it - which is what `Renders.settled` answers.
+// declares its toolbar groups and its menus where their state lives; what its
+// view says is in the message that brings it.
 
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// A page with toolbar groups declared on its content and a menu written into
-/// its session as it comes into the tree.
+/// A page with toolbar groups and a menu declared on its content.
 private struct BarredPage: View {
-    @Environment private var page: PageSession
-
     var body: some View {
         Text("one")
             .toolbar {
@@ -55,7 +51,7 @@ private struct BarredPage: View {
                 .id("file")
                 .isEnabled(true)
             }
-            .onCreated { page.title = "Notes" }
+            .title("Notes")
     }
 }
 

@@ -10,10 +10,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// The pane. A page like any other, which is the whole point - and it carries
-/// a title, written as it comes into the tree, so the pane arrives with one.
+/// The pane. A page like any other, which is the whole point - and its view
+/// names it, so the pane arrives with a title.
 private struct MenuPage: View {
-    @Environment private var page: PageSession
     @Binding var section: String
     @Binding var menu: Bool
 
@@ -28,20 +27,18 @@ private struct MenuPage: View {
                 menu = false
             }
         }
-        .onCreated { page.title = "Sections" }
+        .title("Sections")
     }
 }
 
-/// The page under the pane, named for the section it shows - as it comes into
-/// the tree, and again whenever it is handed another.
+/// The page under the pane, named for the section it shows - again whenever it
+/// is handed another.
 private struct DetailPage: View {
-    @Environment private var page: PageSession
     let section: String
 
     var body: some View {
         ModifiedContent(node: label(section))
-            .onCreated { page.title = section }
-            .onChanged(section) { page.title = section }
+            .title(section)
     }
 }
 
@@ -148,7 +145,7 @@ final class SplitViewTests: XCTestCase {
         .node
 
         // As the message that brings the pages carries them - with the title
-        // each wrote into its session on the way in.
+        // each one's view says.
         let split = Renders().settled(tree)
 
         XCTAssertEqual(split.props, ["showsSidebar": .bool(true)])

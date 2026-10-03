@@ -83,22 +83,22 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuBar](MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ | 3 ✅ · 3 – |  |
 | [ModalStack](ModalStack.md) | 7 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ | 4 ✅ · 3 – |  |
-| [NavigationStack](NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
+| [NavigationStack](NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – |  |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ |  |
-| [Page](Page.md) | 12 | 8 ✅ | 12 ✅ | 7 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – |  |
+| [Page](Page.md) | 11 | 7 ✅ | 11 ✅ | 8 ✅ · 1 – |  |  |  |
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ |  |  |  |
-| [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
-| [TabView](TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
+| [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 8 ✅ | 5 ✅ · 3 – |  |
+| [TabView](TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 8 ✅ | 5 ✅ · 3 – |  |
 | [TextSpan](TextSpan.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ |  |  |  |
-| ✅ |  | 68 | 71 | 41 | 85 | 64 |  |
+| ✅ |  | 67 | 70 | 42 | 69 | 53 |  |
 | ✓ |  | 15 | 12 | 10 | 0 | 1 |  |
-| – |  | 0 | 8 | 13 | 0 | 20 |  |
-| **Met** | 123 | **83** | **91** | **64** | **85** | **85** |  |
+| – |  | 0 | 8 | 13 | 0 | 16 |  |
+| **Met** | 122 | **82** | **90** | **65** | **69** | **70** |  |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 <!-- structure:end -->
 

@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Page: ✅
 Page.appearing: ✅
 Page.backButtonTitle: ✅
@@ -7,6 +7,5 @@ Page.disappearing: ✅
 Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
-Page.padding: ✅
 Page.showsBackButton: ✅
 Page.showsNavigationBar: ✅

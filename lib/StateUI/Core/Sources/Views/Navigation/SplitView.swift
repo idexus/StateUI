@@ -29,7 +29,6 @@
 ///     struct MenuPage: View {
 ///         @Binding var section: Section
 ///         @Binding var menu: Bool
-///         @Environment private var page: PageSession
 ///
 ///         var body: some View {
 ///             VStack {
@@ -41,7 +40,7 @@
 ///                         }
 ///                 }
 ///             }
-///             .onCreated { page.title = "Sections" }   // required
+///             .title("Sections")   // required
 ///         }
 ///     }
 ///
@@ -51,7 +50,7 @@
 /// an edge swipe, a tap on the dimmed page - are written into the binding, and
 /// a host with room for both pages may open with the sidebar showing. The
 /// sidebar page must have a title.
-public struct SplitView: ElementView, Arrangement, BarElement, PageElement {
+public struct SplitView: ElementView, Arrangement, BarElement {
     /// The node this page describes.
     public var node: Node
 

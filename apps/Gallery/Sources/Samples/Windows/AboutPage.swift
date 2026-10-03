@@ -8,9 +8,6 @@ struct AboutPage: View {
     /// The window this is the page of - what it is called, how big, and closed from here: its scene ends with it.
     @Environment private var window: WindowSession
 
-    /// The page itself - its padding.
-    @Environment private var page: PageSession
-
     var body: some View {
         VStack {
             Text("StateUI Gallery")
@@ -34,9 +31,8 @@ struct AboutPage: View {
                 .onClicked { try await window.close() }
         }
         .spacing(12)
+        .padding(20)
         .onCreated {
-            page.padding = Insets(20)
-
             window.title = "About"
             window.width = 360
             window.height = 240

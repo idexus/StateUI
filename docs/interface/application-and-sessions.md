@@ -9,13 +9,14 @@ declaration                     runtime state
 Application                     ApplicationSession
 Scene                           SceneSession
 WindowGroup, Window             WindowSession
-the page a view stands on       PageSession
 ```
 
 A declaration answers what it is composed of. Its session answers what the
 particular running instance is called, where it stands in its lifecycle, and
 what actions can be taken on it. Sessions are ordinary objects with `@State`
-properties and are resolved through `@Environment`.
+properties and are resolved through `@Environment`. The page a view stands on
+has no session: what it is, its view says by modifier
+([What a view says of its page](#what-a-view-says-of-its-page)).
 
 ## Application
 
@@ -382,8 +383,8 @@ colours read as written. Text belongs on a surface of its own rather than
 straight over the desktop. `nil` keeps the platform's opaque window.
 
 ```swift quote
-window.isTranslucent = true
-page.background = Color("#CC0D0B14")
+.pageBackground(Color("#CC0D0B14"))
+.onCreated { window.isTranslucent = true }
 ```
 
 The host reports `WindowPhase` through the same session:
@@ -410,40 +411,41 @@ already stored changes no state, and therefore triggers no extra reaction.
 }
 ```
 
-## Page session
+## What a view says of its page
 
 Whatever a container shows as a screen - a window's view, a navigation stack's
 root and destinations, a tab, either half of a split view, a sheet - stands on
-a page. Nobody declares one: the container puts the view on a page that owns
-one `PageSession` for as long as the same view stands on it: the same view
-type under the same explicit id. Another view in that place starts a session
-of its own. A write to the session builds the page again and carries the view
-on it whole.
+a page. Nobody declares one: the container puts the view on a page, kept for
+as long as the same view stands there - the same view type under the same
+explicit id. Another view in that place stands on a page of its own.
+
+What the page is, the view it shows says by modifier:
+
+| Modifier | Meaning |
+| --- | --- |
+| `.title` | navigation title, and the caption where the page is an item of something else |
+| `.icon` | the page's representative image, commonly a tab icon |
+| `.pageBackground` | flat color behind the whole page, also where the view does not reach |
+| `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
+| `.showsBackButton` | whether that bar offers its native back affordance |
+| `.backButtonTitle` | short title supplied by this page for the page pushed above it |
+
+What is not said is left with the host. Each takes a value, or a state, `$x`,
+which the host follows with no view built again. The space between the page's
+edge and what it shows is that view's own `.padding`. These are said of the
+page only by the view it shows - or by that view's `body` - and a view further
+in that says them says nothing, and is told so once.
 
 An arrangement - `NavigationStack`, `TabView`, `SplitView`, `ModalStack` - is
 a view that stands where a page stands, as the page itself: written there, or
 the `body` of the view written there. Anywhere else - inside a `VStack`, inside
 a page's content - it is left out and said once. It fills where it stands, so
-it keeps only what its contract declares, and it is told what it is by
-modifier.
+it keeps only what its contract declares, and takes its own `.title` and
+`.icon`, for where it is an item of something else, such as a tab.
 
-| Member | Meaning |
-| --- | --- |
-| `phase` | the page's current visibility or navigation phase |
-| `title` | navigation title and the caption when the page is used as an item |
-| `icon` | the page's representative image, commonly a tab icon |
-| `padding` | space between the page edge and its content |
-| `background` | flat color behind the page |
-| `showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
-| `showsBackButton` | whether that bar offers its native back affordance |
-| `backButtonTitle` | short title supplied by this page for the page pushed above it |
-
-Every optional value starts as `nil`, which leaves that choice with the host.
-
-A session holds values. What has a body of its own - the page's actions, the
-view in its title's place and its menus - is declared in the view instead,
-with `.toolbar { }`, `.titleView { }` and `.menuBar { }`, and built with the
-state it follows (see
+What has a body of its own - the page's actions, the view in its title's place
+and its menus - is declared in the view as well, with `.toolbar { }`,
+`.titleView { }` and `.menuBar { }`, and built with the state it follows (see
 [Navigation and presentation](navigation-and-presentation.md#toolbars)).
 
 The back-button title belongs to the page being returned to, not the page
@@ -460,12 +462,10 @@ released explicitly with `Aim.unfocus()` or `OnScreenKeyboard.hide()`. A custom 
 including an image, belongs in `.titleView { }`; bar foreground color
 belongs to the containing page arrangement.
 
-Tell the page its values when the content element is created and again when
-the state they depend on changes; declare its actions where that state lives:
+A value the body computes is said again whenever the body is built again:
 
 ```swift quote
 struct EditorPage: View {
-    @Environment private var page: PageSession
     @State private var dirty = false
 
     var body: some View {
@@ -475,33 +475,27 @@ struct EditorPage: View {
                     .isEnabled(dirty)
                     .onClicked { save() }
             }
-            .onCreated { page.title = "Draft" }
-            .onChanged(dirty) {
-                page.title = dirty ? "Draft - Edited" : "Draft"
-            }
+            .title(dirty ? "Draft - Edited" : "Draft")
     }
 }
 ```
 
-`PagePhase` separates general visibility from navigation-specific movement:
+The page hears its phases through handlers, one per phase, which separate
+general visibility from navigation-specific movement:
 
-| Phase | Meaning |
+| Modifier | Runs |
 | --- | --- |
-| `.created` | the page has been described but has not yet appeared |
-| `.appearing` | it is about to become visible, including a return or tab selection |
-| `.navigatedTo` | a navigation move has arrived at it |
-| `.navigatingFrom` | a navigation move is about to leave it |
-| `.disappearing` | it has been covered or left, including a tab selection change |
-| `.navigatedFrom` | the navigation move away from it has completed |
+| `.onAppearing` | as the page is about to become visible, including a return or tab selection |
+| `.onNavigatedTo` | once a navigation move has arrived at it |
+| `.onNavigatingFrom` | as a navigation move is about to leave it |
+| `.onDisappearing` | as it is covered or left, including a tab selection change |
+| `.onNavigatedFrom` | once the navigation move away from it has completed |
 
-A navigation arrival normally reports `.appearing` and then `.navigatedTo`.
-A navigation departure reports `.navigatingFrom`, `.disappearing`, and then
-`.navigatedFrom`; a tab switch needs only disappearance and appearance. Each
-phase is rendered before the next report, so `.onChanged(page.phase)` sees
-every one - an arrival's `.appearing` as well as its `.navigatedTo`. A host
-does not invent navigation phases for a visibility change that was not a
-navigation move. As with windows, a duplicate report of the standing phase is
-a no-op.
+A navigation arrival runs `.onAppearing` and then `.onNavigatedTo`. A
+navigation departure runs `.onNavigatingFrom`, `.onDisappearing`, and then
+`.onNavigatedFrom`; a tab switch needs only disappearance and appearance. A
+host does not invent navigation phases for a visibility change that was not a
+navigation move, and a page whose view hears no phase is told none.
 
 `onCreated` and `onDestroying` describe the lifetime of a StateUI element;
 they are not substitutes for page appearance or window activation. Use the

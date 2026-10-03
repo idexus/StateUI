@@ -507,14 +507,14 @@
             return .string(text)
 
         case (.plain, .lanes(let lanes)):
-            return value(property, lanes: lanes)
+            return Self.value(of: property, lanes: lanes)
 
         case (.property, let carried):
             let presented = tree?.presentedValue(for: binding, from: carried) ?? carried
             guard let journey = HostBoundary.journey(from: presented) else {
                 return properties[property]
             }
-            return value(property, lanes: journey.value)
+            return Self.value(of: property, lanes: journey.value)
 
         default:
             return properties[property]
@@ -567,7 +567,7 @@
     }
 
     /// A bound state's lanes as the value `property` carries.
-    private func value(_ property: Prop, lanes: [Double]) -> HostValue? {
+    static func value(of property: Prop, lanes: [Double]) -> HostValue? {
         guard !lanes.isEmpty else { return nil }
 
         if Self.colorProperties.contains(property), lanes.count >= 4 {
@@ -598,21 +598,22 @@
     ]
 
     private static let booleanProperties: Set<Prop> = [
-        .allowsDrop, .hidesWhenInactive, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
-        .isAnimating, .clipsContent, .isDestructive,
-        .isEnabled, .isMaximizable, .isMinimizable, .isTranslucent,
+        .allowsDrop, .automationExcludedWithChildren, .hidesWhenInactive, .canDrag, .floatsOnTop, .growsWithText,
+        .ignoresInput, .isAccessibilityHidden, .isAnimating, .clipsContent, .isDestructive,
+        .isEnabled, .isFontAutoScalingEnabled, .isMaximizable, .isMinimizable, .isTranslucent,
         .isOpen, .isPassword, .showsSidebar, .isReadOnly,
         .isScrollEnabled,
         .showsUserLocation, .isSpellCheckEnabled, .isTextPredictionEnabled,
         .isOn, .showsTraffic, .isVisible, .isZoomEnabled, .letsInputThrough,
-        .showsClearButton, .showsText,
+        .showsBackButton, .showsClearButton, .showsNavigationBar, .showsText,
     ]
 
     private static let enumerationProperties: Set<Prop> = [
-        .contentMode, .layoutDirection, .fontAttributes,
+        .accessibilityHeading, .contentMode, .layoutDirection, .fillRule, .fontAttributes,
         .horizontalAlignment, .horizontalScrollIndicator,
-        .horizontalTextAlignment, .inputPurpose,
-        .lineBreak, .orientation, .submitLabel, .textDecorations, .textCase,
+        .horizontalTextAlignment, .iconPosition, .inputPurpose,
+        .lineBreak, .lineCap, .lineJoin, .mapType, .orientation, .placement, .selectionMode, .side, .submitLabel,
+        .swipeDirection, .textDecorations, .textCase, .type,
         .verticalAlignment, .verticalScrollIndicator, .verticalTextAlignment,
     ]
 }

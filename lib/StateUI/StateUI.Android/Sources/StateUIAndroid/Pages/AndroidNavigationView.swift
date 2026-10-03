@@ -39,7 +39,7 @@ final class AndroidNavigationView: AndroidLayoutView {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        let page = SingleChildArithmetic.size(of: items.last, padding: Insets(0), width: width)
+        let page = SingleChildArithmetic.size(of: items.last, width: width)
         return LayoutSize(width: page.width, height: page.height + barHeight(width: width))
     }
 
@@ -49,7 +49,7 @@ final class AndroidNavigationView: AndroidLayoutView {
         guard let page = items.last else { return }
 
         let room = Rect(x: 0, y: height, width: bounds.width, height: max(0, bounds.height - height))
-        page.view.layout(SingleChildArithmetic.place(of: page, in: room, padding: Insets(0), direction: direction))
+        page.view.layout(SingleChildArithmetic.place(of: page, in: room, direction: direction))
     }
 
     /// The bar's own height for `width` points, in points; none while it is hidden.

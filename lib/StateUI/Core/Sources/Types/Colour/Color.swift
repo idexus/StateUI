@@ -52,7 +52,7 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     ///
     ///     static let surface = Color(light: .white, dark: AppColors.offBlack)
     ///
-    /// It goes anywhere a colour goes - a `Style`, a control, a page's session,
+    /// It goes anywhere a colour goes - a `Style`, a control, a page's background,
     /// a state - and follows the system theme wherever it is written.
     ///
     /// Design: docs/design/types/colour-and-theme.md#a-pair-for-each-theme

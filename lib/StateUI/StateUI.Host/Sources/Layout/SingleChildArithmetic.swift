@@ -3,37 +3,29 @@
 
 @_spi(Host) import StateUI
 
-/// The arithmetic of a container with one child - a page, a pane: the child within its padding.
+/// The arithmetic of a container with one child - a page, a pane: the child within its room.
 /// Design: docs/design/host/layout.md#one-child
 @_spi(Host) public enum SingleChildArithmetic {
-    /// The room the child and the padding take for the width offered; the padding alone without a shown child.
+    /// The room the child takes for the width offered, with its margin; none without a shown child.
     @MainActor
-    public static func size<Child: LayoutChild>(of item: Child?, padding: Insets, width offered: Double?) -> LayoutSize {
-        guard let item, item.isShown else {
-            return LayoutSize(width: padding.left + padding.right, height: padding.top + padding.bottom)
-        }
+    public static func size<Child: LayoutChild>(of item: Child?, width offered: Double?) -> LayoutSize {
+        guard let item, item.isShown else { return LayoutSize(width: 0, height: 0) }
 
         let margin = item.values.margin
-        let size = item.size(offered: offered.map {
-            max(0, $0 - padding.left - padding.right - margin.left - margin.right)
-        })
+        let size = item.size(offered: offered.map { max(0, $0 - margin.left - margin.right) })
         return LayoutSize(
-            width: padding.left + padding.right + margin.left + margin.right + size.width,
-            height: padding.top + padding.bottom + margin.top + margin.bottom + size.height)
+            width: margin.left + margin.right + size.width, height: margin.top + margin.bottom + size.height)
     }
 
-    /// Where the child stands in `room`, within `padding`; right to left, turned about the room's middle.
+    /// Where the child stands in `room`; right to left, turned about the room's middle.
     @MainActor
-    public static func place<Child: LayoutChild>(
-        of item: Child, in room: Rect, padding: Insets, direction: LayoutDirection
-    ) -> Rect {
-        direction.places(leftToRight(of: item, in: room, padding: padding), in: room)
+    public static func place<Child: LayoutChild>(of item: Child, in room: Rect, direction: LayoutDirection) -> Rect {
+        direction.places(leftToRight(of: item, in: room), in: room)
     }
 
     /// The place as a layout written left to right has it.
     @MainActor
-    private static func leftToRight<Child: LayoutChild>(of item: Child, in room: Rect, padding: Insets) -> Rect {
-        let content = room.inset(padding)
+    private static func leftToRight<Child: LayoutChild>(of item: Child, in content: Rect) -> Rect {
         let values = item.values
         let margin = values.margin
         let availableWidth = max(0, content.width - margin.left - margin.right)

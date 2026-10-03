@@ -233,10 +233,6 @@ public struct Node {
     /// element and its subtree by type. Never crosses.
     var environments: [(key: ObjectIdentifier, object: AnyObject)] = []
 
-    /// What this element holds for its life, where it asks for something - a page's
-    /// session (ElementSession.swift). Never crosses.
-    var session: ElementSession?
-
     /// Where this node was written among its siblings - the builder path: which
     /// statement, which branch. Never crosses; the differ matches children by it.
     /// Design: docs/design/core/identity-and-diffing.md#keys
@@ -310,6 +306,9 @@ public struct Node {
     /// Set on a placeholder for a composed view whose body is not built yet
     /// (Stateful.swift).
     var stateful: Stateful?
+
+    /// What the view says of the page it stands on, apart from its own values (PageValues.swift).
+    var pageValues: PageValues?
 
     /// Adds a handler beside any the event already has, never instead of it.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids

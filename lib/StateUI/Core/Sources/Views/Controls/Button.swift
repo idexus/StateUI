@@ -37,6 +37,16 @@ extension ButtonProperties {
     }
 }
 
+extension ButtonProperties where Self: View {
+    /// The picture shown with the caption - the button's own, never the page's a view names with `.icon` where it
+    /// stands for its page.
+    ///
+    ///     Button("Surprise me").icon("nav_surprise.png")
+    public func icon(_ value: ImageSource) -> Modified {
+        setValue(ButtonContract.icon, value)
+    }
+}
+
 /// A button with a caption, and a handler for the press.
 ///
 ///     @State private var counter = 0

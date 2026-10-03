@@ -68,7 +68,7 @@ final class AndroidSplitView: AndroidLayoutView {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        SingleChildArithmetic.size(of: items.dropFirst().first, padding: Insets(0), width: width)
+        SingleChildArithmetic.size(of: items.dropFirst().first, width: width)
     }
 
     /// Lays the detail and the drawer out. A layout while the drawer slides leaves it sliding; only a new room -
@@ -89,7 +89,7 @@ final class AndroidSplitView: AndroidLayoutView {
         if let detail = items.dropFirst().first {
             let room = Rect(x: beside, y: 0, width: bounds.width - beside, height: bounds.height)
             detail.view.layout(
-                SingleChildArithmetic.place(of: detail, in: room, padding: Insets(0), direction: direction))
+                SingleChildArithmetic.place(of: detail, in: room, direction: direction))
         }
         scrim.layout(Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
         drawer.layout(Rect(x: 0, y: 0, width: drawerWidth, height: bounds.height))

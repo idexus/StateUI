@@ -10,9 +10,6 @@ struct SecondTabPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
-
     let nav: Navigation
 
     var body: some View {
@@ -42,9 +39,7 @@ struct SecondTabPage: View {
             .spacing(14)
             .padding(24)
         }
-        .onCreated {
-            page.gallery("Second")
-            page.icon = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
-        }
+        .galleryPage("Second")
+        .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
     }
 }

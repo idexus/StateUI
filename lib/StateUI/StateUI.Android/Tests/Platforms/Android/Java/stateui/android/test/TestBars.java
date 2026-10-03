@@ -17,6 +17,18 @@ public final class TestBars {
         return words == null ? null : words.toString();
     }
 
+    /** What the bar's navigation button says to TalkBack; null where the bar shows no navigation button. */
+    public static String navigation(Toolbar bar) {
+        if (bar.getNavigationIcon() == null) return null;
+        CharSequence words = bar.getNavigationContentDescription();
+        return words == null ? "" : words.toString();
+    }
+
+    /** Whether the bar is on screen: shown, and in a window. */
+    public static boolean shown(Toolbar bar) {
+        return bar.isShown();
+    }
+
     /** The colour the bar is painted, as ARGB; 0 where it wears no colour of its own. */
     public static int background(Toolbar bar) {
         Drawable drawn = bar.getBackground();

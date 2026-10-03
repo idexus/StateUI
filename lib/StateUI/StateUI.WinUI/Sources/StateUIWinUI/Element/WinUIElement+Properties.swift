@@ -79,8 +79,6 @@ extension WinUIElement {
             case .background:
                 (view as? WinUILayoutView)?.setBackground(value(.background))
                 (parent?.view as? WinUISplitView)?.paintPane()
-            case .padding where type == .page:
-                (view as? WinUISingleChildView)?.padding = element.insets(.padding)
             default: break
             }
         }

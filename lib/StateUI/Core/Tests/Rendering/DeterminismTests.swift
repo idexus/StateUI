@@ -42,12 +42,9 @@ private struct Counter: View {
     var body: some View { Text("Count: \(count)").fontSize(20) }
 }
 
-/// The stack's root. Every page of the session names itself as it comes into
-/// the tree, which is the message that brings it - so the session's messages
-/// carry every title a host reads.
+/// The stack's root. Every page's view names its page, in the message that
+/// brings it - so the session's messages carry every title a host reads.
 private struct HomePage: View {
-    @Environment private var page: PageSession
-
     /// Lent rather than read here: what reads it is `Counter`, one level down,
     /// which is what makes the clean walk's answer interesting.
     let count: Binding<Int>
@@ -59,32 +56,25 @@ private struct HomePage: View {
             Text("themed").textColor(Color(light: .black, dark: .white))
         }
         .spacing(12)
-        .onCreated {
-            page.title = "Home"
-            page.icon = ImageSource("home.png")
-        }
+        .title("Home")
+        .icon(ImageSource("home.png"))
     }
 }
 
 private struct DetailPage: View {
-    @Environment private var page: PageSession
     let name: String
 
-    var body: some View { Text(name).onCreated { page.title = name } }
+    var body: some View { Text(name).title(name) }
 }
 
 private struct SettingsPage: View {
-    @Environment private var page: PageSession
-
     var body: some View {
         VStack {
             Text("Settings").fontAttributes(.bold)
             Switch(true).onToggled { _ in }
         }
-        .onCreated {
-            page.title = "Settings"
-            page.icon = ImageSource("settings.png")
-        }
+        .title("Settings")
+        .icon(ImageSource("settings.png"))
     }
 }
 

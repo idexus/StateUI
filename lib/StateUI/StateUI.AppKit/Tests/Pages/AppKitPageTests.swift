@@ -657,30 +657,26 @@ final class AppKitPageTests: XCTestCase {
             "arrangement.split")
     }
 
-    /// A page keeps its padding around what it shows and paints its
+    /// A page holds what it shows across all of it and paints its
     /// background colour behind it.
     @MainActor
-    func testAPagesPaddingAndBackgroundReachItsView() throws {
+    func testAPagesContentFillsItAndItsBackgroundReachesItsView() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var padded = HostPatch(id: .manual("padded"), type: .page)
-        padded.properties = [
-            .padding: .numbers([10, 20, 30, 40]),
-            .background: .color(red: 51, green: 102, blue: 153, alpha: 255),
-        ]
-        padded.children = .arranged([HostPatch(id: .manual("content"), type: .colorBox)])
-        renderer.applyForTesting(tree(padded))
+        var painted = HostPatch(id: .manual("painted"), type: .page)
+        painted.properties = [.background: .color(red: 51, green: 102, blue: 153, alpha: 255)]
+        painted.children = .arranged([HostPatch(id: .manual("content"), type: .colorBox)])
+        renderer.applyForTesting(tree(painted))
 
-        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("padded")))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("painted")))
         let content = try XCTUnwrap(renderer.viewForTesting(id: .manual("content")))
         native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
         native.layoutSubtreeIfNeeded()
 
-        XCTAssertEqual(content.frame, NSRect(
-            x: 10, y: 20, width: native.bounds.width - 40, height: native.bounds.height - 60))
+        XCTAssertEqual(content.frame, native.bounds)
         assertChannels(channels(native.layer?.backgroundColor), [0.2, 0.4, 0.6, 1])
     }
 
@@ -1082,20 +1078,14 @@ private enum ChromeRoute: Hashable {
 }
 
 /// A pushed page that declares one action and, for its route, takes its way
-/// back or its whole navigation bar away - written through its session as
-/// it comes in.
+/// back or its whole navigation bar away.
 private struct ChromePage: View {
-    @Environment private var page: PageSession
     let route: ChromeRoute
 
     var body: some View {
-        Text("Pushed").toolbar { ToolbarItem("Save") }.onCreated {
-            switch route {
-            case .plain: break
-            case .withoutBackButton: page.showsBackButton = false
-            case .withoutNavigationBar: page.showsNavigationBar = false
-            }
-        }
+        Text("Pushed").toolbar { ToolbarItem("Save") }
+            .showsBackButton(route != .withoutBackButton)
+            .showsNavigationBar(route != .withoutNavigationBar)
     }
 }
 

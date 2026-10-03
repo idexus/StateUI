@@ -23,7 +23,10 @@ navigation button and the actions. The bar also carries the line under the
 title and the colours the page's path declares, the nearest of each
 ([the bar a path declares](../../host/pages.md#the-bar-a-path-declares)) -
 an arrangement changing one refreshes every bar under it, and a colour that
-travels does so at each frame - and the actions the page's path declares: the ones on the bar
+travels does so at each frame. What a page says of the bar - its title, its way
+back, the bar itself (`WindowChrome.pageValues`) - said from a state lands on
+the page's frame, where nothing arranges the stack, so the page shows its
+stack's bar again there. The bar carries the actions the page's path declares: the ones on the bar
 beside the title, as the host layer composes them - the leading groups
 first, the bar having no leading edge beside its navigation button - the rest
 behind the toolbar's overflow - each an entry of the toolbar's menu, written as

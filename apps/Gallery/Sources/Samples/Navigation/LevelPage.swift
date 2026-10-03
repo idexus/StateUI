@@ -5,14 +5,11 @@ import StateUI
 /// route more than once and each is a page with `@State` of its own.
 ///
 /// It also shows what a PAGE can still ask of the stack it is on, the bar
-/// itself belonging to the arrangement: those requests are written into the
-/// page session.
+/// itself belonging to the arrangement: its view says those requests by
+/// modifier.
 struct LevelPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
-
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
 
     let level: Int
 
@@ -89,31 +86,24 @@ struct LevelPage: View {
         }
         .spacing(16)
         .padding(24)
-        .onCreated {
-            page.gallery("Level \(level)")
-
-            // What the back button reads while the page ABOVE this one is on
-            // top - written on the page the user would go back to. A host
-            // whose back affordance has no text ignores it.
-            page.backButtonTitle = "Level \(level)"
-        }
-        // The bar and its way back are the page's to ask for, from its session.
-        .onChanged(showsBar) { page.showsNavigationBar = showsBar }
-        .onChanged(offersBack) { page.showsBackButton = offersBack }
+        .galleryPage("Level \(level)")
+        // What the back button reads while the page ABOVE this one is on
+        // top - written on the page the user would go back to. A host
+        // whose back affordance has no text ignores it.
+        .backButtonTitle("Level \(level)")
+        // The bar and its way back are the page's to ask for, each from the
+        // state its switch writes: the host follows it, no view built again.
+        .showsNavigationBar($showsBar)
+        .showsBackButton($offersBack)
         // What this page sees of its own life, one count per moment. Appearing
         // and disappearing answer visibility; the other three answer a move.
-        // `appearing` comes on every arrival, the first one included, which
+        // `onAppearing` runs on every arrival, the first one included, which
         // makes it the moment to refresh what may have changed while the page
         // was covered.
-        .onChanged(page.phase) {
-            switch page.phase {
-            case .appearing: arrivals += 1
-            case .disappearing: departures += 1
-            case .navigatedTo: navigatedTo += 1
-            case .navigatingFrom: leaving += 1
-            case .navigatedFrom: left += 1
-            case .created: break
-            }
-        }
+        .onAppearing { arrivals += 1 }
+        .onDisappearing { departures += 1 }
+        .onNavigatedTo { navigatedTo += 1 }
+        .onNavigatingFrom { leaving += 1 }
+        .onNavigatedFrom { left += 1 }
     }
 }

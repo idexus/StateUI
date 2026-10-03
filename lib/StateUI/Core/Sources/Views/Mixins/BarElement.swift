@@ -3,8 +3,8 @@
 
 /// The bar over what an arrangement shows. It belongs to the arrangement and
 /// looks the same whichever page shows; what one page asks of the bar - to be
-/// hidden, or to carry a view instead of its title - is written on its
-/// `PageSession`.
+/// hidden, or to carry a view instead of its title - its view says of its page,
+/// `.showsNavigationBar(false)`.
 ///
 /// Declared on a window's page, it is the whole window's bar; an arrangement
 /// further in stands in its place, one value at a time, while it is shown:

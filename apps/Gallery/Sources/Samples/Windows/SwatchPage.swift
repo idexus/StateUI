@@ -13,9 +13,6 @@ struct SwatchPage: View {
     /// here.
     @Environment private var window: WindowSession
 
-    /// The page itself - its padding.
-    @Environment private var page: PageSession
-
     var body: some View {
         VStack {
             ColorBox()
@@ -43,9 +40,8 @@ struct SwatchPage: View {
             .horizontalAlignment(.center)
         }
         .spacing(14)
+        .padding(16)
         .onCreated {
-            page.padding = Insets(16)
-
             window.title = "Swatch \(number)"
             window.width = 300
             window.height = 340

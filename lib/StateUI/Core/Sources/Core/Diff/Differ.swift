@@ -39,6 +39,9 @@ final class Differ {
     /// What each changed state is called, for `debugInfo()` (Builds.swift).
     var named: [ObjectIdentifier: String] = [:]
 
+    /// Whether the element described next is the view a page shows, whose page values the page takes.
+    var describesPageRoot = false
+
     /// The handlers this walk found to run - `.onChanged`, `.onCreated` - in order.
     /// Design: docs/design/core/render.md#handlers-in-the-message
     var fired: [EventHandler] = []

@@ -72,7 +72,6 @@ enum WinUIRealization {
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
-        .complete("Page", "padding"),
         .unrealized("Path", "ignoresInput", why: hitOnlyWherePainted),
         .unrealized("Polygon", "ignoresInput", why: hitOnlyWherePainted),
         .unrealized("Polyline", "ignoresInput", why: hitOnlyWherePainted),

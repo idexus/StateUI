@@ -107,8 +107,6 @@ Marker
   type
   detailsClicked()
   selected()
-Page
-  padding
 Path
   contentMode
   dash

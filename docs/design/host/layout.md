@@ -160,10 +160,11 @@ written.
 
 ## One child
 
-A page or a pane holds one child within its padding. The child is
-measured only where its natural size places it - on an axis it does not fill
-and states no size for - so a child that fills both ways takes the room
-whatever it would measure. A container with no shown child is its padding.
+A page or a pane holds one child in its room, within the child's margin; the
+space inside a page is its view's own padding. The child is measured only where
+its natural size places it - on an axis it does not fill and states no size
+for - so a child that fills both ways takes the room whatever it would measure.
+A container with no shown child takes no room.
 
 ## A row beside a page
 

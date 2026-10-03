@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `PageContract` on a host: a page shows its content, hears each phase of its life in order as pages are pushed
-/// and popped over it, and stands with the bar, the way back, the background and the padding its session asks for.
+/// and popped over it, and stands with the bar, the way back and the background its view says of it - as a value,
+/// and from a state the host follows.
 @_spi(Host) public enum PageTests: ConformanceFamily {
     public static let name = "Page"
 
@@ -68,42 +69,24 @@
                 s.settle { log.values.suffix(2) == ["Root appearing", "Root navigatedTo"] }
                 s.expect(Array(log.values.suffix(2)), ["Root appearing", "Root navigatedTo"], "the page beneath comes back")
             },
-            pushedHolds(PageContract.showsBackButton, false, then: true) { $0.showsBackButton = $1 },
-            pushedHolds(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle = $1 },
-            pushedHolds(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar = $1 },
-            pushedHolds(PageContract.background, .red, then: .blue) { $0.background = $1 },
-            ConformanceCase("aPagesPaddingKeepsItsContentIn", proves: [
-                Covered(PageContract.padding),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let wide = State(wrappedValue: false)
-                let frames = Received<[Double]>()
-                s.start {
-                    SessionPage(beside: [
-                        ColorBox(.red).width(20).height(20).horizontalAlignment(.start)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) },
-                        Button("Wider").onClicked { wide.wrappedValue = true }.id("change"),
-                    ], key: "\(wide.wrappedValue)") { page, _ in
-                        page.padding = wide.wrappedValue ? Insets(30) : Insets(10)
-                    }
-                    .horizontalAlignment(.start)
-                    .verticalAlignment(.start)
-                }
-                s.settle { frames.values.last.map(FrameReport.inContent)?.first == 10 }
-                s.expect(frames.values.last.map(FrameReport.inContent)?.first, 10, "in from the window by its padding")
-
-                try s.perform(.activate, on: s.element("change"))
-                s.settle { frames.values.last.map(FrameReport.inContent)?.first == 30 }
-                s.expect(frames.values.last.map(FrameReport.inContent)?.first, 30, "and by the padding the tree changed it to")
-            },
+            pushedHolds(PageContract.showsBackButton, false, then: true) { $0.showsBackButton($1) },
+            pushedHolds(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
+            pushedHolds(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
+            pushedHolds(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
+            pushedFollows(PageContract.showsBackButton, false, then: true) { $0.showsBackButton($1) },
+            pushedFollows(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
+            pushedFollows(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
+            pushedFollows(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
         ]
     }
 
-    /// `member` of a page pushed over the root holds what its session writes, and what the tree changes it to.
+    /// `member` of a page pushed over the root holds what its view says, and what it says once its body - and
+    /// nothing around it - is built again.
     static func pushedHolds<Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<PageContract, Value>, _ first: Value, then second: Value,
-        _ write: @escaping @Sendable (PageSession, Value) -> Void
+        _ say: @escaping @Sendable (VStack, Value) -> VStack
     ) -> ConformanceCase {
-        ConformanceCase("Page.\(member.name).holdsWhatItsSessionWritesAndChanges", proves: [
+        ConformanceCase("Page.\(member.name).holdsWhatItsViewSaysAndChanges", proves: [
             Covered(member),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
@@ -111,18 +94,53 @@
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
                     Text("Root")
                 } destination: { _ in
-                    SessionPage(beside: [Button("Change").onClicked { value.wrappedValue = second }.id("change")],
-                                key: "\(value.wrappedValue)") { page, _ in write(page, value.wrappedValue) }
+                    Saying(value: value, second: second, say: say)
                 }
             }
-            let pushed = try pushedPage(s)
-            try s.settle { try s.held(member, on: pushedPage(s)) == first }
-            s.expect(try s.held(member, on: pushed), first, "what its session wrote")
-
-            try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(member, on: pushedPage(s)) == second }
-            s.expect(try s.held(member, on: pushedPage(s)), second, "what the tree changed it to")
+            try held(member, first, then: second, s)
         }
+    }
+
+    /// `member` of a page pushed over the root holds the state its view says it from, and follows the state as it
+    /// is written, no view built again.
+    static func pushedFollows<Value: HostRepresentable & StateValue & Sendable & Equatable>(
+        _ member: ElementProperty<PageContract, Value>, _ first: Value, then second: Value,
+        _ say: @escaping @Sendable (VStack, Binding<Value>) -> VStack
+    ) -> ConformanceCase {
+        ConformanceCase("Page.\(member.name).followsItsState", proves: [
+            Covered(member),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let value = State(wrappedValue: first)
+            s.start {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    say(changing(value, to: second), value.projectedValue)
+                }
+            }
+            try held(member, first, then: second, s)
+        }
+    }
+
+    /// Words and a button writing `second` into `value`.
+    static func changing<Value>(_ value: State<Value>, to second: Value) -> VStack {
+        VStack {
+            Text("Page")
+            Button("Change").onClicked { value.wrappedValue = second }.id("change")
+        }
+    }
+
+    /// The pushed page holds `first`, then `second` once the button is clicked.
+    @MainActor static func held<Value: HostRepresentable & Equatable>(
+        _ member: ElementProperty<PageContract, Value>, _ first: Value, then second: Value, _ s: Session
+    ) throws {
+        let pushed = try pushedPage(s)
+        try s.settle { try s.held(member, on: pushedPage(s)) == first }
+        s.expect(try s.held(member, on: pushed), first, "what its view said")
+
+        try s.perform(.activate, on: s.element("change"))
+        try s.settle { try s.held(member, on: pushedPage(s)) == second }
+        s.expect(try s.held(member, on: pushedPage(s)), second, "what it was changed to")
     }
 
     /// The page pushed over the root: the last page the tree holds.
@@ -134,17 +152,24 @@
     }
 }
 
+/// A page whose body says `value` of its page, and is built again - alone - when the button writes `second`.
+struct Saying<Value: HostRepresentable & Sendable & Equatable>: View {
+    let value: State<Value>
+    let second: Value
+    let say: @Sendable (VStack, Value) -> VStack
+
+    var body: some View {
+        say(PageTests.changing(value, to: second), value.wrappedValue)
+    }
+}
+
 /// A page saying each phase of its life, as its title and the phase.
 struct PhasePage: View {
     let title: String
     let log: Received<String>
 
-    @Environment private var page: PageSession
-
     var body: some View {
-        let (title, log, page) = (self.title, self.log, self.page)
-        return Text(title)
-            .onCreated { page.title = title }
-            .onChanged(page.phase) { log.values.append("\(title) \(page.phase)") }
+        let (title, log) = (self.title, self.log)
+        return Text(title).title(title).loggingPhases(log, as: title)
     }
 }

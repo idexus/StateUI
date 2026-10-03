@@ -68,7 +68,7 @@ final class WinUITabView: WinUILayoutView {
 
     override func contentSize(width: Double?) -> LayoutSize {
         RowEdge.size(
-            page: SingleChildArithmetic.size(of: selectedItem, padding: Insets(0), width: width),
+            page: SingleChildArithmetic.size(of: selectedItem, width: width),
             row: rowHeight(width: width))
     }
 
@@ -78,7 +78,7 @@ final class WinUITabView: WinUILayoutView {
         if !tabsShownByWindow { row.layout(rowRoom) }
         guard let page = selectedItem else { return }
 
-        page.view.layout(SingleChildArithmetic.place(of: page, in: room, padding: Insets(0), direction: direction))
+        page.view.layout(SingleChildArithmetic.place(of: page, in: room, direction: direction))
     }
 
     /// The own row's height for `width` DIPs; none where the window shows the tabs.

@@ -11,9 +11,6 @@ struct GroupPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
-
     let group: SampleGroup
 
     /// Where the gallery is - a card pushes a sample onto the stack.
@@ -47,6 +44,6 @@ struct GroupPage: View {
             .spacing(14)
             .padding(24)
         }
-        .onCreated { page.gallery(group.title) }
+        .galleryPage(group.title)
     }
 }

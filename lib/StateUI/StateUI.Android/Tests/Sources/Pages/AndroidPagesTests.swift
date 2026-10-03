@@ -614,34 +614,25 @@ private struct FurnishedPage: View {
     var showsBackButton = true
     var showsNavigationBar = true
 
-    @Environment private var page: PageSession
-
     var body: some View {
-        let page = self.page
-        let title = self.title
-        let back = showsBackButton
-        let bar = showsNavigationBar
-        return Text(title).onCreated {
-            page.title = title
-            page.background = .blue
-            page.padding = Insets(8)
-            page.showsBackButton = back
-            page.showsNavigationBar = bar
-        }
+        VStack { Text(title) }
+            .padding(8)
+            .title(title)
+            .pageBackground(.blue)
+            .showsBackButton(showsBackButton)
+            .showsNavigationBar(showsNavigationBar)
     }
 }
 
 /// A page whose search field stands in its bar in place of its title.
 private struct SearchingPage: View {
-    @Environment private var page: PageSession
     @State private var query = ""
 
     var body: some View {
-        let page = self.page
         let query = $query
         return Text("Results")
             .titleView { SearchField(query).placeholder("Search") }
-            .onCreated { page.title = "Search" }
+            .title("Search")
     }
 }
 
@@ -689,19 +680,8 @@ private struct TitledPage: View {
     var log: Received<String>? = nil
     var actions: [ToolbarItem] = []
 
-    @Environment private var page: PageSession
-
     var body: some View {
-        let log = self.log
-        let title = self.title
-        let page = self.page
-
-        return Text(title)
-            .toolbar { actions }
-            .onCreated {
-                page.title = title
-                page.icon = icon
-            }
-            .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
+        let words = Text(title).toolbar { actions }.title(title)
+        return (icon.map { words.icon($0) } ?? words).loggingPhases(log, as: title)
     }
 }

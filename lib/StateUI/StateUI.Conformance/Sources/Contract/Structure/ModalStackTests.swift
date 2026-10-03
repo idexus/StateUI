@@ -69,14 +69,13 @@ struct SheetsPage: View {
     let sheets: State<[Int]>
     let log: Received<String>
 
-    @Environment private var page: PageSession
-
     var body: some View {
-        let (sheets, log, page) = (self.sheets, self.log, self.page)
+        let (sheets, log) = (self.sheets, self.log)
         return VStack {
             Text("beneath")
             Button("Present").onClicked { sheets.wrappedValue.append(1) }.id("present")
         }
-        .onChanged(page.phase) { log.values.append("beneath \(page.phase)") }
+        .onAppearing { log.values.append("beneath appearing") }
+        .onDisappearing { log.values.append("beneath disappearing") }
     }
 }

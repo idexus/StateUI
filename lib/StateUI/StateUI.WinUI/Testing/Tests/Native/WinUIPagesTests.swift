@@ -101,9 +101,9 @@ final class WinUIPagesTests: XCTestCase {
             let host = WinUIRenderer.running {
                 TabView([0, 1]) { tab in
                     if tab == 0 {
-                        SessionPage { page, _ in page.title = "Wide"; page.icon = "test_wide.png" }
+                        Text("Wide").title("Wide").icon("test_wide.png")
                     } else {
-                        SessionPage { page, _ in page.title = "Plain" }
+                        Text("Plain").title("Plain")
                     }
                 }
             }
@@ -456,19 +456,15 @@ final class WinUIPagesTests: XCTestCase {
 
 /// A page that puts the focus in its field as it appears.
 private struct AimedFieldPage: View {
-    @Environment private var page: PageSession
     @Aim(TextField.self) private var field
 
     var body: some View {
-        let (page, field) = (self.page, self.field)
+        let field = self.field
         return VStack {
             TextField(State(wrappedValue: "").projectedValue).aim(field)
             Button("Below")
         }
-        .onChanged(page.phase) {
-            guard page.phase == .appearing else { return }
-            try await field.focus()
-        }
+        .onAppearing { try await field.focus() }
     }
 }
 
@@ -480,31 +476,20 @@ private struct TitledPage: View {
     var actions: [ToolbarItem] = []
     var hidesBar = false
 
-    @Environment private var page: PageSession
-
     var body: some View {
-        let log = self.log
-        let title = self.title
-        let page = self.page
-
-        return Text(title)
+        Text(title)
             .toolbar { actions }
-            .onCreated {
-                page.title = title
-                if hidesBar { page.showsNavigationBar = false }
-            }
-            .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
+            .title(title)
+            .showsNavigationBar(!hidesBar)
+            .loggingPhases(log, as: title)
     }
 }
 
-/// A sidebar page in `tone`, written on its session as it is made and as the tone changes.
+/// A sidebar page in `tone`.
 private struct TonedSidebar: View {
-    @Environment private var page: PageSession
     let tone: Color
 
     var body: some View {
-        Text("sidebar")
-            .onCreated { page.background = tone }
-            .onChanged(tone) { page.background = tone }
+        Text("sidebar").pageBackground(tone)
     }
 }

@@ -6,7 +6,7 @@
 
 /// `PageElementContract` on a host: a page and an arrangement stand under the title and with the icon the tree gives
 /// them where another container presents them - a tabbed view's tab - and under the titles the tree changes them to;
-/// the visible page's title names its window. Each case made for every element wearing the tier.
+/// the visible page's title names its window, from a state too. Each case made for every element wearing the tier.
 @_spi(Host) public enum PageElementTests: ConformanceFamily {
     public static let name = "PageElement"
 
@@ -16,7 +16,7 @@
                 inTab(PageElementContract.title, of: element, "Notes", then: "Drafts"),
                 inTab(PageElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
             ]
-        } + [titled]
+        } + [titled, titledByState]
     }
 
     /// `member` of `element`, presented as a tabbed view's first tab, holds what the tree gives it and what the tree
@@ -66,10 +66,33 @@
         ConformanceCase("Page.theVisiblePagesTitleNamesItsWindow", proves: [
             Covered(PageElementContract.title, on: "Page"),
         ]) { s in
-            s.start { SessionPage { page, _ in page.title = "Notes" } }
+            s.start { VStack { Text("Page") }.title("Notes") }
 
             try s.settle { try s.held(WindowContract.title, on: s.element(ofType: WindowContract.nodeType)) == "Notes" }
             s.expect(try s.held(WindowContract.title, on: s.element(ofType: WindowContract.nodeType)), "Notes")
+        }
+    }
+
+    /// The visible page's title said from a state names its window, and follows the state as it is written.
+    static var titledByState: ConformanceCase {
+        ConformanceCase("Page.theTitleFromAStateFollowsIt", proves: [
+            Covered(PageElementContract.title, on: "Page"),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let title = State(wrappedValue: "Notes")
+            s.start {
+                VStack {
+                    Text("Page")
+                    Button("Rename").onClicked { title.wrappedValue = "Drafts" }.id("rename")
+                }
+                .title(title.projectedValue)
+            }
+            let window = try s.element(ofType: WindowContract.nodeType)
+            try s.settle { try s.held(WindowContract.title, on: window) == "Notes" }
+            s.expect(try s.held(WindowContract.title, on: window), "Notes", "the title the state holds")
+
+            try s.perform(.activate, on: s.element("rename"))
+            try s.settle { try s.held(WindowContract.title, on: window) == "Drafts" }
+            s.expect(try s.held(WindowContract.title, on: window), "Drafts", "and the one written into it")
         }
     }
 }
@@ -102,10 +125,10 @@ enum Presented {
         case "TabView":
             return written.worn(by: TabView([0]) { _ in VStack { [Text("Inner")] + others } })
         default:
-            return SessionPage(beside: others, key: "\(value)") { page, _ in
-                if let title = value as? String, member.name == PageElementContract.title.name { page.title = title }
-                if let icon = value as? ImageSource, member.name == PageElementContract.icon.name { page.icon = icon }
-            }
+            let words = VStack { [Text("Page")] + others }
+            if let title = value as? String, member.name == PageElementContract.title.name { return words.title(title) }
+            if let icon = value as? ImageSource, member.name == PageElementContract.icon.name { return words.icon(icon) }
+            return words
         }
     }
 }

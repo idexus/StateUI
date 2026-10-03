@@ -115,19 +115,16 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places[1], Rect(50, 0, 50, 50), "a proportion from 0 is the right half")
     }
 
-    /// One child and its padding turn with the room; left to right is the default, and changes nothing.
+    /// One child and its margin turn with the room; left to right is the default, and changes nothing.
     @MainActor
     func testOneChildRightToLeftTurnsWithItsRoom() {
         var child = Child(width: 20, height: 10)
         child.values.horizontal = 0
+        child.values.margin = Insets(left: 4, top: 0, right: 0, bottom: 0)
 
         let room = Rect(0, 0, 100, 10)
-        XCTAssertEqual(
-            SingleChildArithmetic.place(of: child, in: room, padding: Insets(left: 4, top: 0, right: 0, bottom: 0), direction: .rightToLeft),
-            Rect(76, 0, 20, 10))
-        XCTAssertEqual(
-            SingleChildArithmetic.place(of: child, in: room, padding: Insets(left: 4, top: 0, right: 0, bottom: 0), direction: .leftToRight),
-            Rect(4, 0, 20, 10))
+        XCTAssertEqual(SingleChildArithmetic.place(of: child, in: room, direction: .rightToLeft), Rect(76, 0, 20, 10))
+        XCTAssertEqual(SingleChildArithmetic.place(of: child, in: room, direction: .leftToRight), Rect(4, 0, 20, 10))
     }
 
     /// Fixed tracks take their length, automatic tracks their child, proportional tracks share the rest.
@@ -243,13 +240,15 @@ final class LayoutArithmeticTests: XCTestCase {
             LayoutSize(width: 60, height: 40), "half of the room holds the child only in twice its size")
     }
 
-    /// A child that fills both ways takes the room within the padding, whatever it would measure.
+    /// A child that fills both ways takes the room within its margin, whatever it would measure.
     @MainActor
     func testASingleFillingChildTakesTheRoom() {
-        let place = SingleChildArithmetic.place(
-            of: Child(width: 5, height: 5), in: Rect(0, 0, 100, 40), padding: Insets(10), direction: .leftToRight)
+        var child = Child(width: 5, height: 5)
+        child.values.margin = Insets(10)
 
-        XCTAssertEqual(place, Rect(10, 10, 80, 20))
+        XCTAssertEqual(
+            SingleChildArithmetic.place(of: child, in: Rect(0, 0, 100, 40), direction: .leftToRight),
+            Rect(10, 10, 80, 20))
     }
 
     /// Every layout offers a child the room it stands in less the child's margin, once: the child answers for
@@ -280,9 +279,9 @@ final class LayoutArithmeticTests: XCTestCase {
         }, [84], "a stack placing")
         XCTAssertEqual(offered { _ = ZStackArithmetic.size(of: [child], padding: Insets(0), width: 100) }, [84], "a ZStack")
         XCTAssertEqual(offered { _ = ZStackArithmetic.size(of: [half], padding: Insets(0), width: 100) }, [34], "its area")
-        XCTAssertEqual(offered { _ = SingleChildArithmetic.size(of: child, padding: Insets(0), width: 100) }, [84], "one child")
+        XCTAssertEqual(offered { _ = SingleChildArithmetic.size(of: child, width: 100) }, [84], "one child")
         XCTAssertEqual(offered {
-            _ = SingleChildArithmetic.place(of: child, in: room, padding: Insets(0), direction: .leftToRight)
+            _ = SingleChildArithmetic.place(of: child, in: room, direction: .leftToRight)
         }, [84], "one child placed")
         XCTAssertEqual(offered {
             _ = GridArithmetic.places(

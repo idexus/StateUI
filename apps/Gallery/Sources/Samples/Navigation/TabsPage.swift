@@ -10,9 +10,6 @@ struct TabsPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
-
     let nav: Navigation
 
     /// This TAB's own stack - a different array from the gallery's, which is
@@ -59,6 +56,6 @@ struct TabsPage: View {
             .spacing(14)
             .padding(24)
         }
-        .onCreated { page.gallery("Tabs") }
+        .galleryPage("Tabs")
     }
 }

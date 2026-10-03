@@ -5,8 +5,8 @@
 //
 // A modal stack is an array the author holds, exactly as a navigation path is,
 // and it is an arrangement of that shape: the page it holds first, the sheets
-// over it after, as the window's page. What the pages write as they arrive is
-// in the message that brings them, which is what `Renders.settled` answers.
+// over it after, as the window's page. What each page's view says of it is in
+// the message that brings it.
 // Coming back there is one report, and it says how many are STILL presented -
 // the sheet the user dragged down has already gone.
 //
@@ -22,21 +22,19 @@ private enum Sheet: Hashable {
 
 /// The page underneath, which is what presents.
 private struct HomePage: View {
-    @Environment private var page: PageSession
     @Binding var sheets: [Sheet]
 
     var body: some View {
         Button("Settings")
             .onClicked { sheets.append(.settings) }
-            .onCreated { page.title = "Home" }
+            .title("Home")
     }
 }
 
 /// A presented page. It carries its own way out, because a modal covers the
 /// bars as well as the content and there is nothing else to close it with -
-/// and it says what it is called as it comes into the tree.
+/// and its view says what it is called.
 private struct SheetPage: View {
-    @Environment private var page: PageSession
     @Binding var sheets: [Sheet]
 
     let name: String
@@ -44,9 +42,7 @@ private struct SheetPage: View {
     var body: some View {
         Button("Close")
             .onClicked { sheets.removeLast() }
-            .onCreated {
-                page.title = name
-            }
+            .title(name)
     }
 }
 
@@ -228,6 +224,6 @@ final class ModalStackTests: XCTestCase {
         XCTAssertEqual(modal.children.first?.arrangement, [.manual("root"), .manual("0/1")])
         let presented = modal.children.dropFirst()
         XCTAssertEqual(presented.map { $0.props["title"] }, [.string("Settings"), .string("About")])
-        XCTAssertTrue(presented.allSatisfy { $0.eventNames == HostPatch.pageEvents })
+        XCTAssertTrue(presented.allSatisfy { $0.eventNames.isEmpty }, "a page hears what its view hears: nothing here")
     }
 }

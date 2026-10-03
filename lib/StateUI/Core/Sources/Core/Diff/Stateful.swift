@@ -291,6 +291,11 @@ extension Node {
             // And slot children written on it - a `.contextMenu` - after its own.
             node.children += written.children
 
+            // And what is written on it of its page, over what its body says.
+            if let wrote = written.pageValues {
+                node.pageValues = node.pageValues.map { $0.merged(under: wrote) } ?? wrote
+            }
+
             node.id = written.id ?? node.id
             node.key = written.key ?? node.key
             return node

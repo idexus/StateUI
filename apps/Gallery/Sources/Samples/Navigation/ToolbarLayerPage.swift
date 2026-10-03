@@ -5,8 +5,6 @@ import StateUI
 /// Its actions stand nearer the title than the gallery's, which keep their place at the edge; going back takes them
 /// away with the page, and the bar stands as it stood before the push.
 struct ToolbarLayerPage: View {
-    /// The page itself - what it is called.
-    @Environment private var page: PageSession
 
     /// How deep it stands, from 1.
     let depth: Int
@@ -44,6 +42,6 @@ struct ToolbarLayerPage: View {
                 .accessibilityIdentifier("layer.deeper")
                 .onClicked { path.append(.layer(depth + 1)) }
         }
-        .onCreated { page.gallery("Layer \(depth)") }
+        .galleryPage("Layer \(depth)")
     }
 }
