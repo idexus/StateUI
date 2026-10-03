@@ -54,4 +54,33 @@ final class UIKitFrameReportTests: XCTestCase {
 
         XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 20, 120, 60])
     }
+
+    /// A scroll moves what stands in the scroller: a view's place in the window is said again, though nothing laid
+    /// it out anew - its place in its parent stays.
+    @MainActor
+    func testAScrollSaysWhereAViewStandsInTheWindow() throws {
+        let heard = Received<[Double]>()
+        let host = UIKitRenderer.running {
+            ScrollView {
+                VStack {
+                    ColorBox(.steelBlue).width(120).height(60)
+                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                    ColorBox(.firebrick).width(120).height(3000)
+                }
+                .horizontalAlignment(.start)
+            }
+        }
+        defer { host.finish() }
+        host.settle { !heard.values.isEmpty }
+        let before = try XCTUnwrap(heard.values.last)
+        let scroller = try XCTUnwrap(host.views(UIKitScrollView.self).first?.scroller)
+
+        scroller.setContentOffset(CGPoint(x: 0, y: 100), animated: false)
+        host.frame()
+        host.settle { heard.values.last?[5] != before[5] }
+
+        let after = try XCTUnwrap(heard.values.last)
+        XCTAssertEqual(after[5], before[5] - 100, "its place in the window moved with the scroll")
+        XCTAssertEqual(Array(after.prefix(4)), Array(before.prefix(4)), "its place in its parent stays")
+    }
 }

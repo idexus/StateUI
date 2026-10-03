@@ -103,6 +103,8 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     // MARK: - The user's movement
 
     func scrollViewDidScroll(_ scroller: UIScrollView) {
+        // A scroll moves whatever stands in the scroller, whoever moved it: a frame read under it is said again.
+        laidOut?()
         let standing = Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y)
         guard !ProgramWrite.isWriting, standing != offset else { return }
         let previous = offset
