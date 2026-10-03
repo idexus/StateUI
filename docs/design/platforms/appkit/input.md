@@ -44,6 +44,12 @@ matter:
   field editor is a separate view the window lends the field, so it counts as
   the field it edits.
 
+Tab and Shift-Tab go from view to view in the order they stand on screen. A
+window and a sheet work that loop out themselves
+(`autorecalculatesKeyViewLoop`): StateUI's views are made and placed long
+after the window, and a window keeping the loop it was given leaves a field
+alone in its own - Tab then selects the field's words instead of moving on.
+
 ## Scrolling
 
 The scrolling is the platform's, and the host layer's `ScrollMovement` says

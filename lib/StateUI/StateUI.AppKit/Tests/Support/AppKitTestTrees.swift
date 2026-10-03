@@ -65,7 +65,7 @@ extension AppKitRenderer {
     }
 
     @MainActor
-    private static func views<Native: NSView>(_ type: Native.Type, in view: NSView) -> [Native] {
+    static func views<Native: NSView>(_ type: Native.Type, in view: NSView) -> [Native] {
         let own = (view as? Native).map { [$0] } ?? []
         return own + view.subviews.flatMap { views(type, in: $0) }
     }

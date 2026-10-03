@@ -28,6 +28,8 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
             backing: .buffered,
             defer: false)
         window.isReleasedWhenClosed = false
+        // Tab and Shift-Tab go through the views as they stand on screen: AppKit works the loop out.
+        window.autorecalculatesKeyViewLoop = true
         super.init(window: window)
         window.delegate = self
         focusWatch = window.observe(\.firstResponder) { [weak self] _, _ in

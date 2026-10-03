@@ -49,6 +49,56 @@ final class AppKitFocusTests: XCTestCase {
         settle(renderer) { shown() == "idle" }
         XCTAssertEqual(shown(), "idle")
     }
+
+    /// Tab moves the focus from a field to the next one down, and Shift-Tab back: the window's own key view loop,
+    /// worked out from where its views stand - on a window's page and on a sheet alike.
+    @MainActor
+    func testTabMovesTheFocusToTheNextField() throws {
+        for (place, renderer) in [
+            ("a window's page", AppKitRenderer.running { TwoFields() }),
+            ("a sheet", AppKitRenderer.running {
+                ModalStack(State(wrappedValue: [1]).projectedValue) { Text("Under") } destination: { _ in TwoFields() }
+            }),
+        ] {
+            defer { renderer.closeForTesting() }
+            let shown = {
+                let window = renderer.windowsForTesting.first
+                let content = (window?.modals.last?.window ?? window?.window)?.contentView
+                return content.map { AppKitRenderer.views(NSTextField.self, in: $0) }?.filter(\.isEditable) ?? []
+            }
+            settle(renderer) { shown().count == 2 }
+            let fields = shown()
+                .sorted { $0.convert($0.bounds, to: nil).maxY > $1.convert($1.bounds, to: nil).maxY }
+            let window = try XCTUnwrap(fields.first?.window, place)
+            XCTAssertEqual(fields.count, 2, place)
+            window.makeFirstResponder(fields[0])
+
+            // What the Tab key does in a field: its editor asks the window for the next key view.
+            (window.firstResponder as? NSTextView)?.insertTab(nil)
+            XCTAssertTrue(Self.edits(fields[1], in: window), "Tab goes to the field below, on \(place)")
+
+            (window.firstResponder as? NSTextView)?.insertBacktab(nil)
+            XCTAssertTrue(Self.edits(fields[0], in: window), "Shift-Tab comes back, on \(place)")
+        }
+    }
+
+    /// Whether `field` is being edited in `window`: the window's field editor works for it.
+    private static func edits(_ field: NSTextField, in window: NSWindow) -> Bool {
+        (window.firstResponder as? NSText)?.delegate === field
+    }
+}
+
+/// Two fields one under the other, as a sign-in has them.
+private struct TwoFields: View {
+    @State private var code = ""
+    @State private var password = ""
+
+    var body: some View {
+        VStack {
+            TextField($code).placeholder("Code")
+            TextField($password).placeholder("Password").isPassword(true)
+        }
+    }
 }
 
 /// A field that says whether it has the focus, and two buttons that move it.
