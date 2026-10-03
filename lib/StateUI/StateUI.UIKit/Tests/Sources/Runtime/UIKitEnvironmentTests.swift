@@ -28,6 +28,27 @@ final class UIKitEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .light)
     }
 
+    /// A window the user is not in stands inactive: iPadOS keeps every window on screen active and dims those behind
+    /// the one the user works in - and the window dimmed is activated again as the user comes back to it.
+    @MainActor
+    func testAWindowDimmedBehindAnotherStandsInactive() throws {
+        let scene = try XCTUnwrap(TestScene.scene)
+        let host = UIKitRenderer.running { Text("Behind") }
+        defer {
+            scene.traitOverrides.remove(UITraitActiveAppearance.self)
+            host.finish()
+        }
+        host.settle { StandardEnvironment.application.phase == .active }
+
+        scene.traitOverrides.activeAppearance = .inactive
+        host.settle { StandardEnvironment.application.phase == .inactive }
+        XCTAssertEqual(StandardEnvironment.application.phase, .inactive, "dimmed behind another window")
+
+        scene.traitOverrides.activeAppearance = .active
+        host.settle { StandardEnvironment.application.phase == .active }
+        XCTAssertEqual(StandardEnvironment.application.phase, .active, "the user came back to it")
+    }
+
     /// The display is the screen as the scene stands on it now: turned a quarter, it is landscape, its width and
     /// height swapped, and says the turn.
     @MainActor

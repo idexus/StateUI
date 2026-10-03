@@ -23,6 +23,13 @@ final class UIKitWindowController {
     /// The record its session keeps, for iOS to hand back as it restores the scene.
     private(set) var record: WindowRecord?
 
+    /// What the window does as the user comes to it or goes to another: iPadOS keeps every window on screen active
+    /// and dims those the user is not in, which their scene's active appearance tells.
+    var onFrontMoved: ((UIWindowScene) -> Void)?
+
+    /// The scene's active appearance followed, while the window stands in it.
+    private var frontWatch: (scene: UIWindowScene, registration: UITraitChangeRegistration)?
+
     private let root = UIKitRootViewController()
     let presentation = WindowPresentation()
 
@@ -47,6 +54,7 @@ final class UIKitWindowController {
 
     /// iOS let the scene go, and its window with it; the session stays, for the scene to come back.
     func sceneLeft() {
+        stopWatchingFront()
         window?.isHidden = true
         window?.rootViewController = nil
         window = nil
@@ -60,6 +68,18 @@ final class UIKitWindowController {
         window.makeKeyAndVisible()
         self.window = window
         session = scene.session
+        let registration = scene.registerForTraitChanges([UITraitActiveAppearance.self]) {
+            [weak self] (scene: UIWindowScene, _: UITraitCollection) in
+            self?.onFrontMoved?(scene)
+        }
+        frontWatch = (scene, registration)
+    }
+
+    /// Stops following the scene's active appearance, as the window leaves it.
+    private func stopWatchingFront() {
+        guard let frontWatch else { return }
+        frontWatch.scene.unregisterForTraitChanges(frontWatch.registration)
+        self.frontWatch = nil
     }
 
     /// Shows what the window holds now: the arrangement of pages it shows, and the title of the page the user
@@ -102,6 +122,7 @@ final class UIKitWindowController {
     /// Takes the window out of its scene, which stays: its sheets go first, heard by nobody - the tree that asked for
     /// them is gone.
     func hide() {
+        stopWatchingFront()
         root.letGo()
         window?.isHidden = true
         window?.windowScene = nil

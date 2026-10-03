@@ -46,7 +46,10 @@ window](../../host/runtime.md#the-platforms-first-window)).
 
 A window's lifecycle is its scene's: in front of the user and active, behind
 once in the background, and neither between - each told to the host layer,
-which settles what it means for the window, its scene and the application. A
+which settles what it means for the window, its scene and the application.
+iPadOS keeps every window on screen active and dims those behind the one the
+user works in; a scene's active appearance tells which, so a window dimmed
+stands inactive, and is activated as the user comes back to it. A
 window that comes to stand in a scene already in front, or behind, is told
 where it stands. The user closing a window - swiping its scene away - is the
 scene's session discarded, which the window hears as closed by the user; a
