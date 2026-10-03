@@ -151,12 +151,15 @@ private struct LifetimeCard: View {
     @State private var taps = 0
 
     var body: some View {
+        // A card, not one more button: taller, and an outline alone.
         Button("Card \(number) · tapped \(taps)")
             .fontSize(15)
-            .textColor(.white)
-            .background(Palette.accent)
-            .shape(.roundedRectangle(10))
-            .padding(horizontal: 20, vertical: 12)
+            .textColor(Palette.accent)
+            .background(.transparent)
+            .stroke(Palette.accent)
+            .lineWidth(1.5)
+            .shape(.roundedRectangle(14))
+            .padding(horizontal: 32, vertical: 36)
             .horizontalAlignment(.center)
             .onClicked { taps += 1 }
             .onCreated {
