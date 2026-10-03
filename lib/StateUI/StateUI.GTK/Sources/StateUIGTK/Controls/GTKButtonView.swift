@@ -108,7 +108,7 @@ final class GTKButtonView: GTKView {
         compose()
     }
 
-    /// Stands the picture alone, or with the caption in a box of their own.
+    /// Stands the picture alone, or with the caption in a box of their own in the button's middle, however wide it is.
     private func compose() {
         guard let picture else { return }
         gtk_button_set_child(widget.of(GtkButton.self), nil)
@@ -120,6 +120,7 @@ final class GTKButtonView: GTKView {
         let across = position == .leading || position == .trailing
         let box = gtk_box_new(across ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, Int32((spacing ?? 6).rounded()))!
         gtk_widget_set_direction(box, gtk_widget_get_direction(widget))
+        gtk_widget_set_halign(box, GTK_ALIGN_CENTER)
         let label = gtk_label_new(caption)!
         let first = position == .leading || position == .top
         for part in first ? [picture.widget, label] : [label, picture.widget] {

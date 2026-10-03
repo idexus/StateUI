@@ -44,7 +44,10 @@ A button with a picture shows it as an Image draws one
 ([pictures](#pictures)), as GNOME's buttons compose a picture and words:
 with words, a `GtkBox` holds the picture and a label of the button's own,
 across them or down them as the icon's position says - before, above, after
-or below - the icon spacing apart, else libadwaita's 6; with no words, the
+or below - the icon spacing apart, else libadwaita's 6. The box stands in
+the button's middle however wide the button is, so a button filling its row
+keeps the picture beside its words in the middle: a box left to fill the
+button lays both from its leading edge. With no words, the
 picture alone fills the room inside the padding as its aspect says. The
 button wears GTK's own classes for each, `image-text-button` and
 `image-button`. Its words break as a label's do where the tree says how, and

@@ -66,6 +66,27 @@ final class GTKButtonViewTests: XCTestCase {
         }
     }
 
+    /// A wide button's picture stands beside its words in its middle, as a narrow one's does: the two are centred
+    /// together, never laid from its leading edge.
+    func testAWideButtonsPictureStandsBesideItsWordsInItsMiddle() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack { Button("Media").icon(ImageSource("test_dot.png")).horizontalAlignment(.fill) }
+            }
+            let button = try XCTUnwrap(host.views(GTKButtonView.self).first)
+            let picture = try XCTUnwrap(button.picture?.widget)
+            let words = try XCTUnwrap(button.captionLabel.map { GTKWidget($0) })
+            host.settle { button.frame.width > 200 }
+
+            var (left, right) = (graphene_rect_t(), graphene_rect_t())
+            XCTAssertNotEqual(gtk_widget_compute_bounds(picture, button.widget, &left), 0)
+            XCTAssertNotEqual(gtk_widget_compute_bounds(words, button.widget, &right), 0)
+            let middle = Double(left.origin.x + right.origin.x + right.size.width) / 2
+            let room = Double(gtk_widget_get_width(button.widget))
+            XCTAssertEqual(middle, room / 2, accuracy: 1, "the picture \(left) and the words \(right) across \(room)")
+        }
+    }
+
     /// A button the tree says nothing of stands as the platform's own.
     func testAButtonWithNothingSaidIsThePlatformsOwn() throws {
         try onUIThread {
