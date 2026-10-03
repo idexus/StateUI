@@ -158,6 +158,7 @@ final class AppKitShapeView: AppKitHitTestView {
         ShapeArithmetic.dashLengths(dash, lineWidth: Double(lineWidth)).map { CGFloat($0) }
     }
     var dashPhaseForTesting: CGFloat { dashOffset * lineWidth }
+    var fillForTesting: AppKitBrush { fill }
 
     private func configureStroke(on path: NSBezierPath) {
         path.lineWidth = lineWidth

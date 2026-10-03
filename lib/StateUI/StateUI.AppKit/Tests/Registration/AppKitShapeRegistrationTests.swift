@@ -68,7 +68,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var ellipse = HostPatch(id: .manual("ellipse"), type: .ellipse)
-        ellipse.properties[.fill] = .color(red: 51, green: 102, blue: 153, alpha: 255)
+        ellipse.properties[.fill] = Brush.solidColor(Color(red: 51, green: 102, blue: 153)).propValue
         ellipse.properties[.stroke] = Brush.solidColor(Color("#000000")).propValue
         ellipse.properties[.lineWidth] = .number(3)
         ellipse.properties[.dash] = .numbers([2, 1])
@@ -77,6 +77,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("ellipse")) as? AppKitShapeView)
 
+        XCTAssertNotNil(native.fillForTesting.color, "the fill reaches the ellipse as the brush its contract declares")
         XCTAssertEqual(native.dashPatternForTesting, [6, 3], "a dash is in stroke widths")
         XCTAssertFalse(
             native.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 20)).isEmpty,
