@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Windows made as they are asked for, each showing one view. With no name, the scene's main window - one per
-/// session, the platform making as many sessions as the user asks for; with a name and `for:`, one window per
-/// value, opened beside the main one.
+/// Windows made as they are asked for, each showing one view. Without `for:`, a scene's main window - one per
+/// session, the platform making as many sessions as the user asks for - with no name for the kind *File ▸ New*
+/// opens, or naming a kind of its own; with a name and `for:`, one window per value, opened beside the main one.
 ///
 ///     WindowGroup { MainPage() }
+///     WindowGroup(.editor) { EditorPage() }
 ///     WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
 ///
 /// One window of a kind beside the main one is a `Window`. A window opened beside the main one belongs to its
@@ -30,12 +31,30 @@ public struct WindowGroup<Role>: Scene {
 }
 
 extension WindowGroup where Role == WindowRole.Main {
-    /// The scene's main window, showing `content` - an `if`/`else` there swaps what the one window shows.
+    /// The scene's main window, showing `content` - an `if`/`else` there swaps what the one window shows. Its
+    /// scene is the kind *File ▸ New* opens.
     ///
     /// - Parameter content: the view the window shows.
     public init<Content: View>(@ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
             type: nil, valueType: nil, kind: String(reflecting: Content.self),
+            page: { _, _ in Node.page(content()) })
+    }
+
+    /// The main window of a kind of scene of its own, showing `content`: each session one more, opened by the
+    /// application's session.
+    ///
+    ///     WindowGroup(.editor) { EditorPage() }
+    ///
+    ///     Button("New editor").onClicked { try await application.openWindow(.editor) }
+    ///
+    /// - Parameters:
+    ///   - type: the scene's kind - what `ApplicationSession.openWindow` opens one by, and what the platform
+    ///     restores the scene as.
+    ///   - content: the view the window shows.
+    public init<Content: View>(_ type: WindowType, @ViewBuilder content: @escaping () -> Content) {
+        declared = DeclaredWindows(
+            type: type, valueType: nil, kind: String(reflecting: Content.self),
             page: { _, _ in Node.page(content()) })
     }
 }
@@ -72,12 +91,6 @@ extension WindowGroup where Role == WindowRole.Beside {
                 return Node.page(content(binding))
             },
             restore: { text in ValueText.read(Value.self, from: text).map(AnyHashable.init) })
-    }
-
-    /// One window of a kind is a `Window(.kind) { … }`.
-    @available(*, unavailable, message: "one window of a kind is a Window(.kind); a WindowGroup opens one per value, for:")
-    public init<Content: View>(_ type: WindowType, @ViewBuilder content: @escaping () -> Content) {
-        fatalError()
     }
 
     /// Whether the group's windows hide while another scene of the application is the one in front - and come

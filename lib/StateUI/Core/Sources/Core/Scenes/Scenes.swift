@@ -12,7 +12,7 @@ final class Scenes: @unchecked Sendable {
 
     /// The scenes in opening order - a state the root reads, so a scene opening or
     /// closing builds the application again and no scene that stays.
-    @State var list: [SceneRecord] = [SceneRecord(id: "1", handedOver: false)]
+    @State var list: [SceneRecord] = [SceneRecord(id: "1", kind: .first, handedOver: false)]
 
     /// The number the next scene gets.
     private var next = 2
@@ -26,7 +26,7 @@ final class Scenes: @unchecked Sendable {
     /// Starts again with one scene, waiting for the platform's first window -
     /// what an application is given as it registers.
     func reset() {
-        list = [SceneRecord(id: "1", handedOver: false)]
+        list = [SceneRecord(id: "1", kind: .first, handedOver: false)]
         next = 2
     }
 
@@ -54,11 +54,30 @@ final class Scenes: @unchecked Sendable {
         }
     }
 
-    /// Opens another scene, for the host to open a platform window for.
-    func openScene() throws {
+    /// Opens a scene of `kind`, for the host to open a platform window for: another session, or the one session of
+    /// a kind of one.
+    /// Design: docs/design/core/scenes.md#kinds-of-scene
+    func openScene(_ kind: SceneKind) throws {
         guard Scenes.opensWindows else { throw WindowError.unsupported }
 
-        list.append(SceneRecord(id: "\(next)", handedOver: true))
+        if let application = Renderer.shared.madeApplication() {
+            let mains = SceneKinds.of(application.body).mains
+            let types = mains.map(\.type)
+
+            guard let index = SceneKinds.index(of: kind, among: types) else {
+                if case .named(let type) = kind { throw WindowError.undeclared(type) }
+                throw WindowError.unsupported
+            }
+
+            let settled = SceneKind(main: types[index])
+            let standing = _list.storage.value.map { record in
+                SceneKinds.index(of: record.kind, among: types).map { SceneKind(main: types[$0]) }
+            }
+
+            if mains[index].oneSession, standing.contains(settled) { throw WindowError.alreadyOpen }
+        }
+
+        list.append(SceneRecord(id: "\(next)", kind: kind, handedOver: true))
         next += 1
     }
 
@@ -70,17 +89,18 @@ final class Scenes: @unchecked Sendable {
         ended(record)
     }
 
-    /// The platform handed over a window nobody here asked for: the scene waiting for
-    /// its first window takes it, or a new scene does.
+    /// The platform handed over a window nobody here asked for - a scene of `kind` it restored, or a new one: the
+    /// scene waiting for its first window takes it, or a new scene does.
     /// Design: docs/design/core/scenes.md#connecting-and-ending
-    func connected(restoring values: [String: PropValue]) {
+    func connected(restoring values: [String: PropValue], kind: SceneKind? = nil) {
         let standing = _list.storage.value
 
         if let waiting = standing.first(where: { !$0.handedOver }) {
             waiting.handedOver = true
+            if let kind { waiting.kind = kind }
             waiting.restore(values)
         } else {
-            let record = SceneRecord(id: "\(next)", handedOver: true)
+            let record = SceneRecord(id: "\(next)", kind: kind ?? .unnamed, handedOver: true)
             next += 1
             record.restore(values)
             list.append(record)
@@ -110,11 +130,13 @@ final class Scenes: @unchecked Sendable {
         _list.storage.value.reduce(0) { $0 + $1.pending }
     }
 
-    /// The application as the root of a message: one node per open scene.
+    /// The application as the root of a message: one node per open scene, each built from its kind.
     func tree(of application: any Application) -> Node {
         // One scene value per scene: a scene's `@State` boxes are its value's own.
         Node(
             contract: ApplicationContract.self,
-            children: list.map { SceneElement(record: $0, scene: application.body).node })
+            children: list.map { record in
+                SceneElement(record: record, scene: SceneKinds.of(application.body).scene(for: record)).node
+            })
     }
 }

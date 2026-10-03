@@ -27,10 +27,11 @@ shown - so the tree is steered by `@State` and `@Environment` alone.
 ## Scenes
 
 A scene is one session of the application: a main window, the windows that
-serve it, and the state they share. An application declares one scene type,
-and the platform makes as many instances of it as the user asks for: the first
-at launch, another for every New Window, and every one that was open when the
-system restores the application's windows.
+serve it, and the state they share. An application declares its kinds of
+scene, and the platform makes as many instances of each as the user asks for:
+the first kind at launch, another of the unnamed kind for every New Window,
+one of a named kind for every `openWindow`, and every one that was open when
+the system restores the application's windows (scenes.md, Kinds of scene).
 
 ```text
   struct GalleryApp: Application {
@@ -52,10 +53,17 @@ system restores the application's windows.
   own, and every window of the session reads it, offered with `.environment`
   or handed in as a binding.
 - A scene's body is counted by type (`SceneBuilder`, `WindowRole`): one main
-  window - a `WindowGroup` with no name - and windows beside it, each with a
-  name. A scene with no main window or two does not compile, and neither does
-  a main window under an `if` with no `else`: what a window shows is chosen
-  inside its view.
+  window - its `WindowGroup`, with no name or naming the scene's kind, else its
+  first `Window`, which makes a scene of one session - and windows beside it,
+  each with a name. A scene with two `WindowGroup` main windows, or with only
+  windows per value, does not compile, and neither does a main window under an
+  `if` with no `else`: what a window shows is chosen inside its view.
+- An application's body is counted the same way (`ApplicationBuilder`): kinds
+  of scene - a `Scene`, a `WindowGroup`, a `Window` - and never windows per
+  value, which belong to a scene. A refused expression there gets a type of
+  its own (`PerValue`) whose blocks are unavailable: an unavailable overload
+  of `buildExpression` beside an available generic one would lose to it, as
+  the type checker penalizes what is unavailable.
 - An object is offered to a window by `.environment(_:)` on its `WindowGroup`
   or `Window`, and to every window of every session by `.environment(_:)` on
   the scene where the application names it.

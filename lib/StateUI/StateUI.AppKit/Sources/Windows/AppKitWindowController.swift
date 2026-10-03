@@ -92,7 +92,7 @@ final class AppKitWindowController: NSWindowController {
     ) {
         self.element = element
         self.host = host
-        isMain = element.value(.windowType) == nil
+        isMain = element.isMainWindow
         self.record = record
         self.presentsWindow = presentsWindow
         presented = nativeWindow != nil

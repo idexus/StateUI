@@ -170,7 +170,7 @@
         let own = windows.filter { $0.enclosing(type: .scene) === scene }
         if isHidden { return .stopped }
         if own.contains(where: isActivated) { return .activated }
-        if let main = own.first(where: { $0.value(.windowType) == nil }), isStopped(main) { return .stopped }
+        if let main = own.first(where: \.isMainWindow), isStopped(main) { return .stopped }
         return .deactivated
     }
 

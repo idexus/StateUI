@@ -75,7 +75,7 @@ extension WinUIDriver {
     private func keptWindow(_ element: MountedElement) throws -> KeptScenes.Window {
         let scenes = element.enclosing(type: .application)?.children.filter { $0.type == .scene } ?? []
         guard let scene = element.enclosing(type: .scene), let sceneIndex = scenes.firstIndex(where: { $0 === scene }),
-              let index = scene.windows.filter({ $0.value(.windowType) != nil }).firstIndex(where: { $0 === element })
+              let index = scene.windows.dropFirst().firstIndex(where: { $0 === element }).map({ $0 - 1 })
         else { throw DriverCannot("find what is kept of a window of no kind of its own") }
         let kept = WinUIPersistence.readScenes().scenes
         guard kept.indices.contains(sceneIndex), kept[sceneIndex].windows.indices.contains(index) else {

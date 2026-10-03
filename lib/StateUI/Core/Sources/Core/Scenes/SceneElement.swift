@@ -50,6 +50,17 @@ struct SceneElement: Element {
         var main = window(windows.main, opened: nil, record, session: record.windowSession(SceneElement.mainKey))
         main.id = SceneElement.mainKey
 
+        // A named main window carries its scene's kind, which the platform keeps the scene as; a `Window` as the
+        // main one, its own policies.
+        // Design: docs/design/core/scenes.md#kinds-of-scene
+        if let type = windows.main.type {
+            main.write(WindowContract.windowType, type)
+        }
+        if windows.oneSession {
+            main.write(WindowContract.hidesWhenInactive, windows.main.hides)
+            main.write(WindowContract.floatsOnTop, windows.main.floats)
+        }
+
         var children = [main]
 
         // Read here, so this scene is what builds again when a window opens in it.

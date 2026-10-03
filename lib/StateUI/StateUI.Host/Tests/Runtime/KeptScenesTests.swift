@@ -8,14 +8,15 @@ import XCTest
 /// The scenes a host keeps for the application's next start, where the platform restores no windows.
 @MainActor
 final class KeptScenesTests: XCTestCase {
-    /// The text reads back the scenes it was written from - each kind of value, a window with a value and one
-    /// without, words holding a tab or a line's end - and the same scenes write the same text, their values by key.
+    /// The text reads back the scenes it was written from - a scene of a kind and one of the unnamed kind, each kind
+    /// of value, a window with a value and one without, words holding a tab or a line's end - and the same scenes
+    /// write the same text, their values by key.
     func testTheTextReadsBackTheScenesItHolds() {
         let scenes = KeptScenes(scenes: [
             KeptScenes.Scene(
                 values: ["section": .number(2), "draft": .string("a\tb\nc"), "open": .bool(true)],
                 windows: [KeptScenes.Window(kind: "note", value: "7"), KeptScenes.Window(kind: "fonts", value: nil)]),
-            KeptScenes.Scene(),
+            KeptScenes.Scene(kind: "editor"),
         ])
 
         XCTAssertEqual(KeptScenes(scenes.text), scenes)
@@ -26,7 +27,7 @@ final class KeptScenesTests: XCTestCase {
             value\tsection\tn2.0
             window\tnote\t7
             window\tfonts
-            scene
+            scene\teditor
 
             """)
         XCTAssertEqual(KeptScenes("scene\nsomething\tnew\nvalue\tx\tq1\n").scenes, [KeptScenes.Scene()],
@@ -34,8 +35,8 @@ final class KeptScenesTests: XCTestCase {
         XCTAssertEqual(KeptScenes("").scenes, [])
     }
 
-    /// The scenes a tree holds, each with the values kept for it and its windows of a kind of their own - the main
-    /// one is no such window.
+    /// The scenes a tree holds, each of its main window's kind - its first window, whatever it carries - with the
+    /// values kept for it and the windows beside its main one.
     func testTheScenesATreeHoldsAreKeptWithTheirWindows() {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("application"), type: .application)
@@ -43,14 +44,33 @@ final class KeptScenesTests: XCTestCase {
         var note = HostPatch(id: .manual("note 1"), type: .window)
         note.properties = [.windowType: .name("note"), .windowValue: .string("7")]
         scene.children = .arranged([HostPatch(id: .manual("main"), type: .window), note])
-        root.children = .arranged([scene])
+        var editor = HostPatch(id: .manual("2"), type: .scene)
+        var editorMain = HostPatch(id: .manual("main"), type: .window)
+        editorMain.properties = [.windowType: .name("editor")]
+        editor.children = .arranged([editorMain])
+        root.children = .arranged([scene, editor])
         runtime.tree.apply(root, complete: true)
 
         XCTAssertEqual(
             KeptScenes(of: runtime.tree.root, values: ["1": ["section": .number(2)], "9": ["gone": .bool(true)]]),
             KeptScenes(scenes: [
                 KeptScenes.Scene(values: ["section": .number(2)], windows: [KeptScenes.Window(kind: "note", value: "7")]),
+                KeptScenes.Scene(kind: "editor"),
             ]))
+        let windows = runtime.tree.root?.windows ?? []
+        XCTAssertEqual(windows.map(\.isMainWindow), [true, false, true], "a scene's first window is its main one")
+        XCTAssertEqual(windows.map { $0.ownerWindow?.id }, [nil, .manual("main"), nil])
+    }
+
+    /// A scene kept of a kind comes back as that kind.
+    func testAKeptSceneComesBackAsItsKind() throws {
+        stateUIUseApp(KeptApplication())
+        let runtime = HostRuntime.still()
+
+        SceneKeeper().restore(KeptScenes(scenes: [KeptScenes.Scene(kind: "kept.editor")]), in: runtime)
+
+        let main = try XCTUnwrap(runtime.tree.root?.windows.first)
+        XCTAssertEqual(main.value(.windowType)?.name, "kept.editor")
     }
 
     /// A scene kept comes back with its values before its first render, and is offered the windows it had open: the
@@ -101,7 +121,10 @@ final class KeptScenesTests: XCTestCase {
 private struct KeptApplication: Application {
     nonisolated(unsafe) static var sections: [Int] = []
 
-    var body: some Scene { KeptScene() }
+    var body: some Scene {
+        KeptScene()
+        WindowGroup(WindowType("kept.editor")) { Text("editor") }
+    }
 }
 
 private struct KeptScene: Scene {

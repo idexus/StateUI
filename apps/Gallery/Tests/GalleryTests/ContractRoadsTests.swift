@@ -134,17 +134,17 @@ final class ContractRoadsTests: XCTestCase {
             closed: "struct Lone: Scene { var body: some Scene { WindowGroup { if Bool.random() { Text(\"a\") } } } }",
             open: "struct Lone: Scene { var body: some Scene { WindowGroup { if Bool.random() { Text(\"a\") } else { Text(\"b\") } } } }"),
         Road(
-            name: "one window of a kind written as a group",
-            closed: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; WindowGroup(.debugInspector) { DebugInspector() } } }",
-            open: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; Window(.debugInspector) { DebugInspector() } } }"),
-        Road(
             name: "a scene with two main windows",
-            closed: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; WindowGroup { Text(\"b\") } } }",
+            closed: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; WindowGroup(.debugInspector) { Text(\"b\") } } }",
             open: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; Window(.debugInspector) { Text(\"b\") } } }"),
         Road(
             name: "a scene with no main window",
-            closed: "struct Notes: Scene { var body: some Scene { Window(.debugInspector) { DebugInspector() } } }",
-            open: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; Window(.debugInspector) { DebugInspector() } } }"),
+            closed: "struct Notes: Scene { var body: some Scene { WindowGroup(WindowType(\"roads.note\"), for: Int.self) { n in Text(\"\\(n.wrappedValue)\") } } }",
+            open: "struct Notes: Scene { var body: some Scene { Window(.debugInspector) { Text(\"a\") }; WindowGroup(WindowType(\"roads.note\"), for: Int.self) { n in Text(\"\\(n.wrappedValue)\") } } }"),
+        Road(
+            name: "windows per value in the application's body",
+            closed: "struct Notes: Application { var body: some Scene { WindowGroup { Text(\"a\") }; WindowGroup(WindowType(\"roads.note\"), for: Int.self) { n in Text(\"\\(n.wrappedValue)\") } } }",
+            open: "struct Notes: Application { var body: some Scene { WindowGroup { Text(\"a\") }; Window(WindowType(\"roads.preferences\")) { Text(\"b\") } } }"),
         Road(
             name: "two views in the title's place",
             closed: #"_ = Text("Notes").titleView { Button("Back"); Button("Next") }"#,

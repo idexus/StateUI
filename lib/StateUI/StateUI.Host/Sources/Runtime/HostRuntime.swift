@@ -205,7 +205,7 @@
     /// Design: docs/design/host/runtime.md#a-window-the-user-closes
     public static func toldOnClosing(_ window: MountedElement) -> [(handler: Int32, payload: [HostValue])] {
         let scene = window.enclosing(type: .scene)
-        let sceneTold: (handler: Int32?, payload: [HostValue]) = window.value(.windowType) == nil
+        let sceneTold: (handler: Int32?, payload: [HostValue]) = window.isMainWindow
             ? (scene?.handler(.destroying), [])
             : (scene?.handler(.windowClosed), [window.id.hostValue])
         return [(window.handler(.destroying), []), sceneTold].compactMap { told in

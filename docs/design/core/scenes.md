@@ -11,7 +11,8 @@ reads.
 ```text
   Application
     Scene "1"            one per open scene, in the order they opened
-      Window "main"      its main window, always first
+      Window "main"      its main window, always first - a scene of a named
+                         kind's carrying its windowType
       Window "fonts 1"   a window beside it: the kind, and a number of its own
     Scene "2"
       Window "main"
@@ -37,6 +38,33 @@ application's scene type, so each scene has `@State` of its own, paired across
 renders under its number. The application is asked for a scene value once per
 scene: a scene's boxes belong to its value, and two scenes built from one value
 would share every storage the first adopted.
+
+## Kinds of scene
+
+An application's body lists its kinds of scene, the first opening at launch,
+and each kind is named by its main window: the `WindowGroup` with no name is
+the kind *File ▸ New* opens, a `WindowGroup(.kind)` a kind of many sessions
+opened by `ApplicationSession.openWindow(.kind)`, and a `Window(.kind)` - the
+first in a scene with no `WindowGroup`, or written in the application's body -
+a kind of one session, which opens once and answers `alreadyOpen` after. A
+window per value belongs to a scene, so the application's body refuses one at
+compile time.
+
+A scene's record holds its kind. The scene waiting for the platform's first
+window is of the application's first kind until the build settles it; a scene
+the platform hands over is of the kind it restored, else of the unnamed kind -
+the first where none is unnamed. A kind the application no longer declares
+comes back as the unnamed kind, with nothing of what was kept for it.
+
+Finding a kind evaluates the body of every kind of scene, so it runs in a read
+scope of its own whose reads are dropped: a write to a scene's state builds
+that scene, never the application's root. A kind's name is therefore fixed -
+what its main window shows may change, the name it carries may not.
+
+The main window of a named kind carries its `windowType`, which is what the
+platform keeps the scene as; a `Window` that is a scene's main one carries its
+`hidesWhenInactive` and `floatsOnTop` as well. A host tells the main window by
+its place - a scene's first - and never by what it carries.
 
 ## Sessions
 

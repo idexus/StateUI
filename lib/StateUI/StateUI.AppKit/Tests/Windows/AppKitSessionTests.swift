@@ -366,6 +366,24 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertNil(renderer.restoredWindows["restored-unknown"], "the kind no scene has is declined")
     }
 
+    /// A main window the system restored as a scene of a named kind comes back as that kind, in the very window the
+    /// system restored, its record still carrying the kind.
+    @MainActor
+    func testARestoredMainWindowComesBackAsItsScenesKind() throws {
+        stateUIUseApp(AppKitKindsApp())
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let restored = renderer.acceptRestoredWindow(
+            AppKitRestorationRecord(windowIdentifier: "restored-editor", kind: "appkit.test.editor"))
+        renderer.startForTesting()
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        XCTAssertEqual(renderer.sceneCountForTesting, 1)
+        XCTAssertTrue(controller.window === restored)
+        XCTAssertEqual(controller.element?.value(.windowType)?.name, "appkit.test.editor")
+        XCTAssertEqual(controller.restorationRecordForTesting.kind, "appkit.test.editor")
+    }
+
     @MainActor
     func testPlatformAndStateUICanEachOpenAnotherScene() async throws {
         stateUIUseApp(AppKitSessionApp())
@@ -526,6 +544,18 @@ private struct AppKitSessionScene: Scene {
 
 private struct AppKitSessionApp: Application {
     var body: some Scene { AppKitSessionScene() }
+}
+
+private extension WindowType {
+    static let appKitTestEditor = WindowType("appkit.test.editor")
+}
+
+/// An application of two kinds of scene: its sessions, and editors named by their main window.
+private struct AppKitKindsApp: Application {
+    var body: some Scene {
+        AppKitSessionScene()
+        WindowGroup(.appKitTestEditor) { AppKitSessionPage(caption: "Editor") }
+    }
 }
 
 #endif

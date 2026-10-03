@@ -62,8 +62,13 @@ struct GalleryApp: Application {
         application.persistentKeys = [.visits, .who, .shade]
     }
 
-    /// One gallery, and as many more as the user opens.
-    var body: some Scene { GalleryScene() }
+    /// One gallery, and as many more as the user opens - the first kind of scene; a scratchpad, a kind of its
+    /// own; and one About window for the whole application. See `SceneKindsSample`.
+    var body: some Scene {
+        GalleryScene()
+        ScratchpadScene()
+        Window(.about) { AboutPage() }
+    }
 }
 
 /// The one thing this module exports.

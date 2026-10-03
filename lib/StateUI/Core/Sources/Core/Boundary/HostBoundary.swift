@@ -86,9 +86,11 @@
     /// The first call claims the scene prepared when the application was
     /// registered. Every later call creates another independent scene. Values
     /// restored by the platform land before that scene builds, so
-    /// `@State(sceneKey:)` never briefly exposes its declared default.
-    public static func connectScene(restoring values: [String: HostValue] = [:]) {
-        Scenes.shared.connected(restoring: values)
+    /// `@State(sceneKey:)` never briefly exposes its declared default. `kind`
+    /// is the `windowType` the scene's main window carried when the platform
+    /// kept it - the scene's kind - and nil for a new window.
+    public static func connectScene(restoring values: [String: HostValue] = [:], kind: String? = nil) {
+        Scenes.shared.connected(restoring: values, kind: kind.map { .named(WindowType($0)) })
     }
 
     /// Updates the process-wide application session from native lifecycle.

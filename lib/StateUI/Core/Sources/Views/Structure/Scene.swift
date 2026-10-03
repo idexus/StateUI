@@ -51,6 +51,9 @@ extension Scene {
     var declaredWindows: Windows {
         if let windows = self as? Windows { return windows }
         if let main = self as? WindowGroup<WindowRole.Main> { return Windows(main: main.declared, groups: []) }
+        if let one = self as? Window<WindowRole.Beside> {
+            return Windows(main: one.declared, groups: [], oneSession: true)
+        }
         if let offering = self as? any Offering { return offering.offered.declaredWindows }
 
         return body.declaredWindows

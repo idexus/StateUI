@@ -10,6 +10,9 @@ public struct Windows: Scene {
     /// The kinds of window the scene may open beside its main one.
     let groups: [DeclaredWindows]
 
+    /// Whether the scene has one session: its main window is a `Window`, opened once.
+    var oneSession = false
+
     /// None: the library's own scene.
     public var body: Never { return fatalError("Windows is the library's own scene: it has no body") }
 }

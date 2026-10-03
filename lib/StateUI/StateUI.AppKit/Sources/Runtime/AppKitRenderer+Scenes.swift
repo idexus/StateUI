@@ -41,8 +41,10 @@ extension AppKitRenderer {
         runtime.applicationHidden(hidden)
     }
 
-    func connectPlatformScene(restoring values: [String: HostValue]) {
-        runtime.core.connectScene(restoring: values)
+    /// Hands the core a platform scene: one the system restored as its kind, or a new one - the kind File ▸ New
+    /// opens.
+    func connectPlatformScene(restoring values: [String: HostValue], kind: String? = nil) {
+        runtime.core.connectScene(restoring: values, kind: kind)
         connectedInitialScene = true
     }
 
@@ -109,7 +111,7 @@ extension AppKitRenderer {
         restoredWindows[record.windowIdentifier] = window
 
         if record.ownerIdentifier == nil {
-            connectPlatformScene(restoring: record.kept)
+            connectPlatformScene(restoring: record.kept, kind: record.kind)
             if started { runtime.pump.turn() }
         } else if started {
             offerRestoredWindows()

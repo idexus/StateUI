@@ -7,6 +7,9 @@ final class SceneRecord: @unchecked Sendable {
     /// Its number - "1" for the first scene - which is also its key in the tree.
     let id: String
 
+    /// Which of the application's kinds it is - settled by the build that first finds it.
+    var kind: SceneKind
+
     /// What it has open beside its main window, in the order they opened.
     @State var windows: [OpenedWindow] = []
 
@@ -39,9 +42,10 @@ final class SceneRecord: @unchecked Sendable {
     /// The keys written since the host last took them, each with its last value.
     private var waiting: [String: PropValue] = [:]
 
-    /// A scene, by its number, and whether the platform has handed it a window.
-    init(id: String, handedOver: Bool) {
+    /// A scene of `kind`, by its number, and whether the platform has handed it a window.
+    init(id: String, kind: SceneKind, handedOver: Bool) {
         self.id = id
+        self.kind = kind
         self.handedOver = handedOver
         session = SceneSession(id: id)
         session.record = self

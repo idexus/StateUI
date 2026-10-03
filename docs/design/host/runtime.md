@@ -407,12 +407,13 @@ host's.
 
 A host whose platform restores no windows keeps the application's scenes for
 its next start itself (`SceneKeeper`), in a file of its own whose text one
-codec writes (`KeptScenes`): a line for each scene, then a line for each of
-its kept values - by key, in order, the value's kind a letter before its
-words - then a line for each window of a kind of its own it has open, its
-kind and the text of the value it was opened for. At the start each scene
-kept connects before its first render, with its values, so a scene's state
-never shows its default first; one new scene connects where none was kept.
+codec writes (`KeptScenes`): a line for each scene - with its kind, its main
+window's `windowType`, where it has one - then a line for each of its kept
+values - by key, in order, the value's kind a letter before its words - then
+a line for each window beside its main one, its kind and the text of the
+value it was opened for. At the start each scene kept connects before its
+first render, as its kind and with its values, so a scene's state never
+shows its default first; one new scene connects where none was kept.
 Then each is offered the windows it had open, as the scene's
 `windowRestored`: the scene opens the ones it still declares, and a window
 of a kind it no longer declares is kept no more. The scenes are kept again

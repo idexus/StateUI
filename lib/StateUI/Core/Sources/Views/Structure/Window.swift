@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// One window of a kind, opened beside the scene's main window, showing one view.
+/// One window of a kind, showing one view: beside the scene's main window, or - the first in a scene with no
+/// `WindowGroup`, or written in the application's body - the main window of a scene of one session.
 ///
 ///     Window(.inspector) { Inspector() }
 ///
@@ -12,8 +13,10 @@
 ///     Button("Inspector").onClicked { try await scene.openWindow(.inspector) }
 ///
 /// It belongs to its scene: it opens through the scene's session, closes with the scene, and the platform
-/// restores it with its scene. A host without independent windows refuses `openWindow` with
-/// `WindowError.unsupported`. Windows of a kind, one per value, are a `WindowGroup(.kind, for:)`.
+/// restores it with its scene. As the main window of a scene of one session, the application's session opens
+/// it - `try await application.openWindow(.preferences)` - once. A host without independent windows refuses
+/// `openWindow` with `WindowError.unsupported`. Windows of a kind, one per value, are a
+/// `WindowGroup(.kind, for:)`.
 public struct Window<Role>: Scene {
     /// What it makes.
     var declared: DeclaredWindows

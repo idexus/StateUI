@@ -119,7 +119,8 @@ turns the nodes into the patch.
 ([What a view is](../design/views/README.md#what-a-view-is))
 
 - **`Application`** and **`Scene`** (`Structure/`) are the application's
-  structure, each a `body` built by `ApplicationBuilder` or `SceneBuilder`;
+  structure, each a `body` built by `ApplicationBuilder` - its
+  `SceneKinds` - or `SceneBuilder`;
   `WindowGroup`, `Window` (their `WindowRole`), `Windows`, `WindowType` and
   `WindowError` are a scene's windows, and `Node.page` and `Node.window` the
   page a view stands on and the window around it.
@@ -431,10 +432,12 @@ type's extensions in its folder as `Type+Responsibility.swift`
 ### Scenes
 
 - **`Scenes`**, **`SceneRecord`** and **`SceneElement`** keep the open scenes
-  as state the root reads, numbered by the core, each with its windows and
-  their sessions. *Internal*; an application opens a scene through its
-  `ApplicationSession`, and a host connects one through `HostBoundary`.
+  as state the root reads, numbered by the core, each of its `SceneKind` and
+  with its windows and their sessions. *Internal*; an application opens a
+  scene through its `ApplicationSession`, and a host connects one through
+  `HostBoundary`.
   ([The scene tree](../design/core/scenes.md#the-scene-tree),
+  [kinds of scene](../design/core/scenes.md#kinds-of-scene),
   [connecting and ending](../design/core/scenes.md#connecting-and-ending))
 - **`SceneKey`** names a value a scene keeps for the platform to restore
   (`@State(sceneKey:)`). *Application.*

@@ -4,20 +4,24 @@
 @_spi(Host) import StateUI
 
 /// The application's scenes as a host keeps them for its next start, for a platform that restores no windows: each
-/// scene's kept values, and the windows of a kind of its own it had open, by their kind and their value's text. The
-/// same scenes write the same text.
+/// scene's kind, its kept values, and the windows of a kind of its own it had open, by their kind and their value's
+/// text. The same scenes write the same text.
 /// Design: docs/design/host/runtime.md#kept-scenes
 @_spi(Host) public struct KeptScenes: Equatable, Sendable {
-    /// One scene: its values by key, and its windows of a kind of their own, in order.
+    /// One scene: its kind, its values by key, and its windows of a kind of their own, in order.
     public struct Scene: Equatable, Sendable {
+        /// Its kind - the `windowType` of its main window; nil for the kind whose main window has no name.
+        public var kind: String?
+
         /// Its kept values, by key.
         public var values: [String: HostValue]
 
         /// Its windows of a kind of their own, in order.
         public var windows: [Window]
 
-        /// A scene keeping `values`, with `windows` open.
-        public init(values: [String: HostValue] = [:], windows: [Window] = []) {
+        /// A scene of `kind` keeping `values`, with `windows` open.
+        public init(kind: String? = nil, values: [String: HostValue] = [:], windows: [Window] = []) {
+            self.kind = kind
             self.values = values
             self.windows = windows
         }
@@ -54,6 +58,8 @@
             switch (fields.first, fields.count) {
             case ("scene", 1):
                 scenes.append(Scene())
+            case ("scene", 2):
+                scenes.append(Scene(kind: fields[1]))
             case ("value", 3) where !scenes.isEmpty:
                 if let value = Self.value(fields[2]) { scenes[scenes.count - 1].values[fields[1]] = value }
             case ("window", 2) where !scenes.isEmpty:
@@ -66,13 +72,14 @@
         }
     }
 
-    /// The scenes `root` holds, in order - each with the values `values` keeps for it by its key, and its windows of
-    /// a kind of their own.
+    /// The scenes `root` holds, in order - each with its main window's kind, the values `values` keeps for it by
+    /// its key, and its windows of a kind of their own.
     @MainActor public init(of root: MountedElement?, values: [String: [String: HostValue]]) {
         scenes = Self.scenes(of: root).map { scene in
             Scene(
+                kind: scene.windows.first?.value(.windowType)?.name,
                 values: values[Self.key(of: scene)] ?? [:],
-                windows: scene.windows.compactMap { window in
+                windows: scene.windows.dropFirst().compactMap { window in
                     window.value(.windowType)?.name.map { Window(kind: $0, value: window.value(.windowValue)?.string) }
                 })
         }
@@ -89,10 +96,11 @@
         scene.id.hostValue.string ?? ""
     }
 
-    /// The text holding the scenes: a line "scene" for each, then a line a value, by key, then a line a window.
+    /// The text holding the scenes: a line "scene" for each - with its kind where it has one - then a line a value,
+    /// by key, then a line a window.
     public var text: String {
         scenes.map { scene in
-            (["scene"]
+            ([Self.line(["scene"] + (scene.kind.map { [$0] } ?? []))]
                 + scene.values.keys.sorted().compactMap { key in
                     Self.word(of: scene.values[key]!).map { Self.line(["value", key, $0]) }
                 }

@@ -18,11 +18,11 @@
     /// Nothing kept yet.
     public init() {}
 
-    /// Brings back the scenes `kept` holds - one new scene where it holds none - each connected with its values
-    /// before its first render, then offers each the windows it had open, each rendered before the next.
+    /// Brings back the scenes `kept` holds - one new scene where it holds none - each connected as its kind with its
+    /// values before its first render, then offers each the windows it had open, each rendered before the next.
     public func restore(_ kept: KeptScenes, in runtime: HostRuntime) {
         let scenes = kept.scenes.isEmpty ? [KeptScenes.Scene()] : kept.scenes
-        for scene in scenes { runtime.core.connectScene(restoring: scene.values) }
+        for scene in scenes { runtime.core.connectScene(restoring: scene.values, kind: scene.kind) }
         runtime.pump.turn()
 
         for (scene, element) in zip(scenes, KeptScenes.scenes(of: runtime.tree.root)) {

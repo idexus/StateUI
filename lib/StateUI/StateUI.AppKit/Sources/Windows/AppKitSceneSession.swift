@@ -32,7 +32,7 @@ final class AppKitSceneSession {
     func arrival(
         of element: MountedElement, restoredOwned: (_ owner: String) -> AppKitRestoredWindow?
     ) -> (record: AppKitRestorationRecord, window: NSWindow?) {
-        let isMain = element.value(.windowType) == nil
+        let isMain = element.isMainWindow
         let restored: AppKitRestoredWindow?
         if isMain {
             restored = restoredMain

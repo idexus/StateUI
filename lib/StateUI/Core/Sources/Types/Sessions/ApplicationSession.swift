@@ -72,13 +72,29 @@ public final class ApplicationSession {
     /// `.environment(...)`. It opens scenes as the application's own does.
     public init() {}
 
-    /// Opens another session of the application: a new scene, its main window
-    /// first - what *File ▸ New Window* does, asked from the interface.
+    /// Opens another session of the application: a new scene of the kind whose
+    /// main window has no name - the first kind where none is - its main window
+    /// first; what *File ▸ New Window* does, asked from the interface.
     ///
     /// - Throws: `WindowError.unsupported` where the platform opens no second
-    ///   window - a phone.
+    ///   window - a phone; `WindowError.alreadyOpen` where that kind has one
+    ///   session, open already.
     public nonisolated(nonsending) func openScene() async throws {
-        try Scenes.shared.openScene()
+        try Scenes.shared.openScene(.unnamed)
+    }
+
+    /// Opens a scene of the kind whose main window is of `type`: another session
+    /// of a `WindowGroup(type)`, or the one session of a `Window(type)` written
+    /// first in a scene or in the application's body.
+    ///
+    ///     Button("New editor").onClicked { try await application.openWindow(.editor) }
+    ///
+    /// - Throws: `WindowError.undeclared(type)` where no kind's main window is
+    ///   of `type`; `WindowError.alreadyOpen` where its one session is open;
+    ///   `WindowError.unsupported` where the platform opens no second window - a
+    ///   phone.
+    public nonisolated(nonsending) func openWindow(_ type: WindowType) async throws {
+        try Scenes.shared.openScene(.named(type))
     }
 
     /// Forgets what an application wrote - what a registration starts from, so

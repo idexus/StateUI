@@ -619,7 +619,7 @@ final class CatalogTests: XCTestCase {
 
         // A second window needs somewhere to put it, which a desktop and an
         // iPad have and a phone never will.
-        let notOnAPhone: Set<String> = ["multi-window"]
+        let notOnAPhone: Set<String> = ["multi-window", "scene-kinds"]
 
         for id in notOnAPhone {
             let sample = try XCTUnwrap(catalog.sample(id: id))
@@ -1207,10 +1207,15 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(windows.main.kind, String(reflecting: MainPage.self))
     }
 
-    /// The whole application is that scene - as many galleries as the user
-    /// opens, and nothing else.
-    func testTheApplicationIsItsGallery() {
-        XCTAssertTrue(GalleryApp().body is GalleryScene)
+    /// The application's kinds of scene: its galleries first - what launch and
+    /// File ▸ New open - then scratchpads, and one About window for the whole
+    /// application.
+    func testTheApplicationIsItsGalleriesAndTwoKindsBeside() {
+        let kinds = SceneKinds.of(GalleryApp().body)
+
+        XCTAssertTrue(kinds.scenes.first is GalleryScene)
+        XCTAssertEqual(kinds.mains.map(\.type), [nil, .scratchpad, .about])
+        XCTAssertEqual(kinds.mains.map(\.oneSession), [false, false, true])
     }
 
     /// The menu lists Home, every group, and the one row that performs an act.

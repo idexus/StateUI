@@ -44,7 +44,8 @@ struct HomePage: View {
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
 | `persistentKeys` | state keys hydrated before the first description |
-| `openScene()` | asks for another independent scene session |
+| `openScene()` | asks for another session of the kind *File ▸ New* opens |
+| `openWindow(_:)` | opens a scene of the kind whose main window is of that type |
 
 Configuration needed before the first view is built belongs in the
 application's initializer:
@@ -94,10 +95,11 @@ struct NotesScene: Scene {
 }
 ```
 
-The main window - the `WindowGroup` with no name - is the scene's lifetime
+The main window - the scene's `WindowGroup` - is the scene's lifetime
 boundary. Closing it closes the scene and every window belonging to it, and
 *File ▸ New Window* opens another session of the scene with a main window of
-its own. A window opened beside it is declared with a name:
+its own (see [Kinds of scene](#kinds-of-scene) for a main window with a name).
+A window opened beside it is declared with a name:
 
 - `Window(.inspector) { ... }` allows one window of that kind per scene;
 - `WindowGroup(.document, for: ID.self) { $id in ... }` allows one per value;
@@ -106,9 +108,11 @@ its own. A window opened beside it is declared with a name:
 - the value closure receives a `Binding`, so the same window can be retargeted
   without replacing its session.
 
-The scene's builder counts its main window by type: a scene with none, or with
-two, does not compile, and neither does a main window under an `if` with no
-`else` - what a window shows is chosen inside its view. An object reaches the
+The scene's builder counts its main window by type: a scene with two
+`WindowGroup` main windows does not compile, nor one whose windows are all one
+per value, nor a main window under an `if` with no `else` - what a window shows
+is chosen inside its view. A scene with no `WindowGroup` has its first `Window`
+as its main one: a scene of one session. An object reaches the
 views of a window by `.environment(_:)` on its `WindowGroup` or `Window`, and
 every window of every session by `.environment(_:)` on the scene where the
 application names it.
@@ -120,7 +124,9 @@ Every owned window carries the same four host metadata values. `windowType`
 is the group's open and restoration identity; `windowValue` is the encoded
 per-value identity when the group has one. `hidesWhenInactive` and `floatsOnTop` are
 always explicit booleans, so changing either policy updates an existing native
-window without replacing it. The main window carries none of this group
+window without replacing it. The main window of a named kind of scene carries
+its `windowType` - the scene's kind - and a `Window` that is a scene's main one
+its two policies as well; the unnamed main window carries none of this
 metadata.
 
 ### Auxiliary-window policy
@@ -156,6 +162,62 @@ relationships when that platform exposes the capability. A declaration is not
 evidence that a particular host implements the policy; the
 [platform matrix](../platform-contract.md#contract-members) is the
 support authority.
+
+## Kinds of scene
+
+An application's body lists its kinds of scene. The first opens at launch, and
+each is named by its main window:
+
+```swift
+import StateUI
+
+extension WindowType {
+    static let editor = WindowType("notes.editor")
+    static let preferences = WindowType("notes.preferences")
+}
+
+struct NotesApp: Application {
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+        EditorScene()
+        Window(.preferences) { Text("Preferences") }
+    }
+}
+
+struct EditorScene: Scene {
+    var body: some Scene {
+        WindowGroup(.editor) { Text("A draft") }
+    }
+}
+
+struct NotesPage: View {
+    @Environment private var application: ApplicationSession
+
+    var body: some View {
+        VStack {
+            Button("New editor").onClicked { try await application.openWindow(.editor) }
+            Button("Preferences").onClicked { try await application.openWindow(.preferences) }
+        }
+    }
+}
+```
+
+- The `WindowGroup` with no name is the kind *File ▸ New Window* and
+  `openScene()` open - the first kind where none has an unnamed main window.
+- `WindowGroup(.editor)` is a kind of many sessions: each
+  `application.openWindow(.editor)` opens one more. Opening a kind's main
+  window opens a scene of it.
+- `Window(.preferences)` - written in the application's body, or first in a
+  scene with no `WindowGroup` - is a kind of one session: one window for the
+  whole application, which opens once and answers `WindowError.alreadyOpen`
+  after. It has a `SceneSession` like any scene, and closes with
+  `scene.close()` from a page in it.
+- A window per value belongs to a scene: the application's body refuses one
+  at compile time.
+
+A scene the platform keeps comes back as its kind, with the values its
+`@State(sceneKey:)` kept. One of a kind the application no longer declares
+comes back as the unnamed kind, with nothing of what was kept.
 
 ## Application and scene phases
 
