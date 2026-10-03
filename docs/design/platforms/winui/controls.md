@@ -343,6 +343,12 @@ stretched SVG at its room's size, where the SVG would keep its own and leave
 bands: the relay hands WinUI the picture from memory with its proportions
 let go (`preserveAspectRatio="none"`).
 
+Every other SVG is handed to WinUI by its file's address. An SVG read from
+memory costs WinUI far more once another window shows it: the Gallery's
+pictures, read so in a second gallery window, held some five gigabytes of
+surfaces shared between the windows, where read from their files they add
+megabytes.
+
 ## A web view
 
 A WebView on WinUI is a backend, `lib/Backends/WebView.WinUI`: WinUI's

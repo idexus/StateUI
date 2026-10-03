@@ -284,13 +284,19 @@ extern "C" bool stateui_winui_image_set(
         auto own = declared(text);
         size[0] = own.Width;
         size[1] = own.Height;
-        if (aspect == 2) letGoOfProportions(text);
         // WinUI takes an SVG's pixels for DIPs: centred, it is drawn at its own size by the image's.
         if (centred && own.Width > 0) {
             image.Stretch(xaml::Media::Stretch::Uniform);
             image.Width(own.Width);
             image.Height(own.Height);
         }
+        // Read from its file; only a stretched one, its proportions let go in its text, is read from memory.
+        // Design: docs/design/platforms/winui/controls.md#pictures
+        if (aspect != 2) {
+            image.Source(imaging::SvgImageSource(address(path)));
+            return true;
+        }
+        letGoOfProportions(text);
         image.Source(drawing(text));
         return true;
     } catch (...) {
