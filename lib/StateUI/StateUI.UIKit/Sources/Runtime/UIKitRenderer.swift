@@ -256,19 +256,28 @@ final class UIKitRenderer {
         runtime.displayCycle.hold()
     }
 
-    /// A window closing in front of the user leaves the one they were in before in front of them - iPadOS shows the
-    /// home screen once the scene in front goes.
+    /// A window closing in front of the user leaves the one they were in before in front of them, where it stood
+    /// under it - iPadOS shows the home screen once the scene in front goes.
     /// Design: docs/design/platforms/uikit/runtime.md#scenes
     private func bringBack(insteadOf closing: UIKitWindowController, staying: [MountedElement]) {
-        guard let state = closing.window?.windowScene?.activationState,
-              state == .foregroundActive || state == .foregroundInactive,
-              let back = runtime.lifecycle.activatedLast(among: staying) ?? staying.first,
-              let session = roster.windows.first(where: { $0.0 === back })?.1.session
+        guard let back = runtime.lifecycle.activatedLast(among: staying) ?? staying.first,
+              let controller = roster.windows.first(where: { $0.0 === back })?.1,
+              let session = controller.session,
+              Self.bringsBack(closing: closing.window?.windowScene?.activationState,
+                              staying: controller.window?.windowScene?.activationState)
         else { return }
         UIApplication.shared.activateSceneSession(
             for: UISceneSessionActivationRequest(session: session), errorHandler: { error in
                 MainActor.assumeIsolated { Self.log.error("no window to come back to: \(error.localizedDescription)") }
             })
+    }
+
+    /// Whether the window staying is brought back as one in scene `closing` closes: only from under it - the closing
+    /// one in front, the staying one off the screen. One on the screen beside it stays where and as big as it is:
+    /// brought back, iPadOS would stand it in the closing window's place, at its size.
+    static func bringsBack(closing: UIScene.ActivationState?, staying: UIScene.ActivationState?) -> Bool {
+        let shown: (UIScene.ActivationState?) -> Bool = { $0 == .foregroundActive || $0 == .foregroundInactive }
+        return shown(closing) && !shown(staying)
     }
 
     /// The menus the user's window's page puts on the application's menu bar, as the host layer composes them.

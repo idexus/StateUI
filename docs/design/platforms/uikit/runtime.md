@@ -57,8 +57,11 @@ scene iOS only disconnects to save memory closes nothing: its window waits for
 the session to come back.
 
 A window the tree closes in front of the user first brings back the window
-activated last of those staying: iPadOS shows the home screen once the scene
-in front is destroyed, the application's other windows behind it.
+activated last of those staying, where that one stands off the screen under
+it: iPadOS shows the home screen once the scene in front is destroyed, the
+application's other windows behind it. One standing on the screen beside it
+is left where and as big as it is - brought back, iPadOS would stand it in
+the closing window's place, at its size.
 
 The trap: the scene of a window the tree lets go of is destroyed, and iPadOS
 ends the process once an application's last scene is destroyed. A host whose

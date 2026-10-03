@@ -82,6 +82,16 @@ final class UIKitRendererTests: XCTestCase {
         XCTAssertNotEqual(TestScene.scene?.activationState, .unattached, "the scene stays connected")
     }
 
+    /// A window closing in front brings back the one the user was in only where that one stands off the screen, under
+    /// it: one standing on the screen beside it stays where and as big as it is - an iPad's windows.
+    @MainActor
+    func testAWindowClosingBringsBackOnlyOneOffTheScreen() {
+        XCTAssertTrue(UIKitRenderer.bringsBack(closing: .foregroundActive, staying: .background), "under it")
+        XCTAssertFalse(UIKitRenderer.bringsBack(closing: .foregroundActive, staying: .foregroundInactive), "beside it")
+        XCTAssertFalse(UIKitRenderer.bringsBack(closing: .foregroundActive, staying: .foregroundActive), "beside it")
+        XCTAssertFalse(UIKitRenderer.bringsBack(closing: .background, staying: .background), "nothing in front closes")
+    }
+
     /// A window the tree closes in a host whose windows share its one scene only leaves it: the scene, which would
     /// end the application on an iPad, stays.
     @MainActor
