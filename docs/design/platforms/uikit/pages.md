@@ -56,6 +56,11 @@ going is pushed or popped as UIKit does it, unless the user asked for less
 motion. The user taking pages away - the back button, the edge swipe, the
 back button's menu - is told to the stack as how many stay, as the index of
 its top; where the application keeps its pages, the stack stays as it is.
+UIKit tells it once the move ends, so a render while the pages go still
+describes them: the stack does not show them again, which would undo the
+user's way back. A page comes in already wearing its bar: UIKit takes the
+bar's look as the move starts, and a layout in the same turn - a sidebar
+going away - can start it before the window's chrome is composed.
 
 ## Tabs
 

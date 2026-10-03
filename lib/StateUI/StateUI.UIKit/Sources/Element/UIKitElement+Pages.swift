@@ -98,6 +98,9 @@ extension UIKitElement {
             navigation.showsBar = { [weak self] shown in
                 self?.children.first { $0.controller === shown }?.element.showsTheStacksBar ?? true
             }
+            // A page comes in wearing its own bar: UIKit takes the bar's look as the move starts, which a layout in
+            // the same turn - a sidebar going - can start before the window's chrome is composed.
+            children.forEach { $0.composeChrome() }
             navigation.setPages(children.compactMap(\.controller), animated: !(host?.reducesMotion() ?? true))
         case .tabView:
             guard let tabs = controller as? UIKitTabBarController else { return }
