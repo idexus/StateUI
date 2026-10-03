@@ -58,6 +58,14 @@ narrower width until it lays out again. To see the runner's bars on a
 desktop, run the suite after `defaults write com.apple.dt.xctest.tool
 AppleShowScrollBars Always`, and delete that key afterwards.
 
+## A button's icon beside its words
+
+A button keeps its icon beside its words, the two together in the middle
+(`imageHugsTitle`), however wide the layout stands it. Left to its default,
+AppKit puts the icon at the button's edge and the words alone in the middle:
+a sidebar's "Log out" stretched across the sidebar had its icon at the far
+side of it.
+
 ## A radio button's set
 
 StateUI owns a radio button's set - its name, across the whole window - and

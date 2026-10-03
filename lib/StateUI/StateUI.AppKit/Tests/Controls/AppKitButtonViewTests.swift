@@ -38,6 +38,26 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(button.layer?.borderWidth, 2)
     }
 
+    /// A button wider than its words keeps its icon beside them, the two in the middle together - not the icon at
+    /// the button's edge and the words alone in the middle.
+    @MainActor
+    func testAWideButtonsIconStandsBesideItsWords() throws {
+        for position in [NSControl.ImagePosition.imageLeading, .imageTrailing] {
+            let button = AppKitButtonView(frame: NSRect(x: 0, y: 0, width: 300, height: 32))
+            button.apply(
+                text: "Log out", image: NSImage(size: NSSize(width: 16, height: 16)), imagePosition: position,
+                imageScaling: .scaleProportionallyDown, font: .systemFont(ofSize: 13), textColor: .labelColor,
+                backgroundColor: nil, strokeColor: nil, lineWidth: 0, shape: .rectangle,
+                lineBreakMode: .byTruncatingTail, enabled: true)
+            let cell = try XCTUnwrap(button.cell as? NSButtonCell)
+            let image = cell.imageRect(forBounds: button.bounds)
+            let words = cell.titleRect(forBounds: button.bounds)
+            let gap = position == .imageLeading ? words.minX - image.maxX : image.minX - words.maxX
+
+            XCTAssertLessThan(gap, 12, "\(position.rawValue): the icon \(image) apart from its words \(words)")
+        }
+    }
+
     @MainActor
     func testImageOnlyButtonHasNoInventedCaption() {
         let button = AppKitButtonView()

@@ -20,6 +20,8 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         bezelStyle = .rounded
+        // The icon keeps beside the words, the two in the middle together, however wide the button stands.
+        imageHugsTitle = true
         target = self
         action = #selector(clicked(_:))
     }
