@@ -112,18 +112,22 @@ private struct FollowsAFinger: ExampleContent {
                     // finger makes builds this closure and draws again.
                     DebugInfoLabel()
 
+                    // The outline is the canvas's own edge, and nothing is
+                    // drawn past it.
                     Canvas {
                         Draw.strokeColor(Palette.outline)
                         Draw.lineWidth(1)
                         Draw.strokeRoundedRectangle(
-                            x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
+                            x: 1, y: 1, width: 298, height: 118, cornerRadius: 8)
 
                         Draw.fillColor(Palette.accent)
                         for point in trail {
                             Draw.fillEllipse(x: point.x - 4, y: point.y - 4, width: 8, height: 8)
                         }
                     }
+                    .width(300)
                     .height(120)
+                    .horizontalAlignment(.center)
                     .onPressed { trail = [$0] }
                     .onDragged { trail = Array((trail + [$0]).suffix(120)) }
                     .onReleased { _ in }
@@ -143,14 +147,16 @@ private struct FollowsAFinger: ExampleContent {
             Canvas {
                 Draw.strokeColor(Palette.outline)
                 Draw.lineWidth(1)
-                Draw.strokeRoundedRectangle(x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
+                Draw.strokeRoundedRectangle(x: 1, y: 1, width: 298, height: 118, cornerRadius: 8)
 
                 Draw.fillColor(Palette.accent)
                 for point in trail {
                     Draw.fillEllipse(x: point.x - 4, y: point.y - 4, width: 8, height: 8)
                 }
             }
+            .width(300)
             .height(120)
+            .horizontalAlignment(.center)
             .onPressed { trail = [$0] }
             .onDragged { trail = Array((trail + [$0]).suffix(120)) }
             .onReleased { _ in }
