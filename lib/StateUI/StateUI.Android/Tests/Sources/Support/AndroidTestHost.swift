@@ -192,7 +192,7 @@ extension AndroidRenderer {
     /// A host running the application whose only window shows what `page` builds, at two pixels a point,
     /// on `clock` where one is given.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
     ) -> AndroidRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
         let renderer = bare(clock: clock, reducesMotion: reducesMotion)

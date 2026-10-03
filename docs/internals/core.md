@@ -118,19 +118,22 @@ describes itself as a `Node`, read afresh on every render, and the differ
 turns the nodes into the patch.
 ([What a view is](../design/views/README.md#what-a-view-is))
 
-- **`Application`**, **`Scene`**, **`Window`** and **`Page`** (`Structure/`)
-  are the application's structure, one composition getter each; `Windows`,
-  `WindowGroup`, `WindowType` and `WindowError` are a scene's windows.
+- **`Application`** and **`Scene`** (`Structure/`) are the application's
+  structure, each a `body` built by `ApplicationBuilder` or `SceneBuilder`;
+  `WindowGroup`, `Window` (their `WindowRole`), `Windows`, `WindowType` and
+  `WindowError` are a scene's windows, and `Node.page` and `Node.window` the
+  page a view stands on and the window around it.
   `stateUIUseApp` names the application
   to the host from the application's own registration function.
   *Application.* ([Pages and windows](../design/views/pages.md);
   [applications and sessions](../interface/application-and-sessions.md))
 - **`NavigationStack`**, **`TabView`**, **`SplitView`** and
-  **`ModalStack`** (`Navigation/`) are arrangements: pages that key the pages
-  they hold, whose stack, chosen tab and modal stack are state. `Menu`,
+  **`ModalStack`** (`Navigation/`) are arrangements: views standing where a
+  page stands, which key the pages they hold, whose stack, chosen tab and
+  modal stack are state. `Menu`,
   `MenuItem`, `Divider` and `ToolbarItem` (`Menus/`) are a menu's
   entries and a page's actions, collected without keys. *Application.*
-  ([Arrangements are pages](../design/views/pages.md#arrangements-are-pages),
+  ([An arrangement is a view](../design/views/pages.md#an-arrangement-is-a-view),
   [menus](../design/views/builders.md#menus-collect-without-keys);
   [navigation and presentation](../interface/navigation-and-presentation.md))
 - **The tier protocols** (`Tiers/`) - `PropertyContainer`,
@@ -569,8 +572,9 @@ never against a stored copy
   every member has its case (`ContractCompletenessTests`).
   ([Conformance](../design/host/conformance.md))
 - **The Gallery's suite** compiles every `swift` block of the handbook
-  (`DocumentationExamplesTests`) and refuses each removed spelling at compile
-  time (`ContractRoadsTests`).
+  (`DocumentationExamplesTests`) and proves at compile time the roads the public
+  API closes - no member by token, no view where a run stands, one main
+  window to a scene (`ContractRoadsTests`).
 
 ## Changing the core
 

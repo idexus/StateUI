@@ -14,11 +14,11 @@ public final class Renderer: @unchecked Sendable {
     /// The one renderer: a process has one host.
     public static let shared = Renderer()
 
-    private var application: Application?
+    private var application: (any Application)?
 
     /// The registered application, still to be made: it is made at its first need - the first render, or the
     /// host reading the keys it keeps - so after the host has told what the device is.
-    private var making: (() -> Application)?
+    private var making: (() -> any Application)?
     private var dirty = true
 
     /// The states written since the last render, by storage identity. Behind
@@ -131,7 +131,7 @@ public final class Renderer: @unchecked Sendable {
     /// - Parameter application: the application, made at its first need, once
     ///   what an earlier registration wrote into the application's session is
     ///   forgotten and the host has told what the device is.
-    public func setApplication(_ application: @escaping @autoclosure () -> Application) {
+    public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
         StandardEnvironment.application.forget()
 
         // A new application is a new tree: the old one is let go, and every element of
@@ -157,7 +157,7 @@ public final class Renderer: @unchecked Sendable {
     /// The registered application, made the first time it is needed.
     /// Design: docs/design/core/render.md#a-new-application
     @discardableResult
-    func madeApplication() -> Application? {
+    func madeApplication() -> (any Application)? {
         if application == nil, let making {
             self.making = nil
             let made = making()
@@ -169,7 +169,7 @@ public final class Renderer: @unchecked Sendable {
 
     /// Names the application's own `@State` by their properties, once, since the
     /// application is never walked like a view.
-    static func name(statesOf application: Application) {
+    static func name(statesOf application: any Application) {
         for child in Mirror(reflecting: application).children {
             if let label = child.label, let box = child.value as? StateBox {
                 box.named(label)

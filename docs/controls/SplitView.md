@@ -5,10 +5,10 @@
 A page holding two: a sidebar at the side and the page beside it.
 
 ```swift
-struct MainWindow: Window {
+struct MainPage: View {
     @State private var showsFolders = true
 
-    var page: any Page {
+    var body: some View {
         SplitView($showsFolders) {
             Text("Folders")
         } detail: {

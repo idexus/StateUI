@@ -11,7 +11,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
     static let summary = "The menu you are looking at is a page, and every row in it is a view."
 
     static let code = """
-        // The arrangement, in Gallery/MainWindow.swift - over the gallery's
+        // The arrangement, in Gallery/MainPage.swift - over the gallery's
         // own `Navigation`, a class of states:
         SplitView(nav.$menuOpen) {
             MenuPage(catalog: catalog, nav: nav, log: log,

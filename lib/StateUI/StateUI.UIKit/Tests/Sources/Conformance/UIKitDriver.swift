@@ -68,7 +68,9 @@ final class UIKitDriver: HostDriver {
 
     var register: HostRegister { UIKitRealization.register }
 
-    func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
+    func start(
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+    ) -> MountedTree {
         finish()
         forgetWhatIsKept()
         written.listen()

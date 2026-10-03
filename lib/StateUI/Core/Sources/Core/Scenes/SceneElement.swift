@@ -12,7 +12,7 @@ struct SceneElement: Element {
     let record: SceneRecord
 
     /// What the application says a scene is.
-    let scene: Scene
+    let scene: any Scene
 
     var node: Node {
         let authored = SceneElement.unwrapped(scene)
@@ -34,18 +34,20 @@ struct SceneElement: Element {
 
     /// The scene's node: its main window first, then the windows it has open
     /// beside it, and the reports the host makes about them.
-    static func build(_ record: SceneRecord, _ scene: Scene) -> Node {
-        let windows = scene.windows
+    static func build(_ record: SceneRecord, _ scene: any Scene) -> Node {
+        let windows = scene.declaredWindows
 
         var declared: [WindowType: GroupShape] = [:]
 
-        for group in windows.groups where declared[group.type] == nil {
-            declared[group.type] = GroupShape(valueType: group.valueType, restore: group.restore)
+        for group in windows.groups {
+            guard let type = group.type, declared[type] == nil else { continue }
+
+            declared[type] = GroupShape(valueType: group.valueType, restore: group.restore)
         }
 
         record.declared = declared
 
-        var main = windows.main.node(session: record.windowSession(SceneElement.mainKey))
+        var main = window(windows.main, opened: nil, record, session: record.windowSession(SceneElement.mainKey))
         main.id = SceneElement.mainKey
 
         var children = [main]
@@ -56,7 +58,7 @@ struct SceneElement: Element {
                 continue
             }
 
-            var window = group.make(opened, record).node(session: record.windowSession(opened.key))
+            var window = window(group, opened: opened, record, session: record.windowSession(opened.key))
             window.id = opened.key
 
             // Written either way, so none of them is ever cleared off a window.
@@ -73,7 +75,6 @@ struct SceneElement: Element {
         record.keepWindowSessions()
 
         var node = Node(contract: SceneContract.self, children: children)
-        node.environments = windows.environments
 
         // The user closed a window of the scene - its key is the payload.
         node.addHandler(SceneContract.windowClosed.token) {
@@ -103,19 +104,28 @@ struct SceneElement: Element {
         return node
     }
 
+    /// One window the scene declares, `opened` where it stands beside the main one, with what was offered it.
+    private static func window(
+        _ declared: DeclaredWindows, opened: OpenedWindow?, _ record: SceneRecord, session: WindowSession
+    ) -> Node {
+        var node = Node.window(showing: { declared.page(opened, record) }, kind: declared.kind, session: session)
+        node.environments.insert(contentsOf: declared.environments, at: 0)
+        return node
+    }
+
     /// What the tree knows a scene's main window by.
     static let mainKey = "main"
 
     /// The scene the application wrote, under whatever it offered it.
-    static func unwrapped(_ scene: Scene) -> Scene {
-        (scene as? OfferingScene).map { unwrapped($0.base) } ?? scene
+    static func unwrapped(_ scene: any Scene) -> any Scene {
+        (scene as? any Offering).map { unwrapped($0.offered) } ?? scene
     }
 
     /// What `.environment(_:)` offered the scene, outermost first - so the one
     /// written last is nearest, the way it is on a view.
-    static func offered(by scene: Scene) -> [(key: ObjectIdentifier, object: AnyObject)] {
-        guard let offering = scene as? OfferingScene else { return [] }
+    static func offered(by scene: any Scene) -> [(key: ObjectIdentifier, object: AnyObject)] {
+        guard let offering = scene as? any Offering else { return [] }
 
-        return offered(by: offering.base) + [(key: offering.key, object: offering.object)]
+        return offered(by: offering.offered) + [(key: offering.key, object: offering.object)]
     }
 }

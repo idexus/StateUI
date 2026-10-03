@@ -4,12 +4,12 @@ StateUI separates structural declarations from the identity-bearing objects
 that exist while an application runs:
 
 ```text
-declaration         runtime state
------------         ------------------
-Application         ApplicationSession
-Scene               SceneSession
-Window              WindowSession
-Page                PageSession
+declaration                     runtime state
+-----------                     ------------------
+Application                     ApplicationSession
+Scene                           SceneSession
+WindowGroup, Window             WindowSession
+the page a view stands on       PageSession
 ```
 
 A declaration answers what it is composed of. Its session answers what the
@@ -19,16 +19,15 @@ properties and are resolved through `@Environment`.
 
 ## Application
 
-An application declares one scene shape. A window itself conforms to `Scene`,
-so a single-window application needs no extra scene type:
+An application's `body` is its one scene. Where its sessions need no state
+of their own, that is a `WindowGroup` showing a view - the application's main
+window, one for every session:
 
 ```swift
 struct SingleWindowApp: Application {
-    var scene: any Scene { MainWindow() }
-}
-
-struct MainWindow: Window {
-    var page: any Page { HomePage() }
+    var body: some Scene {
+        WindowGroup { HomePage() }
+    }
 }
 
 struct HomePage: View {
@@ -60,7 +59,7 @@ struct NotesApp: Application {
         application.persistentKeys = [.lastDocument]
     }
 
-    var scene: any Scene { NotesScene() }
+    var body: some Scene { NotesScene() }
 }
 ```
 
@@ -71,8 +70,8 @@ windows opened beside it, and the state those windows share. A platform may
 restore several instances of the same scene declaration. Each instance gets a
 different `SceneSession` and different scene-owned state.
 
-Use a dedicated scene type when there is shared session state or more than one
-window kind:
+Use a scene type of its own when there is shared session state or more than
+one window kind. Its `body` holds its windows:
 
 ```swift quote
 extension WindowType {
@@ -83,30 +82,36 @@ extension WindowType {
 struct NotesScene: Scene {
     @State private var selection = SelectionModel()
 
-    var windows: Windows {
-        Windows {
-            WindowGroup(.inspector) { InspectorWindow() }
-            WindowGroup(.document, for: Int.self) { number in
-                DocumentWindow(number: number)
-            }
-        } main: {
-            MainWindow()
+    var body: some Scene {
+        WindowGroup { MainPage() }
+            .environment(selection)
+        Window(.inspector) { InspectorPage() }
+            .environment(selection)
+        WindowGroup(.document, for: Int.self) { number in
+            DocumentPage(number: number)
         }
-        .environment(selection)
     }
 }
 ```
 
-The `main` window is the scene's lifetime boundary. Closing it closes the scene
-and every window belonging to it. A `WindowGroup` declares a kind the scene is
-allowed to open:
+The main window - the `WindowGroup` with no name - is the scene's lifetime
+boundary. Closing it closes the scene and every window belonging to it, and
+*File ▸ New Window* opens another session of the scene with a main window of
+its own. A window opened beside it is declared with a name:
 
-- `WindowGroup(.inspector) { ... }` allows one window of that kind per scene;
+- `Window(.inspector) { ... }` allows one window of that kind per scene;
 - `WindowGroup(.document, for: ID.self) { $id in ... }` allows one per value;
 - the value is `Codable` and `Hashable` so it can identify and restore the
   window;
 - the value closure receives a `Binding`, so the same window can be retargeted
   without replacing its session.
+
+The scene's builder counts its main window by type: a scene with none, or with
+two, does not compile, and neither does a main window under an `if` with no
+`else` - what a window shows is chosen inside its view. An object reaches the
+views of a window by `.environment(_:)` on its `WindowGroup` or `Window`, and
+every window of every session by `.environment(_:)` on the scene where the
+application names it.
 
 `WindowType` names are durable application vocabulary. Use stable,
 application-qualified names because restoration records them.
@@ -123,7 +128,7 @@ metadata.
 `hidesWhenInactive` and `floatsOnTop` describe auxiliary windows, not new scenes:
 
 ```swift quote
-WindowGroup(.inspector) { InspectorWindow() }
+Window(.inspector) { InspectorPage() }
     .hidesWhenInactive(true)
     .floatsOnTop(true)
 ```
@@ -249,7 +254,7 @@ as a newly opened one.
 
 `WindowSession` owns one running window's phase, title, geometry requests,
 translucency, and `close()` operation. What the window shows - its pages, its
-sheets, its bar - is declared on its `page`.
+sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 
 | Member | Meaning |
 | --- | --- |
@@ -344,17 +349,20 @@ already stored changes no state, and therefore triggers no extra reaction.
 
 ## Page session
 
-Whatever a container shows as a screen - a window's `page`, a navigation
-stack's root and destinations, a tab, either half of a split view, a sheet -
-is a `Page`. Nobody declares one by hand: every view is a page, usually a
-`View` of the application's own, and so is each arrangement. The
-container puts a view on a page that owns one `PageSession` for as long as
-the same view stands on it: the same view type under the same explicit id.
-Another view in that place starts a session of its own. A write to the session
-builds the page again and carries the view on it whole. An arrangement -
-`NavigationStack`, `TabView`, `SplitView` - is a page already and is shown
-as it is; it is not a view, so it stands only where a page stands, and it is
-told what it is by modifier.
+Whatever a container shows as a screen - a window's view, a navigation stack's
+root and destinations, a tab, either half of a split view, a sheet - stands on
+a page. Nobody declares one: the container puts the view on a page that owns
+one `PageSession` for as long as the same view stands on it: the same view
+type under the same explicit id. Another view in that place starts a session
+of its own. A write to the session builds the page again and carries the view
+on it whole.
+
+An arrangement - `NavigationStack`, `TabView`, `SplitView`, `ModalStack` - is
+a view that stands where a page stands, as the page itself: written there, or
+the `body` of the view written there. Anywhere else - inside a `VStack`, inside
+a page's content - it is left out and said once. It fills where it stands, so
+it keeps only what its contract declares, and it is told what it is by
+modifier.
 
 | Member | Meaning |
 | --- | --- |
@@ -438,18 +446,18 @@ session phase whose scope matches the work.
 
 ## The window's bar
 
-The window's bar is declared on the arrangement its `page` returns, as values
+The window's bar is declared on the arrangement the window's view is, as values
 read in the body - so it follows the state it reads with no write of its own:
 
 ```swift
 import StateUI
 
-struct NotesWindow: Window {
+struct NotesPage: View {
     @State private var showsFolders = true
     @State private var folder = "Personal"
     @State private var query = ""
 
-    var page: any Page {
+    var body: some View {
         SplitView($showsFolders) {
             Text("Folders")
         } detail: {

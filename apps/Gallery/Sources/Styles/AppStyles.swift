@@ -15,7 +15,7 @@
 //   - Nothing a Style cannot NAME: a shadow is a property of the view that
 //     casts it, a page's appearance is its `PageSession`'s, and the bars of
 //     NavigationStack and TabView are written on the arrangement itself -
-//     see MainWindow.detail.
+//     see MainPage.detail.
 
 import StateUI
 

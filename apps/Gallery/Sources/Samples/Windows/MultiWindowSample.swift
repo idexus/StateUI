@@ -39,28 +39,26 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         enum AccentChoice: String, CaseIterable, PersistentValue { case violet, teal, coral, graphite }
 
         struct GalleryApp: Application {
-            var scene: any Scene { GalleryScene() }         // a gallery, and as many more
+            var body: some Scene { GalleryScene() }     // a gallery, and as many more
         }
 
         struct GalleryScene: Scene {                    // ONE gallery
             @State private var style = SessionStyle()   // this gallery's own
 
-            var windows: Windows {
-                Windows {
-                    WindowGroup(.fonts) { FontsWindow() }
-                        .hidesWhenInactive(style.hidesTools)
-                        .floatsOnTop(style.floatsTools)
-                    WindowGroup(.colours) { ColoursWindow() }
-                        .hidesWhenInactive(style.hidesTools)
-                        .floatsOnTop(style.floatsTools)
-                    WindowGroup(.debugInspector) { DebugInspector() }
-                    WindowGroup(.swatch, for: Int.self) { number in     // one per value,
-                        SwatchWindow(number: number)                    // its value lent
-                    }
-                } main: {
-                    MainWindow(style: style)
+            var body: some Scene {
+                WindowGroup { MainPage(style: style) }         // the main window
+                Window(.fonts) { FontsPage() }                 // one of a kind, beside it
+                    .hidesWhenInactive(style.hidesTools)
+                    .floatsOnTop(style.floatsTools)
+                    .environment(style)
+                Window(.colours) { ColoursPage() }
+                    .hidesWhenInactive(style.hidesTools)
+                    .floatsOnTop(style.floatsTools)
+                    .environment(style)
+                Window(.debugInspector) { DebugInspector() }
+                WindowGroup(.swatch, for: Int.self) { number in    // one per value,
+                    SwatchPage(number: number)                     // its value lent
                 }
-                .environment(style)                     // one context for all of them
             }
         }
 
@@ -101,7 +99,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         Button("Close swatch 2").onClicked { try await scene.closeWindow(.swatch, value: 2) }
 
         // Each window is handed its number as a binding - writing it makes the
-        // SAME window about another swatch, in SwatchWindow.swift:
+        // SAME window about another swatch, in SwatchPage.swift:
         //     Button("Next").onClicked { number += 1 }
 
         // Another gallery:

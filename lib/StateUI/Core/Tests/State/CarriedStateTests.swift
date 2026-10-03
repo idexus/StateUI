@@ -11,9 +11,9 @@
 // element's law, resolved on this side because the host cannot read a motion
 // plan.
 //
-// The mechanism is in Core/Carried; the MAUI host's half - which runs
-// the cycle on the platform's own frames and writes the values onto the
-// controls - is its StateChannels, CarriedReports and DisplayCycle.
+// The mechanism is in Core/Carried; a host's half - which runs the cycle on
+// the platform's own frames and writes the values onto the controls - is the
+// host layer's `StateChannels` and `DisplayCycle`.
 
 import XCTest
 @_spi(Host) @testable import StateUI

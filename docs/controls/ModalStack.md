@@ -5,10 +5,10 @@
 An arrangement presenting pages over the page it holds: its first child is that page, the others the sheets over it, the last on top.
 
 ```swift
-struct MainWindow: Window {
+struct MainPage: View {
     @State private var sheets: [String] = []
 
-    var page: any Page {
+    var body: some View {
         ModalStack($sheets) {
             Button("Settings").onClicked { sheets.append("Settings") }
         } destination: { sheet in

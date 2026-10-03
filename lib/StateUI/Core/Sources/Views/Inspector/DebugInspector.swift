@@ -3,14 +3,14 @@
 
 /// The inspector in a window of its own, beside its scene's main window.
 ///
-///     WindowGroup(.debugInspector) { DebugInspector() }
+///     Window(.debugInspector) { DebugInspector() }
 ///
 /// A window of the scene that declares it, showing the renders that reached
 /// that scene - opened by the ⓘ of any of the scene's pages, or by
 /// `scene.openWindow(.debugInspector)`. Where a scene declares none, or the
 /// platform opens no second window, the inspector docks in the main window
 /// instead.
-public struct DebugInspector: Window {
+public struct DebugInspector: View {
     /// The scene it inspects - the one it is a window of.
     @Environment private var scene: SceneSession
 
@@ -18,5 +18,5 @@ public struct DebugInspector: Window {
     public init() {}
 
     /// The inspector, for its scene.
-    public var page: any Page { InspectorPage(scene: scene.id) }
+    public var body: some View { InspectorPage(scene: scene.id) }
 }

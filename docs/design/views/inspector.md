@@ -9,7 +9,7 @@ the views here show it.
 An application offers the inspector in one line: `ToolbarItem.inspector(scene)`
 in a page's toolbar items, `InspectorButton()` anywhere a view goes, or, for a
 scene that may show it in a window of its own,
-`WindowGroup(.debugInspector) { DebugInspector() }`.
+`Window(.debugInspector) { DebugInspector() }`.
 
 Each render is listed as it happens: what caused it, which road it took, how
 long describing it took in Swift and applying it took in the host, in
@@ -38,7 +38,7 @@ leaving the page all but uncovered while it is watched, with two buttons at the
 end of the line to open it out and to close it. Opened out, it docks down the
 side on a desktop or a tablet, or shows in the scene's `DebugInspector` window
 where the scene declares one and the platform opens windows: a window of the
-scene like any other, closed with it, hidden with it where its group says so,
+scene like any other, closed with it, hidden with it where its `Window` says so,
 and restored with it.
 
 ## Where it docks

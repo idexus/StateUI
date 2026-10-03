@@ -16,10 +16,10 @@ struct WindowSample: SampleContent, ExampleContent {
     static let summary = "Change the native window while it stays on screen."
 
     static let code = """
-        struct MainWindow: Window {
+        struct MainPage: View {
             @Environment private var window: WindowSession
 
-            var page: any Page {
+            var body: some View {
                 HomePage()
                     .onCreated {
                         window.title = "Notes"

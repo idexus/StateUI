@@ -22,7 +22,7 @@
 /// side on a desktop or a tablet, or shows in the scene's own window where the
 /// scene declares one:
 ///
-///     WindowGroup(.debugInspector) { DebugInspector() }
+///     Window(.debugInspector) { DebugInspector() }
 ///
 /// Nothing is recorded while every inspector is closed or paused.
 public enum Inspector {

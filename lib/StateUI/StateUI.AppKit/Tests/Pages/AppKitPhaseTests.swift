@@ -43,10 +43,10 @@ private struct PhasePage: View {
     }
 }
 
-private struct PhaseWindow: Window {
+private struct MainPage: View {
     let stack: PhaseStack
 
-    var page: any Page {
+    var body: some View {
         NavigationStack(stack.$path) {
             Text("root")
         } destination: { _ in
@@ -58,6 +58,6 @@ private struct PhaseWindow: Window {
 private struct PhaseApp: Application {
     let stack: PhaseStack
 
-    var scene: any Scene { PhaseWindow(stack: stack) }
+    var body: some Scene { WindowGroup { MainPage(stack: stack) } }
 }
 #endif

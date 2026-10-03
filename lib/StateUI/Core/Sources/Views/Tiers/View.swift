@@ -37,7 +37,7 @@ public protocol ViewProperties: VisualElementProperties {}
 ///     Header("Settings")
 ///         .margin(horizontal: 0, vertical: 8)
 ///         .gridRow(1)
-public protocol View: VisualElement, ViewProperties, Page, Views where Modified: View {
+public protocol View: VisualElement, ViewProperties, Views where Modified: View {
     /// The view it is made of.
     associatedtype Body: View
 

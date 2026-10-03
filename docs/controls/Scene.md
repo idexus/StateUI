@@ -9,18 +9,15 @@ extension WindowType {
     static let inspector = WindowType("notes.inspector")
 }
 
-struct NoteWindow: Window {
+struct NotePage: View {
     let title: String
-    var page: any Page { Text(title) }
+    var body: some View { Text(title) }
 }
 
 struct NotesScene: Scene {
-    var windows: Windows {
-        Windows {
-            WindowGroup(.inspector) { NoteWindow(title: "Inspector") }
-        } main: {
-            NoteWindow(title: "Notes")
-        }
+    var body: some Scene {
+        WindowGroup { NotePage(title: "Notes") }
+        Window(.inspector) { NotePage(title: "Inspector") }
     }
 }
 ```

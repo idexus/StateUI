@@ -29,11 +29,14 @@
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
-                TabView([0, 1]) { tab -> any Page in
-                    guard tab == 0 else { return Text("Other") }
-                    return Presented.page(element, member, value.wrappedValue, beside: [
-                        Button("Change").onClicked { value.wrappedValue = second }.id("change"),
-                    ])
+                TabView([0, 1]) { tab in
+                    if tab == 0 {
+                        Presented.page(element, member, value.wrappedValue, beside: [
+                            Button("Change").onClicked { value.wrappedValue = second }.id("change"),
+                        ])
+                    } else {
+                        Text("Other")
+                    }
                 }
             }
             let kind = s.elements(ofType: NodeType(element))
@@ -76,7 +79,15 @@ enum Presented {
     /// A page of `element`'s kind whose `member` is `value`, `beside` its words.
     static func page<Value: HostRepresentable & Sendable & Equatable>(
         _ element: String, _ member: ElementProperty<PageElementContract, Value>, _ value: Value, beside: [any View]
-    ) -> any Page {
+    ) -> ModifiedContent {
+        // Chosen by name, so held as `any View` and handed on as its node.
+        ModifiedContent(node: chosen(element, member, value, beside: beside).node)
+    }
+
+    /// The page `page(_:_:_:beside:)` shows, chosen by name.
+    private static func chosen<Value: HostRepresentable & Sendable & Equatable>(
+        _ element: String, _ member: ElementProperty<PageElementContract, Value>, _ value: Value, beside: [any View]
+    ) -> any View {
         let others: [any View] = beside
         let written = Write(member, value)
         switch element {

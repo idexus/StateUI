@@ -233,6 +233,9 @@ extension Differ {
             break
         }
 
+        // An arrangement keeps what its contract declares (Differ+Arrangements.swift).
+        node.keepingDeclared()
+
         // A scene written as a node rather than a scene type - a test's own tree.
         if node.type == .scene, sceneRecord == nil, case .manual(let name) = id {
             sceneRecord = Scenes.shared.record(id: name)

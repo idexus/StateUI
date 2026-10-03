@@ -5,15 +5,15 @@
 // one shows is a binding of the same type, written back when the user chooses.
 // Design: docs/design/views/pages.md#tabs-report-an-index
 
-/// A page showing several pages, one at a time, with a bar to choose between
-/// them.
+/// Several pages shown one at a time, with a bar to choose between them - a
+/// view that stands where a page stands.
 ///
 ///     enum Tab: Hashable, CaseIterable { case today, settings }
 ///
-///     struct MainWindow: Window {
+///     struct MainPage: View {
 ///         @State private var tab: Tab = .today
 ///
-///         var page: any Page {
+///         var body: some View {
 ///             TabView(Tab.allCases) { tab in
 ///                 switch tab {
 ///                 case .today:    TodayPage()
@@ -48,7 +48,7 @@
 /// Each tab must be a distinct value whose values describe differently
 /// (`String(describing:)`). A page is keyed by its tab alone, so tabs can be
 /// reordered without their pages being rebuilt.
-public struct TabView: Page, ModifiableElement, BarElement, PageElement {
+public struct TabView: ElementView, Arrangement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
@@ -61,9 +61,9 @@ public struct TabView: Page, ModifiableElement, BarElement, PageElement {
     /// - Parameter tabs: what the tab bar offers, in order - the author's own
     ///   type, each value distinct.
     /// - Parameter destination: the page for one tab.
-    public init<Tabs: RandomAccessCollection>(
+    public init<Tabs: RandomAccessCollection, Destination: View>(
         _ tabs: Tabs,
-        @PageBuilder destination: (Tabs.Element) -> any Page
+        @ViewBuilder destination: (Tabs.Element) -> Destination
     ) where Tabs.Element: Hashable {
         let ordered = Array(tabs)
         self.tabs = ordered.map { AnyHashable($0) }

@@ -1,13 +1,8 @@
 import StateUI
 
-/// The window a gallery chooses its accent in - a window OF THE GALLERY that
-/// opened it, painting that gallery's bars and no other's. See
-/// `MultiWindowSample`.
-struct ColoursWindow: Window {
-    var page: any Page { ColoursPage() }
-}
-
-/// The accents on offer, each drawn in itself.
+/// The accents on offer, each drawn in itself: the page of the window a
+/// gallery chooses its accent in, a window OF THE GALLERY that opened it,
+/// painting that gallery's bars and no other's. See `MultiWindowSample`.
 struct ColoursPage: View {
     /// The gallery's look - the one its scene offers every window of it.
     @Environment private var style: SessionStyle

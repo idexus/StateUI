@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-extension PropertyContainer where Self: Page {
+extension View {
     /// A group of actions on the bar of the page this stands in, declared where
     /// the state they follow lives.
     ///

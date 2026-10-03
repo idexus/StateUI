@@ -163,8 +163,8 @@ final class AndroidConformanceTests: XCTestCase {
     func testPageElement() throws { try conform(PageElementTests.self) }
 
     /// The host tells a window its activity's phase: closing or minimizing anything else is Android's own.
-    func testAWindowsPhaseIsTheHostsOwnOnAWindowAlone() throws {
-        try onMainActor {
+    func testAWindowsPhaseIsTheHostsOwnOnAWindowAlone() {
+        onMainActor {
             let driver = AndroidDriver()
             XCTAssertNotNil(driver.byHost("close on Window"))
             XCTAssertNil(driver.byHost("close on Picker"))

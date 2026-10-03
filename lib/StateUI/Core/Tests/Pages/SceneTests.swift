@@ -51,21 +51,9 @@ private struct Home: View {
     }
 }
 
-/// The session's main window.
-private struct MainWindow: Window {
-    @Binding var shade: String
-
-    var page: any Page { Home(shade: $shade) }
-}
-
 /// A page showing the session's accent.
 private struct Showing: View {
     var body: some View { Accent() }
-}
-
-/// The one fonts window a session may open.
-private struct FontsWindow: Window {
-    var page: any Page { Showing() }
 }
 
 /// A page that says which document its window is for, and makes the window
@@ -81,34 +69,26 @@ private struct Retargeting: View {
     }
 }
 
-/// A window per document number.
-private struct DocumentWindow: Window {
-    @Binding var number: Int
-
-    var page: any Page { Retargeting(number: $number) }
-}
-
 /// A session: its own palette, a value it keeps, a group of one and a group
 /// per value.
 private struct Session: Scene {
     @State private var palette = Palette()
     @State(sceneKey: .shade) private var shade = "light"
 
-    var windows: Windows {
-        Windows {
-            WindowGroup(.fonts) { FontsWindow() }
-                .hidesWhenInactive(true)
-                .floatsOnTop(true)
-            WindowGroup(.document, for: Int.self) { $number in DocumentWindow(number: $number) }
-        } main: {
-            MainWindow(shade: $shade)
-        }
-        .environment(palette)
+    var body: some Scene {
+        WindowGroup { Home(shade: $shade) }
+            .environment(palette)
+        Window(.fonts) { Showing() }
+            .hidesWhenInactive(true)
+            .floatsOnTop(true)
+            .environment(palette)
+        WindowGroup(.document, for: Int.self) { $number in Retargeting(number: $number) }
+            .environment(palette)
     }
 }
 
 private struct Studio: Application {
-    var scene: any Scene { Session() }
+    var body: some Scene { Session() }
 }
 
 /// A page with nothing on it.
@@ -116,14 +96,9 @@ private struct Blank: View {
     var body: some View { Text("blank") }
 }
 
-/// A window and nothing else.
-private struct PlainWindow: Window {
-    var page: any Page { Blank() }
-}
-
-/// An application whose scene is a window alone.
+/// An application whose body is its main window alone.
 private struct Alone: Application {
-    var scene: any Scene { PlainWindow() }
+    var body: some Scene { WindowGroup { Blank() } }
 }
 
 /// A page that says loading is over.
@@ -133,36 +108,28 @@ private struct Waiting: View {
     var body: some View { Button("ready").onClicked { loading = false } }
 }
 
-/// What shows while a session is getting ready.
-private struct LoadingWindow: Window {
-    @Binding var loading: Bool
-
-    var page: any Page { Waiting(loading: $loading) }
-}
-
 /// A session whose main window is one thing and then another.
 private struct Starting: Scene {
     @State private var loading = true
 
-    var windows: Windows {
-        Windows {
-        } main: {
+    var body: some Scene {
+        WindowGroup {
             if loading {
-                LoadingWindow(loading: $loading)
+                Waiting(loading: $loading)
             } else {
-                PlainWindow()
+                Blank()
             }
         }
     }
 }
 
 private struct StartingApp: Application {
-    var scene: any Scene { Starting() }
+    var body: some Scene { Starting() }
 }
 
-/// A page showing what its window counted, and counting one more.
+/// A page counting with state of its own.
 private struct Counting: View {
-    @Binding var opened: Int
+    @State private var opened = 0
 
     var body: some View {
         VStack {
@@ -172,15 +139,8 @@ private struct Counting: View {
     }
 }
 
-/// A window holding state of its own.
-private struct CountingWindow: Window {
-    @State private var opened = 0
-
-    var page: any Page { Counting(opened: $opened) }
-}
-
 private struct CountingApp: Application {
-    var scene: any Scene { CountingWindow() }
+    var body: some Scene { WindowGroup { Counting() } }
 }
 
 /// A page that names its window and sizes it as it comes into the tree, and
@@ -199,12 +159,8 @@ private struct Naming: View {
     }
 }
 
-private struct NamingWindow: Window {
-    var page: any Page { Naming() }
-}
-
 private struct NamingApp: Application {
-    var scene: any Scene { NamingWindow() }
+    var body: some Scene { WindowGroup { Naming() } }
 }
 
 /// A page that says how many scenes are open and what its own has open.
@@ -220,23 +176,16 @@ private struct Listing: View {
     }
 }
 
-private struct ListingWindow: Window {
-    var page: any Page { Listing() }
-}
-
 /// A scene whose page counts, with a group of one beside it.
 private struct ListingScene: Scene {
-    var windows: Windows {
-        Windows {
-            WindowGroup(.fonts) { PlainWindow() }
-        } main: {
-            ListingWindow()
-        }
+    var body: some Scene {
+        WindowGroup { Listing() }
+        Window(.fonts) { Blank() }
     }
 }
 
 private struct ListingApp: Application {
-    var scene: any Scene { ListingScene() }
+    var body: some Scene { ListingScene() }
 }
 
 final class SceneTests: XCTestCase {
@@ -252,7 +201,7 @@ final class SceneTests: XCTestCase {
     }
 
     /// The application's tree, the way `Renderer.root` builds it.
-    private func tree(_ application: Application = Studio()) -> Node {
+    private func tree(_ application: some Application = Studio()) -> Node {
         Scenes.shared.tree(of: application)
     }
 
@@ -303,9 +252,9 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(patch.children[0].children.map(\.id), [.manual("main")])
     }
 
-    /// A window alone is a scene of one window - which is what an application
-    /// with nothing to open beside its window writes.
-    func testAWindowAloneIsASceneOfOneWindow() {
+    /// An application whose body is its main window alone - nothing to open
+    /// beside it - is one scene of one window.
+    func testAnApplicationOfItsMainWindowAloneIsASceneOfOneWindow() {
         let patch = Renders().render(tree(Alone()))
 
         XCTAssertEqual(patch.children.map(\.type), [.scene])
@@ -854,9 +803,9 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(texts(in: whole.children[0].children[0]), ["blank"])
     }
 
-    /// A window declared as a type keeps `@State` of its own across renders,
-    /// the way a page does.
-    func testAWindowKeepsStateOfItsOwnAcrossRenders() throws {
+    /// The view a window shows keeps `@State` of its own across renders, the
+    /// way a page does.
+    func testTheViewAWindowShowsKeepsStateOfItsOwnAcrossRenders() throws {
         let renders = Renders()
         let first = renders.render(tree(CountingApp()))
 
@@ -867,7 +816,7 @@ final class SceneTests: XCTestCase {
 
         XCTAssertEqual(
             texts(in: patch), ["1"],
-            "a window whose state was not adopted would have counted from zero again")
+            "a view whose state was not adopted would have counted from zero again")
     }
 
     // MARK: - The generation handshake

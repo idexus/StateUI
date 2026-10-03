@@ -48,7 +48,15 @@ enum Chosen {
     /// A page with an item of `element`'s kind in reach and one out of it, each named and heard as `item` says.
     static func page(
         _ element: String, _ item: @escaping @Sendable (Bool) -> (String, @Sendable () -> Void)
-    ) -> any Page {
+    ) -> ModifiedContent {
+        // Chosen by name, so held as `any View` and handed on as its node.
+        ModifiedContent(node: chosen(element, item).node)
+    }
+
+    /// The page `page(_:_:)` shows, chosen by name.
+    private static func chosen(
+        _ element: String, _ item: @escaping @Sendable (Bool) -> (String, @Sendable () -> Void)
+    ) -> any View {
         let (on, off) = (item(true), item(false))
         if element == "ToolbarItem" {
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {

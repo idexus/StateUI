@@ -165,17 +165,14 @@ private struct PhasePage: View {
 
 /// An application whose main window opens a tool window of its scene.
 private struct ToolApplication: Application {
-    var scene: any Scene { ToolScene() }
+    var body: some Scene { ToolScene() }
 }
 
 private struct ToolScene: Scene {
-    var windows: Windows {
-        Windows({ WindowGroup(WindowType("renderer.tool")) { ToolWindow() } }, main: { ToolMainWindow() })
+    var body: some Scene {
+        WindowGroup { ToolOpeningPage() }
+        Window(WindowType("renderer.tool")) { Text("A tool") }
     }
-}
-
-private struct ToolMainWindow: Window {
-    var page: any Page { ToolOpeningPage() }
 }
 
 private struct ToolOpeningPage: View {
@@ -185,10 +182,6 @@ private struct ToolOpeningPage: View {
         let scene = self.scene
         return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
     }
-}
-
-private struct ToolWindow: Window {
-    var page: any Page { Text("A tool") }
 }
 
 /// A page saying the screen's width and turn.

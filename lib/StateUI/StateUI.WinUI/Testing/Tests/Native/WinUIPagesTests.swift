@@ -436,17 +436,19 @@ final class WinUIPagesTests: XCTestCase {
     }
 
     /// A sign-in's field on a stack, then a split view whose stack's page aims at its field.
-    private static func signIn(_ signedIn: State<Bool>) -> any Page {
-        guard signedIn.wrappedValue else {
-            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                TextField(State(wrappedValue: "").projectedValue)
-            } destination: { _ in Text("Pushed") }
-        }
-        return SplitView(State(wrappedValue: false).projectedValue) {
-            Text("Menu")
-        } detail: {
+    @ViewBuilder
+    private static func signIn(_ signedIn: State<Bool>) -> some View {
+        if signedIn.wrappedValue {
+            SplitView(State(wrappedValue: false).projectedValue) {
+                Text("Menu")
+            } detail: {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    AimedFieldPage()
+                } destination: { _ in Text("Pushed") }
+            }
+        } else {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                AimedFieldPage()
+                TextField(State(wrappedValue: "").projectedValue)
             } destination: { _ in Text("Pushed") }
         }
     }

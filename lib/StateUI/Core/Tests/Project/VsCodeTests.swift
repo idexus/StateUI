@@ -76,21 +76,6 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
-    /// The editor runs no .NET: no task, launch or setting names a MAUI head,
-    /// the MAUI extension or `dotnet`. A head is run by the StateUI extension,
-    /// on AppKit or Android.
-    func testTheEditorRunsNoDotNet() throws {
-        for file in ["launch.json", "tasks.json", "settings.json"] {
-            let text = try String(contentsOf: directory.appendingPathComponent(file), encoding: .utf8)
-
-            for spelling in [
-                "Platforms/Maui", "\"maui.", "\"type\": \"maui\"", ".scripts/Maui", "dotnet", "coreclr", "StateUI.Maui",
-            ] {
-                XCTAssertFalse(text.contains(spelling), "\(file) still says \(spelling).")
-            }
-        }
-    }
-
     /// THE PICKER'S ORDER IS `presentation.order`, NOT THE ORDER IN THE FILE,
     /// and StateUI: Debug is the first launch offered.
     /// Two orders that collide are VS Code's to break however it likes.

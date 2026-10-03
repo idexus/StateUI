@@ -46,12 +46,13 @@ final class UIKitSplitViewTests: XCTestCase {
         let path = State(wrappedValue: [1, 2])
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: { () -> any Page in
-                guard tabbed.wrappedValue else {
-                    return NavigationStack(path.projectedValue) { Text("Stacked") }
+            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
+                if tabbed.wrappedValue {
+                    TabView([0, 1]) { tab in Text("Tab \(tab)") }
+                } else {
+                    NavigationStack(path.projectedValue) { Text("Stacked") }
                         destination: { number in Text("Pushed \(number)") }
                 }
-                return TabView([0, 1]) { tab in Text("Tab \(tab)") }
             }
         }
         defer { host.finish() }
@@ -80,7 +81,7 @@ final class UIKitSplitViewTests: XCTestCase {
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
             SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
-                TabView([0, 1]) { tab -> any Page in
+                TabView([0, 1]) { tab in
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Tab \(tab)") }
                         destination: { number in Text("Pushed \(number)") }
                 }

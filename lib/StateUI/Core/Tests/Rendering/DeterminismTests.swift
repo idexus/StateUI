@@ -88,18 +88,18 @@ private struct SettingsPage: View {
     }
 }
 
-/// The one window of the deterministic session: tabs over a stack, which is the
+/// The main page of the deterministic session: tabs over a stack, which is the
 /// widest tree one screenful of it can hold.
-private struct DeterminismWindow: Window {
+private struct MainPage: View {
     let tab: Binding<Tab>
     let path: Binding<[Route]>
     let count: Binding<Int>
 
-    var page: any Page {
+    var body: some View {
         TabView([Tab.home, .settings]) { which in
             switch which {
             case .home:
-                return NavigationStack(path) {
+                NavigationStack(path) {
                     HomePage(count: count)
                 } destination: { route in
                     switch route {
@@ -111,7 +111,7 @@ private struct DeterminismWindow: Window {
                 .barForegroundColor(.white)
 
             case .settings:
-                return SettingsPage()
+                SettingsPage()
             }
         }
         .selection(tab.projectedValue)
@@ -148,6 +148,7 @@ final class DeterminismTests: XCTestCase {
         let tab = State<Tab>(.home)
         let path = State<[Route]>([])
         let count = State<Int>(0)
+        let session = WindowSession()
 
         let styles = StyleSheet {
             Style<Text>().fontSize(14).textColor(Color(light: .black, dark: .white))
@@ -168,10 +169,9 @@ final class DeterminismTests: XCTestCase {
         }
 
         func window() -> Node {
-            DeterminismWindow(
-                tab: tab.projectedValue,
-                path: path.projectedValue,
-                count: count.projectedValue).node
+            Node.window(
+                MainPage(tab: tab.projectedValue, path: path.projectedValue, count: count.projectedValue),
+                session: session)
         }
 
         func render(_ name: String, complete: Bool = false) {
@@ -230,6 +230,9 @@ final class DeterminismTests: XCTestCase {
         let second = Self.session()
 
         XCTAssertEqual(first.map(\.name), second.map(\.name))
+        XCTAssertTrue(
+            Set(first[0].patch.subtree.map(\.type)).isSuperset(of: [.window, .tabView, .navigationStack, .page]),
+            "the session opens on its widest tree - a window, tabs over a stack, a page - or proves nothing")
 
         for (one, two) in zip(first, second) {
             XCTAssertEqual(

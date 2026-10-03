@@ -1,10 +1,10 @@
 import StateUI
 
-/// A gallery's main window: what it is called, how big it opens, what is
-/// presented over it - and THE ARRANGEMENT, which is the reason this is a type
-/// of its own.
+/// What a gallery's main window shows: what the window is called, how big it
+/// opens, what is presented over it - and THE ARRANGEMENT, which is the reason
+/// this is a view of its own.
 ///
-/// A window is where an application says what a screenful IS, so everything
+/// The view a window shows is where an application says what a screenful IS, so everything
 /// about the way the gallery moves lives here: the split view holding the menu and
 /// the section, the stack the sections push onto, the tabs that one section is
 /// arranged as, and the modal stack over all of it. `GalleryScene` next door is
@@ -19,7 +19,7 @@ import StateUI
 /// what it looks like, the log its lifecycle is written into and what its
 /// chrome says - which is what lets a test build the whole arrangement without
 /// reaching into a running application.
-struct MainWindow: Window {
+struct MainPage: View {
     /// Which kind of device this is, from the standard environment - answered by
     /// the host before the first render, so the first window build already knows
     /// whether to wear a title bar.
@@ -47,7 +47,7 @@ struct MainWindow: Window {
     // MARK: - The window itself
 
     /// This window as it runs: what it is called, how big it is, and where it
-    /// stands in its life - written in `page` below, the one place the
+    /// stands in its life - written in `body` below, the one place the
     /// window is sure to be built.
     @Environment private var window: WindowSession
 
@@ -58,7 +58,7 @@ struct MainWindow: Window {
 
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
-    var page: any Page {
+    var body: some View {
         // What is over all of it: the pages presented over the split view, the
         // stack and the bars alike - empty almost always: presenting is
         // `sheets.append`, and a sheet the user drags down shortens the array
@@ -151,8 +151,8 @@ struct MainWindow: Window {
     /// `TabView` is a page like any other, so a section may simply be one -
     /// and a stack may sit inside a tab, because pages nest without a rule
     /// about which may hold which.
-    @PageBuilder
-    func detail() -> any Page {
+    @ViewBuilder
+    func detail() -> some View {
         if case .tabs = nav.section {
             tabs()
         } else {
@@ -171,8 +171,8 @@ struct MainWindow: Window {
     /// group each. The user's way back out of anything is therefore the
     /// platform's own back button, all the way to the run of group cards the
     /// gallery opens with.
-    @PageBuilder
-    func root() -> any Page {
+    @ViewBuilder
+    func root() -> some View {
         switch nav.section {
         case .home:
             HomePage(catalog: catalog, nav: nav)
@@ -195,8 +195,8 @@ struct MainWindow: Window {
     /// - Parameter route: which page the stack asked for.
     /// - Parameter path: the stack this page is ON, so a page that pushes or
     ///   pops writes the array it is a member of - the main one, or the tab's.
-    @PageBuilder
-    func page(for route: Route, path: Binding<[Route]>) -> any Page {
+    @ViewBuilder
+    func page(for route: Route, path: Binding<[Route]>) -> some View {
         switch route {
         case .group(let route):
             if let group = catalog.groups.first(where: { $0.route == route }) {
@@ -225,7 +225,7 @@ struct MainWindow: Window {
 
     /// The one section that is not a stack: a `TabView` over the author's own
     /// enum, with a stack inside the first tab.
-    func tabs() -> any Page {
+    func tabs() -> some View {
         TabView(nav.tabs) { which in
             switch which {
             case .stack:

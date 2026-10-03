@@ -72,7 +72,7 @@
     /// what stands `beside` them.
     static func page(
         beside: [any View] = [], key: String = "", _ items: @escaping @Sendable () -> [ToolbarItem]
-    ) -> any Page {
+    ) -> some View {
         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
             DeclaringPage(beside: beside.map { $0 }, key: key, items)
         } destination: { _ in Text("Pushed") }

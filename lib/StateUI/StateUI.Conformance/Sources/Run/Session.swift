@@ -64,7 +64,7 @@
 
     /// Shows `page` in a window of its own on the host, its display frames at `clock`'s time where one is given.
     public func start(
-        clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
     ) {
         tree = driver.start(clock: clock, reducesMotion: reducesMotion, page)
     }

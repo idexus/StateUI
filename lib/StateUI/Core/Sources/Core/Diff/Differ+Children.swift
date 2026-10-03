@@ -82,6 +82,12 @@ extension Differ {
             let (child, childPatch) = element(
                 id: id, rendered: match, node: childNode, sizesArrive: sizesArrive)
 
+            // An arrangement anywhere a page does not stand is left out (Differ+Arrangements.swift).
+            guard standsWhereItMay(child, under: node.type) else {
+                forget(child)
+                continue
+            }
+
             children.append(child)
             patches.append(childPatch)
         }

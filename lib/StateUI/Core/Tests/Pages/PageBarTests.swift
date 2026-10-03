@@ -105,7 +105,7 @@ final class PageBarTests: XCTestCase {
     func testEveryToolbarAndMenuModifierIsExercised() throws {
         let sent = Self.keys(in: Self.arrived())
 
-        for source in ["ToolbarItem.swift", "Page+Toolbar.swift", "Menu.swift", "MenuItem.swift", "Page+MenuBar.swift"] {
+        for source in ["ToolbarItem.swift", "View+Toolbar.swift", "Menu.swift", "MenuItem.swift", "View+MenuBar.swift"] {
             let declared = try SourceTree.propertyKeys(in: source)
 
             XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")

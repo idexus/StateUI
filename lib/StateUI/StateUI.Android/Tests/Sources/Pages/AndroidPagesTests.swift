@@ -436,7 +436,7 @@ extension AndroidPagesTests {
                 NavigationStack(path.projectedValue) {
                     TitledPage(title: "Root")
                 } destination: { _ in
-                    TabView([0, 1]) { tab -> any Page in
+                    TabView([0, 1]) { tab in
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) { TitledPage(title: "Tab \(tab)") }
                             destination: { number in TitledPage(title: "Pushed \(number)") }
                     }
@@ -670,7 +670,7 @@ private struct ScenePage: View {
 }
 
 /// A split whose sidebar slides over a stack, as on a phone.
-private func drawerOverStack(sidebar: any Page) -> any Page {
+private func drawerOverStack(sidebar: some View) -> some View {
     SplitView(State(wrappedValue: false).projectedValue) {
         sidebar
     } detail: {

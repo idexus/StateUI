@@ -16,7 +16,7 @@ extension State {
         private let guarded = Lock()
 
         /// How many times this side wrote the value while it lived here - read without
-        /// the lock by an engine's `stirred()`.
+        /// the lock, through `stamp`.
         /// Design: docs/design/core/cycle.md#what-wakes-an-engine
         private let written = Atomic<Int>(0)
 

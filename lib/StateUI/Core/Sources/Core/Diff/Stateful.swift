@@ -231,6 +231,9 @@ extension Node {
         /// The composed view's module-qualified type, which decides whose state it keeps.
         let viewType: String
 
+        /// The view's type, where it is a `View`: what tells whether its body builds an arrangement.
+        let shown: (any View.Type)?
+
         /// The state boxes the fresh view owns, under the paths the walk found them at.
         let boxes: [(path: String, box: StateBox)]
 
@@ -324,10 +327,12 @@ extension Node {
     /// A placeholder for a composed view, expanded by the differ before anything is
     /// sent.
     ///
+    /// - Parameter shown: the view's type, where it is a `View`.
     /// - Parameter scene: the scene this view is, where it is one.
     static func composed(
         _ view: Any,
         type: String,
+        shown: (any View.Type)? = nil,
         scene: SceneRecord? = nil,
         build: @escaping () -> Node
     ) -> Node {
@@ -335,6 +340,7 @@ extension Node {
         let parts = stateParts(in: view)
         node.stateful = Stateful(
             viewType: type,
+            shown: shown,
             boxes: parts.boxes,
             slots: parts.slots,
             inputs: parts.inputs,

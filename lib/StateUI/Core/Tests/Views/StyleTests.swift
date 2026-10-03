@@ -13,11 +13,6 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// The window under every styled application here.
-private struct HomeWindow: Window {
-    var page: any Page { Home() }
-}
-
 /// An application with styles, which is where an application keeps them - written
 /// into the application's session as it is made.
 private struct StyledApp: Application {
@@ -29,7 +24,7 @@ private struct StyledApp: Application {
         }
     }
 
-    var scene: any Scene { HomeWindow() }
+    var body: some Scene { WindowGroup { Home() } }
 }
 
 private struct Home: View {
@@ -547,7 +542,7 @@ final class StyleTests: XCTestCase {
     /// controls carry only what they were written with.
     func testAnApplicationWithNoStylesLeavesItsControlsAlone() {
         struct Plain: Application {
-            var scene: any Scene { HomeWindow() }
+            var body: some Scene { WindowGroup { Home() } }
         }
 
         Renderer.shared.setApplication(Plain())

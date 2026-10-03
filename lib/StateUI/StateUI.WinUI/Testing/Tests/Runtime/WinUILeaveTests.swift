@@ -124,17 +124,14 @@ final class WinUILeaveTests: XCTestCase {
 
 /// An application whose main window opens a tool window of its scene and closes it again.
 private struct LeavingToolApplication: Application {
-    var scene: any Scene { LeavingToolScene() }
+    var body: some Scene { LeavingToolScene() }
 }
 
 private struct LeavingToolScene: Scene {
-    var windows: Windows {
-        Windows({ WindowGroup(WindowType("leave.tool")) { LeavingToolWindow() } }, main: { LeavingMainWindow() })
+    var body: some Scene {
+        WindowGroup { LeavingOpeningPage() }
+        Window(WindowType("leave.tool")) { Text("A tool") }
     }
-}
-
-private struct LeavingMainWindow: Window {
-    var page: any Page { LeavingOpeningPage() }
 }
 
 private struct LeavingOpeningPage: View {
@@ -147,8 +144,4 @@ private struct LeavingOpeningPage: View {
             Button("Close").onClicked { try await scene.closeWindow(WindowType("leave.tool")) }
         }
     }
-}
-
-private struct LeavingToolWindow: Window {
-    var page: any Page { Text("A tool") }
 }

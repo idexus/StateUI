@@ -73,8 +73,8 @@ final class ActCallShapeTests: XCTestCase {
     }
 
     /// An act on a control the author never NAMED carries the element identity
-    /// as a NUMBER - the other namespace of the same argument, resolved through
-    /// `Tracked` where a name goes through `Named`. The box is filled by hand
+    /// as a NUMBER - `ElementID.auto`, the other namespace of the same argument
+    /// beside a name's `.manual`. The box is filled by hand
     /// here because the differ's half is AimTests' business; what this
     /// pins is the act.
     func testAnActByElementNumberCrossesWithItsArgumentsInPlace() async throws {

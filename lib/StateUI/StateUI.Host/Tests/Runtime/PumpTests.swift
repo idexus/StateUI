@@ -150,11 +150,7 @@ private struct CountingPage: View {
 }
 
 private struct CountingApplication: Application {
-    var scene: any Scene { CountingWindow() }
-}
-
-private struct CountingWindow: Window {
-    var page: any Page { CountingPage() }
+    var body: some Scene { WindowGroup { CountingPage() } }
 }
 
 /// A runtime over the real core with no toolkit: the mounted tree, the display cycle and the pump, recording what

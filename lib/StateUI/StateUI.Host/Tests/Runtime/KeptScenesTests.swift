@@ -101,19 +101,14 @@ final class KeptScenesTests: XCTestCase {
 private struct KeptApplication: Application {
     nonisolated(unsafe) static var sections: [Int] = []
 
-    var scene: any Scene { KeptScene() }
+    var body: some Scene { KeptScene() }
 }
 
 private struct KeptScene: Scene {
-    var windows: Windows {
-        Windows({
-            WindowGroup(WindowType("kept.note"), for: Int.self) { number in KeptNoteWindow(number: number.wrappedValue) }
-        }, main: { KeptMainWindow() })
+    var body: some Scene {
+        WindowGroup { KeptSectionPage() }
+        WindowGroup(WindowType("kept.note"), for: Int.self) { number in Text("note \(number.wrappedValue)") }
     }
-}
-
-private struct KeptMainWindow: Window {
-    var page: any Page { KeptSectionPage() }
 }
 
 private struct KeptSectionPage: View {
@@ -123,10 +118,4 @@ private struct KeptSectionPage: View {
         KeptApplication.sections.append(section)
         return Text("section \(section)")
     }
-}
-
-private struct KeptNoteWindow: Window {
-    let number: Int
-
-    var page: any Page { Text("note \(number)") }
 }

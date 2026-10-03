@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-extension PropertyContainer where Self: Page {
+extension View {
     /// A view on the bar in place of the page's title, declared where the
     /// state it follows lives.
     ///

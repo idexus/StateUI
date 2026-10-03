@@ -10,10 +10,10 @@
 ///
 ///     enum Sheet: Hashable { case settings, about }
 ///
-///     struct MainWindow: Window {
+///     struct MainPage: View {
 ///         @State private var sheets: [Sheet] = []
 ///
-///         var page: any Page {
+///         var body: some View {
 ///             ModalStack($sheets) {
 ///                 HomePage(sheets: $sheets)
 ///             } destination: { sheet in
@@ -29,7 +29,7 @@
 /// a sheet the user dismisses shortens the array itself. The page presented
 /// needs the binding too, to close itself; the host picks the platform's own
 /// modal presentation.
-public struct ModalStack: Page, ModifiableElement, BarElement {
+public struct ModalStack: ElementView, Arrangement, BarElement {
     /// The node this stack describes.
     public var node: Node
 
@@ -41,10 +41,10 @@ public struct ModalStack: Page, ModifiableElement, BarElement {
     ///     dismisses shortens it.
     ///   - root: the page the sheets are presented over.
     ///   - destination: the page for one element, asked in stack order.
-    public init<Sheet: Hashable>(
+    public init<Sheet: Hashable, Root: View, Destination: View>(
         _ sheets: Binding<[Sheet]>,
-        @PageBuilder root: () -> any Page,
-        @PageBuilder destination: (Sheet) -> any Page
+        @ViewBuilder root: () -> Root,
+        @ViewBuilder destination: (Sheet) -> Destination
     ) {
         var root = Node.page(root())
         root.id = Self.rootIdentity

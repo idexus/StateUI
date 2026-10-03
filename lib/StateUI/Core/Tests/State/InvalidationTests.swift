@@ -977,12 +977,8 @@ private struct WritingBody: View {
     }
 }
 
-private struct WritingWindow: Window {
-    var page: any Page { WritingBody() }
-}
-
 private struct WritingApp: Application {
-    var scene: any Scene { WritingWindow() }
+    var body: some Scene { WindowGroup { WritingBody() } }
 }
 
 /// A state NO body reads, written by a page's body as it builds - the shape a
@@ -1007,12 +1003,8 @@ private struct AsideBody: View {
     }
 }
 
-private struct AsideWindow: Window {
-    var page: any Page { AsideBody() }
-}
-
 private struct AsideApp: Application {
-    var scene: any Scene { AsideWindow() }
+    var body: some Scene { WindowGroup { AsideBody() } }
 }
 
 /// A window whose PAGE is chosen from a state - a read the window build makes
@@ -1032,15 +1024,11 @@ private struct ChosenPage: View {
     var body: some View { ModifiedContent(node: label(text)) }
 }
 
-private struct ChosenWindow: Window {
-    var page: any Page {
-        ChosenPage(
-            text: Chosen.shared.byFirst
-                ? Chosen.shared.first.wrappedValue
-                : Chosen.shared.other.wrappedValue)
-    }
-}
-
+/// A window choosing its page in its own build, outside every composed view.
 private struct ChosenApp: Application {
-    var scene: any Scene { ChosenWindow() }
+    var body: some Scene {
+        WindowGroup {
+            ChosenPage(text: Chosen.shared.byFirst ? Chosen.shared.first.wrappedValue : Chosen.shared.other.wrappedValue)
+        }
+    }
 }

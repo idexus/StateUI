@@ -6,11 +6,11 @@ The application at the root of a StateUI tree, and what its host does for it wit
 
 ```swift
 struct NotesApp: Application {
-    var scene: any Scene { NotesWindow() }
+    var body: some Scene { WindowGroup { NotesPage() } }
 }
 
-struct NotesWindow: Window {
-    var page: any Page {
+struct NotesPage: View {
+    var body: some View {
         Button("About")
             .onClicked { try await Dialogs.alert("Notes", message: "Version 1.0") }
     }

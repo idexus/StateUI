@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The structure every host shows: Application, Scene, Window, Page.
+// The structure every host shows: an application, its scenes, their windows, and the view each window shows.
 // Design: docs/design/views/pages.md#application-scene-window-page
 
 /// The application at the root of a StateUI tree.
@@ -9,9 +9,10 @@
 /// Handed to `stateUIUseApp` once, at startup; the host then connects the
 /// platform's application and scene lifecycle to it.
 ///
-/// It declares its scene and nothing else. What the whole application is - its
-/// styles, how its values move, what it keeps between launches - is its
-/// `ApplicationSession`, written where the application is made:
+/// Its `body` is the scene it is made of, and nothing else. What the whole
+/// application is - its styles, how its values move, what it keeps between
+/// launches - is its `ApplicationSession`, written where the application is
+/// made:
 ///
 ///     struct NotesApp: Application {
 ///         @Environment private var application: ApplicationSession
@@ -21,194 +22,26 @@
 ///             application.persistentKeys = [.lastNote]
 ///         }
 ///
-///         var scene: any Scene { MainWindow() }
+///         var body: some Scene {
+///             WindowGroup { MainPage() }
+///         }
 ///     }
 ///
 /// Write it in `init`: the kept state's keys are read as the application
 /// registers, before the first view is built. The standard environment - the
 /// device, the display, the locale - is known there already.
 public protocol Application {
+    /// The scene the application is made of.
+    associatedtype Body: Scene
+
     /// What each session of the application is: its main window, the windows
     /// it opens beside it, and the state they share. See `Scene`.
     ///
-    ///     var scene: any Scene { MainWindow() }                          // one window
-    ///     var scene: any Scene { EditorScene().environment(library) }    // an editor's sessions
+    ///     var body: some Scene { WindowGroup { MainPage() } }         // one window
+    ///     var body: some Scene { EditorScene().environment(library) }  // an editor's sessions
     ///
     /// The platform makes as many sessions as the user asks for.
-    var scene: any Scene { get }
-}
-
-/// A window onto a page.
-///
-///     struct MainWindow: Window {
-///         var page: any Page { MainPage() }
-///     }
-///
-/// A type you declare, never a value you chain onto: `page` is its one
-/// requirement, and it may hold `@State` of its own. What the window is as it
-/// runs - its title, its frame, its lifecycle - is its `WindowSession`, in the
-/// environment of everything in it:
-///
-///     struct MainPage: View {
-///         @Environment private var window: WindowSession
-///
-///         var body: some View {
-///             VStack { … }
-///                 .onCreated {
-///                     window.title = "My Application"
-///                     window.width = 1200
-///                 }
-///         }
-///     }
-///
-/// A scene with several kinds of window declares each kind once and names
-/// them in its `Windows`. What every view in a window needs is offered above
-/// it, with `.environment(_:)` on the scene or on its `Windows`.
-public protocol Window: Element, Scene {
-    /// What the window shows: a `NavigationStack`, a `TabView`, a
-    /// `SplitView`, or any other view - usually a `View` of the
-    /// application's own. Read again when a state it read changes. An
-    /// `if`/`else` or a `switch` chooses among pages, each a page of its own.
-    @PageBuilder var page: any Page { get }
-}
-
-extension Window {
-    /// A window alone is a scene of one window:
-    /// `var scene: any Scene { MainWindow() }`.
-    public var windows: Windows { Windows(main: { self }) }
-
-    /// The window as a node: its page, and the library's overlay over it.
-    public var node: Node {
-        let request = ElementSession(WindowSession.self) { WindowSession() }
-
-        var node = composed { request.held(as: WindowSession.self) }
-        node.session = request
-        return node
-    }
-
-    /// The same, for a window of a scene: the session it keeps.
-    /// Design: docs/design/views/pages.md#a-window-is-a-placeholder
-    func node(session: WindowSession) -> Node {
-        var node = composed { session }
-
-        // On the placeholder, so the window's own `@Environment` resolves it too.
-        node.environments.append((key: ObjectIdentifier(WindowSession.self), object: session))
-
-        return node
-    }
-
-    private func composed(session: @escaping () -> WindowSession) -> Node {
-        Node.composed(self, type: String(reflecting: Self.self)) {
-            let session = session()
-            let overlay = Node.overlay(inspector: session.dockedInspector, of: session.record?.id)
-
-            // Its page, then the library's overlay: one order.
-            // Design: docs/design/views/pages.md#the-children-of-a-window
-            var node = Node(
-                contract: WindowContract.self,
-                children: [Node.page(page)] + (overlay.map { [$0] } ?? []))
-            node.props = session.props
-
-            // One handler per lifecycle report, never iterated from a collection.
-            // Design: docs/design/views/pages.md#lifecycle-reports-one-by-one
-            node.addHandler(WindowContract.created.token) { session.phase = .created }
-            node.addHandler(WindowContract.activated.token) { session.phase = .activated }
-            node.addHandler(WindowContract.deactivated.token) { session.phase = .deactivated }
-            node.addHandler(WindowContract.stopped.token) { session.phase = .stopped }
-            node.addHandler(WindowContract.resumed.token) { session.phase = .resumed }
-            node.addHandler(WindowContract.destroying.token) { session.phase = .destroying }
-
-            return node
-        }
-    }
-}
-
-extension Node {
-    /// What the library lays over a window, over every overlay a page declares: the scene's inspector, docked
-    /// at `place`; nil where none is.
-    /// Design: docs/design/views/pages.md#the-children-of-a-window
-    static func overlay(inspector place: Inspector.Place?, of scene: String?) -> Node? {
-        guard let place, let scene else { return nil }
-
-        var layer = ZStack().letsInputThrough(true).node
-        layer.children = [InspectorPanel(scene: scene, place: place).node]
-        return Node(contract: OverlayContract.self, children: [layer])
-    }
-}
-
-/// What a container shows as a screen: a window's `page`, a navigation
-/// stack's root and destinations, a tab, either half of a split view, a
-/// sheet.
-///
-/// Nobody conforms to it by hand. Every view is a page, and so is each
-/// arrangement - `NavigationStack`, `TabView`, `SplitView` - which is not a
-/// view and so stands only where a page stands.
-///
-/// A view shown as a page holds a `PageSession`, in the environment of
-/// everything in it, carrying what the screen is - its title, its buttons,
-/// its menus, its lifecycle:
-///
-///     struct MainPage: View {
-///         @Environment private var page: PageSession
-///
-///         var body: some View {
-///             VStack { … }
-///                 .onCreated { page.title = "Home" }
-///         }
-///     }
-///
-/// What `.onCreated` writes arrives with the page. A page asks things of the
-/// container showing it through the same session, `page.showsNavigationBar =
-/// false`; the bar's look belongs to the arrangement drawing it. An
-/// arrangement is told its title and icon by modifier, from `PageElement`.
-public protocol Page: Element {}
-
-extension Node {
-    /// A view shown as a screen: an arrangement as it is, any other view on a
-    /// page element of its own, which holds the view's `PageSession`. Told by
-    /// the node it builds, so a branch's page is told the same way; the branch
-    /// is part of what the page is.
-    /// Design: docs/design/views/pages.md#a-page-around-a-view
-    static func page(_ shown: any Page) -> Node {
-        let content = shown.node
-        if arrangements.contains(content.type) { return content }
-
-        let kind = (content.stateful?.viewType ?? content.type.name) + (content.id.map { "#\($0)" } ?? "")
-            + (content.key.map { "@\($0)" } ?? "")
-        let request = ElementSession(PageSession.self) { PageSession() }
-
-        var node = composed(ShownView(content: content), type: "StateUI.Page(\(kind))") {
-            page(around: content, session: request.held(as: PageSession.self))
-        }
-
-        node.session = request
-        return node
-    }
-
-    /// The node types of the arrangements: pages this library declares.
-    private static let arrangements: Set<NodeType> = [
-        NavigationStackContract.nodeType, TabViewContract.nodeType, SplitViewContract.nodeType,
-        ModalStackContract.nodeType,
-    ]
-
-    /// The page: the session's properties around its content.
-    private static func page(around content: Node, session: PageSession) -> Node {
-        var node = Node(contract: PageContract.self, children: [content])
-        node.props = session.props
-
-        node.addHandler(PageContract.appearing.token) { session.phase = .appearing }
-        node.addHandler(PageContract.disappearing.token) { session.phase = .disappearing }
-        node.addHandler(PageContract.navigatedTo.token) { session.phase = .navigatedTo }
-        node.addHandler(PageContract.navigatingFrom.token) { session.phase = .navigatingFrom }
-        node.addHandler(PageContract.navigatedFrom.token) { session.phase = .navigatedFrom }
-
-        return node
-    }
-}
-
-/// The view a page shows, held as a node so the view is compared on its own.
-private struct ShownView {
-    let content: Node
+    @ApplicationBuilder var body: Body { get }
 }
 
 // Design: docs/design/views/pages.md#the-application-is-named-once
@@ -226,6 +59,6 @@ private struct ShownView {
 ///   the host has told what the device is - with a fresh application session,
 ///   and kept for the life of the process, so `@State` declared on it
 ///   outlives every window.
-public func stateUIUseApp(_ application: @escaping @autoclosure () -> Application) {
+public func stateUIUseApp<Declared: Application>(_ application: @escaping @autoclosure () -> Declared) {
     Renderer.shared.setApplication(application())
 }

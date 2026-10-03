@@ -269,12 +269,9 @@ its own inspector window:
 
 ```swift quote
 struct EditorScene: Scene {
-    var windows: Windows {
-        Windows {
-            WindowGroup(.debugInspector) { DebugInspector() }
-        } main: {
-            EditorWindow()
-        }
+    var body: some Scene {
+        WindowGroup { EditorPage() }
+        Window(.debugInspector) { DebugInspector() }
     }
 }
 

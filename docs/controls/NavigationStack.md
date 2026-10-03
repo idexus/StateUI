@@ -5,10 +5,10 @@
 A page holding a native stack of pages, with a bar and a back affordance.
 
 ```swift
-struct MainWindow: Window {
+struct MainPage: View {
     @State private var path: [Int] = []
 
-    var page: any Page {
+    var body: some View {
         NavigationStack($path) {
             Button("Open note 1").onClicked { path.append(1) }
         } destination: { note in

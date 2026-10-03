@@ -178,11 +178,8 @@ final class BuildsTests: XCTestCase {
     /// whose closure it is.
     ///
     /// The differ runs that closure when it descends rather than when the
-    /// author's line does, and it used to run outside every build frame - so a
-    /// reading written where it belongs, beside what it is about, said
-    /// "nothing is being described here" while one written a view deeper
-    /// answered properly. The gallery's own sample about `debugInfo()` was
-    /// showing it, on both of its panels.
+    /// author's line does, inside the build frame of the view whose closure it
+    /// is - so a reading written beside what it is about answers about it.
     func testAReadingInsideAContainersClosureHasItsFrame() {
         let said = Said()
         let renders = Renders()

@@ -1,10 +1,11 @@
 # Builders
 
 A result builder turns the statements of a closure into what a container
-holds, or into one view. StateUI has one for views, one for the page a page
-position shows (`PageBuilder`: one page, an `if`/`else` or `switch` keying
-each branch, no `if` without `else`), and one each for menu entries, toolbar
-items, text runs, markers, windows, window groups and styles. The
+holds, or into one view. StateUI has one for views - a page position takes one
+view through it, an `if`/`else` or `switch` keying each branch - one each for
+an application's scene and a scene's windows (`ApplicationBuilder`,
+`SceneBuilder`, which count a scene's main window by type), and one each for
+menu entries, toolbar items, text runs, markers and styles. The
 view builder also gives every view it collects a key.
 
 ## The result says what was written
@@ -141,11 +142,18 @@ each of a list of entries that changes, wants an id. `MenuBarBuilder`, `ToolbarB
 collect one type each - a `Menu`, a `ToolbarItem`, a `TextSpan`, a `Marker` - the
 same way, an array of them standing for a loop.
 
-## Windows and styles
+## Scenes and styles
 
-`WindowBuilder` answers one window. An `if` may choose between two, which
-changes what the one window shows while the platform's window stays where it
-is. `WindowGroupBuilder` collects a scene's groups, one per statement.
+`SceneBuilder` collects a scene's windows and counts them in its types: a
+`WindowGroup` with no name is the scene's main window (`WindowRole.Main`), a
+`Window(.kind)` or a `WindowGroup(.kind, for:)` one beside it
+(`WindowRole.Beside`). It takes them in any order and an `if` for a window only
+some scenes declare; an unavailable overload with a message of its own refuses
+no main window, a second one, a main window under an `if` with no `else`, a
+view written where a window belongs and a scene inside a scene. What a window
+shows is chosen inside its view, where an `if` changes what the one window
+shows while the platform's window stays where it is. `ApplicationBuilder`
+takes the application's one scene the same way.
 
 `StyleBuilder` keeps `buildArray`: a style is filed by its target type or its
 key, so there is no identity to lose in a loop, and a sheet may use `for` and

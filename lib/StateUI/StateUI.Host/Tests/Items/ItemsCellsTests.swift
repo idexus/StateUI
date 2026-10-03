@@ -13,11 +13,7 @@ private enum Heard {
 }
 
 private struct ListApplication: Application {
-    var scene: any Scene { ListWindow() }
-}
-
-private struct ListWindow: Window {
-    var page: any Page { ListPage() }
+    var body: some Scene { WindowGroup { ListPage() } }
 }
 
 /// A hundred numbered items, one chosen at a time, more asked for near the end.

@@ -81,26 +81,22 @@ private struct EveryPropertyPage: View {
 }
 
 /// A window whose session says everything a window can be told.
-private struct EveryPropertyWindow: Window {
-    var page: any Page { EveryPropertyPage() }
+private func everyPropertyWindow() -> Node {
+    let session = WindowSession()
+    session.title = "Everything"
+    session.x = 10
+    session.y = 20
+    session.width = 1200
+    session.height = 800
+    session.minimumWidth = 600
+    session.minimumHeight = 400
+    session.maximumWidth = 1600
+    session.maximumHeight = 1200
+    session.isMaximizable = false
+    session.isMinimizable = true
+    session.isTranslucent = true
 
-    static var node: Node {
-        let session = WindowSession()
-        session.title = "Everything"
-        session.x = 10
-        session.y = 20
-        session.width = 1200
-        session.height = 800
-        session.minimumWidth = 600
-        session.minimumHeight = 400
-        session.maximumWidth = 1600
-        session.maximumHeight = 1200
-        session.isMaximizable = false
-        session.isMinimizable = true
-        session.isTranslucent = true
-
-        return EveryPropertyWindow().node(session: session).built
-    }
+    return Node.window(EveryPropertyPage(), session: session).built
 }
 
 /// A page that dresses its whole session as it arrives, and again - every
@@ -134,6 +130,32 @@ private struct Plain: View {
     var body: some View { Text("plain") }
 }
 
+/// A view whose body is an arrangement.
+private struct Stacked: View {
+    @State private var path: [Int] = []
+
+    var body: some View {
+        NavigationStack($path) { Plain() } destination: { _ in Plain() }
+    }
+}
+
+/// A view whose body chooses between an arrangement and a view.
+private struct Choosing: View {
+    let stack: Bool
+    @State private var path: [Int] = []
+
+    var body: some View {
+        if stack {
+            NavigationStack($path) { Plain() } destination: { _ in Plain() }
+        } else {
+            Plain()
+        }
+    }
+}
+
+/// What a view is offered.
+private final class Offered {}
+
 /// A view that names the page it is shown on, as it arrives.
 private struct Named: View {
     @Environment private var page: PageSession
@@ -166,7 +188,7 @@ final class PageTests: XCTestCase {
     func testAPageSwappedForABranchOfTheSameTypeIsANewPage() {
         let first = State(wrappedValue: true)
         let log = State(wrappedValue: [String]())
-        @PageBuilder func shown() -> any Page {
+        @ViewBuilder func shown() -> some View {
             if first.wrappedValue {
                 Created(name: "one", log: log.projectedValue)
             } else {
@@ -271,13 +293,68 @@ final class PageTests: XCTestCase {
         }
     }
 
-    /// An arrangement is a page already, and is shown as it is.
-    func testAnArrangementIsShownAsItIs() {
+    /// Every arrangement is a page already, and is shown as it is; the pages it arranges stand inside it.
+    func testEveryArrangementIsShownAsItIs() {
+        let path = State<[Int]>([])
+        let sidebar = State(false)
+        let stack = NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
+        let arrangements: [(view: any View, type: NodeType)] = [
+            (stack, .navigationStack),
+            (TabView([0, 1]) { _ in Plain() }, .tabView),
+            (SplitView(sidebar.projectedValue) { Plain() } detail: { Plain() }, .splitView),
+            (ModalStack(path.projectedValue) { Plain() } destination: { _ in Plain() }, .modalStack),
+        ]
+
+        XCTAssertEqual(Set(arrangements.map(\.type)), NodeType.arrangements, "every arrangement is shown")
+        for (view, type) in arrangements {
+            XCTAssertEqual(Node.page(view).built.type, type)
+        }
+        XCTAssertEqual(Node.page(stack).built.children.first?.type, .page)
+    }
+
+    /// A view whose body is an arrangement stands as that arrangement, told by the view's type - which a modifier
+    /// written on the view keeps - and any other view stands on a page of its own.
+    func testAViewWhoseBodyIsAnArrangementStandsAsIt() {
+        XCTAssertEqual(Node.page(Stacked()).built.type, .navigationStack)
+        XCTAssertEqual(Node.page(Stacked().environment(Offered())).built.type, .navigationStack)
+        XCTAssertEqual(Node.page(Plain()).built.type, .page)
+    }
+
+    /// A body choosing between an arrangement and a view stands as a view, as its type cannot tell which it builds;
+    /// the arrangement it chose, standing inside a page, is left out.
+    func testABodyChoosingAnArrangementStandsAsAView() {
+        let patch = Renders().render(Node.page(Choosing(stack: true)))
+
+        XCTAssertEqual(patch.type, .page)
+        XCTAssertFalse(patch.subtree.contains { $0.type == .navigationStack })
+    }
+
+    /// An arrangement stands where a page stands: written inside a layout it is left out, and what is beside it
+    /// stands.
+    func testAnArrangementWhereNoPageStandsIsLeftOut() {
+        let path = State<[Int]>([])
+        let patch = Renders().render(VStack {
+            Text("beside")
+            NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
+        }.node)
+
+        XCTAssertEqual(patch.subtree.map(\.type), [.vStack, .text])
+    }
+
+    /// An arrangement fills where a page stands: what its contract does not declare - a width, a tap - is left
+    /// out, and what it declares stays.
+    func testAnArrangementKeepsWhatItsContractDeclares() {
         let path = State<[Int]>([])
         let stack = NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
+            .width(120)
+            .onTapped {}
+            .barBackgroundColor(.red)
 
-        XCTAssertEqual(Node.page(stack).built.type, .navigationStack)
-        XCTAssertEqual(Node.page(stack).built.children.first?.type, .page)
+        let patch = Renders().render(Node.page(stack))
+
+        XCTAssertNil(patch.props["width"])
+        XCTAssertFalse(patch.eventNames.contains("tapped"))
+        XCTAssertNotNil(patch.props["barBackgroundColor"])
     }
 
     // MARK: - The guards
@@ -293,7 +370,7 @@ final class PageTests: XCTestCase {
     /// no less covered for not being a page's.
     func testEveryPropertyAPageOrAWindowCanBeToldIsCarried() throws {
         let sent = Self.keys(in: Self.arrived(EveryPropertyPage()))
-            .union(Self.keys(in: EveryPropertyWindow.node))
+            .union(Self.keys(in: everyPropertyWindow()))
 
         let page = try SourceTree.propertyKeys(in: "PageSession.swift")
         let window = try SourceTree.propertyKeys(in: "WindowSession.swift")
@@ -307,7 +384,7 @@ final class PageTests: XCTestCase {
         XCTAssertTrue(missing.isEmpty, """
             A page's or a window's session writes \
             \(missing.joined(separator: ", ")), which neither EveryPropertyPage \
-            nor EveryPropertyWindow carries.
+            nor everyPropertyWindow() carries.
 
             A page and a window have no control case - this is where their \
             properties are covered. Write it in the value above, and check the \
@@ -345,9 +422,7 @@ final class PageTests: XCTestCase {
     /// They have no control case: a `ToolbarItem` is not a view and never
     /// appears among ControlTests' cases, so the guard there cannot see
     /// one, and this page is the only place either is built with everything it
-    /// can do. Measured when the tier guard was written: `order` and `priority`
-    /// were carried by NOTHING - two arms of `ApplyToolbarItem` that no test had
-    /// ever run.
+    /// can do.
     func testEveryPropertyAPagesItemsDeclareIsCarried() throws {
         let sent = Self.keys(in: Self.arrived(EveryPropertyPage()))
 
@@ -665,7 +740,7 @@ final class PageTests: XCTestCase {
     /// The window arrives whole too: every property its session can say, its
     /// handlers and the page it holds.
     func testTheWindowArrivesWhole() throws {
-        let window = Renders().settled(EveryPropertyWindow.node)
+        let window = Renders().settled(everyPropertyWindow())
 
         XCTAssertEqual(window.props, [
             "height": .number(800), "isMaximizable": .bool(false), "isMinimizable": .bool(true),

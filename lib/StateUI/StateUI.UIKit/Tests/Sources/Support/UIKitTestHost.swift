@@ -27,11 +27,10 @@ extension UIKitRenderer {
     /// on `clock` where one is given.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, preferences: UserDefaults = TestScene.preferences,
-        _ page: @escaping @Sendable () -> any Page
+        @ViewBuilder _ page: @escaping @Sendable () -> any View
     ) -> UIKitRenderer {
-        running(clock: clock, reducesMotion: reducesMotion, preferences: preferences) {
-            OneWindowApplication(page: page)
-        }
+        let application = OneWindowApplication(page: page)
+        return running(clock: clock, reducesMotion: reducesMotion, preferences: preferences) { application }
     }
 
     /// A host running `application` in the tests' scene, laid out, its kept values read from `preferences` first,
@@ -40,7 +39,7 @@ extension UIKitRenderer {
         clock: TestClock? = nil, reducesMotion: Bool = false, preferences: UserDefaults = TestScene.preferences,
         application: @escaping @Sendable () -> any Application
     ) -> UIKitRenderer {
-        stateUIUseApp(application())
+        Renderer.shared.setApplication(application())
         UIKitRenderer.resourceDirectory = Bundle.main.resourceURL?.appendingPathComponent("Images", isDirectory: true)
         let renderer = UIKitRenderer(
             clock: clock.map { clock in { clock.now } }, preferences: preferences, reducesMotion: { reducesMotion })

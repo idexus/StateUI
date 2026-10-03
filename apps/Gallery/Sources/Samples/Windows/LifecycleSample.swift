@@ -2,8 +2,8 @@ import StateUI
 
 /// The native window lifecycle recorded through `WindowSession.phase`.
 struct LifecycleSample: SampleContent, ExampleContent {
-    /// The window's log, kept with the gallery. It is written by `MainWindow`,
-    /// which watches its window's phase - see Gallery/MainWindow.swift - and
+    /// The window's log, kept with the gallery. It is written by `MainPage`,
+    /// which watches its window's phase - see Gallery/MainPage.swift - and
     /// this sample only reads it.
     let log: WindowLog
 
@@ -22,12 +22,12 @@ struct LifecycleSample: SampleContent, ExampleContent {
             }
         }
 
-        struct MainWindow: Window {
+        struct MainPage: View {
             @Environment private var window: WindowSession
             @State private var menuOpen = false
             let log: WindowLog
 
-            var page: any Page {
+            var body: some View {
                 SplitView($menuOpen) { MenuPage() } detail: { HomePage() }
                     .onCreated { log.note("created") }
                     .onChanged(window.phase) { log.note("\\(window.phase)") }

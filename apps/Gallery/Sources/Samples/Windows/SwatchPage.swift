@@ -1,19 +1,12 @@
 import StateUI
 
-/// A window FOR A VALUE: one per swatch number, the number lent to the window
-/// as its own - so writing it makes the same window about another swatch, and
+/// One swatch - its colour, its number, and a way on to the next: the page of a
+/// window FOR A VALUE, one per swatch number. The number is lent to the window
+/// as its own, so writing it makes the same window about another swatch, and
 /// the system restores the window for the number it was left on. See
 /// `MultiWindowSample`.
-struct SwatchWindow: Window {
-    /// Which swatch the window is for - its value, lent by its group.
-    @Binding var number: Int
-
-    var page: any Page { SwatchPage(number: $number) }
-}
-
-/// One swatch: its colour, its number, and a way on to the next.
 struct SwatchPage: View {
-    /// The window's own value.
+    /// Which swatch the window is for - its value, lent by its group.
     @Binding var number: Int
 
     /// The window this is the page of - named for its swatch, and closed from

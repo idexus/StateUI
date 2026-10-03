@@ -177,26 +177,20 @@ struct NotesApplication: Application {
     /// The kind of a note's window.
     static let note = WindowType("conformance.note")
 
-    var scene: any Scene { NotesScene() }
+    var body: some Scene { NotesScene() }
 }
 
 /// The scene of `NotesApplication`.
 struct NotesScene: Scene {
-    var windows: Windows {
-        Windows({
-            WindowGroup(NotesApplication.note, for: Int.self) { number in NoteWindow(number: number.wrappedValue) }
-                .floatsOnTop(true)
-                .hidesWhenInactive(true)
-        }, main: { MainNotesWindow() })
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+        WindowGroup(NotesApplication.note, for: Int.self) { number in Text("Note \(number.wrappedValue)") }
+            .floatsOnTop(true)
+            .hidesWhenInactive(true)
     }
 }
 
-/// The main window of `NotesApplication`, with the buttons that open note 7 and another scene.
-struct MainNotesWindow: Window {
-    var page: any Page { NotesPage() }
-}
-
-/// The page of the main window.
+/// The page of `NotesApplication`'s main window, with the buttons that open note 7 and another scene.
 struct NotesPage: View {
     @Environment private var scene: SceneSession
     @Environment private var application: ApplicationSession
@@ -208,10 +202,4 @@ struct NotesPage: View {
             Button("Another").onClicked { try await application.openScene() }.id("another")
         }
     }
-}
-
-/// A note's window.
-struct NoteWindow: Window {
-    let number: Int
-    var page: any Page { Text("Note \(number)") }
 }

@@ -29,7 +29,7 @@ enum GallerySection: Hashable {
     case hidden
 
     /// The tabs demonstration, which is the one section arranged as a
-    /// `TabView` rather than as a stack. See `MainWindow.detail`.
+    /// `TabView` rather than as a stack. See `MainPage.detail`.
     case tabs
 }
 
@@ -65,7 +65,7 @@ enum Route: Hashable {
 ///
 /// The tabs are a collection of the AUTHOR's type and the selection is a binding
 /// of it - so what shows is `tab == .second`, not an index into a list somebody
-/// has to keep in step. See `MainWindow.tabs`, which is the one place in the
+/// has to keep in step. See `MainPage.tabs`, which is the one place in the
 /// gallery where the detail page is not a stack.
 enum DemoTab: Hashable {
     /// The tab holding a navigation stack of its own.

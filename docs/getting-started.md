@@ -171,20 +171,18 @@ the settings that save them.
 Every application follows one structural path:
 
 ```text
-Application -> Scene -> Window -> Page -> View
+Application -> Scene -> WindowGroup, Window -> View
 ```
 
-Each type declares exactly one composition property. Runtime properties such
-as styles, window title, geometry, and page title belong to session objects in
+Each declares what it is made of in its `body`. Runtime properties such as
+styles, window title, geometry, and page title belong to session objects in
 the environment.
 
 ```swift
 struct NotesApp: Application {
-    var scene: any Scene { NotesWindow() }
-}
-
-struct NotesWindow: Window {
-    var page: any Page { NotesPage() }
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+    }
 }
 
 struct NotesPage: View {
@@ -203,9 +201,9 @@ struct NotesPage: View {
 }
 ```
 
-`Application`, `Scene` and `Window` are declarations, not native objects, and
-so is the view a window shows as its page. Their sessions carry the identity
-and mutable runtime state.
+`Application`, `Scene`, `WindowGroup` and `Window` are declarations, not native
+objects, and so is the view a window shows, which stands on a page. Their
+sessions carry the identity and mutable runtime state.
 [Applications and sessions](interface/application-and-sessions.md) describes that model
 in full.
 
@@ -228,11 +226,9 @@ application type to the host; it does not build native controls itself.
 
 ```swift
 struct RegisteredApp: Application {
-    var scene: any Scene { RegisteredWindow() }
-}
-
-struct RegisteredWindow: Window {
-    var page: any Page { RegisteredPage() }
+    var body: some Scene {
+        WindowGroup { RegisteredPage() }
+    }
 }
 
 struct RegisteredPage: View {

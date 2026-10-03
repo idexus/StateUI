@@ -116,9 +116,10 @@ extension GTKRenderer {
     /// A host showing `page` in a window of its own, laid out, on `clock` where one is given: a first launch, which
     /// finds nothing an earlier host kept.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
     ) -> GTKRenderer {
-        running(clock: clock, reducesMotion: reducesMotion, application: { OneWindowApplication(page: page) })
+        let application = OneWindowApplication(page: page)
+        return running(clock: clock, reducesMotion: reducesMotion, application: { application })
     }
 
     /// A host running `application`, its windows laid out, on `clock` where one is given: a first launch, which finds
@@ -127,7 +128,7 @@ extension GTKRenderer {
         clock: TestClock? = nil, reducesMotion: Bool = false, keeping: Bool = false,
         application: @escaping @Sendable () -> any Application
     ) -> GTKRenderer {
-        stateUIUseApp(application())
+        Renderer.shared.setApplication(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         if !keeping {
             unlink(GTKKeptValues.file(for: renderer.applicationID))

@@ -434,6 +434,12 @@ enum Inspection {
     /// A type as an author calls it: no module, no generic arguments, and none
     /// of the context a private type's name carries.
     static func short(_ type: String) -> String {
+        // A placeholder the library puts around a view - a page, a window - keeps its kind: Page(HomePage).
+        if let open = type.firstIndex(of: "("), open != type.startIndex, type.hasSuffix(")") {
+            let inner = type[type.index(after: open)..<type.index(before: type.endIndex)]
+            return "\(short(String(type[..<open])))(\(short(String(inner))))"
+        }
+
         let bare = type.split(separator: "<").first.map(String.init) ?? type
 
         return bare.split(separator: ".").last.map(String.init) ?? bare

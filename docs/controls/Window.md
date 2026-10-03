@@ -5,8 +5,8 @@
 A window onto a page.
 
 ```swift
-struct MainWindow: Window {
-    var page: any Page { MainPage() }
+struct NotesApp: Application {
+    var body: some Scene { WindowGroup { MainPage() } }
 }
 
 struct MainPage: View {

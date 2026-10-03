@@ -265,9 +265,5 @@ final class ApplicationLifecycleTests: XCTestCase {
 }
 
 private struct PhasesApplication: Application {
-    var scene: any Scene { PhasesWindow() }
-}
-
-private struct PhasesWindow: Window {
-    var page: any Page { Text("phases") }
+    var body: some Scene { WindowGroup { Text("phases") } }
 }

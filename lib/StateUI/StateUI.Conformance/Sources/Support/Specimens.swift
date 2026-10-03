@@ -61,7 +61,13 @@
     /// A page holding `element`'s specimen wearing `worn` where an application puts one, `beside` it on the page. A
     /// session finds it by the id "specimen", or - a span, an arrangement - as the one element of its kind
     /// (`Session.specimen(_:)`).
-    public static func page(_ element: String, _ worn: [any Worn] = [], beside: [any View] = []) -> any Page {
+    public static func page(_ element: String, _ worn: [any Worn] = [], beside: [any View] = []) -> ModifiedContent {
+        // Chosen by name, so held as `any View` and handed on as its node.
+        ModifiedContent(node: chosen(element, worn, beside: beside).node)
+    }
+
+    /// The page `page(_:_:beside:)` shows, chosen by name.
+    private static func chosen(_ element: String, _ worn: [any Worn], beside: [any View]) -> any View {
         let dressing = Dressing(worn)
         let others: [any View] = beside
         switch element {

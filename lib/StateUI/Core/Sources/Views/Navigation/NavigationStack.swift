@@ -5,16 +5,17 @@
 // holds, and a back gesture the user completes shortens it.
 // Design: docs/design/views/pages.md#the-stack-is-the-state
 
-/// A page holding a native stack of pages, with a bar and a back affordance.
+/// A native stack of pages, with a bar and a back affordance - a view that stands
+/// where a page stands: what a window shows, or a page of another arrangement.
 ///
 ///     enum Route: Hashable {
 ///         case details(String)
 ///     }
 ///
-///     struct MainWindow: Window {
+///     struct MainPage: View {
 ///         @State private var path: [Route] = []
 ///
-///         var page: any Page {
+///         var body: some View {
 ///             NavigationStack($path) {
 ///                 HomePage(path: $path)
 ///             } destination: { route in
@@ -44,7 +45,7 @@
 /// per element of `path`, in order; a `switch` over the route type makes the
 /// compiler check that every route has a page.
 ///
-/// The path can live anywhere a `Binding` can - `@State` on the window, as
+/// The path can live anywhere a `Binding` can - `@State` on the view, as
 /// above, or a model offered with `.environment(_:)` that names the moves:
 ///
 ///     final class Router {
@@ -63,7 +64,7 @@
 /// `.onChanged(path)` observes every committed arrival and departure. The
 /// title on the bar belongs to the top page; `.title` and `.icon` on the
 /// stack name the whole stack where another container presents it.
-public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement {
+public struct NavigationStack: ElementView, Arrangement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
@@ -73,10 +74,10 @@ public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement 
     ///   own type, borrowed two-way. A completed back gesture truncates it.
     /// - Parameter root: the page under everything, built once and kept.
     /// - Parameter destination: the page for one route, asked in path order.
-    public init<Route: Hashable>(
+    public init<Route: Hashable, Root: View, Destination: View>(
         _ path: Binding<[Route]>,
-        @PageBuilder root: () -> any Page,
-        @PageBuilder destination: (Route) -> any Page
+        @ViewBuilder root: () -> Root,
+        @ViewBuilder destination: (Route) -> Destination
     ) {
         var children: [Node] = [Self.identified(Node.page(root()), as: Self.rootIdentity)]
 

@@ -298,11 +298,9 @@ belong to identity-bearing sessions and are obtained with `@Environment`.
 
 ```swift
 struct HandbookApp: Application {
-    var scene: any Scene { HandbookWindow() }
-}
-
-struct HandbookWindow: Window {
-    var page: any Page { HandbookPage() }
+    var body: some Scene {
+        WindowGroup { HandbookPage() }
+    }
 }
 
 struct HandbookPage: View {

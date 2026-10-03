@@ -13,7 +13,7 @@
 //                        session, and the one function this module exports
 //     Gallery/           the gallery itself: one gallery as a scene
 //                        (GalleryScene.swift), its window and the arrangement in
-//                        it (MainWindow.swift), where it is (Navigation.swift),
+//                        it (MainPage.swift), where it is (Navigation.swift),
 //                        what a sample is, the catalog of them, and the pages
 //                        that show them
 //     Styles/            what the app looks like: its palette and its styles
@@ -63,7 +63,7 @@ struct GalleryApp: Application {
     }
 
     /// One gallery, and as many more as the user opens.
-    var scene: any Scene { GalleryScene() }
+    var body: some Scene { GalleryScene() }
 }
 
 /// The one thing this module exports.

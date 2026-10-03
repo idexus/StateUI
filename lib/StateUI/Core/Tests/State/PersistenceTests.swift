@@ -37,10 +37,6 @@ private struct Preferences {
     @State(persistentKey: .appearance) var appearance = Appearance.light
 }
 
-private struct KeepingWindow: Window {
-    var page: any Page { KeepingPage() }
-}
-
 private struct KeepingPage: View {
     var body: some View { Text("kept") }
 }
@@ -65,12 +61,12 @@ private struct KeepingApp: Application {
         application.persistentKeys = [.count, .name]
     }
 
-    var scene: any Scene { KeepingWindow() }
+    var body: some Scene { WindowGroup { KeepingPage() } }
 }
 
 /// An application that keeps nothing, which is what most of them are.
 private struct PlainApp: Application {
-    var scene: any Scene { KeepingWindow() }
+    var body: some Scene { WindowGroup { KeepingPage() } }
 }
 
 final class PersistenceTests: XCTestCase {

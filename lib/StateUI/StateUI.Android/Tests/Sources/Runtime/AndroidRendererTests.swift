@@ -181,14 +181,14 @@ extension AndroidRendererTests {
     /// The window's title is what the activity - and its task among the recent ones - is called.
     func testTheWindowsTitleNamesTheActivity() {
         onMainActor {
-            let host = AndroidRenderer.running { TitledWindowPage(title: "Notes") }
+            let host = AndroidRenderer.running { TitlingPage(title: "Notes") }
             XCTAssertEqual(host.windowTitle, .some("Notes"))
         }
     }
 }
 
 /// A page that names its window.
-private struct TitledWindowPage: View {
+private struct TitlingPage: View {
     @Environment private var window: WindowSession
     let title: String
 

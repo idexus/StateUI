@@ -517,26 +517,15 @@ private struct AppKitSessionPage: View {
     var body: some View { Text(caption) }
 }
 
-private struct AppKitSessionMainWindow: Window {
-    var page: any Page { AppKitSessionPage(caption: "Main") }
-}
-
-private struct AppKitSessionToolWindow: Window {
-    var page: any Page { AppKitSessionPage(caption: "Tool") }
-}
-
 private struct AppKitSessionScene: Scene {
-    var windows: Windows {
-        Windows {
-            WindowGroup(.appKitTestTool) { AppKitSessionToolWindow() }
-        } main: {
-            AppKitSessionMainWindow()
-        }
+    var body: some Scene {
+        WindowGroup { AppKitSessionPage(caption: "Main") }
+        Window(.appKitTestTool) { AppKitSessionPage(caption: "Tool") }
     }
 }
 
 private struct AppKitSessionApp: Application {
-    var scene: any Scene { AppKitSessionScene() }
+    var body: some Scene { AppKitSessionScene() }
 }
 
 #endif

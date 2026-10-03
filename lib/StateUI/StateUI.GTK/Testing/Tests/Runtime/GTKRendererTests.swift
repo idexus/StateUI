@@ -220,22 +220,17 @@ private struct PhasePage: View {
 private struct GoingApplication: Application {
     let gone: Received<String>
 
-    var scene: any Scene { GoingScene(gone: gone) }
+    var body: some Scene { GoingScene(gone: gone) }
 }
 
 private struct GoingScene: Scene {
     let gone: Received<String>
 
-    var windows: Windows {
+    var body: some Scene {
         let gone = self.gone
-        return Windows(main: { GoingWindow(gone: gone) })
+
+        WindowGroup { GoingPage(gone: gone) }
     }
-}
-
-private struct GoingWindow: Window {
-    let gone: Received<String>
-
-    var page: any Page { GoingPage(gone: gone) }
 }
 
 /// A page hearing its window go.
@@ -253,17 +248,14 @@ private struct GoingPage: View {
 
 /// An application whose main window opens a tool window of its scene.
 private struct ToolApplication: Application {
-    var scene: any Scene { ToolScene() }
+    var body: some Scene { ToolScene() }
 }
 
 private struct ToolScene: Scene {
-    var windows: Windows {
-        Windows({ WindowGroup(WindowType("renderer.tool")) { ToolWindow() } }, main: { ToolMainWindow() })
+    var body: some Scene {
+        WindowGroup { ToolOpeningPage() }
+        Window(WindowType("renderer.tool")) { Text("A tool") }
     }
-}
-
-private struct ToolMainWindow: Window {
-    var page: any Page { ToolOpeningPage() }
 }
 
 private struct ToolOpeningPage: View {
@@ -273,10 +265,6 @@ private struct ToolOpeningPage: View {
         let scene = self.scene
         return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
     }
-}
-
-private struct ToolWindow: Window {
-    var page: any Page { Text("A tool") }
 }
 
 /// A label reading its scene's phase, each phase it reads written down.

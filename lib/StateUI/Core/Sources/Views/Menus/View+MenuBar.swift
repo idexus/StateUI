@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-extension PropertyContainer where Self: Page {
+extension View {
     /// Menus on the menu bar while the page this stands in is shown, declared
     /// where the state they follow lives.
     ///

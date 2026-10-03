@@ -18,11 +18,11 @@ extension ControlDictionary {
 
         (ApplicationContract.self, #"""
             struct NotesApp: Application {
-                var scene: any Scene { NotesWindow() }
+                var body: some Scene { WindowGroup { NotesPage() } }
             }
 
-            struct NotesWindow: Window {
-                var page: any Page {
+            struct NotesPage: View {
+                var body: some View {
                     Button("About")
                         .onClicked { try await Dialogs.alert("Notes", message: "Version 1.0") }
                 }
@@ -201,10 +201,10 @@ extension ControlDictionary {
             """#),
 
         (ModalStackContract.self, #"""
-            struct MainWindow: Window {
+            struct MainPage: View {
                 @State private var sheets: [String] = []
 
-                var page: any Page {
+                var body: some View {
                     ModalStack($sheets) {
                         Button("Settings").onClicked { sheets.append("Settings") }
                     } destination: { sheet in
@@ -215,10 +215,10 @@ extension ControlDictionary {
             """#),
 
         (NavigationStackContract.self, #"""
-            struct MainWindow: Window {
+            struct MainPage: View {
                 @State private var path: [Int] = []
 
-                var page: any Page {
+                var body: some View {
                     NavigationStack($path) {
                         Button("Open note 1").onClicked { path.append(1) }
                     } destination: { note in
@@ -326,18 +326,15 @@ extension ControlDictionary {
                 static let inspector = WindowType("notes.inspector")
             }
 
-            struct NoteWindow: Window {
+            struct NotePage: View {
                 let title: String
-                var page: any Page { Text(title) }
+                var body: some View { Text(title) }
             }
 
             struct NotesScene: Scene {
-                var windows: Windows {
-                    Windows {
-                        WindowGroup(.inspector) { NoteWindow(title: "Inspector") }
-                    } main: {
-                        NoteWindow(title: "Notes")
-                    }
+                var body: some Scene {
+                    WindowGroup { NotePage(title: "Notes") }
+                    Window(.inspector) { NotePage(title: "Inspector") }
                 }
             }
             """#),
@@ -393,10 +390,10 @@ extension ControlDictionary {
             """#),
 
         (SplitViewContract.self, #"""
-            struct MainWindow: Window {
+            struct MainPage: View {
                 @State private var showsFolders = true
 
-                var page: any Page {
+                var body: some View {
                     SplitView($showsFolders) {
                         Text("Folders")
                     } detail: {
@@ -529,8 +526,8 @@ extension ControlDictionary {
             """#),
 
         (WindowContract.self, #"""
-            struct MainWindow: Window {
-                var page: any Page { MainPage() }
+            struct NotesApp: Application {
+                var body: some Scene { WindowGroup { MainPage() } }
             }
 
             struct MainPage: View {
@@ -681,10 +678,10 @@ extension ControlDictionary {
             """#),
 
         (BarElementContract.self, #"""
-            struct MainWindow: Window {
+            struct MainPage: View {
                 @State private var path: [Int] = []
 
-                var page: any Page {
+                var body: some View {
                     NavigationStack($path) {
                         Text("Inbox")
                     } destination: { message in

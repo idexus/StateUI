@@ -46,7 +46,13 @@
 
     /// A page where `element` wears `worn` around a bar every host draws - a split view's detail, a tabbed view's
     /// first tab and a modal stack's root are a stack of one page - `beside` the page's words.
-    static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> any Page {
+    static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> ModifiedContent {
+        // Chosen by name, so held as `any View` and handed on as its node.
+        ModifiedContent(node: chosen(element, worn, beside: beside).node)
+    }
+
+    /// The page `declaring(_:_:beside:)` shows, chosen by name.
+    private static func chosen(_ element: String, _ worn: [any Worn], beside: [any View]) -> any View {
         let dressing = Dressing(worn)
         let others: [any View] = beside
         let stack = {

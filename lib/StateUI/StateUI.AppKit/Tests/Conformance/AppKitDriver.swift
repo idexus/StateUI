@@ -79,9 +79,12 @@ final class AppKitDriver: HostDriver {
     /// encoded it.
     private var restorable: [KeptWindow] = []
 
-    func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
+    func start(
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+    ) -> MountedTree {
         forgetWhatIsKept()
-        return run(clock: clock, reducesMotion: reducesMotion) { OneWindowApplication(page: page) }
+        let application = OneWindowApplication(page: page)
+        return run(clock: clock, reducesMotion: reducesMotion) { application }
     }
 
     func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
@@ -105,7 +108,7 @@ final class AppKitDriver: HostDriver {
     ) -> MountedTree {
         restorable = renderer.map { Self.encoded($0.windowsForTesting) } ?? []
         renderer?.closeForTesting()
-        stateUIUseApp(application())
+        Renderer.shared.setApplication(application())
         written.listen()
         let renderer = testRenderer(
             resourceDirectory: Self.pictures, preferences: store, clock: clock.map { clock in { clock.now } },

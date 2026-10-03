@@ -47,8 +47,8 @@ private struct Blank: View {
 }
 
 /// A scene's main window.
-private struct First: Window {
-    var page: any Page { Blank() }
+private struct First: View {
+    var body: some View { Blank() }
 }
 
 /// What an inspector holds, for the test that writes it - a model at file
@@ -64,12 +64,8 @@ private struct Showing: View {
     var body: some View { Text("\(drawn.revision)") }
 }
 
-private struct ShowingWindow: Window {
-    var page: any Page { Showing() }
-}
-
 private struct ShowingApplication: Application {
-    var scene: any Scene { ShowingWindow() }
+    var body: some Scene { WindowGroup { Showing() } }
 }
 
 /// An application holding state of its own, the way an application holds
@@ -77,27 +73,24 @@ private struct ShowingApplication: Application {
 private struct Holding: Application {
     @State var menuOpen = false
 
-    var scene: any Scene { First() }
+    var body: some Scene { WindowGroup { First() } }
 }
 
 /// An application whose scenes are a window alone.
 private struct Plain: Application {
-    var scene: any Scene { First() }
+    var body: some Scene { WindowGroup { First() } }
 }
 
 /// A scene whose inspector may show in a window of its own.
 private struct Inspected: Scene {
-    var windows: Windows {
-        Windows {
-            WindowGroup(.debugInspector) { DebugInspector() }
-        } main: {
-            First()
-        }
+    var body: some Scene {
+        WindowGroup { First() }
+        Window(.debugInspector) { DebugInspector() }
     }
 }
 
 private struct InspectedApp: Application {
-    var scene: any Scene { Inspected() }
+    var body: some Scene { Inspected() }
 }
 
 final class InspectionTests: XCTestCase {
@@ -220,6 +213,15 @@ final class InspectionTests: XCTestCase {
     }
 
     // MARK: - The tree
+
+    /// A view is named by its type alone, and a placeholder the library puts around one - a page, a window - by
+    /// its kind and the view's name, so no bracket is left hanging.
+    func testAPlaceholderIsNamedByItsKindAndItsView() {
+        XCTAssertEqual(Inspection.short("GalleryUI.MainPage"), "MainPage")
+        XCTAssertEqual(Inspection.short("Swift.Array<Swift.Int>"), "Array")
+        XCTAssertEqual(Inspection.short("StateUI.Window(GalleryUI.MainPage)"), "Window(MainPage)")
+        XCTAssertEqual(Inspection.short("StateUI.Page(GalleryUI.HomePage#home@if)"), "Page(HomePage#home@if)")
+    }
 
     func testAFirstRenderBuildsEveryComposedViewForTheFirstTime() {
         let first = pass { Renders().render(Holds(counts: Counts()).node) }

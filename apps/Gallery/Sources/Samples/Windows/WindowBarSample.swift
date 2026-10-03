@@ -25,11 +25,11 @@ struct WindowBarSample: SampleContent, ExampleContent {
             @State var showsAction = false
         }
 
-        struct MainWindow: Window {
+        struct MainPage: View {
             let bar: WindowBarState
             @State private var showsMenu = true
 
-            var page: any Page {
+            var body: some View {
                 SplitView($showsMenu) {
                     MenuPage()
                 } detail: {

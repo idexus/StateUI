@@ -222,18 +222,17 @@ private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
 
 /// Runs a handler that animates before it acts, answering the host's side of it.
 ///
-/// A card dips before it navigates - `press.scaleTo(...)`, awaited - so firing
+/// A card dips before it navigates - `dip.journey.move(to:)`, awaited - so firing
 /// its tap and reading state at once finds nothing: the handler is suspended on
 /// an animation nobody answered. Every command taken is completed through the
 /// typed host boundary, and the jobs are drained between them, because the job
 /// a resume produces does not exist yet at the moment the completion is
 /// reported.
 ///
-/// It also RENDERS, which is what a journey needs and an act never did: an
-/// animation is a state write now, and what carries it is the render the host
-/// makes next. A test that only answered acts would leave the handler
-/// suspended at its first `move(to:)` for ever - which is exactly how this
-/// helper failed the first time the card was migrated.
+/// It also RENDERS, which a journey needs: an animation is a state write, and
+/// what carries it is the render the host makes next. A test that only
+/// answered acts would leave the handler suspended at its first `move(to:)`
+/// for ever.
 
 private func settle(
     _ handler: @escaping EventHandler,
@@ -559,27 +558,27 @@ final class CatalogTests: XCTestCase {
         Catalog(nav: nav, style: SessionStyle(), bar: bar, log: WindowLog())
     }
 
-    /// The gallery's window over a given place - which is where the arrangement
-    /// is declared, so this is what a test asks for a detail page.
-    private func window(
+    /// The gallery's main page over a given place - where the arrangement is
+    /// declared, so this is what a test asks for a detail page.
+    private func mainPage(
         _ nav: Navigation,
         bar: WindowBarState = WindowBarState()
-    ) -> MainWindow {
-        MainWindow(catalog: catalog(nav, bar: bar),
+    ) -> MainPage {
+        MainPage(catalog: catalog(nav, bar: bar),
                    nav: nav,
                    style: SessionStyle(),
                    log: WindowLog(),
                    bar: bar)
     }
 
-    /// A window as the host is first told about it: registered as an
+    /// The window showing `page` as the host is first told about it: registered as an
     /// application of one window and rendered as a complete typed host patch -
     /// which is where what `.onCreated` writes into a session lands: the title
     /// bar, the modal stack, every page's title.
-    private func firstPatch(_ window: MainWindow) -> HostPatch {
+    private func firstPatch(_ page: MainPage) -> HostPatch {
         Scenes.shared.reset()
         Renderer.shared.clearInvalidation()
-        Renderer.shared.setApplication(OneWindow(window: window))
+        Renderer.shared.setApplication(OneWindow(page: page))
 
         return HostBoundary.render(baseline: 0).root
             .children[0].children[0]
@@ -1055,8 +1054,10 @@ final class CatalogTests: XCTestCase {
         let held = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" }?.samples.first)
         let scrolling = try XCTUnwrap(catalog().groups.flatMap(\.samples).first { $0.scrolls })
 
-        XCTAssertTrue(SamplePage.shown(held, nav: Place().nav, bar: AppColors.violet) is TabView)
-        XCTAssertTrue(SamplePage.shown(scrolling, nav: Place().nav, bar: AppColors.violet) is SamplePage)
+        XCTAssertEqual(SamplePage.shown(held, nav: Place().nav, bar: AppColors.violet).node.type, .tabView)
+        XCTAssertEqual(
+            SamplePage.shown(scrolling, nav: Place().nav, bar: AppColors.violet).node.stateful?.viewType,
+            String(reflecting: SamplePage.self))
         XCTAssertEqual(held.tabs, [.example(0), .code])
         XCTAssertEqual(held.tabs.map(held.caption(of:)), ["Example", "In Code"])
         XCTAssertEqual(held.tabs.map(held.icon(of:)), [
@@ -1074,7 +1075,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
 
         XCTAssertEqual(place.section.wrappedValue, .home)
-        XCTAssertEqual(window(place.nav).root().node.stateful?.viewType, String(reflecting: HomePage.self))
+        XCTAssertEqual(mainPage(place.nav).root().node.stateful?.viewType, String(reflecting: HomePage.self))
     }
 
     /// The gallery is a menu over a stack, and both halves are pages.
@@ -1083,7 +1084,8 @@ final class CatalogTests: XCTestCase {
     /// two children wearing the identity of their halves, the pane has a native
     /// title, and the detail is a stack that opens on its root alone.
     func testTheWindowIsAMenuOverAStack() throws {
-        let window = GalleryScene().windows.main.node.built
+        let main = GalleryScene().declaredWindows.main
+        let window = Node.window(showing: { main.page(nil, nil) }, kind: main.kind, session: WindowSession()).built
 
         XCTAssertEqual(window.type, "Window")
 
@@ -1109,7 +1111,7 @@ final class CatalogTests: XCTestCase {
 
         // The pane's title is its session's, written as the pane comes in, so
         // it is in the complete patch that brings the pane to the host.
-        let first = firstPatch(self.window(Place().nav))
+        let first = firstPatch(mainPage(Place().nav))
         let shownPane = try XCTUnwrap(first.children.first?.children.first?.children.first)
 
         XCTAssertEqual(shownPane.type, "Page")
@@ -1125,7 +1127,7 @@ final class CatalogTests: XCTestCase {
     /// The gallery's own window exercises the complete native size and
     /// operation policy while leaving placement to the platform.
     func testTheMainWindowCarriesItsNativePropertyPolicy() {
-        let shown = firstPatch(window(Place().nav))
+        let shown = firstPatch(mainPage(Place().nav))
 
         XCTAssertEqual(prop(shown, .title), .string("StateUI Gallery"))
         XCTAssertEqual(prop(shown, .width), .number(1_100))
@@ -1146,7 +1148,7 @@ final class CatalogTests: XCTestCase {
     func testTheWindowDeclaresItsBar() throws {
         let state = WindowBarState()
         state.subtitle = "Shared"
-        let quiet = firstPatch(window(Place().nav, bar: state))
+        let quiet = firstPatch(mainPage(Place().nav, bar: state))
         let split = try XCTUnwrap(quiet.children.first { $0.type == "ModalStack" }?.children.first)
 
         XCTAssertEqual(split.type, .splitView)
@@ -1156,7 +1158,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertFalse(actions(on: split).contains("Surprise me"), "no action until the sample asks for one")
 
         state.showsSurprise = true
-        let asked = firstPatch(window(Place().nav, bar: state))
+        let asked = firstPatch(mainPage(Place().nav, bar: state))
         let declaring = try XCTUnwrap(asked.children.first { $0.type == "ModalStack" }?.children.first)
         XCTAssertTrue(actions(on: declaring).contains("Surprise me"))
     }
@@ -1164,7 +1166,7 @@ final class CatalogTests: XCTestCase {
     /// And what is presented over all of it: the window's page is a modal
     /// stack holding the split view, the sheets after it.
     func testTheWindowsPageIsAModalStack() throws {
-        let shown = firstPatch(window(Place().nav))
+        let shown = firstPatch(mainPage(Place().nav))
 
         let presented = try XCTUnwrap(shown.children.first { $0.type == "ModalStack" })
 
@@ -1198,17 +1200,17 @@ final class CatalogTests: XCTestCase {
     /// swatch window per number, all opened by the gallery and never by *File ▸
     /// New Window*, which opens a gallery.
     func testAGalleryIsASceneWithItsToolsBesideIt() {
-        let windows = GalleryScene().windows
+        let windows = GalleryScene().declaredWindows
 
-        XCTAssertEqual(windows.groups.map(\.type), [.fonts, .colours, .debugInspector, .swatch])
-        XCTAssertEqual(windows.groups.filter { $0.valueType != nil }.map(\.type), [.swatch])
-        XCTAssertTrue(windows.main is MainWindow)
+        XCTAssertEqual(windows.groups.compactMap(\.type), [.fonts, .colours, .debugInspector, .swatch])
+        XCTAssertEqual(windows.groups.filter { $0.valueType != nil }.compactMap(\.type), [.swatch])
+        XCTAssertEqual(windows.main.kind, String(reflecting: MainPage.self))
     }
 
     /// The whole application is that scene - as many galleries as the user
     /// opens, and nothing else.
     func testTheApplicationIsItsGallery() {
-        XCTAssertTrue(GalleryApp().scene is GalleryScene)
+        XCTAssertTrue(GalleryApp().body is GalleryScene)
     }
 
     /// The menu lists Home, every group, and the one row that performs an act.
@@ -1309,7 +1311,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let detail = window(place.nav).detail().node
+        let detail = mainPage(place.nav).detail().node
 
         XCTAssertEqual(detail.type, "TabView")
         XCTAssertEqual(detail.props["selectedTab"], .number(0))
@@ -1325,7 +1327,7 @@ final class CatalogTests: XCTestCase {
 
         // A written page's caption and picture are its SESSION's, written as
         // it comes in - so they are read off the message that brings it.
-        let shown = firstPatch(window(place.nav))
+        let shown = firstPatch(mainPage(place.nav))
         let tabbed = try XCTUnwrap(shown.children.first?.children.first?.children.first { $0.type == "TabView" })
         let second = try XCTUnwrap(tabbed.children.last)
 
@@ -1348,11 +1350,11 @@ final class CatalogTests: XCTestCase {
         place.tabs.wrappedValue = [.stack, .second, .extra(1)]
         place.tab.wrappedValue = .second
 
-        let before = window(place.nav).detail().node.props["selectedTab"]
+        let before = mainPage(place.nav).detail().node.props["selectedTab"]
 
         place.nav.reverseTabs(showing: .second)
 
-        let after = window(place.nav).detail().node.props["selectedTab"]
+        let after = mainPage(place.nav).detail().node.props["selectedTab"]
 
         XCTAssertEqual(place.tabs.wrappedValue, [.extra(1), .second, .stack])
         XCTAssertEqual(before, .number(1))
@@ -1370,7 +1372,7 @@ final class CatalogTests: XCTestCase {
         place.nav.closeTab(.second, showing: .second)
 
         XCTAssertEqual(place.tabs.wrappedValue, [.stack])
-        XCTAssertNil(window(place.nav).detail().node.props["selectedTab"],
+        XCTAssertNil(mainPage(place.nav).detail().node.props["selectedTab"],
                      "a selection naming no tab must describe no index")
     }
 
@@ -1392,7 +1394,7 @@ final class CatalogTests: XCTestCase {
 
         let tabsPath = place.tabsPath
 
-        let detail = window(place.nav).detail().node
+        let detail = mainPage(place.nav).detail().node
 
         let stack = try XCTUnwrap(detail.children.first)
         let root = try XCTUnwrap(stack.children.first).built
@@ -1410,7 +1412,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let detail = window(place.nav).detail().node
+        let detail = mainPage(place.nav).detail().node
 
         for (index, child) in detail.children.enumerated() {
             // The first tab is a stack, so the page to read is its root.
@@ -1853,7 +1855,7 @@ private func occurrences(of needle: String, in text: String) -> Int {
 /// An application of one window - what a test registers to have the renderer's
 /// own first message about that window.
 private struct OneWindow: Application {
-    let window: MainWindow
+    let page: MainPage
 
-    var scene: any Scene { window }
+    var body: some Scene { WindowGroup { page } }
 }

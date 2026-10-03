@@ -76,6 +76,13 @@ extension HostEventUpdate {
     subscript(event: Event) -> Int? { handlers[event].map(Int.init) }
 }
 
+extension Node {
+    /// A window outside every scene, showing `view`, its session `session`.
+    static func window(_ view: some View, session: WindowSession) -> Node {
+        window(showing: { Node.page(view) }, kind: String(reflecting: Swift.type(of: view)), session: session)
+    }
+}
+
 /// The queued acts, taken the way a host takes them.
 func drainedActs() -> [HostActCall] {
     HostBoundary.takeActCalls()
@@ -420,18 +427,13 @@ enum SourceTree {
     /// insists on covering - never a false failure, and never anything the
     /// library does at run time.
     ///
-    /// BOTH ways a property is written, because under-reporting is exactly what
-    /// went wrong: a modifier that sets two things at once cannot chain
-    /// `setValue`, so it writes `props[…]` inside `modified` - and a scanner
-    /// looking only for `setValue` waved it through. The sources write TOKENS
-    /// since the dictionary round, and a Prop token's member spelling IS the
-    /// property name, so the scan reads the member.
-    /// THREE ways, and the third is the one a scan can miss: a type that is
-    /// not a `PropertyContainer` cannot write `setValue`, so it writes into
-    /// `props` directly - a `Window`'s properties, a menu item's - and the
-    /// subscript is therefore read as well, without a leading dot, which is
-    /// also how the properties a PAGE contributes (`props[.title]` on a local
-    /// dictionary in Application.swift) are seen.
+    /// THREE ways a property is written, and each is read: a modifier chaining
+    /// `setValue`; a modifier setting two things at once, which writes
+    /// `props[…]` inside `modified`; and a type that is not a
+    /// `PropertyContainer` - a session, a menu item - writing into `props`
+    /// directly, so the subscript is read without a leading dot as well. A Prop
+    /// token's member spelling IS the property name, so the scan reads the
+    /// member.
     ///
     /// A member written with its contract counts in the same places -
     /// `setValue(VisualElementContract.opacity, …)`, `$0.write(ViewContract.tapCount, …)`,
@@ -466,9 +468,8 @@ enum SourceTree {
     /// `addHandler(ViewContract.tapped.token, …)`, resolved as `propertyKeys`
     /// resolves one.
     ///
-    /// The sibling of `propertyKeys`, and the reason it exists: a modifier
-    /// whose whole body is an `addHandler` writes no property, so the modifier
-    /// guard cannot see it at all. Two reached the shelf that way.
+    /// The sibling of `propertyKeys`: a modifier whose whole body is an
+    /// `addHandler` writes no property, so the modifier guard cannot see it.
     static func handlerKeys(in file: String) throws -> Set<String> {
         handlerKeys(inSource: try text(in: file))
     }
@@ -482,8 +483,8 @@ enum SourceTree {
             .joined(separator: "\n")
 
         // Character-wise, the way `nodeTypes` reads its members: the token ends
-        // at the first character an identifier cannot hold. Reading up to the
-        // closing parenthesis instead swallowed whole multi-line closures.
+        // at the first character an identifier cannot hold; reading up to the
+        // closing parenthesis would swallow a whole multi-line closure.
         var events: Set<String> = []
         var rest = Substring(source)
 
@@ -616,11 +617,9 @@ enum SourceTree {
     /// Found by walking, not listed - the same rule the build follows, so a new
     /// subdirectory is covered without anything being told about it.
     ///
-    /// The path is reported with FORWARD slashes on every platform. The walk
-    /// yields `Bridge\Exports.swift` on Windows, and a caller comparing against
-    /// a written path - `hasSuffix("/Exports.swift")`, which is how the
-    /// one file allowed to declare `@_cdecl` is recognized - then matches
-    /// nothing and names that very file as the offender.
+    /// The path is reported with FORWARD slashes on every platform: the walk
+    /// yields backslashes on Windows, and a caller comparing against a written
+    /// path - `hasSuffix("/Tokens.swift")` - would match nothing there.
     ///
     /// Read once per run: nothing changes the sources while the suite runs,
     /// and a guard that asks `text(in:)` for each file of a walk would
@@ -765,10 +764,11 @@ enum SourceTree {
     /// The files under Views/ that describe controls, by name: a file's folder
     /// is its topic, and a guard reads it by the name the sources keep unique.
     ///
-    /// Application.swift and the style files describe the application and the
-    /// styles its controls are given - neither a control, and each with tests
-    /// of its own; the shared tier's files and ViewBuilder.swift describe no
-    /// type at all.
+    /// Application.swift, Node+Page.swift, Node+Window.swift and the style
+    /// files describe the application, the window and the page a view stands
+    /// on and the styles its controls are given - none a control, and each with
+    /// tests of its own; the shared tier's files and ViewBuilder.swift describe
+    /// no type at all.
     ///
     /// NavigationStack.swift and TabView.swift are the same kind of thing: a
     /// PAGE arranges other pages, so there is no control to build one on and
@@ -788,7 +788,7 @@ enum SourceTree {
     static func controlSources() throws -> [String] {
         let views = sources.appendingPathComponent("Views")
         let skipped: Set = [
-            "Application.swift", "ViewBuilder.swift",
+            "Application.swift", "Node+Page.swift", "Node+Window.swift", "ViewBuilder.swift",
             "Style.swift", "StyleBag+Properties.swift", "StyleBuilder.swift", "StyleSheet.swift",
             "StyleTarget.swift", "VisualState.swift", "VisualStateList.swift",
             "VisualElement+VisualStates.swift",

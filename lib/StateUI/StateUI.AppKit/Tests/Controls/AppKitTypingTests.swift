@@ -62,10 +62,10 @@ private final class TypingForm {
     @State var query = ""
 }
 
-private struct TypingWindow: Window {
+private struct TypingPage: View {
     let form: TypingForm
 
-    var page: any Page {
+    var body: some View {
         VStack {
             TextField(form.$name)
             TextEditor(form.$notes)
@@ -77,6 +77,6 @@ private struct TypingWindow: Window {
 private struct TypingApp: Application {
     let form: TypingForm
 
-    var scene: any Scene { TypingWindow(form: form) }
+    var body: some Scene { WindowGroup { TypingPage(form: form) } }
 }
 #endif

@@ -15,10 +15,10 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
 
     static let code = """
         // The window's page declares its own, over every page.
-        struct MainWindow: Window {
+        struct MainPage: View {
             @State private var notice = false
 
-            var page: any Page {
+            var body: some View {
                 Pages(notice: $notice)
                     .overlays {
                         if notice {

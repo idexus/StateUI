@@ -12,7 +12,7 @@ import StateUI
 /// itself. It is declared here rather than in the library because there is
 /// nothing general about it: it knows this app's state and this app's icon.
 extension ToolbarItem {
-    /// Back to the home page, in the gallery's group `MainWindow` declares
+    /// Back to the home page, in the gallery's group `MainPage` declares
     /// around every page.
     ///
     /// A page's own actions join that group's page rather than replacing it, so
@@ -21,7 +21,7 @@ extension ToolbarItem {
     /// come in from the title's side.
     ///
     /// The picture is the WHITE house in both themes, which is the one that
-    /// reads on the accent bar `MainWindow` paints - see the note in
+    /// reads on the accent bar `MainPage` paints - see the note in
     /// GalleryPage.swift on why a ToolbarItem's icon cannot be tinted and has to
     /// be chosen instead. The file is named for the theme it was drawn for; what
     /// decides here is the colour behind it, and that colour does not change.

@@ -32,19 +32,15 @@ hangs off them, `Styles` the styles and `Inspector` the inspector.
 An application declares types; the tree under a window is views.
 
 ```text
-  Application ──scene──▶ Scene ──windows──▶ Windows ──main──▶ Window ──page──▶ any Page
-      │                    │                   └──groups──▶ WindowGroup ──▶ Window     │
-  ApplicationSession   SceneSession                          WindowSession            │
-                                                                                      │
-          ┌───────────────────────────────────────────────────────────────────────────┤
-          │ an arrangement - NavigationStack, TabView, SplitView -                  │ any other view -
-          │ is a page itself, and keys the pages it holds                              │ usually a View -
-          ▼                                                                            ▼ goes on a page element
-      pages (each a view on a page element, or another arrangement)            that holds its PageSession
-                                                                                       │
-                                                                                       ▼
-                                                                          views: composed views, controls,
-                                                                          layouts, each with its modifiers
+  Application ──body──▶ Scene ──body──▶ WindowGroup, Window ──▶ view
+      │                    │                                         │
+  ApplicationSession   SceneSession            WindowSession         │
+                                                                     │
+          ┌──────────────────────────────────────────────────────────┤
+          │ an arrangement - NavigationStack, TabView, SplitView -  │ any other view
+          │ written there or built by the view's body - is the     │ goes on a page element
+          ▼ page itself, and keys the pages it holds                 ▼ that holds its PageSession
+      pages (each a view on a page element, or another arrangement)
 ```
 
 A window's node carries its page and the library's overlay - the inspector's

@@ -1,113 +1,98 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// One kind of window a scene opens beside its main one: one window of it,
-/// or - given `for:` - one per value.
+/// Windows made as they are asked for, each showing one view. With no name, the scene's main window - one per
+/// session, the platform making as many sessions as the user asks for; with a name and `for:`, one window per
+/// value, opened beside the main one.
 ///
-///     WindowGroup(.fonts) { FontsWindow() }
-///     WindowGroup(.document, for: UUID.self) { $id in DocumentWindow(id: id) }
+///     WindowGroup { MainPage() }
+///     WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
 ///
-/// The group says what the window is; the scene's session says when it opens:
-///
-///     @Environment private var scene: SceneSession
-///
-///     Button("Fonts").onClicked { try await scene.openWindow(.fonts) }
-///     Button("Open").onClicked { try await scene.openWindow(.document, value: id) }
-///
-/// A window of a group belongs to its scene: it closes with the scene, and the
-/// platform restores it to its scene for the same value, which is why the
-/// value is `Codable`. A host without independent windows refuses
-/// `openWindow` with `WindowError.unsupported`.
-public struct WindowGroup {
-    /// The kind of window.
-    let type: WindowType
+/// One window of a kind beside the main one is a `Window`. A window opened beside the main one belongs to its
+/// scene: it opens through the scene's session, closes with the scene, and the platform restores it to its scene
+/// for the same value, which is why the value is `Codable`.
+public struct WindowGroup<Role>: Scene {
+    /// What it makes.
+    var declared: DeclaredWindows
 
-    /// The type of value the group opens one window per; nil for one window.
-    let valueType: Any.Type?
+    /// None: the library's own scene.
+    public var body: Never { return fatalError("a WindowGroup is the library's own scene: it has no body") }
 
-    /// The window for one that is open, in the scene that has it open.
-    let make: (_ opened: OpenedWindow, _ record: SceneRecord) -> Window
-
-    /// A value read back from its text: what a restored window is opened for.
-    let restore: (_ text: String) -> AnyHashable?
-
-    /// Whether its windows hide while another scene is in front.
-    var hides = false
-
-    /// Whether its windows float above the application's other windows.
-    var floats = false
-
-    /// A group that opens one window, in any scene that declares it.
+    /// Offers an object to everything in its windows, resolved by type the way `.environment` on a view is.
     ///
-    ///     WindowGroup(.debugInspector) { DebugInspector() }
-    ///
-    /// - Parameters:
-    ///   - type: what a session's `openWindow` opens it by.
-    ///   - window: the window.
-    public init(_ type: WindowType, @WindowBuilder window: @escaping () -> Window) {
-        self.type = type
-        valueType = nil
-        make = { _, _ in window() }
-        restore = { _ in nil }
+    ///     WindowGroup { MainPage() }
+    ///         .environment(nav)
+    public func environment<Value: AnyObject>(_ object: Value) -> Self {
+        var copy = self
+        copy.declared.environments.append((key: ObjectIdentifier(Value.self), object: object))
+        return copy
     }
+}
 
-    /// A group that opens one window per value - a document per document, an
-    /// inspector per item.
+extension WindowGroup where Role == WindowRole.Main {
+    /// The scene's main window, showing `content` - an `if`/`else` there swaps what the one window shows.
     ///
-    ///     WindowGroup(.document, for: UUID.self) { $id in DocumentWindow(id: id) }
+    /// - Parameter content: the view the window shows.
+    public init<Content: View>(@ViewBuilder content: @escaping () -> Content) {
+        declared = DeclaredWindows(
+            type: nil, valueType: nil, kind: String(reflecting: Content.self),
+            page: { _, _ in Node.page(content()) })
+    }
+}
+
+extension WindowGroup where Role == WindowRole.Beside {
+    /// One window per value, opened beside the main one - a document per document, an inspector per item.
     ///
-    /// The window is handed a binding to its own value: reading it says which
-    /// value the window is for, and writing it makes the same window about
-    /// another - which is also what the system restores it for.
+    ///     WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
+    ///
+    /// The view is handed a binding to its window's value: reading it says which value the window is for, and
+    /// writing it makes the same window about another - which is also what the system restores it for.
     ///
     /// - Parameters:
     ///   - type: what a session's `openWindow` opens one by.
-    ///   - value: the type of value one window stands for - anything
-    ///     `Codable` and `Hashable`, so the platform can write it down.
-    ///   - window: the window for one value.
-    public init<Value: Codable & Hashable & SendableMetatype>(
+    ///   - value: the type of value one window stands for - anything `Codable` and `Hashable`, so the platform
+    ///     can write it down.
+    ///   - content: the view for one value.
+    public init<Value: Codable & Hashable & SendableMetatype, Content: View>(
         _ type: WindowType,
         for value: Value.Type,
-        @WindowBuilder window: @escaping (Binding<Value>) -> Window
+        @ViewBuilder content: @escaping (Binding<Value>) -> Content
     ) {
-        self.type = type
-        valueType = Value.self
-        make = { opened, record in
-            // The value the scene was built with; a write retargets this window,
-            // and the scene, which reads what it has open, builds it again.
-            let standing = opened.value?.base as! Value
+        declared = DeclaredWindows(
+            type: type, valueType: Value.self, kind: String(reflecting: Content.self),
+            page: { opened, record in
+                // The value the scene was built with; a write retargets this window, and the scene, which reads
+                // what it has open, builds it again.
+                let standing = opened?.value?.base as! Value
 
-            let binding = Binding<Value>(
-                get: { standing },
-                set: { record.retarget(opened.serial, to: $0) })
+                let binding = Binding<Value>(
+                    get: { standing },
+                    set: { if let opened, let record { record.retarget(opened.serial, to: $0) } })
 
-            return window(binding)
-        }
-        restore = { text in ValueText.read(Value.self, from: text).map(AnyHashable.init) }
+                return Node.page(content(binding))
+            },
+            restore: { text in ValueText.read(Value.self, from: text).map(AnyHashable.init) })
     }
 
-    /// Whether the group's windows hide while another scene of the
-    /// application is the one in front - and come back when their own is.
-    /// A host without that native policy leaves the windows visible.
-    ///
-    ///     WindowGroup(.fonts) { FontsWindow() }
-    ///         .hidesWhenInactive(true)
-    public func hidesWhenInactive(_ hides: Bool) -> WindowGroup {
+    /// One window of a kind is a `Window(.kind) { … }`.
+    @available(*, unavailable, message: "one window of a kind is a Window(.kind); a WindowGroup opens one per value, for:")
+    public init<Content: View>(_ type: WindowType, @ViewBuilder content: @escaping () -> Content) {
+        fatalError()
+    }
+
+    /// Whether the group's windows hide while another scene of the application is the one in front - and come
+    /// back when their own is. A host without that native policy leaves the windows visible.
+    public func hidesWhenInactive(_ hides: Bool) -> Self {
         var copy = self
-        copy.hides = hides
+        copy.declared.hides = hides
         return copy
     }
 
-    /// Whether the group's windows float above the application's other
-    /// windows - a tool that stays in sight over the main window it serves -
-    /// while the application is in front. A host without native window levels
-    /// leaves their order to the platform.
-    ///
-    ///     WindowGroup(.fonts) { FontsWindow() }
-    ///         .floatsOnTop(true)
-    public func floatsOnTop(_ floats: Bool) -> WindowGroup {
+    /// Whether the group's windows float above the application's other windows while the application is in
+    /// front. A host without native window levels leaves their order to the platform.
+    public func floatsOnTop(_ floats: Bool) -> Self {
         var copy = self
-        copy.floats = floats
+        copy.declared.floats = floats
         return copy
     }
 }

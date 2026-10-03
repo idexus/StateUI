@@ -40,7 +40,7 @@ struct NotesApp: Application {
         application.styles = HandbookStyles.sheet
     }
 
-    var scene: any Scene { MainWindow() }
+    var body: some Scene { WindowGroup { MainPage() } }
 }
 ```
 

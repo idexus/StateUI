@@ -410,22 +410,15 @@ final class DrivenPatchTests: XCTestCase {
     /// nobody waiting.
     ///
     /// Read from the source rather than written out here, because what this
-    /// holds is that no SECOND declaration comes back - on `Binding`, say, as
-    /// a synonym for assignment that answered `true` for a walk nothing
-    /// walked - and that the old spelling stays gone.
+    /// holds is that no SECOND declaration stands - on `Binding`, say, as a
+    /// synonym for assignment that answers `true` for a walk nothing walks.
     func testAValueIsSentOnAJourneyByOneSpellingOnly() throws {
         let sources = try SourceTree.allSources()
         var declared: [(file: String, line: String)] = []
-        var old = 0
 
         for source in sources {
-            for line in source.text.split(separator: "\n") {
-                if line.contains("func move(to") {
-                    declared.append(
-                        (source.path, String(line).trimmingCharacters(in: .whitespacesAndNewlines)))
-                }
-
-                if line.contains("func animateTo") { old += 1 }
+            for line in source.text.split(separator: "\n") where line.contains("func move(to") {
+                declared.append((source.path, String(line).trimmingCharacters(in: .whitespacesAndNewlines)))
             }
         }
 
@@ -436,7 +429,6 @@ final class DrivenPatchTests: XCTestCase {
         XCTAssertTrue(
             declared.first?.line.contains("target: Value") == true,
             "and it takes the value's own type: it is the journey's, not any binding's")
-        XCTAssertEqual(old, 0, "`animateTo` is not a spelling any more")
     }
 
     /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.

@@ -27,14 +27,17 @@ struct SamplePage: View {
     /// its own, on a bar in `bar`, the colour of the stack they are pushed onto.
     /// The tabs carry the sample's name, which names the window while they are
     /// the stack's last place; their pages name the tabs alone.
-    static func shown(_ sample: Sample, nav: Navigation, bar: Color) -> any Page {
-        guard !sample.scrolls else { return SamplePage(sample: sample, nav: nav) }
-
-        return TabView(sample.tabs) { tab in
-            SampleTabPage(sample: sample, tab: tab, nav: nav)
+    @ViewBuilder
+    static func shown(_ sample: Sample, nav: Navigation, bar: Color) -> some View {
+        if sample.scrolls {
+            SamplePage(sample: sample, nav: nav)
+        } else {
+            TabView(sample.tabs) { tab in
+                SampleTabPage(sample: sample, tab: tab, nav: nav)
+            }
+            .title(sample.title)
+            .barBackgroundColor(bar)
         }
-        .title(sample.title)
-        .barBackgroundColor(bar)
     }
 
     var body: some View {

@@ -34,7 +34,9 @@
 
     /// Shows `page` in a window of its own on a new host, its display frames at `clock`'s time where one is
     /// given; the tree it mounted.
-    func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree
+    func start(
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+    ) -> MountedTree
 
     /// Runs `application` on a new host, its display frames at `clock`'s time where one is given; the tree it
     /// mounted.

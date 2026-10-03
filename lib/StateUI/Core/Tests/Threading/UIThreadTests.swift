@@ -215,10 +215,9 @@ final class UIThreadTests: XCTestCase {
     /// value's board: no job, no act, and no render where nobody reads the
     /// value. The write waiting for a cycle is the work - counted by
     /// `HostBoundary.waitForWork`, and announced after it lands, so the thread cannot
-    /// wake, count nothing and park again with the movement behind it. That
-    /// was the gallery's analog clock on the MAUI heads: its `async let`
-    /// hands started from the pool, and the clock stood on its first second
-    /// until the next event reached the app.
+    /// wake, count nothing and park again with the movement behind it - a
+    /// clock whose hands start from the pool would stand on its first second
+    /// until the next event reached the application.
     func testAMovementStartedFromThePoolWakesTheHostAndReadsAsWork() async throws {
         let fade = wornOnAQuietBoard()
 

@@ -1,26 +1,28 @@
 # Pages and windows
 
-An application declares its structure as types. An `Application` answers its
-scene, a `Scene` its windows, a `Window` its page, and a page shows views.
-Each declares only what it is made of; what each one is while it runs lives in
-its session.
+An application declares its structure as types and builders. An
+`Application`'s body is its scene, a `Scene`'s body its windows - a
+`WindowGroup` and the windows beside it - and each window shows a view, which
+stands on a page. Each declares only what it is made of; what each one is while
+it runs lives in its session.
 
 ## Application scene window page
 
 ```text
-  Application ──scene──▶ Scene ──windows──▶ Windows ──main──▶ Window ──page──▶ Page ──▶ view tree
-                                               └──groups──▶ WindowGroup ──▶ Window
+  Application ──body──▶ Scene ──body──▶ WindowGroup ──▶ view ──▶ page ──▶ view tree
+                                   └──▶ Window, WindowGroup(for:) ──▶ view
 
   ApplicationSession    SceneSession        WindowSession             PageSession
   styles, motion,       open and close      title, frame,             title, padding, background,
   kept values           its windows         lifecycle                 bar requests, lifecycle
 ```
 
-`Application`, `Scene` and `Window` are protocols with one composition getter
-each. A page position takes `any Page`: every view is one, and so is each
-arrangement. The sessions are objects in the environment of everything under
-them, written like any state - usually from the `.onCreated` of what is shown -
-so the tree is steered by `@State` and `@Environment` alone.
+`Application` and `Scene` are protocols with one composition getter each,
+`body`, built by `ApplicationBuilder` and `SceneBuilder`. A window shows a
+view: an arrangement stands there as the page itself, any other view on a page
+element around it. The sessions are objects in the environment of everything
+under them, written like any state - usually from the `.onCreated` of what is
+shown - so the tree is steered by `@State` and `@Environment` alone.
 
 ## Scenes
 
@@ -33,19 +35,15 @@ system restores the application's windows.
 ```text
   struct GalleryApp: Application {
       @State private var library = Library()                  every session's
-      var scene: any Scene { GalleryScene().environment(library) }
+      var body: some Scene { GalleryScene().environment(library) }
   }
 
   struct GalleryScene: Scene {
       @State private var nav = Navigation()                   this session's
-      var windows: Windows {
-          Windows {
-              WindowGroup(.fonts) { FontsWindow() }
-              WindowGroup(.document, for: UUID.self) { $id in DocumentWindow(id: id) }
-          } main: {
-              MainWindow()
-          }
-          .environment(nav)
+      var body: some Scene {
+          WindowGroup { MainPage() }.environment(nav)
+          Window(.fonts) { FontsPanel() }.environment(nav)
+          WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
       }
   }
 ```
@@ -53,9 +51,17 @@ system restores the application's windows.
 - A session's state is its scene type's own `@State`. Each session has its
   own, and every window of the session reads it, offered with `.environment`
   or handed in as a binding.
-- A window of a group belongs to its scene. It opens through the scene's
-  session, `scene.openWindow(.fonts)`, closes with the scene, may hide while
-  another scene is in front, and is never what New Window makes.
+- A scene's body is counted by type (`SceneBuilder`, `WindowRole`): one main
+  window - a `WindowGroup` with no name - and windows beside it, each with a
+  name. A scene with no main window or two does not compile, and neither does
+  a main window under an `if` with no `else`: what a window shows is chosen
+  inside its view.
+- An object is offered to a window by `.environment(_:)` on its `WindowGroup`
+  or `Window`, and to every window of every session by `.environment(_:)` on
+  the scene where the application names it.
+- A window opened beside the main one belongs to its scene. It opens through
+  the scene's session, `scene.openWindow(.fonts)`, closes with the scene, may
+  hide while another scene is in front, and is never what New Window makes.
 - What the system restores is what was open: each scene comes back with the
   windows it had and the values its `@State(sceneKey:)` held. A group's value
   is `Codable` for that reason, and a `WindowType` name is written down with
@@ -68,11 +74,9 @@ its platform provides; a host that shows one window refuses another with
 
 ## A window is a placeholder
 
-`Window.node` answers a placeholder like a composed view's (`Node.composed`),
-so a window declared as a type may hold `@State` of its own and is built again
-on its own when that state changes. A window shown alone, outside every scene,
-keeps its `WindowSession` on its element, the way a page does. A scene's
-windows are handed theirs by the scene, which keeps them.
+A window's node is a placeholder like a composed view's (`Node.window`), so it
+is built again on its own when what it reads moves; the view it shows holds the
+state. Its `WindowSession` is handed to it by its scene, which keeps it.
 
 The session and, for a main window, the panel its scene's inspector docks in
 are asked for inside the window's build, so the window is what builds again
@@ -116,9 +120,10 @@ can differ between two instances within one run.
 A view shown as a screen gets a page element around it (`Node.page`). The page
 holds the view's `PageSession` for its life: kept while the same view stands
 there - the same kind under the same explicit id, from the same branch - and
-made afresh for another. A page position takes its page through `PageBuilder`,
-so an `if`/`else` or a `switch` there keys each branch, and two branches of
-the same view are two pages, as two branches in a container are two elements.
+made afresh for another. A page position takes its view through `ViewBuilder`,
+so an `if`/`else` or a `switch` there keys each branch (`Either`), and two
+branches of the same view are two pages, as two branches in a container are
+two elements.
 The view stays the element it is, one level down, with its state, its inputs
 and whatever was written on it, so a write to the session builds the page again
 and carries the view whole.
@@ -128,13 +133,25 @@ title view does not look to the differ as though its content moved. The view
 is held as a node - interface, not an input anything compares - so the page is
 built with its parent and the view is compared on its own.
 
-## Arrangements are pages
+## An arrangement is a view
 
-`NavigationStack`, `TabView`, `SplitView` and `ModalStack` conform to `Page`
-and not to `View`, so an arrangement stands only where a page stands: a stack
-written inside a `VStack` does not compile. An arrangement is a page already
-and is shown as it is, with no page element around it - told by the node it
-builds, so one a branch chose is told the same way.
+`NavigationStack`, `TabView`, `SplitView` and `ModalStack` are views
+(`ElementView`), so a view's `body` may be one. An arrangement stands where a
+page stands - a window's view, a page of another arrangement - as the page
+itself, with no page element around it. Whether a view builds one is told by
+its type (`Node.isArrangement`): an arrangement, or a composed view whose
+`body`, followed down, ends on one; the placeholder records the view's type,
+so a modifier written on the view keeps the answer. A `body` whose `if`
+chooses between an arrangement and another view cannot be told by its type,
+and stands as a view.
+
+Anywhere else an arrangement is left out of what is described and said once
+(`complain`): inside a layout, and inside a page, where a view's branch chose
+one. No type refuses an arrangement in a `VStack`, since a composed view may
+hide one in its `body`; the hosts show one only where a page stands. An
+arrangement fills where it stands, so it keeps what its contract declares - its
+bar, its title and icon, its own state - and leaves out, said once, what a
+view's modifier writes on it: a width, a margin, a gesture.
 
 What a screen is - its title, its buttons - is its page's session. An
 arrangement's bar belongs to the arrangement (`BarElement`) and looks the same

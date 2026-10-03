@@ -13,11 +13,11 @@ struct ModalSample: SampleContent, ExampleContent {
             case settings
         }
 
-        struct MainWindow: Window {
+        struct MainPage: View {
             @State private var sheets: [Sheet] = []
 
             // The sheets stand over the window's page, the last on top.
-            var page: any Page {
+            var body: some View {
                 ModalStack($sheets) {
                     HomePage(sheets: $sheets)
                 } destination: { _ in

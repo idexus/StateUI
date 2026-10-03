@@ -4,14 +4,14 @@
 import StateUI
 
 /// The smallest complete application around one page: one scene, one window.
-public struct OneWindowApplication: Application {
-    /// The page, built again each time the window is.
-    public let page: @Sendable () -> any Page
+public struct OneWindowApplication: Application, Sendable {
+    /// The page, built again each time the window is - any test's view, which enters the window by its node.
+    let page: @Sendable () -> any View
 
     /// An application showing `page` in its one window.
-    public init(page: @escaping @Sendable () -> any Page) {
+    public init(@ViewBuilder page: @escaping @Sendable () -> any View) {
         self.page = page
     }
 
-    public var scene: any Scene { OneWindow(content: page) }
+    public var body: some Scene { WindowGroup { ModifiedContent(node: page().node) } }
 }

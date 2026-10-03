@@ -12,7 +12,7 @@ reads.
   Application
     Scene "1"            one per open scene, in the order they opened
       Window "main"      its main window, always first
-      Window "fonts 1"   a window of a group: the kind, and a number of its own
+      Window "fonts 1"   a window beside it: the kind, and a number of its own
     Scene "2"
       Window "main"
 ```
@@ -47,13 +47,14 @@ describe it. The main window's session lives as long as the scene.
 
 ## Opening windows
 
-A scene declares its window groups, and each build records their shapes: the
-type of value a group opens one window per, and how to read that value back from
+A scene declares the windows it opens beside its main one - a `Window` of a
+kind, a `WindowGroup` of a kind per value - and each build records their shapes:
+the type of value one window stands for, and how to read that value back from
 text. Opening a window checks the kind is declared and the value's type matches.
 Whether a window may open beside another is the platform's: a desktop and an
 iPad do, a phone does not, and a host that has not said - a test - does.
 
-A window of a group has a number of its own in its scene, in the order windows
+A window opened beside the main one has a number of its own in its scene, in the order windows
 opened there, which keeps it the same window when the value it stands for
 changes. Its kind, its value's text, whether it hides while another scene is in
 front and whether it floats are written on every build, either way, so none of

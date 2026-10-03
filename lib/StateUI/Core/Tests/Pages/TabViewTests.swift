@@ -241,7 +241,7 @@ final class TabViewTests: XCTestCase {
         let tree = TabView([Tab.home, .settings]) { tab in
             switch tab {
             case .home:
-                return NavigationStack(path.projectedValue) {
+                NavigationStack(path.projectedValue) {
                     TabPage(tab: .home)
                 } destination: { _ in
                     TabPage(tab: .browse)
@@ -250,7 +250,7 @@ final class TabViewTests: XCTestCase {
                 .icon("house.png")
 
             default:
-                return TabPage(tab: tab)
+                TabPage(tab: tab)
             }
         }
         .selection(selection.projectedValue)

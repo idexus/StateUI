@@ -7,7 +7,7 @@ extension View where Modified == ModifiedContent {
     /// whether this view stood here last render - so its `@State` is kept.
     /// Assigning to it does nothing.
     public var node: Node {
-        get { Node.composed(self, type: String(reflecting: Self.self)) { body.node } }
+        get { Node.composed(self, type: String(reflecting: Self.self), shown: Self.self) { body.node } }
         set {}
     }
 

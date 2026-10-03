@@ -305,11 +305,9 @@ struct NotesApp: Application {
         application.persistentKeys = [.appearance]
     }
 
-    var scene: any Scene { NotesWindow() }
-}
-
-struct NotesWindow: Window {
-    var page: any Page { SettingsPage() }
+    var body: some Scene {
+        WindowGroup { SettingsPage() }
+    }
 }
 
 struct SettingsPage: View {

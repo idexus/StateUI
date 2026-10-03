@@ -30,7 +30,7 @@ struct GalleryScene: Scene {
     @State private var bar = WindowBarState()
 
     /// What the main window has said about its life - its phase, watched in
-    /// `MainWindow` and read by the Lifecycle sample.
+    /// `MainPage` and read by the Lifecycle sample.
     @State private var log = WindowLog()
 
     /// WHERE THE CATALOG IS KEPT, so that it is built once rather than on
@@ -40,28 +40,16 @@ struct GalleryScene: Scene {
 
     /// The gallery's windows: the main one, and the ones it may open beside
     /// it - its Fonts and Colours windows, which may step aside while another
-    /// gallery is in front or float above it, its inspector, and a swatch per
-    /// number.
-    var windows: Windows {
+    /// gallery is in front or float above it and read the session's style,
+    /// its inspector, and a swatch per number.
+    var body: some Scene {
         let nav = self.nav
         let style = self.style
         let bar = self.bar
         let log = self.log
 
-        return Windows {
-            WindowGroup(.fonts) { FontsWindow() }
-                .hidesWhenInactive(style.hidesTools)
-                .floatsOnTop(style.floatsTools)
-
-            WindowGroup(.colours) { ColoursWindow() }
-                .hidesWhenInactive(style.hidesTools)
-                .floatsOnTop(style.floatsTools)
-
-            WindowGroup(.debugInspector) { DebugInspector() }
-
-            WindowGroup(.swatch, for: Int.self) { number in SwatchWindow(number: number) }
-        } main: {
-            MainWindow(
+        WindowGroup {
+            MainPage(
                 catalog: kept.catalog {
                     Catalog(nav: nav, style: style, bar: bar, log: log)
                 },
@@ -70,7 +58,19 @@ struct GalleryScene: Scene {
                 log: log,
                 bar: bar)
         }
-        .environment(nav)
-        .environment(style)
+
+        Window(.fonts) { FontsPage() }
+            .hidesWhenInactive(style.hidesTools)
+            .floatsOnTop(style.floatsTools)
+            .environment(style)
+
+        Window(.colours) { ColoursPage() }
+            .hidesWhenInactive(style.hidesTools)
+            .floatsOnTop(style.floatsTools)
+            .environment(style)
+
+        Window(.debugInspector) { DebugInspector() }
+
+        WindowGroup(.swatch, for: Int.self) { number in SwatchPage(number: number) }
     }
 }

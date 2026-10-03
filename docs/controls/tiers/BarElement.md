@@ -5,10 +5,10 @@
 What an arrangement declares of the bar while it stands on the visible path: its colours, and the application's name, line and mark in the bar.
 
 ```swift
-struct MainWindow: Window {
+struct MainPage: View {
     @State private var path: [Int] = []
 
-    var page: any Page {
+    var body: some View {
         NavigationStack($path) {
             Text("Inbox")
         } destination: { message in
