@@ -38,6 +38,46 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertTrue(menuOpen.wrappedValue, "the program's move is not told back as another")
     }
 
+    /// A page pushed as the sidebar goes - a group chosen from a menu - stands at once: it is laid out where it
+    /// stands, never grown from nothing with the sidebar's slide.
+    @MainActor
+    func testAPagePushedAsTheSidebarGoesIsNotGrownFromNothing() throws {
+        let path = State(wrappedValue: [Int]())
+        let menuOpen = State(wrappedValue: true)
+        let host = UIKitRenderer.running {
+            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
+                NavigationStack(path.projectedValue) { Text("Home") } destination: { number in Text("Group \(number)") }
+            }
+        }
+        defer { host.finish() }
+        let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
+        host.settle { split.view.window != nil && split.displayMode != .secondaryOnly }
+
+        path.wrappedValue = [1]
+        menuOpen.wrappedValue = false
+        host.runtime.pump.turn()
+
+        let words = try XCTUnwrap(host.views(UIKitTextView.self).first { $0.attributedText?.string == "Group 1" })
+        var grown: [String] = []
+        var each: UIView? = words
+        while let view = each {
+            // Grown from nothing: its size travels from a size as much smaller as it is - from zero.
+            if let size = view.layer.animation(forKey: "bounds.size") as? CABasicAnimation, size.isAdditive,
+               let from = (size.fromValue as? NSValue)?.cgSizeValue, view.bounds.width > 0,
+               from.width == -view.bounds.width, from.height == -view.bounds.height {
+                grown.append("\(type(of: view))")
+            }
+            each = view.superview
+        }
+        XCTAssertEqual(grown, [], "the page stands where it is laid out, from its first frame")
+
+        let stack = try XCTUnwrap(Self.controller(of: .navigationStack, in: host) as? UINavigationController)
+        host.settle { split.transitionCoordinator == nil && stack.transitionCoordinator == nil }
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
+        let page = try XCTUnwrap(stack.topViewController?.view)
+        XCTAssertEqual(page.convert(page.bounds, to: stack.view), stack.view.bounds, "the page fills its column")
+    }
+
     /// A detail the tree replaces - a stack with pages pushed on it by tabs, the stack emptied in the same move, once
     /// the sidebar showed and hid - stands in the window in place of the one before.
     @MainActor

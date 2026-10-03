@@ -85,6 +85,10 @@ bars inside stand as a phone's.
 
 Whether the sidebar shows is the display mode the host prefers: over or
 beside the detail while the tree asks for it, the detail alone while not.
+The tree's move is UIKit's own (`show`/`hide` of the sidebar's column), which
+moves the columns together with a page pushed in the same turn: in an
+animation of the host's own, the page's first frame was laid out inside it
+and grew from nothing.
 The sidebar showing or hiding on screen is heard as the display mode
 changes, whoever moved it; the program's own move and the host's adapting
 to a new room are not told back. The traps: sliding over the detail, UIKit
