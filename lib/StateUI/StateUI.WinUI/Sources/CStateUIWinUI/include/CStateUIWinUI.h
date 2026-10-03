@@ -62,8 +62,8 @@ typedef enum {
 
 /// A question for the user: `kind` 0 an alert, 1 a confirmation, 2 a choice of actions, 3 a prompt; its title
 /// and message; the captions that accept and cancel; for a choice, the dangerous one and the choices; for a
-/// prompt, the field's placeholder, its most characters (0 for any), what it is for (StateUI's `InputPurpose`)
-/// and what it starts holding. Null for a caption there is none of.
+/// prompt, the field's placeholder, its most characters (0 for any), whether its words are spell checked and
+/// predicted, its input scope (`WinUIInputScope`) and what it starts holding. Null for a caption there is none of.
 typedef struct {
     int32_t kind;
     char const *title;
@@ -75,7 +75,9 @@ typedef struct {
     int32_t choiceCount;
     char const *placeholder;
     int32_t maximumLength;
-    int32_t purpose;
+    bool spellChecked;
+    bool predicted;
+    int32_t scope;
     char const *initial;
 } StateUIQuestion;
 
@@ -568,10 +570,10 @@ StateUIObjectRef stateui_winui_search_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);
 void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf8);
 
-/// How a field or an editor takes words: read only, spell checked, predicting the next word, and what they are for
-/// (StateUI's `InputPurpose`), which picks the on-screen keyboard.
+/// How a field or an editor takes words: read only, spell checked, predicting the next word, and its input scope
+/// (`WinUIInputScope`, the relay's numbering of WinUI's scopes), which picks the keyboard a screen offers.
 void stateui_winui_field_set_behaviour(StateUIObjectRef field, bool readOnly, bool spellChecked, bool predicted,
-                                       int32_t purpose);
+                                       int32_t scope);
 
 /// The case a field's or an editor's typing takes (StateUI's `TextCase`).
 void stateui_winui_field_set_casing(StateUIObjectRef field, int32_t textCase);

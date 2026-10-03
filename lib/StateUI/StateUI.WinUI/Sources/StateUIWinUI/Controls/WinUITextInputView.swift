@@ -46,9 +46,10 @@ class WinUITextInputView: WinUIView {
         stateui_winui_set_enabled(handle, enabled)
     }
 
-    /// How the words are taken: read only, spell checked, predicting the next word, and what they are for.
-    func setBehaviour(readOnly: Bool, spellChecked: Bool, predicted: Bool, purpose: InputPurpose?) {
-        stateui_winui_field_set_behaviour(handle, readOnly, spellChecked, predicted, purpose?.rawValue ?? 0)
+    /// How the words are taken: read only, and with `traits` - spell checked, predicted, and the keyboard's scope.
+    func setBehaviour(readOnly: Bool, traits: InputTraits) {
+        stateui_winui_field_set_behaviour(
+            handle, readOnly, traits.checksSpelling, traits.predicts, WinUIInputScope(traits).rawValue)
     }
 
     /// The case typing takes: WinUI puts each letter typed in it.

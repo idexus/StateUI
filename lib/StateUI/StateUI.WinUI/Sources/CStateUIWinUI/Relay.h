@@ -116,8 +116,8 @@ namespace stateui {
     /// stays.
     void holdHitArea(xaml::UIElement const &element, int64_t view);
 
-    /// WinUI's input scope for StateUI's `InputPurpose`: the on-screen keyboard a field brings up.
-    xaml::Input::InputScope inputScope(int32_t purpose);
+    /// WinUI's input scope the relay numbers `scope` (`WinUIInputScope`): the on-screen keyboard a field brings up.
+    xaml::Input::InputScope inputScope(int32_t scope);
 
     /// Whether the window whose root is `root` presents sheets over its pages.
     bool showsSheets(controls::Grid const &root);

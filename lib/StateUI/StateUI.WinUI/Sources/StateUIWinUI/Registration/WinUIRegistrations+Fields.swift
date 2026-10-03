@@ -92,11 +92,7 @@ extension WinUIRegistrations {
     ]
 
     private static func applyBox<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
-        view.setBehaviour(
-            readOnly: values[TextInputContract.isReadOnly] ?? false,
-            spellChecked: values[TextInputContract.isSpellCheckEnabled] ?? true,
-            predicted: values[TextInputContract.isTextPredictionEnabled] ?? true,
-            purpose: values[TextInputContract.inputPurpose])
+        view.setBehaviour(readOnly: values[TextInputContract.isReadOnly] ?? false, traits: InputTraits(values))
         view.setLook(
             alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
             placeholderColor: values[TextInputContract.placeholderColor]?.propValue)

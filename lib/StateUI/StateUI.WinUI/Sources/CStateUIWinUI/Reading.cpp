@@ -315,15 +315,15 @@ namespace {
         return own ? colour(own) : std::string();
     }
 
-    /// What a field is for, as StateUI's InputPurpose numbers it: the input scope's first name, found in the
+    /// A text box's input scope, as the relay numbers them (`WinUIInputScope`): its first name, found in the
     /// relay's own table of them.
-    std::optional<std::string> purpose(IInspectable const &object) {
+    std::optional<std::string> scope(IInspectable const &object) {
         auto box = object.try_as<controls::TextBox>();
         if (!box) return std::nullopt;
-        auto scope = box.InputScope();
-        if (!scope || scope.Names().Size() == 0) return "0";
-        auto name = scope.Names().GetAt(0).NameValue();
-        for (int32_t index = 0; index < 8; ++index) {
+        auto given = box.InputScope();
+        if (!given || given.Names().Size() == 0) return "0";
+        auto name = given.Names().GetAt(0).NameValue();
+        for (int32_t index = 0; index < 7; ++index) {
             if (inputScope(index).Names().GetAt(0).NameValue() == name) return number(index);
         }
         return "0";
@@ -331,7 +331,7 @@ namespace {
 
     std::optional<std::string> read(IInspectable const &object, std::string_view what) {
         if (what == "tint") return tint(object);
-        if (what == "purpose") return purpose(object);
+        if (what == "scope") return scope(object);
         if (auto bar = object.try_as<controls::TitleBar>()) return chrome(bar, what);
         if (auto split = object.try_as<controls::NavigationView>(); split && what == "paneOpen") {
             return flag(split.IsPaneOpen());

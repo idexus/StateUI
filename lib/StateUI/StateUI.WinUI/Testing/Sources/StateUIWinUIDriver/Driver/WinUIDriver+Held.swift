@@ -276,7 +276,8 @@ extension WinUIDriver {
         case "isReadOnly": return (facts[0] != 0).propValue
         case "isSpellCheckEnabled": return (facts[1] != 0).propValue
         case "isTextPredictionEnabled": return (facts[2] != 0).propValue
-        case "inputPurpose": return InputPurpose(rawValue: Int32(try read(view, "purpose")) ?? 0)?.propValue
+        case "inputPurpose":
+            return WinUIInputScope(rawValue: Int32(try read(view, "scope")) ?? 0).map(Self.purpose)?.propValue
         case "cursorPosition": return Int(facts[5]).propValue
         case "selectionLength": return Int(facts[6]).propValue
         default: return nil
@@ -571,6 +572,19 @@ extension WinUIDriver {
         case 1: .automatic
         case 3: .visible
         default: .never
+        }
+    }
+
+    /// The purpose a text box's input scope is given for.
+    static func purpose(_ scope: WinUIInputScope) -> InputPurpose {
+        switch scope {
+        case .default: .default
+        case .text: .text
+        case .chat: .chat
+        case .email: .email
+        case .number: .numeric
+        case .telephone: .telephone
+        case .url: .url
         }
     }
 }

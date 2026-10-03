@@ -245,12 +245,15 @@ does not type through it; a button, a switch and a slider are driven through
 their automation patterns.
 
 How the words are taken is the tree's where it says so and WinUI's where it
-does not: read only, spell checked and predicting the next word - WinUI's
-defaults, both on - and what they are for, which is the text box's input
-scope and so the on-screen keyboard. The words stand across the box as their
-alignment says, the placeholder takes its colour, and the caret and the
-selection are put where the tree put them, in the characters WinUI counts,
-only where the tree changed them.
+does not: read only, and the traits the host layer reads once ([what typing
+is given](../../host/runtime.md#what-typing-is-given)) - spell checked and
+predicting the next word, WinUI's defaults both on and plain words neither,
+and the text box's input scope, which picks the on-screen keyboard: its keys
+by the purpose, `Text` where sentences start in capitals, `Chat` where emoji
+are offered. A question's field takes the same. The words stand across the
+box as their alignment says, the placeholder takes its colour, and the caret
+and the selection are put where the tree put them, in the characters WinUI
+counts, only where the tree changed them.
 
 A search box is WinUI's `AutoSuggestBox` as it is: the text box its template
 holds takes the box's style, which carries whether it is read only, the case

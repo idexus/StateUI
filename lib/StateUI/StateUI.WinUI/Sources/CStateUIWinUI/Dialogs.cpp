@@ -120,7 +120,9 @@ namespace {
             controls::TextBox field;
             if (question.placeholder) field.PlaceholderText(text(question.placeholder));
             if (question.maximumLength > 0) field.MaxLength(question.maximumLength);
-            field.InputScope(inputScope(question.purpose));
+            field.IsSpellCheckEnabled(question.spellChecked);
+            field.IsTextPredictionEnabled(question.predicted);
+            field.InputScope(inputScope(question.scope));
             field.Text(text(question.initial));
             content.Children().Append(field);
             dialog.Content(content);
@@ -145,14 +147,14 @@ namespace {
 }
 
 namespace stateui {
-    xaml::Input::InputScope inputScope(int32_t purpose) {
+    xaml::Input::InputScope inputScope(int32_t number) {
         using name = input::InputScopeNameValue;
-        // StateUI's InputPurpose: default, plain, chat, email, numeric, telephone, text, url.
-        static name const names[] = {name::Default, name::Default, name::Chat, name::EmailSmtpAddress,
-                                     name::Number, name::TelephoneNumber, name::Text, name::Url};
+        // WinUIInputScope: default, text, chat, email, number, telephone, url.
+        static name const names[] = {name::Default, name::Text, name::Chat, name::EmailSmtpAddress,
+                                     name::Number, name::TelephoneNumber, name::Url};
         input::InputScope scope;
         input::InputScopeName scopeName;
-        scopeName.NameValue(purpose >= 0 && purpose < 8 ? names[purpose] : name::Default);
+        scopeName.NameValue(number >= 0 && number < 7 ? names[number] : name::Default);
         scope.Names().Append(scopeName);
         return scope;
     }

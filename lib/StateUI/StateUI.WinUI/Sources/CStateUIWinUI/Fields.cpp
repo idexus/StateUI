@@ -67,12 +67,12 @@ namespace {
         }));
     }
 
-    /// The only scopes a password box takes: digits for a numeric purpose, a password's otherwise.
-    xaml::Input::InputScope passwordScope(int32_t purpose) {
+    /// The only scopes a password box takes: digits for the number scope (4), a password's otherwise.
+    xaml::Input::InputScope passwordScope(int32_t number) {
         xaml::Input::InputScope scope;
         xaml::Input::InputScopeName name;
-        name.NameValue(purpose == 4 ? xaml::Input::InputScopeNameValue::NumericPin
-                                    : xaml::Input::InputScopeNameValue::Password);
+        name.NameValue(number == 4 ? xaml::Input::InputScopeNameValue::NumericPin
+                                   : xaml::Input::InputScopeNameValue::Password);
         scope.Names().Append(name);
         return scope;
     }
@@ -184,19 +184,19 @@ extern "C" void stateui_winui_field_set_placeholder(StateUIObjectRef handle, cha
 }
 
 extern "C" void stateui_winui_field_set_behaviour(
-    StateUIObjectRef handle, bool readOnly, bool spellChecked, bool predicted, int32_t purpose
+    StateUIObjectRef handle, bool readOnly, bool spellChecked, bool predicted, int32_t scope
 ) {
     try {
         // A password box has no read-only state, spell checking or prediction.
         if (auto password = as<IInspectable>(handle).try_as<controls::PasswordBox>()) {
-            password.InputScope(passwordScope(purpose));
+            password.InputScope(passwordScope(scope));
             return;
         }
         auto field = borrow<controls::TextBox>(handle);
         field.IsReadOnly(readOnly);
         field.IsSpellCheckEnabled(spellChecked);
         field.IsTextPredictionEnabled(predicted);
-        field.InputScope(inputScope(purpose));
+        field.InputScope(inputScope(scope));
     } catch (...) {
         report("setting how a field takes words");
     }

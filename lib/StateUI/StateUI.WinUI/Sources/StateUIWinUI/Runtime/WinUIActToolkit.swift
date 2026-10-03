@@ -63,14 +63,15 @@ final class WinUIActToolkit: ActToolkit {
             question.title, question.message, question.accept, question.cancel, question.destruction,
             question.placeholder, question.words,
         ]
+        let traits = InputTraits(spellChecked: true, predicted: true, purpose: question.purpose)
         WinUIStrings.withCStrings(words.map { $0 ?? "" } + question.choices) { pointers in
             func at(_ index: Int) -> UnsafePointer<CChar>? { words[index] == nil ? nil : pointers[index] }
             Array(pointers.dropFirst(words.count)).withUnsafeBufferPointer { offered in
                 var relayed = StateUIQuestion(
                     kind: kind, title: at(0), message: at(1), accept: at(2), cancel: at(3), destruction: at(4),
                     choices: offered.baseAddress, choiceCount: Int32(question.choices.count), placeholder: at(5),
-                    maximumLength: Int32(question.maximumLength ?? 0), purpose: question.purpose.rawValue,
-                    initial: at(6))
+                    maximumLength: Int32(question.maximumLength ?? 0), spellChecked: traits.checksSpelling,
+                    predicted: traits.predicts, scope: WinUIInputScope(traits).rawValue, initial: at(6))
                 stateui_winui_ask(content.handle, ticket, &relayed)
             }
         }
