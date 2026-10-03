@@ -4,7 +4,6 @@ import StateUI
 struct PinchSample: SampleContent, ExampleContent {
     @State private var pinch = 1.0
     @State private var reports = 0
-    @State private var log: [String] = []
 
     static let id = "pinch"
     static let title = "Pinch"
@@ -18,7 +17,6 @@ struct PinchSample: SampleContent, ExampleContent {
     static let code = """
         @State private var pinch = 1.0
         @State private var reports = 0
-        @State private var log: [String] = []
 
         VStack {
             // The scale and the report count are read here, so every report a
@@ -48,26 +46,12 @@ struct PinchSample: SampleContent, ExampleContent {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
-            // Beside the typed handler, not instead of it: the report's
-            // three values as the view's contract declares them.
-            .onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
-                let line = "\\(phase)  \\(scale)  \\(origin.x), \\(origin.y)"
-                log = (log + [line]).suffix(6).map { $0 }
-            }
-
             Text("Scale \\(Int(pinch * 100))% - \\(reports) report(s)")
-
-            VStack {
-                ForEach(Array(log.enumerated()), id: \\.offset) { pair in
-                    Text(pair.element)
-                }
-            }
 
             Button("Back to life size")
                 .onClicked {
                     pinch = 1
                     reports = 0
-                    log = []
                 }
         }
         """
@@ -104,15 +88,6 @@ struct PinchSample: SampleContent, ExampleContent {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
-            // Beside the typed handler, not instead of it: the report's three
-            // values as the view's contract declares them - its phase, its
-            // scale, and where it is centred. A report of another shape
-            // reaches no handler and is said once, which is what tells a
-            // gesture that stopped reporting from one this side cannot read.
-            .onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
-                let line = "\(phase)  \(scale)  \(origin.x), \(origin.y)"
-                log = (log + [line]).suffix(6).map { $0 }
-            }
 
             // Per cent rather than a formatted double: String(format:) is
             // Foundation, and this library's one hard rule is to stay away from
@@ -124,17 +99,6 @@ struct PinchSample: SampleContent, ExampleContent {
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
 
-            // What arrived: phase, scale, and where the pinch is centred.
-            VStack {
-                ForEach(Array(log.enumerated()), id: \.offset) { pair in
-                    Text(pair.element)
-                        .fontSize(11)
-                        .textColor(Palette.subtle)
-                        .horizontalTextAlignment(.center)
-                }
-            }
-            .spacing(2)
-
             Button("Back to life size")
                 .fontSize(13)
                 .padding(horizontal: 16, vertical: 6)
@@ -142,7 +106,6 @@ struct PinchSample: SampleContent, ExampleContent {
                 .onClicked {
                     pinch = 1
                     reports = 0
-                    log = []
                 }
         }
         .spacing(12)
