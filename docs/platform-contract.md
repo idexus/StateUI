@@ -438,7 +438,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Line](controls/Line.md) | 80 | 30 ✅ · 1 ☑️ · 25 ✓ · 3 – | 32 ✅ · 25 ✓ · 3 – | 54 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 ✓ · 3 – | 49 ✅ · 11 ✓ · 4 – |  |
 | [Map](controls/Map.md) | 74 | 33 ✅ · 1 ☑️ · 26 ✓ · 3 – | 33 ✅ · 26 ✓ · 3 – | 74 🧩 | 74 🧩 | 74 🧩 |  |
 | [Path](controls/Path.md) | 77 | 27 ✅ · 1 ☑️ · 25 ✓ · 3 – | 29 ✅ · 25 ✓ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 ✓ · 3 – | 46 ✅ · 11 ✓ · 4 – |  |
-| [Picker](controls/Picker.md) | 82 | 39 ✅ · 1 ☑️ · 26 ✓ · 1 – | 27 ✅ · 29 ✓ · 3 – | 53 ✅ · 1 ☑️ · 2 ✓ · 3 – | 67 ✅ · 2 ✓ | 50 ✅ · 11 ✓ · 7 – |  |
+| [Picker](controls/Picker.md) | 82 | 39 ✅ · 1 ☑️ · 26 ✓ · 1 – | 28 ✅ · 28 ✓ · 3 – | 54 ✅ · 1 ☑️ · 1 ✓ · 3 – | 67 ✅ · 2 ✓ | 50 ✅ · 11 ✓ · 7 – |  |
 | [Polygon](controls/Polygon.md) | 78 | 28 ✅ · 1 ☑️ · 25 ✓ · 3 – | 30 ✅ · 25 ✓ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 ✓ · 3 – | 47 ✅ · 11 ✓ · 4 – |  |
 | [Polyline](controls/Polyline.md) | 78 | 28 ✅ · 1 ☑️ · 25 ✓ · 3 – | 30 ✅ · 25 ✓ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 ✓ · 3 – | 47 ✅ · 11 ✓ · 4 – |  |
 | [ProgressBar](controls/ProgressBar.md) | 68 | 27 ✅ · 1 ☑️ · 25 ✓ · 3 – | 28 ✅ · 25 ✓ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 52 ✅ · 2 ✓ · 3 – | 41 ✅ · 12 ✓ · 4 – |  |
@@ -456,8 +456,8 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 30 ✅ · 25 ✓ · 3 – | 32 ✅ · 25 ✓ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 ✓ · 3 – | 45 ✅ · 11 ✓ · 4 – |  |
 | [WebView](controls/WebView.md) | 77 | 39 ✅ · 1 ☑️ · 26 ✓ | 39 ✅ · 26 ✓ | 61 ✅ · 1 ☑️ · 3 – | 44 ✅ · 3 ✓ · 18 – | 53 ✅ · 12 ✓ · 1 – |  |
 | [ZStack](controls/ZStack.md) | 73 | 29 ✅ · 25 ✓ · 3 – | 31 ✅ · 25 ✓ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 ✓ · 3 – | 44 ✅ · 11 ✓ · 4 – |  |
-| ✅ |  | 1057 | 1059 | 1737 | 1844 | 1507 |  |
-| ✓ |  | 820 | 819 | 7 | 78 | 362 |  |
+| ✅ |  | 1057 | 1060 | 1738 | 1844 | 1507 |  |
+| ✓ |  | 820 | 818 | 6 | 78 | 362 |  |
 | – |  | 67 | 81 | 85 | 69 | 87 |  |
 | **Met** | 2447 | **1944** | **1959** | **1829** | **1991** | **1956** |  |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 |  |
@@ -551,7 +551,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ |  | 1 ✅ | 1 ✅ |  |
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `showsBackButton`, `showsNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 8 ✅ | 10 ✅ | 7 ✅ · 1 – | 8 ✅ | 7 ✅ |  |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
-| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`) | 7 | 3 ✅ · 1 ✓ | 4 ✓ | 2 ✅ · 2 ✓ | 7 ✅ | 3 ✅ · 4 – |  |
+| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`) | 7 | 3 ✅ · 1 ✓ | 1 ✅ · 3 ✓ | 3 ✅ · 1 ✓ | 7 ✅ | 3 ✅ · 4 – |  |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |

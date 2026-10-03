@@ -5,7 +5,7 @@ Picker.frameChanged: ✅
 Picker.isOpen: not realized
 Picker.opened: waits on Picker.isOpen
 Picker.options: ✓ read options of Picker: the host's own choice, not the menu's
-Picker.placeholder: ✓ choose on Picker: the host's choice called, not the menu's action
+Picker.placeholder: ✅
 Picker.selectedIndex: ✓ choose on Picker: the host's choice called, not the menu's action
 Picker.selectedIndexChanged: ✓ choose on Picker: the host's choice called, not the menu's action
 Text.text: ✅
