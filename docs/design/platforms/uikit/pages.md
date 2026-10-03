@@ -13,8 +13,9 @@ the whole window.
 
 ## The safe area
 
-A page's view stands in its controller's safe area, clear of the bars and the
-notch, and out to the screen's edge on each edge its content lets itself under
+A page's view stands in its controller's safe area, clear of the bars, the
+notch and an iPad window's own controls in its corner (the safe area with its
+corner adapted), and out to the screen's edge on each edge its content lets itself under
 them ([the safe area](../../host/layout.md#the-safe-area)); the controller's
 own view shows the page's background, so it stands behind the bars either
 way. Only a page's own layout reaches under them; one deeper in stands where

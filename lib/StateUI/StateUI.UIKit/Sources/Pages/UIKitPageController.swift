@@ -56,9 +56,15 @@ final class UIKitPageController: UIViewController {
         view.backgroundColor = background.flatMap(UIColor.init(stateUI:)) ?? .systemBackground
     }
 
+    /// The safe area the page's content stands in: clear of the screen's bars, the notch, and the window's own
+    /// controls in its corner - an iPad's window - which a bar over the page stands clear of already.
+    var safeInsets: UIEdgeInsets {
+        view.edgeInsets(for: .safeArea(cornerAdaptation: .vertical))
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let (safe, whole) = (view.bounds.inset(by: view.safeAreaInsets), view.bounds.inset(by: barsOver))
+        let (safe, whole) = (view.bounds.inset(by: safeInsets), view.bounds.inset(by: barsOver))
         let room = SafeAreaArithmetic.room(
             safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height),
             whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),

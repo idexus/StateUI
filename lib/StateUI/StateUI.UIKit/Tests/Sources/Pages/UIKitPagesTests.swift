@@ -66,6 +66,21 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(navigation.viewControllers.count, 1)
     }
 
+    /// A page with no bar over it stands clear of the window's own controls in its corner - an iPad's window - as
+    /// well as of the screen's bars.
+    @MainActor
+    func testAPageWithNoBarStandsClearOfTheWindowsControls() throws {
+        let host = UIKitRenderer.running { Text("Words at the top") }
+        defer { host.finish() }
+        let words = try XCTUnwrap(host.views(UIKitTextView.self).first)
+        host.settle { words.window != nil && words.bounds.width > 0 }
+        let window = try XCTUnwrap(words.window)
+        let clear = window.edgeInsets(for: .safeArea(cornerAdaptation: .vertical))
+
+        let corner = words.convert(CGPoint.zero, to: window)
+        XCTAssertGreaterThanOrEqual(corner.y, clear.top, "below the window's controls")
+    }
+
     /// A field in the title's place keeps its width while the user types into it: a control is not fitted to its
     /// words again at every render, which cut it and let the bar widen it again, letter by letter.
     @MainActor

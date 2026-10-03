@@ -36,10 +36,10 @@ extension UIKitElement: FrameReporter {
     private static func safeCorner(of view: UIView, in window: UIWindow) -> CGPoint {
         var responder: UIResponder? = view
         while let each = responder, !(each is UIKitPageController) { responder = each.next }
-        guard let page = (responder as? UIKitPageController)?.view else {
+        guard let page = responder as? UIKitPageController, let view = page.view else {
             return CGPoint(x: window.safeAreaInsets.left, y: window.safeAreaInsets.top)
         }
-        return page.convert(page.bounds.inset(by: page.safeAreaInsets).origin, to: window)
+        return view.convert(view.bounds.inset(by: page.safeInsets).origin, to: window)
     }
 }
 
