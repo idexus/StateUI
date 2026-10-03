@@ -139,8 +139,8 @@ final class WinUIRendererTests: XCTestCase {
 
 /// A page saying the application's phase and its window's.
 private struct PhasePage: View {
-    @Environment private var application: ApplicationSession
-    @Environment private var window: WindowSession
+    @Environment(\.application) private var application
+    @Environment(\.window) private var window
 
     var body: some View {
         Text("\(application.phase) \(window.phase)")
@@ -149,22 +149,22 @@ private struct PhasePage: View {
 
 /// A page saying the screen's width and turn.
 private struct DisplayPage: View {
-    @Environment private var display: DeviceDisplay
+    @Environment(\.device) private var device
 
     var body: some View {
-        Text("\(Int(display.width)) \(display.rotation)")
+        Text("\(Int(device.display.width)) \(device.display.rotation)")
     }
 }
 
 /// A page saying what it runs on and the theme it runs in.
 private struct EnvironmentPage: View {
-    @Environment private var device: DeviceInfo
-    @Environment private var app: AppInfo
+    @Environment(\.device) private var device
+    @Environment(\.application) private var app
 
     var body: some View {
         VStack {
-            Text("\(device.platform) \(device.formFactor)")
-            Text("\(app.colorScheme)")
+            Text("\(device.info.platform) \(device.info.formFactor)")
+            Text("\(app.info.colorScheme)")
         }
     }
 }

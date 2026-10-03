@@ -31,7 +31,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
             let log: WindowLog
             let listsHiddenRow: Bool
 
-            @Environment private var device: DeviceInfo
+            @Environment(\\.device) private var device
 
             var body: some View {
                 VStack {
@@ -56,7 +56,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
                     }
 
                     // A row that DOES something rather than going somewhere.
-                    MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.formFactor) }
+                    MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
                         .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
 
                     // The window's phase, written into its log by a view of

@@ -3,22 +3,22 @@ import StateUI
 /// The three lifecycle scopes available to every view in a window.
 struct WindowPhaseSample: SampleContent, ExampleContent {
     /// The application as it runs.
-    @Environment var application: ApplicationSession
+    @Environment(\.application) var application
 
     /// This gallery - the scene the page is in.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     /// The window this page is in.
-    @Environment var window: WindowSession
+    @Environment(\.window) var window
 
     static let id = "windowPhase"
     static let title = "Phases"
     static let summary = "Read application, scene, and window lifecycle as state."
 
     static let code = """
-        @Environment private var application: ApplicationSession
-        @Environment private var scene: SceneSession
-        @Environment private var window: WindowSession
+        @Environment(\\.application) private var application
+        @Environment(\\.scene) private var scene
+        @Environment(\\.window) private var window
 
         VStack {
             DebugInfoLabel()

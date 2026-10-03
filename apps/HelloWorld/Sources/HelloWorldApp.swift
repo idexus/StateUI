@@ -8,10 +8,10 @@ import StateUI
 /// wants a stack, tabs or a menu, that view's `body` is a `NavigationStack`, a
 /// `TabView` or a `SplitView`, over state the view owns. What a window is
 /// called and how big it opens are its session's, written from a view in it
-/// (`@Environment private var window: WindowSession`).
+/// (`@Environment(\.window) private var window`).
 struct HelloWorldApp: Application {
     /// The application as it runs - where its styles go.
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     /// The application's styles - see Styles/AppStyles.swift - written
     /// as the application is made. A colour in one follows the theme by

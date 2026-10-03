@@ -7,7 +7,7 @@ struct InspectorPage: View {
     let scene: String
 
     /// The window it is the page of.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         InspectorView(scene: scene, place: .window, wide: true)

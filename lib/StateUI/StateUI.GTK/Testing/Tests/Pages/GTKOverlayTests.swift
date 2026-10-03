@@ -29,7 +29,7 @@ private struct OverlaidPage: View {
 /// A page filled by a button, which tells its scene.
 private struct ScenePage: View {
     let scenes: Received<SceneSession>
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     var body: some View {
         let (scenes, scene) = (self.scenes, self.scene)

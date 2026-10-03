@@ -55,7 +55,7 @@ private final class Settings {
 /// An application that keeps two of its settings, in the platform's own store -
 /// said as it is made, which is when the host asks for them.
 private struct KeepingApp: Application {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     init() {
         application.persistentKeys = [.count, .name]

@@ -8,7 +8,7 @@ struct ColoursPage: View {
     @Environment private var style: SessionStyle
 
     /// The window this is the page of - what it is called, and how big.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         VStack {

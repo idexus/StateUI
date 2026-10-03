@@ -36,7 +36,7 @@ private struct Accent: View {
 /// it - through the application's session, which is in the environment of everything.
 private struct Home: View {
     @Environment private var palette: Palette
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
     @Binding var shade: String
 
     var body: some View {
@@ -170,7 +170,7 @@ private struct CountingApp: Application {
 /// A page that names its window and sizes it as it comes into the tree, and renames it on a press - through the
 /// window's session.
 private struct Naming: View {
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         VStack {
@@ -189,8 +189,8 @@ private struct NamingApp: Application {
 
 /// A page that says how many scenes stand and which windows its own has open.
 private struct Listing: View {
-    @Environment private var application: ApplicationSession
-    @Environment private var scene: SceneSession
+    @Environment(\.application) private var application
+    @Environment(\.scene) private var scene
 
     var body: some View {
         VStack {

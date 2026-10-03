@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The screen the interface is on, as the host last reported it. Resolve it
-/// with `@Environment var display: DeviceDisplay`. Rotating a phone updates
+/// The screen the interface is on, as the host last reported it. Read it as
+/// the device's `display`, `@Environment(\.device)`. Rotating a phone updates
 /// `orientation`, `rotation`, `width` and `height` in one host update.
 public final class DeviceDisplay {
     /// The screen's width in PIXELS - divide by `density` for the points a

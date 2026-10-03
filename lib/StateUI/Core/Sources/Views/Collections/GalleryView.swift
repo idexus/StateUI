@@ -54,7 +54,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// Whether a pointer drag has to move the run: a finger drags a scroller
     /// itself, a mouse does not.
-    @Environment private var device: DeviceInfo
+    @Environment(\.device) private var device
 
     /// Where the run is scrolled to, carried both ways and never read in a
     /// body; `$scrolled.journey.value` is where the run is.
@@ -448,7 +448,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         // On a desktop a pointer drag turns the run: a scroller takes no drag
         // from a mouse, and a finger drags the scroller itself.
-        if device.formFactor == .desktop {
+        if device.info.formFactor == .desktop {
             reader = reader.onPanUpdated { pan in
                 switch pan.phase {
                 case .began:

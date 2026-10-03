@@ -1,10 +1,10 @@
 import StateUI
 
-/// The host's battery - a standard environment provider, resolved by type.
+/// The host's battery - the device's, read by name: `device.battery`.
 struct BatterySample: SampleContent, ExampleContent {
-    /// The provider itself: nothing is passed anywhere - the type is the key,
-    /// and the host keeps the object current.
-    @Environment var battery: Battery
+    /// The device, by its name: nothing is passed anywhere, and the host keeps
+    /// its battery current.
+    @Environment(\.device) var device
 
     static let id = "battery"
     static let title = "Battery"
@@ -13,7 +13,7 @@ struct BatterySample: SampleContent, ExampleContent {
 
     static let code = """
         struct BatteryBadge: View {
-            @Environment var battery: Battery
+            @Environment(\\.device) var device
 
             var body: some View {
                 VStack {
@@ -21,13 +21,13 @@ struct BatterySample: SampleContent, ExampleContent {
                     // builds this closure - and nothing else on the page.
                     DebugInfoLabel()
 
-                    Text(battery.chargeLevel <= 0
+                    Text(device.battery.chargeLevel <= 0
                         ? "the host has not said"
-                        : "\\(Int(battery.chargeLevel * 100))%")
+                        : "\\(Int(device.battery.chargeLevel * 100))%")
 
-                    Text("state · \\(battery.state)")
-                    Text("source · \\(battery.powerSource)")
-                    Text("saver · \\(battery.energySaverStatus)")
+                    Text("state · \\(device.battery.state)")
+                    Text("source · \\(device.battery.powerSource)")
+                    Text("saver · \\(device.battery.energySaverStatus)")
                 }
             }
         }
@@ -37,18 +37,18 @@ struct BatterySample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Text(battery.chargeLevel <= 0
+            Text(device.battery.chargeLevel <= 0
                 ? "the host has not said"
-                : "\(Int(battery.chargeLevel * 100))%")
+                : "\(Int(device.battery.chargeLevel * 100))%")
                 .fontSize(34)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Text("state · \(battery.state)")
+            Text("state · \(device.battery.state)")
                 .fontSize(15)
-            Text("source · \(battery.powerSource)")
+            Text("source · \(device.battery.powerSource)")
                 .fontSize(15)
-            Text("saver · \(battery.energySaverStatus)")
+            Text("saver · \(device.battery.energySaverStatus)")
                 .fontSize(15)
         }
         .spacing(10)

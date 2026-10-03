@@ -5,16 +5,16 @@ import StateUI
 /// `en_001` on Android, and a Windows app's Foundation has no zones at all.
 struct LocaleInfoSample: SampleContent, ExampleContent {
     /// The locale, as the host reports it.
-    @Environment var locale: LocaleInfo
+    @Environment(\.locale) var locale
 
     static let id = "locale"
-    static let title = "LocaleInfo"
+    static let title = "Locale"
     static let summary = "Language, region, time zone and calendar habits - "
         + "the host's answer, on every platform."
 
     static let code = """
         struct LocaleBadge: View {
-            @Environment var locale: LocaleInfo
+            @Environment(\\.locale) var locale
 
             var body: some View {
                 VStack {

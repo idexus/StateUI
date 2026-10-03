@@ -456,7 +456,7 @@ extension State.Storage where Value: StateValue {
         guard let pair, let hostRead, let hostWrite else { return }
 
         // The read that makes this element the theme's reader.
-        _ = StandardEnvironment.app.colorScheme
+        _ = StandardEnvironment.application.info.colorScheme
 
         guard StateImage.bytes(of: pair.carried) != StateImage.bytes(of: hostRead().carried) else { return }
 

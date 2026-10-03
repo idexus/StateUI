@@ -45,8 +45,8 @@ lighter than `gray`, as its CSS value is.
 
 `Color(light:dark:)` is one value that goes wherever a colour goes. It
 travels as both halves, `PropValue.themed`, until the differ builds the
-element wearing it. The differ then picks the half `AppInfo.colorScheme`
-says and records that read against the element.
+element wearing it. The differ then picks the half the application's
+`info.colorScheme` says and records that read against the element.
 
 ```text
   Color(light: .white, dark: .black)          written in a body, a style,
@@ -54,7 +54,7 @@ says and records that read against the element.
        |  .themed(light: .color(white), dark: .color(black))
        v
   the differ builds the element wearing it
-       |  resolvingTheme() reads AppInfo.colorScheme,
+       |  resolvingTheme() reads application.info.colorScheme,
        |  and the element reads the theme from then on
        v
   .color(white) in the patch                  a theme change builds exactly

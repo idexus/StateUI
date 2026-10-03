@@ -135,7 +135,7 @@ private struct LeavingToolScene: Scene {
 }
 
 private struct LeavingOpeningPage: View {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     var body: some View {
         let application = self.application

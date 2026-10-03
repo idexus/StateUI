@@ -107,7 +107,7 @@ private struct AskingScene: Scene {
 }
 
 private struct AskingOpeningPage: View {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     var body: some View {
         let application = self.application

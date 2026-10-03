@@ -922,9 +922,9 @@ func stack(_ children: [Node], id: String? = nil) -> Node {
 /// The provider is the one the host pushes into, which is exactly what a real
 /// theme change writes.
 func withTheme(_ theme: ColorScheme, _ body: () -> Void) {
-    let held = StandardEnvironment.app.colorScheme
-    StandardEnvironment.app.colorScheme = theme
-    defer { StandardEnvironment.app.colorScheme = held }
+    let held = StandardEnvironment.application.info.colorScheme
+    StandardEnvironment.application.info.colorScheme = theme
+    defer { StandardEnvironment.application.info.colorScheme = held }
 
     body()
 }

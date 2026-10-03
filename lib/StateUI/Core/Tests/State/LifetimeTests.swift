@@ -288,7 +288,7 @@ private struct Titling: Application {
 
 /// A page that names the window it is in as it comes into the tree.
 private struct TitlingPage: View {
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         Text("hello").onCreated { window.title = "Titled" }

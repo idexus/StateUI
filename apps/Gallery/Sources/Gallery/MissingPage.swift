@@ -15,7 +15,7 @@ import StateUI
 /// entry renamed and a card not.
 struct MissingPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     let id: String
 

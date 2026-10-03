@@ -20,12 +20,12 @@ final class UIKitEnvironmentTests: XCTestCase {
         }
 
         scene.traitOverrides.userInterfaceStyle = .dark
-        host.settle { StandardEnvironment.app.colorScheme == .dark }
-        XCTAssertEqual(StandardEnvironment.app.colorScheme, .dark)
+        host.settle { StandardEnvironment.application.info.colorScheme == .dark }
+        XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .dark)
 
         scene.traitOverrides.userInterfaceStyle = .light
-        host.settle { StandardEnvironment.app.colorScheme == .light }
-        XCTAssertEqual(StandardEnvironment.app.colorScheme, .light)
+        host.settle { StandardEnvironment.application.info.colorScheme == .light }
+        XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .light)
     }
 
     /// The display is the screen as the scene stands on it now: turned a quarter, it is landscape, its width and
@@ -33,7 +33,7 @@ final class UIKitEnvironmentTests: XCTestCase {
     @MainActor
     func testTheDisplayIsTheScreenAsItIsTurned() throws {
         let scene = try XCTUnwrap(TestScene.scene)
-        let display = StandardEnvironment.display
+        let display = StandardEnvironment.device.display
         let environment = UIKitEnvironment(core: CoreLink())
         defer { Self.turn(scene, to: .portrait) }
 
@@ -89,7 +89,7 @@ final class UIKitEnvironmentTests: XCTestCase {
     /// none, as on the simulator.
     @MainActor
     func testTheBatteryReportedIsSettled() {
-        let battery = StandardEnvironment.battery
+        let battery = StandardEnvironment.device.battery
         let before = HostBatteryInfo(
             chargeLevel: battery.chargeLevel, state: battery.state, powerSource: battery.powerSource,
             energySaverStatus: battery.energySaverStatus)

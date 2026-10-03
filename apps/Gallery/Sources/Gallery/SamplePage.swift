@@ -11,7 +11,7 @@ import StateUI
 /// still is shown as tabs instead - see `shown(_:nav:)` and `SampleTabPage`.
 struct SamplePage: View {
     /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     let sample: Sample
 

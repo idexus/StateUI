@@ -35,25 +35,24 @@ struct KeptSectionPage: View {
 
 /// What the host reported of the device's locale, battery and network, one label each.
 struct EnvironmentPage: View {
-    @Environment var locale: LocaleInfo
-    @Environment var battery: Battery
-    @Environment var connectivity: Connectivity
+    @Environment(\.locale) var locale
+    @Environment(\.device) var device
 
     var body: some View {
         VStack {
             Text("locale \(locale.name) \(locale.timeZone)")
-            Text("battery \(battery.state)")
-            Text("network \(connectivity.networkAccess)")
+            Text("battery \(device.battery.state)")
+            Text("network \(device.connectivity.networkAccess)")
         }
     }
 }
 
 /// A page showing what the device is called.
 struct DevicePage: View {
-    @Environment var device: DeviceInfo
+    @Environment(\.device) var device
 
     var body: some View {
-        Text("device \(device.name)")
+        Text("device \(device.info.name)")
     }
 }
 
@@ -236,7 +235,7 @@ extension AndroidRendererTests {
 
 /// A page that names its window.
 private struct TitlingPage: View {
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
     let title: String
 
     var body: some View {

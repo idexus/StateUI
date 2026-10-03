@@ -60,7 +60,7 @@ enum Styled {
 struct StyledPage: View {
     let inner: any View
 
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     var body: some View {
         let (inner, application) = (self.inner, self.application)

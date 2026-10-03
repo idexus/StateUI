@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The user's language, region, zone and calendar habits, as the host
-/// reports them. Resolve it with `@Environment var locale: LocaleInfo`.
+/// reports them. Read it with `@Environment(\.locale) private var locale`.
 public final class LocaleInfo {
     /// The two-letter language, such as "en" or "pl".
     @State public var language = ""

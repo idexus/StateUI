@@ -3,16 +3,16 @@ import StateUI
 /// The screen, its density and which way it is turned.
 struct DeviceDisplaySample: SampleContent, ExampleContent {
     /// The main display, as the host measures it.
-    @Environment var display: DeviceDisplay
+    @Environment(\.device) var device
 
     static let id = "deviceDisplay"
-    static let title = "DeviceDisplay"
+    static let title = "Display"
     static let summary = "The screen in pixels and points, and which way it "
         + "is turned - live through a rotation."
 
     static let code = """
         struct DisplayBadge: View {
-            @Environment var display: DeviceDisplay
+            @Environment(\\.device) var device
 
             var body: some View {
                 VStack {
@@ -20,18 +20,18 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
                     // this closure.
                     DebugInfoLabel()
 
-                    Text("\\(Int(display.width)) × \\(Int(display.height)) px")
+                    Text("\\(Int(device.display.width)) × \\(Int(device.display.height)) px")
 
-                    Text(display.density > 0
-                        ? "\\(Int(display.width / display.density)) × "
-                            + "\\(Int(display.height / display.density)) pt "
-                            + "at \\(display.density)x"
+                    Text(device.display.density > 0
+                        ? "\\(Int(device.display.width / device.display.density)) × "
+                            + "\\(Int(device.display.height / device.display.density)) pt "
+                            + "at \\(device.display.density)x"
                         : "density not said")
 
-                    Text("\\(display.orientation) · \\(display.rotation)")
+                    Text("\\(device.display.orientation) · \\(device.display.rotation)")
 
-                    Text(display.refreshRate > 0
-                        ? "\\(Int(display.refreshRate)) Hz"
+                    Text(device.display.refreshRate > 0
+                        ? "\\(Int(device.display.refreshRate)) Hz"
                         : "refresh not said")
                 }
             }
@@ -42,24 +42,24 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Text("\(Int(display.width)) × \(Int(display.height)) px")
+            Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
                 .fontSize(28)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Text(display.density > 0
-                ? "\(Int(display.width / display.density)) × "
-                    + "\(Int(display.height / display.density)) pt at "
-                    + "\(display.density)x"
+            Text(device.display.density > 0
+                ? "\(Int(device.display.width / device.display.density)) × "
+                    + "\(Int(device.display.height / device.display.density)) pt at "
+                    + "\(device.display.density)x"
                 : "density not said")
                 .fontSize(15)
 
-            Text("orientation · \(display.orientation)")
+            Text("orientation · \(device.display.orientation)")
                 .fontSize(15)
-            Text("rotation · \(display.rotation)")
+            Text("rotation · \(device.display.rotation)")
                 .fontSize(15)
-            Text(display.refreshRate > 0
-                ? "refresh · \(Int(display.refreshRate)) Hz"
+            Text(device.display.refreshRate > 0
+                ? "refresh · \(Int(device.display.refreshRate)) Hz"
                 : "refresh · not said")
                 .fontSize(15)
         }

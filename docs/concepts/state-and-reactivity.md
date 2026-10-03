@@ -299,7 +299,7 @@ extension PersistentKey {
 }
 
 struct NotesApp: Application {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     init() {
         application.persistentKeys = [.appearance]

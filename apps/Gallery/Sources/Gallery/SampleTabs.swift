@@ -54,7 +54,7 @@ extension Sample {
 /// show IS its state.
 struct SampleTabPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     let sample: Sample
 

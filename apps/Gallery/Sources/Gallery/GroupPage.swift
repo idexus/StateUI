@@ -9,7 +9,7 @@ import StateUI
 /// catalog, not a file.
 struct GroupPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     let group: SampleGroup
 
@@ -17,7 +17,7 @@ struct GroupPage: View {
     let nav: Navigation
 
     /// Which kind of device this is - what decides which samples are listed.
-    @Environment var device: DeviceInfo
+    @Environment(\.device) var device
 
     var body: some View {
         ScrollView {
@@ -35,7 +35,7 @@ struct GroupPage: View {
                 // route rather than as a string in a dictionary.
                 // `shown`, not `samples`: a sample about desktop chrome is not
                 // listed on a phone.
-                ForEach(group.shown(on: device.formFactor), id: \.id) { sample in
+                ForEach(group.shown(on: device.info.formFactor), id: \.id) { sample in
                     Card(sample.title, summary: sample.summary) {
                         nav.push(.sample(sample.id))
                     }

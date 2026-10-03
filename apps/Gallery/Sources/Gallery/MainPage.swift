@@ -23,7 +23,7 @@ struct MainPage: View {
     /// Which kind of device this is, from the standard environment - answered by
     /// the host before the first render, so the first window build already knows
     /// whether to wear a title bar.
-    @Environment private var device: DeviceInfo
+    @Environment(\.device) private var device
 
     /// Every sample there is, already built.
     let catalog: Catalog
@@ -48,11 +48,11 @@ struct MainPage: View {
     /// This window as it runs: what it is called, how big it is, and where it
     /// stands in its life - written in `body` below, the one place the
     /// window is sure to be built.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     /// The galleries' scene this window is in - the one the ⓘ opens the
     /// inspector of.
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     // MARK: - What the user is looking at
 
@@ -89,7 +89,7 @@ struct MainPage: View {
                 if bar.showsSurprise {
                     ToolbarItem("Surprise me")
                         .icon("nav_surprise_chrome.png")
-                        .onClicked { nav.surprise(from: catalog, on: device.formFactor) }
+                        .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
                 }
             }
             // What the window's bar says of the gallery: its name and mark, and
@@ -131,7 +131,7 @@ struct MainPage: View {
                 window.isMinimizable = true
 
                 // On a desktop the menu is a sidebar beside the page.
-                if device.formFactor == .desktop {
+                if device.info.formFactor == .desktop {
                     nav.menuOverlays = false
                 }
 

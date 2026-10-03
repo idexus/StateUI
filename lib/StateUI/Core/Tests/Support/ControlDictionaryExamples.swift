@@ -526,7 +526,7 @@ extension ControlDictionary {
             }
 
             struct MainPage: View {
-                @Environment private var window: WindowSession
+                @Environment(\.window) private var window
 
                 var body: some View {
                     Text("Hello")

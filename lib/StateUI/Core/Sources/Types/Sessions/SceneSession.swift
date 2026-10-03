@@ -3,7 +3,7 @@
 
 /// A scene as it runs: where it stands, and the windows it has open.
 ///
-///     @Environment private var scene: SceneSession
+///     @Environment(\.scene) private var scene
 ///
 ///     Text(scene.phase == .active ? "In front" : "Behind another window")
 ///     Text("\(scene.windows.count) windows")

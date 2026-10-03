@@ -15,7 +15,7 @@
 /// made:
 ///
 ///     struct NotesApp: Application {
-///         @Environment private var application: ApplicationSession
+///         @Environment(\.application) private var application
 ///
 ///         init() {
 ///             application.styles = AppStyles.sheet

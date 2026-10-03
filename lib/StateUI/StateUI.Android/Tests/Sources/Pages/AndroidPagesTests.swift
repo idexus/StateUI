@@ -652,7 +652,7 @@ private struct ScenePage: View {
     let log: Received<String>
     let scenes: Received<SceneSession>
 
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     var body: some View {
         let (scenes, scene) = (self.scenes, self.scene)

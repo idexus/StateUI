@@ -72,7 +72,7 @@ final class OpenScenes: @unchecked Sendable {
     /// Whether the platform opens a window beside another: a desktop and an iPad do, a phone does not, and a host that
     /// has not said does.
     static var opensWindows: Bool {
-        let device = StandardEnvironment.device
+        let device = StandardEnvironment.device.info
 
         switch device.formFactor {
         case .desktop, .unknown: return true

@@ -9,7 +9,7 @@ import StateUI
 /// modifier.
 struct LevelPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     let level: Int
 

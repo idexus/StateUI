@@ -46,7 +46,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
         // Into the application's session as it is made, so the host knows
         // what to read before the first view is built:
-        @Environment private var application: ApplicationSession
+        @Environment(\\.application) private var application
 
         init() {
             application.persistentKeys = [.visits, .who, .shade]

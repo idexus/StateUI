@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The kind of machine the interface is showing on, as the host reports it
-/// before the first render - so the first tree already knows. Resolve it with
-/// `@Environment var device: DeviceInfo`:
+/// before the first render - so the first tree already knows. Read it as the
+/// device's `info`:
 ///
-///     @Environment var device: DeviceInfo
+///     @Environment(\.device) private var device
 ///
 ///     var body: some View {
-///         device.formFactor == .desktop ? wideLayout : phoneLayout
+///         device.info.formFactor == .desktop ? wideLayout : phoneLayout
 ///     }
 ///
 /// The formFactor distinguishes form factors that share an operating system. A

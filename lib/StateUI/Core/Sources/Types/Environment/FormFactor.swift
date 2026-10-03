@@ -6,9 +6,9 @@
 
 /// The kind of device the interface is showing on.
 ///
-///     @Environment var device: DeviceInfo
+///     @Environment(\.device) var device
 ///     …
-///     device.formFactor == .desktop ? wideLayout : phoneLayout
+///     device.info.formFactor == .desktop ? wideLayout : phoneLayout
 ///
 /// It tells a phone from a tablet where the platform alone cannot:
 /// `stateUIPlatform()` is iOS on both. `\(formFactor)` prints the case name.

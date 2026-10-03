@@ -28,10 +28,10 @@ struct MenuPage: View {
     let listsHiddenRow: Bool
 
     /// The device's facts, for the line at the bottom.
-    @Environment private var device: DeviceInfo
+    @Environment(\.device) private var device
 
     /// The window the menu stands in - whether the desktop shows through it.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         Grid {
@@ -75,7 +75,7 @@ struct MenuPage: View {
     /// phone leaves the mark out: its rows need the room to scroll.
     private var header: some View {
         VStack {
-            if device.formFactor != .phone {
+            if device.info.formFactor != .phone {
                 Image("stateui_mark.png")
                     .width(51)
                     .height(51)
@@ -134,7 +134,7 @@ struct MenuPage: View {
 
             // A row that DOES something rather than going somewhere. It needs
             // no type of its own: the same view, with a different handler.
-            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.formFactor) }
+            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
                 .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
         }
     }
@@ -142,7 +142,7 @@ struct MenuPage: View {
     /// What is underneath: the platform compiled in, and the formFactor the host
     /// answered before the first render.
     private var footer: some View {
-        Text("native: \(stateUIPlatform()) · \(device.formFactor)")
+        Text("native: \(stateUIPlatform()) · \(device.info.formFactor)")
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)

@@ -120,7 +120,7 @@ public struct WindowSessionPage: View {
     /// What it writes.
     let write: @Sendable (WindowSession) -> Void
 
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     /// A page writing its window's session as `write` says - again whenever `key` changes - `beside` its words.
     public init(beside: [any View] = [], key: String = "", _ write: @escaping @Sendable (WindowSession) -> Void) {

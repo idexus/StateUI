@@ -229,7 +229,9 @@ per take (scenes.md).
 `.environment(object)` provides an object to a subtree, and
 `@Environment var x: T` on any view below resolves the nearest object of that
 type: the annotation is the key, so there is nothing to spell and nothing to
-collide. Nothing about it crosses to the host.
+collide. What the library offers is read by its name, `@Environment(\.window)`,
+a name for its object's type, so both resolve through the same stack. Nothing
+about it crosses to the host.
 
 ```text
   .environment(obj)   stored on the node, outside the patch
@@ -243,8 +245,8 @@ collide. Nothing about it crosses to the host.
 
 A carried view's inputs cannot see a provider above it replacing its object, so
 the differ compares a snapshot of the visible providers too
-(identity-and-diffing.md). The standard providers - battery, connectivity,
-display, locale, device, application info and the three sessions - are there
+(identity-and-diffing.md). What the library offers - the device, the locale
+and the three sessions - is there
 without anybody writing `.environment()`; a slot nothing filled answers the
 standard provider of its type, which is what lets the application itself
 declare `@Environment`, its `init` and `scene` running outside the differ. A

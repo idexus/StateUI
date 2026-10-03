@@ -35,7 +35,7 @@ final class AppKitEnvironmentTests: XCTestCase {
     /// The battery report says something settled: a level from 0 to 1 and a state, `notPresent` on a Mac with none.
     @MainActor
     func testTheBatteryReportedIsSettled() {
-        let battery = StandardEnvironment.battery
+        let battery = StandardEnvironment.device.battery
         let before = HostBatteryInfo(
             chargeLevel: battery.chargeLevel, state: battery.state, powerSource: battery.powerSource,
             energySaverStatus: battery.energySaverStatus)

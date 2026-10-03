@@ -39,10 +39,10 @@ struct GalleryApp: Application {
     /// by the host before the application is made, so the styles below already
     /// know whether the SearchField wants a touch floor. An APPLICATION's
     /// unfilled slot answers the standard provider directly.
-    @Environment var device: DeviceInfo
+    @Environment(\.device) var device
 
     /// The application as it runs - where its styles and its kept keys go.
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     /// What every gallery shares, written as the application is made.
     init() {
@@ -52,7 +52,7 @@ struct GalleryApp: Application {
         // desktop's - and the application is made at its first need, after the
         // host says the device. A colour in a style follows the theme by itself.
         // See Styles/AppStyles.swift.
-        application.styles = AppStyles.sheet(on: device.formFactor)
+        application.styles = AppStyles.sheet(on: device.info.formFactor)
 
         // What the gallery KEEPS between launches - `PersistentStateSample`'s
         // three settings, and nothing else. Listed because a settings store

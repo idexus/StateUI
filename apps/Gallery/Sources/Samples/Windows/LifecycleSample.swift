@@ -23,7 +23,7 @@ struct LifecycleSample: SampleContent, ExampleContent {
         }
 
         struct MainPage: View {
-            @Environment private var window: WindowSession
+            @Environment(\\.window) private var window
             @State private var menuOpen = false
             let log: WindowLog
 

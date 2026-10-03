@@ -323,4 +323,20 @@ final class EnvironmentTests: XCTestCase {
         renders.revisit(changed: changed)
         XCTAssertEqual(reader.count, 1, "the same provider is not a reason to build the view")
     }
+
+    // MARK: - By name
+
+    /// What the library offers is read by name, each of its objects under one name of `EnvironmentValues`; read by
+    /// its type, it is refused with that name, while an application's own object is read by its type.
+    func testTheLibrarysObjectsAreReadByName() {
+        XCTAssertEqual(
+            StandardEnvironment.scope.compactMap { StandardEnvironment.names[$0.key] }.sorted(),
+            ["application", "device", "locale", "scene", "window"])
+        XCTAssertEqual(StandardEnvironment.names.count, StandardEnvironment.scope.count, "every name names an object")
+        XCTAssertEqual(
+            Environment<WindowSession>.refusal,
+            "WindowSession is the library's: read it by its name, @Environment(\\.window) private var window.")
+        XCTAssertEqual(Environment<Device>.refusal?.contains("@Environment(\\.device)"), true)
+        XCTAssertNil(Environment<Session>.refusal, "an application's own object is read by its type")
+    }
 }

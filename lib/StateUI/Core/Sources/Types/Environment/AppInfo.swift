@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The application, as the host describes it - the manifest facts, and the
-/// one value here that CHANGES: the theme. Resolve it with
-/// `@Environment var app: AppInfo`.
+/// one value here that CHANGES: the theme. Read it as the application's
+/// `info`: `@Environment(\.application) private var app`, then `app.info.name`.
 public final class AppInfo {
     /// The application's display name.
     @State public var name = ""

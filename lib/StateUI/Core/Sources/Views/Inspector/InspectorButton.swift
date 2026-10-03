@@ -7,7 +7,7 @@
 ///     VStack { InspectorButton() }
 public struct InspectorButton: View {
     /// The scene the button is in, whose inspector it shows.
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     /// The button.
     public init() {}

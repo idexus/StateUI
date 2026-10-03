@@ -5,7 +5,7 @@
 /// how its values animate, what it keeps between launches, and opening its
 /// windows.
 ///
-///     @Environment private var application: ApplicationSession
+///     @Environment(\.application) private var application
 ///
 ///     Button("New window").onClicked { try await application.openWindow() }
 ///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
@@ -13,8 +13,8 @@
 /// A session is one opening of something declared: the application from its
 /// start to the end of its process, a scene from its first window opening to
 /// its last closing, a window from `.created` to `.destroying`. Each is in the
-/// environment of everything under it - `ApplicationSession`, `SceneSession`,
-/// `WindowSession` - so a view acts on the one it is in, from a handler, an
+/// environment of everything under it - `\.application`, `\.scene`,
+/// `\.window` - so a view acts on the one it is in, from a handler, an
 /// engine or a task alike.
 ///
 /// Design: docs/design/types/sessions.md#one-opening-of-something-declared
@@ -23,6 +23,10 @@ public final class ApplicationSession {
     /// out of sight, as the host maps its native application and window
     /// lifecycle.
     @State public internal(set) var phase: ApplicationPhase = .active
+
+    /// What the application is, as the host describes it: its name, identifier, version and build, and the theme
+    /// the system asks for.
+    public let info = AppInfo()
 
     /// The sessions of the scenes standing right now, in the order they
     /// opened - read like any state, so a view that shows them is built again

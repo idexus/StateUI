@@ -4,7 +4,7 @@
 /// A window as it runs: its lifecycle, title, requested geometry,
 /// translucency, and close operation.
 ///
-///     @Environment private var window: WindowSession
+///     @Environment(\.window) private var window
 ///
 ///     VStack { … }
 ///         .onCreated {

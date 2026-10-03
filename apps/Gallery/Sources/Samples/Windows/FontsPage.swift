@@ -9,7 +9,7 @@ struct FontsPage: View {
     @Environment private var style: SessionStyle
 
     /// The window this is the page of - what it is called, and how big.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     /// Families every desktop this gallery runs on has; empty is the
     /// platform's own.

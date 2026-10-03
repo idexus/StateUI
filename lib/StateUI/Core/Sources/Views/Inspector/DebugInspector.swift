@@ -12,7 +12,7 @@
 /// first window instead.
 public struct DebugInspector: View {
     /// The scene it inspects - the one it is a window of.
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     /// The inspector's window.
     public init() {}

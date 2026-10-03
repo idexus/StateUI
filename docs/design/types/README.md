@@ -139,7 +139,7 @@ writes them into one provider object each, and a view reads a provider with
        |
        |  HostBoundary.setDeviceInfo(...) and its kin, one per provider
        v
-  Battery  Connectivity  DeviceDisplay  LocaleInfo  DeviceInfo  AppInfo  ApplicationSession
+  Device (info, display, battery, connectivity)  LocaleInfo  ApplicationSession (info, phase)
        |   each property a @State
        |
        v

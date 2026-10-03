@@ -9,7 +9,7 @@ import StateUI
 /// anywhere that can name the case.
 struct HiddenPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     let nav: Navigation
 

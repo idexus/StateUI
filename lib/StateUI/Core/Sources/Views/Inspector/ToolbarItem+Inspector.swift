@@ -5,7 +5,7 @@ extension ToolbarItem {
     /// The button that shows a scene's inspector and hides it again - for a
     /// page's `.toolbar { }`. See `Inspector`.
     ///
-    ///     @Environment private var scene: SceneSession
+    ///     @Environment(\.scene) private var scene
     ///
     ///     VStack { … }
     ///         .toolbar { ToolbarItem.inspector(scene) }

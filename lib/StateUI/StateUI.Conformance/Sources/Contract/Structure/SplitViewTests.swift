@@ -83,7 +83,7 @@
 private struct WideDetail: View {
     let detail: any View
 
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     init(_ detail: any View) {
         self.detail = detail

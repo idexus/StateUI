@@ -3,7 +3,7 @@ import StateUI
 /// Whether the internet is reachable, and by what.
 struct ConnectivitySample: SampleContent, ExampleContent {
     /// The network, as the host last reported it.
-    @Environment var connectivity: Connectivity
+    @Environment(\.device) var device
 
     static let id = "connectivity"
     static let title = "Connectivity"
@@ -12,7 +12,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
 
     static let code = """
         struct SaveButton: View {
-            @Environment var connectivity: Connectivity
+            @Environment(\\.device) var device
 
             var body: some View {
                 VStack {
@@ -20,16 +20,16 @@ struct ConnectivitySample: SampleContent, ExampleContent {
                     // this closure.
                     DebugInfoLabel()
 
-                    Text(connectivity.networkAccess == .internet
-                        ? "online" : "offline · \\(connectivity.networkAccess)")
+                    Text(device.connectivity.networkAccess == .internet
+                        ? "online" : "offline · \\(device.connectivity.networkAccess)")
 
                     // A host may report one entry per ADAPTER, so repeats
                     // are collapsed for display.
-                    Text("via \\(Set(connectivity.connectionProfiles
+                    Text("via \\(Set(device.connectivity.connectionProfiles
                         .map { "\\($0)" }).sorted().joined(separator: ", "))")
 
                     Button("Save to the cloud")
-                        .isEnabled(connectivity.networkAccess == .internet)
+                        .isEnabled(device.connectivity.networkAccess == .internet)
                 }
             }
         }
@@ -40,25 +40,25 @@ struct ConnectivitySample: SampleContent, ExampleContent {
         // entry per adapter, so repeats are collapsed for display and the
         // value stays untouched. Sorted, because a Set's own order changes
         // run to run.
-        let profiles = Set(connectivity.connectionProfiles.map { "\($0)" })
+        let profiles = Set(device.connectivity.connectionProfiles.map { "\($0)" })
             .sorted()
             .joined(separator: ", ")
 
         return VStack {
             DebugInfoLabel()
 
-            Text(connectivity.networkAccess == .internet ? "online" : "offline")
+            Text(device.connectivity.networkAccess == .internet ? "online" : "offline")
                 .fontSize(34)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Text("access · \(connectivity.networkAccess)")
+            Text("access · \(device.connectivity.networkAccess)")
                 .fontSize(15)
             Text("via · \(profiles.isEmpty ? "nothing reported" : profiles)")
                 .fontSize(15)
 
             Button("Save to the cloud")
-                .isEnabled(connectivity.networkAccess == .internet)
+                .isEnabled(device.connectivity.networkAccess == .internet)
                 .background(Palette.accent)
                 .textColor(.white)
                 .shape(.roundedRectangle(8))
@@ -71,7 +71,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("The button above is enabled by a READ - "
-                + "`connectivity.networkAccess == .internet` - so it follows the "
+                + "`device.connectivity.networkAccess == .internet` - so it follows the "
                 + "network with no handler anywhere. On a phone, flip airplane "
                 + "mode and watch this page change twice; on Android that is "
                 + "`adb shell svc wifi disable`.")

@@ -34,7 +34,7 @@ Install the sheet on `ApplicationSession` when the application is made:
 
 ```swift quote
 struct NotesApp: Application {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     init() {
         application.styles = HandbookStyles.sheet
@@ -99,8 +99,8 @@ The differ resolves the theme variant for the element wearing it. A system
 theme change invalidates those resolved uses. The host therefore receives one
 concrete color or resource name and needs no parallel theme binding model.
 
-Use `@Environment var app: AppInfo` only when application logic needs the
-theme as a value. A themed color or image follows the theme without an
+Read `app.info.colorScheme`, with `@Environment(\.application) private var
+app`, only when application logic needs the theme as a value. A themed color or image follows the theme without an
 application branch.
 
 ## Visual states

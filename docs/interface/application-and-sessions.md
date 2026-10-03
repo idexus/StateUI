@@ -14,7 +14,8 @@ WindowGroup, Window             WindowSession
 A declaration answers what it is composed of. Its session answers what the
 particular running instance is called, where it stands in its lifecycle, and
 what actions can be taken on it. Sessions are ordinary objects with `@State`
-properties and are resolved through `@Environment`. The page a view stands on
+properties, read by name: `@Environment(\.application)`, `\.scene`,
+`\.window`. The page a view stands on
 has no session: what it is, its view says by modifier
 ([What a view says of its page](#what-a-view-says-of-its-page)).
 
@@ -54,7 +55,7 @@ application's initializer:
 
 ```swift quote
 struct NotesApp: Application {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     init() {
         application.styles = AppStyles.sheet
@@ -143,7 +144,7 @@ struct AboutScene: Scene {
 }
 
 struct NotesPage: View {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     var body: some View {
         VStack {
@@ -154,8 +155,8 @@ struct NotesPage: View {
 }
 
 struct EditorPage: View {
-    @Environment private var window: WindowSession
-    @Environment private var scene: SceneSession
+    @Environment(\.window) private var window
+    @Environment(\.scene) private var scene
 
     var body: some View {
         VStack {
@@ -274,9 +275,9 @@ The application opens a window by its kind; a session closes the exact
 window or scene it is:
 
 ```swift quote
-@Environment private var application: ApplicationSession
-@Environment private var scene: SceneSession
-@Environment private var window: WindowSession
+@Environment(\.application) private var application
+@Environment(\.scene) private var scene
+@Environment(\.window) private var window
 
 try await application.openWindow()
 try await application.openWindow(.inspector)
@@ -335,7 +336,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 Position and size are four independent optional requests:
 
 ```swift quote
-@Environment private var window: WindowSession
+@Environment(\.window) private var window
 
 window.x = 120
 window.y = 80

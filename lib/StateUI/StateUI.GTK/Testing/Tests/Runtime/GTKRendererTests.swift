@@ -79,7 +79,7 @@ final class GTKRendererTests: XCTestCase {
             _ = GTKRenderer.running { Text("styled") }
             let dark = adw_style_manager_get_dark(adw_style_manager_get_default()) != 0
 
-            XCTAssertEqual(StandardEnvironment.app.colorScheme, dark ? .dark : .light)
+            XCTAssertEqual(StandardEnvironment.application.info.colorScheme, dark ? .dark : .light)
         }
     }
 
@@ -97,7 +97,7 @@ final class GTKRendererTests: XCTestCase {
 
 /// A page that sizes its window as it is made.
 private struct SizedPage: View {
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         let window = self.window
@@ -183,19 +183,18 @@ extension GTKRendererTests {
 
 /// A page saying the locale's name and zone, the battery's state and the network's access.
 private struct MachinePage: View {
-    @Environment private var locale: LocaleInfo
-    @Environment private var battery: Battery
-    @Environment private var connectivity: Connectivity
+    @Environment(\.locale) private var locale
+    @Environment(\.device) private var device
 
     var body: some View {
-        Text("\(locale.name) \(locale.timeZone) \(battery.state) \(connectivity.networkAccess)")
+        Text("\(locale.name) \(locale.timeZone) \(device.battery.state) \(device.connectivity.networkAccess)")
     }
 }
 
 /// A page saying the application's phase and its window's.
 private struct PhasePage: View {
-    @Environment private var application: ApplicationSession
-    @Environment private var window: WindowSession
+    @Environment(\.application) private var application
+    @Environment(\.window) private var window
 
     var body: some View {
         Text("\(application.phase) \(window.phase)")
@@ -222,7 +221,7 @@ private struct GoingScene: Scene {
 /// A page hearing its window go.
 private struct GoingPage: View {
     let gone: Received<String>
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         let gone = self.gone
@@ -234,7 +233,7 @@ private struct GoingPage: View {
 
 /// A label reading its scene's phase, each phase it reads written down.
 private struct ScenePhaseLabel: View {
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     var body: some View {
         Text("\(scene.phase)")

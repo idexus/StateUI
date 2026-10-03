@@ -13,7 +13,7 @@ import XCTest
 private struct OverlaidPage: View {
     let menus: State<Bool>
     let scenes: Received<SceneSession>
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     var body: some View {
         let (menus, scenes, scene) = (self.menus, self.scenes, self.scene)

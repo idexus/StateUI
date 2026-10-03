@@ -1482,8 +1482,8 @@ final class CatalogTests: XCTestCase {
     /// smallest view that can.
     func testACardCrossedDescribesTheCaptionAndNotThePage() throws {
         // The arrows are a desktop's, a finger having the run itself.
-        StandardEnvironment.device.formFactor = .desktop
-        defer { StandardEnvironment.device.formFactor = .unknown }
+        StandardEnvironment.device.info.formFactor = .desktop
+        defer { StandardEnvironment.device.info.formFactor = .unknown }
 
         Renderer.shared.clearInvalidation()
 

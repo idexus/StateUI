@@ -11,7 +11,7 @@ struct SwatchPage: View {
 
     /// The window this is the page of - named for its swatch, and closed from
     /// here.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         VStack {

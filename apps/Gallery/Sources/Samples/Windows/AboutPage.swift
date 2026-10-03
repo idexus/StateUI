@@ -3,10 +3,10 @@ import StateUI
 /// About the gallery: the page of one window for the whole application, in a scene of its own. See `AboutScene`.
 struct AboutPage: View {
     /// The application as it runs - how many scenes stand.
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     /// The window this is the page of - what it is called, how big, and closed from here: its scene ends with it.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         VStack {

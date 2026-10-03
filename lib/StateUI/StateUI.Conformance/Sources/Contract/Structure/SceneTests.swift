@@ -64,7 +64,7 @@
 struct ScenePhasePage: View {
     let log: Received<ScenePhase>
 
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     var body: some View {
         let (log, scene) = (self.log, self.scene)
@@ -78,7 +78,7 @@ struct ScenePhasePage: View {
 struct ApplicationPage: View {
     let sessions: Received<ApplicationSession>
 
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     var body: some View {
         let (sessions, application) = (self.sessions, self.application)

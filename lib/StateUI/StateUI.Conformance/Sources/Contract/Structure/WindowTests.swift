@@ -173,7 +173,7 @@
 struct WindowPhasePage: View {
     let log: Received<WindowPhase>
 
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         let (log, window) = (self.log, self.window)
@@ -211,7 +211,7 @@ struct NotesScene: Scene {
 
 /// The page launch opens in `NotesApplication`, with the buttons that open note 7 and the other scene's window.
 struct NotesPage: View {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     var body: some View {
         let application = self.application

@@ -33,7 +33,7 @@ struct WindowPhaseLog: View {
     let log: WindowLog
 
     /// The window this view stands in, whose phase it follows.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         ColorBox(Color("#00000000"))

@@ -844,9 +844,9 @@ final class GalleryViewTests: XCTestCase {
     /// user could move a run of cards only by the wheel. The formFactor is the
     /// question and not the platform's name: iOS is a phone AND a tablet.
     func testOnlyADesktopTurnsTheRunByDragging() throws {
-        let was = StandardEnvironment.device.formFactor
+        let was = StandardEnvironment.device.info.formFactor
 
-        defer { StandardEnvironment.device.formFactor = was }
+        defer { StandardEnvironment.device.info.formFactor = was }
 
         for (formFactor, drags) in [
             (FormFactor.desktop, true),
@@ -854,7 +854,7 @@ final class GalleryViewTests: XCTestCase {
             (FormFactor.tablet, false),
         ] {
             Renderer.shared.clearStates()
-            StandardEnvironment.device.formFactor = formFactor
+            StandardEnvironment.device.info.formFactor = formFactor
 
             let showing = laid(Renders(), { self.gallery(5).node }).first
 

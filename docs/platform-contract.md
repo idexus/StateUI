@@ -276,17 +276,18 @@ as such, so none is claimed for any host.
 
 ## Standard environment
 
-StateUI's seven standard environment domains, each a set of facts a host
-supplies and keeps current. These carry no mark: no conformance case gives a
-verdict for a domain as a whole, so none is claimed for any host.
+The facts a host supplies and keeps current, read through the environment by
+name - `\.device`, `\.locale`, `\.application`. These carry no mark: no
+conformance case gives a verdict for a set of facts as a whole, so none is
+claimed for any host.
 
-- `Battery`: `chargeLevel`, `state`, `powerSource`, `energySaverStatus`
-- `Connectivity`: `networkAccess`, `connectionProfiles`
-- `DeviceDisplay`: `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate`
-- `LocaleInfo`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`
-- `DeviceInfo`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType`
-- `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`
-- `ApplicationSession`: `phase`
+- `device.battery`: `chargeLevel`, `state`, `powerSource`, `energySaverStatus`
+- `device.connectivity`: `networkAccess`, `connectionProfiles`
+- `device.display`: `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate`
+- `device.info`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType`
+- `locale`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`
+- `application.info`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`
+- `application`: `phase`
 
 The public provider and its fallback values exist whatever a host supplies.
 [Environment](concepts/environment.md) defines that schema; the hosts' pages

@@ -3,7 +3,7 @@ import StateUI
 /// The theme as a value a view can branch on.
 struct AppThemeSample: SampleContent, ExampleContent {
     /// The application's information, where the theme is read.
-    @Environment var app: AppInfo
+    @Environment(\.application) var app
 
     static let id = "appTheme"
     static let title = "Theme"
@@ -12,7 +12,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
 
     static let code = """
         struct ThemeBadge: View {
-            @Environment var app: AppInfo
+            @Environment(\\.application) var app
 
             var body: some View {
                 VStack {
@@ -20,12 +20,12 @@ struct AppThemeSample: SampleContent, ExampleContent {
                     // closure.
                     DebugInfoLabel()
 
-                    Text("\\(app.colorScheme)")
+                    Text("\\(app.info.colorScheme)")
 
                     // LOGIC on the theme - a different WORD, not a colour.
                     // A colour that differs by theme is Color(light:dark:),
                     // which follows by itself.
-                    Text(app.colorScheme == .dark
+                    Text(app.info.colorScheme == .dark
                         ? "lights off - a view can choose calmer artwork"
                         : "lights on - a view can choose vivid artwork")
                 }
@@ -37,12 +37,12 @@ struct AppThemeSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Text("\(app.colorScheme)")
+            Text("\(app.info.colorScheme)")
                 .fontSize(34)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Text(app.colorScheme == .dark
+            Text(app.info.colorScheme == .dark
                 ? "lights off - a view can choose calmer artwork"
                 : "lights on - a view can choose vivid artwork")
                 .fontSize(15)

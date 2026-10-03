@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The environment: an object provided above with `.environment()`, resolved
-// below by type with `@Environment`.
+// The environment: what the library offers, read by name, and an object
+// provided above with `.environment()`, read by its type.
 // Design: docs/design/core/state.md#the-environment
 
 /// One `@Environment` slot, which the differ fills as it walks.
@@ -17,8 +17,14 @@ protocol EnvironmentSlot: AnyObject {
     var filled: AnyObject? { get }
 }
 
-/// An object an ancestor provided with `.environment()`, resolved by its type -
-/// the annotation is the key, so there is no argument to pass.
+/// What the environment holds at a view's place. What the library offers is read
+/// by its name - the application, the scene, the window, the device and the
+/// locale (`EnvironmentValues`):
+///
+///     @Environment(\.window) private var window
+///
+/// An object an ancestor provided with `.environment()` is read by its type -
+/// the annotation is the key, so there is no argument to pass:
 ///
 ///     struct BasketRow: View {
 ///         @Environment var basket: Basket
@@ -30,16 +36,29 @@ protocol EnvironmentSlot: AnyObject {
 ///
 /// A body that reads one of the object's `@State` properties is rebuilt when it
 /// changes; the provider, which only passes the reference, is not. Reading a
-/// type no ancestor provided stops the program with its name, except the
-/// standard providers and sessions, which every tree has.
+/// type no ancestor provided stops the program with its name, and so does
+/// reading one of the library's by its type.
 @propertyWrapper
 public final class Environment<Value: AnyObject>: @unchecked Sendable {
     /// What the differ resolved for this view's place in the tree - written and read
     /// on the UI thread.
     private var resolved: Value?
 
-    /// Declares the slot. The differ fills it before the view's body builds.
-    public init() {}
+    /// Reads what the library offers by its name: `@Environment(\.window)`.
+    public init(_ name: KeyPath<EnvironmentValues, Value>) {}
+
+    /// Reads an object an ancestor provided with `.environment()`, found by its
+    /// type. The differ fills it before the view's body builds.
+    public init() {
+        if let refusal = Self.refusal { preconditionFailure(refusal) }
+    }
+
+    /// Why the library's own object is not read by its type - the name it is read by; nil for any other type.
+    static var refusal: String? {
+        StandardEnvironment.names[ObjectIdentifier(Value.self)].map { name in
+            "\(Value.self) is the library's: read it by its name, @Environment(\\.\(name)) private var \(name)."
+        }
+    }
 
     /// The nearest object of this type an ancestor provided - or, where no walk
     /// filled the slot, the standard provider of the type, which is what lets the

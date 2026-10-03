@@ -12,12 +12,12 @@
 
     /// Updates the appearance used to resolve themed values before rendering.
     public static func setColorScheme(_ theme: ColorScheme) {
-        update(StandardEnvironment.app, \.colorScheme, theme)
+        update(StandardEnvironment.application.info, \.colorScheme, theme)
     }
 
     /// Replaces the standard device report used by application builds.
     public static func setDeviceInfo(_ info: HostDeviceInfo) {
-        let device = StandardEnvironment.device
+        let device = StandardEnvironment.device.info
         update(device, \.formFactor, info.formFactor)
         update(device, \.platform, info.platform)
         update(device, \.model, info.model)
@@ -29,7 +29,7 @@
 
     /// Replaces the standard main-display report used by application builds.
     public static func setDisplayInfo(_ info: HostDisplayInfo) {
-        let display = StandardEnvironment.display
+        let display = StandardEnvironment.device.display
         update(display, \.width, info.width)
         update(display, \.height, info.height)
         update(display, \.density, info.density)
@@ -40,7 +40,7 @@
 
     /// Replaces the standard application-manifest report used by builds.
     public static func setApplicationInfo(_ info: HostApplicationInfo) {
-        let app = StandardEnvironment.app
+        let app = StandardEnvironment.application.info
         update(app, \.name, info.name)
         update(app, \.packageName, info.packageName)
         update(app, \.versionString, info.versionString)
@@ -49,7 +49,7 @@
 
     /// Replaces the standard battery report.
     public static func setBatteryInfo(_ info: HostBatteryInfo) {
-        let battery = StandardEnvironment.battery
+        let battery = StandardEnvironment.device.battery
         update(battery, \.chargeLevel, info.chargeLevel)
         update(battery, \.state, info.state)
         update(battery, \.powerSource, info.powerSource)
@@ -58,7 +58,7 @@
 
     /// Replaces the standard connectivity report.
     public static func setConnectivityInfo(_ info: HostConnectivityInfo) {
-        let connectivity = StandardEnvironment.connectivity
+        let connectivity = StandardEnvironment.device.connectivity
         update(connectivity, \.networkAccess, info.networkAccess)
         update(connectivity, \.connectionProfiles, info.connectionProfiles)
     }

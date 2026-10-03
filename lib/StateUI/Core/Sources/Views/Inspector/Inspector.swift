@@ -7,7 +7,7 @@
 
 /// What each render costs and what it builds, shown inside the application.
 ///
-///     @Environment private var scene: SceneSession
+///     @Environment(\.scene) private var scene
 ///
 ///     VStack { … }
 ///         .toolbar { ToolbarItem.inspector(scene) }
@@ -49,7 +49,7 @@ public enum Inspector {
 
     /// Shows a scene's inspector, and records from now on.
     ///
-    ///     @Environment private var scene: SceneSession
+    ///     @Environment(\.scene) private var scene
     ///
     ///     Button("Inspect").onClicked { Inspector.open(.side, in: scene) }
     ///
@@ -86,7 +86,7 @@ public enum Inspector {
     /// Whether it may dock down the side: a third of a desktop's or a tablet's
     /// window, where it would be all of a phone's.
     static var offersSide: Bool {
-        let formFactor = StandardEnvironment.device.formFactor
+        let formFactor = StandardEnvironment.device.info.formFactor
         return formFactor == .desktop || formFactor == .tablet
     }
 

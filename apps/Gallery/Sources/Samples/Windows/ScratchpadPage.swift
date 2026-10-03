@@ -7,13 +7,13 @@ struct ScratchpadPage: View {
     @State(sceneKey: .scratch) private var text = ""
 
     /// The scratchpads - the scene the page is in, closed whole from here.
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     /// The application as it runs - how many scenes stand.
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     /// The window this is the page of - what it is called, how big, and closed from here.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     var body: some View {
         VStack {

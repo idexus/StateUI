@@ -8,7 +8,7 @@ import StateUI
 /// gallery's own type, so moving the tabs from code is an assignment.
 struct SecondTabPage: View {
     /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     let nav: Navigation
 

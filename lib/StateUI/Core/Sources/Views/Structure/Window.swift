@@ -8,7 +8,7 @@
 /// The window says what it is; the application's session says when it opens, opening its scene first where that
 /// is not open:
 ///
-///     @Environment private var application: ApplicationSession
+///     @Environment(\.application) private var application
 ///
 ///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
 ///

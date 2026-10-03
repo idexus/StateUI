@@ -8,11 +8,11 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     let style: SessionStyle
 
     /// The galleries' scene as it runs: its windows, and closing it whole.
-    @Environment private var scene: SceneSession
+    @Environment(\.scene) private var scene
 
     /// The application as it runs - which opens a window in the scene
     /// declaring it.
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     /// What the last button answered: the window it opened or closed, or what
     /// it was refused with.
@@ -76,8 +76,8 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         // Opening and closing the scene's windows:
 
         let style: SessionStyle
-        @Environment private var scene: SceneSession            // the galleries
-        @Environment private var application: ApplicationSession
+        @Environment(\\.scene) private var scene            // the galleries
+        @Environment(\\.application) private var application
         @State private var said = "Nothing asked yet."
 
         Button("Fonts").onClicked {
@@ -94,7 +94,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         SwitchRow("Keep them on top", style.$floatsTools)
 
         // And a window closes itself, from a page in it:
-        //     @Environment private var window: WindowSession
+        //     @Environment(\\.window) private var window
         //     Button("Done").onClicked { try await window.close() }
 
         // A window per value:

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The battery, as the host last reported it. Resolve it with
-/// `@Environment var battery: Battery`; the values update as the platform
+/// The battery, as the host last reported it. Read it as the device's
+/// `battery`, `@Environment(\.device)`; the values update as the platform
 /// reports, and exactly the views that read them are rebuilt.
 ///
-///     let fake = Battery()
-///     fake.chargeLevel = 0.07
+///     let fake = Device()
+///     fake.battery.chargeLevel = 0.07
 ///     ChildView().environment(fake)
 ///
 /// A host that cannot observe a battery leaves `chargeLevel` at `-1` and the

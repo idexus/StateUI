@@ -4,7 +4,7 @@ import StateUI
 /// application, in a scene of its own.
 struct ScenesSample: SampleContent, ExampleContent {
     /// The application as it runs - which opens a window in the scene declaring it.
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     /// What the last button answered.
     @State private var said = "Nothing asked yet."
@@ -44,8 +44,8 @@ struct ScenesSample: SampleContent, ExampleContent {
 
         struct ScratchpadPage: View {
             @State(sceneKey: .scratch) private var text = ""   // the scene's: every scratchpad window shows it
-            @Environment private var window: WindowSession
-            @Environment private var scene: SceneSession
+            @Environment(\\.window) private var window
+            @Environment(\\.scene) private var scene
 
             var body: some View {
                 VStack {
@@ -56,7 +56,7 @@ struct ScenesSample: SampleContent, ExampleContent {
             }
         }
 
-        @Environment private var application: ApplicationSession
+        @Environment(\\.application) private var application
 
         // A window opens in the scene declaring its kind, which opens with it where it does not stand.
         Button("New scratchpad").onClicked { try await application.openWindow(.scratchpad) }

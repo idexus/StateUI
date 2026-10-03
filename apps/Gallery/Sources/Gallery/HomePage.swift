@@ -22,7 +22,7 @@ import StateUI
 /// times a second.
 struct HomePage: View {
     /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+    @Environment(\.scene) var scene
 
     let catalog: Catalog
 
@@ -33,12 +33,9 @@ struct HomePage: View {
     /// swipes, so the words under the cards follow the hand.
     @State private var chosen = 0
 
-    /// The device's facts, resolved from the standard environment - the
-    /// formFactor for the count, and the footer's word.
-    @Environment var device: DeviceInfo
-
-    /// The screen, which decides whether a phone is on its side.
-    @Environment var display: DeviceDisplay
+    /// The device: its form factor for the count and the footer's word, and its
+    /// screen, which decides whether a phone is on its side.
+    @Environment(\.device) var device
 
     /// How much of the page stands beside the cards.
     ///
@@ -160,7 +157,7 @@ struct HomePage: View {
                 .lineWidth(0)
                 .shape(.roundedRectangle(18))
 
-                SectionTitle("\(catalog.sampleCount(on: device.formFactor)) SAMPLES "
+                SectionTitle("\(catalog.sampleCount(on: device.info.formFactor)) SAMPLES "
                     + "IN \(groups.count) GROUPS")
             }
             .spacing(14)
@@ -197,7 +194,7 @@ struct HomePage: View {
                 // it steps. ON A DESKTOP ONLY: a finger has the run itself and
                 // needs no buttons, where a mouse without a wheel - or a hand
                 // on a keyboard - has no way to turn it at all.
-                if device.formFactor == .desktop {
+                if device.info.formFactor == .desktop {
                     Steps(position: $chosen, count: groups.count)
                 }
 
@@ -220,7 +217,7 @@ struct HomePage: View {
                 // to as many lines as it wants, the count sits under it, and
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
-                Caption(catalog: catalog, position: $chosen, formFactor: device.formFactor)
+                Caption(catalog: catalog, position: $chosen, formFactor: device.info.formFactor)
                     .height(Self.caption)
                     .verticalAlignment(.start)
             }
@@ -243,7 +240,7 @@ struct HomePage: View {
                 // The platform is compiled in; the formFactor - phone, tablet,
                 // desktop - is the host's answer, which is what lets the
                 // catalog list desktop chrome only where it draws.
-                Text("native: \(stateUIPlatform()) · \(device.formFactor)")
+                Text("native: \(stateUIPlatform()) · \(device.info.formFactor)")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
@@ -374,9 +371,9 @@ struct HomePage: View {
     /// of everything above them for nothing. Where there is never room, the
     /// answer is not to ask.
     private var affords: Chrome {
-        guard device.formFactor == .phone else { return .full }
+        guard device.info.formFactor == .phone else { return .full }
 
-        return display.orientation == .landscape ? .cards : .heading
+        return device.display.orientation == .landscape ? .cards : .heading
     }
 
     /// What the room holds, and how tall the run of cards stands in it.

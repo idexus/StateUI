@@ -16,7 +16,7 @@ import XCTest
 /// An application with styles, which is where an application keeps them - written
 /// into the application's session as it is made.
 private struct StyledApp: Application {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     init() {
         application.styles = StyleSheet {
@@ -292,7 +292,7 @@ final class StyleTests: XCTestCase {
     /// handler writes one into a session - follows the theme all the same:
     /// the element wearing it is the theme's reader, whoever wrote it.
     func testAThemedColourWrittenOutsideEveryBuildFollowsTheTheme() {
-        let app = StandardEnvironment.app
+        let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
         app.colorScheme = .light
@@ -315,7 +315,7 @@ final class StyleTests: XCTestCase {
     /// it: the closure that wrote the label read nothing, and does not run
     /// again.
     func testAThemeChangeBuildsTheElementWearingThePairAlone() {
-        let app = StandardEnvironment.app
+        let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
         app.colorScheme = .light
@@ -351,7 +351,7 @@ final class StyleTests: XCTestCase {
     /// theme's reader, so a theme change builds it again and the host is sent
     /// to the other half - the way a pair written on a node crosses.
     func testAColourPairTheHostCarriesFollowsTheTheme() {
-        let app = StandardEnvironment.app
+        let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
         app.colorScheme = .light
@@ -417,7 +417,7 @@ final class StyleTests: XCTestCase {
     /// property, so the change that finds it is a write to `colorScheme`
     /// and nothing else the app object says.
     func testWritingAThemedColourRecordsAReadOfTheTheme() {
-        let app = StandardEnvironment.app
+        let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
         app.colorScheme = .light

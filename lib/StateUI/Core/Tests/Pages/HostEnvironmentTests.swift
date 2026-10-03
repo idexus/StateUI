@@ -20,10 +20,10 @@ import XCTest
 
 /// Reads the battery - the view a report should rebuild.
 private struct BatteryLabel: View {
-    @Environment var battery: Battery
+    @Environment(\.device) var device
 
     var body: some View {
-        ModifiedContent(node: label("\(Int(battery.chargeLevel * 100))% \(battery.state)"))
+        ModifiedContent(node: label("\(Int(device.battery.chargeLevel * 100))% \(device.battery.state)"))
     }
 }
 
@@ -32,10 +32,10 @@ private struct BatteryLabel: View {
 /// heading is written in, and a different one from reading a provider
 /// straight into a label.
 private struct Heading: View {
-    @Environment var display: DeviceDisplay
+    @Environment(\.device) var device
 
     /// Whether the heading fits - the question a page asks of the screen.
-    var fits: Bool { display.orientation != .landscape }
+    var fits: Bool { device.display.orientation != .landscape }
 
     var body: some View {
         ModifiedContent(node: label(fits ? "fits" : "too wide"))
@@ -60,8 +60,8 @@ private final class Builds {
 /// The shape of an application: not a view, built outside any walk, so
 /// nothing ever fills its slots - the unfilled-slot fallback is what answers.
 private struct AppShaped {
-    @Environment var device: DeviceInfo
-    @Environment var application: ApplicationSession
+    @Environment(\.device) var device
+    @Environment(\.application) var application
 }
 
 final class HostEnvironmentTests: XCTestCase {
@@ -74,35 +74,35 @@ final class HostEnvironmentTests: XCTestCase {
         // The providers are process-wide on purpose, so every mutation here
         // is put back - a later test reading the headless defaults must find
         // them.
-        StandardEnvironment.battery.chargeLevel = -1
-        StandardEnvironment.battery.state = .unknown
-        StandardEnvironment.battery.powerSource = .unknown
-        StandardEnvironment.battery.energySaverStatus = .unknown
-        StandardEnvironment.connectivity.networkAccess = .unknown
-        StandardEnvironment.connectivity.connectionProfiles = []
-        StandardEnvironment.device.formFactor = .unknown
-        StandardEnvironment.device.platform = ""
-        StandardEnvironment.device.model = ""
-        StandardEnvironment.device.manufacturer = ""
-        StandardEnvironment.device.name = ""
-        StandardEnvironment.device.versionString = ""
-        StandardEnvironment.device.deviceType = .unknown
-        StandardEnvironment.app.name = ""
-        StandardEnvironment.app.packageName = ""
-        StandardEnvironment.app.versionString = ""
-        StandardEnvironment.app.buildString = ""
-        StandardEnvironment.app.colorScheme = .system
+        StandardEnvironment.device.battery.chargeLevel = -1
+        StandardEnvironment.device.battery.state = .unknown
+        StandardEnvironment.device.battery.powerSource = .unknown
+        StandardEnvironment.device.battery.energySaverStatus = .unknown
+        StandardEnvironment.device.connectivity.networkAccess = .unknown
+        StandardEnvironment.device.connectivity.connectionProfiles = []
+        StandardEnvironment.device.info.formFactor = .unknown
+        StandardEnvironment.device.info.platform = ""
+        StandardEnvironment.device.info.model = ""
+        StandardEnvironment.device.info.manufacturer = ""
+        StandardEnvironment.device.info.name = ""
+        StandardEnvironment.device.info.versionString = ""
+        StandardEnvironment.device.info.deviceType = .unknown
+        StandardEnvironment.application.info.name = ""
+        StandardEnvironment.application.info.packageName = ""
+        StandardEnvironment.application.info.versionString = ""
+        StandardEnvironment.application.info.buildString = ""
+        StandardEnvironment.application.info.colorScheme = .system
         StandardEnvironment.application.phase = .active
 
         // Display providers are process-wide. Restore every field so a later
         // test starts from the headless environment rather than this test's
         // screen.
-        StandardEnvironment.display.width = 0
-        StandardEnvironment.display.height = 0
-        StandardEnvironment.display.density = 0
-        StandardEnvironment.display.orientation = .unknown
-        StandardEnvironment.display.rotation = .unknown
-        StandardEnvironment.display.refreshRate = 0
+        StandardEnvironment.device.display.width = 0
+        StandardEnvironment.device.display.height = 0
+        StandardEnvironment.device.display.density = 0
+        StandardEnvironment.device.display.orientation = .unknown
+        StandardEnvironment.device.display.rotation = .unknown
+        StandardEnvironment.device.display.refreshRate = 0
         StandardEnvironment.locale.language = ""
         StandardEnvironment.locale.region = ""
         StandardEnvironment.locale.name = ""
@@ -190,7 +190,7 @@ final class HostEnvironmentTests: XCTestCase {
             orientation: .landscape, rotation: .rotation90, refreshRate: 60))
 
         XCTAssertEqual(
-            StandardEnvironment.display.orientation, .landscape,
+            StandardEnvironment.device.display.orientation, .landscape,
             "the provider took the report")
 
         let patch = renders.revisit(changed: changed)
@@ -202,9 +202,9 @@ final class HostEnvironmentTests: XCTestCase {
 
     func testAFakeProvidedNearerWins() {
         let renders = Renders()
-        let fake = Battery()
-        fake.chargeLevel = 0.07
-        fake.state = .discharging
+        let fake = Device()
+        fake.battery.chargeLevel = 0.07
+        fake.battery.state = .discharging
 
         Renderer.shared.clearInvalidation()
         let patch = renders.render(
@@ -250,25 +250,25 @@ final class HostEnvironmentTests: XCTestCase {
     func testEveryReportLandsOnItsProvidersProperties() {
         HostBoundary.setBatteryInfo(HostBatteryInfo(
             chargeLevel: 0.42, state: .discharging, powerSource: .battery, energySaverStatus: .off))
-        XCTAssertEqual(StandardEnvironment.battery.chargeLevel, 0.42)
-        XCTAssertEqual(StandardEnvironment.battery.state, .discharging)
-        XCTAssertEqual(StandardEnvironment.battery.powerSource, .battery)
-        XCTAssertEqual(StandardEnvironment.battery.energySaverStatus, .off)
+        XCTAssertEqual(StandardEnvironment.device.battery.chargeLevel, 0.42)
+        XCTAssertEqual(StandardEnvironment.device.battery.state, .discharging)
+        XCTAssertEqual(StandardEnvironment.device.battery.powerSource, .battery)
+        XCTAssertEqual(StandardEnvironment.device.battery.energySaverStatus, .off)
 
         HostBoundary.setConnectivityInfo(HostConnectivityInfo(
             networkAccess: .constrainedInternet, connectionProfiles: [.wifi, .ethernet]))
-        XCTAssertEqual(StandardEnvironment.connectivity.networkAccess, .constrainedInternet)
-        XCTAssertEqual(StandardEnvironment.connectivity.connectionProfiles, [.wifi, .ethernet])
+        XCTAssertEqual(StandardEnvironment.device.connectivity.networkAccess, .constrainedInternet)
+        XCTAssertEqual(StandardEnvironment.device.connectivity.connectionProfiles, [.wifi, .ethernet])
 
         HostBoundary.setDisplayInfo(HostDisplayInfo(
             width: 2_400, height: 1_080, density: 2,
             orientation: .landscape, rotation: .rotation180, refreshRate: 120))
-        XCTAssertEqual(StandardEnvironment.display.width, 2_400)
-        XCTAssertEqual(StandardEnvironment.display.height, 1_080)
-        XCTAssertEqual(StandardEnvironment.display.density, 2)
-        XCTAssertEqual(StandardEnvironment.display.orientation, .landscape)
-        XCTAssertEqual(StandardEnvironment.display.rotation, .rotation180)
-        XCTAssertEqual(StandardEnvironment.display.refreshRate, 120)
+        XCTAssertEqual(StandardEnvironment.device.display.width, 2_400)
+        XCTAssertEqual(StandardEnvironment.device.display.height, 1_080)
+        XCTAssertEqual(StandardEnvironment.device.display.density, 2)
+        XCTAssertEqual(StandardEnvironment.device.display.orientation, .landscape)
+        XCTAssertEqual(StandardEnvironment.device.display.rotation, .rotation180)
+        XCTAssertEqual(StandardEnvironment.device.display.refreshRate, 120)
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw",
@@ -285,22 +285,22 @@ final class HostEnvironmentTests: XCTestCase {
         HostBoundary.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop, platform: "macOS", model: "Mac14,9", manufacturer: "Apple",
             name: "Studio", versionString: "26.0", deviceType: .physical))
-        XCTAssertEqual(StandardEnvironment.device.formFactor, .desktop)
-        XCTAssertEqual(StandardEnvironment.device.platform, "macOS")
-        XCTAssertEqual(StandardEnvironment.device.model, "Mac14,9")
-        XCTAssertEqual(StandardEnvironment.device.manufacturer, "Apple")
-        XCTAssertEqual(StandardEnvironment.device.name, "Studio")
-        XCTAssertEqual(StandardEnvironment.device.versionString, "26.0")
-        XCTAssertEqual(StandardEnvironment.device.deviceType, .physical)
+        XCTAssertEqual(StandardEnvironment.device.info.formFactor, .desktop)
+        XCTAssertEqual(StandardEnvironment.device.info.platform, "macOS")
+        XCTAssertEqual(StandardEnvironment.device.info.model, "Mac14,9")
+        XCTAssertEqual(StandardEnvironment.device.info.manufacturer, "Apple")
+        XCTAssertEqual(StandardEnvironment.device.info.name, "Studio")
+        XCTAssertEqual(StandardEnvironment.device.info.versionString, "26.0")
+        XCTAssertEqual(StandardEnvironment.device.info.deviceType, .physical)
 
         HostBoundary.setApplicationInfo(HostApplicationInfo(
             name: "Gallery", packageName: "com.example.gallery", versionString: "1.2", buildString: "34"))
         HostBoundary.setColorScheme(.dark)
-        XCTAssertEqual(StandardEnvironment.app.name, "Gallery")
-        XCTAssertEqual(StandardEnvironment.app.packageName, "com.example.gallery")
-        XCTAssertEqual(StandardEnvironment.app.versionString, "1.2")
-        XCTAssertEqual(StandardEnvironment.app.buildString, "34")
-        XCTAssertEqual(StandardEnvironment.app.colorScheme, .dark)
+        XCTAssertEqual(StandardEnvironment.application.info.name, "Gallery")
+        XCTAssertEqual(StandardEnvironment.application.info.packageName, "com.example.gallery")
+        XCTAssertEqual(StandardEnvironment.application.info.versionString, "1.2")
+        XCTAssertEqual(StandardEnvironment.application.info.buildString, "34")
+        XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .dark)
 
         HostBoundary.setApplicationPhase(.inactive)
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)

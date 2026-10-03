@@ -4,7 +4,7 @@ import StateUI
 /// value in the application takes when nothing nearer says another.
 struct ApplicationSessionSample: SampleContent, ExampleContent {
     /// The application as it runs - one for the whole process.
-    @Environment var application: ApplicationSession
+    @Environment(\.application) var application
 
     @State private var wide = false
 
@@ -23,7 +23,7 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
     }
 
     static let code = """
-        @Environment private var application: ApplicationSession
+        @Environment(\\.application) private var application
         @State private var wide = false
 
         static let laws = ["Standard", "Spring", "None"]

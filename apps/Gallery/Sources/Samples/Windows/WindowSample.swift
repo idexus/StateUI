@@ -2,7 +2,7 @@ import StateUI
 
 /// Native window identity, geometry, constraints, operations and translucency.
 struct WindowSample: SampleContent, ExampleContent {
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     @State private var renames = 0
     @State private var maximizable = true
@@ -17,7 +17,7 @@ struct WindowSample: SampleContent, ExampleContent {
 
     static let code = """
         struct MainPage: View {
-            @Environment private var window: WindowSession
+            @Environment(\\.window) private var window
 
             var body: some View {
                 HomePage()
@@ -38,7 +38,7 @@ struct WindowSample: SampleContent, ExampleContent {
             }
         }
 
-        @Environment private var window: WindowSession
+        @Environment(\\.window) private var window
         @State private var maximizable = true
         @State private var minimizable = true
         @State private var translucent = false

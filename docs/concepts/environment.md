@@ -1,9 +1,10 @@
 # Environment, platform facts, and time
 
-`@Environment` resolves a shared reference by its Swift type. It is the route
-for application models supplied to a subtree, platform facts supplied by a
-host, and the runtime session belonging to the application, scene, window, or
-page.
+`@Environment` reads a shared reference at a view's place. What the library
+offers - the application, scene and window sessions, the device the
+application runs on, and the user's locale - is read by its name,
+`@Environment(\.window)`. An application's own model, supplied to a subtree, is
+read by its Swift type.
 
 Environment resolution does not introduce another reactive system. The
 resolved object's `@State` properties use the same read tracking, bindings, and
@@ -83,21 +84,21 @@ replacement through an explicit binding owned by that ancestor.
 
 ## Overriding one branch
 
-The same rule applies to standard providers. A test, preview, or controlled
-subtree can provide a nearer instance:
+The same rule applies to what the library offers. A test, preview, or
+controlled subtree can provide a nearer device:
 
 ```swift
 struct SavePanel: View {
-    @Environment private var connectivity: Connectivity
+    @Environment(\.device) private var device
 
     var body: some View {
         Button("Save")
-            .isEnabled(connectivity.networkAccess == .internet)
+            .isEnabled(device.connectivity.networkAccess == .internet)
     }
 }
 
-let offline = Connectivity()
-offline.networkAccess = .none
+let offline = Device()
+offline.connectivity.networkAccess = .none
 
 SavePanel().environment(offline)
 ```
@@ -105,31 +106,42 @@ SavePanel().environment(offline)
 Only that branch sees the override. The process-wide provider remains the
 answer everywhere else.
 
-## Standard environment
+## What the library offers
 
-Every tree starts with one process-wide instance of each standard provider.
+Every tree starts with one process-wide instance of each, read by its name.
 The host seeds the facts it knows before the first render and updates changing
 facts on its UI thread. Each field is `@State`, so reading one field subscribes
-to that field rather than to its whole provider.
+to that field rather than to the whole object.
 
-There are seven host domains. Their ordered property schemas are part of
+| Name | Type | What it holds |
+| --- | --- | --- |
+| `\.application` | `ApplicationSession` | the application's facts (`info`), its phase, styles, motion, kept keys and open scenes |
+| `\.scene` | `SceneSession` | the scene the view stands in |
+| `\.window` | `WindowSession` | the window the view stands in |
+| `\.device` | `Device` | what the device is (`info`), its `display`, `battery` and `connectivity` |
+| `\.locale` | `LocaleInfo` | the user's language, region, zone and conventions |
+
+The facts the host reports, and their ordered property schemas, are part of
 StateUI's contract:
 
-| Domain and type | Properties | Meaning and initial fallback |
+| Read as - type | Properties | Meaning and initial fallback |
 | --- | --- | --- |
-| battery — `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; level is `-1`, enums are `.unknown` until reported |
-| connectivity — `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
-| display — `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
-| locale — `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric` | host-normalized language, region, IANA zone, clock and calendar conventions; text starts empty, the clock starts 12-hour, the week on Sunday, and units metric |
-| device — `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
-| app — `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme` | manifest identity and live requested appearance; text starts empty and theme `.system` |
-| application — `ApplicationSession` | `phase` | process-wide visibility state; the host maps lifecycle to `.active`, `.inactive`, or `.background` |
+| `device.battery` - `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; level is `-1`, enums are `.unknown` until reported |
+| `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
+| `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
+| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
+| `locale` - `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric` | host-normalized language, region, IANA zone, clock and calendar conventions; text starts empty, the clock starts 12-hour, the week on Sunday, and units metric |
+| `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme` | manifest identity and live requested appearance; text starts empty and theme `.system` |
+| `application.phase` - `ApplicationPhase` | | process-wide visibility state; the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
-A host may be unable to observe a domain. The documented fallback remains
+A host may be unable to observe a fact. The documented fallback remains
 visible in that case; an empty string or `.unknown` is data, not a reason to
-guess. A malformed complete domain update is refused rather than partially
+guess. A malformed complete update is refused rather than partially
 applied. Closed enum values unknown to the runtime degrade to `.unknown` while
-open vocabulary, such as `DeviceInfo.platform`, stays authored text.
+open vocabulary, such as `device.info.platform`, stays authored text.
+
+Each of these is read by its name only: `@Environment var device: Device` stops
+the program as the view is made, naming `@Environment(\.device)`.
 
 The closed vocabulary used by these fields is:
 
@@ -157,50 +169,49 @@ proves a capability, rely on the documented fallback.
 
 ```swift
 struct RuntimeSummary: View {
-    @Environment private var device: DeviceInfo
-    @Environment private var display: DeviceDisplay
-    @Environment private var locale: LocaleInfo
-    @Environment private var app: AppInfo
+    @Environment(\.device) private var device
+    @Environment(\.locale) private var locale
+    @Environment(\.application) private var app
 
     var body: some View {
         VStack {
-            Text("\(app.name) \(app.versionString)")
-            Text("\(device.platform) · \(device.formFactor)")
-            Text("\(Int(display.width / max(display.density, 1))) points wide")
+            Text("\(app.info.name) \(app.info.versionString)")
+            Text("\(device.info.platform) · \(device.info.formFactor)")
+            Text("\(Int(device.display.width / max(device.display.density, 1))) points wide")
             Text("\(locale.language)-\(locale.region) · \(locale.timeZone)")
         }
     }
 }
 ```
 
-Use `DeviceInfo.formFactor` for a semantic form-factor decision, never for
+Use `device.info.formFactor` for a semantic form-factor decision, never for
 layout: a window can be smaller than its display, and resized. Lay out by the
 room a view is given - `.onFrameChanged` and `GeometryReader`
 ([layout](../interface/layout.md)) - and read display points (`pixels / density`) for the
-screen itself, handling zero density before the first host report. Use `AppInfo.colorScheme` only when logic itself branches on the
+screen itself, handling zero density before the first host report. Use `app.info.colorScheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
-`Connectivity.networkAccess == .internet` means ordinary internet access.
+`device.connectivity.networkAccess == .internet` means ordinary internet access.
 `.constrainedInternet` describes a route with a portal or another constraint,
 and `connectionProfiles` may contain more than one active transport.
 
 ## Runtime sessions are environments
 
-Three session types are available by the same mechanism:
+The three sessions are read the same way, by name:
 
-| Session | Lifetime and ownership |
+| Name - session | Lifetime and ownership |
 | --- | --- |
-| `ApplicationSession` | one process; styles, default motion, persistent keys and storage, application phase, and open scenes |
-| `SceneSession` | one application scene; scene phase, its windows, and scene/window operations |
-| `WindowSession` | one native window; lifecycle, title, geometry requests, chrome, modal stack, and close operation |
+| `\.application` - `ApplicationSession` | one process; its facts, styles, default motion, persistent keys and storage, application phase, and open scenes |
+| `\.scene` - `SceneSession` | one application scene; scene phase, its windows, and scene/window operations |
+| `\.window` - `WindowSession` | one native window; lifecycle, title, geometry requests, chrome, modal stack, and close operation |
 
 Each scene and window provides its own session nearer than the inert
 fallback instance. A descendant therefore acts on the session it is inside:
 
 ```swift
 struct WindowHeading: View {
-    @Environment private var window: WindowSession
-    @Environment private var application: ApplicationSession
+    @Environment(\.window) private var window
+    @Environment(\.application) private var application
 
     var body: some View {
         VStack {

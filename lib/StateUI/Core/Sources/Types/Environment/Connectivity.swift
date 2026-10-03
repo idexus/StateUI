@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The network, as the host last reported it. Resolve it with
-/// `@Environment var connectivity: Connectivity`.
+/// The network, as the host last reported it. Read it as the device's
+/// `connectivity`, `@Environment(\.device)`.
 ///
 /// A host that cannot observe reachability reports `.unknown` and an empty
 /// profile list.

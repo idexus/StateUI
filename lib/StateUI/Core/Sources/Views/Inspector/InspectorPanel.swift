@@ -10,13 +10,13 @@ struct InspectorPanel: View {
     /// Where it docks.
     let place: Inspector.Place
 
-    @Environment private var device: DeviceInfo
+    @Environment(\.device) private var device
 
     var body: some View {
         // Read here, so a panel folding or opening out is the one view built
         // again - the window under it standing as it was.
         let collapsed = place == .bottom && InspectorModel.shared.collapsed.contains(scene)
-        let wide = place == .bottom && device.formFactor != .phone && device.formFactor != .unknown
+        let wide = place == .bottom && device.info.formFactor != .phone && device.info.formFactor != .unknown
 
         let panel = ZStack {
             if collapsed {
