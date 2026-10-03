@@ -239,7 +239,9 @@ turned card's corners. A card's rectangle stays its stated size, so its content
 is laid out in the width the author wrote it for and drawn smaller, where a
 shrinking rectangle would keep the words their size and cut them off. It grows
 only to 1.375 times its stated size - past that the room is simply room, and
-the run stands in its middle - which also keeps the arithmetic bounded.
+the run stands in its middle - which also keeps the arithmetic bounded. Until
+the platform reports the room the run places no card: each stands as it is,
+never drawn at a scale worked out from a room of nothing.
 
 Far cards go into the background by a fade or a shade. A card faded to a half
 shows whatever is behind it, which in the wheel and the fan is the next card

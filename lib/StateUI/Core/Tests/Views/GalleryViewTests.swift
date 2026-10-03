@@ -339,6 +339,30 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(scale(showing, 0), 1.1 * 0.75, accuracy: 0.001)
     }
 
+    /// A CARD STANDS AT ITS STATED SIZE before the run places it. A card the
+    /// run has not placed yet is laid out as it is - and one with no size of
+    /// its own would fill the whole room, its pictures drawn that large.
+    func testACardStandsAtItsStatedSizeBeforeTheRunPlacesIt() {
+        // Each card in the wrapper the run places, the card's own inside it.
+        let cards = board(Renders().render(gallery(3).node)).children.compactMap(\.children.first)
+
+        XCTAssertEqual(cards.count, 3)
+        for card in cards {
+            XCTAssertEqual(card.properties[.width], .number(176))
+            XCTAssertEqual(card.properties[.height], .number(248))
+        }
+    }
+
+    /// A ROOM NOT YET MEASURED PLACES NO CARD: until the platform says how big
+    /// the room is, every card stands as it is, never drawn at a scale worked
+    /// out from nothing.
+    func testARoomNotYetMeasuredPlacesNoCard() {
+        let renders = Renders()
+        let showing = laid(renders, { self.gallery(3).node }, width: 0, height: 0).patch
+
+        XCTAssertEqual(placements(showing).count, 0)
+    }
+
     /// AND A LARGE ROOM SHOWS IT LARGER, up to a point. The size a card is
     /// told is the shape of one and the size it stands at in a room exactly
     /// right for it; a bigger room draws a bigger card, by whichever side has

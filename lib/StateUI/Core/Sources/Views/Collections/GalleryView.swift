@@ -355,7 +355,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         }
 
         // The face in a wrapper of its own, so the press on it is not overwritten
-        // by the placement written on the wrapper every frame.
+        // by the placement written on the wrapper every frame. The wrapper is the
+        // card's size: a card the run has not placed yet would fill the room.
+        let (width, height) = (cardWidth, cardHeight)
         var run = PlacedLayout(items, id: source.path) { item in
             Grid {
                 ModifiedContent(node: make(item))
@@ -363,6 +365,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                     .scale(dips.wrappedValue == item[keyPath: path] ? Self.dip : 1)
                     .motion(Self.pressing)
             }
+            .width(width)
+            .height(height)
         }
 
         // The shade sits beside the press: the card that dips wears none.
@@ -375,8 +379,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             .frame($room)
             // The arithmetic runs again whenever the hand or the room moves.
             .engine(following: $scrolled, $room) { _ in
+                // A room not yet measured places nothing: every card stands as it is until it is.
+                let measured = room.width > 0 && room.height > 0
                 placements = PlacedRun(
-                    (0..<count).map { place($0, count, room, shape) },
+                    measured ? (0..<count).map { place($0, count, room, shape) } : [],
                     // Following the hand, placements arrive; a shape change animates.
                     motion: travels ? .inherited : .none)
 
