@@ -83,6 +83,7 @@ final class AppKitFocusTests: XCTestCase {
     }
 
     /// Whether `field` is being edited in `window`: the window's field editor works for it.
+    @MainActor
     private static func edits(_ field: NSTextField, in window: NSWindow) -> Bool {
         (window.firstResponder as? NSText)?.delegate === field
     }
