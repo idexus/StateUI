@@ -70,7 +70,12 @@ struct WindowSample: SampleContent, ExampleContent {
             .onCreated { translucent = window.isTranslucent == true }
         """
 
-    var notes: (any View)? { nil }
+    var notes: (any View)? {
+        Text("On an iPad and a phone the system sizes and places a window - the user drags its corner - "
+            + "so the size, the place, maximizing, minimizing and translucency do nothing there.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
 
     var body: some View {
         VStack {
