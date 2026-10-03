@@ -63,6 +63,8 @@ enum WinUIRealization {
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
         .complete("MenuBar", "order"),
+        .unrealized("ModalStack", "accessibilityIdentifier", why: "A modal stack has no view of its own to name: its "
+            + "pages stand in the window, each named by its own identifier."),
         .complete("ModalStack", "popped"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),

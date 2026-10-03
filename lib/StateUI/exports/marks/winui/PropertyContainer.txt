@@ -13,6 +13,7 @@ ItemsView.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: 🧩
 MenuItem.accessibilityIdentifier: ✅
+ModalStack.accessibilityIdentifier: not realized
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
@@ -35,4 +36,5 @@ TextSpan.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: ✅
 ToolbarItem.accessibilityIdentifier: ✅
 VStack.accessibilityIdentifier: ✅
+WebView.accessibilityIdentifier: ✅
 ZStack.accessibilityIdentifier: ✅
