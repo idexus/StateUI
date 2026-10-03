@@ -13,7 +13,6 @@ ItemsView.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: ✅
 MenuItem.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.
-ModalStack.accessibilityIdentifier: cannot read accessibilityIdentifier of ModalStack - AppKit's driver has no path for it yet
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅

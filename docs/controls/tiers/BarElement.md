@@ -21,8 +21,6 @@ struct MainPage: View {
 }
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
-
 Worn by: [ModalStack](../ModalStack.md) · [NavigationStack](../NavigationStack.md) · [SplitView](../SplitView.md) · [TabView](../TabView.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/BarElementContract.swift`.

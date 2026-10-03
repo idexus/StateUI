@@ -20,7 +20,7 @@ struct MainPage: View {
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md)
+Inherits: [BarElement](tiers/BarElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -39,12 +39,12 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (7)</th><th>Realization</th></tr></thead>
+<thead><tr><th>Host</th><th>Created</th><th>Members (6)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>4 ✅</td><td>sheet <code>NSWindow</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>4 ✅ · 2 –</td><td><code>present(_:animated:)</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>3 ✅ · 2 –</td><td>full-screen <code>Dialog</code> (?)</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅</td><td><code>ContentDialog</code> (?)</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>4 ✅ · 3 –</td><td>modal <code>GtkWindow</code>; libadwaita <code>AdwDialog</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>4 ✅ · 2 –</td><td>modal <code>GtkWindow</code>; libadwaita <code>AdwDialog</code></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;dialog&gt;</code> with <code>showModal()</code></td></tr>
 <tr><td colspan="3">no host yet</td></tr></tbody>
 </table>
@@ -56,16 +56,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/ModalStackCo
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>popped</code></td><td>event</td><td><code>Int</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
-</table>
-
-## From [PropertyContainer](tiers/PropertyContainer.md)
-
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
-
-<table>
-<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center"></td><td align="center">–</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read accessibilityIdentifier of ModalStack - AppKit's driver has no path for it yet<br>UIKit: cannot read accessibilityIdentifier of ModalStack - UIKit's driver has no path for it yet<br>Android Views: cannot read accessibilityIdentifier of ModalStack - Android's driver has no path for it yet<br>WinUI 3: not realized<br>GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr></tbody>
 </table>
 
 ## From [BarElement](tiers/BarElement.md)

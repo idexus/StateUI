@@ -13,7 +13,6 @@ ItemsView.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: ✅
 MenuItem.accessibilityIdentifier: ✅
-ModalStack.accessibilityIdentifier: cannot read accessibilityIdentifier of ModalStack - UIKit's driver has no path for it yet
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅

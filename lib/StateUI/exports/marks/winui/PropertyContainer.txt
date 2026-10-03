@@ -13,7 +13,6 @@ ItemsView.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: 🧩
 MenuItem.accessibilityIdentifier: ✅
-ModalStack.accessibilityIdentifier: not realized
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅

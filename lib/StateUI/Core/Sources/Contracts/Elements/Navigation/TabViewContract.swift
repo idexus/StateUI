@@ -11,8 +11,11 @@ public enum TabViewContract: ElementContract {
     /// StateUI's state contract.
     public static let layer: ElementLayer = .adaptive
 
-    /// Tabs have a bar, and are shown as a page with a title and an icon.
-    public static let tiers: [any Contract.Type] = [BarElementContract.self, PageElementContract.self]
+    /// Tabs have a bar, are shown as a page with a title and an icon, and
+    /// automation finds them by their name.
+    public static let tiers: [any Contract.Type] = [
+        BarElementContract.self, PageElementContract.self, PropertyContainerContract.self,
+    ]
 
     /// Which tab is showing, counted from zero.
     public static let selectedTab = ElementProperty<Self, Int>(

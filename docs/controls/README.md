@@ -82,7 +82,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Menu](Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [MenuBar](MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ | 3 ✅ · 3 – |  |
-| [ModalStack](ModalStack.md) | 7 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ | 4 ✅ · 3 – |  |
+| [ModalStack](ModalStack.md) | 6 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ | 4 ✅ · 2 – |  |
 | [NavigationStack](NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 4 ✅ · 3 – |  |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [Page](Page.md) | 11 | 7 ✅ | 11 ✅ | 8 ✅ · 1 – | 9 ✅ |  |  |
@@ -97,8 +97,8 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ | 22 ✅ |  |  |
 | ✅ |  | 67 | 70 | 42 | 110 | 53 |  |
 | ✓ |  | 15 | 12 | 10 | 0 | 1 |  |
-| – |  | 1 | 9 | 13 | 0 | 16 |  |
-| **Met** | 122 | **83** | **91** | **65** | **110** | **70** |  |
+| – |  | 1 | 9 | 13 | 0 | 15 |  |
+| **Met** | 121 | **83** | **91** | **65** | **110** | **69** |  |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 <!-- structure:end -->
 

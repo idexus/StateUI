@@ -13,7 +13,6 @@ ItemsView.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: 🧩
 MenuItem.accessibilityIdentifier: – An Android menu entry holds no identifier: automation finds it by its title.
-ModalStack.accessibilityIdentifier: cannot read accessibilityIdentifier of ModalStack - Android's driver has no path for it yet
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
