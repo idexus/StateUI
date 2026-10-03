@@ -11,10 +11,10 @@ private struct LoadingList: ExampleContent {
 
         Grid {
             HStack {
-                Text(loading ? "Loading" : "\\(count) items")
                 Button("Start over")
                     .isEnabled(count > 30)
                     .onClicked { count = 30 }
+                Text(loading ? "Loading" : "\\(count) items")
             }
             .gridRow(0)
 
@@ -41,16 +41,16 @@ private struct LoadingList: ExampleContent {
     var body: some View {
         Grid {
             HStack {
-                Text(loading ? "Loading" : "\(count) items")
-                    .fontSize(13)
-                    .textColor(Palette.accent)
-                    .verticalAlignment(.center)
-
                 Button("Start over")
                     .fontSize(13)
                     .padding(horizontal: 16, vertical: 6)
                     .isEnabled(count > 30)
                     .onClicked { count = 30 }
+
+                Text(loading ? "Loading" : "\(count) items")
+                    .fontSize(13)
+                    .textColor(Palette.accent)
+                    .verticalAlignment(.center)
             }
             .spacing(12)
             .gridRow(0)
