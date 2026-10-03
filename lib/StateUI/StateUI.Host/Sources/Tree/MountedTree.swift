@@ -11,7 +11,8 @@
     /// The element's place in its parent changed, so the parent arranges again.
     public var arrangement: Bool
 
-    /// The window's chrome shows what moved: a window's frame, a bar's colours (`WindowChrome.follows`).
+    /// The window's chrome shows what moved: a window's frame, a bar's colours, a page's words on its bar
+    /// (`WindowChrome.follows`).
     public var windowChrome: Bool
 
     /// An impact of the parts named.

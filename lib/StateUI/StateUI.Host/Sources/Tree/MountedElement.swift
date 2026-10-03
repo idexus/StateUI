@@ -408,7 +408,7 @@
             content: true,
             arrangement: !native.presentsView
                 || !changed.subtracting(ownPlacementRun).isDisjoint(with: Self.arrangedProperties),
-            windowChrome: WindowChrome.follows(type))
+            windowChrome: WindowChrome.follows(type, changed: changed))
     }
 
     /// The value `property` presents: a running animation's, else the described or bound one.

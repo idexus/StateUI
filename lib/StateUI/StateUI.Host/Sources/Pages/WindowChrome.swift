@@ -70,10 +70,10 @@
         }
     }
 
-    /// Whether the chrome shows what an element of `type` moves on a frame: a window's frame, an arrangement's bar
-    /// colours - the chrome is composed again as they move.
-    public static func follows(_ type: NodeType) -> Bool {
-        followed.contains(type)
+    /// Whether the chrome shows what an element of `type` moves on a frame in `changed`: a window's frame, an
+    /// arrangement's bar colours, a page's words on its bar - the chrome is composed again as they move.
+    public static func follows(_ type: NodeType, changed: Set<Prop>) -> Bool {
+        followed.contains(type) || type == .page && !changed.isDisjoint(with: pageValues)
     }
 
     private static let followed: Set<NodeType> = [.window, .navigationStack, .tabView, .splitView, .modalStack]

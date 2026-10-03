@@ -368,6 +368,24 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertTrue(bar.windowChrome, "a bar's colour is the window's chrome")
     }
 
+    /// What of a page the chrome shows - its title, its way back, its bar, the back button's words - moved from a
+    /// state composes the window's chrome again, on every host; another of its values does not.
+    @MainActor
+    func testAPagesWordsOnItsBarMovedComposeTheChrome() {
+        let (tree, _) = Self.tree(viewless: [])
+        var page = HostPatch(id: .manual("page"), type: .page)
+        page.properties = [.title: .string("Notes")]
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([page])
+        tree.apply(stack, complete: true)
+        let pageMount = tree.root!.children[0].mount
+
+        for value in WindowChrome.pageValues.sorted() {
+            XCTAssertTrue(tree.present(states: [:], properties: [pageMount: [value]]).windowChrome, "\(value)")
+        }
+        XCTAssertFalse(tree.present(states: [:], properties: [pageMount: [.opacity]]).windowChrome, "its opacity")
+    }
+
     /// A value said from a state crosses as lanes and is read as the type its member declares: every Boolean member
     /// of every contract as a Boolean, every colour as a colour, every closed vocabulary as its case.
     @MainActor

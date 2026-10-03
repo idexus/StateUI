@@ -92,7 +92,9 @@ of the elements around it is decided once, for every host
 (`MountedElement.presentFrame`): the element presents itself again; its
 parent arranges again where a value that places it moved, or where it shows
 no view of its own and is drawn by its parent's; and the window's chrome is
-composed again where it shows what moved (`WindowChrome.follows`).
+composed again where it shows what moved (`WindowChrome.follows`): a window's
+frame, an arrangement's bar colours, and a page's title, bar, way back and
+back button's words said from a state, which no render follows.
 
 ## One turn
 
