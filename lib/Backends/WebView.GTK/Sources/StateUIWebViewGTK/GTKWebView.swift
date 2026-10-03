@@ -49,6 +49,9 @@ final class GTKWebView: GTKControl {
     /// WebKit's web view, as WebKit's calls take it.
     var webView: UnsafeMutableRawPointer { UnsafeMutableRawPointer(widget) }
 
+    /// The address WebKit shows; nil before its first page.
+    var address: String? { webkit_web_view_get_uri(webView).map { String(cString: $0) } }
+
     // MARK: - What the tree gives it
 
     /// Shows `source` - once the element's other values, its agent among them, are applied.
@@ -111,7 +114,7 @@ final class GTKWebView: GTKControl {
 
     /// A load moved on: it began, its page came, or it ended.
     func loadChanged(_ event: Int32) {
-        let address = webkit_web_view_get_uri(webView).map { String(cString: $0) } ?? ""
+        let address = self.address ?? ""
         switch event {
         case LoadEvent.started:
             failed = false
