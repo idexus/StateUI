@@ -83,7 +83,7 @@ and x64, started with no Swift on the search path.
 
 ## A Linux machine: GTK 4
 
-Last verified 2026-10-02.
+Last verified 2026-10-03.
 
 | | |
 | --- | --- |
@@ -102,6 +102,7 @@ Last verified 2026-10-02.
 | WebKitGTK | 2.52.6 (`webkitgtk-6.0`), for the web view's backend |
 | Pictures | gdk-pixbuf 2.42.10, with librsvg 2.58.0's SVG loader |
 | GLib | 2.80.0 |
+| Graphics | Mesa 25.2.8 on the machine's virtio-gpu; the tests draw with GTK's cairo renderer, an application with its GL one |
 
 Ubuntu 24.04's own Node.js is 18, below the extension's 20; Node.js 22 from
 nodejs.org stands first on the user's `PATH`.
