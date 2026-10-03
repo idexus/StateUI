@@ -33,6 +33,12 @@ final class UIKitNavigationController: UINavigationController, UINavigationContr
     /// Shows `pages`, the last on top: moving there as a push or a pop where one page came or went.
     func setPages(_ pages: [UIViewController], animated: Bool) {
         defer { showTopsBar() }
+        // The user is taking pages away and the tree hears it once the move ends: a render meanwhile still
+        // describes them, and showing them again would undo the user's way back.
+        if transitionCoordinator != nil, pages.elementsEqual(self.pages, by: ===), viewControllers.count < pages.count,
+           viewControllers.elementsEqual(pages.prefix(viewControllers.count), by: ===) {
+            return
+        }
         guard !pages.elementsEqual(self.pages, by: ===) || !viewControllers.elementsEqual(pages, by: ===) else {
             return
         }

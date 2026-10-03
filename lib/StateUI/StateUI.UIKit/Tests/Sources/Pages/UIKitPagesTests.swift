@@ -37,6 +37,35 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(window.windowScene?.title, "ItemsView", "the scene's")
     }
 
+    /// The user's way back is not undone by a render while the page goes. The stack is told once the move ends, so a
+    /// render meanwhile still describes the page going - and the stack shows it no more.
+    @MainActor
+    func testARenderWhileTheUserGoesBackLeavesThePageGone() throws {
+        let path = State(wrappedValue: [1])
+        let painted = State(wrappedValue: false)
+        let host = UIKitRenderer.running {
+            NavigationStack(path.projectedValue) {
+                Text("Root")
+            } destination: { level in
+                Text("Level \(level)")
+            }
+            .barBackgroundColor(painted.wrappedValue ? .firebrick : .steelBlue)
+        }
+        defer { host.finish() }
+        let stack = try XCTUnwrap(host.runtime.tree.root?.first(type: .navigationStack))
+        let navigation = try XCTUnwrap((stack.native as? UIKitElement)?.controller as? UIKitNavigationController)
+        host.settle { navigation.viewControllers.count == 2 && navigation.transitionCoordinator == nil }
+
+        navigation.popViewController(animated: true)
+        painted.wrappedValue = true
+        host.runtime.pump.turn()
+        XCTAssertEqual(navigation.viewControllers.count, 1, "the page the user took away stays away")
+
+        host.settle { path.wrappedValue.isEmpty && navigation.transitionCoordinator == nil }
+        XCTAssertEqual(path.wrappedValue, [], "the move ended: the path is shortened")
+        XCTAssertEqual(navigation.viewControllers.count, 1)
+    }
+
     /// A field in the title's place keeps its width while the user types into it: a control is not fitted to its
     /// words again at every render, which cut it and let the bar widen it again, letter by letter.
     @MainActor
