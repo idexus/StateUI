@@ -2,4 +2,4 @@
 ToolbarItem: ✅
 ToolbarItem.clicked: ✅
 ToolbarItem.placement: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet
-ToolbarItem.showsText: not realized
+ToolbarItem.showsText: – A UIKit bar button shows its picture or its words, never both.

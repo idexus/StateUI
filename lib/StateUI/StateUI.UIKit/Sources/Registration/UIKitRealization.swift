@@ -81,6 +81,7 @@ enum UIKitRealization {
         .complete("TabView", "selectedTabChanged"),
         .complete("ToolbarItem", "isDestructive"),
         .complete("ToolbarItem", "placement"),
+        .notPlanned("ToolbarItem", "showsText", reason: "A UIKit bar button shows its picture or its words, never both."),
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
         .complete("Window", "activated"),

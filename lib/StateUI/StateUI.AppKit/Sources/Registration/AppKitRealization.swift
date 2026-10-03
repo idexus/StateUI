@@ -105,6 +105,8 @@ enum AppKitRealization {
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .complete("ToolbarItem", "placement"),
+        .notPlanned("ToolbarItem", "showsText",
+                    reason: "A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item."),
         .unrealized("ToolbarItem", "accessibilityIdentifier", why: "An NSToolbarItem holds no accessibility identifier."),
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
