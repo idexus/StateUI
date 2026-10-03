@@ -166,6 +166,16 @@ its natural size places it - on an axis it does not fill and states no size
 for - so a child that fills both ways takes the room whatever it would measure.
 A container with no shown child takes no room.
 
+## A button's picture and words
+
+A button's picture beside its words stands with them, the two together in the
+middle of the room inside its padding, however wide the button is laid out. A
+control that draws its picture at its own edge and its words in the middle is
+given, on each side, half of what the picture, the gap and the words leave
+(`ButtonArithmetic.sideRoom`) as more padding where it is placed; it is not the
+button's, so it is left out of what the button measures. A picture above or
+below its words is already in the middle with them.
+
 ## A row beside a page
 
 An arrangement's own row - a tabbed view's tabs where they stand in no window

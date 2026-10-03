@@ -132,6 +132,8 @@ enum TestJava {
     static let getLayout = Java.method(JavaAPI.textView, "getLayout", "()Landroid/text/Layout;")
     static let textLayout = Java.findClass("android/text/Layout")
     static let getLineWidth = Java.method(textLayout, "getLineWidth", "(I)F")
+    static let getLineLeft = Java.method(textLayout, "getLineLeft", "(I)F")
+    static let getCompoundDrawablePadding = Java.method(JavaAPI.textView, "getCompoundDrawablePadding", "()I")
     static let getLayoutHeight = Java.method(textLayout, "getHeight", "()I")
     static let getDrawable = Java.method(JavaAPI.imageView, "getDrawable", "()Landroid/graphics/drawable/Drawable;")
     static let bitmapDrawable = Java.findClass("android/graphics/drawable/BitmapDrawable")

@@ -95,6 +95,10 @@ enum JavaAPI {
 
     static let setMaxLines = Java.method(textView, "setMaxLines", "(I)V")
     static let getPaint = Java.method(textView, "getPaint", "()Landroid/text/TextPaint;")
+    static let getCompoundPaddingLeft = Java.method(textView, "getCompoundPaddingLeft", "()I")
+    static let getCompoundPaddingRight = Java.method(textView, "getCompoundPaddingRight", "()I")
+    static let getCompoundDrawablePadding = Java.method(textView, "getCompoundDrawablePadding", "()I")
+    static let measureText = Java.method(Java.findClass("android/graphics/Paint"), "measureText", "(Ljava/lang/String;)F")
     static let getCompoundPaddingTop = Java.method(textView, "getCompoundPaddingTop", "()I")
     static let getCompoundPaddingBottom = Java.method(textView, "getCompoundPaddingBottom", "()I")
     static let getIncludeFontPadding = Java.method(textView, "getIncludeFontPadding", "()Z")
@@ -494,6 +498,7 @@ enum ViewConstants {
     static let unspecified: Int32 = 0
     static let exactly: Int32 = 0x4000_0000
     static let atMost: Int32 = Int32(bitPattern: 0x8000_0000)
+    static let modes: Int32 = Int32(bitPattern: 0xC000_0000)
 
     /// The spec's mode and size.
     static func mode(_ spec: Int32) -> Int32 { spec & Int32(bitPattern: 0xC000_0000) }

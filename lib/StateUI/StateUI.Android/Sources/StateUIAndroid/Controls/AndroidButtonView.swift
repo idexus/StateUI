@@ -29,6 +29,10 @@ final class AndroidButtonView: AndroidTextualView {
     /// What the icon was last shown as, so an unchanged one is not sent again.
     private var shownIcon: Icon.Shown?
 
+    /// The pixels added to each side of the padding where the button is placed, standing its icon and its words
+    /// together in the middle; not the button's own, so left out of what it measures.
+    private var sideRoom: Int32 = 0
+
     init() {
         super.init { _ in Java.new(JavaAPI.button, JavaAPI.newButton, .object(AndroidRenderer.context)) }
         Java.call(reference, JavaAPI.setAllCaps, .bool(false))
@@ -133,7 +137,48 @@ final class AndroidButtonView: AndroidTextualView {
     override func layout(_ place: Rect) {
         let room = (width: pixels(place.width), height: pixels(place.height))
         if !hasWords, placedSize.map({ $0 != room }) ?? true { showIcon(room: room) }
+        standTogether(width: room.width)
         super.layout(place)
+    }
+
+    /// Measured as if the side room were not there: as wide again as it adds, less what it adds.
+    override func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
+        guard sideRoom > 0 else { return super.measure(width: width, height: height) }
+        let mode = width & ViewConstants.modes
+        let widened = mode == ViewConstants.unspecified ? width : mode | ((width & ~ViewConstants.modes) + 2 * sideRoom)
+        let measured = super.measure(width: widened, height: height)
+        return (measured.width - 2 * sideRoom, measured.height)
+    }
+
+    /// Stands the icon beside the words in the middle with them, on a button `width` pixels wide.
+    /// Design: docs/design/host/layout.md#a-buttons-picture-and-words
+    private func standTogether(width: Int32) {
+        let reference = reference
+        let (left, top) = (Java.callInt(reference, JavaAPI.getPaddingLeft), Java.callInt(reference, JavaAPI.getPaddingTop))
+        let (right, bottom) = (Java.callInt(reference, JavaAPI.getPaddingRight), Java.callInt(reference, JavaAPI.getPaddingBottom))
+        var side: Int32 = 0
+        if hasWords, icon.picture != nil {
+            let gap = Java.callInt(reference, JavaAPI.getCompoundDrawablePadding)
+            let picture = Java.callInt(reference, JavaAPI.getCompoundPaddingLeft)
+                + Java.callInt(reference, JavaAPI.getCompoundPaddingRight) - left - right - gap
+            side = Int32(ButtonArithmetic.sideRoom(
+                Double(width - left - right + 2 * sideRoom), picture: Double(picture), gap: Double(gap),
+                words: Double(wordsWidth), position: icon.position).rounded(.down))
+        }
+        guard side != sideRoom else { return }
+        Java.call(reference, JavaAPI.setPadding,
+                  .int(left - sideRoom + side), .int(top), .int(right - sideRoom + side), .int(bottom))
+        sideRoom = side
+    }
+
+    /// The pixels the words take on one line, as the button's paint draws them.
+    private var wordsWidth: Float {
+        Java.frame {
+            guard let paint = Java.callObject(reference, JavaAPI.getPaint) else { return 0 }
+            let words = Java.string(text)
+            defer { Java.release(local: words) }
+            return Java.callFloat(paint, JavaAPI.measureText, .object(words))
+        }
     }
 
     override func sized(width: Int32, height: Int32) {
@@ -144,7 +189,19 @@ final class AndroidButtonView: AndroidTextualView {
     /// The padding is the icon's room too.
     override func setPadding(_ insets: Insets?) {
         super.setPadding(insets)
+        paddingSet()
         showIcon(room: placedSize)
+    }
+
+    override func showBackground(_ drawable: JavaObject?) {
+        super.showBackground(drawable)
+        paddingSet()
+    }
+
+    /// The padding was set afresh, with no side room in it: it is worked out again where the button stands.
+    private func paddingSet() {
+        sideRoom = 0
+        if let placed = placedSize { standTogether(width: placed.width) }
     }
 
     override func detach() {

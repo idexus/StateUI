@@ -14,6 +14,7 @@ final class AndroidButtonViewTests: XCTestCase {
             ("testAButtonIsAsBigAsItsWordsAndItsRoom", testAButtonIsAsBigAsItsWordsAndItsRoom),
             ("testAnIconAloneFitsTheRoomInsideThePadding", testAnIconAloneFitsTheRoomInsideThePadding),
             ("testAnIconBesideWordsStandsWhereItsPositionSays", testAnIconBesideWordsStandsWhereItsPositionSays),
+            ("testAWideButtonsIconStandsBesideItsWords", testAWideButtonsIconStandsBesideItsWords),
             ("testALookIsOneShapeUnderThePlatformsRipple", testALookIsOneShapeUnderThePlatformsRipple),
             ("testALookThePageShowsThroughCastsNoShadow", testALookThePageShowsThroughCastsNoShadow),
             ("testADisabledLookDimsAsTheThemesControlsDo", testADisabledLookDimsAsTheThemesControlsDo),
@@ -72,6 +73,29 @@ final class AndroidButtonViewTests: XCTestCase {
             XCTAssertEqual(Self.besideWords(of: buttons[0]), [true, false, false, false])
             XCTAssertEqual(Self.besideWords(of: buttons[1]), [false, true, false, false])
             XCTAssertNil(Self.layerSize(of: buttons[0]), "no icon alone in the middle")
+        }
+    }
+
+    /// A button wider than its words keeps its icon beside them, the two in the middle together - not the icon at
+    /// the button's edge and the words alone in the middle; the room that takes is not the button's, which still
+    /// measures as its twin of its own width does.
+    func testAWideButtonsIconStandsBesideItsWords() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Button("Log out").icon("test_wide.png").width(300).horizontalAlignment(.start)
+                    Button("Log out").icon("test_wide.png").horizontalAlignment(.start)
+                }
+            }
+            host.layOut()
+            let buttons = host.views(AndroidButtonView.self)
+            let gap = try XCTUnwrap(Self.gapBesideWords(of: buttons[0]))
+
+            XCTAssertLessThan(gap, 24, "the icon \(gap) pixels from its words")
+            XCTAssertEqual(
+                buttons[0].measure(width: ViewConstants.unspecified, height: ViewConstants.unspecified).width,
+                buttons[1].measure(width: ViewConstants.unspecified, height: ViewConstants.unspecified).width,
+                "the wide button measures as its twin")
         }
     }
 
@@ -221,6 +245,16 @@ final class AndroidButtonViewTests: XCTestCase {
         defer { Java.release(local: layout) }
         let width = Java.callFloat(layout, TestJava.getLineWidth, .int(0))
         return (Int32(width.rounded(.up)), Java.callInt(layout, TestJava.getLayoutHeight))
+    }
+
+    /// The pixels between the picture before the words and the words: the drawable's padding, and where the line
+    /// of words starts in the room beside the picture.
+    @MainActor
+    private static func gapBesideWords(of button: AndroidButtonView) -> Float? {
+        guard let layout = Java.callObject(button.reference, TestJava.getLayout) else { return nil }
+        defer { Java.release(local: layout) }
+        return Java.callFloat(layout, TestJava.getLineLeft, .int(0))
+            + Float(Java.callInt(button.reference, TestJava.getCompoundDrawablePadding))
     }
 
     /// The pixels of padding around the button's words, across and down.

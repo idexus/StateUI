@@ -142,6 +142,13 @@ then the author's, `minimumWidth` and `minimumHeight`, as on every host. The
 stepper's buttons keep a square of 48 points, the room a finger needs, as
 the stepper's own choice.
 
+Android draws a button's icon at the edge of its padding and centres the words
+in what is left, so a button laid out wider than its words would stand them
+apart. Where it is placed, the host adds to each side of the padding what the
+icon, the gap and the words leave (`ButtonArithmetic.sideRoom`,
+[a button's picture and words](../../host/layout.md#a-buttons-picture-and-words)),
+and measures the button as if that room were not there.
+
 ## A button's look
 
 A button says nothing of its look and keeps its theme's: a background with

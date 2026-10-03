@@ -115,6 +115,16 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places[1], Rect(50, 0, 50, 50), "a proportion from 0 is the right half")
     }
 
+    /// A picture beside a button's words leaves half of what the two and their gap do not fill on each side, so they
+    /// stand together in the middle; nothing where they fill the room, or where the picture stands above or below.
+    func testAButtonsPictureAndWordsStandTogetherInTheMiddle() {
+        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .leading), 100)
+        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .trailing), 100)
+        XCTAssertEqual(ButtonArithmetic.sideRoom(80, picture: 40, gap: 8, words: 52, position: .leading), 0, "too narrow")
+        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .top), 0)
+        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .bottom), 0)
+    }
+
     /// One child and its margin turn with the room; left to right is the default, and changes nothing.
     @MainActor
     func testOneChildRightToLeftTurnsWithItsRoom() {

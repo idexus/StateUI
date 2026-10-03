@@ -6,6 +6,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
     @State private var pressed = false
     @State private var side = 0
     @State private var gap = 8.0
+    @State private var wide = false
 
     static let sides = ["Leading", "Top", "Trailing", "Bottom"]
     static let positions: [IconPosition] = [.leading, .top, .trailing, .bottom]
@@ -19,6 +20,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
         @State private var pressed = false
         @State private var side = 0
         @State private var gap = 8.0
+        @State private var wide = false
 
         static let sides = ["Leading", "Top", "Trailing", "Bottom"]
         static let positions: [IconPosition] = [.leading, .top, .trailing, .bottom]
@@ -52,11 +54,12 @@ struct IconButtonSample: SampleContent, ExampleContent {
             Text(pressed ? "Held down" : "Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
 
             // Words and a picture: the picture on the side chosen, the gap
-            // between them as the slider says.
+            // between them as the slider says - together, however wide.
             Button("Media")
                 .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                 .iconPosition(Self.positions[side])
                 .iconSpacing(gap)
+                .horizontalAlignment(wide ? .fill : .center)
                 .onClicked { taps += 1 }
 
             Picker(Self.sides)
@@ -66,6 +69,8 @@ struct IconButtonSample: SampleContent, ExampleContent {
             Slider($gap)
                 .minimum(0)
                 .maximum(24)
+
+            SwitchRow("Full width", $wide)
         }
         """
 
@@ -108,7 +113,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                 .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                 .iconPosition(Self.positions[side])
                 .iconSpacing(gap)
-                .horizontalAlignment(.center)
+                .horizontalAlignment(wide ? .fill : .center)
                 .onClicked { taps += 1 }
 
             Picker(Self.sides)
@@ -119,6 +124,8 @@ struct IconButtonSample: SampleContent, ExampleContent {
             Slider($gap)
                 .minimum(0)
                 .maximum(24)
+
+            SwitchRow("Full width", $wide)
         }
         .spacing(12)
     }
