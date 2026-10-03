@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 NavigationStack.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
 NavigationStack.title: ✅
 Page.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
