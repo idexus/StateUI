@@ -88,10 +88,8 @@ enum GTKRealization {
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),
-        .complete("Scene", "destroying"),
         .complete("Scene", "stopped"),
         .complete("Scene", "windowClosed"),
-        .complete("Scene", "windowRestored"),
         .notPlanned("Slider", "released", reason: "GTK's scale tells no one it is held: its range claims the "
             + "press, and GTK denies every other gesture on it."),
         .notPlanned("Slider", "pressed", reason: "GTK's scale tells no one it is held: its range claims the "

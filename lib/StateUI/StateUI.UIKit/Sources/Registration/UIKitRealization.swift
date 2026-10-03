@@ -66,7 +66,6 @@ enum UIKitRealization {
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),
-        .complete("Scene", "destroying"),
         .complete("Scene", "stopped"),
         .complete("Scene", "windowClosed"),
         .complete("TextSpan", "background"),

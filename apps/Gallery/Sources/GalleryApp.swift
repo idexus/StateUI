@@ -9,11 +9,12 @@
 //
 // HOW THIS IS LAID OUT:
 //
-//     GalleryApp.swift   the application - its scene, what it writes into its
+//     GalleryApp.swift   the application - its scenes, what it writes into its
 //                        session, and the one function this module exports
-//     Gallery/           the gallery itself: one gallery as a scene
-//                        (GalleryScene.swift), its window and the arrangement in
-//                        it (MainPage.swift), where it is (Navigation.swift),
+//     Gallery/           the gallery itself: the galleries as a scene
+//                        (GalleryScene.swift), one gallery window
+//                        (GalleryWindow.swift) and the arrangement in it
+//                        (MainPage.swift), where it is (Navigation.swift),
 //                        what a sample is, the catalog of them, and the pages
 //                        that show them
 //     Styles/            what the app looks like: its palette and its styles
@@ -30,9 +31,9 @@ import StateUI
 
 /// The gallery application.
 ///
-/// An application is what every gallery SHARES - its styles, and the settings
-/// it keeps between launches. Each gallery is a scene of its own, and there are
-/// as many as the user opens: see Gallery/GalleryScene.swift.
+/// An application is what every scene SHARES - its styles, and the settings
+/// it keeps between launches. The galleries are one scene, its windows as many
+/// as the user opens: see Gallery/GalleryScene.swift.
 struct GalleryApp: Application {
     /// Which kind of device this is, from the standard environment - answered
     /// by the host before the application is made, so the styles below already
@@ -62,12 +63,12 @@ struct GalleryApp: Application {
         application.persistentKeys = [.visits, .who, .shade]
     }
 
-    /// One gallery, and as many more as the user opens - the first kind of scene; a scratchpad, a kind of its
-    /// own; and one About window for the whole application. See `SceneKindsSample`.
+    /// The galleries - launch and *File ▸ New Window* open one more gallery window; the scratchpads; and one
+    /// About window for the whole application, in a scene of its own. See `ScenesSample`.
     var body: some Scene {
         GalleryScene()
         ScratchpadScene()
-        Window(.about) { AboutPage() }
+        AboutScene()
     }
 }
 

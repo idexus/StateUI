@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A scene as the tree holds it, and the node its build answers: the main window,
-// the windows open beside it, and the handlers of the host's reports.
+// A scene as the tree holds it, and the node its build answers: its windows, and the
+// handlers of the host's reports.
 // Design: docs/design/core/scenes.md#the-scene-tree
 
 /// A scene as the tree holds it - a composed view, so each open scene has `@State`
@@ -32,52 +32,24 @@ struct SceneElement: Element {
         return node
     }
 
-    /// The scene's node: its main window first, then the windows it has open
-    /// beside it, and the reports the host makes about them.
+    /// The scene's node: its windows, in the order they opened, and the reports the host makes about them.
     static func build(_ record: SceneRecord, _ scene: any Scene) -> Node {
         let windows = scene.declaredWindows
 
-        var declared: [WindowType: GroupShape] = [:]
+        // Read here, so this scene is what builds again when a window of it opens or closes.
+        var children: [Node] = []
+        for (position, opened) in record.windows.enumerated() {
+            guard let declaration = windows.declaration(of: opened.type) else { continue }
 
-        for group in windows.groups {
-            guard let type = group.type, declared[type] == nil else { continue }
-
-            declared[type] = GroupShape(valueType: group.valueType, restore: group.restore)
-        }
-
-        record.declared = declared
-
-        var main = window(windows.main, opened: nil, record, session: record.windowSession(SceneElement.mainKey))
-        main.id = SceneElement.mainKey
-
-        // A named main window carries its scene's kind, which the platform keeps the scene as; a `Window` as the
-        // main one, its own policies.
-        // Design: docs/design/core/scenes.md#kinds-of-scene
-        if let type = windows.main.type {
-            main.write(WindowContract.windowType, type)
-        }
-        if windows.oneSession {
-            main.write(WindowContract.hidesWhenInactive, windows.main.hides)
-            main.write(WindowContract.floatsOnTop, windows.main.floats)
-        }
-
-        var children = [main]
-
-        // Read here, so this scene is what builds again when a window opens in it.
-        for opened in record.windows {
-            guard let group = windows.groups.first(where: { $0.type == opened.type }) else {
-                continue
-            }
-
-            var window = window(group, opened: opened, record, session: record.windowSession(opened.key))
+            var window = window(declaration, opened: opened, record, docks: position == 0)
             window.id = opened.key
 
             // Written either way, so none of them is ever cleared off a window.
             // Design: docs/design/core/scenes.md#opening-windows
-            window.write(WindowContract.windowType, opened.type)
+            if let type = opened.type { window.write(WindowContract.windowType, type) }
             window.describe(WindowContract.windowValue, opened.text)
-            window.write(WindowContract.hidesWhenInactive, group.hides)
-            window.write(WindowContract.floatsOnTop, group.floats)
+            window.write(WindowContract.hidesWhenInactive, declaration.hides)
+            window.write(WindowContract.floatsOnTop, declaration.floats)
 
             children.append(window)
         }
@@ -87,25 +59,12 @@ struct SceneElement: Element {
 
         var node = Node(contract: SceneContract.self, children: children)
 
-        // The user closed a window of the scene - its key is the payload.
+        // The user closed a window of the scene - its key is the payload; the scene ends with its last.
         node.addHandler(SceneContract.windowClosed.token) {
             if let key = EventBuffer.current.value()?.string {
                 record.closed(key: key)
             }
         }
-
-        // The system restored one: its kind and its value's text. A render is asked for
-        // either way - the host holds the window until it hears.
-        node.addHandler(SceneContract.windowRestored.token) {
-            if let name = EventBuffer.current.value(0)?.string {
-                record.restored(kind: name, text: EventBuffer.current.value(1)?.string)
-            }
-
-            Renderer.shared.setNeedsRender()
-        }
-
-        // Its main window has gone - the user closed it - and the scene with it.
-        node.addHandler(SceneContract.destroying.token) { Scenes.shared.ended(record) }
 
         // Where the scene stands, as the host sees it.
         node.addHandler(SceneContract.activated.token) { record.session.phase = .active }
@@ -115,17 +74,18 @@ struct SceneElement: Element {
         return node
     }
 
-    /// One window the scene declares, `opened` where it stands beside the main one, with what was offered it.
+    /// One window the scene has open, with what was offered it - the scene's inspector docked in it where `docks`
+    /// says: its first.
+    /// Design: docs/design/views/inspector.md#where-it-docks
     private static func window(
-        _ declared: DeclaredWindows, opened: OpenedWindow?, _ record: SceneRecord, session: WindowSession
+        _ declared: DeclaredWindows, opened: OpenedWindow, _ record: SceneRecord, docks: Bool
     ) -> Node {
-        var node = Node.window(showing: { declared.page(opened, record) }, kind: declared.kind, session: session)
+        var node = Node.window(
+            showing: { declared.page(opened, record) }, kind: declared.kind,
+            session: record.windowSession(opened.key), inspector: docks ? { record.dockedInspector } : nil)
         node.environments.insert(contentsOf: declared.environments, at: 0)
         return node
     }
-
-    /// What the tree knows a scene's main window by.
-    static let mainKey = "main"
 
     /// The scene the application wrote, under whatever it offered it.
     static func unwrapped(_ scene: any Scene) -> any Scene {

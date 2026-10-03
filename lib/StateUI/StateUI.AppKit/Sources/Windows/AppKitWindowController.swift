@@ -16,10 +16,9 @@ final class AppKitWindowController: NSWindowController {
     /// The window element shown.
     private(set) weak var element: MountedElement?
     weak var host: AppKitRenderer?
-    let isMain: Bool
     let presentsWindow: Bool
-    var record: AppKitRestorationRecord
-    var restorationRecordForTesting: AppKitRestorationRecord { record }
+    var record: WindowRecord
+    var restorationRecordForTesting: WindowRecord { record }
 
     /// What the window shows, by the host layer's rule.
     let presentation = WindowPresentation()
@@ -45,7 +44,7 @@ final class AppKitWindowController: NSWindowController {
     /// The window's first responder, watched so every element that follows its
     /// focus hears it move.
     var focusWatch: NSKeyValueObservation?
-    lazy var toolbar = AppKitWindowToolbar(windowIdentifier: record.windowIdentifier)
+    lazy var toolbar = AppKitWindowToolbar(windowIdentifier: record.identifier)
 
     /// The row a window's tabs stand in beneath its toolbar, and where it
     /// stands: the title bar's accessory, or a split view detail's own.
@@ -86,13 +85,12 @@ final class AppKitWindowController: NSWindowController {
     init(
         _ element: MountedElement,
         host: AppKitRenderer?,
-        record: AppKitRestorationRecord,
+        record: WindowRecord,
         nativeWindow: NSWindow? = nil,
         presentsWindow: Bool
     ) {
         self.element = element
         self.host = host
-        isMain = element.isMainWindow
         self.record = record
         self.presentsWindow = presentsWindow
         presented = nativeWindow != nil
@@ -106,13 +104,12 @@ final class AppKitWindowController: NSWindowController {
         super.init(window: window)
 
         window.delegate = self
-        window.isExcludedFromWindowsMenu = !isMain
         configureChrome(window)
         focusWatch = window.observe(\.firstResponder) { [weak self] _, _ in
             MainActor.assumeIsolated { self?.focusMoved() }
         }
         if nativeWindow == nil {
-            window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
+            window.identifier = NSUserInterfaceItemIdentifier(record.identifier)
             window.isRestorable = true
             window.restorationClass = AppKitWindowRestorer.self
         }
@@ -176,12 +173,7 @@ final class AppKitWindowController: NSWindowController {
         guard let window else { return }
 
         let changes = presentation.show(element, in: runtime.lifecycle)
-        record = AppKitRestorationRecord(
-            windowIdentifier: record.windowIdentifier,
-            ownerIdentifier: record.ownerIdentifier,
-            kind: element.name(.windowType),
-            value: element.value(.windowValue)?.string,
-            kept: isMain ? record.kept : [:])
+        record = WindowRecord(of: element, identifier: record.identifier, kept: record.kept)
 
         if let frame = changes.frame { request(frame, of: window) }
         let asked = WindowFrame(of: element)

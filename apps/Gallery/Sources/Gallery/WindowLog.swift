@@ -1,7 +1,7 @@
 import StateUI
 
-/// What a gallery's main window has said about its life, numbered, newest
-/// last - kept by the gallery's scene, written by `MainPage` as the window
+/// What a gallery window has said about its life, numbered, newest last -
+/// kept by the window (`GalleryWindow`), written by `MainPage` as the window
 /// is made and by `WindowPhaseLog` as its phase moves, and read by the
 /// Lifecycle sample.
 final class WindowLog {

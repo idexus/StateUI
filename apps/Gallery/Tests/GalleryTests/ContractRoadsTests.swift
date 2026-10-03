@@ -8,7 +8,7 @@ import XCTest
 ///
 /// A member is reached through its contract, never by a token and a list of
 /// values; a view stands where a view stands, never among a text's runs or a
-/// map's markers; a scene has one main window. Each closed road is written here
+/// map's markers; a scene is made of windows, and an application of scenes. Each closed road is written here
 /// the way an application would write it, and must NOT compile against the
 /// library's public module; the open road beside it must. The pair is what makes
 /// the refusal mean something: the two listings differ in that one spelling, so
@@ -134,17 +134,17 @@ final class ContractRoadsTests: XCTestCase {
             closed: "struct Lone: Scene { var body: some Scene { WindowGroup { if Bool.random() { Text(\"a\") } } } }",
             open: "struct Lone: Scene { var body: some Scene { WindowGroup { if Bool.random() { Text(\"a\") } else { Text(\"b\") } } } }"),
         Road(
-            name: "a scene with two main windows",
-            closed: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; WindowGroup(.debugInspector) { Text(\"b\") } } }",
+            name: "a view standing among a scene's windows",
+            closed: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; Text(\"b\") } }",
             open: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; Window(.debugInspector) { Text(\"b\") } } }"),
         Road(
-            name: "a scene with no main window",
-            closed: "struct Notes: Scene { var body: some Scene { WindowGroup(WindowType(\"roads.note\"), for: Int.self) { n in Text(\"\\(n.wrappedValue)\") } } }",
-            open: "struct Notes: Scene { var body: some Scene { Window(.debugInspector) { Text(\"a\") }; WindowGroup(WindowType(\"roads.note\"), for: Int.self) { n in Text(\"\\(n.wrappedValue)\") } } }"),
+            name: "a scene standing in a scene",
+            closed: "struct Tools: Scene { var body: some Scene { Window(.debugInspector) { Text(\"a\") } } }; struct Notes: Scene { var body: some Scene { Tools() } }",
+            open: "struct Tools: Scene { var body: some Scene { Window(.debugInspector) { Text(\"a\") } } }; struct Notes: Application { var body: some Scene { Tools() } }"),
         Road(
-            name: "windows per value in the application's body",
-            closed: "struct Notes: Application { var body: some Scene { WindowGroup { Text(\"a\") }; WindowGroup(WindowType(\"roads.note\"), for: Int.self) { n in Text(\"\\(n.wrappedValue)\") } } }",
-            open: "struct Notes: Application { var body: some Scene { WindowGroup { Text(\"a\") }; Window(WindowType(\"roads.preferences\")) { Text(\"b\") } } }"),
+            name: "a view standing among an application's scenes",
+            closed: "struct Notes: Application { var body: some Scene { WindowGroup { Text(\"a\") }; Text(\"b\") } }",
+            open: "struct Notes: Application { var body: some Scene { WindowGroup { Text(\"a\") }; Window(.debugInspector) { Text(\"b\") } } }"),
         Road(
             name: "two views in the title's place",
             closed: #"_ = Text("Notes").titleView { Button("Back"); Button("Next") }"#,

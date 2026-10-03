@@ -26,58 +26,56 @@ shown - so the tree is steered by `@State` and `@Environment` alone.
 
 ## Scenes
 
-A scene is one session of the application: a main window, the windows that
-serve it, and the state they share. An application declares its kinds of
-scene, and the platform makes as many instances of each as the user asks for:
-the first kind at launch, another of the unnamed kind for every New Window,
-one of a named kind for every `openWindow`, and every one that was open when
-the system restores the application's windows (scenes.md, Kinds of scene).
+A scene is a set of windows and the state they share. An application declares
+its scenes, each standing at most once: it opens with its first window -
+launch opens the window of the `WindowGroup` with no name, *File ▸ New* one
+more, `openWindow` one of a kind - and ends with its last
+([scenes.md](../core/scenes.md#a-scene-stands-once)).
 
 ```text
   struct GalleryApp: Application {
-      @State private var library = Library()                  every session's
-      var body: some Scene { GalleryScene().environment(library) }
+      @State private var library = Library()                  every scene's
+      var body: some Scene {
+          GalleryScene().environment(library)
+          Window(.about) { AboutPage() }                      a scene of its own
+      }
   }
 
   struct GalleryScene: Scene {
-      @State private var nav = Navigation()                   this session's
+      @State private var style = Style()                      the scene's
       var body: some Scene {
-          WindowGroup { MainPage() }.environment(nav)
-          Window(.fonts) { FontsPanel() }.environment(nav)
+          WindowGroup { MainPage() }.environment(style)       launch, New: one more
+          Window(.fonts) { FontsPanel() }.environment(style)  one
           WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
       }
   }
 ```
 
-- A session's state is its scene type's own `@State`. Each session has its
-  own, and every window of the session reads it, offered with `.environment`
-  or handed in as a binding.
-- A scene's body is counted by type (`SceneBuilder`, `WindowRole`): one main
-  window - its `WindowGroup`, with no name or naming the scene's kind, else its
-  first `Window`, which makes a scene of one session - and windows beside it,
-  each with a name. A scene with two `WindowGroup` main windows, or with only
-  windows per value, does not compile, and neither does a main window under an
-  `if` with no `else`: what a window shows is chosen inside its view.
-- An application's body is counted the same way (`ApplicationBuilder`): kinds
-  of scene - a `Scene`, a `WindowGroup`, a `Window` - and never windows per
-  value, which belong to a scene. A refused expression there gets a type of
-  its own (`PerValue`) whose blocks are unavailable: an unavailable overload
-  of `buildExpression` beside an available generic one would lose to it, as
-  the type checker penalizes what is unavailable.
+- A scene's state is its type's own `@State`, and every window of it reads
+  it, offered with `.environment` or handed in as a binding. What belongs to
+  one window is the `@State` of the view it shows.
+- A scene's body takes windows in any number and order (`SceneBuilder`), and
+  refuses a view or another scene; an application's body takes scenes
+  (`ApplicationBuilder`), a window written there being a scene of its own,
+  and refuses a view. A refused expression gets unavailable blocks of its own
+  type: an unavailable overload of `buildExpression` beside an available
+  generic one would lose to it, as the type checker penalizes what is
+  unavailable.
 - An object is offered to a window by `.environment(_:)` on its `WindowGroup`
-  or `Window`, and to every window of every session by `.environment(_:)` on
-  the scene where the application names it.
-- A window opened beside the main one belongs to its scene. It opens through
-  the scene's session, `scene.openWindow(.fonts)`, closes with the scene, may
-  hide while another scene is in front, and is never what New Window makes.
-- What the system restores is what was open: each scene comes back with the
-  windows it had and the values its `@State(sceneKey:)` held. A group's value
-  is `Codable` for that reason, and a `WindowType` name is written down with
-  every window, so it should not change between versions.
+  or `Window`, and to every window of a scene by `.environment(_:)` on the
+  scene where the application names it.
+- A window of a kind opens through the application's session,
+  `application.openWindow(.fonts)`, in the scene declaring the kind. It may
+  hide while another scene is in front, and closes with its scene.
+- What the system restores is what was open: each window comes back as its
+  kind for its value, and its scene with the values its `@State(sceneKey:)`
+  held. A group's value is `Codable` for that reason, and a `WindowType` name
+  is written down with every window, so it should not change between
+  versions.
 
-Which scenes are open is the library's to hold (`Scenes.swift`),
-never the author's. A host maps sessions onto the scene or window identities
-its platform provides; a host that shows one window refuses another with
+Which scenes stand is the library's to hold (`OpenScenes.swift`), never the
+author's. A host maps windows onto the window or scene identities its
+platform provides; a platform that shows one window refuses another with
 `WindowError.unsupported`.
 
 ## A window is a placeholder
@@ -86,7 +84,7 @@ A window's node is a placeholder like a composed view's (`Node.window`), so it
 is built again on its own when what it reads moves; the view it shows holds the
 state. Its `WindowSession` is handed to it by its scene, which keeps it.
 
-The session and, for a main window, the panel its scene's inspector docks in
+The session and, for a scene's first window, the panel its inspector docks in
 are asked for inside the window's build, so the window is what builds again
 when either moves. The session is also offered on the placeholder itself, so
 the window's own `@Environment` resolves it as well as everything under it.
@@ -112,8 +110,8 @@ of the views, so a view coming or going leaves the others the elements they
 were. The host lays the overlays of the path it shows - the outer under the
 inner - and the library's own over them all
 ([the overlays of a window](../host/pages.md#the-overlays-of-a-window)). The
-inspector docks by a value of its main window (`dockedInspector`), whose
-panel the window lays as it builds.
+inspector docks by a value of its scene (`dockedInspector`), whose panel the
+scene's first window lays as it builds.
 
 ## Lifecycle reports one by one
 

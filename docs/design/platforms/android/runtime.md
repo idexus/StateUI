@@ -37,10 +37,11 @@ new configuration - while the scene stands, and every connection makes
 another independent scene, so a later activity takes over the scene the one
 before showed, with its state: the previous tree leaves, letting go of the
 old activity's views, and a renderer of the new activity's own, whose intake
-holds no message yet, asks for the whole tree. Back finishes the activity and
-ends its scene - its window, then the scene, hear they are going - and the
-launcher's next activity finds none standing: it connects a new scene, as the
-first activity did.
+holds no message yet, asks for the whole tree, and the scenes kept pass to
+it. Back finishes the activity: the user closed its window, which hears it is
+going, and its scene that the window closed, and the scene ends with it. The
+launcher's next activity finds none standing: the scenes kept come back, as
+for the first activity.
 
 ## The doorbell
 
@@ -103,8 +104,9 @@ of the application, its scene and its window by the host layer's rule ([the
 application's phase](../../host/runtime.md#the-applications-phase)): each
 rendered before the next is heard, and a window shown again after it stopped
 resumed on its way to active. The window hears it was made as the host layer
-shows it, once; and it is going - then its scene - only when the activity
-finishes, not when Android makes the activity again for a new configuration. The window's title is the activity's, and the label its task
+shows it, once; and it is going, and its scene that it closed, only when the
+activity finishes, not when Android makes the activity again for a new
+configuration. The window's title is the activity's, and the label its task
 shows among the recent ones.
 
 ## Acts
@@ -151,3 +153,8 @@ A kept state's key is in the platform's preferences, as the words its kind
 reads back. Every key the application lists is read before the first scene
 connects, in one call, and handed to the core ahead of the first view; a
 key's new value is written as its save arrives.
+
+Android restores no windows, so the application's scenes are kept beside the
+values, under a key of the host's own, by the host layer's rule ([kept
+scenes](../../host/runtime.md#kept-scenes)), and come back at the next
+start.

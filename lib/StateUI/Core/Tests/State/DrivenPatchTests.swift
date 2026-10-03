@@ -24,15 +24,15 @@ final class DrivenPatchTests: XCTestCase {
     }
 
     /// Wraps a view the way a render is rooted - the application, its scene,
-    /// the scene's main window and a page - so the patch is a whole render
+    /// the window launch opens and a page - so the patch is a whole render
     /// rather than a fragment.
     private func rooted(_ content: Node) -> Node {
-        var main = Node(type: "Window", children: [
+        var launched = Node(type: "Window", children: [
             Node(type: "Page", children: [content]),
         ])
-        main.id = SceneElement.mainKey
+        launched.id = "window 1"
 
-        var scene = Node(type: "Scene", children: [main])
+        var scene = Node(type: "Scene", children: [launched])
         scene.id = "1"
 
         return Node(type: "Application", children: [scene])
@@ -42,7 +42,7 @@ final class DrivenPatchTests: XCTestCase {
     /// content, `.auto(3)` first.
     private func page(_ content: Node) throws -> HostPatch {
         try XCTUnwrap(Differ().reconcile(nil, with: rooted(content)).patch
-            .at(.manual("1"), .manual(SceneElement.mainKey), .auto(2)))
+            .at(.manual("1"), .manual("window 1"), .auto(2)))
     }
 
     /// The registrations of the element at `path` below `page`.

@@ -1,16 +1,17 @@
 import StateUI
 
-/// A gallery is a SCENE: its main window, the windows it opens beside it, and
-/// the state they share - and another gallery is one more scene.
+/// The galleries are a SCENE: as many gallery windows as the user opens, the
+/// windows beside them, and the look they share.
 struct MultiWindowSample: SampleContent, ExampleContent {
-    /// This gallery's look, which its Fonts and Colours windows change.
+    /// The look every gallery window wears, which the Fonts and Colours
+    /// windows change.
     let style: SessionStyle
 
-    /// This gallery as it runs: where it stands, and opening and closing its
-    /// windows - and itself.
+    /// The galleries' scene as it runs: its windows, and closing it whole.
     @Environment private var scene: SceneSession
 
-    /// The application as it runs - which is what opens another gallery.
+    /// The application as it runs - which opens a window in the scene
+    /// declaring it.
     @Environment private var application: ApplicationSession
 
     /// What the last button answered: the window it opened or closed, or what
@@ -19,7 +20,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
     static let id = "multi-window"
     static let title = "More than one window"
-    static let summary = "Open tools, valued windows, and another independent scene."
+    static let summary = "Tools, a window per value, and more gallery windows sharing one scene."
 
     /// Devices whose host can present independent windows.
     static let formFactors: Set<FormFactor> = [.tablet, .desktop]
@@ -38,16 +39,12 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
         enum AccentChoice: String, CaseIterable, PersistentValue { case violet, teal, coral, graphite }
 
-        struct GalleryApp: Application {
-            var body: some Scene { GalleryScene() }     // a gallery, and as many more
-        }
-
-        struct GalleryScene: Scene {                    // ONE gallery
-            @State private var style = SessionStyle()   // this gallery's own
+        struct GalleryScene: Scene {                    // the galleries
+            @State private var style = SessionStyle()   // the look every window of it wears
 
             var body: some Scene {
-                WindowGroup { MainPage(style: style) }         // the main window
-                Window(.fonts) { FontsPage() }                 // one of a kind, beside it
+                WindowGroup { GalleryWindow(style: style) }    // launch, File ▸ New: one more
+                Window(.fonts) { FontsPage() }                 // one of a kind
                     .hidesWhenInactive(style.hidesTools)
                     .floatsOnTop(style.floatsTools)
                     .environment(style)
@@ -62,31 +59,38 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             }
         }
 
-        final class SessionStyle {                      // kept WITH its gallery
+        struct GalleryWindow: View {                    // ONE gallery window
+            let style: SessionStyle
+            @State private var nav = Navigation()       // where it is: its own
+
+            var body: some View { MainPage(nav: nav, style: style) }
+        }
+
+        final class SessionStyle {                      // kept WITH its scene
             @State(sceneKey: .font) var font = ""
             @State(sceneKey: .accent) var accent = AccentChoice.violet
             @State var hidesTools = false
             @State var floatsTools = false
         }
 
-        // Opening and closing this gallery's windows:
+        // Opening and closing the scene's windows:
 
         let style: SessionStyle
-        @Environment private var scene: SceneSession            // THIS gallery
+        @Environment private var scene: SceneSession            // the galleries
         @Environment private var application: ApplicationSession
         @State private var said = "Nothing asked yet."
 
         Button("Fonts").onClicked {
             do {
-                try await scene.openWindow(.fonts)
+                try await application.openWindow(.fonts)
             } catch WindowError.alreadyOpen {
                 said = "It is open already."
             }
         }
 
-        Button("Close fonts").onClicked { try await scene.closeWindow(.fonts) }
+        Button("Close fonts").onClicked { try await application.closeWindow(.fonts) }
 
-        SwitchRow("Hide them behind another gallery", style.$hidesTools)
+        SwitchRow("Hide them behind another scene", style.$hidesTools)
         SwitchRow("Keep them on top", style.$floatsTools)
 
         // And a window closes itself, from a page in it:
@@ -95,24 +99,24 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
         // A window per value:
 
-        Button("Swatch 2").onClicked { try await scene.openWindow(.swatch, value: 2) }
-        Button("Close swatch 2").onClicked { try await scene.closeWindow(.swatch, value: 2) }
+        Button("Swatch 2").onClicked { try await application.openWindow(.swatch, value: 2) }
+        Button("Close swatch 2").onClicked { try await application.closeWindow(.swatch, value: 2) }
 
         // Each window is handed its number as a binding - writing it makes the
         // SAME window about another swatch, in SwatchPage.swift:
         //     Button("Next").onClicked { number += 1 }
 
-        // Another gallery:
+        // More gallery windows, and the whole scene:
 
-        Button("Open another gallery").onClicked { try await application.openScene() }
-        Button("Close this gallery").onClicked { try await scene.close() }
+        Button("New gallery window").onClicked { try await application.openWindow() }   // as File ▸ New
+        Button("Close every gallery window").onClicked { try await scene.close() }     // and its tools
 
         VStack {
             // What the last button answered, and what is open - read here, so
-            // a gallery or a window opening or closing builds this closure.
+            // a window opening or closing builds this closure.
             DebugInfoLabel()
             Text(said)
-            Text("\\(application.scenes.count) galleries open")
+            Text("Windows in this scene: \\(scene.windows.count)")
             Text(scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
         }
         """
@@ -121,7 +125,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         VStack {
             preview
 
-            SectionTitle("This gallery's windows")
+            SectionTitle("The scene's windows")
 
             HStack {
                 opens("Fonts", .fonts)
@@ -146,21 +150,18 @@ struct MultiWindowSample: SampleContent, ExampleContent {
                     .textColor(Palette.accent)
                     .horizontalTextAlignment(.center)
 
-                Text(application.scenes.count == 1
-                    ? "1 gallery open"
-                    : "\(application.scenes.count) galleries open")
+                Text("Windows in this scene: \(scene.windows.count)")
                     .fontSize(13)
                     .horizontalTextAlignment(.center)
 
-                Text("this gallery's windows: "
-                    + scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
+                Text(scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
             }
             .spacing(4)
 
-            SwitchRow("Hide them behind another gallery", style.$hidesTools)
+            SwitchRow("Hide them behind another scene", style.$hidesTools)
             SwitchRow("Keep them on top", style.$floatsTools)
 
             SectionTitle("A window per value")
@@ -179,9 +180,9 @@ struct MultiWindowSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked { await closeSwatch(2) }
 
-            SectionTitle("Another gallery")
+            SectionTitle("More gallery windows")
 
-            Button("Open another gallery")
+            Button("New gallery window")
                 .background(style.accent.color)
                 .textColor(.white)
                 .shape(.roundedRectangle(8))
@@ -190,7 +191,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("scene.open")
                 .onClicked { await openAnother() }
 
-            Button("Close this gallery")
+            Button("Close every gallery window")
                 .fontSize(13)
                 .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
@@ -201,16 +202,15 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     }
 
     var notes: (any View)? {
-        Text("Fonts and Colours are this gallery's own windows: they change its font "
-            + "and accent, and close with it. A swatch window exists once per value, "
-            + "its number lent to it as a binding. Another gallery is one more scene, "
-            + "with windows and state of its own.")
+        Text("Fonts and Colours are windows of the galleries' scene: they change the "
+            + "look every gallery window wears, and close with the scene. A swatch "
+            + "window exists once per value, its number lent to it as a binding. "
+            + "Another gallery window has a place of its own and the scene's look.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
 
-    /// A line in the gallery's own font and accent - what its two windows
-    /// change.
+    /// A line in the scene's font and accent - what its two windows change.
     private var preview: some View {
         let line = Text("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
@@ -220,7 +220,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         return style.font.isEmpty ? line : line.fontFamily(style.font)
     }
 
-    /// The button that opens one of the gallery's windows.
+    /// The button that opens one of the scene's windows.
     private func opens(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
             .background(style.accent.color)
@@ -240,10 +240,10 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .onClicked { await close(type, caption) }
     }
 
-    /// Opens a window of this gallery, and says what came of it.
+    /// Opens a window of the scene, and says what came of it.
     private func open(_ type: WindowType, _ caption: String) async {
         do {
-            try await scene.openWindow(type)
+            try await application.openWindow(type)
             said = "\(caption): opened."
         } catch WindowError.alreadyOpen {
             said = "\(caption): WindowError.alreadyOpen - it is open already."
@@ -255,7 +255,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// Closes one, and says what came of it.
     private func close(_ type: WindowType, _ caption: String) async {
         do {
-            try await scene.closeWindow(type)
+            try await application.closeWindow(type)
             said = "\(caption): closed."
         } catch WindowError.notOpen {
             said = "\(caption): WindowError.notOpen - it is not open."
@@ -264,13 +264,13 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         }
     }
 
-    /// Opens another gallery.
+    /// Opens one more gallery window, as *File ▸ New Window* does.
     private func openAnother() async {
         do {
-            try await application.openScene()
-            said = "Another gallery is open."
+            try await application.openWindow()
+            said = "Another gallery window is open."
         } catch {
-            said = "Another gallery: \(error)"
+            said = "Another gallery window: \(error)"
         }
     }
 
@@ -288,7 +288,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// Opens a swatch's window, and says what came of it.
     private func openSwatch(_ number: Int) async {
         do {
-            try await scene.openWindow(.swatch, value: number)
+            try await application.openWindow(.swatch, value: number)
             said = "Swatch \(number): opened."
         } catch WindowError.alreadyOpen {
             said = "Swatch \(number): WindowError.alreadyOpen - it is open already."
@@ -300,7 +300,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// Closes one, and says what came of it.
     private func closeSwatch(_ number: Int) async {
         do {
-            try await scene.closeWindow(.swatch, value: number)
+            try await application.closeWindow(.swatch, value: number)
             said = "Swatch \(number): closed."
         } catch WindowError.notOpen {
             said = "Swatch \(number): WindowError.notOpen - it is not open."
@@ -309,12 +309,12 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         }
     }
 
-    /// Ends this gallery - its main window and every window it opened.
+    /// Ends the scene - every gallery window and every window beside them.
     private func closeThis() async {
         do {
             try await scene.close()
         } catch {
-            said = "This gallery: \(error)"
+            said = "The scene: \(error)"
         }
     }
 

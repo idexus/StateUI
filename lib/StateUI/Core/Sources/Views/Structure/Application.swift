@@ -31,16 +31,19 @@
 /// registers, before the first view is built. The standard environment - the
 /// device, the display, the locale - is known there already.
 public protocol Application {
-    /// The scene the application is made of.
+    /// The scenes the application is made of.
     associatedtype Body: Scene
 
-    /// What each session of the application is: its main window, the windows
-    /// it opens beside it, and the state they share. See `Scene`.
+    /// The application's scenes, each standing at most once, with the
+    /// windows it declares. See `Scene`.
     ///
-    ///     var body: some Scene { WindowGroup { MainPage() } }         // one window
-    ///     var body: some Scene { EditorScene().environment(library) }  // an editor's sessions
+    ///     var body: some Scene { WindowGroup { MainPage() } }  // one kind of window
+    ///     var body: some Scene {
+    ///         EditorScene().environment(library)            // the editors and their tools
+    ///         Window(.about) { AboutPage() }                // a scene of its own
+    ///     }
     ///
-    /// The platform makes as many sessions as the user asks for.
+    /// *File ▸ New* makes one more window of the `WindowGroup` with no name.
     @ApplicationBuilder var body: Body { get }
 }
 

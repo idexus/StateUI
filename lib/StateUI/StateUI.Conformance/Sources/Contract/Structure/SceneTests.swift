@@ -5,8 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `SceneContract` on a host: a scene hears when it comes to the front, goes behind another application and goes out
-/// of sight; when its main window closes it ends; a window of its own the user closes is heard; a window the platform
-/// restores comes back for its value.
+/// of sight; a window of it the user closes is heard, and the last one ends it.
 @_spi(Host) public enum SceneTests: ConformanceFamily {
     public static let name = "Scene"
 
@@ -38,19 +37,10 @@
                 try s.perform(.restore, on: window)
                 s.settle { log.values.last == .active }
             },
-            ConformanceCase("aSceneEndsWhenItsMainWindowCloses", proves: [Covered(SceneContract.destroying)]) { s in
-                let sessions = Received<ApplicationSession>()
-                s.start { ApplicationPage(sessions: sessions) }
-                s.settle { !sessions.values.isEmpty }
-                s.expect(sessions.values.first?.scenes.count, 1)
-
-                try s.perform(.close, on: s.element(ofType: WindowContract.nodeType))
-                s.settle { sessions.values.first?.scenes.isEmpty == true }
-                s.expect(sessions.values.first?.scenes.count, 0, "the scene ended")
-            },
-            ConformanceCase("aWindowOfItsOwnTheUserClosesIsHeard", proves: [
+            ConformanceCase("aWindowTheUserClosesIsHeardAndTheLastEndsItsScene", proves: [
                 Covered(SceneContract.windowClosed),
             ], needs: [Covered(WindowContract.windowType)]) { s in
+                let sessions = Received<ApplicationSession>()
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
@@ -59,18 +49,12 @@
                 try s.perform(.close, on: note)
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 1 }
                 s.expect(s.elements(ofType: WindowContract.nodeType).count, 1, "the scene let the note's window go")
-            },
-            ConformanceCase("aWindowThePlatformRestoresComesBackForItsValue", proves: [
-                Covered(SceneContract.windowRestored),
-            ]) { s in
-                try s.start(application: { NotesApplication() })
-                try s.perform(.activate, on: s.element("open"))
-                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
 
-                try s.start(application: { NotesApplication() })
-                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
-                guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("nothing restored") }
-                s.expect(try s.held(WindowContract.windowValue, on: note), "7", "the note restored for its number")
+                s.start { ApplicationPage(sessions: sessions) }
+                s.settle { !sessions.values.isEmpty }
+                try s.perform(.close, on: s.element(ofType: WindowContract.nodeType))
+                s.settle { sessions.values.first?.scenes.isEmpty == true }
+                s.expect(sessions.values.first?.scenes.count, 0, "its last window gone, the scene ended")
             },
         ]
     }

@@ -120,8 +120,8 @@ turns the nodes into the patch.
 
 - **`Application`** and **`Scene`** (`Structure/`) are the application's
   structure, each a `body` built by `ApplicationBuilder` - its
-  `SceneKinds` - or `SceneBuilder`;
-  `WindowGroup`, `Window` (their `WindowRole`), `Windows`, `WindowType` and
+  `Scenes` - or `SceneBuilder`;
+  `WindowGroup`, `Window`, `Windows`, `WindowType` and
   `WindowError` are a scene's windows, and `Node.page` and `Node.window` the
   page a view stands on and the window around it.
   `stateUIUseApp` names the application
@@ -431,14 +431,17 @@ type's extensions in its folder as `Type+Responsibility.swift`
 
 ### Scenes
 
-- **`Scenes`**, **`SceneRecord`** and **`SceneElement`** keep the open scenes
-  as state the root reads, numbered by the core, each of its `SceneKind` and
-  with its windows and their sessions. *Internal*; an application opens a
-  scene through its `ApplicationSession`, and a host connects one through
-  `HostBoundary`.
+- **`Scenes`** is what an application's body declares: its scenes, each with
+  its windows. *Application*, as the body's type; read by the core.
+  ([A scene stands once](../design/core/scenes.md#a-scene-stands-once))
+- **`OpenScenes`**, **`SceneRecord`** and **`SceneElement`** keep the scenes
+  standing as state the root reads, numbered by the core, each at most once
+  and with its windows and their sessions. *Internal*; an application opens a
+  window through its `ApplicationSession`, and a host hands one over through
+  `HostBoundary.connectWindow`.
   ([The scene tree](../design/core/scenes.md#the-scene-tree),
-  [kinds of scene](../design/core/scenes.md#kinds-of-scene),
-  [connecting and ending](../design/core/scenes.md#connecting-and-ending))
+  [opening windows](../design/core/scenes.md#opening-windows),
+  [what the platform hands over](../design/core/scenes.md#what-the-platform-hands-over))
 - **`SceneKey`** names a value a scene keeps for the platform to restore
   (`@State(sceneKey:)`). *Application.*
   ([Scene keys](../design/core/scenes.md#scene-keys);
@@ -514,9 +517,11 @@ values ([core link](../design/host/runtime.md#core-link)). The
   only where a field differs; `languageDirection` reads back the way the
   user's language is written.
   ([How the host writes it](../design/types/environment.md#how-the-host-writes-it))
-- **Scenes and kept values.** `connectScene(restoring:)` hands the core a
-  scene the platform made, with what it kept; `persistentKeys` and
-  `restorePersistent(_:)` hydrate kept state before the first render.
+- **Windows and kept values.** `connectWindow(kind:value:restoring:)` hands
+  the core a window the platform made - its first, a new one, or one it kept,
+  with its scene's kept values - and answers the scene it opened in;
+  `persistentKeys` and `restorePersistent(_:)` hydrate kept state before the
+  first render.
   ([Kept state](../design/core/state.md#kept-state))
 - **Realization.** `setRealization(_:)` says what the host realizes, which
   `realizes(_:)` answers; the registrations stand in

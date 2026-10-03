@@ -17,7 +17,7 @@
 /// it built and carried - and a chosen render shows its tree of composed
 /// views with each one's time.
 ///
-/// Each scene has its own. It opens along the bottom of the scene's main
+/// Each scene has its own. It opens along the bottom of the scene's first
 /// window folded to one line, the last render; opened out, it docks at the
 /// side on a desktop or a tablet, or shows in the scene's own window where the
 /// scene declares one:
@@ -28,11 +28,11 @@
 public enum Inspector {
     /// Where an inspector shows.
     public enum Place: Sendable, Equatable {
-        /// Along the bottom of its scene's main window, the page going on above
+        /// Along the bottom of its scene's first window, the page going on above
         /// it - where the ⓘ opens it, folded to one line.
         case bottom
 
-        /// Down the trailing side of the main window, under the bar.
+        /// Down the trailing side of the scene's first window, under the bar.
         case side
 
         /// In the scene's `DebugInspector` window - where the scene declares
@@ -93,7 +93,7 @@ public enum Inspector {
     /// Whether a scene's inspector may show in a window of its own: the scene
     /// declares one, and the platform opens windows.
     static func windowed(_ record: SceneRecord) -> Bool {
-        record.declared[.debugInspector] != nil && Scenes.opensWindows
+        OpenScenes.shared.declares(.debugInspector, in: record) && OpenScenes.opensWindows
     }
 
     /// Whether a scene's inspector shows, docked or in its window.
@@ -110,10 +110,10 @@ public enum Inspector {
 
         if place == .window, windowed(record) {
             dock(nil, in: record)
-            try? record.open(.debugInspector)
+            try? OpenScenes.shared.open(.debugInspector)
         } else {
             if windowed(record) {
-                try? record.close(.debugInspector)
+                try? record.close(.debugInspector, value: nil)
             }
 
             dock(place == .window ? (offersSide ? .side : .bottom) : place, in: record)
@@ -133,7 +133,7 @@ public enum Inspector {
         let model = InspectorModel.shared
 
         if windowed(record) {
-            try? record.close(.debugInspector)
+            try? record.close(.debugInspector, value: nil)
         }
 
         dock(nil, in: record)
@@ -142,7 +142,7 @@ public enum Inspector {
     }
 
     /// Forgets the inspector of a scene that has ended: docked, it went with
-    /// the scene's main window, and the record stops once no inspector shows.
+    /// the scene's windows, and the record stops once no inspector shows.
     static func ended(_ record: SceneRecord) {
         let model = InspectorModel.shared
 
@@ -153,11 +153,11 @@ public enum Inspector {
         model.settle()
     }
 
-    /// Docks a scene's inspector at `place` in its main window, or nowhere: a value of the window, whose panel the
-    /// library lays over every overlay a page declares.
+    /// Docks a scene's inspector at `place` in its first window, or nowhere: a value of the scene, whose panel the
+    /// library lays over every overlay that window's page declares.
     /// Design: docs/design/views/inspector.md#where-it-docks
     private static func dock(_ place: Place?, in record: SceneRecord) {
         InspectorModel.shared.places[record.id] = place
-        record.windowSession(SceneElement.mainKey).dockedInspector = place
+        record.dockedInspector = place
     }
 }

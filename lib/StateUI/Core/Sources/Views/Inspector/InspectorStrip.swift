@@ -20,7 +20,7 @@ struct InspectorStrip: View {
         return Grid {
             Grid {
                 if let last {
-                    Row(pass: last, scene: element, index: Scenes.shared.index(of: scene), chosen: false)
+                    Row(pass: last, scene: element, index: OpenScenes.shared.index(of: scene), chosen: false)
                 } else {
                     Text(InspectorView.waiting(all.count))
                         .fontSize(12)
@@ -35,7 +35,7 @@ struct InspectorStrip: View {
             HStack {
                 Look.icon(Look.expanding, "Expand") { model.expand(scene) }
                 Look.icon(Look.closing, "Close") {
-                    if let record = Scenes.shared.record(id: scene) {
+                    if let record = OpenScenes.shared.record(id: scene) {
                         Inspector.hide(in: record)
                     }
                 }

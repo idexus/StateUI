@@ -84,8 +84,11 @@ final class UIKitActToolkit: ActToolkit {
     }
 
     func keep(_ call: HostActCall) -> Bool {
-        guard call.act == .persistValue else { return false }
-        renderer.savePersistent(call)
+        switch call.act {
+        case .persistValue: renderer.savePersistent(call)
+        case .persistSceneValue: renderer.keepSceneValue(call)
+        default: return false
+        }
         return true
     }
 

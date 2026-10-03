@@ -2,12 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extension Node {
-    /// A scene's window showing the page `page` builds, a view of `kind`: a placeholder built again when its
-    /// session or its scene's docked inspector moves, its session offered on it.
+    /// A scene's window showing the page `page` builds, a view of `kind`, its scene's inspector docked in it where
+    /// `inspector` reads a place: a placeholder built again when its session or that place moves, or it starts or
+    /// stops docking one, its session offered on it.
     /// Design: docs/design/views/pages.md#a-window-is-a-placeholder
-    static func window(showing page: @escaping () -> Node, kind: String, session: WindowSession) -> Node {
-        var window = composed(Shown(), type: "StateUI.Window(\(kind))") {
-            let overlay = Node.overlay(inspector: session.dockedInspector, of: session.record?.id)
+    static func window(
+        showing page: @escaping () -> Node, kind: String, session: WindowSession,
+        inspector: (() -> Inspector.Place?)? = nil
+    ) -> Node {
+        var window = composed(Shown(docks: inspector != nil), type: "StateUI.Window(\(kind))") {
+            let overlay = Node.overlay(inspector: inspector?(), of: session.record?.id)
 
             // Its page, then the library's overlay: one order.
             // Design: docs/design/views/pages.md#the-children-of-a-window
@@ -40,5 +44,7 @@ extension Node {
     }
 }
 
-/// What a window's placeholder is made of: nothing of its own to keep.
-private struct Shown {}
+/// What a window's placeholder is made of: whether it docks its scene's inspector.
+private struct Shown {
+    let docks: Bool
+}

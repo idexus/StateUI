@@ -139,20 +139,6 @@ extension GTKRendererTests {
         }
     }
 
-    /// A window of a kind of its own belongs to its scene's main window, as a tool window does on GNOME: above it, and
-    /// gone with it; the main window belongs to none.
-    func testAWindowOfItsOwnBelongsToTheMainWindow() throws {
-        try onUIThread {
-            let host = GTKRenderer.running(application: { ToolApplication() })
-            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            host.settle { host.windows.count == 2 }
-
-            XCTAssertEqual(host.windows.count, 2)
-            let (main, tool) = (host.windows[0].window, host.windows[1].window)
-            XCTAssertTrue(gtk_window_get_transient_for(tool.widget.of(GtkWindow.self)) == main.widget.of(GtkWindow.self))
-            XCTAssertNil(gtk_window_get_transient_for(main.widget.of(GtkWindow.self)))
-        }
-    }
 }
 
 extension GTKRendererTests {
@@ -243,27 +229,6 @@ private struct GoingPage: View {
         let window = self.window
         return Text("going")
             .onChanged(window.phase) { if window.phase == .destroying { gone.values.append("window") } }
-    }
-}
-
-/// An application whose main window opens a tool window of its scene.
-private struct ToolApplication: Application {
-    var body: some Scene { ToolScene() }
-}
-
-private struct ToolScene: Scene {
-    var body: some Scene {
-        WindowGroup { ToolOpeningPage() }
-        Window(WindowType("renderer.tool")) { Text("A tool") }
-    }
-}
-
-private struct ToolOpeningPage: View {
-    @Environment private var scene: SceneSession
-
-    var body: some View {
-        let scene = self.scene
-        return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
     }
 }
 

@@ -2,17 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The application as it runs: where it stands, what its controls look like,
-/// how its values animate, what it keeps between launches, and opening another
-/// of its scenes.
+/// how its values animate, what it keeps between launches, and opening its
+/// windows.
 ///
 ///     @Environment private var application: ApplicationSession
 ///
-///     Button("New window").onClicked { try await application.openScene() }
+///     Button("New window").onClicked { try await application.openWindow() }
+///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
 ///
 /// A session is one opening of something declared: the application from its
-/// start to the end of its process, a scene from its main window opening to
-/// its closing, a window from `.created` to `.destroying`, a content page for
-/// as long as its element lives. Each is in the environment of everything
+/// start to the end of its process, a scene from its first window opening to
+/// its last closing, a window from `.created` to `.destroying`, a content page
+/// for as long as its element lives. Each is in the environment of everything
 /// under it - `ApplicationSession`, `SceneSession`, `WindowSession`,
 /// `PageSession` - so a view acts on the one it is in, from a handler, an
 /// engine or a task alike.
@@ -24,12 +25,12 @@ public final class ApplicationSession {
     /// lifecycle.
     @State public internal(set) var phase: ApplicationPhase = .active
 
-    /// The sessions of the scenes open right now, in the order they opened -
-    /// read like any state, so a view that shows them is built again as a
-    /// scene opens or closes.
+    /// The sessions of the scenes standing right now, in the order they
+    /// opened - read like any state, so a view that shows them is built again
+    /// as a scene opens or ends.
     ///
     ///     Text("\(application.scenes.count) open")
-    public var scenes: [SceneSession] { Scenes.shared.list.map(\.session) }
+    public var scenes: [SceneSession] { OpenScenes.shared.list.map(\.session) }
 
     /// The styles every control in the application can be given.
     ///
@@ -72,29 +73,64 @@ public final class ApplicationSession {
     /// `.environment(...)`. It opens scenes as the application's own does.
     public init() {}
 
-    /// Opens another session of the application: a new scene of the kind whose
-    /// main window has no name - the first kind where none is - its main window
-    /// first; what *File ▸ New Window* does, asked from the interface.
+    /// Opens one more window of the `WindowGroup` with no name - what launch
+    /// opens and *File ▸ New Window* does - in its scene, which opens with it
+    /// where it does not stand.
     ///
     /// - Throws: `WindowError.unsupported` where the platform opens no second
-    ///   window - a phone; `WindowError.alreadyOpen` where that kind has one
-    ///   session, open already.
-    public nonisolated(nonsending) func openScene() async throws {
-        try Scenes.shared.openScene(.unnamed)
+    ///   window - a phone.
+    public nonisolated(nonsending) func openWindow() async throws {
+        try OpenScenes.shared.open(nil)
     }
 
-    /// Opens a scene of the kind whose main window is of `type`: another session
-    /// of a `WindowGroup(type)`, or the one session of a `Window(type)` written
-    /// first in a scene or in the application's body.
+    /// Opens a window of `type` in the scene declaring it, which opens with it
+    /// where it does not stand: the one window of a `Window(type)`, or one more
+    /// of a `WindowGroup(type)`.
     ///
-    ///     Button("New editor").onClicked { try await application.openWindow(.editor) }
+    ///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
     ///
-    /// - Throws: `WindowError.undeclared(type)` where no kind's main window is
-    ///   of `type`; `WindowError.alreadyOpen` where its one session is open;
+    /// - Throws: `WindowError.alreadyOpen` where its one window is open,
+    ///   `WindowError.undeclared(type)` where no scene declares it,
+    ///   `WindowError.wrongValue(type)` where it opens one per value, and
     ///   `WindowError.unsupported` where the platform opens no second window - a
     ///   phone.
     public nonisolated(nonsending) func openWindow(_ type: WindowType) async throws {
-        try Scenes.shared.openScene(.named(type))
+        try OpenScenes.shared.open(type)
+    }
+
+    /// Opens the window of `type` for `value` in the scene declaring it, which
+    /// opens with it where it does not stand.
+    ///
+    ///     Button("Open").onClicked { try await application.openWindow(.document, value: id) }
+    ///
+    /// - Throws: `WindowError.alreadyOpen` where a window for that value is
+    ///   open, and the rest of `WindowError` where it cannot open.
+    public nonisolated(nonsending) func openWindow<Value: Codable & Hashable>(
+        _ type: WindowType,
+        value: Value
+    ) async throws {
+        try OpenScenes.shared.open(type, value: AnyHashable(value), text: try ValueText.write(value), of: Value.self)
+    }
+
+    /// Closes the window of `type` - every window of a `WindowGroup(type)` -
+    /// its scene ending with its last window.
+    ///
+    /// - Throws: `WindowError.notOpen` where none is open, and
+    ///   `WindowError.undeclared(type)` where no scene declares it.
+    public nonisolated(nonsending) func closeWindow(_ type: WindowType) async throws {
+        try OpenScenes.shared.close(type)
+    }
+
+    /// Closes the window of `type` for `value`, its scene ending with its last
+    /// window.
+    ///
+    /// - Throws: `WindowError.notOpen` where no window for that value is open,
+    ///   and the rest of `WindowError` where it cannot close.
+    public nonisolated(nonsending) func closeWindow<Value: Codable & Hashable>(
+        _ type: WindowType,
+        value: Value
+    ) async throws {
+        try OpenScenes.shared.close(type, value: AnyHashable(value), of: Value.self)
     }
 
     /// Forgets what an application wrote - what a registration starts from, so

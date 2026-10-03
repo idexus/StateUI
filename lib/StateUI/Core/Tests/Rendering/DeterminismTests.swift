@@ -159,10 +159,10 @@ final class DeterminismTests: XCTestCase {
         // what a render is rooted in - one scene of one window here, the way
         // most applications have one.
         func tree() -> Node {
-            var main = window()
-            main.id = SceneElement.mainKey
+            var launched = window()
+            launched.id = "window 1"
 
-            var scene = Node(type: .scene, children: [main])
+            var scene = Node(type: .scene, children: [launched])
             scene.id = "1"
 
             return Node(type: .application, children: [scene])

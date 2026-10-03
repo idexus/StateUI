@@ -68,9 +68,8 @@ pages is the window's content: a page shown by itself in a frame whose header
 bar is the window's title bar, an arrangement as it stands, its pages
 carrying their own ([pages](pages.md)). A window is presented the first time
 it shows something while its scene shows it, and told it was made once, in
-its turn. A window of a kind of its own belongs to its scene's main window -
-GTK's transient window, above it and gone with it - and a window its scene
-hides while another is in front is hidden. A question, a word to the screen
+its turn. Every window is one of its own, and a window its scene hides while
+another is in front is hidden. A question, a word to the screen
 reader and the way back go to the window the user is in: the one activated
 last.
 

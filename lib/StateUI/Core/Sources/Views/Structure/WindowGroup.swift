@@ -1,66 +1,49 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Windows made as they are asked for, each showing one view. Without `for:`, a scene's main window - one per
-/// session, the platform making as many sessions as the user asks for - with no name for the kind *File ▸ New*
-/// opens, or naming a kind of its own; with a name and `for:`, one window per value, opened beside the main one.
+/// A factory of windows, each showing one view, made as they are asked for - in the scene that declares it, which
+/// opens with its first window and stands while one is open. With no name, what launch and *File ▸ New* make one
+/// more of, one such group in an application; with a name, a window each time `application.openWindow(.kind)` asks;
+/// with a name and `for:`, one window per value.
 ///
 ///     WindowGroup { MainPage() }
 ///     WindowGroup(.editor) { EditorPage() }
 ///     WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
 ///
-/// One window of a kind beside the main one is a `Window`. A window opened beside the main one belongs to its
-/// scene: it opens through the scene's session, closes with the scene, and the platform restores it to its scene
-/// for the same value, which is why the value is `Codable`.
-public struct WindowGroup<Role>: Scene {
+/// One window of a kind in its scene is a `Window`.
+public struct WindowGroup: Scene {
     /// What it makes.
     var declared: DeclaredWindows
 
     /// None: the library's own scene.
     public var body: Never { return fatalError("a WindowGroup is the library's own scene: it has no body") }
 
-    /// Offers an object to everything in its windows, resolved by type the way `.environment` on a view is.
+    /// The group launch and *File ▸ New* make a window of, showing `content` - an `if`/`else` there swaps what a
+    /// window shows.
     ///
-    ///     WindowGroup { MainPage() }
-    ///         .environment(nav)
-    public func environment<Value: AnyObject>(_ object: Value) -> Self {
-        var copy = self
-        copy.declared.environments.append((key: ObjectIdentifier(Value.self), object: object))
-        return copy
-    }
-}
-
-extension WindowGroup where Role == WindowRole.Main {
-    /// The scene's main window, showing `content` - an `if`/`else` there swaps what the one window shows. Its
-    /// scene is the kind *File ▸ New* opens.
-    ///
-    /// - Parameter content: the view the window shows.
+    /// - Parameter content: the view a window shows.
     public init<Content: View>(@ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
             type: nil, valueType: nil, kind: String(reflecting: Content.self),
             page: { _, _ in Node.page(content()) })
     }
 
-    /// The main window of a kind of scene of its own, showing `content`: each session one more, opened by the
-    /// application's session.
+    /// Windows of a kind, one more each time it is asked for, showing `content`.
     ///
     ///     WindowGroup(.editor) { EditorPage() }
     ///
     ///     Button("New editor").onClicked { try await application.openWindow(.editor) }
     ///
     /// - Parameters:
-    ///   - type: the scene's kind - what `ApplicationSession.openWindow` opens one by, and what the platform
-    ///     restores the scene as.
-    ///   - content: the view the window shows.
+    ///   - type: what `ApplicationSession.openWindow` opens one by, and what the platform restores one as.
+    ///   - content: the view a window shows.
     public init<Content: View>(_ type: WindowType, @ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
             type: type, valueType: nil, kind: String(reflecting: Content.self),
             page: { _, _ in Node.page(content()) })
     }
-}
 
-extension WindowGroup where Role == WindowRole.Beside {
-    /// One window per value, opened beside the main one - a document per document, an inspector per item.
+    /// One window per value - a document per document, an inspector per item.
     ///
     ///     WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
     ///
@@ -68,7 +51,7 @@ extension WindowGroup where Role == WindowRole.Beside {
     /// writing it makes the same window about another - which is also what the system restores it for.
     ///
     /// - Parameters:
-    ///   - type: what a session's `openWindow` opens one by.
+    ///   - type: what `ApplicationSession.openWindow` opens one by.
     ///   - value: the type of value one window stands for - anything `Codable` and `Hashable`, so the platform
     ///     can write it down.
     ///   - content: the view for one value.
@@ -91,6 +74,16 @@ extension WindowGroup where Role == WindowRole.Beside {
                 return Node.page(content(binding))
             },
             restore: { text in ValueText.read(Value.self, from: text).map(AnyHashable.init) })
+    }
+
+    /// Offers an object to everything in its windows, resolved by type the way `.environment` on a view is.
+    ///
+    ///     WindowGroup { MainPage() }
+    ///         .environment(nav)
+    public func environment<Value: AnyObject>(_ object: Value) -> Self {
+        var copy = self
+        copy.declared.environments.append((key: ObjectIdentifier(Value.self), object: object))
+        return copy
     }
 
     /// Whether the group's windows hide while another scene of the application is the one in front - and come

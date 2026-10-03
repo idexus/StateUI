@@ -1,17 +1,18 @@
 import StateUI
 
-/// One scratchpad's page: its text, kept with its scene, and a way to close it.
+/// A scratchpad window's page: the scratchpads' one text, kept with their scene, and a way to close the window - or
+/// every scratchpad window at once.
 struct ScratchpadPage: View {
-    /// The text, this scratchpad's own.
+    /// The text, the scene's: every scratchpad window shows and writes it.
     @State(sceneKey: .scratch) private var text = ""
 
-    /// This scratchpad - the scene the page is in.
+    /// The scratchpads - the scene the page is in, closed whole from here.
     @Environment private var scene: SceneSession
 
     /// The application as it runs - how many scenes stand.
     @Environment private var application: ApplicationSession
 
-    /// The window this is the page of - what it is called, and how big.
+    /// The window this is the page of - what it is called, how big, and closed from here.
     @Environment private var window: WindowSession
 
     /// The page itself - its padding.
@@ -19,7 +20,7 @@ struct ScratchpadPage: View {
 
     var body: some View {
         VStack {
-            Text("Write anything: this scratchpad keeps it, and another keeps its own.")
+            Text("Write anything: every scratchpad window shows this one text, and keeps it.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
@@ -27,16 +28,25 @@ struct ScratchpadPage: View {
                 .height(180)
                 .accessibilityIdentifier("scratchpad.text")
 
-            Text("\(application.scenes.count) scenes open")
+            Text("Scratchpad windows: \(scene.windows.count) · scenes open: \(application.scenes.count)")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Button("Close this scratchpad")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
-                .horizontalAlignment(.end)
-                .accessibilityIdentifier("scratchpad.close")
-                .onClicked { try await scene.close() }
+            HStack {
+                Button("Close this window")
+                    .fontSize(13)
+                    .padding(horizontal: 14, vertical: 6)
+                    .accessibilityIdentifier("scratchpad.close")
+                    .onClicked { try await window.close() }
+
+                Button("Close every scratchpad")
+                    .fontSize(13)
+                    .padding(horizontal: 14, vertical: 6)
+                    .accessibilityIdentifier("scratchpad.closeScene")
+                    .onClicked { try await scene.close() }
+            }
+            .spacing(10)
+            .horizontalAlignment(.end)
         }
         .spacing(10)
         .onCreated {

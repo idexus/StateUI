@@ -20,6 +20,19 @@ struct CounterPage: View {
     }
 }
 
+/// A page showing what its scene keeps, which a click changes.
+struct KeptSectionPage: View {
+    @State(sceneKey: SceneKey("android.section", of: Int.self)) private var section = 0
+
+    var body: some View {
+        VStack {
+            Text("section \(section)")
+            Button("Two")
+                .onClicked { section = 2 }
+        }
+    }
+}
+
 /// What the host reported of the device's locale, battery and network, one label each.
 struct EnvironmentPage: View {
     @Environment var locale: LocaleInfo
@@ -53,6 +66,8 @@ final class AndroidRendererTests: XCTestCase {
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
             ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
             ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
+            ("testASceneComesBackAtTheNextStartWithWhatItKept", testASceneComesBackAtTheNextStartWithWhatItKept),
+            ("testAnActivityMadeAgainKeepsWhatTheScenesKept", testAnActivityMadeAgainKeepsWhatTheScenesKept),
             ("testAStartedHostSaysWhatItRealizes", testAStartedHostSaysWhatItRealizes),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
             ("testTheHostReportsTheLocaleTheBatteryAndTheNetwork", testTheHostReportsTheLocaleTheBatteryAndTheNetwork),
@@ -118,6 +133,38 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(second.runtime.tree.root?.children.filter { $0.type == .scene }.count, 1)
             XCTAssertEqual(second.views(AndroidTextView.self).map(\.text), ["count 0"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
+        }
+    }
+
+    /// The platform restores no windows: a value a scene keeps is kept with the scenes beside the preferences, and
+    /// comes back with its scene at the process's next start.
+    func testASceneComesBackAtTheNextStartWithWhatItKept() throws {
+        try onMainActor {
+            let first = AndroidRenderer.running { KeptSectionPage() }
+            try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
+            XCTAssertEqual(first.views(AndroidTextView.self).map(\.text), ["section 2"])
+            first.runtime.tree.root?.leave()
+
+            stateUIUseApp(OneWindowApplication { KeptSectionPage() })
+            let next = AndroidRenderer.bare()
+            next.show()
+
+            XCTAssertEqual(next.views(AndroidTextView.self).map(\.text), ["section 2"])
+        }
+    }
+
+    /// What the scenes keep outlives the activity: Android making it again hands the scenes kept to the next, which
+    /// keeps them on.
+    func testAnActivityMadeAgainKeepsWhatTheScenesKept() throws {
+        try onMainActor {
+            let first = AndroidRenderer.running { KeptSectionPage() }
+            try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
+
+            let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
+
+            let kept = AndroidPersistence.readScenes(context: TestContext.context.reference)
+            XCTAssertEqual(second.views(AndroidTextView.self).map(\.text), ["section 2"])
+            XCTAssertEqual(kept.scenes.map(\.values), [["android.section": .number(2)]])
         }
     }
 

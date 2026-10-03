@@ -12,7 +12,7 @@ own.
 
 ```text
   Application                        the root, and the acts with no control behind them
-    Scene                            one session of the application
+    Scene                            windows and the state they share
       Window                         a window onto a page
         Page, NavigationStack,       what a window shows; the arrangements are pages too
         TabView, SplitView,

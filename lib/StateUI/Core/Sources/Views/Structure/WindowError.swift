@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Why a window or a scene was not opened or closed - what a session's
-/// `openWindow`, `closeWindow` and `close()` throw, and
-/// `ApplicationSession.openScene()`.
+/// Why a window was not opened or closed - what the application's
+/// `openWindow` and `closeWindow` throw, and a scene's or a window's
+/// `close()`.
 public enum WindowError: Error, Equatable, Sendable {
     /// It is open already: opening what is open is refused, and says so.
     case alreadyOpen
@@ -15,7 +15,7 @@ public enum WindowError: Error, Equatable, Sendable {
     /// reads, or one whose scene has ended.
     case noScene
 
-    /// The scene declares no group of this kind.
+    /// No scene declares windows of this kind.
     case undeclared(WindowType)
 
     /// The group is declared for another value: it opens one window and was

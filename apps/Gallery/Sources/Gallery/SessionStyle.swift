@@ -1,7 +1,7 @@
 import StateUI
 
-/// The kinds of window a gallery opens beside its main one - each a window of
-/// the gallery that opened it. See `GalleryScene`.
+/// The kinds of window the galleries' scene opens beside its gallery windows -
+/// each a window of that scene. See `GalleryScene`.
 extension WindowType {
     /// The window that chooses the gallery's font.
     static let fonts = WindowType("gallery.fonts")
@@ -64,13 +64,13 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
     }
 }
 
-/// What one gallery looks like, and how its tool windows stand - stepping
-/// aside for another gallery, floating on top - the context a gallery's
-/// windows share.
+/// What the galleries look like, and how their tool windows stand - stepping
+/// aside for another scene, floating on top - the context every window of the
+/// galleries' scene shares.
 ///
-/// Held by the gallery's scene and offered to every window of it, so the Fonts
-/// and Colours windows change the gallery that opened them and no other, with
-/// nothing passed between them and the main window.
+/// Held by the galleries' scene and offered to every window of it, so the Fonts
+/// and Colours windows change every gallery window at once, with nothing passed
+/// between them.
 final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""

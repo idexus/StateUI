@@ -78,7 +78,6 @@ enum AndroidRealization {
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),
-        .complete("Scene", "destroying"),
         .complete("Scene", "stopped"),
         .complete("TextSpan", "background"),
         .complete("TextSpan", "fontAttributes"),

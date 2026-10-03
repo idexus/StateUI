@@ -31,14 +31,10 @@ enum AndroidRegistrations {
         return registry
     }()
 
-    /// The acts this host performs, whichever element each is aimed at; the host layer's performer
-    /// (`HostActPerformer`) answers exactly these, and refuses every other by name.
-    static let acts: [any ContractMember] = [
-        VisualElementContract.focus, VisualElementContract.unfocus,
-        ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
-        ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
-        ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard, ApplicationContract.persistValue,
-        ApplicationContract.prompt, ApplicationContract.utcOffset,
+    /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`) and its
+    /// own elements' acts; the host layer's performer (`HostActPerformer`) answers exactly these, and refuses every
+    /// other by name.
+    static let acts: [any ContractMember] = HostActs.performed + [
         WebViewContract.evaluateJavaScript, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
         ItemsViewContract.scrollTo,
     ]

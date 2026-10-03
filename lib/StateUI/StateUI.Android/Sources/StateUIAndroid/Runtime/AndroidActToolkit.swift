@@ -16,6 +16,9 @@ final class AndroidActToolkit: ActToolkit {
     private let root: JavaObject
     private let tree: () -> MountedTree
 
+    /// Where a scene's value goes to be kept with the scenes.
+    private let keepSceneValue: (HostActCall) -> Void
+
     /// The dialogs showing, by ticket, each with what hears its answer.
     private var dialogs: [Int64: (Bool, String?) -> Void] = [:]
     private static var nextDialogTicket: Int64 = 1
@@ -27,11 +30,15 @@ final class AndroidActToolkit: ActToolkit {
     /// dialog's.
     private(set) static var nextScriptTicket: Int64 = -1
 
-    init(core: CoreLink, context: JavaObject, root: JavaObject, tree: @escaping () -> MountedTree) {
+    init(
+        core: CoreLink, context: JavaObject, root: JavaObject, tree: @escaping () -> MountedTree,
+        keepSceneValue: @escaping (HostActCall) -> Void
+    ) {
         self.core = core
         self.context = context
         self.root = root
         self.tree = tree
+        self.keepSceneValue = keepSceneValue
     }
 
     let host = "Android Views"
@@ -137,8 +144,11 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     func keep(_ call: HostActCall) -> Bool {
-        guard call.act == .persistValue else { return false }
-        AndroidPersistence.keep(call, core: core, context: context.reference)
+        switch call.act {
+        case .persistValue: AndroidPersistence.keep(call, core: core, context: context.reference)
+        case .persistSceneValue: keepSceneValue(call)
+        default: return false
+        }
         return true
     }
 

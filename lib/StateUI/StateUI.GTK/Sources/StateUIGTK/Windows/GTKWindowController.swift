@@ -28,12 +28,11 @@ final class GTKWindowController {
         window = GTKWindow(application: application)
     }
 
-    /// Shows what the element asks for now, the window it belongs to found by `windowOf`. The host layer tells the
-    /// page the user sees and the window made before the window is first shown.
-    func present(_ element: MountedElement, in runtime: HostRuntime, windowOf: (MountedElement) -> GTKWindow?) {
+    /// Shows what the element asks for now. The host layer tells the page the user sees and the window made before
+    /// the window is first shown.
+    func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
         let changes = presentation.show(element, in: runtime.lifecycle)
-        if let owner = changes.owner { window.setOwner(owner.flatMap(windowOf)) }
         if let frame = changes.frame { window.request(frame) }
         if let bounds = changes.bounds { window.bound(bounds) }
         if let hidden = changes.hidden { window.setHidden(hidden) }

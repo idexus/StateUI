@@ -687,7 +687,7 @@ final class StyleTests: XCTestCase {
                 .shape(.roundedRectangle(12))
         }
 
-        var main = Node(type: "Window", children: [
+        var launched = Node(type: "Window", children: [
             Node(type: "Page", children: [
                 VStack {
                     Text("Welcome").style("Headline")
@@ -698,15 +698,15 @@ final class StyleTests: XCTestCase {
                 .node,
             ]),
         ])
-        main.id = SceneElement.mainKey
+        launched.id = "window 1"
 
-        var scene = Node(type: "Scene", children: [main])
+        var scene = Node(type: "Scene", children: [launched])
         scene.id = "1"
 
         let tree = Node(type: "Application", children: [scene])
 
         let stack = try XCTUnwrap(differ.reconcile(nil, with: tree, styles: sheet).patch
-            .at(.manual("1"), .manual(SceneElement.mainKey), .auto(2), .auto(3)))
+            .at(.manual("1"), .manual("window 1"), .auto(2), .auto(3)))
         let ink = Color("#212121").propValue
 
         // The headline's style, based on the body's - and standing in place of

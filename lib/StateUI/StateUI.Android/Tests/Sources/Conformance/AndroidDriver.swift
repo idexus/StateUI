@@ -83,6 +83,7 @@ final class AndroidDriver: HostDriver {
         self.renderer = renderer
         Java.call(window.reference, Self.setContentView, .object(root.reference))
         Java.callStatic(Self.testPixels, Self.paintNothing, .object(window.reference))
+        AndroidPersistence.writeScenes("", context: window.reference)  // no scenes an earlier case kept
         renderer.show()
         layOut()
         // The activity comes to the front: onResume.

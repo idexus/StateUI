@@ -133,13 +133,9 @@
         return moves
     }
 
-    /// What the scenes and the windows hear as the application ends: each scene's windows that they are going, then
-    /// the scene.
+    /// What the windows hear as the application ends: each, in order, that it is going.
     public static func ending(windows: [MountedElement]) -> [Told] {
-        scenes(of: windows).flatMap { scene in
-            windows.filter { $0.enclosing(type: .scene) === scene }.map { Told(element: $0, event: .destroying) }
-                + [Told(element: scene, event: .destroying)]
-        }
+        windows.map { Told(element: $0, event: .destroying) }
     }
 
     /// The scenes holding `windows`, each once, in order.
@@ -164,13 +160,12 @@
         !isStopped(window) && reports.first { $0.window === window }?.activated == true
     }
 
-    /// What `scene` stands in: stopped with the application hidden, activated while one of its windows is, stopped
-    /// while its main window is off the screen, else deactivated.
+    /// What `scene` stands in: activated while one of its windows is, stopped while every one is off the screen,
+    /// else deactivated.
     private func sceneEvent(_ scene: MountedElement, windows: [MountedElement]) -> Event {
         let own = windows.filter { $0.enclosing(type: .scene) === scene }
-        if isHidden { return .stopped }
         if own.contains(where: isActivated) { return .activated }
-        if let main = own.first(where: \.isMainWindow), isStopped(main) { return .stopped }
+        if own.allSatisfy(isStopped) { return .stopped }
         return .deactivated
     }
 

@@ -87,8 +87,7 @@ performance counter's, in milliseconds.
 
 Each window element the tree holds is shown in a WinUI `Window` of its own,
 kept by a window controller in the tree's order; a window the tree no longer
-holds is closed. The first is the scene's main window, where the application's
-questions stand and whose screen the environment reads. A window element's
+holds is closed. The first is the one whose screen the environment reads. A window element's
 arrangement of pages is its window's content, under the window's chrome, which
 names it after the visible page, else after the element's title
 ([the window's chrome](pages.md#the-windows-chrome)); the window is activated
@@ -126,11 +125,9 @@ also told it lost its activation, in either order; a change of its size or
 presenter tells it only where it is minimized. A window its scene hides is
 `AppWindow.Hide`, and shown again without being activated; one hidden before
 it was ever shown is activated as it is first shown. A floating window is
-`IsAlwaysOnTop` while the application is in front. A window of a kind of its
-own is owned by its scene's main window (`GWLP_HWNDPARENT`), as a tool window
-is on Windows: above it, hidden while it is minimized, and out of the
-taskbar and the switcher (`IsShownInSwitchers`). A window hidden - with its
-owner, or by its scene - tells its state as it hides and shows again
+`IsAlwaysOnTop` while the application is in front. Every window is one of
+its own, in the taskbar and the switcher. A window its scene hides tells its
+state as it hides and shows again
 (`AppWindow.Changed`), off the screen while it is hidden. A window is told it was made before it is
 first shown: WinUI tells it that it was activated inside `Activate`, before
 the call returns.

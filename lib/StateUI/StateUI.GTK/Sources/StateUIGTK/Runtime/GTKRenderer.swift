@@ -51,7 +51,7 @@ final class GTKRenderer {
         roster.controllers
     }
 
-    /// The first window - the scene's main one; nil before there is one.
+    /// The first window of the first scene; nil before there is one.
     var window: GTKWindow? {
         windows.first?.window
     }
@@ -141,7 +141,7 @@ final class GTKRenderer {
             close: { $0.window.close() })
         if let window, frameClock.widget != window.widget { frameClock.widget = window.widget }
         for (element, controller) in roster.windows {
-            controller.present(element, in: runtime, windowOf: { [roster] in roster.controller(of: $0)?.window })
+            controller.present(element, in: runtime)
         }
         if !reportedDisplay, let window, gtk_widget_get_realized(window.widget) != 0 {
             reportedDisplay = true

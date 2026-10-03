@@ -223,11 +223,6 @@ void stateui_winui_window_close(StateUIObjectRef window);
 void stateui_winui_window_set_shown(StateUIObjectRef window, bool shown);
 /// Minimizes or restores the window as its buttons do: `ShowWindow` with `command`. What a test does.
 void stateui_winui_window_show_as_user(StateUIObjectRef window, int32_t command);
-/// Makes `owner` the window's owner - it stands above it, is hidden with it, and leaves the switchers - or, for
-/// null, a window of its own again.
-void stateui_winui_window_set_owner(StateUIObjectRef window, StateUIObjectRef owner);
-/// Whether `owner` owns the window and the switchers leave it out. What a test reads.
-bool stateui_winui_window_belongs_to(StateUIObjectRef window, StateUIObjectRef owner);
 
 /// Moves or sizes the window where `has` says, each alone: `values` are x and y from the corner of the screen's work
 /// area and the width and height of its content, in DIPs.

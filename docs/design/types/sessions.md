@@ -10,7 +10,7 @@ task alike - and says which by the session it holds.
 ```text
   ApplicationSession   the application, from its start to the end of its process
        |
-       +-- SceneSession     a scene, from its main window opening to its closing
+       +-- SceneSession     a scene, from its first window opening to its last closing
               |
               +-- WindowSession    a window, from created to destroying
                      |

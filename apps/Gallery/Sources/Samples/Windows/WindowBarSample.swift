@@ -12,7 +12,7 @@ final class WindowBarState {
 /// The bar the window declares on its page: the application's name, a line under the title, and an action on every
 /// page.
 struct WindowBarSample: SampleContent, ExampleContent {
-    /// The values shared with this gallery's main window.
+    /// The values shared with the gallery window the sample is in.
     let bar: WindowBarState
 
     static let id = "windowBar"

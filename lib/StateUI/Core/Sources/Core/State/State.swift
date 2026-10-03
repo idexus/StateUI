@@ -255,7 +255,7 @@ extension State where Value: PersistentValue {
         sceneClaim = { [unowned self] record in self.claim(key, in: record) }
 
         // And at once where it is made inside a scene's build - a model's state.
-        if let record = Scenes.shared.building {
+        if let record = OpenScenes.shared.building {
             claim(key, in: record)
         }
     }

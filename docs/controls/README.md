@@ -75,7 +75,7 @@ The scene, the window and the page an application is made of, the arrangements a
 <!-- structure:begin -->
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](Application.md) | 12 | 7 ✅ · 5 ✓ | 6 ✅ · 5 ✓ | 4 ✅ · 4 ✓ | 12 ✅ | 11 ✅ · 1 ✓ |  |
+| [Application](Application.md) | 12 | 7 ✅ · 5 ✓ | 7 ✅ · 5 ✓ | 6 ✅ · 4 ✓ | 12 ✅ | 11 ✅ · 1 ✓ |  |
 | [ContextMenu](ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Divider](Divider.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Marker](Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 |  |
@@ -86,7 +86,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [NavigationStack](NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [Page](Page.md) | 12 | 8 ✅ | 12 ✅ | 7 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – |  |
-| [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
+| [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ |  |  |  |
 | [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
 | [TabView](TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
 | [TextSpan](TextSpan.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
@@ -94,11 +94,11 @@ The scene, the window and the page an application is made of, the arrangements a
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
-| [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – |  |
-| ✅ |  | 70 | 71 | 40 | 113 | 78 |  |
-| ✓ |  | 15 | 12 | 10 | 0 | 7 |  |
-| – |  | 0 | 8 | 13 | 0 | 28 |  |
-| **Met** | 125 | **85** | **91** | **63** | **113** | **113** |  |
+| [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ |  |  |  |
+| ✅ |  | 68 | 71 | 41 | 85 | 64 |  |
+| ✓ |  | 15 | 12 | 10 | 0 | 1 |  |
+| – |  | 0 | 8 | 13 | 0 | 20 |  |
+| **Met** | 123 | **83** | **91** | **64** | **85** | **85** |  |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 <!-- structure:end -->
 

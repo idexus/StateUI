@@ -1,17 +1,17 @@
 import StateUI
 
-/// An application of several kinds of scene, each named by its main window: the galleries, a scratchpad of its own
-/// kind, and one About window for the whole application.
-struct SceneKindsSample: SampleContent, ExampleContent {
-    /// The application as it runs - which opens a scene of each kind.
+/// An application of several scenes: the galleries, the scratchpads, and About - one window for the whole
+/// application, in a scene of its own.
+struct ScenesSample: SampleContent, ExampleContent {
+    /// The application as it runs - which opens a window in the scene declaring it.
     @Environment private var application: ApplicationSession
 
     /// What the last button answered.
     @State private var said = "Nothing asked yet."
 
-    static let id = "scene-kinds"
-    static let title = "Kinds of scene"
-    static let summary = "A scratchpad is a scene of its own kind; About is one window for the application."
+    static let id = "scenes"
+    static let title = "Scenes"
+    static let summary = "Scratchpads are a scene of their own; About is a scene of one window."
 
     /// Devices whose host can present independent windows.
     static let formFactors: Set<FormFactor> = [.tablet, .desktop]
@@ -24,39 +24,48 @@ struct SceneKindsSample: SampleContent, ExampleContent {
 
         struct GalleryApp: Application {
             var body: some Scene {
-                GalleryScene()                          // the first kind: launch and File ▸ New
-                ScratchpadScene()                       // a kind of its own
-                Window(.about) { AboutPage() }          // one for the whole application
+                GalleryScene()                          // launch and File ▸ New: one more gallery window
+                ScratchpadScene()
+                AboutScene()                            // one window for the whole application
             }
         }
 
         struct ScratchpadScene: Scene {
             var body: some Scene {
-                WindowGroup(.scratchpad) { ScratchpadPage() }   // names the kind
+                WindowGroup(.scratchpad) { ScratchpadPage() }   // as many as are opened
+            }
+        }
+
+        struct AboutScene: Scene {
+            var body: some Scene {
+                Window(.about) { AboutPage() }          // a scene of its own, in no gallery
             }
         }
 
         struct ScratchpadPage: View {
-            @State(sceneKey: .scratch) private var text = ""   // each scratchpad's own
+            @State(sceneKey: .scratch) private var text = ""   // the scene's: every scratchpad window shows it
+            @Environment private var window: WindowSession
             @Environment private var scene: SceneSession
 
             var body: some View {
                 VStack {
                     TextEditor($text)
-                    Button("Close this scratchpad").onClicked { try await scene.close() }
+                    Button("Close this window").onClicked { try await window.close() }
+                    Button("Close every scratchpad").onClicked { try await scene.close() }
                 }
             }
         }
 
         @Environment private var application: ApplicationSession
 
+        // A window opens in the scene declaring its kind, which opens with it where it does not stand.
         Button("New scratchpad").onClicked { try await application.openWindow(.scratchpad) }
         Button("About").onClicked { try await application.openWindow(.about) }   // alreadyOpen once open
 
         VStack {
             DebugInfoLabel()
             Text(said)
-            Text("\\(application.scenes.count) scenes open")
+            Text("Scenes open: \\(application.scenes.count)")
         }
         """
 
@@ -89,7 +98,7 @@ struct SceneKindsSample: SampleContent, ExampleContent {
                     .textColor(Palette.accent)
                     .horizontalTextAlignment(.center)
 
-                Text("\(application.scenes.count) scenes open")
+                Text("Scenes open: \(application.scenes.count)")
                     .fontSize(13)
                     .horizontalTextAlignment(.center)
             }
@@ -98,7 +107,7 @@ struct SceneKindsSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    /// Opens a scene of the kind `type` names, and says what came of it.
+    /// Opens a window of the kind `type` names, in the scene declaring it, and says what came of it.
     private func open(_ type: WindowType, _ caption: String) async {
         do {
             try await application.openWindow(type)

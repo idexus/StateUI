@@ -121,7 +121,7 @@ of its members each meets, and why a cell is empty.
 | [ProgressBar](controls/ProgressBar.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [RadioButton](controls/RadioButton.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Rectangle](controls/Rectangle.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Scene](controls/Scene.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [Scene](controls/Scene.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
 | [ScrollView](controls/ScrollView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [SearchField](controls/SearchField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Slider](controls/Slider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -140,7 +140,7 @@ of its members each meets, and why a cell is empty.
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [WebView](controls/WebView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
 | [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 <!-- creation:end -->
 
@@ -466,7 +466,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 12 | 7 ✅ · 5 ✓ | 6 ✅ · 5 ✓ | 4 ✅ · 4 ✓ | 12 ✅ | 11 ✅ · 1 ✓ |  |
+| [Application](controls/Application.md) | 12 | 7 ✅ · 5 ✓ | 7 ✅ · 5 ✓ | 6 ✅ · 4 ✓ | 12 ✅ | 11 ✅ · 1 ✓ |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Divider](controls/Divider.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 |  |
@@ -477,7 +477,7 @@ Every control, and every part an application, its windows and its pages are made
 | [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [Page](controls/Page.md) | 12 | 8 ✅ | 12 ✅ | 7 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – |  |
-| [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
+| [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ |  |  |  |
 | [SplitView](controls/SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
 | [TabView](controls/TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – |  |
 | [TextSpan](controls/TextSpan.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
@@ -485,11 +485,11 @@ Every control, and every part an application, its windows and its pages are made
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
-| [Window](controls/Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – |  |
-| ✅ |  | 70 | 71 | 40 | 113 | 78 |  |
-| ✓ |  | 15 | 12 | 10 | 0 | 7 |  |
-| – |  | 0 | 8 | 13 | 0 | 28 |  |
-| **Met** | 125 | **85** | **91** | **63** | **113** | **113** |  |
+| [Window](controls/Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ |  |  |  |
+| ✅ |  | 68 | 71 | 41 | 85 | 64 |  |
+| ✓ |  | 15 | 12 | 10 | 0 | 1 |  |
+| – |  | 0 | 8 | 13 | 0 | 20 |  |
+| **Met** | 123 | **83** | **91** | **64** | **85** | **85** |  |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 <!-- dictionary:end -->
 
@@ -557,7 +557,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | 3 | 3 ✅ | 2 ✅ · 1 ✓ | 3 ✅ | 3 ✅ | 3 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
-| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
+| [Scene](controls/Scene.md) | `activated`, `deactivated`, `stopped`, `windowClosed` | 4 | 4 ✅ | 3 ✅ | 3 ✅ |  |  |  |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollIndicator` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 2 ✅ | 7 ✅ | 7 ✅ |  |
 | [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 1 ✅ | 1 ✅ |  |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 4 ✅ | 4 ✅ | 4 ✅ · 2 – |  |
@@ -573,7 +573,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 6 ✅ · 1 ✓ |  |
-| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – |  |
+| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ |  |  |  |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
@@ -651,7 +651,7 @@ realizes the element and each of its members.
 `scrollYChanged`, `selected`, `selectedIndexChanged`, `selectedItemsChanged`,
 `selectedTabChanged`, `showsSidebarChanged`, `stopped`, `submitted`, `swiped`,
 `tapped`, `textChanged`, `timeChanged`, `toggled`, `valueChanged`,
-`windowClosed`, `windowRestored`.
+`windowClosed`.
 
 ### Acts
 

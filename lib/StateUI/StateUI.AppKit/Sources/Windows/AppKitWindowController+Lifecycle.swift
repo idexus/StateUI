@@ -29,15 +29,12 @@ extension AppKitWindowController: NSWindowDelegate {
     }
 
     func keepSceneValues(_ values: [String: HostValue]) {
-        guard isMain else { return }
         record.kept = values
         window?.invalidateRestorableState()
     }
 
     func window(_ window: NSWindow, willEncodeRestorableState state: NSCoder) {
-        if let data = try? record.data() {
-            state.encode(data as NSData, forKey: AppKitWindowRestorer.recordKey)
-        }
+        state.encode(record.text as NSString, forKey: AppKitWindowRestorer.recordKey)
     }
 
     func windowDidBecomeKey(_ notification: Notification) {

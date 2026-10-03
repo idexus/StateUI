@@ -13,13 +13,13 @@ final class PatchShapeTests: XCTestCase {
     /// value that changes, a button with a handler, and a keyed list.
     ///
     /// Under the application and its scene, which is where every render is
-    /// rooted - the scene's main window, as most applications have one. See
+    /// rooted - the window launch opens, as most applications have one. See
     /// `Renderer.root`.
     private func page(count: Int, items: [String], sized: Bool = true) -> Node {
-        var main = window(count: count, items: items, sized: sized)
-        main.id = SceneElement.mainKey
+        var launched = window(count: count, items: items, sized: sized)
+        launched.id = "window 1"
 
-        var scene = Node(type: "Scene", children: [main])
+        var scene = Node(type: "Scene", children: [launched])
         scene.id = "1"
 
         return Node(type: "Application", children: [scene])
@@ -67,8 +67,8 @@ final class PatchShapeTests: XCTestCase {
         }
 
         // The page's counter, button and list, below the application: its
-        // scene, its main window, the page and the stack.
-        let stack: [ElementID] = [.manual("1"), .manual(SceneElement.mainKey), .auto(2), .auto(3)]
+        // scene, the window launch opens, the page and the stack.
+        let stack: [ElementID] = [.manual("1"), .manual("window 1"), .auto(2), .auto(3)]
         let counter = stack + [.auto(4)]
         let button = stack + [.auto(5)]
         let list = stack + [.auto(6)]
@@ -144,15 +144,15 @@ final class PatchShapeTests: XCTestCase {
             ])
 
         // Under the application and its scene, which is where every window
-        // stands - the scene's main window, known by what the tree calls one.
-        var main = window
-        main.id = SceneElement.mainKey
+        // stands - the window launch opens, known by what the tree calls one.
+        var launched = window
+        launched.id = "window 1"
 
-        var scene = Node(type: "Scene", children: [main])
+        var scene = Node(type: "Scene", children: [launched])
         scene.id = "1"
 
         let patch = Differ().reconcile(nil, with: Node(type: "Application", children: [scene])).patch
-        let handlers = try XCTUnwrap(patch.at(.manual("1"), .manual(SceneElement.mainKey))?.events?.handlers)
+        let handlers = try XCTUnwrap(patch.at(.manual("1"), .manual("window 1"))?.events?.handlers)
 
         XCTAssertEqual(
             handlers.keys.map(\.name).sorted(),

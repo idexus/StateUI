@@ -33,6 +33,11 @@
     private var turning = false
     private var again = false
 
+    /// Whether turns wait for the platform's first window: a host whose windows come after its start holds them, so
+    /// the scene a window the platform kept opens is built with what it kept. `HostRuntime.connectWindow` lets them
+    /// run.
+    public var waitsForFirstWindow = false
+
     /// Turns over `tree`, with `log` hearing a drift the intake refused.
     public init(
         core: CoreLink,
@@ -55,7 +60,7 @@
     /// the transaction is over.
     /// Design: docs/design/host/runtime.md#the-handlers-order
     public func turn() {
-        guard !handlers.inTransaction else { return }
+        guard !handlers.inTransaction, !waitsForFirstWindow else { return }
         guard !turning else {
             again = true
             return

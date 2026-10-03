@@ -58,7 +58,7 @@ final class Differ {
 
     /// The scene the walk is inside; `Scenes.building` follows it.
     var sceneRecord: SceneRecord? {
-        didSet { Scenes.shared.building = sceneRecord }
+        didSet { OpenScenes.shared.building = sceneRecord }
     }
 
     /// Reconciles the tree just built against the one the host holds. `describeAll`
@@ -130,7 +130,7 @@ final class Differ {
         // And the scene it is in, whose record the kept state below is claimed from.
         let outer = sceneRecord
         if rendered.type == .scene, sceneRecord == nil, case .manual(let name) = rendered.id {
-            sceneRecord = Scenes.shared.record(id: name)
+            sceneRecord = OpenScenes.shared.record(id: name)
         }
         defer { sceneRecord = outer }
 

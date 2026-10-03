@@ -43,6 +43,10 @@ final class AndroidRenderer {
     /// What the first window shows, by the host layer's rule: its arrangement of pages, its sheets, its overlays.
     private let presentation = WindowPresentation()
 
+    /// The application's scenes as they stand, kept for its next start - one for the process, handed from each
+    /// activity to the next.
+    private(set) var scenes = SceneKeeper()
+
     /// Whether the activity was last told there is a way back.
     private var handlesBack = false
 
@@ -72,7 +76,7 @@ final class AndroidRenderer {
 
     /// Starts the host in an activity's root, then rings the doorbell for everything after its first render.
     /// An activity after the first takes over the scene the one before showed, rendered whole; where Back ended
-    /// that scene, it connects a new one, as the first activity did.
+    /// that scene, the scenes kept come back, as for the first activity.
     /// Design: docs/design/platforms/android/runtime.md#a-later-activity
     @discardableResult
     static func start(context: JavaObject, root: JavaObject, density: Double) -> AndroidRenderer {
@@ -89,7 +93,8 @@ final class AndroidRenderer {
             unrealized: AndroidRealization.unmade)
         AndroidEnvironment.report(to: core, activity: context.reference)
         if previous == nil { AndroidPersistence.restore(into: core, context: context.reference) }
-        renderer.show(connectingScene: !sceneStands)
+        if let previous { renderer.scenes = previous.scenes }
+        renderer.show(restoringScenes: !sceneStands)
         AndroidDoorbell.install { AndroidRenderer.shared?.runtime.pump.turn() }
         return renderer
     }
@@ -111,7 +116,8 @@ final class AndroidRenderer {
 
     /// Android's part of the acts every host performs, and the host layer's performer of them.
     private lazy var actToolkit = AndroidActToolkit(
-        core: runtime.core, context: context, root: root, tree: { [unowned self] in runtime.tree })
+        core: runtime.core, context: context, root: root, tree: { [unowned self] in runtime.tree },
+        keepSceneValue: { [unowned self] in keepSceneValue($0) })
     private lazy var acts = HostActPerformer(toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes, and what that
@@ -121,10 +127,19 @@ final class AndroidRenderer {
         runtime.pump.turn()
     }
 
-    /// Renders the application whole, connecting its scene first where no activity has shown it.
-    func show(connectingScene: Bool = true) {
-        if connectingScene { runtime.core.connectScene() }
+    /// Renders the application whole: where no activity shows a scene, the scenes kept for this start come back
+    /// first, else the window launch opens.
+    /// Design: docs/design/host/runtime.md#kept-scenes
+    func show(restoringScenes: Bool = true) {
+        if restoringScenes { scenes.restore(AndroidPersistence.readScenes(context: context.reference), in: runtime) }
         runtime.pump.turn()
+    }
+
+    /// A scene keeps a value, kept with the scenes for the next start.
+    func keepSceneValue(_ call: HostActCall) {
+        if scenes.keep(call.arguments), let text = scenes.changed(root: runtime.tree.root) {
+            AndroidPersistence.writeScenes(text, context: context.reference)
+        }
     }
 
     /// The activity's lifecycle moved: its one window stands activated in front of the user (onResume), off the
@@ -139,9 +154,11 @@ final class AndroidRenderer {
         runtime.windowStateChanged(window, minimized: phase == .background, activated: phase == .active)
     }
 
-    /// The activity is finishing: its window hears it is going, then its scene.
+    /// The activity is finishing - Back, or the application finished it: the user closed its window, which hears it
+    /// is going, and its scene that the window closed.
     func destroying() {
-        runtime.ending()
+        guard let window = runtime.tree.root?.first(type: .window) else { return }
+        runtime.userClosed(window)
     }
 
     /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
@@ -265,6 +282,9 @@ extension AndroidRenderer: TurnPresenter {
     func presentRendered() {
         showWindow()
         refreshBack()
+        if let text = scenes.changed(root: runtime.tree.root) {
+            AndroidPersistence.writeScenes(text, context: context.reference)
+        }
     }
 
     func perform(_ call: HostActCall) {

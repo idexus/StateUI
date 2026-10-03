@@ -91,7 +91,8 @@ Before the first render, a host hands the core its realization
 ([environment and kept values](#environment-and-kept-values)) and the kept
 values its store holds (`persistentKeys`, `restorePersistent`). It follows the
 language's direction (`MountedTree.followTheLanguagesDirection`), connects its
-scene (`CoreLink.connectScene`) and turns the pump once. The doorbell carries
+first window - one the platform kept, or a new one - through
+`HostRuntime.connectWindow`, and turns the pump once. The doorbell carries
 every turn after.
 
 ### The roads in
@@ -256,15 +257,13 @@ toolkit's calls:
 - **`WindowRoster`** keeps the window elements under the root in the tree's
   order, each with the host's controller of it: a window the tree keeps keeps
   its controller, a window it drops has its controller closed - the last
-  first, so a window closes before the one it belongs to - a new one has
-  one made, and the first window's coming is said. The host hands it `make`
+  first - a new one has one made, and the first window's coming is said. The host hands it `make`
   and `close`.
   ([The windows a tree holds](../design/host/tree.md#the-windows-a-tree-holds))
 - **`WindowPresentation`** says what a window shows, where it changed: its
   arrangement of pages, the pages its modal stack presents as sheets, what it
-  lays over them, its frame, bounds and traits, whether its scene hides it,
-  and the window it belongs to - its scene's main window's, for a window of a
-  kind of its own (`MountedElement.ownerWindow`). The page the user sees hears
+  lays over them, its frame, bounds and traits, and whether its scene hides
+  it. The page the user sees hears
   that it is shown, and a new window that it was made, each in its turn,
   before the host first shows the window; `wayBack` is the way back the window
   offers. The host shows each in its toolkit's window.

@@ -92,7 +92,7 @@ final class WinUIActsTests: XCTestCase {
     }
 }
 
-/// An application whose main window opens a tool window, which asks the user something.
+/// An application whose first window opens a tool window, which asks the user something.
 private struct AskingApplication: Application {
     var body: some Scene { AskingScene() }
 }
@@ -107,10 +107,10 @@ private struct AskingScene: Scene {
 }
 
 private struct AskingOpeningPage: View {
-    @Environment private var scene: SceneSession
+    @Environment private var application: ApplicationSession
 
     var body: some View {
-        let scene = self.scene
-        return Button("Tool").onClicked { try await scene.openWindow(WindowType("acts.tool")) }
+        let application = self.application
+        return Button("Tool").onClicked { try await application.openWindow(WindowType("acts.tool")) }
     }
 }

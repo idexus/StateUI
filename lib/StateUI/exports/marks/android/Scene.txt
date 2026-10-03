@@ -1,8 +1,6 @@
-# revision 1.1
+# revision 2.1
 Scene: ✅
 Scene.activated: ✅
 Scene.deactivated: ✅
-Scene.destroying: ✅
 Scene.stopped: ✅
 Scene.windowClosed: not realized
-Scene.windowRestored: not realized

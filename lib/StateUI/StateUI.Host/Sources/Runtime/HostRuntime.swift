@@ -154,7 +154,18 @@
         if moves.standing { pump.presenter?.presentRendered() }
     }
 
-    /// The application is ending: each scene's windows hear they are going, then the scene.
+    /// Hands the core a window the platform made - its first, a new one of no kind, or one it kept, of `kind`, for
+    /// the value written `value`, with its scene's kept `values` - and lets the turns held for the first run. Answers
+    /// the number of the scene it opened in; nil where no scene declares it, for the host to close it.
+    @discardableResult
+    public func connectWindow(
+        kind: String? = nil, value: String? = nil, restoring values: [String: HostValue] = [:]
+    ) -> String? {
+        pump.waitsForFirstWindow = false
+        return core.connectWindow(kind: kind, value: value, restoring: values)
+    }
+
+    /// The application is ending: every window hears it is going.
     public func ending() {
         tell(ApplicationLifecycle.ending(windows: tree.root?.windows ?? []))
     }
@@ -200,17 +211,15 @@
         pump.turn()
     }
 
-    /// What the user closing `window` tells, in order: the window that it is going, then its scene - that it is
-    /// going too where the window is its main one, else that one of its windows closed, by the window's key.
+    /// What the user closing `window` tells, in order: the window that it is going, then its scene that one of its
+    /// windows closed, by the window's key.
     /// Design: docs/design/host/runtime.md#a-window-the-user-closes
     public static func toldOnClosing(_ window: MountedElement) -> [(handler: Int32, payload: [HostValue])] {
-        let scene = window.enclosing(type: .scene)
-        let sceneTold: (handler: Int32?, payload: [HostValue]) = window.isMainWindow
-            ? (scene?.handler(.destroying), [])
-            : (scene?.handler(.windowClosed), [window.id.hostValue])
-        return [(window.handler(.destroying), []), sceneTold].compactMap { told in
-            told.handler.map { (handler: $0, payload: told.payload) }
-        }
+        let told: [(handler: Int32?, payload: [HostValue])] = [
+            (window.handler(.destroying), []),
+            (window.enclosing(type: .scene)?.handler(.windowClosed), [window.id.hostValue]),
+        ]
+        return told.compactMap { each in each.handler.map { (handler: $0, payload: each.payload) } }
     }
 
     private func tell(_ told: [ApplicationLifecycle.Told]) {

@@ -18,8 +18,9 @@ extension AppKitRenderer {
         }
     }
 
-    func openPlatformScene() {
-        connectPlatformScene(restoring: [:])
+    /// Opens one more window of the group with no name - *File ▸ New*, or the Dock with none open.
+    func openNewWindow() {
+        runtime.connectWindow()
         runtime.pump.turn()
     }
 
@@ -32,7 +33,7 @@ extension AppKitRenderer {
         if let first = windowControllers.first?.window {
             first.makeKeyAndOrderFront(nil)
         } else {
-            openPlatformScene()
+            openNewWindow()
         }
     }
 
@@ -41,25 +42,13 @@ extension AppKitRenderer {
         runtime.applicationHidden(hidden)
     }
 
-    /// Hands the core a platform scene: one the system restored as its kind, or a new one - the kind File ▸ New
-    /// opens.
-    func connectPlatformScene(restoring values: [String: HostValue], kind: String? = nil) {
-        runtime.core.connectScene(restoring: values, kind: kind)
-        connectedInitialScene = true
-    }
-
     /// Shows every window element in an AppKit window of its own, in the tree's order - a window the tree no longer
-    /// holds closes, the last first - each scene keeping what its windows are restored by.
+    /// holds closes, the last first.
     func synchronizeWindows() {
         guard let root = runtime.tree.root, root.type == .application else { return }
         windowSynchronizationCountForTesting += 1
 
-        let scenes = root.children.filter { $0.type == .scene }
-        sessions = sessions.filter { id, _ in scenes.contains { $0.id == id } }
-        for scene in scenes where sessions[scene.id] == nil {
-            sessions[scene.id] = AppKitSceneSession(restoredMain: takeRestoredMainWindow())
-        }
-
+        sceneValues.keep(only: Set(SceneValues.scenes(of: root).map(SceneValues.key(of:))))
         roster.update(root: root, make: makeWindowController, close: { $0.closeFromTree() })
         for (index, (element, controller)) in roster.windows.enumerated() {
             controller.present(element, in: runtime, cascade: index)
@@ -71,118 +60,44 @@ extension AppKitRenderer {
         runtime.displayCycle.hold()
     }
 
-    /// The controller of a window element new here: in the window the system restored for it, where there is one.
+    /// The controller of a window element new here: in the window the system restored for it, where there is one,
+    /// its record carrying what its scene keeps.
     private func makeWindowController(_ element: MountedElement) -> AppKitWindowController {
-        let session = element.enclosing(type: .scene).flatMap { sessions[$0.id] }
-        let arrival = session?.arrival(of: element) { [unowned self] owner in
-            takeRestoredWindow(
-                owner: owner, kind: element.name(.windowType), value: element.value(.windowValue)?.string)
-        }
+        let restored = self.restored.take(for: element)
+        let scene = element.enclosing(type: .scene).map(SceneValues.key(of:)) ?? ""
         return AppKitWindowController(
             element,
             host: self,
-            record: arrival?.record ?? AppKitRestorationRecord(windowIdentifier: UUID().uuidString),
-            nativeWindow: arrival?.window,
+            record: WindowRecord(
+                of: element, identifier: restored?.record.identifier ?? UUID().uuidString, kept: sceneValues[scene]),
+            nativeWindow: restored?.native,
             presentsWindow: presentsWindows)
     }
 
+    /// A scene keeps a value: every window of it writes it in its record, for whichever comes back first.
     func keepSceneValue(_ call: HostActCall) {
-        guard call.arguments.count >= 3,
-              let sceneID = call.arguments[0].name,
-              let name = call.arguments[1].name,
-              let session = sessions[.manual(sceneID)]
-        else { return }
+        guard let scene = sceneValues.keep(call.arguments) else { return }
 
-        session.keep(name: name, value: call.arguments[2])
-        windowControllers.first { $0.isMain && $0.element?.enclosing(type: .scene)?.id == .manual(sceneID) }?
-            .keepSceneValues(session.kept)
+        for controller in windowControllers
+        where controller.element?.enclosing(type: .scene).map(SceneValues.key(of:)) == scene {
+            controller.keepSceneValues(sceneValues[scene])
+        }
     }
 
-    func acceptRestoredWindow(_ record: AppKitRestorationRecord) -> NSWindow {
-        if let standing = restoredWindows[record.windowIdentifier] { return standing }
-
+    /// A window the system restored, in a window of its own, as its kind for its value - nil where no scene declares
+    /// it, and the system restores nothing.
+    func acceptRestoredWindow(_ record: WindowRecord) -> NSWindow? {
         let window = AppKitWindowController.makeWindow()
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
+        window.identifier = NSUserInterfaceItemIdentifier(record.identifier)
         window.isRestorable = true
         window.restorationClass = AppKitWindowRestorer.self
 
-        restorationQueue.append(record)
-        restoredWindows[record.windowIdentifier] = window
+        guard restored.accept(record, native: window, values: &sceneValues, in: runtime) else { return nil }
 
-        if record.ownerIdentifier == nil {
-            connectPlatformScene(restoring: record.kept, kind: record.kind)
-            if started { runtime.pump.turn() }
-        } else if started {
-            offerRestoredWindows()
-        }
-
-        scheduleRestorationAbandonment()
+        connectedFirstWindow = true
+        if started { runtime.pump.turn() }
         return window
-    }
-
-    func takeRestoredWindow(
-        owner: String,
-        kind: String?,
-        value: String?
-    ) -> AppKitRestoredWindow? {
-        guard let record = restorationQueue.takeOwned(by: owner, kind: kind, value: value),
-              let window = restoredWindows.removeValue(forKey: record.windowIdentifier)
-        else { return nil }
-
-        offeredRestorations.remove(record.windowIdentifier)
-        return AppKitRestoredWindow(record: record, window: window)
-    }
-
-    func takeRestoredMainWindow() -> AppKitRestoredWindow? {
-        guard let record = restorationQueue.takeMain(),
-              let window = restoredWindows.removeValue(forKey: record.windowIdentifier)
-        else { return nil }
-
-        return AppKitRestoredWindow(record: record, window: window)
-    }
-
-    /// Offers each scene the restored windows it owns, each once: the scene's handler hears its kind and value, and
-    /// one the next presentation finds no window claiming is declined.
-    func offerRestoredWindows() {
-        for scene in runtime.tree.root?.children.filter({ $0.type == .scene }) ?? [] {
-            guard let owner = sessions[scene.id]?.identifier,
-                  let handler = scene.handler(.windowRestored)
-            else { continue }
-
-            for record in restorationQueue.owned(by: owner) {
-                guard let kind = record.kind,
-                      offeredRestorations.insert(record.windowIdentifier).inserted
-                else { continue }
-
-                var payload: [HostValue] = [.string(kind)]
-                if let value = record.value { payload.append(.string(value)) }
-                offersAwaitingClaim.append(record.windowIdentifier)
-                runtime.dispatch(handler, payload: payload)
-            }
-        }
-    }
-
-    func declineRestorationIfUnclaimed(_ identifier: String) {
-        guard let record = restorationQueue.remove(windowIdentifier: identifier) else { return }
-        offeredRestorations.remove(identifier)
-        restoredWindows.removeValue(forKey: record.windowIdentifier)?.close()
-    }
-
-    func scheduleRestorationAbandonment() {
-        guard !abandonmentScheduled else { return }
-        abandonmentScheduled = true
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-            guard let self else { return }
-            self.abandonmentScheduled = false
-            let owners = Set(self.sessions.values.compactMap(\.identifier))
-
-            for record in self.restorationQueue.all
-            where record.ownerIdentifier.map({ !owners.contains($0) }) ?? false {
-                self.declineRestorationIfUnclaimed(record.windowIdentifier)
-            }
-        }
     }
 
     /// A window took the keyboard: its page's menus stand in the menu bar, and the host layer settles what it means.

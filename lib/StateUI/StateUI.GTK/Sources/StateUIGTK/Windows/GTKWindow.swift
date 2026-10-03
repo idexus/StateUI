@@ -141,12 +141,6 @@ final class GTKWindow {
         if presented { gtk_widget_set_visible(widget, hidden ? 0 : 1) } else if !hidden, content != nil { firstPresent() }
     }
 
-    /// Makes the window `owner`'s - above it, and gone with it - or, for nil, one of its own.
-    func setOwner(_ owner: GTKWindow?) {
-        gtk_window_set_transient_for(widget.of(GtkWindow.self), owner?.widget.of(GtkWindow.self))
-        gtk_window_set_destroy_with_parent(widget.of(GtkWindow.self), owner == nil ? 0 : 1)
-    }
-
     /// Shows `view` as the window's content, as it stands: an arrangement whose pages carry their header bars.
     func show(_ view: GTKView?) {
         guard view !== content || pageFrame != nil else { return }

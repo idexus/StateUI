@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// An inspector docked in its scene's main window, in a layout that takes no
+/// An inspector docked in its scene's first window, in a layout that takes no
 /// touches of its own, so the page under it stays in use.
 struct InspectorPanel: View {
     /// The scene it looks at, by its number.

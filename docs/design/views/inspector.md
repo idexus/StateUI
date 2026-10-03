@@ -22,7 +22,7 @@ it - with each one's time, its own and with what is under it.
   InspectorModel (one, shared)       places, folded, paused, revision, selected
         │ revision moves at most once per pace
         ▼
-  Inspector.panel(in: scene) ──▶ Node.overlay(InspectorPanel)   docked in the main window
+  Inspector.panel(in: scene) ──▶ Node.overlay(InspectorPanel)   docked in the first window
   DebugInspector ──page──▶ InspectorPage                        in a window of its own
         │
         ▼
@@ -33,7 +33,7 @@ it - with each one's time, its own and with what is under it.
 
 Every scene has its own inspector, showing the renders that reached that scene:
 the ⓘ is handed the scene it opens. It opens along the bottom of the scene's
-main window folded to one line - the last render that reached the scene -
+first window folded to one line - the last render that reached the scene -
 leaving the page all but uncovered while it is watched, with two buttons at the
 end of the line to open it out and to close it. Opened out, it docks down the
 side on a desktop or a tablet, or shows in the scene's `DebugInspector` window
@@ -43,9 +43,9 @@ and restored with it.
 
 ## Where it docks
 
-A docked inspector is the scene's main window's own overlay: where it docks
-is a value of the window's session (`dockedInspector`), written whenever it
-docks, moves or leaves; the window reads it, so it builds again then, and
+A docked inspector is the overlay of the scene's first window: where it
+docks is a value of the scene (`dockedInspector`), written whenever it docks,
+moves or leaves; the first window reads it, so it builds again then, and
 lays the panel after every overlay a page declares - over all of them. The
 panel is a layout that takes no touches of its own, laid over the whole
 window: a touch anywhere the panel is not goes through to the page under it,

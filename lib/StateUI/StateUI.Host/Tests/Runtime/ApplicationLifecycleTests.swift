@@ -13,60 +13,60 @@ final class ApplicationLifecycleTests: XCTestCase {
     /// nowhere - told to the scene, then to the window; a window shown again hears first, once, that it resumed; a
     /// state told again tells nothing.
     func testAWindowsStateIsTheApplicationsPhase() throws {
-        let (runtime, lifecycle) = Self.application([("1", [Self.window("main")])])
-        let main = try Self.window("main", in: "1", of: runtime)
+        let (runtime, lifecycle) = Self.application([("1", [Self.window("window 1")])])
+        let window = try Self.window("window 1", in: "1", of: runtime)
 
-        lifecycle.report(main, minimized: false, activated: true)
+        lifecycle.report(window, minimized: false, activated: true)
         var moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertEqual(moves.phase, .active)
-        XCTAssertEqual(Self.names(moves.told), ["1 activated", "1/main activated"])
+        XCTAssertEqual(Self.names(moves.told), ["1 activated", "1/window 1 activated"])
         XCTAssertTrue(lifecycle.settle(windows: runtime.tree.root!.windows).told.isEmpty, "told again, nothing")
 
-        lifecycle.report(main, minimized: false, activated: false)
+        lifecycle.report(window, minimized: false, activated: false)
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertEqual(moves.phase, .inactive)
-        XCTAssertEqual(Self.names(moves.told), ["1 deactivated", "1/main deactivated"])
+        XCTAssertEqual(Self.names(moves.told), ["1 deactivated", "1/window 1 deactivated"])
 
-        lifecycle.report(main, minimized: true, activated: true)
+        lifecycle.report(window, minimized: true, activated: true)
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertEqual(moves.phase, .background, "minimized, whatever its activation")
-        XCTAssertEqual(Self.names(moves.told), ["1 stopped", "1/main stopped"])
+        XCTAssertEqual(Self.names(moves.told), ["1 stopped", "1/window 1 stopped"])
 
-        lifecycle.report(main, minimized: false, activated: false)
+        lifecycle.report(window, minimized: false, activated: false)
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertEqual(moves.phase, .inactive)
-        XCTAssertEqual(Self.names(moves.told), ["1/main resumed", "1 deactivated", "1/main deactivated"])
+        XCTAssertEqual(Self.names(moves.told), ["1/window 1 resumed", "1 deactivated", "1/window 1 deactivated"])
 
-        lifecycle.report(main, minimized: false, activated: true)
+        lifecycle.report(window, minimized: false, activated: true)
         XCTAssertEqual(Self.names(lifecycle.settle(windows: runtime.tree.root!.windows).told),
-                       ["1 activated", "1/main activated"], "resumed once")
+                       ["1 activated", "1/window 1 activated"], "resumed once")
     }
 
     /// One window deactivated as another of the application is activated is one move: the application stays in use,
     /// the scene hears nothing, and what leaves hears it before what is activated.
     func testMovingBetweenTheApplicationsWindowsKeepsItInUse() throws {
-        let (runtime, lifecycle) = Self.application([("1", [Self.window("main"), Self.window("tool", kind: "tool")])])
-        let main = try Self.window("main", in: "1", of: runtime)
-        let tool = try Self.window("tool", in: "1", of: runtime)
-        lifecycle.report(main, minimized: false, activated: true)
+        let (runtime, lifecycle) = Self.application([("1", [Self.window("window 1"), Self.window("tool 2", kind: "tool")])])
+        let window = try Self.window("window 1", in: "1", of: runtime)
+        let tool = try Self.window("tool 2", in: "1", of: runtime)
+        lifecycle.report(window, minimized: false, activated: true)
         _ = lifecycle.settle(windows: runtime.tree.root!.windows)
 
-        lifecycle.report(main, minimized: false, activated: false)
+        lifecycle.report(window, minimized: false, activated: false)
         lifecycle.report(tool, minimized: false, activated: true)
         let moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertNil(moves.phase, "still in use")
-        XCTAssertEqual(Self.names(moves.told), ["1/main deactivated", "1/tool activated"])
+        XCTAssertEqual(Self.names(moves.told), ["1/window 1 deactivated", "1/tool 2 activated"])
     }
 
     /// The window a user comes back to is the one activated last among those asked: a window told again later, but
     /// not activated, keeps its place; a window never activated is none.
     func testTheWindowActivatedLastIsTheOneComeBackTo() throws {
         let (runtime, lifecycle) = Self.application([
-            ("1", [Self.window("main")]), ("2", [Self.window("main")]), ("3", [Self.window("main")]),
+            ("1", [Self.window("window 1")]), ("2", [Self.window("window 1")]), ("3", [Self.window("window 1")]),
         ])
         let (first, second, third) = (
-            try Self.window("main", in: "1", of: runtime), try Self.window("main", in: "2", of: runtime),
-            try Self.window("main", in: "3", of: runtime))
+            try Self.window("window 1", in: "1", of: runtime), try Self.window("window 1", in: "2", of: runtime),
+            try Self.window("window 1", in: "3", of: runtime))
 
         lifecycle.report(first, minimized: false, activated: true)
         lifecycle.report(second, minimized: false, activated: true)
@@ -83,9 +83,9 @@ final class ApplicationLifecycleTests: XCTestCase {
     /// The scene in front is the one whose window was activated last: the application going behind another moves it
     /// nowhere, another scene's window activated moves it there - the scene left hears it first.
     func testOnlyAnotherScenesWindowMovesTheSceneInFront() throws {
-        let (runtime, lifecycle) = Self.application([("1", [Self.window("main")]), ("2", [Self.window("main")])])
-        let first = try Self.window("main", in: "1", of: runtime)
-        let second = try Self.window("main", in: "2", of: runtime)
+        let (runtime, lifecycle) = Self.application([("1", [Self.window("window 1")]), ("2", [Self.window("window 1")])])
+        let first = try Self.window("window 1", in: "1", of: runtime)
+        let second = try Self.window("window 1", in: "2", of: runtime)
         let scene1 = try XCTUnwrap(first.enclosing(type: .scene))
 
         lifecycle.report(first, minimized: false, activated: true)
@@ -98,19 +98,19 @@ final class ApplicationLifecycleTests: XCTestCase {
         let moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertTrue(lifecycle.front === second.enclosing(type: .scene))
         XCTAssertTrue(moves.standing, "the scene in front moved")
-        XCTAssertEqual(Self.names(moves.told), ["2 activated", "2/main activated"])
+        XCTAssertEqual(Self.names(moves.told), ["2 activated", "2/window 1 activated"])
     }
 
     /// A window that hides while another scene is in front stands hidden, and stopped, while one is; it stands again
     /// as its scene comes to the front. Before any scene came to the front, none hides.
     func testAWindowHidesWhileAnotherSceneIsInFront() throws {
         let (runtime, lifecycle) = Self.application([
-            ("1", [Self.window("main"), Self.window("tool", kind: "tool", [.hidesWhenInactive: .bool(true)])]),
-            ("2", [Self.window("main")]),
+            ("1", [Self.window("window 1"), Self.window("tool 2", kind: "tool", [.hidesWhenInactive: .bool(true)])]),
+            ("2", [Self.window("window 1")]),
         ])
-        let first = try Self.window("main", in: "1", of: runtime)
-        let tool = try Self.window("tool", in: "1", of: runtime)
-        let second = try Self.window("main", in: "2", of: runtime)
+        let first = try Self.window("window 1", in: "1", of: runtime)
+        let tool = try Self.window("tool 2", in: "1", of: runtime)
+        let second = try Self.window("window 1", in: "2", of: runtime)
         XCTAssertFalse(lifecycle.isHiddenByScene(tool), "no scene in front yet")
 
         lifecycle.report(first, minimized: false, activated: true)
@@ -122,65 +122,70 @@ final class ApplicationLifecycleTests: XCTestCase {
         var moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertTrue(lifecycle.isHiddenByScene(tool))
         XCTAssertFalse(lifecycle.isHiddenByScene(second), "a window that does not hide")
-        XCTAssertTrue(Self.names(moves.told).contains("1/tool stopped"))
+        XCTAssertTrue(Self.names(moves.told).contains("1/tool 2 stopped"))
 
         lifecycle.report(second, minimized: false, activated: false)
         lifecycle.report(first, minimized: false, activated: true)
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertFalse(lifecycle.isHiddenByScene(tool))
-        XCTAssertEqual(Self.names(moves.told).filter { $0.hasPrefix("1/tool") }, ["1/tool resumed", "1/tool deactivated"])
+        XCTAssertEqual(Self.names(moves.told).filter { $0.hasPrefix("1/tool 2") }, ["1/tool 2 resumed", "1/tool 2 deactivated"])
     }
 
     /// A window that floats does so while the application is in front - and before it is told it is not - and
     /// sinks with it while another application is in use.
     func testAWindowFloatsWhileTheApplicationIsInFront() throws {
         let (runtime, lifecycle) = Self.application([
-            ("1", [Self.window("main"), Self.window("tool", kind: "tool", [.floatsOnTop: .bool(true)])]),
+            ("1", [Self.window("window 1"), Self.window("tool 2", kind: "tool", [.floatsOnTop: .bool(true)])]),
         ])
-        let main = try Self.window("main", in: "1", of: runtime)
-        let tool = try Self.window("tool", in: "1", of: runtime)
+        let window = try Self.window("window 1", in: "1", of: runtime)
+        let tool = try Self.window("tool 2", in: "1", of: runtime)
         XCTAssertTrue(lifecycle.floats(tool))
-        XCTAssertFalse(lifecycle.floats(main), "a window that does not say so")
+        XCTAssertFalse(lifecycle.floats(window), "a window that does not say so")
 
-        lifecycle.report(main, minimized: false, activated: true)
+        lifecycle.report(window, minimized: false, activated: true)
         _ = lifecycle.settle(windows: runtime.tree.root!.windows)
-        lifecycle.report(main, minimized: false, activated: false)
+        lifecycle.report(window, minimized: false, activated: false)
         let moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertFalse(lifecycle.floats(tool))
         XCTAssertTrue(moves.standing, "the floating windows sink")
         XCTAssertEqual(WindowTraits(of: tool, in: lifecycle).floatsOnTop, false)
     }
 
-    /// A scene whose main window is minimized is stopped, unless another of its windows is activated; a hidden
-    /// application stops everything, whatever its windows do.
-    func testAMinimizedMainWindowOrAHiddenApplicationStopsTheScene() throws {
-        let (runtime, lifecycle) = Self.application([("1", [Self.window("main"), Self.window("tool", kind: "tool")])])
-        let main = try Self.window("main", in: "1", of: runtime)
-        let tool = try Self.window("tool", in: "1", of: runtime)
+    /// A scene is stopped while every window of it is out of sight, and not while one of them stands on the screen;
+    /// a hidden application stops everything, whatever its windows do.
+    func testASceneIsStoppedWhileEveryWindowOfItIsOutOfSight() throws {
+        let (runtime, lifecycle) = Self.application([("1", [Self.window("window 1"), Self.window("tool 2", kind: "tool")])])
+        let window = try Self.window("window 1", in: "1", of: runtime)
+        let tool = try Self.window("tool 2", in: "1", of: runtime)
 
-        lifecycle.report(main, minimized: true, activated: false)
+        lifecycle.report(window, minimized: true, activated: false)
         var moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertEqual(moves.phase, .inactive, "a window of it still stands on the screen")
-        XCTAssertEqual(Self.names(moves.told), ["1 stopped", "1/main stopped", "1/tool deactivated"])
+        XCTAssertEqual(Self.names(moves.told), ["1 deactivated", "1/window 1 stopped", "1/tool 2 deactivated"])
+
+        lifecycle.report(tool, minimized: true, activated: false)
+        moves = lifecycle.settle(windows: runtime.tree.root!.windows)
+        XCTAssertEqual(Self.names(moves.told), ["1 stopped", "1/tool 2 stopped"])
 
         lifecycle.report(tool, minimized: false, activated: true)
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
-        XCTAssertEqual(Self.names(moves.told), ["1 activated", "1/tool activated"])
+        XCTAssertEqual(Self.names(moves.told), ["1/tool 2 resumed", "1 activated", "1/tool 2 activated"])
 
         lifecycle.isHidden = true
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertEqual(moves.phase, .background)
-        XCTAssertEqual(Self.names(moves.told), ["1 stopped", "1/tool stopped"])
+        XCTAssertEqual(Self.names(moves.told), ["1 stopped", "1/tool 2 stopped"])
     }
 
-    /// As the application ends, each scene's windows hear that they are going, then the scene.
-    func testTheEndingTellsEachScenesWindowsThenTheScene() {
+    /// As the application ends, each window hears that it is going; a scene ends with its windows.
+    func testTheEndingTellsEveryWindow() {
         let (runtime, _) = Self.application([
-            ("1", [Self.window("main"), Self.window("tool", kind: "tool")]), ("2", [Self.window("main")]),
+            ("1", [Self.window("window 1"), Self.window("tool 2", kind: "tool")]),
+            ("2", [Self.window("about 1", kind: "about")]),
         ])
 
         XCTAssertEqual(Self.names(ApplicationLifecycle.ending(windows: runtime.tree.root!.windows)), [
-            "1/main destroying", "1/tool destroying", "1 destroying", "2/main destroying", "2 destroying",
+            "1/window 1 destroying", "1/tool 2 destroying", "2/about 1 destroying",
         ])
     }
 
@@ -188,10 +193,10 @@ final class ApplicationLifecycleTests: XCTestCase {
     func testTheCoreAndTheWindowHearThePhase() throws {
         stateUIUseApp(PhasesApplication())
         let runtime = HostRuntime.still()
-        runtime.core.connectScene()
+        runtime.connectWindow()
         runtime.pump.turn()
         defer { HostBoundary.setApplicationPhase(.active) }
-        let window = try XCTUnwrap(Scenes.shared.list.first).windowSession(SceneElement.mainKey)
+        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession("window 1")
         let element = try XCTUnwrap(runtime.tree.root?.windows.first)
 
         runtime.windowStateChanged(element, minimized: true, activated: false)
@@ -210,10 +215,10 @@ final class ApplicationLifecycleTests: XCTestCase {
     func testAPhaseSettledInsideATransactionWaitsForItsEnd() throws {
         stateUIUseApp(PhasesApplication())
         let runtime = HostRuntime.still()
-        runtime.core.connectScene()
+        runtime.connectWindow()
         runtime.pump.turn()
         defer { HostBoundary.setApplicationPhase(.active) }
-        let window = try XCTUnwrap(Scenes.shared.list.first).windowSession(SceneElement.mainKey)
+        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession("window 1")
         let element = try XCTUnwrap(runtime.tree.root?.windows.first)
 
         runtime.pump.performUserTransaction {
@@ -237,7 +242,7 @@ final class ApplicationLifecycleTests: XCTestCase {
         return (runtime, runtime.lifecycle)
     }
 
-    /// A window element named `name`, of `kind` where it is not a scene's main window, saying `properties`.
+    /// A window element named `name`, of `kind` where it is not of the group with no name, saying `properties`.
     private static func window(_ name: String, kind: String? = nil, _ properties: [Prop: HostValue] = [:]) -> HostPatch {
         var window = HostPatch(id: .manual(name), type: .window)
         window.properties = properties

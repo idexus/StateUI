@@ -9,8 +9,7 @@ public enum ScenePhase: Sendable {
     /// The scene is showing, and another is in front of it.
     case inactive
 
-    /// The scene's main window is stopped, or the application is hidden or in
-    /// the background. Only the main window decides: a window the scene
-    /// opened beside it does not.
+    /// Every window of the scene is out of sight, or the application is hidden
+    /// or in the background.
     case background
 }

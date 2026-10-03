@@ -313,10 +313,10 @@ struct HandbookPage: View {
 }
 ```
 
-An application can own multiple scene sessions. A scene owns its main window
-and any windows opened from its declared `WindowGroup`s. Activation,
-restoration, focus, hiding, and closure are mapped to those sessions while
-StateUI retains deterministic state and tree ownership.
+An application declares its scenes, each standing at most once with the
+windows it has open, which share its state. Activation, restoration, focus,
+hiding, and closure are mapped to those sessions while StateUI retains
+deterministic state and tree ownership.
 
 Navigation paths, tab selections, sidebar visibility, and modal stacks are
 state. A control method is invoked through an `@Aim`; an aim identifies a

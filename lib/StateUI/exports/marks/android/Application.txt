@@ -8,7 +8,7 @@ Application.currentTime: ✅
 Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: cannot focus on TextField - Android's driver has no path for it yet
-Application.persistSceneValue: not realized
-Application.persistValue: cannot read what is kept - Android's driver has no path for it yet
+Application.persistSceneValue: ✅
+Application.persistValue: ✅
 Application.prompt: ✓ read a question: what the relay keeps of the dialog it showed
 Application.utcOffset: ✅

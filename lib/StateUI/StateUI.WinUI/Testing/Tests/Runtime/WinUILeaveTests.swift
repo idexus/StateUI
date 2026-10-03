@@ -122,7 +122,7 @@ final class WinUILeaveTests: XCTestCase {
     }
 }
 
-/// An application whose main window opens a tool window of its scene and closes it again.
+/// An application whose first window opens a tool window of its scene and closes it again.
 private struct LeavingToolApplication: Application {
     var body: some Scene { LeavingToolScene() }
 }
@@ -135,13 +135,13 @@ private struct LeavingToolScene: Scene {
 }
 
 private struct LeavingOpeningPage: View {
-    @Environment private var scene: SceneSession
+    @Environment private var application: ApplicationSession
 
     var body: some View {
-        let scene = self.scene
+        let application = self.application
         return VStack {
-            Button("Open").onClicked { try await scene.openWindow(WindowType("leave.tool")) }
-            Button("Close").onClicked { try await scene.closeWindow(WindowType("leave.tool")) }
+            Button("Open").onClicked { try await application.openWindow(WindowType("leave.tool")) }
+            Button("Close").onClicked { try await application.closeWindow(WindowType("leave.tool")) }
         }
     }
 }

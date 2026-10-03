@@ -8,13 +8,15 @@
 /// Design: docs/design/host/runtime.md#acts
 @_spi(Host) public enum HostActs {
     /// The acts every host performs: the focus, the questions for the user and a word to a screen reader, the time
-    /// and the zones, the on-screen keyboard, a kept value, and a handler's failure told.
+    /// and the zones, the on-screen keyboard, a value kept - the application's or a scene's - and a handler's failure
+    /// told.
     public static let performed: [any ContractMember] = [
         VisualElementContract.focus, VisualElementContract.unfocus,
         ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
         ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
-        ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard, ApplicationContract.persistValue,
-        ApplicationContract.prompt, ApplicationContract.utcOffset,
+        ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard,
+        ApplicationContract.persistSceneValue, ApplicationContract.persistValue, ApplicationContract.prompt,
+        ApplicationContract.utcOffset,
     ]
 
     /// The answer to `currentTime`: the hour, the minute, the second and the millisecond of the local time.

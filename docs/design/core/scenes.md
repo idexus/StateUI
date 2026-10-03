@@ -1,110 +1,117 @@
 # Scenes
 
-Which scenes are open is the library's to hold, never the author's: the
-platform makes them - at launch, for a new window, when the system restores the
-application's windows - and `ApplicationSession.openScene()` asks for one more.
-`Scenes` (Scenes.swift) keeps them as state the root of the tree
-reads.
+An application's body declares its scenes, each standing at most once: it opens
+with its first window and ends with its last. Which scenes stand and which
+windows each has open is the library's to hold, never the author's: launch, the
+platform and `ApplicationSession.openWindow` open windows, and the user and a
+session close them. `OpenScenes` (OpenScenes.swift) keeps the scenes standing as
+state the root of the tree reads.
 
 ## The scene tree
 
 ```text
   Application
-    Scene "1"            one per open scene, in the order they opened
-      Window "main"      its main window, always first - a scene of a named
-                         kind's carrying its windowType
-      Window "fonts 1"   a window beside it: the kind, and a number of its own
+    Scene "1"            one per scene standing, in the order they opened
+      Window "window 1"  a window of the group with no name: "window", and its number
+      Window "fonts 2"   a window of a kind: the kind, and its number
     Scene "2"
-      Window "main"
+      Window "about 1"
 ```
 
-The application is the root and its scenes an arranged list: one for most
-applications, one per session for a desktop one. The host opens and closes
-platform windows to match, so a scene that leaves the list is a scene that
-closes.
+The application is the root and its scenes an arranged list. The host opens
+and closes platform windows to match, so a window that leaves the tree is a
+window that closes.
 
 A scene's number is the library's - "1", "2", in the order they opened - and
-never the platform's, which keeps the patch the same on every run. The
-platform's own identity for a scene, the one the system restores it by, stays
-on the host, which keeps the two paired.
+never the platform's, which keeps the patch the same on every run. A window's
+key is its kind and a number of its own in its scene, in the order its windows
+opened, which keeps it the same window when the value it stands for changes.
 
-The list of scenes is a `@State` the root reads, so a scene opening or closing
+The list of scenes is a `@State` the root reads, so a scene opening or ending
 builds the application again and nothing in the scenes that stay. Each scene's
-record holds the windows it has open beside its main one as a `@State` its own
-node reads, so opening a window in one scene builds nothing of another.
+record holds its windows as a `@State` its own node reads, so opening a window
+in one scene builds nothing of another - and nothing of the windows standing
+in it: a window's placeholder is carried while what it was given is the same.
 
-Each open scene is a `SceneElement`, a composed view whose type is the
-application's scene type, so each scene has `@State` of its own, paired across
-renders under its number. The application is asked for a scene value once per
-scene: a scene's boxes belong to its value, and two scenes built from one value
-would share every storage the first adopted.
+Each scene standing is a `SceneElement`, a composed view whose type is the
+scene's own, so its `@State` is paired across renders under its number and
+shared by every window of it.
 
-## Kinds of scene
+## A scene stands once
 
-An application's body lists its kinds of scene, the first opening at launch,
-and each kind is named by its main window: the `WindowGroup` with no name is
-the kind *File ▸ New* opens, a `WindowGroup(.kind)` a kind of many sessions
-opened by `ApplicationSession.openWindow(.kind)`, and a `Window(.kind)` - the
-first in a scene with no `WindowGroup`, or written in the application's body -
-a kind of one session, which opens once and answers `alreadyOpen` after. A
-window per value belongs to a scene, so the application's body refuses one at
-compile time.
+A scene stands at most once: a window of it opens in it where it stands, and
+opens it where it does not. Every window of a scene shares the scene's state;
+what belongs to one window is the `@State` of the view it shows. A scene ends
+when its last window goes - the user closed it, a session closed it, or the
+scene's session closed them all - and its state goes with it: the next window of
+it opens a fresh scene.
 
-A scene's record holds its kind. The scene waiting for the platform's first
-window is of the application's first kind until the build settles it; a scene
-the platform hands over is of the kind it restored, else of the unnamed kind -
-the first where none is unnamed. A kind the application no longer declares
-comes back as the unnamed kind, with nothing of what was kept for it.
+What each scene declares is read from the application's body in a read scope
+of its own whose reads are dropped, so a write to a scene's state builds that
+scene, never the application's root. What a scene declares is therefore fixed:
+what a window shows may change, which windows a scene declares may not.
 
-Finding a kind evaluates the body of every kind of scene, so it runs in a read
-scope of its own whose reads are dropped: a write to a scene's state builds
-that scene, never the application's root. A kind's name is therefore fixed -
-what its main window shows may change, the name it carries may not.
+A window of a kind belongs to the scene declaring that kind; one kind is
+declared by one scene, and the group with no name by one scene of the
+application. Where several declare one, the first does.
 
-The main window of a named kind carries its `windowType`, which is what the
-platform keeps the scene as; a `Window` that is a scene's main one carries its
-`hidesWhenInactive` and `floatsOnTop` as well. A host tells the main window by
-its place - a scene's first - and never by what it carries.
+## Launch and New
+
+Launch opens one window: of the `WindowGroup` with no name, in the scene
+declaring it - else the first window of no value the first scene declares. The
+application is made at its first need, so the scene launch opens is settled
+then, before anything reads it. *File ▸ New Window* and `openWindow()` open one
+more window of that group.
+
+## Opening windows
+
+`ApplicationSession.openWindow` opens a window by its kind, in the scene that
+declares it: a `Window(.kind)` once, a window of a `WindowGroup(.kind, for:)`
+once a value, and one more window of a `WindowGroup` each time it is asked.
+Opening checks the kind is declared and the value's type matches. Whether a
+window may open beside another is the platform's: a desktop and an iPad do, a
+phone does not, and a host that has not said - a test - does.
+
+A window's kind, its value's text, whether it hides while another scene is in
+front and whether it floats are written on every build, either way, so none of
+them is ever cleared off a window it was on - those members have no host
+default (contracts.md). A window of the group with no name carries no kind.
+
+## What the platform hands over
+
+A window the platform made comes through one entry,
+`HostBoundary.connectWindow`:
+
+- the platform's first window is the one launch opened;
+- a new window of no kind is one more of the group with no name;
+- a window the platform kept comes as the kind and the value's text it carried,
+  with its scene's kept values, and opens in the scene declaring that kind,
+  which opens with it where it does not stand.
+
+A kept window of another kind coming first takes the place of the window
+launch opens: what the platform kept is what stands. A kind no scene declares,
+or a text that no longer reads as the group's value, is refused, and the host
+closes the window; the window launch opens waits on for the platform's next. What the platform kept for a scene lands only where the
+scene opens with that window, before its first build; a scene standing already
+keeps its own.
+
+## What the platform keeps
+
+For each window the host writes down its kind and its value as text, and with
+it the values of its scene's `@State(sceneKey:)`. What comes back at launch is
+what the system restores; nothing of the library's decides it.
+
+A window's value is any `Codable` the author chose, and the platform keeps text,
+so `ValueText` writes a value as JSON and reads it back - by hand, with no
+Foundation, and with an object's members in the order the value encoded them, so
+one value is one text on every run.
 
 ## Sessions
 
 Each scene has a `SceneSession` in the environment of everything under it, and
 each window a `WindowSession`, held by its scene's record for as long as the
 window is open, so what a window was told about itself outlives the renders that
-describe it. The main window's session lives as long as the scene.
-
-## Opening windows
-
-A scene declares the windows it opens beside its main one - a `Window` of a
-kind, a `WindowGroup` of a kind per value - and each build records their shapes:
-the type of value one window stands for, and how to read that value back from
-text. Opening a window checks the kind is declared and the value's type matches.
-Whether a window may open beside another is the platform's: a desktop and an
-iPad do, a phone does not, and a host that has not said - a test - does.
-
-A window opened beside the main one has a number of its own in its scene, in the order windows
-opened there, which keeps it the same window when the value it stands for
-changes. Its kind, its value's text, whether it hides while another scene is in
-front and whether it floats are written on every build, either way, so none of
-them is ever cleared off a window it was on - those members have no host
-default (contracts.md).
-
-## What the platform keeps
-
-For each scene the host writes down which windows it had open - each window's
-kind and its value as text - and the values of the scene's `@State(sceneKey:)`.
-What comes back at launch is what the system restores; nothing of the library's
-decides it.
-
-A window the system restored comes back only where the scene still declares its
-kind and the text still reads as its value; anywhere else it closes again. "No"
-is an answer too: the host holds the window until the render after the report
-says whether the scene took it, so that render is asked for either way.
-
-A window's value is any `Codable` the author chose, and the platform keeps text,
-so `ValueText` writes a value as JSON and reads it back - by hand, with no
-Foundation, and with an object's members in the order the value encoded them, so
-one value is one text on every run.
+describe it.
 
 ## Scene keys
 
@@ -115,16 +122,3 @@ under its state's lock, from whichever thread wrote it, so the record holds its
 own lock around those three tables. What the platform kept lands before the
 scene's first build. The waiting values go out as one act per key per take, scene
 by scene in the order they opened (state.md).
-
-## Connecting and ending
-
-The platform hands over windows nobody here asked for: the first at launch, one
-for a new window, a scene the system restored. The first scene, made when the
-application registered, waits for the platform's first window; any later window
-is a new scene. Either way what the platform kept for the scene is restored
-before it builds, and a render is asked for, since the host renders into the
-window it is holding as soon as the call returns.
-
-A scene ends when its main window goes - the user closed it, or the session's
-`close()` asked - and every window beside it closes with it, along with an
-inspector docked there.

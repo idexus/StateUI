@@ -20,11 +20,36 @@ final class UIKitWindowController {
     /// The phase the window was last told; nil until it was told one.
     var toldPhase: ApplicationPhase?
 
+    /// The record its session keeps, for iOS to hand back as it restores the scene.
+    private(set) var record: WindowRecord?
+
     private let root = UIKitRootViewController()
     let presentation = WindowPresentation()
 
     init(_ element: MountedElement, scene: UIWindowScene?) {
         if let scene { stand(in: scene) }
+    }
+
+    /// Whether the window stands for the scene session `session`.
+    func holds(_ session: UISceneSession) -> Bool {
+        self.session?.persistentIdentifier == session.persistentIdentifier
+    }
+
+    /// Writes the record `make` makes of the window, given its session's identity, in the session - where it
+    /// changed.
+    func keep(_ make: (String) -> WindowRecord) {
+        guard let session else { return }
+        let record = make(session.persistentIdentifier)
+        guard record != self.record else { return }
+        self.record = record
+        session.userInfo = (session.userInfo ?? [:]).merging([UIKitRenderer.recordKey: record.text]) { $1 }
+    }
+
+    /// iOS let the scene go, and its window with it; the session stays, for the scene to come back.
+    func sceneLeft() {
+        window?.isHidden = true
+        window?.rootViewController = nil
+        window = nil
     }
 
     /// Stands the window in `scene`, which iOS connected for it.

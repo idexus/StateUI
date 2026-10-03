@@ -48,10 +48,16 @@ final class UIKitRenderer {
         toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
         answered: { [unowned self] in runtime.pump.turn() })
 
-    /// The scenes iOS connected that no StateUI window stands in yet, the first first.
-    private var waitingScenes: [UIWindowScene] = []
+    /// The key a scene's session keeps its window's record under, for iOS to hand back as it restores the scene.
+    static let recordKey = "StateUI.Window"
 
-    /// Whether iOS connected the scene the application launched in: a window the tree holds before waits for it.
+    /// The scenes iOS connected that no StateUI window stands in yet, each as the window it came in as.
+    let restored = RestoredWindows<UIWindowScene>()
+
+    /// What each StateUI scene keeps, by its key, for the records of its windows.
+    var sceneValues = SceneValues()
+
+    /// Whether iOS connected the scene the application launched in.
     private var launched = false
 
     private var started = false
@@ -68,6 +74,9 @@ final class UIKitRenderer {
         self.reducesMotion = reducesMotion
         runtime.displayCycle.presenter = self
         runtime.pump.presenter = self
+        // Nothing renders before iOS connects the first scene: a window it kept opens its StateUI scene with what
+        // that kept.
+        runtime.pump.waitsForFirstWindow = true
         // On iOS the focus moves between the fields and editors the user types in, which say so.
         for name in [
             UITextField.textDidBeginEditingNotification, UITextField.textDidEndEditingNotification,
@@ -137,29 +146,53 @@ final class UIKitRenderer {
         runtime.userClosed(window)
     }
 
-    /// A scene iOS connected: a StateUI scene of its own, whose window stands in it, which says what the display
-    /// is and, the first, what theme the user chose.
+    /// A scene iOS connected, which says what the display is and, the first, what theme the user chose: the window
+    /// standing for its session comes back to it; else the window it kept comes in as its kind for its value; else a
+    /// window the tree holds, waiting for the scene the host asked for, stands in it; else it is a new window.
+    /// Design: docs/design/platforms/uikit/runtime.md#scenes
     func connect(_ scene: UIWindowScene) {
         environment.followTheme(of: scene)
         environment.reportDisplay(of: scene)
         let first = !launched
         launched = true
-        // A window the tree already holds, waiting for a scene, stands in it; at launch, any other asks for its own.
-        if let waiting = roster.windows.first(where: { $0.1.window == nil })?.1 {
-            waiting.stand(in: scene)
-            if first, ownsScenes {
-                for _ in roster.windows.filter({ $0.1.window == nil }) { requestScene() }
-            }
+
+        if let standing = roster.windows.first(where: { $0.1.holds(scene.session) })?.1 {
+            standing.stand(in: scene)
             return synchronizeWindows()
         }
-        waitingScenes.append(scene)
-        runtime.core.connectScene()
+        let kept = (scene.session.userInfo?[Self.recordKey] as? String).flatMap(WindowRecord.init)
+        if let kept, restored.accept(kept, native: scene, values: &sceneValues, in: runtime) {
+            return runtime.pump.turn()
+        }
+        if !first, let waiting = roster.windows.first(where: { $0.1.session == nil })?.1 {
+            waiting.stand(in: scene)
+            return synchronizeWindows()
+        }
+        // The first is the window launch opens; any other, one more of the group with no name. A kept window no
+        // scene declares now is a new one: iOS connected its scene, and the user is to see something in it.
+        let new = WindowRecord(identifier: scene.session.persistentIdentifier)
+        _ = restored.accept(new, native: scene, values: &sceneValues, in: runtime)
         runtime.pump.turn()
     }
 
-    /// A scene iOS let go of.
+    /// A scene iOS let go of - in the background, to come back - takes its window with it; the StateUI window
+    /// stands until its session comes back or the user closes it.
     func disconnect(_ scene: UIWindowScene) {
-        waitingScenes.removeAll { $0 === scene }
+        roster.windows.first { $0.1.window?.windowScene === scene }?.1.sceneLeft()
+    }
+
+    /// A scene keeps a value: every window of it writes it in its session's record, for whichever comes back first.
+    func keepSceneValue(_ call: HostActCall) {
+        guard sceneValues.keep(call.arguments) != nil else { return }
+        keepRecords()
+    }
+
+    /// Writes each window's record in its scene's session: its kind, its value and what its StateUI scene keeps.
+    private func keepRecords() {
+        for (element, controller) in roster.windows {
+            let scene = element.enclosing(type: .scene).map(SceneValues.key(of:)) ?? ""
+            controller.keep { WindowRecord(of: element, identifier: $0, kept: sceneValues[scene]) }
+        }
     }
 
     private func reportEnvironment() {
@@ -186,8 +219,9 @@ final class UIKitRenderer {
     func synchronizeWindows() {
         guard let root = runtime.tree.root, root.type == .application else { return }
 
+        sceneValues.keep(only: Set(SceneValues.scenes(of: root).map(SceneValues.key(of:))))
         roster.update(root: root, make: { [unowned self] element in
-            let scene = waitingScenes.isEmpty ? nil : waitingScenes.removeFirst()
+            let scene = restored.take(for: element)?.native
             if scene == nil, ownsScenes, launched { requestScene() }
             return UIKitWindowController(element, scene: scene)
         }, close: { [unowned self] closing in
@@ -198,6 +232,7 @@ final class UIKitRenderer {
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
+        keepRecords()
         tellStandingPhases()
         rebuildMenuBarWhereItChanged()
         runtime.displayCycle.hold()

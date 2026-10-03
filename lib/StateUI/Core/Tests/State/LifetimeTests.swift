@@ -232,8 +232,8 @@ final class LifetimeTests: XCTestCase {
     /// a window's title given by its page as it comes in reaches the host
     /// with the window, not a render after it.
     func testWhatOnCreatedWritesIsInTheMessageThatBringsTheElement() throws {
-        Scenes.shared.reset()
-        defer { Scenes.shared.reset() }
+        OpenScenes.shared.reset()
+        defer { OpenScenes.shared.reset() }
         Renderer.shared.setApplication(Titling())
 
         let first = Renderer.shared.renderHost(baseline: 0)
@@ -252,8 +252,8 @@ final class LifetimeTests: XCTestCase {
     /// into the message a few times and no more; what is left runs after it,
     /// and nothing is lost.
     func testAChainLongerThanTheSettlingPassesGoesOnAfterTheMessage() throws {
-        Scenes.shared.reset()
-        defer { Scenes.shared.reset() }
+        OpenScenes.shared.reset()
+        defer { OpenScenes.shared.reset() }
         Renderer.shared.setApplication(Chaining())
 
         let first = Renderer.shared.renderHost(baseline: 0)

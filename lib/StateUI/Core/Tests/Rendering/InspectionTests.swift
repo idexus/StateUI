@@ -76,9 +76,16 @@ private struct Holding: Application {
     var body: some Scene { WindowGroup { First() } }
 }
 
-/// An application whose scenes are a window alone.
+private extension WindowType {
+    static let second = WindowType("inspection.second")
+}
+
+/// An application of two scenes, each a window alone.
 private struct Plain: Application {
-    var body: some Scene { WindowGroup { First() } }
+    var body: some Scene {
+        WindowGroup { First() }
+        Window(.second) { First() }
+    }
 }
 
 /// A scene whose inspector may show in a window of its own.
@@ -97,7 +104,7 @@ final class InspectionTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
-        Scenes.shared.reset()
+        Renderer.shared.setApplication(Plain())
         Inspection.start()
     }
 
@@ -114,7 +121,7 @@ final class InspectionTests: XCTestCase {
         // NOT LEFT INSTALLED: a pass the next test keeps would otherwise start
         // the inspector's paced rebuild, a sleeping task another test counts.
         Inspection.landed = nil
-        Scenes.shared.reset()
+        OpenScenes.shared.reset()
         super.tearDown()
     }
 
@@ -146,23 +153,28 @@ final class InspectionTests: XCTestCase {
         }
     }
 
-    /// Two scenes, the way the platform hands them over.
-    private func twoScenes() {
-        Scenes.shared.connected(restoring: [:])
-        Scenes.shared.connected(restoring: [:])
+    /// The registered application's tree, the way `Renderer.root` builds it.
+    private func tree() -> Node {
+        OpenScenes.shared.tree(of: Renderer.shared.madeApplication()!)
     }
 
-    /// What each scene's main window holds, by type.
-    private func slots() -> [[NodeType]] {
-        Renders().render(Scenes.shared.tree(of: Plain())).children.map {
-            $0.children[0].children.map(\.type)
+    /// Two scenes, the way the platform hands their windows over.
+    private func twoScenes() {
+        HostBoundary.connectWindow()
+        HostBoundary.connectWindow(kind: WindowType.second.name)
+    }
+
+    /// What each window of each scene holds, by type.
+    private func slots() -> [[[NodeType]]] {
+        Renders().render(tree()).children.map { scene in
+            scene.children.map { $0.children.map(\.type) }
         }
     }
 
-    /// What the inspector docked over each scene's main window says - its
+    /// What the inspector docked over each scene's first window says - its
     /// labels and its buttons, in walk order; nothing where none docks.
     private func docked() -> [[String]] {
-        Renders().render(Scenes.shared.tree(of: Plain())).children.map { scene in
+        Renders().render(tree()).children.map { scene in
             scene.children[0].children.filter { $0.type == .overlay }.flatMap { words(in: $0) }
         }
     }
@@ -284,7 +296,7 @@ final class InspectionTests: XCTestCase {
     func testARenderIsFiledUnderTheScenesItReached() {
         twoScenes()
 
-        let first = pass { Renders().render(Scenes.shared.tree(of: Plain())) }
+        let first = pass { Renders().render(tree()) }
         let scenes = Set((first?.entries ?? []).filter { $0.depth == 0 }.map(\.scene))
 
         XCTAssertEqual(scenes, [.manual("1"), .manual("2")])
@@ -369,64 +381,82 @@ final class InspectionTests: XCTestCase {
     // MARK: - Where it shows
 
     /// Every scene has its own inspector, and one docked is an overlay on that
-    /// scene's main window alone.
-    func testAnInspectorDocksInItsOwnScenesMainWindowAndNoOther() {
+    /// scene's first window alone.
+    func testAnInspectorDocksInItsOwnScenesFirstWindowAndNoOther() throws {
         twoScenes()
+        try OpenScenes.shared.open(nil)
 
-        Inspector.show(in: Scenes.shared.list[1], .side)
-        XCTAssertEqual(slots(), [[.page], [.page, .overlay]])
+        Inspector.show(in: OpenScenes.shared.list[1], .side)
+        XCTAssertEqual(slots(), [[[.page], [.page]], [[.page, .overlay]]])
 
-        Inspector.show(in: Scenes.shared.list[0], .bottom)
-        XCTAssertEqual(slots(), [[.page, .overlay], [.page, .overlay]])
+        Inspector.show(in: OpenScenes.shared.list[0], .bottom)
+        XCTAssertEqual(slots(), [[[.page, .overlay], [.page]], [[.page, .overlay]]])
 
-        Inspector.hide(in: Scenes.shared.list[1])
-        XCTAssertEqual(slots(), [[.page, .overlay], [.page]])
+        Inspector.hide(in: OpenScenes.shared.list[1])
+        XCTAssertEqual(slots(), [[[.page, .overlay], [.page]], [[.page]]])
     }
 
-    /// A docked inspector is a value of its main window, whose panel the library lays as the window's own overlay,
+    /// A docked inspector is a value of its scene, whose panel the library lays as its first window's own overlay,
     /// after its page - over every overlay a page declares - and hiding it takes the layer away.
-    func testADockedInspectorIsTheWindowsOwnOverlay() throws {
-        Scenes.shared.connected(restoring: [:])
-        let record = try XCTUnwrap(Scenes.shared.list.first)
-        let window = record.windowSession(SceneElement.mainKey)
+    func testADockedInspectorIsTheFirstWindowsOwnOverlay() throws {
+        HostBoundary.connectWindow()
+        let record = try XCTUnwrap(OpenScenes.shared.list.first)
 
         Inspector.show(in: record, .bottom)
-        XCTAssertEqual(window.dockedInspector, .bottom)
-        let built = try XCTUnwrap(Renders().render(Scenes.shared.tree(of: Plain())).children.first?.children.first)
+        XCTAssertEqual(record.dockedInspector, .bottom)
+        let built = try XCTUnwrap(Renders().render(tree()).children.first?.children.first)
         XCTAssertEqual(built.children.last?.type, .overlay)
         XCTAssertEqual(built.children.last?.children.first?.type, .zStack)
 
         Inspector.hide(in: record)
-        XCTAssertNil(window.dockedInspector)
+        XCTAssertNil(record.dockedInspector)
+    }
+
+    /// The first window closing hands the docked inspector to the window that is first then.
+    func testADockedInspectorMovesToTheWindowFirstNow() throws {
+        let renders = Renders()
+        renders.render(tree())
+        try OpenScenes.shared.open(nil)
+        let record = try XCTUnwrap(OpenScenes.shared.list.first)
+        Inspector.show(in: record, .bottom)
+        let docked = renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual(docked.at(.manual("1"), .manual("window 2"))?.children.map(\.type), [.page])
+
+        try record.closeWindow(key: "window 1")
+        let moved = renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(moved.at(.manual("1"))?.arrangement, [.manual("window 2")])
+        XCTAssertEqual(
+            moved.at(.manual("1"), .manual("window 2"))?.children.map(\.type), [.page, .overlay],
+            "the window first now docks it, in the render that closed the other")
     }
 
     /// In a window of its own, an inspector is a window OF ITS SCENE - the
-    /// scene's `DebugInspector`, beside its main window.
+    /// scene's `DebugInspector`, beside the window it was opened from.
     func testAnInspectorInAWindowIsAWindowOfItsScene() {
+        Renderer.shared.setApplication(InspectedApp())
         let renders = Renders()
+        renders.render(tree())
 
-        // Built once, so the scene has said which groups it declares.
-        renders.render(Scenes.shared.tree(of: InspectedApp()))
+        Inspector.show(in: OpenScenes.shared.list[0], .window)
 
-        Inspector.show(in: Scenes.shared.list[0], .window)
-
-        let whole = renders.renderFromScratch(Scenes.shared.tree(of: InspectedApp()))
+        let whole = renders.renderFromScratch(tree())
 
         XCTAssertEqual(
             whole.children[0].children.map(\.id),
-            [.manual("main"), .manual("stateui.debugInspector 1")])
+            [.manual("window 1"), .manual("stateui.debugInspector 2")])
         XCTAssertNil(InspectorModel.shared.places["1"])
     }
 
     /// A scene that declares no window for it has its inspector DOCK instead -
     /// the window is a place a scene offers, never one the library makes.
     func testAnInspectorWithNoWindowToShowInDocks() {
-        Renders().render(Scenes.shared.tree(of: Plain()))
+        Renders().render(tree())
 
-        Inspector.show(in: Scenes.shared.list[0], .window)
+        Inspector.show(in: OpenScenes.shared.list[0], .window)
 
         XCTAssertEqual(InspectorModel.shared.places["1"], .bottom)
-        XCTAssertTrue(Scenes.shared.list[0].windows.isEmpty)
+        XCTAssertEqual(OpenScenes.shared.list[0].windows.map(\.key), ["window 1"])
     }
 
     /// The ⓘ opens the inspector of the scene whose session it is handed, and
@@ -434,12 +464,12 @@ final class InspectionTests: XCTestCase {
     func testAButtonOpensTheInspectorOfItsOwnScene() {
         twoScenes()
 
-        let second = Scenes.shared.list[1].session
+        let second = OpenScenes.shared.list[1].session
 
         Inspector.toggle(in: second)
         XCTAssertEqual(Array(InspectorModel.shared.places.keys), ["2"])
         XCTAssertTrue(Inspector.isOpen(in: second))
-        XCTAssertFalse(Inspector.isOpen(in: Scenes.shared.list[0].session))
+        XCTAssertFalse(Inspector.isOpen(in: OpenScenes.shared.list[0].session))
 
         Inspector.toggle(in: second)
         XCTAssertTrue(InspectorModel.shared.places.isEmpty)
@@ -451,8 +481,8 @@ final class InspectionTests: XCTestCase {
     func testAnInspectorEndsWithItsScene() {
         twoScenes()
 
-        Inspector.show(in: Scenes.shared.list[1], .bottom)
-        Scenes.shared.ended(Scenes.shared.list[1])
+        Inspector.show(in: OpenScenes.shared.list[1], .bottom)
+        OpenScenes.shared.ended(OpenScenes.shared.list[1])
 
         XCTAssertTrue(InspectorModel.shared.places.isEmpty)
         XCTAssertFalse(Inspection.recording)
@@ -464,10 +494,10 @@ final class InspectionTests: XCTestCase {
     func testAnInspectorAlongTheBottomFoldsToItsLastRender() {
         twoScenes()
 
-        _ = pass { Renders().render(Scenes.shared.tree(of: Plain())) }
+        _ = pass { Renders().render(tree()) }
 
-        Inspector.show(in: Scenes.shared.list[0], .bottom)
-        Inspector.show(in: Scenes.shared.list[1], .bottom)
+        Inspector.show(in: OpenScenes.shared.list[0], .bottom)
+        Inspector.show(in: OpenScenes.shared.list[1], .bottom)
         InspectorModel.shared.collapsed.insert("1")
 
         let folded = docked()
@@ -481,8 +511,8 @@ final class InspectionTests: XCTestCase {
         XCTAssertTrue(docked()[0].contains("Collapse"))
 
         InspectorModel.shared.collapsed.insert("1")
-        Inspector.show(in: Scenes.shared.list[0], .side)
-        Inspector.show(in: Scenes.shared.list[0], .bottom)
+        Inspector.show(in: OpenScenes.shared.list[0], .side)
+        Inspector.show(in: OpenScenes.shared.list[0], .bottom)
         XCTAssertTrue(docked()[0].contains("Collapse"))
     }
 
@@ -493,9 +523,9 @@ final class InspectionTests: XCTestCase {
     func testTheButtonOpensTheInspectorFoldedAlongTheBottom() {
         twoScenes()
 
-        _ = pass { Renders().render(Scenes.shared.tree(of: Plain())) }
+        _ = pass { Renders().render(tree()) }
 
-        let first = Scenes.shared.list[0].session
+        let first = OpenScenes.shared.list[0].session
 
         Inspector.toggle(in: first)
 

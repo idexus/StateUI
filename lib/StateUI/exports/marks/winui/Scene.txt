@@ -2,7 +2,5 @@
 Scene: ✅
 Scene.activated: ✅
 Scene.deactivated: ✅
-Scene.destroying: ✅
 Scene.stopped: ✅
 Scene.windowClosed: ✅
-Scene.windowRestored: ✅

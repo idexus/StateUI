@@ -39,9 +39,8 @@ bounds the whole content view, and are applied again on every presentation,
 since the chrome grows with a row of tabs; what the tree leaves unsaid is the
 window's own. The traits ([a window's traits](../../host/tree.md#a-windows-traits))
 are the zoom and minimize buttons, a window the desktop shows through, and
-the floating level while the application is in front. A window of a kind of
-its own stands apart from its scene's main window, as a Mac's auxiliary
-windows do, and out of the Windows menu.
+the floating level while the application is in front. Every window stands
+in the Windows menu.
 
 ## The application's phase
 
@@ -54,19 +53,22 @@ window stands minimized and whether it holds the keyboard. Another
 application in front takes the keyboard from every window, which is all
 AppKit tells of it. A window its scene hides is ordered out, and ordered in
 again without the keyboard. A window the user closes is heard by it and its
-scene; the application ending tells each scene's windows, then the scene.
+scene; the application ending tells every window. *File ▸ New Window*, and the
+Dock with no window open, open one more window of the group with no name.
 
 ## Restored windows
 
-The system restores a Mac's windows itself: each window encodes its
-restoration record - its scene's identifier, its kind, its value, the scene's
-kept values - and the system hands it back to the restoration class before
-the application finishes launching. A restored main window connects its
-scene with the values it kept (`AppKitSceneSession`); a restored window of a
-kind of its own is offered to the scene that owns it, and taken by the window
-the scene opens for its kind and value. One no scene claims by the
-presentation after its offer is declined, and one whose scene never comes is
-let go after three seconds. The system keeps a restored window's frame too, so
+The system restores a Mac's windows itself: each window encodes its record's
+text (`WindowRecord`) as its restorable state, and the system hands it back
+to the restoration class before the application finishes launching, which
+gives it to the renderer (`AppKitRestorationBroker`). What happens to it then
+is the host layer's, the same on every host whose platform restores windows
+([restored windows](../../host/runtime.md#restored-windows)); AppKit makes
+the window it comes in, and hands the system none for a window refused, which
+then restores nothing. Where the system restored none by the time the
+application finished launching, the host connects a new one: the window launch
+opens.
+The system keeps a restored window's frame too, so
 a window keeps nothing in the application's preferences: a frame autosave
 name, one a window, would leave a key there for every window ever opened,
 and every move would write the growing file again.

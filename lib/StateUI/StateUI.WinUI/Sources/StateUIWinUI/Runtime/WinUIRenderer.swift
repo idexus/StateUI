@@ -46,7 +46,7 @@ final class WinUIRenderer {
         roster.controllers
     }
 
-    /// The first window - the scene's main one; nil before there is one.
+    /// The first window of the first scene; nil before there is one.
     var window: WinUIWindow? {
         windows.first?.window
     }
@@ -148,7 +148,7 @@ final class WinUIRenderer {
             runtime.pump.turn()
         }
         for (element, controller) in roster.windows {
-            controller.present(element, in: runtime, windowOf: { [roster] in roster.controller(of: $0)?.window })
+            controller.present(element, in: runtime)
         }
     }
 

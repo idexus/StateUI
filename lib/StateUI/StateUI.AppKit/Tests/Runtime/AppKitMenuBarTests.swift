@@ -13,7 +13,7 @@ final class AppKitMenuBarTests: XCTestCase {
     /// equivalents, so without them a field copies, pastes and undoes nothing.
     @MainActor
     func testTheMenuBarHoldsTheTextCommandsAFieldAnswers() throws {
-        let main = StateUIAppKit.mainMenu(newScene: nil)
+        let main = StateUIAppKit.mainMenu(newWindow: nil)
         XCTAssertEqual(main.items.map(\.title).dropFirst(), ["File", "Edit", "Window"])
 
         let edit = try XCTUnwrap(main.item(withTitle: "Edit")?.submenu)
@@ -42,7 +42,7 @@ final class AppKitMenuBarTests: XCTestCase {
             }
         }
         defer { renderer.closeForTesting() }
-        let main = StateUIAppKit.mainMenu(newScene: nil)
+        let main = StateUIAppKit.mainMenu(newWindow: nil)
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
 
         renderer.installPageMenus(controller.pageMenus, into: main)

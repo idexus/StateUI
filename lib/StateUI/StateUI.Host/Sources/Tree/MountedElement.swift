@@ -320,20 +320,6 @@
         type == .window ? [self] : children.flatMap(\.windows)
     }
 
-    /// Whether this is a scene's main window - the scene's first.
-    /// Design: docs/design/core/scenes.md#the-scene-tree
-    public var isMainWindow: Bool {
-        type == .window && enclosing(type: .scene)?.windows.first === self
-    }
-
-    /// The window this one belongs to: its scene's main window, where it is a window beside it; nil for a main
-    /// window, and for any other element.
-    public var ownerWindow: MountedElement? {
-        guard type == .window, !isMainWindow else { return nil }
-
-        return enclosing(type: .scene)?.windows.first
-    }
-
     /// The first element with key `sought` in this subtree, this one first.
     public func first(id sought: ElementID) -> MountedElement? {
         if id == sought { return self }

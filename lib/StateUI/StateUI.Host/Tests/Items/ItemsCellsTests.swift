@@ -59,7 +59,7 @@ final class ItemsCellsTests: XCTestCase {
         Heard.opened = []
         stateUIUseApp(ListApplication())
         runtime = HostRuntime.still()
-        runtime.core.connectScene()
+        runtime.connectWindow()
         runtime.pump.turn()
         let list = try XCTUnwrap(runtime.tree.root?.first(type: .itemsView))
         cells = ItemsCells(list, in: runtime)

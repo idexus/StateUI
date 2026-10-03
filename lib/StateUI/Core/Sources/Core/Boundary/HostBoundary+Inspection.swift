@@ -15,7 +15,7 @@
     @MainActor
     public static func inspected(generation: Int32, scenes: [String: Double], apply: Double, nodes: Int, made: Int) {
         for (name, micros) in scenes.sorted(by: { $0.key < $1.key }) {
-            guard let index = Scenes.shared.index(of: name) else { continue }
+            guard let index = OpenScenes.shared.index(of: name) else { continue }
             Inspection.applied(generation: generation, scene: index, micros: micros)
         }
         Inspection.applied(

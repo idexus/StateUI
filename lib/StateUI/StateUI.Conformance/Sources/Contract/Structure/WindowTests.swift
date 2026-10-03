@@ -6,8 +6,8 @@
 
 /// `WindowContract` on a host: a window hears each phase of its life - made and brought to the front, put behind
 /// another application and back, put away and brought back, closed - and a modal the user takes away; it stands with
-/// the title, the size, the place, the bounds and the chrome its session asks for, and a window a scene opens is of
-/// its kind, for its value, floating or hiding as its group says.
+/// the title, the size, the place, the bounds and the chrome its session asks for; a window opened by its kind is of
+/// that kind, for its value, floating or hiding as its group says, and the platform keeps it for its value.
 @_spi(Host) public enum WindowTests: ConformanceFamily {
     public static let name = "Window"
 
@@ -87,6 +87,18 @@
                 s.expect(try s.held(WindowContract.windowType, on: note), NotesApplication.note)
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
             },
+            ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
+                Covered(WindowContract.windowValue),
+            ]) { s in
+                try s.start(application: { NotesApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+
+                try s.start(application: { NotesApplication() })
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("nothing kept") }
+                s.expect(try s.held(WindowContract.windowValue, on: note), "7", "the note kept for its number")
+            },
             ConformanceCase("aWindowOfTheGroupFloatsWhileTheApplicationIsInFront", proves: [
                 Covered(WindowContract.floatsOnTop),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
@@ -94,15 +106,15 @@
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
                 let windows = s.elements(ofType: WindowContract.nodeType)
-                guard let main = windows.first, let note = windows.last else { return s.fail("no second window") }
+                guard let notes = windows.first, let note = windows.last else { return s.fail("no second window") }
 
                 try s.perform(.bringToFront, on: note)
                 try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == true }
                 s.expect(try s.held(WindowContract.floatsOnTop, on: note), true, "over the application's windows")
-                try s.perform(.switchAway, on: main)
+                try s.perform(.switchAway, on: notes)
                 try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == false }
                 s.expect(try s.held(WindowContract.floatsOnTop, on: note), false, "not over another application")
-                try s.perform(.switchBack, on: main)
+                try s.perform(.switchBack, on: notes)
                 try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == true }
                 s.expect(try s.held(WindowContract.floatsOnTop, on: note), true, "with the application in front again")
             },
@@ -171,16 +183,23 @@ struct WindowPhasePage: View {
     }
 }
 
-/// An application whose scene opens a note's window beside its main one: of the note's kind, for the note's number,
-/// floating over the others and hiding while another scene is in front - and opens another scene.
+/// An application of two scenes: its notes - the page launch opens, and a window per note, of the note's kind, for
+/// the note's number, floating over the others and hiding while another scene is in front - and another, a window
+/// alone.
 struct NotesApplication: Application {
     /// The kind of a note's window.
     static let note = WindowType("conformance.note")
 
-    var body: some Scene { NotesScene() }
+    /// The kind of the other scene's window.
+    static let other = WindowType("conformance.other")
+
+    var body: some Scene {
+        NotesScene()
+        Window(NotesApplication.other) { Text("Another scene") }
+    }
 }
 
-/// The scene of `NotesApplication`.
+/// The notes scene of `NotesApplication`.
 struct NotesScene: Scene {
     var body: some Scene {
         WindowGroup { NotesPage() }
@@ -190,16 +209,15 @@ struct NotesScene: Scene {
     }
 }
 
-/// The page of `NotesApplication`'s main window, with the buttons that open note 7 and another scene.
+/// The page launch opens in `NotesApplication`, with the buttons that open note 7 and the other scene's window.
 struct NotesPage: View {
-    @Environment private var scene: SceneSession
     @Environment private var application: ApplicationSession
 
     var body: some View {
-        let (scene, application) = (self.scene, self.application)
+        let application = self.application
         return VStack {
-            Button("Open").onClicked { try await scene.openWindow(NotesApplication.note, value: 7) }.id("open")
-            Button("Another").onClicked { try await application.openScene() }.id("another")
+            Button("Open").onClicked { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
+            Button("Another").onClicked { try await application.openWindow(NotesApplication.other) }.id("another")
         }
     }
 }

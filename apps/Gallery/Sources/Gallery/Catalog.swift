@@ -267,7 +267,7 @@ final class Catalog {
                     Sample(WindowSample()),
                     Sample(WindowBarSample(bar: bar)),
                     Sample(MultiWindowSample(style: style)),
-                    Sample(SceneKindsSample()),
+                    Sample(ScenesSample()),
                     Sample(WindowOverlaySample(nav: nav)),
                     Sample(LifecycleSample(log: log)),
                     Sample(WindowPhaseSample()),

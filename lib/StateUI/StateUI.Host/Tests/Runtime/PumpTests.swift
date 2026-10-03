@@ -202,7 +202,7 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
                 self.drifts.append(line)
             })
         pump.presenter = self
-        core.connectScene()
+        core.connectWindow()
     }
 
     var words: String {

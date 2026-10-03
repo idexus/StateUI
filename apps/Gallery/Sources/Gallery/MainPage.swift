@@ -1,14 +1,14 @@
 import StateUI
 
-/// What a gallery's main window shows: what the window is called, how big it
+/// What a gallery window shows: what the window is called, how big it
 /// opens, what is presented over it - and THE ARRANGEMENT, which is the reason
 /// this is a view of its own.
 ///
 /// The view a window shows is where an application says what a screenful IS, so everything
 /// about the way the gallery moves lives here: the split view holding the menu and
 /// the section, the stack the sections push onto, the tabs that one section is
-/// arranged as, and the modal stack over all of it. `GalleryScene` next door is
-/// then what it should be - the gallery's state, and the windows built from it.
+/// arranged as, and the modal stack over all of it. `GalleryWindow` next door is
+/// then what it should be - the window's state, and the page built from it.
 ///
 /// **The arrangement is one page with a menu on one side and whatever the
 /// section asks for on the other.**
@@ -36,8 +36,7 @@ struct MainPage: View {
     /// the Colours window chooses.
     let style: SessionStyle
 
-    /// The gallery's log of this window's lifecycle - the state is
-    /// `GalleryScene`'s, the moments are this window's.
+    /// The log of this window's lifecycle - kept by `GalleryWindow`.
     let log: WindowLog
 
     /// What the window's bar says - the Window bar sample writes it. See
@@ -51,7 +50,8 @@ struct MainPage: View {
     /// window is sure to be built.
     @Environment private var window: WindowSession
 
-    /// The gallery this window is in - the scene the ⓘ opens the inspector of.
+    /// The galleries' scene this window is in - the one the ⓘ opens the
+    /// inspector of.
     @Environment private var scene: SceneSession
 
     // MARK: - What the user is looking at

@@ -15,8 +15,8 @@ final class AppKitSessionTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(
-            scene("1", windows: [window("main"), window("fonts 1", kind: "fonts")]),
-            scene("2", windows: [window("main")])
+            scene("1", windows: [window("window 1"), window("fonts 2", kind: "fonts")]),
+            scene("2", windows: [window("window 1")])
         ))
 
         XCTAssertEqual(renderer.sceneCountForTesting, 2)
@@ -24,7 +24,6 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(renderer.windowsForTesting.compactMap { $0.element?.enclosing(type: .scene)?.id }, [
             .manual("1"), .manual("1"), .manual("2"),
         ])
-        XCTAssertEqual(renderer.windowsForTesting.map(\.isMain), [true, false, true])
         XCTAssertTrue(renderer.windowsForTesting.compactMap(\.window).allSatisfy(NSApp.windows.contains))
     }
 
@@ -35,7 +34,7 @@ final class AppKitSessionTests: XCTestCase {
         let kept = { UserDefaults.standard.dictionaryRepresentation().keys.filter { $0.hasPrefix("NSWindow Frame") } }
         let before = Set(kept())
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        renderer.applyForTesting(tree(scene("1", windows: [window("main"), window("fonts 1", kind: "fonts")])))
+        renderer.applyForTesting(tree(scene("1", windows: [window("window 1"), window("fonts 2", kind: "fonts")])))
         for controller in renderer.windowsForTesting {
             controller.window?.setFrame(NSRect(x: 40, y: 40, width: 320, height: 240), display: false)
         }
@@ -49,82 +48,63 @@ final class AppKitSessionTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.applyForTesting(tree(
-            scene("1", windows: [window("main"), window("fonts 1", kind: "fonts")]),
-            scene("2", windows: [window("main")])
+            scene("1", windows: [window("window 1"), window("fonts 2", kind: "fonts")]),
+            scene("2", windows: [window("window 1")])
         ))
-        let main = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let first = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let tool = try XCTUnwrap(renderer.windowsForTesting.dropFirst().first?.window)
+        let closing = ClosingWatch()
+        defer { closing.stop() }
 
         renderer.applyForTesting(tree(
-            scene("1", windows: [window("main")]),
-            scene("2", windows: [window("main")])
+            scene("1", windows: [window("window 1")]),
+            scene("2", windows: [window("window 1")])
         ))
 
         XCTAssertEqual(renderer.windowsForTesting.count, 2)
-        XCTAssertTrue(renderer.windowsForTesting.first?.window === main)
-        XCTAssertFalse(tool.isVisible)
+        XCTAssertTrue(renderer.windowsForTesting.first?.window === first)
+        XCTAssertEqual(closing.closed, [ObjectIdentifier(tool)])
     }
 
-    func testRestorationRecordRoundTripsEverySceneValueKind() throws {
-        let record = AppKitRestorationRecord(
-            windowIdentifier: "window-B",
-            ownerIdentifier: "window-A",
-            kind: "document",
-            value: "42",
-            kept: [
-                "enabled": .bool(true),
-                "scale": .number(1.25),
-                "title": .string("Dusk"),
-            ])
+    /// A window the system restored comes back as its kind, in that very window, carrying what its scene keeps -
+    /// whatever order the system restores them in; one of a kind no scene declares is not restored.
+    @MainActor
+    func testAWindowTheSystemRestoredComesBackInThatVeryWindow() async throws {
+        stateUIUseApp(AppKitSessionApp())
+        let firstHost = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        firstHost.startForTesting()
+        try await StandardEnvironment.application.openWindow(.appKitTestTool)
+        firstHost.runtime.pump.turn()
+        firstHost.keepSceneValue(HostActCall(
+            act: .persistSceneValue, arguments: [.name("1"), .name("shade"), .string("dusk")], completion: nil))
+        let records = firstHost.windowsForTesting.map(\.restorationRecordForTesting)
+        firstHost.closeForTesting()
+        XCTAssertEqual(records.map(\.kind), [nil, "appkit.test.tool"])
 
-        XCTAssertEqual(try AppKitRestorationRecord(data: record.data()), record)
-    }
+        stateUIUseApp(AppKitSessionApp())
+        let restoredHost = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { restoredHost.closeForTesting() }
+        let tool = try XCTUnwrap(restoredHost.acceptRestoredWindow(records[1]))
+        let window = try XCTUnwrap(restoredHost.acceptRestoredWindow(records[0]))
+        XCTAssertNil(restoredHost.acceptRestoredWindow(WindowRecord(identifier: "gone", kind: "appkit.test.gone")))
+        restoredHost.startForTesting()
 
-    func testAnOwnedWindowMayBeRestoredBeforeItsSceneMainWindow() {
-        let queue = AppKitRestorationQueue()
-        let owned = AppKitRestorationRecord(
-            windowIdentifier: "tool",
-            ownerIdentifier: "main",
-            kind: "fonts",
-            value: nil)
-        let main = AppKitRestorationRecord(windowIdentifier: "main")
-
-        queue.append(owned)
-        XCTAssertNil(queue.takeMain())
-
-        queue.append(main)
-        XCTAssertEqual(queue.takeMain(), main)
-        XCTAssertEqual(queue.takeOwned(by: "main", kind: "fonts", value: nil), owned)
-        XCTAssertTrue(queue.isEmpty)
+        let controllers = restoredHost.windowsForTesting
+        XCTAssertEqual(controllers.count, 2)
+        XCTAssertEqual(restoredHost.sceneCountForTesting, 1)
+        XCTAssertTrue(controllers[0].window === tool)
+        XCTAssertTrue(controllers[1].window === window)
+        XCTAssertEqual(controllers.map(\.restorationRecordForTesting.identifier), [records[1].identifier, records[0].identifier])
+        XCTAssertEqual(controllers.map(\.restorationRecordForTesting.kept), [["shade": .string("dusk")], ["shade": .string("dusk")]])
     }
 
     @MainActor
-    func testRestoredNativeWindowsAreClaimedByTheirSceneRegardlessOfArrivalOrder() {
+    func testARestoredWindowKeepsItsFrameWhenNoGeometryIsRequested() throws {
+        stateUIUseApp(AppKitSessionApp())
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        let ownedRecord = AppKitRestorationRecord(
-            windowIdentifier: "restored-tool",
-            ownerIdentifier: "restored-main",
-            kind: "fonts")
-        let mainRecord = AppKitRestorationRecord(windowIdentifier: "restored-main")
-        let owned = renderer.acceptRestoredWindow(ownedRecord)
-        let main = renderer.acceptRestoredWindow(mainRecord)
-
-        renderer.applyForTesting(tree(
-            scene("1", windows: [window("main"), window("fonts 1", kind: "fonts")])
-        ))
-
-        XCTAssertEqual(renderer.windowsForTesting.count, 2)
-        XCTAssertTrue(renderer.windowsForTesting[0].window === main)
-        XCTAssertTrue(renderer.windowsForTesting[1].window === owned)
-    }
-
-    @MainActor
-    func testARestoredWindowKeepsItsFrameWhenNoGeometryIsRequested() {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-        let record = AppKitRestorationRecord(windowIdentifier: UUID().uuidString)
-        let restored = renderer.acceptRestoredWindow(record)
+        let record = WindowRecord(identifier: UUID().uuidString)
+        let restored = try XCTUnwrap(renderer.acceptRestoredWindow(record))
         restored.setFrame(
             NSRect(x: 137, y: 211, width: 733, height: 577),
             display: false)
@@ -134,8 +114,9 @@ final class AppKitSessionTests: XCTestCase {
         restored.styleMask.remove(.miniaturizable)
         let standing = restored.frame
 
-        renderer.applyForTesting(tree(scene("1", windows: [window("main")])))
+        renderer.startForTesting()
 
+        XCTAssertTrue(renderer.windowsForTesting.first?.window === restored)
         XCTAssertEqual(restored.frame, standing)
         XCTAssertEqual(restored.contentMinSize, NSSize(width: 320, height: 240))
         XCTAssertEqual(restored.contentMaxSize, NSSize(width: 1_200, height: 900))
@@ -150,7 +131,7 @@ final class AppKitSessionTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var initial = window("main")
+        var initial = window("window 1")
         initial.properties[.width] = .number(640)
         initial.properties[.height] = .number(480)
         renderer.applyForTesting(tree(scene("1", windows: [initial])))
@@ -159,7 +140,7 @@ final class AppKitSessionTests: XCTestCase {
         native.setContentSize(NSSize(width: 700, height: 550))
         native.setFrameOrigin(NSPoint(x: 137, y: 211))
 
-        var width = HostPatch(id: .manual("main"), type: .window)
+        var width = HostPatch(id: .manual("window 1"), type: .window)
         width.properties[.width] = .number(820)
         renderer.applyForTesting(tree(scene("1", windows: [width])))
 
@@ -168,7 +149,7 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(contentSize.height, 550, accuracy: 0.001)
         XCTAssertEqual(native.frame.minX, 137, accuracy: 0.001)
 
-        var relinquishedWidth = HostPatch(id: .manual("main"), type: .window)
+        var relinquishedWidth = HostPatch(id: .manual("window 1"), type: .window)
         relinquishedWidth.clearedProperties = [.width]
         native.setContentSize(NSSize(width: 910, height: 610))
         renderer.applyForTesting(tree(scene("1", windows: [relinquishedWidth])))
@@ -179,7 +160,7 @@ final class AppKitSessionTests: XCTestCase {
 
         let x = native.frame.minX
         let screen = try XCTUnwrap(native.screen ?? NSScreen.main)
-        var y = HostPatch(id: .manual("main"), type: .window)
+        var y = HostPatch(id: .manual("window 1"), type: .window)
         y.properties[.y] = .number(73)
         renderer.applyForTesting(tree(scene("1", windows: [y])))
 
@@ -192,7 +173,7 @@ final class AppKitSessionTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var authored = window("main")
+        var authored = window("window 1")
         authored.properties.merge([
             .title: .string("Workspace"),
             .x: .number(137),
@@ -230,7 +211,7 @@ final class AppKitSessionTests: XCTestCase {
             native.delegate?.windowShouldZoom?(native, toFrame: native.frame) ?? true)
 
         let standingFrame = native.frame
-        var cleared = HostPatch(id: .manual("main"), type: .window)
+        var cleared = HostPatch(id: .manual("window 1"), type: .window)
         cleared.clearedProperties = [
             .title, .x, .y, .width, .height,
             .minimumWidth, .minimumHeight, .maximumWidth, .maximumHeight,
@@ -253,7 +234,7 @@ final class AppKitSessionTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var authored = window("main")
+        var authored = window("window 1")
         authored.properties[.minimumWidth] = .number(640)
         authored.properties[.maximumWidth] = .number(320)
         renderer.applyForTesting(tree(scene("1", windows: [authored])))
@@ -264,7 +245,7 @@ final class AppKitSessionTests: XCTestCase {
     }
 
     @MainActor
-    func testOwnedWindowMapsAndClearsItsCompleteNativeMetadataGroup() throws {
+    func testAWindowOfAKindMapsAndClearsItsCompleteNativeMetadataGroup() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -275,26 +256,22 @@ final class AppKitSessionTests: XCTestCase {
         tool.properties[.hidesWhenInactive] = .bool(true)
         tool.properties[.floatsOnTop] = .bool(true)
         renderer.applyForTesting(tree(
-            scene("1", windows: [window("main"), tool]),
-            scene("2", windows: [window("main")])
+            scene("1", windows: [window("window 1"), tool]),
+            scene("2", windows: [window("window 1")])
         ))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.dropFirst().first)
         let native = try XCTUnwrap(controller.window)
 
-        XCTAssertFalse(controller.isMain)
-        XCTAssertEqual(controller.restorationRecordForTesting.ownerIdentifier,
-                       renderer.windowsForTesting.first?.restorationRecordForTesting.windowIdentifier)
         XCTAssertEqual(controller.restorationRecordForTesting.kind, "notes.inspector")
         XCTAssertEqual(controller.restorationRecordForTesting.value, "selection-7")
-        XCTAssertTrue(native.isExcludedFromWindowsMenu)
         XCTAssertEqual(native.level, .floating)
 
         var cleared = HostPatch(id: .manual("tool"), type: .window)
         cleared.clearedProperties = [.windowValue, .hidesWhenInactive, .floatsOnTop]
         renderer.applyForTesting(tree(
-            scene("1", windows: [window("main"), cleared]),
-            scene("2", windows: [window("main")])
+            scene("1", windows: [window("window 1"), cleared]),
+            scene("2", windows: [window("window 1")])
         ))
 
         XCTAssertEqual(controller.restorationRecordForTesting.kind, "notes.inspector")
@@ -302,123 +279,115 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(native.level, .normal)
     }
 
+    /// A value a scene keeps is written in the record of every window of it - whichever the system brings back first
+    /// opens the scene with it - and of a window it opens later; another scene's windows keep their own.
     @MainActor
-    func testASceneKeySaveUpdatesTheMainWindowsRestorationRecord() throws {
+    func testASceneValueIsKeptInEveryWindowOfItsScene() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        renderer.applyForTesting(tree(scene("1", windows: [window("main")])))
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("window 1"), window("fonts 2", kind: "fonts")]),
+            scene("2", windows: [window("window 1")])
+        ))
 
         renderer.keepSceneValue(HostActCall(
             act: .persistSceneValue,
             arguments: [.name("1"), .name("shade"), .string("dusk")],
             completion: nil))
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("window 1"), window("fonts 2", kind: "fonts"), window("window 3")]),
+            scene("2", windows: [window("window 1")])
+        ))
 
-        let main = try XCTUnwrap(renderer.windowsForTesting.first)
-        XCTAssertEqual(main.restorationRecordForTesting.kept, ["shade": .string("dusk")])
+        XCTAssertEqual(renderer.windowsForTesting.map(\.restorationRecordForTesting.kept), [
+            ["shade": .string("dusk")], ["shade": .string("dusk")], ["shade": .string("dusk")], [:],
+        ])
     }
 
+    /// A window the system restored of another scene's kind takes the place of the window launch opens: what the
+    /// system kept is what stands, in the very window it restored.
     @MainActor
-    func testAWholeOwnedWindowIsOfferedBackToTheRestoredScene() async throws {
-        stateUIUseApp(AppKitSessionApp())
-        let firstHost = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        firstHost.startForTesting()
-
-        let scene = try XCTUnwrap(Scenes.shared.list.first?.session)
-        try await scene.openWindow(.appKitTestTool)
-        firstHost.runtime.pump.turn()
-        XCTAssertEqual(firstHost.windowsForTesting.count, 2)
-
-        let mainRecord = firstHost.windowsForTesting[0].restorationRecordForTesting
-        let ownedRecord = firstHost.windowsForTesting[1].restorationRecordForTesting
-        firstHost.closeForTesting()
-
-        stateUIUseApp(AppKitSessionApp())
-        let restoredHost = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { restoredHost.closeForTesting() }
-        let ownedWindow = restoredHost.acceptRestoredWindow(ownedRecord)
-        let mainWindow = restoredHost.acceptRestoredWindow(mainRecord)
-
-        restoredHost.startForTesting()
-
-        XCTAssertEqual(restoredHost.windowsForTesting.count, 2)
-        XCTAssertTrue(restoredHost.windowsForTesting[0].window === mainWindow)
-        XCTAssertTrue(restoredHost.windowsForTesting[1].window === ownedWindow)
-    }
-
-    /// A window the system restored, of a kind the scene has, is offered to the scene, which opens it again in that
-    /// very window; one of a kind no scene has is declined at the next presentation, and closes.
-    @MainActor
-    func testARestoredWindowOfTheScenesKindComesBackInTheWindowTheSystemRestored() throws {
-        stateUIUseApp(AppKitSessionApp())
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-        renderer.startForTesting()
-        let owner = try XCTUnwrap(renderer.windowsForTesting.first?.restorationRecordForTesting.windowIdentifier)
-
-        let restored = renderer.acceptRestoredWindow(AppKitRestorationRecord(
-            windowIdentifier: "restored-tool", ownerIdentifier: owner, kind: "appkit.test.tool", value: nil))
-        _ = renderer.acceptRestoredWindow(AppKitRestorationRecord(
-            windowIdentifier: "restored-unknown", ownerIdentifier: owner, kind: "appkit.test.unknown", value: nil))
-        renderer.runtime.pump.turn()
-
-        XCTAssertEqual(renderer.windowsForTesting.count, 2)
-        XCTAssertTrue(renderer.windowsForTesting.last?.window === restored)
-        XCTAssertNil(renderer.restoredWindows["restored-unknown"], "the kind no scene has is declined")
-    }
-
-    /// A main window the system restored as a scene of a named kind comes back as that kind, in the very window the
-    /// system restored, its record still carrying the kind.
-    @MainActor
-    func testARestoredMainWindowComesBackAsItsScenesKind() throws {
+    func testARestoredWindowOfAnotherSceneTakesTheLaunchWindowsPlace() throws {
         stateUIUseApp(AppKitKindsApp())
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         let restored = renderer.acceptRestoredWindow(
-            AppKitRestorationRecord(windowIdentifier: "restored-editor", kind: "appkit.test.editor"))
+            WindowRecord(identifier: "restored-editor", kind: "appkit.test.editor"))
         renderer.startForTesting()
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
-        XCTAssertEqual(renderer.sceneCountForTesting, 1)
+        XCTAssertEqual(renderer.windowsForTesting.count, 1)
         XCTAssertTrue(controller.window === restored)
         XCTAssertEqual(controller.element?.value(.windowType)?.name, "appkit.test.editor")
         XCTAssertEqual(controller.restorationRecordForTesting.kind, "appkit.test.editor")
     }
 
+    /// *File ▸ New* and `openWindow()` each open one more window of the group with no name, in the scene standing;
+    /// a window another scene declares opens that scene.
     @MainActor
-    func testPlatformAndStateUICanEachOpenAnotherScene() async throws {
-        stateUIUseApp(AppKitSessionApp())
+    func testNewWindowAndOpenWindowEachOpenOneMore() async throws {
+        stateUIUseApp(AppKitKindsApp())
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
+        XCTAssertEqual(renderer.windowsForTesting.count, 1)
 
+        renderer.openNewWindow()
+        try await StandardEnvironment.application.openWindow()
+        renderer.runtime.pump.turn()
+        XCTAssertEqual(renderer.windowsForTesting.count, 3)
         XCTAssertEqual(renderer.sceneCountForTesting, 1)
 
-        renderer.openPlatformScene()
-        XCTAssertEqual(renderer.sceneCountForTesting, 2)
-
-        try await StandardEnvironment.application.openScene()
+        try await StandardEnvironment.application.openWindow(.appKitTestEditor)
         renderer.runtime.pump.turn()
-        XCTAssertEqual(renderer.sceneCountForTesting, 3)
-        XCTAssertEqual(StandardEnvironment.application.scenes.count, 3)
+        XCTAssertEqual(renderer.windowsForTesting.count, 4)
+        XCTAssertEqual(renderer.sceneCountForTesting, 2)
+        XCTAssertEqual(StandardEnvironment.application.scenes.count, 2)
     }
 
+    /// The user closing a window closes that one alone - its scene stands while a window of it does - and closing
+    /// the last ends the scene.
     @MainActor
-    func testClosingANativeMainWindowEndsItsSceneAndEveryOwnedWindow() async throws {
+    func testClosingANativeWindowEndsItsSceneWithTheLast() async throws {
         stateUIUseApp(AppKitSessionApp())
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
-        let scene = try XCTUnwrap(StandardEnvironment.application.scenes.first)
-        try await scene.openWindow(.appKitTestTool)
+        try await StandardEnvironment.application.openWindow(.appKitTestTool)
         renderer.runtime.pump.turn()
-        XCTAssertEqual(renderer.windowsForTesting.count, 2)
+        let tool = try XCTUnwrap(renderer.windowsForTesting.last?.window)
 
-        renderer.windowsForTesting[0].windowWillClose(
-            Notification(name: NSWindow.willCloseNotification))
+        renderer.windowsForTesting[0].windowWillClose(Notification(name: NSWindow.willCloseNotification))
+
+        XCTAssertEqual(renderer.sceneCountForTesting, 1)
+        XCTAssertTrue(renderer.windowsForTesting.map(\.window) == [tool])
+
+        renderer.windowsForTesting[0].windowWillClose(Notification(name: NSWindow.willCloseNotification))
 
         XCTAssertEqual(renderer.sceneCountForTesting, 0)
         XCTAssertTrue(StandardEnvironment.application.scenes.isEmpty)
+    }
+
+    /// A scene's session closing it closes every native window of it.
+    @MainActor
+    func testClosingASceneClosesEveryNativeWindowOfIt() async throws {
+        stateUIUseApp(AppKitSessionApp())
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.startForTesting()
+        try await StandardEnvironment.application.openWindow(.appKitTestTool)
+        renderer.runtime.pump.turn()
+        let natives = renderer.windowsForTesting.compactMap(\.window)
+        XCTAssertEqual(natives.count, 2)
+        let closing = ClosingWatch()
+        defer { closing.stop() }
+
+        try await XCTUnwrap(StandardEnvironment.application.scenes.first).close()
+        renderer.runtime.pump.turn()
+
         XCTAssertTrue(renderer.windowsForTesting.isEmpty)
+        XCTAssertEqual(renderer.sceneCountForTesting, 0)
+        XCTAssertEqual(Set(closing.closed), Set(natives.map(ObjectIdentifier.init)))
     }
 
     @MainActor
@@ -455,8 +424,8 @@ final class AppKitSessionTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.applyForTesting(tree(
-            scene("1", windows: [window("main")]),
-            scene("2", windows: [window("main")])
+            scene("1", windows: [window("window 1")]),
+            scene("2", windows: [window("window 1")])
         ))
         let first = try XCTUnwrap(renderer.windowsForTesting[0].window)
         let second = try XCTUnwrap(renderer.windowsForTesting[1].window)
@@ -487,9 +456,7 @@ final class AppKitSessionTests: XCTestCase {
                 .activated: eventBase,
                 .deactivated: eventBase + 1,
                 .stopped: eventBase + 2,
-                .destroying: eventBase + 3,
-                .windowRestored: eventBase + 4,
-                .windowClosed: eventBase + 5,
+                .windowClosed: eventBase + 3,
             ])
         }
         scene.children = .arranged(windows)
@@ -526,6 +493,26 @@ final class AppKitSessionTests: XCTestCase {
     }
 }
 
+/// The native windows that close while it watches, by identity, in order.
+@MainActor
+private final class ClosingWatch {
+    private(set) var closed: [ObjectIdentifier] = []
+    private var token: (any NSObjectProtocol)?
+
+    init() {
+        token = NotificationCenter.default.addObserver(
+            forName: NSWindow.willCloseNotification, object: nil, queue: nil
+        ) { [weak self] note in
+            guard let window = (note.object as? NSWindow).map(ObjectIdentifier.init) else { return }
+            MainActor.assumeIsolated { self?.closed.append(window) }
+        }
+    }
+
+    func stop() {
+        token.map(NotificationCenter.default.removeObserver)
+    }
+}
+
 private extension WindowType {
     static let appKitTestTool = WindowType("appkit.test.tool")
 }
@@ -550,7 +537,7 @@ private extension WindowType {
     static let appKitTestEditor = WindowType("appkit.test.editor")
 }
 
-/// An application of two kinds of scene: its sessions, and editors named by their main window.
+/// An application of two scenes: the one with a tool window, and the editors.
 private struct AppKitKindsApp: Application {
     var body: some Scene {
         AppKitSessionScene()

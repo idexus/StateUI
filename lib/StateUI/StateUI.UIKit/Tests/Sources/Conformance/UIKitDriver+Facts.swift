@@ -96,7 +96,10 @@ extension UIKitDriver {
 
     /// What the host keeps under `key` for the next launch, as it reads it back.
     func kept(_ key: String, inScene: Bool) throws -> HostValue? {
-        guard !inScene else { throw DriverCannot("read a scene's kept value: UIKit keeps none yet") }
+        if inScene {
+            let record = TestScene.scene?.session.userInfo?[UIKitRenderer.recordKey] as? String
+            return record.flatMap(WindowRecord.init)?.kept[key]
+        }
         guard let word = TestScene.preferences.string(forKey: key) else { return nil }
         let kinds = [
             PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Bool.self),

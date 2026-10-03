@@ -111,22 +111,6 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
-    /// A window of a kind of its own belongs to its scene's main window, as a tool window does on Windows: above it,
-    /// hidden with it, out of the switchers; the main window belongs to none.
-    func testAWindowOfItsOwnBelongsToTheMainWindow() throws {
-        try onUIThread {
-            let host = WinUIRenderer.running(application: { ToolApplication() })
-            let open = try XCTUnwrap(host.views(WinUIButtonView.self).first)
-
-            stateui_winui_button_invoke(open.handle)
-            for _ in 0..<30 where host.windows.count < 2 { host.step() }
-            XCTAssertEqual(host.windows.count, 2)
-            let (main, tool) = (host.windows[0].window, host.windows[1].window)
-            XCTAssertTrue(stateui_winui_window_belongs_to(tool.handle, main.handle))
-            XCTAssertFalse(stateui_winui_window_belongs_to(main.handle, tool.handle))
-        }
-    }
-
     /// The page reads the screen its window stands on: its size, and how it is turned - not at all on this machine.
     func testThePageReadsTheScreenItStandsOn() {
         onUIThread {
@@ -160,27 +144,6 @@ private struct PhasePage: View {
 
     var body: some View {
         Text("\(application.phase) \(window.phase)")
-    }
-}
-
-/// An application whose main window opens a tool window of its scene.
-private struct ToolApplication: Application {
-    var body: some Scene { ToolScene() }
-}
-
-private struct ToolScene: Scene {
-    var body: some Scene {
-        WindowGroup { ToolOpeningPage() }
-        Window(WindowType("renderer.tool")) { Text("A tool") }
-    }
-}
-
-private struct ToolOpeningPage: View {
-    @Environment private var scene: SceneSession
-
-    var body: some View {
-        let scene = self.scene
-        return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
     }
 }
 

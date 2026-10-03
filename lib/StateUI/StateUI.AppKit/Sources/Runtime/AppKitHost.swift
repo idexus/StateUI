@@ -44,7 +44,7 @@ public enum StateUIAppKit {
         application: NSApplication,
         delegate: AppDelegate
     ) {
-        let main = mainMenu(newScene: delegate)
+        let main = mainMenu(newWindow: delegate)
         application.windowsMenu = main.items.first { $0.identifier == AppKitMenus.identifier(.window) }?.submenu
         application.mainMenu = main
     }
@@ -53,7 +53,7 @@ public enum StateUIAppKit {
     /// `newScene`, Edit with the text commands a field answers through the responder chain, and Window. A page's
     /// menus join it as it shows.
     /// Design: docs/design/platforms/appkit/runtime.md#the-menu-bar
-    static func mainMenu(newScene: AnyObject?) -> NSMenu {
+    static func mainMenu(newWindow: AnyObject?) -> NSMenu {
         let main = NSMenu()
         let name = ProcessInfo.processInfo.processName
 
@@ -63,9 +63,10 @@ public enum StateUIAppKit {
         main.addItem(submenu: applicationMenu, titled: name)
 
         let fileMenu = NSMenu(title: "File")
-        let newWindow = NSMenuItem(title: "New Window", action: #selector(AppDelegate.newScene(_:)), keyEquivalent: "n")
-        newWindow.target = newScene
-        fileMenu.addItem(newWindow)
+        let newWindowItem = NSMenuItem(
+            title: "New Window", action: #selector(AppDelegate.newWindow(_:)), keyEquivalent: "n")
+        newWindowItem.target = newWindow
+        fileMenu.addItem(newWindowItem)
         main.addItem(submenu: fileMenu, titled: "File", standard: .file)
 
         let editMenu = NSMenu(title: "Edit")
@@ -143,8 +144,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         true
     }
 
-    @objc func newScene(_ sender: Any?) {
-        host.openPlatformScene()
+    @objc func newWindow(_ sender: Any?) {
+        host.openNewWindow()
     }
 }
 #endif

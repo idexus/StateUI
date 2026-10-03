@@ -268,7 +268,7 @@ extension NodeType {
     static let created = WindowContract.created.token
     static let selectedTabChanged = TabViewContract.selectedTabChanged.token
     static let deactivated = SceneContract.deactivated.token
-    static let destroying = SceneContract.destroying.token
+    static let destroying = WindowContract.destroying.token
     static let disappearing = PageContract.disappearing.token
     static let dragged = CanvasContract.dragged.token
     static let dragLeave = ViewContract.dragLeave.token
@@ -310,7 +310,6 @@ extension NodeType {
     static let toggled = CheckBoxContract.toggled.token
     static let valueChanged = SliderContract.valueChanged.token
     static let windowClosed = SceneContract.windowClosed.token
-    static let windowRestored = SceneContract.windowRestored.token
 }
 
 @_spi(Host) public extension Act {

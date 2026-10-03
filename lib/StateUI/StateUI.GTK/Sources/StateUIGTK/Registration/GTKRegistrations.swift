@@ -47,6 +47,6 @@ enum GTKRegistrations {
     /// The acts this host performs: every host's (`HostActs.performed`), a scene's value kept, and a list scrolled to
     /// an item.
     static let acts: [any ContractMember] =
-        HostActs.performed + [ApplicationContract.persistSceneValue, ItemsViewContract.scrollTo]
+        HostActs.performed + [ItemsViewContract.scrollTo]
 
 }

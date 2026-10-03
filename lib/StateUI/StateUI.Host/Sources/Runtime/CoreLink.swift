@@ -176,9 +176,12 @@
         HostBoundary.setApplicationPhase(phase)
     }
 
-    /// Hands a platform scene to StateUI before its first render: one it kept, of `kind`, or a new one.
-    public func connectScene(restoring values: [String: HostValue] = [:], kind: String? = nil) {
-        HostBoundary.connectScene(restoring: values, kind: kind)
+    /// Hands a platform window to StateUI - through `HostRuntime.connectWindow`, which lets the turns held for it run.
+    @discardableResult
+    func connectWindow(
+        kind: String? = nil, value: String? = nil, restoring values: [String: HostValue] = [:]
+    ) -> String? {
+        HostBoundary.connectWindow(kind: kind, value: value, restoring: values)
     }
 
     /// The keys read from the platform's settings store before the first render.

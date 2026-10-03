@@ -159,16 +159,6 @@ final class HostRenderTests: XCTestCase {
         XCTAssertFalse(HostBoundary.cyclesPending)
     }
 
-    func testANativeHostConnectsPlatformScenesBeforeRenderingThem() {
-        Scenes.shared.reset()
-
-        HostBoundary.connectScene(restoring: ["shade": .string("dusk")])
-        HostBoundary.connectScene(restoring: [:])
-
-        XCTAssertEqual(Scenes.shared.list.map(\.id), ["1", "2"])
-        XCTAssertTrue(Scenes.shared.list.allSatisfy(\.handedOver))
-    }
-
     func testANativeHostMovesTheApplicationSessionPhase() {
         HostBoundary.setApplicationPhase(.background)
         XCTAssertEqual(StandardEnvironment.application.phase, .background)

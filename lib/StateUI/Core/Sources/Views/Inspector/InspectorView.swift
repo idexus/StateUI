@@ -24,7 +24,7 @@ struct InspectorView: View {
         model.record()
 
         let element = ElementID.manual(scene)
-        let index = Scenes.shared.index(of: scene)
+        let index = OpenScenes.shared.index(of: scene)
         let all = Array(Inspection.passes.reversed())
         let passes = InspectorView.history(of: element, in: all)
         let chosen = model.selected.flatMap { number in passes.first { $0.number == number } }
@@ -93,7 +93,7 @@ struct InspectorView: View {
     /// inspector.
     @ViewBuilder
     private func head(_ model: InspectorModel) -> some View {
-        let record = Scenes.shared.record(id: scene)
+        let record = OpenScenes.shared.record(id: scene)
         let windowed = record.map(Inspector.windowed) ?? false
         let close: () -> Void = {
             if let record {

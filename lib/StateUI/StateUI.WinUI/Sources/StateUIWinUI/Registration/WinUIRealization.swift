@@ -82,10 +82,8 @@ enum WinUIRealization {
             + "AutoSuggestBox's text box template aligns only the words typed."),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),
-        .complete("Scene", "destroying"),
         .complete("Scene", "stopped"),
         .complete("Scene", "windowClosed"),
-        .complete("Scene", "windowRestored"),
         .complete("TextSpan", "background"),
         .complete("TextSpan", "tracking"),
         .complete("TextSpan", "fontAttributes"),
@@ -158,7 +156,7 @@ enum WinUIRealization {
         let registry = WinUIRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + [ApplicationContract.persistSceneValue, ItemsViewContract.scrollTo]).map(\.name))
+            acts: (HostActs.performed + [ItemsViewContract.scrollTo]).map(\.name))
     }
 
     /// What WinUI realizes, member by member: these records before what its registry says.

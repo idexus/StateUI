@@ -88,12 +88,6 @@ public final class WindowSession {
     /// the application's colours read as they are written. `nil` keeps the
     /// platform's opaque window.
     @State public var isTranslucent: Bool? = nil
-
-    /// Where the scene's inspector is docked in this window - the library
-    /// lays its panel over every overlay a page declares; nil where none is.
-    /// Design: docs/design/views/inspector.md#where-it-docks
-    @State var dockedInspector: Inspector.Place? = nil
-
     /// The key the tree knows the window by in its scene.
     let key: String
 
@@ -113,8 +107,7 @@ public final class WindowSession {
         self.init(key: "", record: nil)
     }
 
-    /// Closes the window - and where it is its scene's main window, the scene
-    /// with every window of it.
+    /// Closes the window - and where it is its scene's last, the scene with it.
     ///
     /// - Throws: `WindowError.noScene` for a window of no open scene - one
     ///   whose scene has ended included, whoever still holds it -
@@ -122,15 +115,11 @@ public final class WindowSession {
     ///   `WindowError.unsupported` where the host cannot close this window
     ///   independently.
     public nonisolated(nonsending) func close() async throws {
-        guard let record, Scenes.shared.record(id: record.id) === record else {
+        guard let record, OpenScenes.shared.record(id: record.id) === record else {
             throw WindowError.noScene
         }
 
-        if key == SceneElement.mainKey {
-            try Scenes.shared.close(record)
-        } else {
-            try record.closeWindow(key: key)
-        }
+        try record.closeWindow(key: key)
     }
 
     /// The explicitly authored window properties. An absent value leaves that

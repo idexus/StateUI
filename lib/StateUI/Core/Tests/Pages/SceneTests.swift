@@ -1,42 +1,42 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// An application's windows are its SCENES - one per session, each a main
-// window and the windows it opens beside it - and this is what the tree says
-// about them: which scenes are open, what each has open, what every window is
-// known by, what each session is told and does, and what the host writes down
-// for the system to restore.
+// An application's SCENES - each declared once, standing at most once, its
+// windows sharing its state - and what the tree says about them: which scenes
+// stand, which windows each has open, what every window is known by, what each
+// session is told and does, and what a platform hands over and keeps.
 
 import XCTest
 @_spi(Host) @testable import StateUI
 
 private extension WindowType {
     static let fonts = WindowType("fonts")
+    static let note = WindowType("note")
     static let document = WindowType("document")
+    static let about = WindowType("about")
 }
 
 private extension SceneKey {
     static let shade = SceneKey("shade", of: String.self)
 }
 
-/// What a session shares with every window of it.
+/// What a scene shares with every window of it.
 private final class Palette {
     @State var accent = "violet"
 }
 
-/// The session's accent, as a view reads it.
+/// The scene's accent, as a view reads it.
 private struct Accent: View {
     @Environment private var palette: Palette
 
     var body: some View { Text(palette.accent) }
 }
 
-/// The session's main page: its accent and the value it keeps, and a button
-/// for each thing a test does from inside the scene - through the scene's
-/// session, which is in the environment of everything in it.
+/// A studio window: the scene's accent and the value it keeps, and a button for each thing a test does from inside
+/// it - through the application's session, which is in the environment of everything.
 private struct Home: View {
     @Environment private var palette: Palette
-    @Environment private var scene: SceneSession
+    @Environment private var application: ApplicationSession
     @Binding var shade: String
 
     var body: some View {
@@ -44,20 +44,22 @@ private struct Home: View {
             Accent()
             Text(shade)
             Button("teal").onClicked { palette.accent = "teal" }
-            Button("fonts").onClicked { try await scene.openWindow(.fonts) }
-            Button("document").onClicked { try await scene.openWindow(.document, value: 42) }
+            Button("new").onClicked { try await application.openWindow() }
+            Button("fonts").onClicked { try await application.openWindow(.fonts) }
+            Button("note").onClicked { try await application.openWindow(.note) }
+            Button("document").onClicked { try await application.openWindow(.document, value: 42) }
+            Button("about").onClicked { try await application.openWindow(.about) }
             Button("dusk").onClicked { shade = "dusk" }
         }
     }
 }
 
-/// A page showing the session's accent.
+/// A page showing the scene's accent.
 private struct Showing: View {
     var body: some View { Accent() }
 }
 
-/// A page that says which document its window is for, and makes the window
-/// about another.
+/// A page that says which document its window is for, and makes the window about another.
 private struct Retargeting: View {
     @Binding var number: Int
 
@@ -69,9 +71,14 @@ private struct Retargeting: View {
     }
 }
 
-/// A session: its own palette, a value it keeps, a group of one and a group
-/// per value.
-private struct Session: Scene {
+/// A page with nothing on it.
+private struct Blank: View {
+    var body: some View { Text("blank") }
+}
+
+/// A studio: its palette and a value it keeps, shared by every window of it - studio windows, one fonts window,
+/// notes, and a window per document.
+private struct StudioScene: Scene {
     @State private var palette = Palette()
     @State(sceneKey: .shade) private var shade = "light"
 
@@ -82,23 +89,40 @@ private struct Session: Scene {
             .hidesWhenInactive(true)
             .floatsOnTop(true)
             .environment(palette)
+        WindowGroup(.note) { Showing() }
+            .environment(palette)
         WindowGroup(.document, for: Int.self) { $number in Retargeting(number: $number) }
             .environment(palette)
     }
 }
 
+/// The studio, and an About window of its own - a scene with no state.
 private struct Studio: Application {
-    var body: some Scene { Session() }
+    var body: some Scene {
+        StudioScene()
+        Window(.about) { Blank() }
+    }
 }
 
-/// A page with nothing on it.
-private struct Blank: View {
-    var body: some View { Text("blank") }
-}
-
-/// An application whose body is its main window alone.
+/// An application whose body is one window.
 private struct Alone: Application {
     var body: some Scene { WindowGroup { Blank() } }
+}
+
+/// An application whose first scene has no unnamed group: launch opens the unnamed group's, wherever it stands.
+private struct AboutFirst: Application {
+    var body: some Scene {
+        Window(.about) { Blank() }
+        StudioScene()
+    }
+}
+
+/// An application with no unnamed group at all: launch opens the first window the first scene declares.
+private struct Unnamed: Application {
+    var body: some Scene {
+        WindowGroup(.note) { Blank() }
+        Window(.about) { Blank() }
+    }
 }
 
 /// A page that says loading is over.
@@ -108,7 +132,7 @@ private struct Waiting: View {
     var body: some View { Button("ready").onClicked { loading = false } }
 }
 
-/// A session whose main window is one thing and then another.
+/// A scene whose window is one thing and then another.
 private struct Starting: Scene {
     @State private var loading = true
 
@@ -143,8 +167,8 @@ private struct CountingApp: Application {
     var body: some Scene { WindowGroup { Counting() } }
 }
 
-/// A page that names its window and sizes it as it comes into the tree, and
-/// renames it on a press - through the window's session.
+/// A page that names its window and sizes it as it comes into the tree, and renames it on a press - through the
+/// window's session.
 private struct Naming: View {
     @Environment private var window: WindowSession
 
@@ -163,7 +187,7 @@ private struct NamingApp: Application {
     var body: some Scene { WindowGroup { Naming() } }
 }
 
-/// A page that says how many scenes are open and what its own has open.
+/// A page that says how many scenes stand and which windows its own has open.
 private struct Listing: View {
     @Environment private var application: ApplicationSession
     @Environment private var scene: SceneSession
@@ -176,40 +200,40 @@ private struct Listing: View {
     }
 }
 
-/// A scene whose page counts, with a group of one beside it.
-private struct ListingScene: Scene {
+private struct ListingApp: Application {
     var body: some Scene {
         WindowGroup { Listing() }
-        Window(.fonts) { Blank() }
+        Window(.about) { Blank() }
     }
-}
-
-private struct ListingApp: Application {
-    var body: some Scene { ListingScene() }
 }
 
 final class SceneTests: XCTestCase {
     override func setUp() {
         super.setUp()
-        Scenes.shared.reset()
         Renderer.shared.clearInvalidation()
+        start(Studio())
     }
 
     override func tearDown() {
-        Scenes.shared.reset()
+        OpenScenes.shared.reset()
         super.tearDown()
     }
 
-    /// The application's tree, the way `Renderer.root` builds it.
-    private func tree(_ application: some Application = Studio()) -> Node {
-        Scenes.shared.tree(of: application)
+    /// Registers `application`, as a host's head does: its scenes are what its body declares.
+    private func start(_ application: @escaping @autoclosure () -> any Application) {
+        Renderer.shared.setApplication(application())
     }
 
-    /// Two scenes, the way the platform hands them over: the first window is
-    /// the scene the application started with, the second one more.
-    private func twoScenes() {
-        Scenes.shared.connected(restoring: [:])
-        Scenes.shared.connected(restoring: [:])
+    /// The application's tree, the way `Renderer.root` builds it.
+    private func tree() -> Node {
+        OpenScenes.shared.tree(of: Renderer.shared.madeApplication()!)
+    }
+
+    private var application: ApplicationSession { StandardEnvironment.application }
+
+    /// The scene of number `id`.
+    private func scene(_ id: String) throws -> SceneRecord {
+        try XCTUnwrap(OpenScenes.shared.list.first { $0.id == id })
     }
 
     /// The handler of the button with a caption, anywhere under a patch.
@@ -239,9 +263,8 @@ final class SceneTests: XCTestCase {
 
     // MARK: - The shape
 
-    /// The ROOT is the application, its children are its scenes, and a scene's
-    /// first child is its main window - one shape, whatever the application
-    /// declares.
+    /// The ROOT is the application and its children the scenes that stand; launch opens one window of the
+    /// unnamed group, in its scene.
     func testTheApplicationHoldsItsScenesAndASceneItsWindows() {
         let patch = Renders().render(tree())
 
@@ -249,22 +272,33 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(patch.children.map(\.type), [.scene])
         XCTAssertEqual(patch.children.map(\.id), [.manual("1")])
         XCTAssertEqual(patch.children[0].children.map(\.type), [.window])
-        XCTAssertEqual(patch.children[0].children.map(\.id), [.manual("main")])
+        XCTAssertEqual(patch.children[0].children.map(\.id), [.manual("window 1")])
     }
 
-    /// An application whose body is its main window alone - nothing to open
-    /// beside it - is one scene of one window.
-    func testAnApplicationOfItsMainWindowAloneIsASceneOfOneWindow() {
-        let patch = Renders().render(tree(Alone()))
+    /// An application whose body is one window is a scene of that window.
+    func testAnApplicationOfOneWindowIsASceneOfIt() {
+        start(Alone())
+        let patch = Renders().render(tree())
 
         XCTAssertEqual(patch.children.map(\.type), [.scene])
-        XCTAssertEqual(patch.children[0].children.map(\.id), [.manual("main")])
+        XCTAssertEqual(patch.children[0].children.map(\.id), [.manual("window 1")])
         XCTAssertEqual(texts(in: patch.children[0].children[0]), ["blank"])
+    }
+
+    /// Launch opens the unnamed group's window wherever its scene stands among the scenes - and, with no unnamed
+    /// group, the first window the first scene declares.
+    func testLaunchOpensTheUnnamedGroupsWindow() {
+        start(AboutFirst())
+        XCTAssertEqual(texts(in: Renders().render(tree())), ["violet", "light"])
+
+        start(Unnamed())
+        let patch = Renders().render(tree())
+        XCTAssertEqual(patch.children[0].children.map(\.id), [.manual("note 1")])
     }
 
     /// And the render is rooted the same way on the real road.
     func testTheRenderIsRootedInTheApplication() throws {
-        Renderer.shared.setApplication(Alone())
+        start(Alone())
 
         let dump = PatchDump.text(Renderer.shared.renderHost(baseline: 0).root)
         let lines = dump.split(separator: "\n").map(String.init)
@@ -278,182 +312,176 @@ final class SceneTests: XCTestCase {
         XCTAssertLessThan(scene, window, "and its window under that:\n\(dump)")
     }
 
-    // MARK: - A scene is a session
+    // MARK: - A scene stands once
 
-    /// Every scene has STATE OF ITS OWN: the palette one session changes is
-    /// that session's, and the other goes on showing its own.
-    func testEverySceneHasStateOfItsOwn() throws {
-        twoScenes()
-
+    /// Every window of a scene SHARES ITS STATE: the palette one window changes is what every other window of the
+    /// scene shows.
+    func testEveryWindowOfASceneSharesItsState() throws {
         let renders = Renders()
         let first = renders.render(tree())
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(button("teal", in: first.children[1]))))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(button("new", in: first))))
+        let two = renders.renderFromScratch(tree())
+        XCTAssertEqual(two.children.map { $0.children.map(\.id) }, [[.manual("window 1"), .manual("window 2")]])
 
+        let second = try XCTUnwrap(two.children.first?.children.last)
+        XCTAssertTrue(renders.fire(try XCTUnwrap(button("teal", in: second))))
         let whole = renders.renderFromScratch(tree())
 
-        XCTAssertEqual(texts(in: whole.children[0]), ["violet", "light"])
-        XCTAssertEqual(texts(in: whole.children[1]), ["teal", "light"])
+        XCTAssertEqual(whole.children.first?.children.map { texts(in: $0).first }, ["teal", "teal"])
     }
 
-    /// A window OPENS IN THE SCENE WHOSE SESSION OPENED IT, and reads that
-    /// scene's context - the one the session offered its windows.
-    func testAWindowOpensInTheSceneWhoseSessionOpenedIt() throws {
-        twoScenes()
+    /// A window opens IN THE SCENE THAT DECLARES IT, which stands once: the studio's fonts and notes open in the
+    /// studio, and About opens a scene of its own the first time it is asked for, and none after.
+    func testAWindowOpensInTheSceneThatDeclaresIt() async throws {
+        Renders().render(tree())
 
-        let renders = Renders()
-        let first = renders.render(tree())
+        try await application.openWindow(.fonts)
+        try await application.openWindow(.note)
+        try await application.openWindow(.about)
+        let again = await refusal { try await self.application.openWindow(.about) }
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(button("teal", in: first.children[1]))))
-        XCTAssertTrue(renders.fire(try XCTUnwrap(button("fonts", in: first.children[1]))))
+        XCTAssertEqual(again, .alreadyOpen)
+        XCTAssertEqual(OpenScenes.shared.list.map(\.id), ["1", "2"])
+        XCTAssertEqual(try scene("1").windows.map(\.key), ["window 1", "fonts 2", "note 3"])
+        XCTAssertEqual(try scene("2").windows.map(\.key), ["about 1"])
+    }
 
-        let whole = renders.renderFromScratch(tree())
+    // MARK: - What the application opens
 
-        XCTAssertEqual(whole.children[0].children.map(\.id), [.manual("main")])
+    /// A `Window` opens once, a window for a value once a value, and a group makes one more each time it is
+    /// asked: File ▸ New's unnamed one, and a kind's.
+    func testAWindowOpensOnceAndAGroupMakesOneMoreEachTime() async throws {
+        Renders().render(tree())
+
+        let fonts = await refusal { try await self.application.openWindow(.fonts) }
+        let fontsAgain = await refusal { try await self.application.openWindow(.fonts) }
+        let document = await refusal { try await self.application.openWindow(.document, value: 42) }
+        let documentAgain = await refusal { try await self.application.openWindow(.document, value: 42) }
+        try await application.openWindow(.document, value: 7)
+        try await application.openWindow(.note)
+        try await application.openWindow(.note)
+        try await application.openWindow()
+
+        XCTAssertNil(fonts)
+        XCTAssertEqual(fontsAgain, .alreadyOpen)
+        XCTAssertNil(document)
+        XCTAssertEqual(documentAgain, .alreadyOpen)
         XCTAssertEqual(
-            whole.children[1].children.map(\.id), [.manual("main"), .manual("fonts 1")])
-        XCTAssertEqual(texts(in: whole.children[1].children[1]), ["teal"])
+            try scene("1").windows.map(\.key),
+            ["window 1", "fonts 2", "document 3", "document 4", "note 5", "note 6", "window 7"])
     }
 
-    // MARK: - What a scene's session says
-
-    /// Opening a window that is open is REFUSED, and says so.
-    func testOpeningAWindowThatIsOpenIsRefused() async {
+    /// What cannot open is said BY NAME: a kind no scene declares, a value a group is not for, and a window not
+    /// open to close.
+    func testWhatCannotOpenIsSaidByName() async {
         Renders().render(tree())
 
-        let scene = Scenes.shared.list[0].session
-        let first = await refusal { try await scene.openWindow(.fonts) }
-        let second = await refusal { try await scene.openWindow(.fonts) }
-
-        XCTAssertNil(first)
-        XCTAssertEqual(second, .alreadyOpen)
-    }
-
-    /// What the scene cannot open is said BY NAME: a kind it does not declare,
-    /// a value the group is not for, a window not open to close, and a session
-    /// that is no open scene's at all.
-    func testWhatASceneCannotOpenIsSaidByName() async {
-        Renders().render(tree())
-
-        let scene = Scenes.shared.list[0].session
         let palette = WindowType("palette")
 
-        let undeclared = await refusal { try await scene.openWindow(palette) }
-        let valueForOne = await refusal { try await scene.openWindow(.fonts, value: 3) }
-        let noValue = await refusal { try await scene.openWindow(.document) }
-        let otherType = await refusal { try await scene.openWindow(.document, value: "x") }
-        let notOpen = await refusal { try await scene.closeWindow(.fonts) }
+        let undeclared = await refusal { try await self.application.openWindow(palette) }
+        let valueForOne = await refusal { try await self.application.openWindow(.fonts, value: 3) }
+        let noValue = await refusal { try await self.application.openWindow(.document) }
+        let otherType = await refusal { try await self.application.openWindow(.document, value: "x") }
+        let notOpen = await refusal { try await self.application.closeWindow(.fonts) }
 
         XCTAssertEqual(undeclared, .undeclared(palette))
         XCTAssertEqual(valueForOne, .wrongValue(.fonts))
         XCTAssertEqual(noValue, .wrongValue(.document))
         XCTAssertEqual(otherType, .wrongValue(.document))
         XCTAssertEqual(notOpen, .notOpen)
-
-        // The session a view outside every scene reads.
-        let nowhere = await refusal { try await SceneSession().openWindow(.fonts) }
-        XCTAssertEqual(nowhere, .noScene)
     }
 
-    /// Another session is the APPLICATION's to open.
-    func testTheApplicationOpensAnotherScene() async throws {
-        try await StandardEnvironment.application.openScene()
+    // MARK: - A scene ends with its last window
 
-        XCTAssertEqual(Scenes.shared.list.map(\.id), ["1", "2"])
-        XCTAssertEqual(
-            Renders().render(tree()).children.map(\.id),
-            [.manual("1"), .manual("2")])
+    /// A scene ENDS WITH ITS LAST WINDOW, its state with it: the next window of it opens a fresh scene.
+    func testASceneEndsWithItsLastWindow() async throws {
+        let renders = Renders()
+        let first = renders.render(tree())
+        XCTAssertTrue(renders.fire(try XCTUnwrap(button("teal", in: first))))
+
+        try await application.openWindow(.fonts)
+        try await application.closeWindow(.fonts)
+        XCTAssertEqual(OpenScenes.shared.list.map(\.id), ["1"], "a window left: the scene stands")
+
+        try await scene("1").windowSession("window 1").close()
+        XCTAssertTrue(OpenScenes.shared.list.isEmpty)
+
+        try await application.openWindow()
+        let fresh = renders.renderFromScratch(tree())
+        XCTAssertEqual(fresh.children.map(\.id), [.manual("2")])
+        XCTAssertEqual(texts(in: fresh).first, "violet", "a fresh scene, its state from the start")
     }
 
-    /// A scene's session closes the scene - and once it has ended, the
-    /// session answers that it is no open scene's, whoever still holds it.
-    func testASceneSessionEndsItsScene() async throws {
-        twoScenes()
+    /// A scene's session closes every window of it, ending it - and once it has ended, its sessions and its
+    /// windows' answer that they are no open scene's, whoever still holds them.
+    func testASceneSessionClosesEveryWindowOfIt() async throws {
         Renders().render(tree())
+        try await application.openWindow(.fonts)
 
-        let ending = Scenes.shared.list[1]
-
-        try await ending.session.openWindow(.fonts)
+        let ending = try scene("1")
+        let fonts = ending.windowSession("fonts 2")
         try await ending.session.close()
 
-        XCTAssertEqual(Scenes.shared.list.map(\.id), ["1"])
-
-        let after = await refusal { try await ending.session.openWindow(.document, value: 1) }
-        XCTAssertEqual(after, .noScene)
-    }
-
-    /// A window's session answers that its scene has ended, whoever still
-    /// holds the scene - the way the scene's own session does.
-    func testAWindowOfAnEndedSceneSaysSo() async throws {
-        twoScenes()
-        Renders().render(tree())
-
-        let ending = Scenes.shared.list[1]
-        try await ending.session.openWindow(.fonts)
-
-        let fonts = ending.windowSession("fonts 1")
-        let main = ending.windowSession(SceneElement.mainKey)
-        try await ending.session.close()
-
+        XCTAssertTrue(OpenScenes.shared.list.isEmpty)
         let closingOne = await refusal { try await fonts.close() }
-        let closingMain = await refusal { try await main.close() }
-
+        let closingScene = await refusal { try await ending.session.close() }
         XCTAssertEqual(closingOne, .noScene)
-        XCTAssertEqual(closingMain, .noScene)
+        XCTAssertEqual(closingScene, .noScene)
     }
 
-    /// The application lists its scenes' sessions and a scene its windows' -
-    /// the main one first - each the very session the scene or the window
-    /// holds, and nothing for a scene that has ended.
+    /// The application lists the scenes that stand and a scene its windows, in opening order, each the very
+    /// session the scene or the window holds - and nothing for a scene that has ended.
     func testTheApplicationListsItsScenesAndASceneItsWindows() async throws {
-        twoScenes()
-        Renders().render(tree(ListingApp()))
+        start(ListingApp())
+        Renders().render(tree())
 
-        let first = Scenes.shared.list[0]
-        try await first.session.openWindow(.fonts)
+        try await application.openWindow()
+        try await application.openWindow(.about)
 
-        XCTAssertEqual(StandardEnvironment.application.scenes.map(\.id), ["1", "2"])
-        XCTAssertTrue(StandardEnvironment.application.scenes[0] === first.session)
-        XCTAssertEqual(first.session.windows.map(\.key), ["main", "fonts 1"])
-        XCTAssertTrue(first.session.windows[1] === first.windowSession("fonts 1"))
+        let first = try scene("1")
+        XCTAssertEqual(application.scenes.map(\.id), ["1", "2"])
+        XCTAssertTrue(application.scenes.first === first.session)
+        XCTAssertEqual(first.session.windows.map(\.key), ["window 1", "window 2"])
+        XCTAssertTrue(first.session.windows.last === first.windowSession("window 2"))
 
-        let ending = Scenes.shared.list[1].session
+        let ending = try scene("2").session
         try await ending.close()
 
-        XCTAssertEqual(StandardEnvironment.application.scenes.map(\.id), ["1"])
+        XCTAssertEqual(application.scenes.map(\.id), ["1"])
         XCTAssertTrue(ending.windows.isEmpty)
         XCTAssertTrue(SceneSession().windows.isEmpty)
     }
 
-    /// And a view that shows them is built again as a window or a scene opens -
-    /// the lists being read like any state.
+    /// And a view that shows them is built again as a window or a scene opens - the lists being read like any
+    /// state - in the window that stood before.
     func testAViewShowingTheListsIsBuiltAgainAsTheyMove() async throws {
+        start(ListingApp())
         let renders = Renders()
-        XCTAssertEqual(texts(in: renders.render(tree(ListingApp()))), ["1 scenes", "main"])
+        XCTAssertEqual(texts(in: renders.render(tree())), ["1 scenes", "window 1"])
 
-        try await Scenes.shared.list[0].session.openWindow(.fonts)
+        try await application.openWindow()
+        let opened = renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        let standing = try XCTUnwrap(opened.at(.manual("1"), .manual("window 1")))
+        XCTAssertEqual(texts(in: standing), ["window 1, window 2"], "the label that changed, in the window that stood")
 
-        let opened = renders.render(
-            tree(ListingApp()), changed: Renderer.shared.pendingChanges)
-        XCTAssertTrue(texts(in: opened).contains("main, fonts 1"), "\(texts(in: opened))")
-
-        try await StandardEnvironment.application.openScene()
-
-        let another = renders.render(
-            tree(ListingApp()), changed: Renderer.shared.pendingChanges)
-        XCTAssertTrue(texts(in: another.children[0]).contains("2 scenes"), "\(texts(in: another))")
+        try await application.openWindow(.about)
+        let another = renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        let first = try XCTUnwrap(another.at(.manual("1"), .manual("window 1")))
+        XCTAssertEqual(texts(in: first), ["2 scenes"])
     }
 
     // MARK: - What a window's session says
 
-    /// A window's session IS what its properties are: written as the window
-    /// comes into the tree, and again later, each lands on the window node.
+    /// A window's session IS what its properties are: written as the window comes into the tree, and again later,
+    /// each lands on the window node.
     func testAWindowsSessionIsWhatItsPropertiesAre() throws {
+        start(NamingApp())
         let renders = Renders()
-        let first = renders.render(tree(NamingApp()))
+        let first = renders.render(tree())
 
         // `.onCreated` ran after that render, so the next one carries it.
-        let named = renders.render(tree(NamingApp()), changed: Renderer.shared.pendingChanges)
+        let named = renders.render(tree(), changed: Renderer.shared.pendingChanges)
         let window = try XCTUnwrap(named.children.first?.children.first)
 
         XCTAssertEqual(window.props[.title], .string("Named"))
@@ -461,7 +489,7 @@ final class SceneTests: XCTestCase {
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(button("rename", in: first))))
 
-        let renamed = renders.render(tree(NamingApp()), changed: Renderer.shared.pendingChanges)
+        let renamed = renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(renamed.children.first?.children.first?.props[.title], .string("Renamed"))
     }
@@ -469,67 +497,58 @@ final class SceneTests: XCTestCase {
     /// A window's phase follows the events its platform window raises.
     func testAWindowsPhaseFollowsItsPlatformWindow() throws {
         let renders = Renders()
-        let main = try XCTUnwrap(renders.render(tree()).children.first?.children.first)
-        let session = Scenes.shared.list[0].windowSession(SceneElement.mainKey)
+        let window = try XCTUnwrap(renders.render(tree()).children.first?.children.first)
+        let session = try scene("1").windowSession("window 1")
 
         XCTAssertEqual(session.phase, .created)
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(main.events?[.activated])))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.activated])))
         XCTAssertEqual(session.phase, .activated)
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(main.events?[.stopped])))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.stopped])))
         XCTAssertEqual(session.phase, .stopped)
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(main.events?[.resumed])))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.resumed])))
         XCTAssertEqual(session.phase, .resumed)
     }
 
-    /// A window's session closes the window it is - and a main window's, its
-    /// scene with it.
+    /// A window's session closes the window it is, and a second close says it is not open.
     func testAWindowsSessionClosesItsWindow() async throws {
         Renders().render(tree())
+        try await application.openWindow(.fonts)
 
-        let scene = Scenes.shared.list[0]
-        try await scene.session.openWindow(.fonts)
+        let studio = try scene("1")
+        try await studio.windowSession("fonts 2").close()
+        XCTAssertEqual(studio.windows.map(\.key), ["window 1"])
 
-        try await scene.windowSession("fonts 1").close()
-        XCTAssertTrue(scene.windows.isEmpty)
-
-        let again = await refusal { try await scene.windowSession("fonts 1").close() }
+        let again = await refusal { try await studio.windowSession("fonts 2").close() }
         XCTAssertEqual(again, .notOpen)
-
-        try await scene.windowSession(SceneElement.mainKey).close()
-        XCTAssertTrue(Scenes.shared.list.isEmpty)
     }
 
-    /// A window's session is the same one for as long as the window is open,
-    /// and goes with it.
+    /// A window's session is the same one for as long as the window is open, and goes with it.
     func testAWindowsSessionLastsAsLongAsItsWindow() async throws {
         let renders = Renders()
         renders.render(tree())
 
-        let scene = Scenes.shared.list[0]
-        try await scene.session.openWindow(.fonts)
+        let studio = try scene("1")
+        try await application.openWindow(.fonts)
         renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
-        let open = scene.windowSession("fonts 1")
+        let open = studio.windowSession("fonts 2")
         renders.render(tree())
-        XCTAssertTrue(scene.windowSession("fonts 1") === open)
+        XCTAssertTrue(studio.windowSession("fonts 2") === open)
 
-        try await scene.session.closeWindow(.fonts)
+        try await application.closeWindow(.fonts)
         renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
-        XCTAssertFalse(scene.windowSession("fonts 1") === open)
+        XCTAssertFalse(studio.windowSession("fonts 2") === open)
     }
 
-    /// No application, window or page says what its session holds. One
-    /// declared with a `title`, a size, a style sheet or a lifecycle handler of
-    /// its own compiles - a property is a property - and does NOTHING, which is
-    /// the one failure this library refuses; so the sources are read for one,
-    /// the README and the gallery's listings included.
-    func testNoApplicationWindowOrPageSaysWhatItsSessionHolds() throws {
-        // A page's are read off its session, so a value added there is looked
-        // for here the day it arrives.
+    /// No application or view says what its session holds. One declared with a `title`, a style sheet or a
+    /// lifecycle handler of its own compiles - a property is a property - and does NOTHING, which is the one failure
+    /// this library refuses; so the sources are read for one, the README and the gallery's listings included.
+    func testNoApplicationOrViewSaysWhatItsSessionHolds() throws {
+        // A page's are read off its session, so a value added there is looked for here the day it arrives.
         let pageSession = try SourceTree.text(in: "PageSession.swift")
 
         let onPage = pageSession.split(separator: "\n").compactMap { line -> String? in
@@ -541,19 +560,10 @@ final class SceneTests: XCTestCase {
 
         XCTAssertTrue(onPage.contains("title"), "PageSession's values were not found to look for")
 
-        // What each kind of type is told through its session, by the names it
-        // could once answer them under.
+        // What each kind of type is told through its session.
         let held: [(kind: String, names: [String])] = [
             ("Application", ["styles", "motion", "persistentKeys"]),
-            ("Window", [
-                "title", "x", "y", "width", "height",
-                "minimumWidth", "minimumHeight", "maximumWidth", "maximumHeight",
-                "isMaximizable", "isMinimizable", "isTranslucent", "titleBar", "modalStack", "environment",
-                "onCreated", "onActivated", "onDeactivated", "onStopped", "onResumed", "onDestroying",
-            ]),
-            ("View", onPage + [
-                "onAppearing", "onDisappearing", "onNavigatedTo", "onNavigatingFrom", "onNavigatedFrom",
-            ]),
+            ("View", onPage + ["onAppearing", "onDisappearing", "onNavigatedTo", "onNavigatingFrom", "onNavigatedFrom"]),
         ]
 
         var files = [SourceTree.repository.appendingPathComponent("README.md")]
@@ -587,9 +597,8 @@ final class SceneTests: XCTestCase {
             found.joined(separator: "\n"))
     }
 
-    /// The direct members of every type declared a `kind` - `Window`,
-    /// `View`, `Application` - as text: what stands one level inside
-    /// its braces, nested types left out.
+    /// The direct members of every type declared a `kind` - `View`, `Application` - as text: what stands one level
+    /// inside its braces, nested types left out.
     private func bodies(of kind: String, in text: String) -> [String] {
         var bodies: [String] = []
         var search = text.startIndex
@@ -627,10 +636,10 @@ final class SceneTests: XCTestCase {
         return bodies
     }
 
-    // MARK: - A window per value
+    // MARK: - What a window carries
 
-    /// A window for a value is known by its kind and a number of its own, and
-    /// carries its kind and its value as the host writes them down.
+    /// A window for a value is known by its kind and a number of its own, and carries its kind, its value and its
+    /// policies as the host writes them down.
     func testAWindowForAValueCarriesItsKindAndItsValue() throws {
         let renders = Renders()
         let first = renders.render(tree())
@@ -640,7 +649,7 @@ final class SceneTests: XCTestCase {
         let whole = renders.renderFromScratch(tree())
         let document = try XCTUnwrap(whole.children[0].children.last)
 
-        XCTAssertEqual(document.id, .manual("document 1"))
+        XCTAssertEqual(document.id, .manual("document 2"))
         XCTAssertEqual(document.props[.windowType], .name("document"))
         XCTAssertEqual(document.props[.windowValue], .string("42"))
         XCTAssertEqual(document.props[.hidesWhenInactive], .bool(false))
@@ -648,8 +657,18 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(texts(in: document), ["Document 42"])
     }
 
-    /// A window writing its own binding stays THE SAME WINDOW, now about
-    /// another value - which is also what the host now writes down.
+    /// A window of the unnamed group carries no kind and no value - only its policies.
+    func testAWindowOfTheUnnamedGroupCarriesNoKind() throws {
+        let window = try XCTUnwrap(Renders().render(tree()).children[0].children.first)
+
+        XCTAssertNil(window.props[.windowType])
+        XCTAssertNil(window.props[.windowValue])
+        XCTAssertEqual(window.props[.hidesWhenInactive], .bool(false))
+        XCTAssertEqual(window.props[.floatsOnTop], .bool(false))
+    }
+
+    /// A window writing its own binding stays THE SAME WINDOW, now about another value - which is also what the
+    /// host now writes down.
     func testAWindowWritingItsOwnValueStaysTheSameWindow() throws {
         let renders = Renders()
         let first = renders.render(tree())
@@ -662,29 +681,26 @@ final class SceneTests: XCTestCase {
         let whole = renders.renderFromScratch(tree())
         let document = try XCTUnwrap(whole.children[0].children.last)
 
-        XCTAssertEqual(document.id, .manual("document 1"))
+        XCTAssertEqual(document.id, .manual("document 2"))
         XCTAssertEqual(document.props[.windowValue], .string("7"))
         XCTAssertEqual(texts(in: document), ["Document 7"])
     }
 
-    /// Closed by value, a window leaves its scene - and a second close says it
-    /// is not open.
-    func testClosingAWindowByItsValue() async {
+    /// Closed by value, a window leaves its scene - and a second close says it is not open.
+    func testClosingAWindowByItsValue() async throws {
         Renders().render(tree())
 
-        let scene = Scenes.shared.list[0].session
-        let opened = await refusal { try await scene.openWindow(.document, value: 42) }
-        let closed = await refusal { try await scene.closeWindow(.document, value: 42) }
-        let again = await refusal { try await scene.closeWindow(.document, value: 42) }
+        let opened = await refusal { try await self.application.openWindow(.document, value: 42) }
+        let closed = await refusal { try await self.application.closeWindow(.document, value: 42) }
+        let again = await refusal { try await self.application.closeWindow(.document, value: 42) }
 
         XCTAssertNil(opened)
         XCTAssertNil(closed)
         XCTAssertEqual(again, .notOpen)
-        XCTAssertTrue(Scenes.shared.list[0].windows.isEmpty)
+        XCTAssertEqual(try scene("1").windows.map(\.key), ["window 1"])
     }
 
-    /// Whether a group's windows hide while another scene is in front, and
-    /// whether they float on top, rides each window of it.
+    /// Whether a window hides while another scene is in front, and whether it floats on top, rides it.
     func testAWindowThatHidesOrFloatsSaysSo() throws {
         let renders = Renders()
         let first = renders.render(tree())
@@ -699,120 +715,124 @@ final class SceneTests: XCTestCase {
 
     // MARK: - What the host reports
 
-    /// The user closing a window takes it out of its scene, by its key - and
-    /// a report about a window already gone changes nothing.
+    /// The user closing a window takes it out of its scene, by its key - a report about a window already gone
+    /// changes nothing - and the last one takes the scene.
     func testTheUserClosingAWindowTakesItOut() throws {
         let renders = Renders()
         let first = renders.render(tree())
         let closed = try XCTUnwrap(first.children[0].events?[.windowClosed])
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(button("fonts", in: first))))
-        XCTAssertEqual(Scenes.shared.list[0].windows.map(\.key), ["fonts 1"])
+        XCTAssertEqual(try scene("1").windows.map(\.key), ["window 1", "fonts 2"])
 
-        XCTAssertTrue(renders.fire(closed, with: [.string("fonts 1")]))
-        XCTAssertTrue(Scenes.shared.list[0].windows.isEmpty)
+        XCTAssertTrue(renders.fire(closed, with: [.string("fonts 2")]))
+        XCTAssertTrue(renders.fire(closed, with: [.string("fonts 2")]))
+        XCTAssertEqual(try scene("1").windows.map(\.key), ["window 1"])
 
-        XCTAssertTrue(renders.fire(closed, with: [.string("fonts 1")]))
-        XCTAssertTrue(Scenes.shared.list[0].windows.isEmpty)
+        XCTAssertTrue(renders.fire(closed, with: [.string("window 1")]))
+        XCTAssertTrue(OpenScenes.shared.list.isEmpty)
     }
 
-    /// The system restoring a window at launch puts it back - once, and only
-    /// where the scene declares its kind and its text reads as the value.
-    func testTheSystemRestoringAWindowPutsItBack() throws {
-        let renders = Renders()
-        let restored = try XCTUnwrap(renders.render(tree()).children[0].events?[.windowRestored])
+    /// A platform window comes in as its kind: the first, with no kind, is the window launch opened; one more with
+    /// no kind is another of the unnamed group; a kept one of a kind opens in the scene declaring it, a scene
+    /// opening first where none stands; one of a kind no scene declares, or a value that does not read, is refused.
+    func testAPlatformWindowComesInAsItsKind() {
+        XCTAssertEqual(HostBoundary.connectWindow(), "1")
+        XCTAssertEqual(HostBoundary.connectWindow(), "1")
+        XCTAssertEqual(HostBoundary.connectWindow(kind: "fonts"), "1")
+        XCTAssertEqual(HostBoundary.connectWindow(kind: "document", value: "42"), "1")
+        XCTAssertEqual(HostBoundary.connectWindow(kind: "about"), "2")
+        XCTAssertNil(HostBoundary.connectWindow(kind: "palette"))
+        XCTAssertNil(HostBoundary.connectWindow(kind: "document", value: "not a number"))
 
-        renders.fire(restored, with: [.string("document"), .string("42")])
-        renders.fire(restored, with: [.string("document"), .string("42")])
-        renders.fire(restored, with: [.string("fonts")])
-        renders.fire(restored, with: [.string("palette")])
-        renders.fire(restored, with: [.string("document"), .string("not a number")])
+        let patch = Renders().render(tree())
 
-        XCTAssertEqual(Scenes.shared.list[0].windows.map(\.key), ["document 1", "fonts 2"])
-        XCTAssertEqual(Scenes.shared.list[0].windows.first?.value, AnyHashable(42))
+        XCTAssertEqual(
+            patch.children.map { $0.children.map(\.id) },
+            [[.manual("window 1"), .manual("window 2"), .manual("fonts 3"), .manual("document 4")],
+             [.manual("about 1")]])
     }
 
-    /// A scene's main window going ends the scene, and every window beside it
-    /// with it.
-    func testTheMainWindowGoingEndsItsScene() throws {
-        twoScenes()
+    /// A kept window of another kind coming first takes the place of the window launch opens: what the platform
+    /// kept is what stands.
+    func testAKeptWindowOfAnotherKindTakesTheLaunchWindowsPlace() {
+        XCTAssertNotNil(HostBoundary.connectWindow(kind: "about"))
 
-        let renders = Renders()
-        let first = renders.render(tree())
+        let patch = Renders().render(tree())
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(first.children[1].events?[.destroying])))
-        XCTAssertEqual(Scenes.shared.list.map(\.id), ["1"])
+        XCTAssertEqual(patch.children.map { $0.children.map(\.id) }, [[.manual("about 1")]])
     }
 
-    /// The platform's first window is the scene the application started
-    /// with; every one after it is a scene more.
-    func testThePlatformsFirstWindowIsTheSceneTheApplicationStartedWith() {
-        Scenes.shared.connected(restoring: [:])
-        XCTAssertEqual(Scenes.shared.list.map(\.id), ["1"])
+    /// A window refused coming first leaves the launch window waiting, for the platform's next first window to take.
+    func testARefusedWindowLeavesTheLaunchWindowWaiting() {
+        XCTAssertNil(HostBoundary.connectWindow(kind: "palette"))
+        XCTAssertNil(HostBoundary.connectWindow(kind: "document", value: "not a number"))
+        XCTAssertEqual(HostBoundary.connectWindow(), "1")
 
-        Scenes.shared.connected(restoring: [:])
-        XCTAssertEqual(Scenes.shared.list.map(\.id), ["1", "2"])
+        let patch = Renders().render(tree())
+
+        XCTAssertEqual(patch.children.map { $0.children.map(\.id) }, [[.manual("window 1")]])
     }
 
     // MARK: - What a scene keeps
 
-    /// A value a scene kept comes back WITH IT, from the scene's first build -
-    /// and a scene that kept nothing starts from the value written beside the
-    /// state.
-    func testAValueASceneKeptComesBackWithIt() {
-        Scenes.shared.connected(restoring: ["shade": .string("dark")])
-        Scenes.shared.connected(restoring: [:])
+    /// A value a scene kept comes back WITH ITS FIRST WINDOW, from the scene's first build; a scene's later
+    /// windows find the scene standing.
+    func testAValueASceneKeptComesBackWithItsFirstWindow() {
+        HostBoundary.connectWindow(restoring: ["shade": .string("dark")])
+        HostBoundary.connectWindow(kind: "fonts", restoring: ["shade": .string("ignored")])
 
         let patch = Renders().render(tree())
 
-        XCTAssertEqual(texts(in: patch.children[0]), ["violet", "dark"])
-        XCTAssertEqual(texts(in: patch.children[1]), ["violet", "light"])
+        XCTAssertEqual(texts(in: patch.children[0].children[0]).prefix(2), ["violet", "dark"])
     }
 
-    /// A value written is kept FOR THE SCENE IT WAS WRITTEN IN - one act per
-    /// key, naming the scene.
+    /// A value written is kept FOR THE SCENE IT WAS WRITTEN IN - one act per key, naming the scene.
     func testAValueASceneKeepsIsKeptForThatScene() throws {
-        twoScenes()
-
         let renders = Renders()
         let first = renders.render(tree())
-        _ = Scenes.shared.takeSaves()
+        _ = OpenScenes.shared.takeSaves()
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(button("dusk", in: first.children[1]))))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(button("dusk", in: first))))
 
-        let saves = Scenes.shared.takeSaves()
+        let saves = OpenScenes.shared.takeSaves()
 
         XCTAssertEqual(saves.map(\.act), [.persistSceneValue])
-        XCTAssertEqual(saves.first?.arguments, [.name("2"), .name("shade"), .string("dusk")])
+        XCTAssertEqual(saves.first?.arguments, [.name("1"), .name("shade"), .string("dusk")])
     }
 
-    // MARK: - The main window
+    // MARK: - A window and the view it shows
 
-    /// The main window may be one thing and then another, and it stays ONE
-    /// WINDOW - the platform's window keeps standing while what is in it
-    /// changes.
-    func testTheMainWindowStaysOneWindowWhateverItIsWrittenAs() throws {
+    /// A window may show one thing and then another, and it stays ONE WINDOW - the platform's window keeps standing
+    /// while what is in it changes.
+    func testAWindowStaysOneWindowWhateverItShows() throws {
+        start(StartingApp())
         let renders = Renders()
-        let first = renders.render(tree(StartingApp()))
+        let first = renders.render(tree())
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(button("ready", in: first))))
 
-        let whole = renders.renderFromScratch(tree(StartingApp()))
+        let changed = renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        XCTAssertFalse(
+            changed.subtree.contains { [.scene, .window].contains($0.type) && $0.replace },
+            "the window and its scene are not made anew - the platform's window keeps standing")
+        XCTAssertTrue(changed.subtree.contains { $0.replace }, "what the window shows is")
 
-        XCTAssertEqual(whole.children[0].children.map(\.id), [.manual("main")])
+        let whole = renders.renderFromScratch(tree())
+        XCTAssertEqual(whole.children[0].children.map(\.id), [.manual("window 1")])
         XCTAssertEqual(texts(in: whole.children[0].children[0]), ["blank"])
     }
 
-    /// The view a window shows keeps `@State` of its own across renders, the
-    /// way a page does.
+    /// The view a window shows keeps `@State` of its own across renders, the way a page does.
     func testTheViewAWindowShowsKeepsStateOfItsOwnAcrossRenders() throws {
+        start(CountingApp())
         let renders = Renders()
-        let first = renders.render(tree(CountingApp()))
+        let first = renders.render(tree())
 
         XCTAssertEqual(texts(in: first), ["0"])
         XCTAssertTrue(renders.fire(try XCTUnwrap(button("more", in: first))))
 
-        let patch = renders.render(tree(CountingApp()), changed: Renderer.shared.pendingChanges)
+        let patch = renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(
             texts(in: patch), ["1"],
@@ -821,10 +841,10 @@ final class SceneTests: XCTestCase {
 
     // MARK: - The generation handshake
 
-    /// The head names the GENERATION, and quoting it back is what earns a
-    /// patch: a caller holding anything else is sent the whole tree instead.
+    /// The head names the GENERATION, and quoting it back is what earns a patch: a caller holding anything else is
+    /// sent the whole tree instead.
     func testQuotingTheGenerationEarnsAPatchAndAStaleNumberTheWholeTree() {
-        Renderer.shared.setApplication(Alone())
+        start(Alone())
 
         let first = Renderer.shared.renderHost(baseline: 0)
         XCTAssertTrue(first.complete, "a caller with no tree is sent the whole of it")
@@ -841,49 +861,51 @@ final class SceneTests: XCTestCase {
 
     // MARK: - The contract a host reads
 
-    /// Two scenes, the first with a window beside its main one, every window
-    /// named on its own session, and then that window closed - what a host
-    /// applies to a real application.
-    func testTwoScenesAndAWindowOpenAndCloseAsAHostReadsThem() throws {
-        twoScenes()
-        Scenes.shared.list[0].windows = [OpenedWindow(type: .fonts, serial: 1, value: nil, text: nil)]
+    /// Two scenes, every window named on its own session, and then one window closed - what a host applies to a
+    /// real application.
+    func testTwoScenesAndTheirWindowsAsAHostReadsThem() async throws {
+        try await application.openWindow(.fonts)
+        try await application.openWindow(.about)
 
-        Scenes.shared.list[0].windowSession(SceneElement.mainKey).title = "Studio"
-        Scenes.shared.list[0].windowSession("fonts 1").title = "Fonts"
-        Scenes.shared.list[1].windowSession(SceneElement.mainKey).title = "Studio 2"
+        try scene("1").windowSession("window 1").title = "Studio"
+        try scene("1").windowSession("fonts 2").title = "Fonts"
+        try scene("2").windowSession("about 1").title = "About"
 
         let differ = Differ()
 
         let opened = differ.reconcile(nil, with: tree(), describeAll: true)
-        let main = ElementID.manual(SceneElement.mainKey)
-        let fonts = ElementID.manual("fonts 1")
-        let sceneEvents = ["activated", "deactivated", "destroying", "stopped", "windowClosed", "windowRestored"]
+        let (studio, fonts, about) = (ElementID.manual("window 1"), ElementID.manual("fonts 2"), ElementID.manual("about 1"))
+        let sceneEvents = ["activated", "deactivated", "stopped", "windowClosed"]
         let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
 
         XCTAssertEqual(opened.patch.arrangement, [.manual("1"), .manual("2")])
-        XCTAssertEqual(opened.patch.at(.manual("1"))?.arrangement, [main, fonts])
-        XCTAssertEqual(opened.patch.at(.manual("2"))?.arrangement, [main])
+        XCTAssertEqual(opened.patch.at(.manual("1"))?.arrangement, [studio, fonts])
+        XCTAssertEqual(opened.patch.at(.manual("2"))?.arrangement, [about])
         XCTAssertEqual(opened.patch.at(.manual("1"))?.eventNames, sceneEvents)
         XCTAssertEqual(opened.patch.at(.manual("2"))?.eventNames, sceneEvents)
 
         // Every window named on its own session, its lifetime its own handlers.
-        XCTAssertEqual(opened.patch.at(.manual("1"), main)?.props, ["title": .string("Studio")])
-        XCTAssertEqual(opened.patch.at(.manual("2"), main)?.props, ["title": .string("Studio 2")])
+        XCTAssertEqual(opened.patch.at(.manual("1"), studio)?.props, [
+            "title": .string("Studio"), "floatsOnTop": .bool(false), "hidesWhenInactive": .bool(false),
+        ])
         XCTAssertEqual(opened.patch.at(.manual("1"), fonts)?.props, [
             "title": .string("Fonts"), "windowType": .name("fonts"),
             "floatsOnTop": .bool(true), "hidesWhenInactive": .bool(true),
         ])
-        for path in [[.manual("1"), main], [.manual("1"), fonts], [.manual("2"), main]] as [[ElementID]] {
+        XCTAssertEqual(opened.patch.at(.manual("2"), about)?.props, [
+            "title": .string("About"), "windowType": .name("about"),
+            "floatsOnTop": .bool(false), "hidesWhenInactive": .bool(false),
+        ])
+        for path in [[.manual("1"), studio], [.manual("1"), fonts], [.manual("2"), about]] as [[ElementID]] {
             XCTAssertEqual(opened.patch.at(path)?.eventNames, windowEvents)
         }
 
-        Scenes.shared.list[0].windows = []
+        try await application.closeWindow(.fonts)
 
-        // The window closed: the scene's arrangement without it, and nothing
-        // else said.
+        // The window closed: the scene's arrangement without it, and nothing else said.
         let closed = differ.reconcile(
             opened.node, with: tree(), changed: Renderer.shared.pendingChanges).patch
-        XCTAssertEqual(closed.at(.manual("1"))?.arrangement, [main])
+        XCTAssertEqual(closed.at(.manual("1"))?.arrangement, [studio])
         XCTAssertFalse(
             closed.subtree.contains { !$0.props.isEmpty || $0.events != nil },
             "a window leaving is its scene's arrangement alone")

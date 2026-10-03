@@ -81,16 +81,21 @@
         StandardEnvironment.locale.layoutDirection
     }
 
-    /// Hands a platform-created scene to StateUI before its first render.
+    /// Hands StateUI a window the platform made, before its first render.
     ///
-    /// The first call claims the scene prepared when the application was
-    /// registered. Every later call creates another independent scene. Values
-    /// restored by the platform land before that scene builds, so
-    /// `@State(sceneKey:)` never briefly exposes its declared default. `kind`
-    /// is the `windowType` the scene's main window carried when the platform
-    /// kept it - the scene's kind - and nil for a new window.
-    public static func connectScene(restoring values: [String: HostValue] = [:], kind: String? = nil) {
-        Scenes.shared.connected(restoring: values, kind: kind.map { .named(WindowType($0)) })
+    /// The platform's first window is the one launch opens. A window it kept
+    /// comes as the `windowType` and the `windowValue` it carried, with its
+    /// scene's kept values, which land before that scene builds where it opens
+    /// with this window - so `@State(sceneKey:)` never briefly exposes its
+    /// declared default. A new window of no kind is one more of the group with
+    /// no name. Answers the number of the scene the window opened in, nil where
+    /// no scene declares it - the host closes that one.
+    /// Design: docs/design/core/scenes.md#what-the-platform-hands-over
+    @discardableResult
+    public static func connectWindow(
+        kind: String? = nil, value: String? = nil, restoring values: [String: HostValue] = [:]
+    ) -> String? {
+        OpenScenes.shared.connected(kind.map(WindowType.init), text: value, restoring: values)
     }
 
     /// Updates the process-wide application session from native lifecycle.

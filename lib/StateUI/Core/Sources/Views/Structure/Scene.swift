@@ -4,31 +4,29 @@
 // How an application is laid out in windows.
 // Design: docs/design/views/pages.md#scenes
 
-/// One session of the application: its main window, the windows it opens beside it, and the state they share.
+/// One of the application's scenes: the windows it declares and the state they share. It stands at most once,
+/// opening with its first window and ending with its last.
 ///
-///     struct EditorScene: Scene {
-///         @State private var document = Document()
+///     struct NotesScene: Scene {
+///         @State private var library = Library()
 ///
 ///         var body: some Scene {
-///             WindowGroup { EditorPage() }
-///                 .environment(document)
-///             Window(.fonts) { FontsPanel() }
-///                 .environment(document)
+///             WindowGroup { NotePage() }
+///                 .environment(library)
+///             Window(.inspector) { Inspector() }
+///                 .environment(library)
 ///         }
 ///     }
 ///
-/// An application with nothing to keep per session writes its `WindowGroup` in its own `body` instead:
-/// `var body: some Scene { WindowGroup { MainPage() } }`.
-///
-/// A scene holds `@State` once per session: a second *File ▸ New Window* is a second instance with state of its
-/// own. What every session shares belongs to the `Application` and reaches a scene through `.environment(_:)`.
-/// Opening and closing its windows is its `SceneSession`'s, in the environment of every view in it.
+/// Every window of a scene shares its `@State`; what belongs to one window is the `@State` of the view it shows.
+/// An application with nothing to share writes its windows in its own `body`, each a scene of its own:
+/// `var body: some Scene { WindowGroup { NotePage() } }`. What every scene shares belongs to the `Application`
+/// and reaches a scene through `.environment(_:)`. The application's session opens a scene's windows.
 public protocol Scene {
     /// The scene it is made of.
     associatedtype Body: Scene
 
-    /// The scene's windows: its main one, and the windows it may open beside it. Read again when a state it read
-    /// changes.
+    /// The scene's windows. Read again when a state it read changes.
     @SceneBuilder var body: Body { get }
 }
 
@@ -36,8 +34,7 @@ public protocol Scene {
 extension Never: Scene {}
 
 extension Scene {
-    /// Offers an object to every window of every session of this scene, resolved by type the way `.environment`
-    /// on a view is.
+    /// Offers an object to every window of this scene, resolved by type the way `.environment` on a view is.
     ///
     ///     var body: some Scene { GalleryScene().environment(library) }
     ///
@@ -50,10 +47,8 @@ extension Scene {
     /// The windows this scene declares: its body followed down to the library's own scene.
     var declaredWindows: Windows {
         if let windows = self as? Windows { return windows }
-        if let main = self as? WindowGroup<WindowRole.Main> { return Windows(main: main.declared, groups: []) }
-        if let one = self as? Window<WindowRole.Beside> {
-            return Windows(main: one.declared, groups: [], oneSession: true)
-        }
+        if let group = self as? WindowGroup { return Windows(declared: [group.declared]) }
+        if let window = self as? Window { return Windows(declared: [window.declared]) }
         if let offering = self as? any Offering { return offering.offered.declaredWindows }
 
         return body.declaredWindows

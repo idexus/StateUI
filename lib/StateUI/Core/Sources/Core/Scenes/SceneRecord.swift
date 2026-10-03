@@ -1,30 +1,26 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// One open scene: what it has open beside its main window, what the platform
-/// kept for it, and the sessions it hands the views under it.
+/// One scene standing: the windows it has open, what the platform kept for it, and the sessions it hands the views
+/// under it.
 final class SceneRecord: @unchecked Sendable {
     /// Its number - "1" for the first scene - which is also its key in the tree.
     let id: String
 
-    /// Which of the application's kinds it is - settled by the build that first finds it.
-    var kind: SceneKind
+    /// Where its scene stands among those the application's body declares.
+    var declaration: Int
 
-    /// What it has open beside its main window, in the order they opened.
-    @State var windows: [OpenedWindow] = []
+    /// Its windows, in the order they opened.
+    @State var windows: [OpenedWindow]
+
+    /// Where the scene's inspector is docked - in its first window - nil where it is not.
+    @State var dockedInspector: Inspector.Place?
 
     /// Its session - what a view in the scene resolves as `SceneSession`.
     let session: SceneSession
 
-    /// The groups its last build declared, by kind - written by that build.
-    var declared: [WindowType: GroupShape] = [:]
-
-    /// Whether the platform has handed it a window; the scene an application starts
-    /// with waits for the first one.
-    var handedOver: Bool
-
     /// The last number given to one of its windows.
-    private var serial = 0
+    private var serial: Int
 
     /// Each window's session, kept while the window is open.
     private var windowSessions: [String: WindowSession] = [:]
@@ -42,72 +38,68 @@ final class SceneRecord: @unchecked Sendable {
     /// The keys written since the host last took them, each with its last value.
     private var waiting: [String: PropValue] = [:]
 
-    /// A scene of `kind`, by its number, and whether the platform has handed it a window.
-    init(id: String, kind: SceneKind, handedOver: Bool) {
+    /// A scene, by its number, of declaration `declaration`, with `windows` open.
+    init(id: String, declaration: Int, windows: [OpenedWindow] = []) {
         self.id = id
-        self.kind = kind
-        self.handedOver = handedOver
+        self.declaration = declaration
+        _windows = State(wrappedValue: windows)
+        _dockedInspector = State(wrappedValue: nil)
+        serial = windows.map(\.serial).max() ?? 0
         session = SceneSession(id: id)
         session.record = self
     }
 
     // MARK: - Its windows
 
-    /// Opens the window of a group that opens one.
-    func open(_ type: WindowType) throws {
-        try check(type, takes: nil)
-
-        guard Scenes.opensWindows else { throw WindowError.unsupported }
-        guard !windows.contains(where: { $0.type == type }) else { throw WindowError.alreadyOpen }
-
-        windows.append(OpenedWindow(type: type, serial: nextSerial(), value: nil, text: nil))
+    /// Opens a window of `type` - nil for the group with no name - for `value`, written `text`.
+    func open(_ type: WindowType?, value: AnyHashable?, text: String?) {
+        serial += 1
+        windows.append(OpenedWindow(type: type, serial: serial, value: value, text: text))
     }
 
-    /// Opens the window for a value.
-    func open<Value: Codable & Hashable>(_ type: WindowType, value: Value) throws {
-        try check(type, takes: Value.self)
+    /// Whether it holds the window `declaration` opens for `value` - a `Window` once, a group's window per value
+    /// once, a group of no value never.
+    func holds(_ declaration: DeclaredWindows, value: AnyHashable?) -> Bool {
+        guard declaration.single || value != nil else { return false }
 
-        guard Scenes.opensWindows else { throw WindowError.unsupported }
-
-        let key = AnyHashable(value)
-
-        guard !windows.contains(where: { $0.type == type && $0.value == key }) else {
-            throw WindowError.alreadyOpen
-        }
-
-        windows.append(
-            OpenedWindow(type: type, serial: nextSerial(), value: key, text: try ValueText.write(value)))
+        return windows.contains { $0.type == declaration.type && $0.value == value }
     }
 
-    /// Closes the window of a group that opens one.
-    func close(_ type: WindowType) throws {
-        try check(type, takes: nil)
+    /// Closes the window of `type` for `value` - every window of a group of no value - the scene ending with its
+    /// last.
+    func close(_ type: WindowType, value: AnyHashable?) throws {
+        let closing = windows.filter { $0.type == type && $0.value == value }.map(\.key)
+        guard !closing.isEmpty else { throw WindowError.notOpen }
 
-        guard let index = windows.firstIndex(where: { $0.type == type }) else {
-            throw WindowError.notOpen
-        }
-
-        windows.remove(at: index)
-    }
-
-    /// Closes the window for a value.
-    func close<Value: Codable & Hashable>(_ type: WindowType, value: Value) throws {
-        try check(type, takes: Value.self)
-
-        let key = AnyHashable(value)
-
-        guard let index = windows.firstIndex(where: { $0.type == type && $0.value == key }) else {
-            throw WindowError.notOpen
-        }
-
-        windows.remove(at: index)
+        for key in closing { remove(key, ending: true) }
     }
 
     /// Closes one of its windows by its key - what that window's session asks for.
     func closeWindow(key: String) throws {
         guard windows.contains(where: { $0.key == key }) else { throw WindowError.notOpen }
 
-        closed(key: key)
+        remove(key, ending: true)
+    }
+
+    /// The user closed one of its windows; a report about one already gone changes nothing.
+    func closed(key: String) {
+        guard windows.contains(where: { $0.key == key }) else { return }
+
+        remove(key, ending: true)
+    }
+
+    /// Takes one of its windows out - the scene ending with its last, where `ending` says.
+    /// Design: docs/design/core/scenes.md#a-scene-stands-once
+    func remove(_ key: String, ending: Bool) {
+        windows.removeAll { $0.key == key }
+
+        if ending, windows.isEmpty { OpenScenes.shared.ended(self) }
+    }
+
+    /// Makes the window launch opens `window`, before anything has read the scene.
+    func settle(_ window: OpenedWindow) {
+        _windows.storage.value = [window]
+        serial = window.serial
     }
 
     /// Makes one of its windows about another value - the window's own binding.
@@ -116,34 +108,6 @@ final class SceneRecord: @unchecked Sendable {
 
         windows[index].value = AnyHashable(value)
         windows[index].text = try? ValueText.write(value)
-    }
-
-    /// The user closed one of its windows; a report about one already gone changes
-    /// nothing.
-    func closed(key: String) {
-        windows.removeAll { $0.key == key }
-    }
-
-    /// The system restored one of its windows: back it goes where the scene still
-    /// declares its kind and the text reads as its value, and nowhere else.
-    /// Design: docs/design/core/scenes.md#what-the-platform-keeps
-    func restored(kind name: String, text: String?) {
-        let type = WindowType(name)
-
-        guard let shape = declared[type] else { return }
-
-        guard let text else {
-            guard shape.valueType == nil, !windows.contains(where: { $0.type == type }) else { return }
-
-            windows.append(OpenedWindow(type: type, serial: nextSerial(), value: nil, text: nil))
-            return
-        }
-
-        guard shape.valueType != nil, let value = shape.restore(text),
-            !windows.contains(where: { $0.type == type && $0.value == value })
-        else { return }
-
-        windows.append(OpenedWindow(type: type, serial: nextSerial(), value: value, text: text))
     }
 
     /// The session of one of its windows, made once and kept.
@@ -157,24 +121,11 @@ final class SceneRecord: @unchecked Sendable {
         return made
     }
 
-    /// Lets go of the sessions of windows that have closed; its main window's
-    /// is kept for as long as the scene is.
+    /// Lets go of the sessions of windows that have closed.
     func keepWindowSessions() {
-        let open = Set(windows.map(\.key) + [SceneElement.mainKey])
+        let open = Set(windows.map(\.key))
 
         windowSessions = windowSessions.filter { open.contains($0.key) }
-    }
-
-    /// Checks a kind against what the scene declares.
-    private func check(_ type: WindowType, takes valueType: Any.Type?) throws {
-        guard let shape = declared[type] else { throw WindowError.undeclared(type) }
-        guard shape.takes(valueType) else { throw WindowError.wrongValue(type) }
-    }
-
-    /// The next number for one of its windows.
-    private func nextSerial() -> Int {
-        serial += 1
-        return serial
     }
 
     // MARK: - What it keeps
@@ -221,29 +172,10 @@ final class SceneRecord: @unchecked Sendable {
     }
 }
 
-/// What a scene's build declared about one of its window groups - what opening a
-/// window is checked against, and what a restored window is read with.
-struct GroupShape {
-    /// The type of value the group opens one window per; nothing for a group of one.
-    let valueType: Any.Type?
-
-    /// A value read back out of the text it was written down as.
-    let restore: (String) -> AnyHashable?
-
-    /// Whether this shape takes a value of `type` - nothing meaning none.
-    func takes(_ type: Any.Type?) -> Bool {
-        switch (valueType, type) {
-        case (nil, nil): return true
-        case let (declared?, given?): return ObjectIdentifier(declared) == ObjectIdentifier(given)
-        default: return false
-        }
-    }
-}
-
-/// A window a scene has open beside its main one.
+/// A window a scene has open.
 struct OpenedWindow: Equatable {
-    /// Its group's kind.
-    let type: WindowType
+    /// Its kind; nil for a window of the group with no name.
+    let type: WindowType?
 
     /// Its number in its scene, in opening order - what keeps it the same window when
     /// its value changes.
@@ -255,8 +187,8 @@ struct OpenedWindow: Equatable {
     /// That value written down, the way the platform keeps it.
     var text: String?
 
-    /// What the tree knows it by.
-    var key: String { "\(type.name) \(serial)" }
+    /// What the tree knows it by: its kind - "window" for the group with no name - and its number.
+    var key: String { "\(type?.name ?? "window") \(serial)" }
 }
 
 /// A state box a scene may keep - one declared with a `SceneKey`, which the

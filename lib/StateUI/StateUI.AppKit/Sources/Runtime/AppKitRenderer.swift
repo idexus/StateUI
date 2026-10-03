@@ -39,20 +39,15 @@ final class AppKitRenderer: @unchecked Sendable {
     /// The windows the tree holds, each with its controller, in the tree's order.
     let roster = WindowRoster<AppKitWindowController>()
 
-    /// What each scene keeps for the system's window restoration, by the scene's identity.
-    var sessions: [ElementID: AppKitSceneSession] = [:]
+    /// What each scene keeps for the system's window restoration, by the scene's key.
+    var sceneValues = SceneValues()
     var doorbellStarted = false
-    var connectedInitialScene = false
+    /// Whether the platform's first window came - one the system restored before the start.
+    var connectedFirstWindow = false
     var started = false
     weak var activeWindow: AppKitWindowController?
-    let restorationQueue = AppKitRestorationQueue()
-    var restoredWindows: [String: NSWindow] = [:]
-    var offeredRestorations = Set<String>()
-
-    /// The restored windows offered to their scenes in the last presentation: one no scene claimed by the next is
-    /// declined.
-    var offersAwaitingClaim: [String] = []
-    var abandonmentScheduled = false
+    /// The windows the system restored, waiting for the tree to claim them.
+    let restored = RestoredWindows<NSWindow>()
     var pageMenuInsertions: [(menu: NSMenu, item: NSMenuItem)] = []
     var windowSynchronizationCountForTesting = 0
 
@@ -86,8 +81,9 @@ final class AppKitRenderer: @unchecked Sendable {
         configureEnvironment()
         runtime.tree.followTheLanguagesDirection()
         hydratePersistentState()
-        if !connectedInitialScene {
-            connectPlatformScene(restoring: [:])
+        if !connectedFirstWindow {
+            runtime.connectWindow()
+            connectedFirstWindow = true
         }
         runtime.pump.turn()
     }
@@ -219,11 +215,7 @@ extension AppKitElement: PlacedView {
 
 extension AppKitRenderer: TurnPresenter {
     func presentRendered() {
-        let offered = offersAwaitingClaim
-        offersAwaitingClaim = []
         synchronizeWindows()
-        for identifier in offered { declineRestorationIfUnclaimed(identifier) }
-        offerRestoredWindows()
     }
 
     func perform(_ call: HostActCall) {

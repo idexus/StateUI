@@ -39,6 +39,6 @@ public struct WindowType: Hashable, Sendable, CustomStringConvertible, HostRepre
     /// The inspector that shows what every render costs and builds - see
     /// `DebugInspector`, which is its window.
     ///
-    ///     WindowGroup(.debugInspector) { DebugInspector() }
+    ///     Window(.debugInspector) { DebugInspector() }
     public static let debugInspector = WindowType("stateui.debugInspector")
 }

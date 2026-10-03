@@ -10,7 +10,7 @@
 // at nothing - and none of it is visible until the app is running and someone
 // taps the wrong row.
 //
-// Building the tree is the whole test harness: `GalleryScene().windows.main.node` produces
+// Building the tree is the whole test harness: a gallery window's page produces
 // the Node tree the host would be sent, with no renderer, no host and no device
 // involved. And WHERE THE GALLERY IS is state on this side - so a move is
 // tested by firing the handler a user would touch and reading the boxes it
@@ -576,7 +576,7 @@ final class CatalogTests: XCTestCase {
     /// which is where what `.onCreated` writes into a session lands: the title
     /// bar, the modal stack, every page's title.
     private func firstPatch(_ page: MainPage) -> HostPatch {
-        Scenes.shared.reset()
+        OpenScenes.shared.reset()
         Renderer.shared.clearInvalidation()
         Renderer.shared.setApplication(OneWindow(page: page))
 
@@ -619,7 +619,7 @@ final class CatalogTests: XCTestCase {
 
         // A second window needs somewhere to put it, which a desktop and an
         // iPad have and a phone never will.
-        let notOnAPhone: Set<String> = ["multi-window", "scene-kinds"]
+        let notOnAPhone: Set<String> = ["multi-window", "scenes"]
 
         for id in notOnAPhone {
             let sample = try XCTUnwrap(catalog.sample(id: id))
@@ -1084,8 +1084,8 @@ final class CatalogTests: XCTestCase {
     /// two children wearing the identity of their halves, the pane has a native
     /// title, and the detail is a stack that opens on its root alone.
     func testTheWindowIsAMenuOverAStack() throws {
-        let main = GalleryScene().declaredWindows.main
-        let window = Node.window(showing: { main.page(nil, nil) }, kind: main.kind, session: WindowSession()).built
+        let gallery = try XCTUnwrap(GalleryScene().declaredWindows.opening)
+        let window = Node.window(showing: { gallery.page(nil, nil) }, kind: gallery.kind, session: WindowSession()).built
 
         XCTAssertEqual(window.type, "Window")
 
@@ -1195,27 +1195,32 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(place.sheets.wrappedValue.isEmpty, "and closing nothing is nothing")
     }
 
-    /// A gallery is a SCENE: its main window, and beside it the Fonts and
-    /// Colours windows and the inspector - one window of each kind - and a
-    /// swatch window per number, all opened by the gallery and never by *File ▸
-    /// New Window*, which opens a gallery.
-    func testAGalleryIsASceneWithItsToolsBesideIt() {
-        let windows = GalleryScene().declaredWindows
+    /// The galleries are a SCENE: gallery windows, as many as are opened - what
+    /// launch and *File ▸ New Window* open - and beside them the Fonts and
+    /// Colours windows and the inspector, one of each, and a swatch window per
+    /// number.
+    func testTheGalleriesAreASceneWithTheirToolsBeside() {
+        let windows = GalleryScene().declaredWindows.declared
 
-        XCTAssertEqual(windows.groups.compactMap(\.type), [.fonts, .colours, .debugInspector, .swatch])
-        XCTAssertEqual(windows.groups.filter { $0.valueType != nil }.compactMap(\.type), [.swatch])
-        XCTAssertEqual(windows.main.kind, String(reflecting: MainPage.self))
+        XCTAssertEqual(windows.map(\.type), [nil, .fonts, .colours, .debugInspector, .swatch])
+        XCTAssertEqual(windows.filter(\.single).compactMap(\.type), [.fonts, .colours, .debugInspector])
+        XCTAssertEqual(windows.filter { $0.valueType != nil }.compactMap(\.type), [.swatch])
+        XCTAssertEqual(windows.first?.kind, String(reflecting: GalleryWindow.self))
     }
 
-    /// The application's kinds of scene: its galleries first - what launch and
-    /// File ▸ New open - then scratchpads, and one About window for the whole
-    /// application.
-    func testTheApplicationIsItsGalleriesAndTwoKindsBeside() {
-        let kinds = SceneKinds.of(GalleryApp().body)
+    /// The application's scenes: the galleries, which launch opens; the
+    /// scratchpads; and About, one window for the whole application in a scene
+    /// of its own.
+    func testTheApplicationIsTheGalleriesTheScratchpadsAndAbout() {
+        let scenes = Scenes.of(GalleryApp().body)
 
-        XCTAssertTrue(kinds.scenes.first is GalleryScene)
-        XCTAssertEqual(kinds.mains.map(\.type), [nil, .scratchpad, .about])
-        XCTAssertEqual(kinds.mains.map(\.oneSession), [false, false, true])
+        XCTAssertTrue(scenes.declared[0] is GalleryScene)
+        XCTAssertTrue(scenes.declared[1] is ScratchpadScene)
+        XCTAssertTrue(scenes.declared[2] is AboutScene)
+        XCTAssertEqual(scenes.launching, 0, "launch opens a gallery window")
+        XCTAssertEqual(scenes.windows[1].declared.map(\.type), [.scratchpad])
+        XCTAssertEqual(scenes.windows[2].declared.map(\.type), [.about])
+        XCTAssertEqual(scenes.windows[2].declared.map(\.single), [true])
     }
 
     /// The menu lists Home, every group, and the one row that performs an act.

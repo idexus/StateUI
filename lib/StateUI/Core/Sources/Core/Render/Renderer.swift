@@ -148,8 +148,8 @@ public final class Renderer: @unchecked Sendable {
         self.application = nil
         making = application
 
-        // One scene, waiting for the platform's first window (Scenes.swift).
-        Scenes.shared.reset()
+        // The scene launch opens, its window waiting for the platform's first (OpenScenes.swift).
+        OpenScenes.shared.reset()
 
         setNeedsRender()
     }
@@ -163,6 +163,7 @@ public final class Renderer: @unchecked Sendable {
             let made = making()
             application = made
             Renderer.name(statesOf: made)
+            OpenScenes.shared.settleLaunch(Scenes.of(made.body))
         }
         return application
     }
@@ -472,7 +473,7 @@ public final class Renderer: @unchecked Sendable {
         // The application is the root and its open scenes its children.
         let session = StandardEnvironment.application
 
-        return (Scenes.shared.tree(of: application), session.styles, session.motion)
+        return (OpenScenes.shared.tree(of: application), session.styles, session.motion)
     }
 
     /// Shown until an application registers, in the shape a real one has.
@@ -481,8 +482,8 @@ public final class Renderer: @unchecked Sendable {
         label.write(TextualElementContract.text, "StateUI: no application registered")
 
         let page = Node(contract: PageContract.self, children: [label])
-        let main = Node(contract: WindowContract.self, id: SceneElement.mainKey, children: [page])
-        let scene = Node(contract: SceneContract.self, id: "1", children: [main])
+        let window = Node(contract: WindowContract.self, id: "window 1", children: [page])
+        let scene = Node(contract: SceneContract.self, id: "1", children: [window])
 
         return Node(contract: ApplicationContract.self, children: [scene])
     }

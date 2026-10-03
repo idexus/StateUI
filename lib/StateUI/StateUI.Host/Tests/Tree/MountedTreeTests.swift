@@ -107,13 +107,13 @@ final class MountedTreeTests: XCTestCase {
     /// the elements walked, made and kept, and each scene's part by its place in the application.
     @MainActor
     func testAMessageAppliedTellsTheInspectorWhatItCost() throws {
-        Scenes.shared.reset()
-        Scenes.shared.connected(restoring: [:])
-        Scenes.shared.connected(restoring: [:])
+        stateUIUseApp(TwoScenes())
+        HostBoundary.connectWindow()
+        HostBoundary.connectWindow(kind: "tree.second")
         Inspection.start()
         defer {
             Inspection.stop()
-            Scenes.shared.reset()
+            OpenScenes.shared.reset()
         }
         for generation: Int32 in 1...3 {
             Inspection.begin(road: .build, causes: [])
@@ -725,4 +725,12 @@ private final class RecordingNative: NativeElement {
     func arrangeChildren() { log.arranged.append(name) }
     func directionChanged() { log.turned.append(name) }
     func leave() { log.left.append(name) }
+}
+
+/// An application of two scenes, each a window alone.
+private struct TwoScenes: Application {
+    var body: some Scene {
+        WindowGroup { Text("first") }
+        Window(WindowType("tree.second")) { Text("second") }
+    }
 }

@@ -395,6 +395,7 @@ ZStack
   handlerFailed()
   hideOnScreenKeyboard()
   moveToRegion()
+  persistSceneValue()
   persistValue()
   prompt()
   reload()

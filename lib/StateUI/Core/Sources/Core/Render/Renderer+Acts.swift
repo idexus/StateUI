@@ -59,7 +59,7 @@ extension Renderer {
     var actCallsPending: Int {
         // A save waiting is an act the moment it is taken (Persistence.swift).
         guarded.withLock { actCalls.count } + PersistentStore.shared.pending
-            + Scenes.shared.pendingSaves
+            + OpenScenes.shared.pendingSaves
     }
 
     /// Queues an act and suspends until the host answers, running and resuming on
@@ -117,6 +117,6 @@ extension Renderer {
         }
 
         // And what the open scenes keep, the same way (Scenes.swift).
-        return queued + saves + Scenes.shared.takeSaves()
+        return queued + saves + OpenScenes.shared.takeSaves()
     }
 }

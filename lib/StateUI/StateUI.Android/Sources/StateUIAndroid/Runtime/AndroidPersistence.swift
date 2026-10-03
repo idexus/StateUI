@@ -15,20 +15,42 @@ enum AndroidPersistence {
         let keys = core.persistentKeys
         guard !keys.isEmpty else { return }
 
-        let words: [String?] = Java.frame {
-            let names = Java.array(of: JavaAPI.string, keys.map { Java.string($0.name) })
-            let read = Java.callStaticObject(JavaAPI.store, JavaAPI.readStore, .object(context), .object(names))
+        let kept = zip(keys, words(keys.map(\.name), context: context)).compactMap { key, word in
+            word.map { (key.name, $0) }
+        }
+        core.restorePersistent(KeptWord.restored(Dictionary(uniqueKeysWithValues: kept), for: keys))
+    }
+
+    /// The words the preferences keep under `names`, in order; nil for a name they keep nothing under.
+    static func words(_ names: [String], context: jobject) -> [String?] {
+        Java.frame {
+            let array = Java.array(of: JavaAPI.string, names.map { Java.string($0) })
+            let read = Java.callStaticObject(JavaAPI.store, JavaAPI.readStore, .object(context), .object(array))
             return read.map { array in
-                (0..<keys.count).map { index -> String? in
+                (0..<names.count).map { index -> String? in
                     let element = Java.jni.GetObjectArrayElement(Java.env, array, jsize(index))
                     defer { Java.release(local: element) }
                     return element.map { Java.text($0) }
                 }
             } ?? []
         }
+    }
 
-        let kept = zip(keys, words).compactMap { key, word in word.map { (key.name, $0) } }
-        core.restorePersistent(KeptWord.restored(Dictionary(uniqueKeysWithValues: kept), for: keys))
+    /// The key the application's scenes are kept under for the next start: the platform restores no windows.
+    static let scenesKey = "StateUI.Scenes"
+
+    /// The application's scenes as they stood, for this start.
+    static func readScenes(context: jobject) -> KeptScenes {
+        KeptScenes((words([scenesKey], context: context).first ?? nil) ?? "")
+    }
+
+    /// Writes the scenes' text in place of what was kept.
+    static func writeScenes(_ text: String, context: jobject) {
+        Java.frame {
+            Java.callStatic(
+                JavaAPI.store, JavaAPI.writeStore, .object(context), .object(Java.string(scenesKey)),
+                .object(Java.string(text)))
+        }
     }
 
     /// Keeps a key's new value, as the act `persistValue` carries it.

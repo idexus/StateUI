@@ -19,9 +19,9 @@ properties and are resolved through `@Environment`.
 
 ## Application
 
-An application's `body` is its one scene. Where its sessions need no state
-of their own, that is a `WindowGroup` showing a view - the application's main
-window, one for every session:
+An application's `body` lists its scenes. Where its windows share nothing,
+that is a `WindowGroup` showing a view: launch opens one window of it, and
+*File ▸ New Window* one more.
 
 ```swift
 struct SingleWindowApp: Application {
@@ -40,12 +40,13 @@ struct HomePage: View {
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
-| `scenes` | currently open scene sessions, in opening order |
+| `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
 | `persistentKeys` | state keys hydrated before the first description |
-| `openScene()` | asks for another session of the kind *File ▸ New* opens |
-| `openWindow(_:)` | opens a scene of the kind whose main window is of that type |
+| `openWindow()` | opens one more window of the `WindowGroup` with no name, as *File ▸ New Window* does |
+| `openWindow(_:)`, `openWindow(_:value:)` | opens a window of a kind, in the scene declaring it |
+| `closeWindow(_:)`, `closeWindow(_:value:)` | closes a window of a kind |
 
 Configuration needed before the first view is built belongs in the
 application's initializer:
@@ -64,15 +65,11 @@ struct NotesApp: Application {
 }
 ```
 
-## Scene ownership
+## Scenes
 
-A scene is one independent application session: its main window, any auxiliary
-windows opened beside it, and the state those windows share. A platform may
-restore several instances of the same scene declaration. Each instance gets a
-different `SceneSession` and different scene-owned state.
-
-Use a scene type of its own when there is shared session state or more than
-one window kind. Its `body` holds its windows:
+A scene is a set of windows and the state they share. Each scene the
+application declares stands at most once: it opens with its first window and
+ends with its last, and its state goes with it.
 
 ```swift quote
 extension WindowType {
@@ -81,13 +78,13 @@ extension WindowType {
 }
 
 struct NotesScene: Scene {
-    @State private var selection = SelectionModel()
+    @State private var library = Library()
 
     var body: some Scene {
-        WindowGroup { MainPage() }
-            .environment(selection)
+        WindowGroup { NotesPage() }
+            .environment(library)
         Window(.inspector) { InspectorPage() }
-            .environment(selection)
+            .environment(library)
         WindowGroup(.document, for: Int.self) { number in
             DocumentPage(number: number)
         }
@@ -95,43 +92,101 @@ struct NotesScene: Scene {
 }
 ```
 
-The main window - the scene's `WindowGroup` - is the scene's lifetime
-boundary. Closing it closes the scene and every window belonging to it, and
-*File ▸ New Window* opens another session of the scene with a main window of
-its own (see [Kinds of scene](#kinds-of-scene) for a main window with a name).
-A window opened beside it is declared with a name:
+A scene declares its windows three ways:
 
-- `Window(.inspector) { ... }` allows one window of that kind per scene;
-- `WindowGroup(.document, for: ID.self) { $id in ... }` allows one per value;
-- the value is `Codable` and `Hashable` so it can identify and restore the
-  window;
-- the value closure receives a `Binding`, so the same window can be retargeted
-  without replacing its session.
+- `WindowGroup { ... }` with no name - one in the application - is the window
+  launch opens, and *File ▸ New Window* makes one more of it;
+- `WindowGroup(.kind) { ... }` makes as many windows of the kind as are
+  opened, and `Window(.kind) { ... }` makes one;
+- `WindowGroup(.kind, for: ID.self) { $id in ... }` makes one window per
+  value. The value is `Codable` and `Hashable` so it can identify and restore
+  the window, and the closure receives a `Binding`, so the same window can be
+  retargeted without replacing its session.
 
-The scene's builder counts its main window by type: a scene with two
-`WindowGroup` main windows does not compile, nor one whose windows are all one
-per value, nor a main window under an `if` with no `else` - what a window shows
-is chosen inside its view. A scene with no `WindowGroup` has its first `Window`
-as its main one: a scene of one session. An object reaches the
-views of a window by `.environment(_:)` on its `WindowGroup` or `Window`, and
-every window of every session by `.environment(_:)` on the scene where the
-application names it.
+Every window of a scene shares the scene's `@State`. What belongs to one
+window is the `@State` of the view it shows: two windows of `NotesPage` each
+keep a place of their own, and both read the scene's `library`. An object
+reaches the views of a window by `.environment(_:)` on its `WindowGroup` or
+`Window`. What a window shows may change; which windows a scene declares may
+not.
+
+A window belongs to the scene declaring its kind. A window that belongs to
+none of the others - About, the preferences - is a scene of its own:
+
+```swift
+import StateUI
+
+extension WindowType {
+    static let editor = WindowType("notes.editor")
+    static let about = WindowType("notes.about")
+}
+
+struct NotesApp: Application {
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+        EditorScene()
+        AboutScene()
+    }
+}
+
+struct EditorScene: Scene {
+    var body: some Scene {
+        WindowGroup(.editor) { EditorPage() }
+    }
+}
+
+struct AboutScene: Scene {
+    var body: some Scene {
+        Window(.about) { Text("Notes 1.0") }
+    }
+}
+
+struct NotesPage: View {
+    @Environment private var application: ApplicationSession
+
+    var body: some View {
+        VStack {
+            Button("New editor").onClicked { try await application.openWindow(.editor) }
+            Button("About").onClicked { try await application.openWindow(.about) }
+        }
+    }
+}
+
+struct EditorPage: View {
+    @Environment private var window: WindowSession
+    @Environment private var scene: SceneSession
+
+    var body: some View {
+        VStack {
+            Button("Close").onClicked { try await window.close() }
+            Button("Close every editor").onClicked { try await scene.close() }
+        }
+    }
+}
+```
+
+- A window written in the application's body, like the `WindowGroup` here, is
+  a scene of its own with no state.
+- `application.openWindow(.editor)` opens one more editor window, in the scene
+  declaring `.editor`, which opens with it where it does not stand.
+- `application.openWindow(.about)` opens the About window once, and answers
+  `WindowError.alreadyOpen` while it is open.
+- `window.close()` closes one window, and the scene ends with its last;
+  `scene.close()` closes every window of the scene at once.
 
 `WindowType` names are durable application vocabulary. Use stable,
 application-qualified names because restoration records them.
 
-Every owned window carries the same four host metadata values. `windowType`
-is the group's open and restoration identity; `windowValue` is the encoded
-per-value identity when the group has one. `hidesWhenInactive` and `floatsOnTop` are
-always explicit booleans, so changing either policy updates an existing native
-window without replacing it. The main window of a named kind of scene carries
-its `windowType` - the scene's kind - and a `Window` that is a scene's main one
-its two policies as well; the unnamed main window carries none of this
-metadata.
+Every window carries the same four host metadata values. `windowType` is its
+kind - none for a window of the `WindowGroup` with no name - and `windowValue`
+the encoded per-value identity where the group has one. `hidesWhenInactive`
+and `floatsOnTop` are always explicit booleans, so changing either policy
+updates an existing native window without replacing it.
 
-### Auxiliary-window policy
+### Window policy
 
-`hidesWhenInactive` and `floatsOnTop` describe auxiliary windows, not new scenes:
+`hidesWhenInactive` and `floatsOnTop` describe how a group's windows stand
+beside the application's other scenes:
 
 ```swift quote
 Window(.inspector) { InspectorPage() }
@@ -141,15 +196,12 @@ Window(.inspector) { InspectorPage() }
 
 Both default to `false` and are independent.
 
-- `hidesWhenInactive(true)` hides each window of the group while another scene of the
-  same application is in front, then shows it again with its owning scene. It
-  does not close the window or end its `WindowSession`.
-- `floatsOnTop(true)` keeps the group's windows above the application's normal
+- `hidesWhenInactive(true)` hides each window of the group while another scene
+  of the same application is in front, then shows it again with its own scene.
+  It does not close the window or end its `WindowSession`.
+- `floatsOnTop(true)` keeps the group's windows above the application's other
   windows while the application is in front. It does not make them global
-  always-on-top windows, and it does not change their scene ownership.
-- Auxiliary windows belong to their scene and close with it. System surfaces
-  that enumerate application documents or main windows should enumerate scene
-  main windows, not these helpers.
+  always-on-top windows.
 
 Changing either policy updates windows that are already open. In particular,
 turning `hidesWhenInactive` off while a window is hidden by its scene makes that window
@@ -163,62 +215,6 @@ evidence that a particular host implements the policy; the
 [platform matrix](../platform-contract.md#contract-members) is the
 support authority.
 
-## Kinds of scene
-
-An application's body lists its kinds of scene. The first opens at launch, and
-each is named by its main window:
-
-```swift
-import StateUI
-
-extension WindowType {
-    static let editor = WindowType("notes.editor")
-    static let preferences = WindowType("notes.preferences")
-}
-
-struct NotesApp: Application {
-    var body: some Scene {
-        WindowGroup { NotesPage() }
-        EditorScene()
-        Window(.preferences) { Text("Preferences") }
-    }
-}
-
-struct EditorScene: Scene {
-    var body: some Scene {
-        WindowGroup(.editor) { Text("A draft") }
-    }
-}
-
-struct NotesPage: View {
-    @Environment private var application: ApplicationSession
-
-    var body: some View {
-        VStack {
-            Button("New editor").onClicked { try await application.openWindow(.editor) }
-            Button("Preferences").onClicked { try await application.openWindow(.preferences) }
-        }
-    }
-}
-```
-
-- The `WindowGroup` with no name is the kind *File ▸ New Window* and
-  `openScene()` open - the first kind where none has an unnamed main window.
-- `WindowGroup(.editor)` is a kind of many sessions: each
-  `application.openWindow(.editor)` opens one more. Opening a kind's main
-  window opens a scene of it.
-- `Window(.preferences)` - written in the application's body, or first in a
-  scene with no `WindowGroup` - is a kind of one session: one window for the
-  whole application, which opens once and answers `WindowError.alreadyOpen`
-  after. It has a `SceneSession` like any scene, and closes with
-  `scene.close()` from a page in it.
-- A window per value belongs to a scene: the application's body refuses one
-  at compile time.
-
-A scene the platform keeps comes back as its kind, with the values its
-`@State(sceneKey:)` kept. One of a kind the application no longer declares
-comes back as the unnamed kind, with nothing of what was kept.
-
 ## Application and scene phases
 
 `ApplicationSession.phase` and `SceneSession.phase` use the same three words
@@ -228,7 +224,7 @@ at different ownership scopes:
 | --- | --- | --- |
 | `.active` | one of the application's windows is in use | one of this scene's windows is in use |
 | `.inactive` | application windows remain visible while another application is in front | this scene remains visible while another scene is in front |
-| `.background` | none of the application's windows can be seen | the scene's main window is stopped, or the application is hidden |
+| `.background` | none of the application's windows can be seen | every window of the scene is out of sight, or the application is hidden |
 
 A multi-window application can therefore be `.active` while one of its scenes
 is `.inactive`. `SceneSession.phase` starts at `.active` when a new scene is
@@ -236,24 +232,24 @@ being brought up and then follows reports for that scene. Neither value
 replaces `WindowSession.phase`, which records the more detailed lifecycle of
 one particular window.
 
-The scene node has six host reports. `activated`, `deactivated`, and `stopped`
-move `SceneSession.phase`. `destroying` ends the scene after its main window is
-closed. `windowClosed` removes the exact owned-window key supplied by the host,
-while `windowRestored` offers a restored kind and optional encoded value back
-to that scene. A tree-driven close emits neither close report: the Swift tree
-already owns that decision.
+The scene node has four host reports. `activated`, `deactivated`, and
+`stopped` move `SceneSession.phase`. `windowClosed` - the user closed one of
+the scene's windows - removes the window by the key the host supplies, and the
+scene ends with its last. A tree-driven close emits no close report: the Swift
+tree already owns that decision.
 
-Lifecycle is an effective state, not a count of native callbacks. If the main
-window is minimized and the application is then hidden, showing the
-application again does not resume either the main window or its scene. They
+Lifecycle is an effective state, not a count of native callbacks. If a scene's
+only window is minimized and the application is then hidden, showing the
+application again does not resume either the window or its scene. They
 advance only after the remaining minimized cause ends. The same rule prevents
 duplicate phase changes when callbacks overlap.
 
 ## Scene-local restored state
 
-`@State(sceneKey:)` is ordinary state whose storage belongs to the current
-scene session. The host serializes it with that scene and hydrates it before
-the restored scene is described.
+`@State(sceneKey:)` is ordinary state whose storage belongs to the scene
+standing: every window of the scene reads the one value. The host keeps it
+with the scene's windows and hands it back before the restored scene is
+described.
 
 ```swift quote
 extension SceneKey {
@@ -267,27 +263,31 @@ final class SelectionModel {
 }
 ```
 
-Two scenes using the same key do not share one value. Each scene restores its
-own. Process-wide preferences use `@State(persistentKey:)` instead; see
+A scene stands once, so its key holds one value, which ends with the scene.
+Process-wide preferences use `@State(persistentKey:)` instead; see
 [State and reactivity](../concepts/state-and-reactivity.md).
 
 ## Opening and closing
 
-Session methods act on the exact session object held by the view:
+The application opens a window by its kind; a session closes the exact
+window or scene it is:
 
 ```swift quote
 @Environment private var application: ApplicationSession
 @Environment private var scene: SceneSession
 @Environment private var window: WindowSession
 
-try await application.openScene()
-try await scene.openWindow(.inspector)
-try await scene.openWindow(.document, value: 7)
-try await scene.closeWindow(.document, value: 7)
+try await application.openWindow()
+try await application.openWindow(.inspector)
+try await application.openWindow(.document, value: 7)
+try await application.closeWindow(.document, value: 7)
 try await window.close()
 try await scene.close()
 ```
 
+A window opens in the scene declaring its kind, which opens with it where it
+does not stand. Whether a window may open beside another is the platform's: a
+desktop and an iPad open one, a phone answers `.unsupported`.
 `SceneSession.windows` and `ApplicationSession.scenes` are reactive readings.
 A body that reads either is rebuilt when the collection changes.
 
@@ -299,18 +299,19 @@ does not silently start referring to a newer scene after its own scene ends.
 
 Restoration has two inputs with different owners:
 
-- the platform reconnects scene and native-window identities that were open;
-- StateUI restores declared window kinds, per-value identities, and
-  `@State(sceneKey:)` values into the matching scene session.
+- the platform keeps the windows that were open - AppKit and iPadOS by their
+  own restoration, the other hosts in a store of their own - each with its
+  kind, its value's text and its scene's `@State(sceneKey:)` values;
+- StateUI brings each back as its kind for its value, in the scene declaring
+  it, which opens with it and its kept values where it does not stand.
 
 Restoration never changes the structural contract. A window kind must still be
-declared by the scene, and its saved value must still decode as the group's
-declared type. Unsupported or obsolete records are refused rather than mapped
-onto another window.
+declared, and its saved value must still decode as the group's declared type.
+A record that no longer reads is refused rather than mapped onto another
+window.
 
-The scene declaration is rebuilt before its restored group windows are
-materialized, so every restored window receives the same session environment
-as a newly opened one.
+A restored scene's kept values land before its first build, so every window of
+it starts from what the scene kept.
 
 ## Window session
 
@@ -328,7 +329,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
 | `isTranslucent` | whether the desktop shows through the window, where the platform can show it |
-| `close()` | closes this exact window; closing the main window ends its scene |
+| `close()` | closes this exact window; its scene ends with its last |
 
 Position and size are four independent optional requests:
 

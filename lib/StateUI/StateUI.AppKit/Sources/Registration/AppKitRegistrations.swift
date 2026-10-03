@@ -43,11 +43,11 @@ enum AppKitRegistrations {
         .filter { $0.owner == VisualElementContract.name && $0.member == VisualElementContract.background.name }
         .map { NodeType($0.element) })
 
-    /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`), the
-    /// scene's kept values, which a Mac keeps in the window it restores, and its own elements' acts. The host layer's performer
+    /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`) and its
+    /// own elements' acts. The host layer's performer
     /// (`HostActPerformer`) answers exactly these and the application's own; every other act it refuses by name.
     static let acts: [any ContractMember] =
-        HostActs.performed + [ApplicationContract.persistSceneValue, ItemsViewContract.scrollTo, MapContract.moveToRegion]
+        HostActs.performed + [ItemsViewContract.scrollTo, MapContract.moveToRegion]
         + webActs
 
     static func edgeInsets(_ value: Insets?) -> NSEdgeInsets {

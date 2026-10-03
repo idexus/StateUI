@@ -4,39 +4,35 @@
 @_spi(Host) import StateUI
 
 /// The application's scenes as a host keeps them for its next start, for a platform that restores no windows: each
-/// scene's kind, its kept values, and the windows of a kind of its own it had open, by their kind and their value's
-/// text. The same scenes write the same text.
+/// scene's kept values and the windows it had open, by their kind and their value's text. The same scenes write the
+/// same text.
 /// Design: docs/design/host/runtime.md#kept-scenes
 @_spi(Host) public struct KeptScenes: Equatable, Sendable {
-    /// One scene: its kind, its values by key, and its windows of a kind of their own, in order.
+    /// One scene: its values by key, and its windows, in order.
     public struct Scene: Equatable, Sendable {
-        /// Its kind - the `windowType` of its main window; nil for the kind whose main window has no name.
-        public var kind: String?
-
         /// Its kept values, by key.
         public var values: [String: HostValue]
 
-        /// Its windows of a kind of their own, in order.
+        /// Its windows, in order.
         public var windows: [Window]
 
-        /// A scene of `kind` keeping `values`, with `windows` open.
-        public init(kind: String? = nil, values: [String: HostValue] = [:], windows: [Window] = []) {
-            self.kind = kind
+        /// A scene keeping `values`, with `windows` open.
+        public init(values: [String: HostValue] = [:], windows: [Window] = []) {
             self.values = values
             self.windows = windows
         }
     }
 
-    /// A window of a kind of its own: the kind, and the text of the value it was opened for, where it was.
+    /// A window: its kind, and the text of the value it was opened for, where it was.
     public struct Window: Equatable, Sendable {
-        /// The kind a scene declares it under.
-        public let kind: String
+        /// The kind a scene declares it under; nil for the group with no name.
+        public let kind: String?
 
         /// The text of the value it was opened for; nil for none.
         public let value: String?
 
         /// A window of `kind`, for the value written `value`.
-        public init(kind: String, value: String?) {
+        public init(kind: String?, value: String?) {
             self.kind = kind
             self.value = value
         }
@@ -58,53 +54,37 @@
             switch (fields.first, fields.count) {
             case ("scene", 1):
                 scenes.append(Scene())
-            case ("scene", 2):
-                scenes.append(Scene(kind: fields[1]))
             case ("value", 3) where !scenes.isEmpty:
-                if let value = Self.value(fields[2]) { scenes[scenes.count - 1].values[fields[1]] = value }
-            case ("window", 2) where !scenes.isEmpty:
-                scenes[scenes.count - 1].windows.append(Window(kind: fields[1], value: nil))
-            case ("window", 3) where !scenes.isEmpty:
-                scenes[scenes.count - 1].windows.append(Window(kind: fields[1], value: fields[2]))
+                if let value = SceneValueWord.value(fields[2]) { scenes[scenes.count - 1].values[fields[1]] = value }
+            case ("window", 1...3) where !scenes.isEmpty:
+                let window = Window(kind: fields.dropFirst().first, value: fields.dropFirst(2).first)
+                scenes[scenes.count - 1].windows.append(window)
             default:
                 continue
             }
         }
     }
 
-    /// The scenes `root` holds, in order - each with its main window's kind, the values `values` keeps for it by
-    /// its key, and its windows of a kind of their own.
-    @MainActor public init(of root: MountedElement?, values: [String: [String: HostValue]]) {
-        scenes = Self.scenes(of: root).map { scene in
+    /// The scenes `root` holds, in order - each with the values `values` keeps for it and its windows.
+    @MainActor public init(of root: MountedElement?, values: SceneValues) {
+        scenes = SceneValues.scenes(of: root).map { scene in
             Scene(
-                kind: scene.windows.first?.value(.windowType)?.name,
-                values: values[Self.key(of: scene)] ?? [:],
-                windows: scene.windows.dropFirst().compactMap { window in
-                    window.value(.windowType)?.name.map { Window(kind: $0, value: window.value(.windowValue)?.string) }
+                values: values[SceneValues.key(of: scene)],
+                windows: scene.windows.map {
+                    Window(kind: $0.value(.windowType)?.name, value: $0.value(.windowValue)?.string)
                 })
         }
     }
 
-    /// The scene elements `root` holds, in order.
-    @MainActor static func scenes(of root: MountedElement?) -> [MountedElement] {
-        guard let root else { return [] }
-        return root.type == .scene ? [root] : root.children.filter { $0.type == .scene }
-    }
-
-    /// The key a scene's values are kept under: the one the act keeping them names it by.
-    @MainActor static func key(of scene: MountedElement) -> String {
-        scene.id.hostValue.string ?? ""
-    }
-
-    /// The text holding the scenes: a line "scene" for each - with its kind where it has one - then a line a value,
-    /// by key, then a line a window.
+    /// The text holding the scenes: a line "scene" for each, then a line a value, by key, then a line a window -
+    /// its kind and its value where it has them.
     public var text: String {
         scenes.map { scene in
-            ([Self.line(["scene"] + (scene.kind.map { [$0] } ?? []))]
+            (["scene"]
                 + scene.values.keys.sorted().compactMap { key in
-                    Self.word(of: scene.values[key]!).map { Self.line(["value", key, $0]) }
+                    SceneValueWord.word(of: scene.values[key]!).map { Self.line(["value", key, $0]) }
                 }
-                + scene.windows.map { Self.line(["window", $0.kind] + ($0.value.map { [$0] } ?? [])) })
+                + scene.windows.map { Self.line(["window"] + [$0.kind, $0.value].compactMap { $0 }) })
                 .map { $0 + "\n" }.joined()
         }.joined()
     }
@@ -112,23 +92,5 @@
     /// A line of `fields`, each escaped, apart by tabs.
     private static func line(_ fields: [String]) -> String {
         fields.map(KeptValuesText.escaped).joined(separator: "\t")
-    }
-
-    /// A value as its words, its kind's letter first; nil for a value no scene keeps.
-    private static func word(of value: HostValue) -> String? {
-        if let bool = value.bool { return bool ? "btrue" : "bfalse" }
-        if let number = value.number { return "n\(number)" }
-        return value.string.map { "s\($0)" }
-    }
-
-    /// The value words of `word`'s kind read as; nil for words of no kind.
-    private static func value(_ word: String) -> HostValue? {
-        let words = String(word.dropFirst())
-        switch word.first {
-        case "b": return .bool(words == "true")
-        case "n": return Double(words).map { .number($0) }
-        case "s": return .string(words)
-        default: return nil
-        }
     }
 }
