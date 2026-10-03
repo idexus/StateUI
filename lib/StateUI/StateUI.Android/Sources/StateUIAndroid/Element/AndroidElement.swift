@@ -69,10 +69,6 @@ final class AndroidElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-        // A bar's colour travels frame by frame: every bar the arrangement's reaches shows each.
-        if NodeType.pageTypes.contains(type), !changed.isDisjoint(with: Self.barValues) { refreshBars() }
-        // A page's word on its bar from a state lands here, not where the tree arranges the stack.
-        if type == .page, !changed.isDisjoint(with: WindowChrome.pageValues) { refreshStacksBar() }
     }
 
     func leave() {

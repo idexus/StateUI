@@ -74,7 +74,7 @@ extension AndroidElement {
     }
 
     /// The bar of the stack this page or arrangement stands in shows again, and the system's back follows it.
-    func refreshStacksBar() {
+    private func refreshStacksBar() {
         host?.refreshBack()
 
         var stack = parent

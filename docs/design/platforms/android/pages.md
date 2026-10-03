@@ -22,11 +22,12 @@ with a title view shows that view instead, across the room between the
 navigation button and the actions. The bar also carries the line under the
 title and the colours the page's path declares, the nearest of each
 ([the bar a path declares](../../host/pages.md#the-bar-a-path-declares)) -
-an arrangement changing one refreshes every bar under it, and a colour that
-travels does so at each frame. What a page says of the bar - its title, its way
-back, the bar itself (`WindowChrome.pageValues`) - said from a state lands on
-the page's frame, where nothing arranges the stack, so the page shows its
-stack's bar again there. The bar carries the actions the page's path declares: the ones on the bar
+an arrangement changing one refreshes every bar under it. A colour that
+travels, and what a page says of the bar from a state - its title, its way
+back, the bar itself - land on a frame, where nothing arranges the stack:
+where the host layer says the frame moved the window's chrome
+([one frame](../../host/runtime.md#one-frame)), every bar the window and its
+sheets show is shown again. The bar carries the actions the page's path declares: the ones on the bar
 beside the title, as the host layer composes them - the leading groups
 first, the bar having no leading edge beside its navigation button - the rest
 behind the toolbar's overflow - each an entry of the toolbar's menu, written as

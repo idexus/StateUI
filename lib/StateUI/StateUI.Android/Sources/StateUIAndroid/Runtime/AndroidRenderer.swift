@@ -235,6 +235,16 @@ final class AndroidRenderer {
     /// The overlays' views the root holds now, the first lowest, let go of as the window stops showing them.
     private var shownOverlays: [AndroidView] = []
 
+    /// Shows the first window's chrome again where a frame moved what it shows (`WindowChrome.follows`): its title,
+    /// the bar and tab row of every arrangement it and its sheets show, and whether there is a way back.
+    private func showChrome() {
+        guard let window = runtime.tree.root?.first(type: .window) else { return }
+        showTitle(of: window)
+        presentation.arrangement?.android.refreshBars()
+        presentation.sheets.forEach { $0.android.refreshBars() }
+        refreshBack()
+    }
+
     /// Goes the way back the window offers the user - a sidebar sliding over the page closing first, then the host
     /// layer's (`WindowPresentation.wayBack`); whether there was one.
     /// Design: docs/design/host/pages.md#the-way-back
@@ -302,7 +312,7 @@ extension AndroidRenderer: FramePresenter {
     }
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        runtime.tree.present(states: states, properties: properties)
+        if runtime.tree.present(states: states, properties: properties).windowChrome { showChrome() }
     }
 
     func renderIfNeeded() {

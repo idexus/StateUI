@@ -13,6 +13,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAStackShowsItsTopPageUnderItsBarAndGoesBack", testAStackShowsItsTopPageUnderItsBarAndGoesBack),
             ("testTabsOnAStackNameTheBarByTheirOwnTitle", testTabsOnAStackNameTheBarByTheirOwnTitle),
             ("testWordsOnAPaintedBarFollowHowDarkItIs", testWordsOnAPaintedBarFollowHowDarkItIs),
+            ("testABarsColourTravelsOnTheDisplaysFrames", testABarsColourTravelsOnTheDisplaysFrames),
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
@@ -104,6 +105,38 @@ final class AndroidPagesTests: XCTestCase {
             dark.wrappedValue = false
             host.runtime.pump.turn()
             XCTAssertEqual(navigation.bar.content.foreground, .color(red: 0, green: 0, blue: 0, alpha: 255))
+        }
+    }
+
+    /// A bar's colour the tree changes travels on the display's frames, where nothing arranges the stack: the bar
+    /// shows a colour on the way, then lands on the new one.
+    func testABarsColourTravelsOnTheDisplaysFrames() throws {
+        try onMainActor {
+            let first = State(wrappedValue: true)
+            let clock = TestClock()
+            let host = AndroidRenderer.running(clock: clock) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { _ in TitledPage(title: "Pushed") }
+                    .barBackgroundColor(first.wrappedValue ? Color(red: 200, green: 0, blue: 0) : Color(red: 0, green: 0, blue: 200))
+            }
+            host.layOut()
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            let (start, end) = (
+                HostValue.color(red: 200, green: 0, blue: 0, alpha: 255), HostValue.color(red: 0, green: 0, blue: 200, alpha: 255))
+            XCTAssertEqual(navigation.bar.content.background, start)
+
+            first.wrappedValue = false
+            host.runtime.pump.turn()
+            clock.now = 100
+            host.frame()
+            let midway = navigation.bar.content.background
+            XCTAssertNotEqual(midway, start, "the bar moved on a frame")
+            XCTAssertNotEqual(midway, end, "the bar is on its way")
+
+            clock.now = 10_000
+            host.frame()
+            XCTAssertEqual(navigation.bar.content.background, end)
         }
     }
 
