@@ -17,7 +17,7 @@ private enum InteropTestContract: ApplicationTier {
     /// Registered by no test, so a call on it is refused.
     static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
 
-    /// Raised by the host, with what it said.
+    /// Raised by the application, with what it said.
     static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
 
     static let members: [any ContractMember] = [doubled, unregistered, spoke]
@@ -138,6 +138,7 @@ final class UIKitInteropTests: XCTestCase {
     @MainActor
     private func running() -> UIKitRenderer {
         Self.registerLamp()
+        StateUIEvents.raises(InteropTestContract.spoke)
         return UIKitRenderer.running { Calling() }
     }
 
@@ -180,7 +181,8 @@ final class UIKitInteropTests: XCTestCase {
         XCTAssertTrue(answer.hasPrefix("thrown:") && answer.contains("InteropTest.Unregistered"), answer)
     }
 
-    /// An event the application raises through the host reaches every subscription to it.
+    /// An event the application raises reaches every subscription to it, carrying the values its contract
+    /// declares.
     @MainActor
     func testAnEventTheApplicationRaisesReachesItsSubscriptions() throws {
         let host = running()

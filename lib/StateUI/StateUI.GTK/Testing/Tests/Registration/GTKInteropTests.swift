@@ -19,7 +19,7 @@ private enum InteropTestContract: ApplicationTier {
     /// Registered by no test, so a call on it is refused.
     static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
 
-    /// Raised by the host, with what it said.
+    /// Raised by the application, with what it said.
     static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
 
     /// Declared by no test, so a handler listening for it hears nothing.
@@ -180,6 +180,7 @@ final class GTKInteropTests: XCTestCase {
         try onUIThread {
             defer { GTKInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
+            StateUIEvents.raises(InteropTestContract.spoke)
             let host = GTKRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
@@ -198,6 +199,7 @@ final class GTKInteropTests: XCTestCase {
                 try await Task.sleep(nanoseconds: 20_000_000)
                 return number * 2
             }
+            StateUIEvents.raises(InteropTestContract.spoke)
             let host = GTKRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
@@ -210,6 +212,7 @@ final class GTKInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onUIThread {
+            StateUIEvents.raises(InteropTestContract.spoke)
             let host = GTKRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(GTKButtonView.self).last).click()
@@ -220,9 +223,11 @@ final class GTKInteropTests: XCTestCase {
         }
     }
 
-    /// An event the host raises reaches every subscription to it, carrying the values the contract declares.
-    func testAnEventTheHostRaisesReachesItsSubscriptions() {
+    /// An event the application raises reaches every subscription to it, carrying the values its contract
+    /// declares.
+    func testAnEventTheApplicationRaisesReachesItsSubscriptions() {
         onUIThread {
+            StateUIEvents.raises(InteropTestContract.spoke)
             let host = GTKRenderer.running { Calling() }
             XCTAssertEqual(host.said, "-")
 

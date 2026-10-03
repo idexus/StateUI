@@ -19,7 +19,7 @@ private enum InteropTestContract: ApplicationTier {
     /// Registered by no test, so a call on it is refused.
     static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
 
-    /// Raised by the host, with what it said.
+    /// Raised by the application, with what it said.
     static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
 
     /// Declared by no test, so a handler listening for it hears nothing.
@@ -104,6 +104,7 @@ final class AppKitInteropTests: XCTestCase {
 
         StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
 
+        StateUIEvents.raises(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
@@ -120,6 +121,7 @@ final class AppKitInteropTests: XCTestCase {
     @MainActor
     func testAnActNobodyRegisteredIsRefusedByName() throws {
 
+        StateUIEvents.raises(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
@@ -132,11 +134,12 @@ final class AppKitInteropTests: XCTestCase {
         XCTAssertTrue(answer.contains("InteropTest.Unregistered"), answer)
     }
 
-    /// An event the host raises reaches every subscription to it, carrying the
-    /// values the contract declares.
+    /// An event the application raises reaches every subscription to it, carrying the values its contract
+    /// declares.
     @MainActor
-    func testAnEventTheHostRaisesReachesItsSubscriptions() throws {
+    func testAnEventTheApplicationRaisesReachesItsSubscriptions() throws {
 
+        StateUIEvents.raises(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }
         XCTAssertEqual(said(renderer), "-")
@@ -155,7 +158,6 @@ final class AppKitInteropTests: XCTestCase {
     @MainActor
     func testARunningHostSaysWhatItRealizesAndWhatTheApplicationRaises() {
         StateUIEvents.raises(InteropTestContract.spoke)
-
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }
 

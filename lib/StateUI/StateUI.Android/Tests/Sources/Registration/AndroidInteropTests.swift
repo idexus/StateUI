@@ -140,7 +140,7 @@ final class AndroidInteropTests: XCTestCase {
         [
             ("testAnActTheApplicationRegisteredIsPerformedAndAnswers", testAnActTheApplicationRegisteredIsPerformedAndAnswers),
             ("testAnActNobodyRegisteredIsRefusedByName", testAnActNobodyRegisteredIsRefusedByName),
-            ("testAnEventTheApplicationRaisesReachesItsListeners", testAnEventTheApplicationRaisesReachesItsListeners),
+            ("testAnEventTheApplicationRaisesReachesItsSubscriptions", testAnEventTheApplicationRaisesReachesItsSubscriptions),
             ("testTheApplicationsOwnElementIsMadeAndTakesItsProperty", testTheApplicationsOwnElementIsMadeAndTakesItsProperty),
             ("testAnEventTheApplicationsControlRaisesReachesItsHandler", testAnEventTheApplicationsControlRaisesReachesItsHandler),
             ("testAnAimedActIsHandedTheApplicationsOwnControl", testAnAimedActIsHandedTheApplicationsOwnControl),
@@ -210,6 +210,7 @@ final class AndroidInteropTests: XCTestCase {
         try onMainActor {
             defer { AndroidInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
+            StateUIEvents.raises(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
@@ -222,6 +223,7 @@ final class AndroidInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onMainActor {
+            StateUIEvents.raises(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
@@ -232,8 +234,9 @@ final class AndroidInteropTests: XCTestCase {
         }
     }
 
-    /// An event the application raises reaches every listener, carrying the values its contract declares.
-    func testAnEventTheApplicationRaisesReachesItsListeners() {
+    /// An event the application raises reaches every subscription to it, carrying the values its contract
+    /// declares.
+    func testAnEventTheApplicationRaisesReachesItsSubscriptions() {
         onMainActor {
             StateUIEvents.raises(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
