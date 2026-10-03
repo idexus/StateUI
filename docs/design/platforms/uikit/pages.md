@@ -18,7 +18,9 @@ notch, and out to the screen's edge on each edge its content lets itself under
 them ([the safe area](../../host/layout.md#the-safe-area)); the controller's
 own view shows the page's background, so it stands behind the bars either
 way. Only a page's own layout reaches under them; one deeper in stands where
-its page puts it.
+its page puts it. A frame report's safe area is that same one - the page's,
+under its stack's bar as well as the status bar - so a view at its page's top
+corner reads nothing from it.
 
 ## The bar
 

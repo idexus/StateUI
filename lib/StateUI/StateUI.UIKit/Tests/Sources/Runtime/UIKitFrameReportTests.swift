@@ -55,6 +55,30 @@ final class UIKitFrameReportTests: XCTestCase {
         XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 20, 120, 60])
     }
 
+    /// The safe area is where a page's content may stand: under a stack's bar too, not the status bar alone - a view
+    /// at the top corner of its page reads nothing from it.
+    @MainActor
+    func testAViewAtItsPagesTopCornerStandsAtTheSafeAreasCorner() throws {
+        let heard = Received<[Double]>()
+        let host = UIKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                VStack {
+                    ColorBox(.steelBlue).width(120).height(60)
+                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+                .title("Top")
+            } destination: { _ in Text("Below") }
+        }
+        defer { host.finish() }
+        host.settle { (heard.values.last?[5] ?? 0) > 0 }
+
+        let report = try XCTUnwrap(heard.values.last)
+        XCTAssertGreaterThan(report[5], 60, "under the status bar and the stack's bar")
+        XCTAssertEqual(Array(report[6...7]), [0, 0], "at the corner of the safe area")
+    }
+
     /// A scroll moves what stands in the scroller: a view's place in the window is said again, though nothing laid
     /// it out anew - its place in its parent stays.
     @MainActor
