@@ -25,7 +25,9 @@ final class GTKScrollerView: GTKView {
                 MainActor.assumeIsolated {
                     guard let view = GTKView.find(viewNumber(data)) as? GTKScrollerView else { return }
                     view.onScrolled?(view.standing.offset)
-                    GTKRenderer.shared?.runtime.frames.laidOut()
+                    // The viewport moves the document in the layout after this; allocated, it says it moved.
+                    // Design: docs/design/platforms/gtk/layout.md#where-a-view-stands
+                    if let content = view.content { gtk_widget_queue_allocate(content.widget) }
                 }
             }
         }

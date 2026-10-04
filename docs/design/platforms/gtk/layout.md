@@ -61,6 +61,13 @@ layout has placed yet - neither StateUI's nor GTK's allocation - stands
 nowhere and says nothing: a frame's tick comes before its layout, so a view
 made just before it would otherwise say it stands at zero.
 
+A scroll moves where a view stands in its window with no layout of its own:
+the adjustment changes first, and the viewport moves the document in the
+frame's layout after it, by a transform alone, which allocates nothing of
+StateUI's. So the scroller asks for its document's allocation again as its
+adjustment changes; allocated where the viewport now puts it, the document
+says it moved, and the views read say where they stand on the next frame.
+
 ## Scrolling
 
 A ScrollView is a StateUI layout holding GTK's `GtkScrolledWindow`, which
