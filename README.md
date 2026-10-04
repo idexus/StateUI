@@ -27,12 +27,12 @@ contract is settled.
 ## In Action
 
 <p>
-  <img src="docs/assets/winui.jpg" alt="The Gallery's home page on WinUI 3" width="75.7%"
-  ><img src="docs/assets/uikit.jpg" alt="The Gallery's home page on UIKit, on an iPhone" width="24.1%">
+  <img src="docs/assets/winui.jpg" alt="The Gallery's home page on WinUI 3" width="76.3%"
+  ><img src="docs/assets/uikit.jpg" alt="The Gallery's home page on UIKit, on an iPhone" width="23.5%">
 </p>
 <p>
-  <img src="docs/assets/gtk.jpg" alt="The Gallery's Grid sample on GTK 4 with libadwaita" width="74.3%"
-  ><img src="docs/assets/android.jpg" alt="The Gallery's Grid sample on Android Views" width="25.5%">
+  <img src="docs/assets/gtk.jpg" alt="The Gallery's Grid sample on GTK 4 with libadwaita" width="75.0%"
+  ><img src="docs/assets/android.jpg" alt="The Gallery's Grid sample on Android Views" width="24.8%">
 </p>
 
 The same Gallery - one Swift module - on WinUI 3, UIKit, GTK 4 and Android
