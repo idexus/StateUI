@@ -1,0 +1,336 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// The library's own vocabulary: one token per member the sources and the hosts
+// name, made from the member, for the hosts behind `@_spi(Host)`. A token is a
+// name only - a host reads it by that name - and carries no
+// `///`: its documentation is its member's.
+// Design: docs/design/core/contracts.md#tokens
+
+extension NodeType {
+    /// Elements whose host arranges children from native measurement - the ones that
+    /// may say how their children animate.
+    static let places: Set<NodeType> = [
+        .vStack, .hStack, .grid, .zStack,
+    ]
+
+    /// Elements that always say a layout motion: child-placing layouts and the
+    /// application, whose answer the rest inherit.
+    /// Design: docs/design/core/identity-and-diffing.md#layout-motion
+    static let saysMotion: Set<NodeType> = places.union([.application])
+}
+
+@_spi(Host) public extension NodeType {
+    static let activityIndicator = ActivityIndicatorContract.nodeType
+    static let application = ApplicationContract.nodeType
+    static let colorBox = ColorBoxContract.nodeType
+    static let button = ButtonContract.nodeType
+    static let checkBox = CheckBoxContract.nodeType
+    static let page = PageContract.nodeType
+    static let contextMenu = ContextMenuContract.nodeType
+    static let datePicker = DatePickerContract.nodeType
+    static let textEditor = TextEditorContract.nodeType
+    static let ellipse = EllipseContract.nodeType
+    static let textField = TextFieldContract.nodeType
+    static let splitView = SplitViewContract.nodeType
+    static let textSpans = TextSpansContract.nodeType
+    static let canvas = CanvasContract.nodeType
+    static let grid = GridContract.nodeType
+    static let hStack = HStackContract.nodeType
+    static let image = ImageContract.nodeType
+    static let itemsView = ItemsViewContract.nodeType
+    static let text = TextContract.nodeType
+    static let line = LineContract.nodeType
+    static let map = MapContract.nodeType
+    static let menu = MenuContract.nodeType
+    static let menuBar = MenuBarContract.nodeType
+    static let menuItem = MenuItemContract.nodeType
+    static let divider = DividerContract.nodeType
+    static let modalStack = ModalStackContract.nodeType
+    static let navigationStack = NavigationStackContract.nodeType
+    static let titleView = TitleViewContract.nodeType
+    static let overlay = OverlayContract.nodeType
+    static let path = PathContract.nodeType
+    static let picker = PickerContract.nodeType
+    static let marker = MarkerContract.nodeType
+    static let polygon = PolygonContract.nodeType
+    static let polyline = PolylineContract.nodeType
+    static let progressBar = ProgressBarContract.nodeType
+    static let radioButton = RadioButtonContract.nodeType
+    static let rectangle = RectangleContract.nodeType
+    static let scene = SceneContract.nodeType
+    static let scrollView = ScrollViewContract.nodeType
+    static let searchField = SearchFieldContract.nodeType
+    static let slider = SliderContract.nodeType
+    static let textSpan = TextSpanContract.nodeType
+    static let stepper = StepperContract.nodeType
+    static let `switch` = SwitchContract.nodeType
+    static let tabView = TabViewContract.nodeType
+    static let timePicker = TimePickerContract.nodeType
+    static let toolbarItem = ToolbarItemContract.nodeType
+    static let toolbarItemGroup = ToolbarItemGroupContract.nodeType
+    static let vStack = VStackContract.nodeType
+    static let webView = WebViewContract.nodeType
+    static let window = WindowContract.nodeType
+    static let zStack = ZStackContract.nodeType
+}
+
+@_spi(Host) public extension Prop {
+    static let accessibilityHeading = VisualElementContract.accessibilityHeading.token
+    static let accessibilityHint = VisualElementContract.accessibilityHint.token
+    static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
+    static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
+    static let subtitle = MarkerContract.subtitle.token
+    static let allowsDrop = ViewContract.allowsDrop.token
+    static let area = ViewContract.area.token
+    static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
+    static let barForegroundColor = BarElementContract.barForegroundColor.token
+    static let endReachedWithin = ItemsViewContract.endReachedWithin.token
+    static let hidesWhenInactive = WindowContract.hidesWhenInactive.token
+    static let isAccessibilityHidden = VisualElementContract.isAccessibilityHidden.token
+    static let items = ItemsViewContract.items.token
+    static let itemsLayout = ItemsViewContract.itemsLayout.token
+    static let pivotX = VisualElementContract.pivotX.token
+    static let pivotY = VisualElementContract.pivotY.token
+    static let contentMode = ShapeContract.contentMode.token
+    static let automationExcludedWithChildren = VisualElementContract.automationExcludedWithChildren.token
+    static let growsWithText = TextEditorContract.growsWithText.token
+    static let background = VisualElementContract.background.token
+    static let barBackgroundColor = BarElementContract.barBackgroundColor.token
+    static let barIcon = BarElementContract.barIcon.token
+    static let barSubtitle = BarElementContract.barSubtitle.token
+    static let barTitle = BarElementContract.barTitle.token
+    static let canDrag = ViewContract.canDrag.token
+    static let tracking = TextStyleElementContract.tracking.token
+    static let selectedItems = ItemsViewContract.selectedItems.token
+    static let selectionMode = ItemsViewContract.selectionMode.token
+    static let shape = BorderElementContract.shape.token
+    static let showsClearButton = TextFieldContract.showsClearButton.token
+    static let showsText = ToolbarItemContract.showsText.token
+    static let color = ColorBoxContract.color.token
+    static let columns = GridContract.columns.token
+    static let columnSpacing = GridContract.columnSpacing.token
+    static let iconPosition = ButtonContract.iconPosition.token
+    static let iconSpacing = ButtonContract.iconSpacing.token
+    static let cornerRadius = ColorBoxContract.cornerRadius.token
+    static let selectedTab = TabViewContract.selectedTab.token
+    static let cursorPosition = TextInputContract.cursorPosition.token
+    static let data = PathContract.data.token
+    static let date = DatePickerContract.date.token
+    static let dragText = ViewContract.dragText.token
+    static let drawing = CanvasContract.drawing.token
+    static let fill = ShapeContract.fill.token
+    static let fillRule = PolygonContract.fillRule.token
+    static let floatsOnTop = WindowContract.floatsOnTop.token
+    static let layoutDirection = VisualElementContract.layoutDirection.token
+    static let letsInputThrough = LayoutContract.letsInputThrough.token
+    static let fontAttributes = FontElementContract.fontAttributes.token
+    static let isFontAutoScalingEnabled = FontElementContract.isFontAutoScalingEnabled.token
+    static let fontFamily = FontElementContract.fontFamily.token
+    static let fontSize = FontElementContract.fontSize.token
+    static let format = DatePickerContract.format.token
+    static let frame = VisualElementContract.frame.token
+    static let gridColumn = ViewContract.gridColumn.token
+    static let gridColumnSpan = ViewContract.gridColumnSpan.token
+    static let gridRow = ViewContract.gridRow.token
+    static let gridRowSpan = ViewContract.gridRowSpan.token
+    static let groupName = RadioButtonContract.groupName.token
+    static let height = VisualElementContract.height.token
+    static let horizontalAlignment = ViewContract.horizontalAlignment.token
+    static let horizontalScrollIndicator = ScrollViewContract.horizontalScrollIndicator.token
+    static let horizontalTextAlignment = TextAlignmentElementContract.horizontalTextAlignment.token
+    static let icon = MenuItemElementContract.icon.token
+    static let step = StepperContract.step.token
+    static let ignoresInput = VisualElementContract.ignoresInput.token
+    static let isAnimating = ImageContract.isAnimating.token
+    static let isOn = CheckBoxContract.isOn.token
+    static let clipsContent = LayoutContract.clipsContent.token
+    static let isDestructive = MenuItemElementContract.isDestructive.token
+    static let isEnabled = VisualElementContract.isEnabled.token
+    static let isMaximizable = WindowContract.isMaximizable.token
+    static let isMinimizable = WindowContract.isMinimizable.token
+    static let isTranslucent = WindowContract.isTranslucent.token
+    static let isOpen = DatePickerContract.isOpen.token
+    static let isPassword = TextFieldContract.isPassword.token
+    static let showsSidebar = SplitViewContract.showsSidebar.token
+    static let isReadOnly = TextInputContract.isReadOnly.token
+    static let isScrollEnabled = MapContract.isScrollEnabled.token
+    static let showsUserLocation = MapContract.showsUserLocation.token
+    static let isSpellCheckEnabled = TextInputContract.isSpellCheckEnabled.token
+    static let isTextPredictionEnabled = TextInputContract.isTextPredictionEnabled.token
+    static let showsTraffic = MapContract.showsTraffic.token
+    static let isVisible = VisualElementContract.isVisible.token
+    static let isZoomEnabled = MapContract.isZoomEnabled.token
+    static let options = PickerContract.options.token
+    static let inputPurpose = TextInputContract.inputPurpose.token
+    static let label = MarkerContract.label.token
+    static let lineBreak = ButtonContract.lineBreak.token
+    static let lineHeight = LineHeightElementContract.lineHeight.token
+    static let location = MarkerContract.location.token
+    static let mapType = MapContract.mapType.token
+    static let margin = ViewContract.margin.token
+    static let maximum = SliderContract.maximum.token
+    static let maximumDate = DatePickerContract.maximumDate.token
+    static let maximumHeight = VisualElementContract.maximumHeight.token
+    static let maximumWidth = VisualElementContract.maximumWidth.token
+    static let maximumLength = TextInputContract.maximumLength.token
+    static let maximumLines = TextContract.maximumLines.token
+    static let minimum = SliderContract.minimum.token
+    static let minimumDate = DatePickerContract.minimumDate.token
+    static let minimumHeight = VisualElementContract.minimumHeight.token
+    static let minimumWidth = VisualElementContract.minimumWidth.token
+    static let backButtonTitle = PageContract.backButtonTitle.token
+    static let showsBackButton = PageContract.showsBackButton.token
+    static let showsNavigationBar = PageContract.showsNavigationBar.token
+    static let opacity = VisualElementContract.opacity.token
+    static let order = ToolbarItemGroupContract.order.token
+    static let placement = ToolbarItemContract.placement.token
+    static let orientation = ScrollViewContract.orientation.token
+    static let padding = PaddingElementContract.padding.token
+    static let panTouchCount = ViewContract.panTouchCount.token
+    static let panXChannel = ViewContract.panXChannel.token
+    static let panYChannel = ViewContract.panYChannel.token
+    static let placeholder = TextInputContract.placeholder.token
+    static let placeholderColor = TextInputContract.placeholderColor.token
+    static let points = PolygonContract.points.token
+    static let progress = ProgressBarContract.progress.token
+    static let region = MapContract.region.token
+    static let geometryTransform = ShapeContract.geometryTransform.token
+    static let submitLabel = SearchFieldContract.submitLabel.token
+    static let rotation = VisualElementContract.rotation.token
+    static let rotationX = VisualElementContract.rotationX.token
+    static let rotationY = VisualElementContract.rotationY.token
+    static let rows = GridContract.rows.token
+    static let rowSpacing = GridContract.rowSpacing.token
+    static let scale = VisualElementContract.scale.token
+    static let scaleX = VisualElementContract.scaleX.token
+    static let scaleY = VisualElementContract.scaleY.token
+    static let scrollOffset = ScrollViewContract.scrollOffset.token
+    static let selectedIndex = PickerContract.selectedIndex.token
+    static let selectionLength = TextInputContract.selectionLength.token
+    static let side = ToolbarItemGroupContract.side.token
+    static let source = ImageContract.source.token
+    static let spacing = StackContract.spacing.token
+    static let stroke = ShapeContract.stroke.token
+    static let dashPhase = ShapeContract.dashPhase.token
+    static let dash = ShapeContract.dash.token
+    static let lineCap = ShapeContract.lineCap.token
+    static let lineJoin = ShapeContract.lineJoin.token
+    static let miterLimit = ShapeContract.miterLimit.token
+    static let lineWidth = ShapeContract.lineWidth.token
+    static let style = VisualElementContract.style.token
+    static let swipeDirection = ViewContract.swipeDirection.token
+    static let swipeThreshold = ViewContract.swipeThreshold.token
+    static let tapCount = ViewContract.tapCount.token
+    static let text = TextualElementContract.text.token
+    static let textColor = TextStyleElementContract.textColor.token
+    static let textDecorations = DecorableTextElementContract.textDecorations.token
+    static let textCase = TextualElementContract.textCase.token
+    static let time = TimePickerContract.time.token
+    static let tint = TintElementContract.tint.token
+    static let title = PageElementContract.title.token
+    static let translationX = VisualElementContract.translationX.token
+    static let translationY = VisualElementContract.translationY.token
+    static let type = MarkerContract.type.token
+    static let userAgent = WebViewContract.userAgent.token
+
+    static let value = SliderContract.value.token
+    static let verticalAlignment = ViewContract.verticalAlignment.token
+    static let verticalScrollIndicator = ScrollViewContract.verticalScrollIndicator.token
+    static let verticalTextAlignment = TextAlignmentElementContract.verticalTextAlignment.token
+    static let width = VisualElementContract.width.token
+    static let windowType = WindowContract.windowType.token
+    static let windowValue = WindowContract.windowValue.token
+    static let x = WindowContract.x.token
+    static let x1 = LineContract.x1.token
+    static let x2 = LineContract.x2.token
+    static let y = WindowContract.y.token
+    static let y1 = LineContract.y1.token
+    static let y2 = LineContract.y2.token
+    static let zIndex = VisualElementContract.zIndex.token
+}
+
+@_spi(Host) public extension Event {
+    static let activated = SceneContract.activated.token
+    static let appearing = PageContract.appearing.token
+    static let canGoBackChanged = WebViewContract.canGoBackChanged.token
+    static let canGoForwardChanged = WebViewContract.canGoForwardChanged.token
+    static let clicked = MenuItemElementContract.clicked.token
+    static let closed = DatePickerContract.closed.token
+    static let dateChanged = DatePickerContract.dateChanged.token
+    static let endReached = ItemsViewContract.endReached.token
+    static let itemActivated = ItemsViewContract.itemActivated.token
+    static let selected = MarkerContract.selected.token
+    static let detailsClicked = MarkerContract.detailsClicked.token
+    static let realizedChanged = ItemsViewContract.realizedChanged.token
+    static let selectedItemsChanged = ItemsViewContract.selectedItemsChanged.token
+    static let submitted = SearchFieldContract.submitted.token
+    static let created = WindowContract.created.token
+    static let selectedTabChanged = TabViewContract.selectedTabChanged.token
+    static let deactivated = SceneContract.deactivated.token
+    static let destroying = WindowContract.destroying.token
+    static let disappearing = PageContract.disappearing.token
+    static let dragged = CanvasContract.dragged.token
+    static let dragLeave = ViewContract.dragLeave.token
+    static let dragOver = ViewContract.dragOver.token
+    static let dragStarting = ViewContract.dragStarting.token
+    static let drop = ViewContract.drop.token
+    static let dragEnded = ViewContract.dragEnded.token
+    static let frameChanged = ViewContract.frameChanged.token
+    static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
+    static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
+    static let mapClicked = MapContract.mapClicked.token
+    static let navigated = WebViewContract.navigated.token
+    static let navigatedFrom = PageContract.navigatedFrom.token
+    static let navigatedTo = PageContract.navigatedTo.token
+    static let navigating = WebViewContract.navigating.token
+    static let navigatingFrom = PageContract.navigatingFrom.token
+    static let opened = DatePickerContract.opened.token
+    static let panUpdated = ViewContract.panUpdated.token
+    static let pinchUpdated = ViewContract.pinchUpdated.token
+    static let pointerEntered = ViewContract.pointerEntered.token
+    static let pointerExited = ViewContract.pointerExited.token
+    static let pointerMoved = ViewContract.pointerMoved.token
+    static let pointerPressed = ViewContract.pointerPressed.token
+    static let pointerReleased = ViewContract.pointerReleased.token
+    static let popped = NavigationStackContract.popped.token
+    static let pressed = ButtonContract.pressed.token
+    static let processTerminated = WebViewContract.processTerminated.token
+    static let released = ButtonContract.released.token
+    static let resumed = WindowContract.resumed.token
+    static let scrollStopped = ScrollViewContract.scrollStopped.token
+    static let scrollXChanged = ScrollViewContract.scrollXChanged.token
+    static let scrollYChanged = ScrollViewContract.scrollYChanged.token
+    static let selectedIndexChanged = PickerContract.selectedIndexChanged.token
+    static let stopped = SceneContract.stopped.token
+    static let swiped = ViewContract.swiped.token
+    static let tapped = ViewContract.tapped.token
+    static let textChanged = TextInputContract.textChanged.token
+    static let timeChanged = TimePickerContract.timeChanged.token
+    static let toggled = CheckBoxContract.toggled.token
+    static let valueChanged = SliderContract.valueChanged.token
+    static let windowClosed = SceneContract.windowClosed.token
+}
+
+@_spi(Host) public extension Act {
+    static let focus = VisualElementContract.focus.token
+    static let scrollTo = ItemsViewContract.scrollTo.token
+    static let unfocus = VisualElementContract.unfocus.token
+    static let goBack = WebViewContract.goBack.token
+    static let goForward = WebViewContract.goForward.token
+    static let reload = WebViewContract.reload.token
+    static let evaluateJavaScript = WebViewContract.evaluateJavaScript.token
+    static let moveToRegion = MapContract.moveToRegion.token
+    static let hideOnScreenKeyboard = ApplicationContract.hideOnScreenKeyboard.token
+    static let alert = ApplicationContract.alert.token
+    static let confirm = ApplicationContract.confirm.token
+    static let chooseAction = ApplicationContract.chooseAction.token
+    static let prompt = ApplicationContract.prompt.token
+    static let announce = ApplicationContract.announce.token
+    static let currentTime = ApplicationContract.currentTime.token
+    static let currentTimeZone = ApplicationContract.currentTimeZone.token
+    static let utcOffset = ApplicationContract.utcOffset.token
+    static let persistValue = ApplicationContract.persistValue.token
+    static let persistSceneValue = ApplicationContract.persistSceneValue.token
+    static let handlerFailed = ApplicationContract.handlerFailed.token
+}

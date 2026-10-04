@@ -1,12 +1,12 @@
 # Layout on WinUI
 
-StateUI's layouts place their children by the core's arithmetic
+StateUI's layouts place their children by the host layer's arithmetic
 ([layout](../../host/layout.md)); WinUI measures and draws each child.
 
 ## A layout is a panel
 
 Every StateUI layout is the relay's panel, a `Panel` whose `MeasureOverride`
-and `ArrangeOverride` call the host, which answers with the core's arithmetic
+and `ArrangeOverride` call the host, which answers with the host layer's arithmetic
 and measures and places each child through the relay. WinUI lays out by
 asking: a child is placed only inside its parent's arrangement
 ([a place between passes](#a-place-between-passes)).
@@ -65,7 +65,7 @@ WinUI arranges an element at no less than the size it last asked for in
 than its content would be laid out at its content's size and clipped, where
 StateUI places it at its place and lets it draw past its edges. A StateUI
 layout that another StateUI layout places therefore asks WinUI for no room:
-its parent reads its size from the core's arithmetic (`naturalSize`), and
+its parent reads its size from the host layer's arithmetic (`naturalSize`), and
 WinUI arranges it exactly where the parent puts it. A layout WinUI itself
 places - the window's content, a scroller's document - answers with the room
 its children take, within the room offered. A native control keeps its own
@@ -91,15 +91,35 @@ A view whose frame the tree reads - a state its frame drives, or a handler
 for its changes - says where it stands on the display's next frame after a
 layout pass or a scroll: its frame in its parent, its place in the window's
 content, and that place from the page's corner, all in DIPs. The host hears
-every StateUI layout WinUI arranges and every scroller's movement, and asks
-only the views that are read, in the order they were made; a view that did
-not move says nothing. It speaks on a frame rather than inside WinUI's pass,
-so what a handler renders is laid out in a pass of its own.
+every StateUI layout WinUI arranges and every scroller's movement, and tells
+the host layer every change of an ItemsView's view, which says it - WinUI's
+compositor moves a list's rows and lays nothing out (host/items.md, `The
+view moving`); it asks only the views that are read, in the order they were
+made; a view that did not move says nothing. It speaks on a frame rather
+than inside WinUI's pass, so what a handler renders is laid out in a pass of
+its own.
+
+## Right to left
+
+A layout mirrors its children by the host layer's arithmetic, never by
+WinUI's `FlowDirection` ([right to left](../../host/layout.md#right-to-left)).
+WinUI hands an element's direction down to everything in it, and an element
+told right to left under one left to right is drawn mirrored whole: a panel
+would mirror its places a second time, and a picture, a figure or a gradient
+would be turned. So a control takes its element's direction - its words, the
+side its mark stands on, the end a slider fills from - and a layout and a
+drawing (a picture, a figure, a canvas, a colour box, the activity ring) stand
+left to right, written so, never inherited. An ItemsView's items are placed
+by WinUI's own list, which takes the element's direction - a grid fills from
+the right - while each cell's content stands by the same rule. A web view stands left to right: its page says its own direction. A
+control told right to left is
+mirrored whole by WinUI, its background with it: a gradient there runs the
+other way.
 
 ## Scrolling
 
 A ScrollView is a StateUI layout holding WinUI's `ScrollViewer`, which holds
-the document the core's scroll arithmetic lays out - never smaller than the
+the document the host layer's scroll arithmetic lays out - never smaller than the
 viewport, and several children stacked down. The scroller is measured with no
 room in the directions it scrolls: it measures its document without bound
 there itself, so the extent is the document's, and asking for no room it

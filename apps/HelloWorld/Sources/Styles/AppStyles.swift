@@ -13,7 +13,7 @@ enum AppStyles {
         StyleSheet {
             // Both colours carry both themes, so the app follows the system
             // with nothing else to write.
-            Style<Label>()
+            Style<Text>()
                 .textColor(Color(light: .black, dark: .white))
                 .fontSize(15)
 
@@ -23,7 +23,7 @@ enum AppStyles {
                 .fontSize(14)
                 .fontAttributes(.bold)
                 .shape(.roundedRectangle(10))
-                .padding(16, 11)
+                .padding(horizontal: 16, vertical: 11)
         }
     }
 }

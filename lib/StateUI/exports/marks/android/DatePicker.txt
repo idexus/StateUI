@@ -1,0 +1,11 @@
+# revision 2.1
+DatePicker: ✅
+DatePicker.closed: ✅
+DatePicker.date: ✅
+DatePicker.dateChanged: ✅
+DatePicker.format: ✓ read format of DatePicker: the pattern the relay writes the field in
+DatePicker.frameChanged: ✅
+DatePicker.isOpen: ✅
+DatePicker.maximumDate: ✓ read maximumDate of DatePicker: the bounds the relay hands its calendar as it opens
+DatePicker.minimumDate: ✓ read minimumDate of DatePicker: the bounds the relay hands its calendar as it opens
+DatePicker.opened: ✅

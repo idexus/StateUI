@@ -26,26 +26,26 @@ struct StyleSample: SampleContent, ExampleContent {
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
                 .shape(.roundedRectangle(10))
-                .padding(16, 11)
+                .padding(horizontal: 16, vertical: 11)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
                 }
 
-            Style<Label>("Headline")
+            Style<Text>("Headline")
                 .fontSize(32)
                 .horizontalTextAlignment(.center)
 
             // One shape, stated once. The second style is the first plus
             // a colour - and inherits everything it does not mention.
-            Style<Label>("Quote")
+            Style<Text>("Quote")
                 .textColor(Palette.subtle)
                 .fontSize(17)
                 .fontAttributes(.italic)
-                .characterSpacing(0.3)
+                .tracking(0.3)
                 .horizontalTextAlignment(.center)
 
-            Style<Label>("QuoteLoud")
+            Style<Text>("QuoteLoud")
                 .basedOn("Quote")
                 .textColor(Palette.accent)
         }
@@ -70,19 +70,19 @@ struct StyleSample: SampleContent, ExampleContent {
             Switch($enabled)
 
             // The one style with a key, asked for by name.
-            Label("Headline")
+            Text("Headline")
                 .style("Headline")
 
             // The same words twice: what matches is inherited.
-            Label("The same nine words, and one of these declares a colour.")
+            Text("The same nine words, and one of these declares a colour.")
                 .style("Quote")
 
-            Label("The same nine words, and one of these declares a colour.")
+            Text("The same nine words, and one of these declares a colour.")
                 .style("QuoteLoud")
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -105,7 +105,7 @@ struct StyleSample: SampleContent, ExampleContent {
                 .onClicked {}
 
             HStack {
-                Label("Enabled")
+                Text("Enabled")
                     .fontSize(14)
                     .verticalAlignment(.center)
 
@@ -121,7 +121,7 @@ struct StyleSample: SampleContent, ExampleContent {
             // The others are implicit - they have no key, so every control of
             // the type gets them. This one has one, and is asked for; a keyed
             // style REPLACES the implicit one, so it says everything it needs.
-            Label("Headline")
+            Text("Headline")
                 .style("Headline")
 
             SectionTitle("A style written from another")
@@ -130,29 +130,29 @@ struct StyleSample: SampleContent, ExampleContent {
             // `.basedOn("Quote")` plus one colour - so everything that matches
             // below is inherited, and the one thing that differs is the one
             // thing it declares.
-            Label("The same nine words, and one of these declares a colour.")
+            Text("The same nine words, and one of these declares a colour.")
                 .style("Quote")
 
-            Label("The same nine words, and one of these declares a colour.")
+            Text("The same nine words, and one of these declares a colour.")
                 .style("QuoteLoud")
         }
         .spacing(14)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Nothing in the example sets a colour, a size or a corner: every "
+            Text("Nothing in the example sets a colour, a size or a corner: every "
                 + "button takes all of it from the gallery's one `Style<Button>`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A style with no key is implicit: every control of its type wears it. "
+            Text("A style with no key is implicit: every control of its type wears it. "
                 + "`Headline` has a key and is asked for by name, and a keyed style "
                 + "REPLACES the implicit one, so it says everything it needs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both quotes are italic, both are 17 point, both are centred, both "
+            Text("Both quotes are italic, both are 17 point, both are centred, both "
                 + "carry the same letter spacing - and only one of them says so. "
                 + "`QuoteLoud` is `.basedOn(\"Quote\")` and a text colour, which "
                 + "is the whole of its declaration. A property the child states "
@@ -160,7 +160,7 @@ struct StyleSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Every colour the styles use is one `Color(light:dark:)`, a value "
+            Text("Every colour the styles use is one `Color(light:dark:)`, a value "
                 + "for each theme. None of this crosses the boundary: the styles are "
                 + "resolved in Swift, into the controls, so what the host receives is "
                 + "a button with its colours already on it.")

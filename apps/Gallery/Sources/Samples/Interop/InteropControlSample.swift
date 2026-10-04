@@ -27,7 +27,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
             public static let members: [any ContractMember] = [signal, lampTapped]
         }
 
-        public struct TrafficLight: View {
+        public struct TrafficLight: ElementView {
             public var node = Node(contract: TrafficLightContract.self)
 
             public init() {}
@@ -54,7 +54,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
                     signal = TrafficSignal(rawValue: Int32(index)) ?? signal
                 }
 
-            Label("signal: \\(signal)")
+            Text("signal: \\(signal)")
 
             Button("Advance")
                 .onClicked {
@@ -480,7 +480,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
             """))
     #endif
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -491,7 +491,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
                 }
                 .horizontalAlignment(.center)
 
-            Label("signal: \(signal)")
+            Text("signal: \(signal)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
@@ -504,22 +504,22 @@ struct InteropControlSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label(InteropHost.lamps + " The host creates it once, keeps "
+            Text(InteropHost.lamps + " The host creates it once, keeps "
                 + "it by identity between renders, puts each described value on it, and "
                 + "then applies what every view shares - margins, alignment, opacity, "
                 + "gestures.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The control never switches itself. A tap raises `lampTapped` through "
+            Text("The control never switches itself. A tap raises `lampTapped` through "
                 + "the reports its `create` is handed, this sample's `@State` decides, "
                 + "and the next render lights the lamp.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`TrafficSignal` is a closed vocabulary, so it crosses as its member's "
+            Text("`TrafficSignal` is a closed vocabulary, so it crosses as its member's "
                 + "number - and the registration is handed it back as `TrafficSignal`, "
                 + "typed, rather than as that number.")
                 .fontSize(12)

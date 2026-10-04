@@ -1,0 +1,10 @@
+# revision 1.1
+Slider: ✅
+Slider.frameChanged: ✅
+Slider.maximum: ✅
+Slider.minimum: ✅
+Slider.pressed: cannot drag on Slider - AppKit's driver has no path for it yet
+Slider.released: cannot drag on Slider - AppKit's driver has no path for it yet
+Slider.value: ✅
+Slider.valueChanged: ✅
+Text.text: ✅

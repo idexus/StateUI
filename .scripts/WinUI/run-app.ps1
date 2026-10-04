@@ -15,28 +15,34 @@
 # Builds an application's WinUI head, lays the Windows App SDK beside it and
 # starts it.
 #
-#   .\run-app.ps1 -App apps\HelloWorld [-Configuration debug|release] [-Detach | -BuildOnly]
+#   .\run-app.ps1 -App apps\HelloWorld [-Configuration debug|release] [-Architecture arm64|x64] [-Detach | -BuildOnly]
 #
-#   -App        the application's folder: Package.swift, and Platforms\WinUI
-#   -Detach     returns once the application has started, instead of waiting
-#               for it and passing on what it writes
-#   -BuildOnly  starts nothing: the head stands ready for a debugger to start
+#   -App           the application's folder: Package.swift, and Platforms\WinUI
+#   -Architecture  what the head is built for: this machine's own by default;
+#                  an ARM64 machine builds x64 too, which Windows runs emulated
+#   -Detach        returns once the application has started, instead of waiting
+#                  for it and passing on what it writes
+#   -BuildOnly     starts nothing: the head stands ready for a debugger to start
 #
-# Everything a build writes stays under <App>\.build-winui. Every STATEUI_
-# variable of the calling shell - STATEUI_TALLY=1, STATEUI_INSPECT=1 - reaches
-# the application's environment.
+# Everything a build writes stays under <App>\.build\winui, each architecture's
+# head in a folder of its own (--show-bin-path). Every STATEUI_ variable of the
+# calling shell - STATEUI_TALLY=1, STATEUI_INSPECT=1 - reaches the
+# application's environment.
 # ---------------------------------------------------------------------------
 param(
     [Parameter(Mandatory = $true)][string]$App,
     [ValidateSet('debug', 'release')][string]$Configuration = 'debug',
+    [ValidateSet('arm64', 'x64')][string]$Architecture,
     [switch]$Detach,
     [switch]$BuildOnly
 )
 . (Join-Path $PSScriptRoot 'tools.ps1')
+if (-not $Architecture) { $Architecture = $StateUIArchitecture }
+$arch = Get-StateUIArchitectureArguments $Architecture
 
 $application = (Resolve-Path $App).Path
 $name = Split-Path $application -Leaf
-$scratch = Join-Path $application '.build-winui'
+$scratch = Join-Path $application '.build\winui'
 
 # A running head holds its executable, which the build writes again: it stops first.
 $running = Get-Process -Name "${name}WinUI" -ErrorAction SilentlyContinue
@@ -47,15 +53,15 @@ if ($running) {
 $global:LASTEXITCODE = 0
 
 Initialize-StateUIProjection
-$env:STATEUI_WINUI = '1'
-Write-Host "building ${name}WinUI, $Configuration - SwiftPM reads the packages first, printing nothing"
+$env:STATEUI_HOST = 'winui'
+Write-Host "building ${name}WinUI, $Configuration, $Architecture - SwiftPM reads the packages first, printing nothing"
 Write-StateUIEditorBuilds
-swift build --package-path $application -c $Configuration --product "${name}WinUI" --scratch-path $scratch
+swift build --package-path $application -c $Configuration --product "${name}WinUI" --scratch-path $scratch @arch
 if ($LASTEXITCODE) { throw "the WinUI head of $name did not build" }
 Write-Host "laying the Windows App SDK beside ${name}WinUI.exe"
-$bin = (swift build --package-path $application -c $Configuration --scratch-path $scratch --show-bin-path).Trim()
+$bin = (swift build --package-path $application -c $Configuration --scratch-path $scratch --show-bin-path @arch).Trim()
 $executable = Join-Path $bin "${name}WinUI.exe"
-Set-StateUISelfContained -Directory $bin -Executables $executable
+Set-StateUISelfContained -Directory $bin -Executables $executable -Architecture $Architecture
 
 # The application's pictures stand beside it, where its WinUI host reads them.
 $images = Join-Path $application 'Resources\Images'

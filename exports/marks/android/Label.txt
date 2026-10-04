@@ -1,6 +1,0 @@
-# revision 1.1
-Label: ✅
-Label.frameChanged: ✅
-Label.lineBreak: ✅
-Label.maximumLines: ✅
-Label.text: ✅

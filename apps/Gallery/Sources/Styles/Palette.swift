@@ -39,8 +39,7 @@ enum Palette {
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
     /// Text that reads on `brand`, and on the bar. White in both, which is what
-    /// lets one toolbar icon be right on both - see `PageSession.gallery` in
-    /// Gallery/GalleryPage.swift.
+    /// lets one toolbar icon be right on both - see the bars `MainPage` paints.
     static let onBrand = AppColors.white
 
     /// Violet into orange: the two halves of what this library is, in one
@@ -60,7 +59,7 @@ enum Palette {
 
     // MARK: Text
 
-    /// Ordinary text. The implicit Label style sets this; it is here for the
+    /// Ordinary text. The implicit Text style sets this; it is here for the
     /// places that need to say it again - over a filled panel, say.
     static let text = Color(light: AppColors.ink, dark: AppColors.inkDark)
 
@@ -78,6 +77,18 @@ enum Palette {
 
     /// One step up from the page: a card, a code block, a panel.
     static let raised = Color(light: AppColors.raised, dark: AppColors.raisedDark)
+
+    /// Behind the sidebar's rows: white in the light, a step up from the page
+    /// in the dark, so the menu and the page it leads to stand apart.
+    static let sidebar = Color(light: AppColors.raised, dark: AppColors.sidebarDark)
+
+    /// Over the sidebar's glass where the window shows the desktop: nothing in
+    /// the light, a thin layer of the sidebar's tone in the dark.
+    static let sidebarOverGlass = Color(light: .transparent, dark: AppColors.sidebarGlassDark)
+
+    /// Behind the words of a field: white in the light, sunk below the card in
+    /// the dark.
+    static let field = Color(light: AppColors.raised, dark: AppColors.fieldDark)
 
     /// Outlines, dividers, the edge of a card.
     static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)

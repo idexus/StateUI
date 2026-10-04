@@ -1,10 +1,10 @@
 import StateUI
 
-/// The host's battery - a standard environment provider, resolved by type.
+/// The host's battery - the device's, read by name: `device.battery`.
 struct BatterySample: SampleContent, ExampleContent {
-    /// The provider itself: nothing is passed anywhere - the type is the key,
-    /// and the host keeps the object current.
-    @Environment var battery: Battery
+    /// The device, by its name: nothing is passed anywhere, and the host keeps
+    /// its battery current.
+    @Environment(\.device) var device
 
     static let id = "battery"
     static let title = "Battery"
@@ -12,58 +12,58 @@ struct BatterySample: SampleContent, ExampleContent {
         + "state, source and the saver."
 
     static let code = """
-        struct BatteryBadge: ContentView {
-            @Environment var battery: Battery
+        struct BatteryBadge: View {
+            @Environment(\\.device) var device
 
-            var content: any View {
+            var body: some View {
                 VStack {
                     // The battery is read here, so a change the host reports
                     // builds this closure - and nothing else on the page.
                     DebugInfoLabel()
 
-                    Label(battery.chargeLevel <= 0
+                    Text(device.battery.chargeLevel <= 0
                         ? "the host has not said"
-                        : "\\(Int(battery.chargeLevel * 100))%")
+                        : "\\(Int(device.battery.chargeLevel * 100))%")
 
-                    Label("state · \\(battery.state)")
-                    Label("source · \\(battery.powerSource)")
-                    Label("saver · \\(battery.energySaverStatus)")
+                    Text("state · \\(device.battery.state)")
+                    Text("source · \\(device.battery.powerSource)")
+                    Text("saver · \\(device.battery.energySaverStatus)")
                 }
             }
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label(battery.chargeLevel <= 0
+            Text(device.battery.chargeLevel <= 0
                 ? "the host has not said"
-                : "\(Int(battery.chargeLevel * 100))%")
+                : "\(Int(device.battery.chargeLevel * 100))%")
                 .fontSize(34)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("state · \(battery.state)")
+            Text("state · \(device.battery.state)")
                 .fontSize(15)
-            Label("source · \(battery.powerSource)")
+            Text("source · \(device.battery.powerSource)")
                 .fontSize(15)
-            Label("saver · \(battery.energySaverStatus)")
+            Text("saver · \(device.battery.energySaverStatus)")
                 .fontSize(15)
         }
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Reading a property is the whole subscription: the host "
+            Text("Reading a property is the whole subscription: the host "
                 + "pushes each change the platform reports, and exactly the "
                 + "views that read the battery are rebuilt. On Android, try "
                 + "`adb shell dumpsys battery set level 50`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A host that cannot observe a battery leaves the level at -1, "
+            Text("A host that cannot observe a battery leaves the level at -1, "
                 + "read here as \"the host has not said\", and the other "
                 + "values at `.unknown`.")
                 .fontSize(12)

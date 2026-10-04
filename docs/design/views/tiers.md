@@ -6,7 +6,7 @@ it, and every control wearing that tier inherits the modifier: opacity from
 `VisualElementProperties`, margin from `ViewProperties`, padding from
 `PaddingElement`, the font size from `FontElement`. A modifier is therefore
 offered on exactly the controls that carry the property - `.spacing()` on a
-stack, `.placeholder()` on a text field, and nothing on a Label that a Label
+stack, `.placeholder()` on a text field, and nothing on a Text that a Text
 does not carry. Each Swift tier has a tier contract under `Contracts/Tiers`
 or `Contracts/Mixins`, which declares its members for the hosts.
 
@@ -23,19 +23,19 @@ allowed can be written" a compiler rule rather than a convention.
   ├── VisualElementProperties              └── ModifiableElement      events, lifetime
   │   └── ViewProperties                       └── VisualElement      key, aim, samples,
   │       ├── LayoutProperties                     │                  environment, style
-  │       │   └── StackBaseProperties              └── View           gestures, pan, frame,
+  │       │   └── StackProperties              └── View           gestures, pan, frame,
   │       ├── ShapeProperties                          │              context menu
-  │       └── InputViewProperties                      ├── Layout
-  └── the mixins, one file each:                       │   └── StackBase
-      TextStyleElement  TextElement  FontElement       ├── Shape
-      TextAlignmentElement  PaddingElement             └── InputView
+  │       └── TextInputProperties                      ├── Layout
+  └── the mixins, one file each:                       │   └── Stack
+      TextStyleElement  TextualElement  FontElement       ├── Shape
+      TextAlignmentElement  PaddingElement             └── TextInput
       LineHeightElement  DecorableTextElement
       BorderElement  ImageElement  TintElement
-      BarElement  PageElement  MenuItemElement
+      BarElement  MenuItemElement
 ```
 
 A control conforms on the element side - `View`, `Layout`, `Shape`,
-`InputView` - which brings the matching property side with it, plus the mixins
+`TextInput` - which brings the matching property side with it, plus the mixins
 it carries and its own `…Properties` protocol. A `Style<Target>` conforms to
 the property side alone, one conditional conformance per tier its target wears,
 so a style offers exactly the setters its target can carry, and an event, a
@@ -43,7 +43,7 @@ gesture or an `.id()` written on a style does not compile.
 
 Every modifier returns a modified copy. Nothing mutates in place, so a view is
 a value all the way down and a chain reads in one direction:
-`Label("Total").fontSize(20).textColor(.gray).margin(0, 8)`.
+`Text("Total").fontSize(20).textColor(.gray).margin(horizontal: 0, vertical: 8)`.
 
 ## Why events live on the element side
 
@@ -62,21 +62,22 @@ container, modifiable element, visual element, view, layout, stack, shape and
 input view - a file for each, and one more for a larger group of a tier's
 modifiers: a view's gestures, where it sits, what it says about itself.
 `testTheSharedTierIsCoveredOnce` checks the properties declared in those files
-against one case, built from a stack and a label, so those properties are
-covered once rather than in every control's case.
+against one case, built from a stack holding a shape, a label and a text
+field, so those properties are covered once rather than in every control's
+case.
 
 ## One file per mixin tier
 
 A tier worn by some controls and not others - text, font, alignment, padding,
-line height, decoration, border, image, tint, bar, page and menu item - has a
-file of its own in `Mixins` rather than a block in a shared tier's file. Its
+line height, decoration, border, image, tint, bar and menu item - has a file
+of its own in `Mixins` rather than a block in a shared tier's file. Its
 properties are then not part of the shared tier the case checks, and a
 control that does not wear the tier is never offered its modifiers.
 
 ## Tiers a text run wears
 
 `PropertyContainer` sits below `VisualElement` because not everything that
-carries properties is a view. A `TextSpan`, one run of text inside a Label,
+carries properties is a view. A `TextSpan`, one run of text inside a Text,
 carries a text colour, a font size and a background colour, and has no
 opacity, margin or size. The text and font mixins are therefore written against
 `PropertyContainer`, where a `TextSpan` and a `Style` - which is not in the
@@ -84,10 +85,10 @@ tree at all - can both wear them.
 
 There are two text tiers because some controls colour text they do not own. A
 Picker shows the chosen item, and a DatePicker and a TimePicker format a value:
-each carries `textColor` and `characterSpacing` through `TextStyleElement`, and
-only a control that says something of its own wears `TextElement`, which adds
+each carries `textColor` and `tracking` through `TextStyleElement`, and
+only a control that says something of its own wears `TextualElement`, which adds
 the text and its case. Changing the case of a formatted picker value would be
-a different, platform-specific promise, so `textCase` is on `TextElement`.
+a different, platform-specific promise, so `textCase` is on `TextualElement`.
 
 `PaddingElement` and `TextAlignmentElement` stop at `VisualElementProperties`:
 each names a set of properties rather than a kind of control, and asks for
@@ -103,8 +104,8 @@ are written once and serve the control and the style alike.
 
 ## Input views
 
-`InputViewProperties` is a `ViewProperties`: it stands for a kind of control, a
-positioned view the user types into. `InputView` is its element half, as
+`TextInputProperties` is a `ViewProperties`: it stands for a kind of control, a
+positioned view the user types into. `TextInput` is its element half, as
 `Layout` and `Shape` are theirs, and the element half is what a style is told
 apart by: the conditional conformances in `StyleBag+Properties.swift` name the
 element protocol, so a tier with only a property half could not be given to a
@@ -114,21 +115,21 @@ style without also giving it the modifiers of `View`.
 
 Rectangle, Ellipse, Line, Path, Polygon and Polyline share one drawing
 vocabulary, the shape tier, checked once by the shared case rather than once
-per shape. `renderTransform` transforms the path each shape makes, so one
+per shape. `geometryTransform` transforms the path each shape makes, so one
 modifier means one thing on all of them and the stroke follows the transformed
 path; `.transform` moves what was drawn, after layout.
 
-A layout's outline, `BorderElement`'s `stroke` and `strokeWidth`, carries the
+A layout's outline, `BorderElement`'s `stroke` and `lineWidth`, carries the
 same properties as a shape's rather than wearing the shape tier, because that
-tier also carries `fill`, `renderTransform`, `aspect` and the dash pattern, a
-drawn figure's properties and none of them a layout's. In the patch they are the
-same properties.
+tier also carries `fill`, `geometryTransform`, `contentMode` and the dash
+pattern, a drawn figure's properties and none of them a layout's. In the patch
+they are the same properties.
 
 ## Borders
 
 `BorderElement` is what an element draws of its own box: `shape` - a
 rectangle, a rounded rectangle or an ellipse - which its background fills,
-and `stroke` and `strokeWidth`, its outline on it, one wide where no width is
+and `stroke` and `lineWidth`, its outline on it, one wide where no width is
 said. A stack, a grid and a ZStack wear it through the layout tier, their
 `clipsContent` cutting what they hold to the shape; a scroller wears it and
 always cuts what it shows to it; a Button and a RadioButton wear it for the

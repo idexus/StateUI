@@ -1,0 +1,5 @@
+# revision 3.1
+ToolbarItem: ✅
+ToolbarItem.clicked: ✅
+ToolbarItem.placement: ✅
+ToolbarItem.showsText: ✅

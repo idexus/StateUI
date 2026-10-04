@@ -20,7 +20,7 @@ struct TickerSample: SampleContent, ExampleContent {
             // which is what a clock costs when its digits are described.
             DebugInfoLabel()
 
-            Label("\\((ticker.limit ?? 0) - ticker.ticks)")
+            Text("\\((ticker.limit ?? 0) - ticker.ticks)")
 
             ProgressBar(remaining)
 
@@ -50,11 +50,11 @@ struct TickerSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label("\((ticker.limit ?? 0) - ticker.ticks)")
+            Text("\((ticker.limit ?? 0) - ticker.ticks)")
                 .fontSize(64)
                 .fontAttributes(.bold)
                 .textColor(ticker.isFinished ? Palette.subtle : Palette.accent)
@@ -66,12 +66,12 @@ struct TickerSample: SampleContent, ExampleContent {
             HStack {
                 Button(ticker.isRunning ? "Stop" : "Start")
                     .fontSize(13)
-                    .padding(20, 6)
+                    .padding(horizontal: 20, vertical: 6)
                     .onClicked { ticker.isRunning ? ticker.stop() : ticker.start() }
 
                 Button("Reset")
                     .fontSize(13)
-                    .padding(20, 6)
+                    .padding(horizontal: 20, vertical: 6)
                     .onClicked { ticker.reset() }
             }
             .spacing(10)
@@ -81,7 +81,7 @@ struct TickerSample: SampleContent, ExampleContent {
                 ForEach([10, 30, 60]) { length in
                     Button("\(length)s")
                         .fontSize(12)
-                        .padding(14, 4)
+                        .padding(horizontal: 14, vertical: 4)
                         .onClicked {
                             ticker.reset()
                             ticker.limit = length
@@ -95,22 +95,22 @@ struct TickerSample: SampleContent, ExampleContent {
         .onDestroying { ticker.stop() }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("The same countdown as the Task.sleep sample, with the loop moved into "
+            Text("The same countdown as the Task.sleep sample, with the loop moved into "
                 + "the library. What is left here is a value to read: no flag, no visit "
                 + "token, no while - a tick writes what the interface reads and asks "
                 + "for the render itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("It sleeps to a DEADLINE rather than for a length, so the lateness of "
+            Text("It sleeps to a DEADLINE rather than for a length, so the lateness of "
                 + "each lap is spent instead of added up - where a loop written by hand "
                 + "adds every one of them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Starting twice is safe - each run takes a token, and a loop that wakes "
+            Text("Starting twice is safe - each run takes a token, and a loop that wakes "
                 + "holding an old one returns. Stopping it in .onDestroying is still the "
                 + "reader's to write: a ticker outlives the page unless someone says "
                 + "otherwise, which is what makes it usable for something that should "

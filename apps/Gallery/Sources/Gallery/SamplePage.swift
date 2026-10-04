@@ -8,41 +8,37 @@ import StateUI
 /// PUSHED - it arrives as `.sample(id)` on the bound path - so the platform's
 /// back button and back gesture work as they do anywhere else, and two samples
 /// can be on the stack at once. A sample whose examples must hold the page
-/// still is shown as tabs instead - see `shown(_:nav:)` and `SampleTabPage`.
-struct SamplePage: ContentView {
-    /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
+/// still is shown as tabs instead - see `shown(_:nav:bar:)` and `SampleTabPage`.
+struct SamplePage: View {
+    /// The gallery this page is in - its scene.
+    @Environment(\.scene) var scene
 
     let sample: Sample
 
     let nav: Navigation
-
-    /// The page itself - what it is called, and what is on its bar. A sample
-    /// with something of its own for the bar - a search box, buttons, a menu
-    /// - writes it into this same session.
-    @Environment private var page: PageSession
 
     /// The page a sample is shown on: this scrolling page, or - for a sample
     /// whose examples hold the page still - its tabs, which a window shows as
     /// its own, on a bar in `bar`, the colour of the stack they are pushed onto.
     /// The tabs carry the sample's name, which names the window while they are
     /// the stack's last place; their pages name the tabs alone.
-    static func shown(_ sample: Sample, nav: Navigation, bar: Color) -> any Page {
-        guard !sample.scrolls else { return SamplePage(sample: sample, nav: nav) }
-
-        return TabbedView(sample.tabs) { tab in
-            SampleTabPage(sample: sample, tab: tab, nav: nav)
+    @ViewBuilder
+    static func shown(_ sample: Sample, nav: Navigation, bar: Color) -> some View {
+        if sample.scrolls {
+            SamplePage(sample: sample, nav: nav)
+        } else {
+            TabView(sample.tabs) { tab in
+                SampleTabPage(sample: sample, tab: tab, nav: nav)
+            }
+            .title(sample.title)
+            .barBackgroundColor(bar)
         }
-        .title(sample.title)
-        .barBackgroundColor(bar)
     }
 
-    var content: any View {
+    var body: some View {
         // Dressed as every page of the gallery is. What a sample adds to the
-        // bar it writes from its own `.onCreated`, which runs AFTER this one,
-        // being further in - so its buttons go before these and its title
-        // view, a page having one, replaces the gallery's.
-        scrolling.onCreated { page.gallery(sample.title, scene: scene, nav: nav) }
+        // bar - its buttons, its title view - it declares on its own views.
+        scrolling.galleryPage(sample.title)
     }
 
     /// Everything in one scroller: the summary, then each example with its
@@ -52,7 +48,7 @@ struct SamplePage: ContentView {
     private var scrolling: ScrollView {
         ScrollView {
             VStack {
-                Label(sample.summary)
+                Text(sample.summary)
                     .fontSize(15)
                     .textColor(Palette.subtle)
 
@@ -69,7 +65,7 @@ struct SamplePage: ContentView {
     /// One example as this page shows it: "Example", "Notes" and "In Swift",
     /// each over what it names. Among several examples, the example's name -
     /// "Example 2" - heads its whole group instead.
-    private func sections(of example: Example, at index: Int) -> any View {
+    private func sections(of example: Example, at index: Int) -> some View {
         let name = sample.name(ofExample: index)
         let box = Self.boxed(example.view)
 
@@ -85,14 +81,14 @@ struct SamplePage: ContentView {
             }
 
             if let notes = example.notes {
-                Self.section("Notes", notes)
+                Self.section("Notes", ModifiedContent(node: notes.node))
             }
 
             Self.section(example.codeHeading, CodeBlock(example.code))
 
             // The far side of the example, where it has one: a section per
             // language its host's half is written in.
-            example.hostCode.listings.map { listing -> Element in
+            example.hostCode.listings.map { listing -> any View in
                 Self.section(
                     example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }
@@ -104,7 +100,7 @@ struct SamplePage: ContentView {
     ///
     /// - Parameter heading: what the section is called.
     /// - Parameter content: what it holds.
-    static func section(_ heading: String, _ content: Element) -> any View {
+    static func section<Content: View>(_ heading: String, _ content: Content) -> some View {
         VStack {
             SectionTitle(heading)
             content
@@ -122,7 +118,7 @@ struct SamplePage: ContentView {
     ///
     /// - Parameter view: the example itself.
     /// - Parameter fills: whether the example takes the whole cell.
-    static func boxed(_ view: Element, fills: Bool = false) -> ZStack {
+    static func boxed<Content: View>(_ view: Content, fills: Bool = false) -> ZStack {
         ZStack {
             if fills {
                 Grid {
@@ -138,7 +134,7 @@ struct SamplePage: ContentView {
         }
         .style("Card")
         .stroke(Palette.outline)
-        .strokeWidth(1)
+        .lineWidth(1)
         .shape(.roundedRectangle(10))
     }
 }

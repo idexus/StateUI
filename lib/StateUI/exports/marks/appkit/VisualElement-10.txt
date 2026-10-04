@@ -1,0 +1,45 @@
+# revision 1.1
+ActivityIndicator.accessibilityLabel: ✅
+Button.frame: ✅
+Canvas.frameChanged: ✅
+Canvas.height: ✅
+Canvas.width: ✅
+CheckBox.isVisible: ✅
+CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform, checked against the layer it composed itself
+ColorBox.scale: ✓ read scale of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.rotation: ✓ read rotation of DatePicker: the host's own transform, checked against the layer it composed itself
+Ellipse.layoutDirection: ✅
+Grid.isAccessibilityHidden: ✅
+HStack.accessibilityLabel: ✅
+Image.frame: ✅
+ItemsView.frameChanged: ✅
+ItemsView.height: ✅
+ItemsView.width: ✅
+Line.scale: ✓ read scale of Line: the host's own transform, checked against the layer it composed itself
+Map.rotation: ✓ read rotation of Map: the host's own transform, checked against the layer it composed itself
+Path.layoutDirection: ✅
+Picker.isAccessibilityHidden: ✅
+Polygon.accessibilityLabel: ✅
+Polyline.frame: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.height: ✅
+ProgressBar.width: ✅
+RadioButton.isVisible: ✅
+RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.scale: ✓ read scale of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.layoutDirection: ✅
+Slider.isAccessibilityHidden: ✅
+Stepper.accessibilityLabel: ✅
+Switch.frame: ✅
+Text.isVisible: ✅
+Text.translationX: ✓ read translationX of Text: the host's own transform, checked against the layer it composed itself
+TextEditor.frameChanged: ✅
+TextEditor.height: ✅
+TextEditor.width: ✅
+TextField.isVisible: ✅
+TextField.translationX: ✓ read translationX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.rotation: ✓ read rotation of VStack: the host's own transform, checked against the layer it composed itself
+WebView.layoutDirection: ✅
+ZStack.isAccessibilityHidden: ✅

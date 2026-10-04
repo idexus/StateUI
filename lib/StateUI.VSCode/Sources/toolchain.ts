@@ -103,6 +103,33 @@ export function svgLoaderIn(cache: string): string | undefined {
     return undefined;
 }
 
+/** The loader a glycin loader's config names for SVG pictures - its `[loader:image/svg+xml]` - or undefined where it names none. */
+export function svgLoaderInGlycin(config: string): string | undefined {
+    const section = config.split(/\r?\n(?=\s*\[)/).find((part) => /^\s*\[loader:image\/svg\+xml\]/.test(part));
+    const exec = section?.match(/^\s*Exec\s*=\s*(.+?)\s*$/m)?.[1];
+    return exec ? path.basename(exec) : undefined;
+}
+
+/** glycin's SVG loader, among the loader configs of the data folders - where gdk-pixbuf 2.44 and newer read pictures
+ *  through glycin - or undefined. */
+function glycinSVGLoader(): string | undefined {
+    const folders = (process.env.XDG_DATA_DIRS || "/usr/local/share:/usr/share").split(":")
+        .concat(process.env.XDG_DATA_HOME || path.join(os.homedir(), ".local", "share"));
+    for (const folder of folders.filter((each) => each.length > 0)) {
+        const loaders = path.join(folder, "glycin-loaders");
+        for (const version of fs.existsSync(loaders) ? fs.readdirSync(loaders) : []) {
+            const configs = path.join(loaders, version, "conf.d");
+            for (const file of fs.existsSync(configs) ? fs.readdirSync(configs).filter((each) => each.endsWith(".conf")) : []) {
+                const loader = svgLoaderInGlycin(fs.readFileSync(path.join(configs, file), "utf8"));
+                if (loader) {
+                    return `glycin's ${loader}`;
+                }
+            }
+        }
+    }
+    return undefined;
+}
+
 /** The output of `command` run with `args` - its standard output and error together - or undefined where it did not run. */
 function run(command: string, args: readonly string[]): Promise<string | undefined> {
     return new Promise((resolve) => {
@@ -135,6 +162,11 @@ function served(version: string | undefined, minimum: string, where?: string): s
     return atLeast(version, minimum) ? (where ? `${version} (${where})` : version) : new TooOld(version);
 }
 
+/** The first Apple Development identity `security find-identity -v -p codesigning` lists, by its name. */
+export function developmentIdentityIn(text: string): string | undefined {
+    return text.match(/"(Apple Development: [^"]+)"/)?.[1];
+}
+
 /** An NDK's release in its `source.properties`: "30.0.16248370". */
 export function ndkRevisionIn(properties: string): string | undefined {
     return properties.match(/^Pkg\.Revision\s*=\s*(\S+)/m)?.[1];
@@ -165,6 +197,16 @@ const lldbDap: Check = {
     },
 };
 
+/** Git, which New Project Group lists StateUI's releases with and clones one by. */
+const git: Check = {
+    component: "Git", neededBy: "New Project Group's releases",
+    advice: "Install Git from https://git-scm.com.",
+    look: async () => {
+        const version = versionIn((await run("git", ["--version"])) ?? "");
+        return version && `${version} (${onPath("git")})`;
+    },
+};
+
 /** Node.js 20 or newer and npm, which build this extension from a checkout. */
 const node: Check = {
     component: "Node.js 20 or newer, with npm", neededBy: "the extension's own build",
@@ -190,12 +232,19 @@ function linuxChecks(): Check[] {
         module("gtk4", "GTK", "4.14", "libgtk-4-dev"),
         module("libadwaita-1", "libadwaita", "1.5", "libadwaita-1-dev"),
         {
+            component: "WebKitGTK 6.0, with its headers", neededBy: "GTK's web view (lib/Backends/WebView.GTK), the GTK host's tests included",
+            advice: "Install libwebkitgtk-6.0-dev on Ubuntu, webkitgtk-6.0 on Arch: the web view's backend links it.",
+            look: async () => served((await run("pkg-config", ["--modversion", "webkitgtk-6.0"]))?.trim(), "2.40"),
+        },
+        {
             component: "gdk-pixbuf's SVG loader", neededBy: "GTK's pictures",
-            advice: "Install librsvg2-common: without it GTK draws no SVG picture.",
+            advice: "Install librsvg2-common - or, where gdk-pixbuf reads through glycin, glycin's loaders (glycin on Arch):"
+                + " without one GTK draws no SVG picture.",
             look: async () => {
                 const cache = process.env.GDK_PIXBUF_MODULE_FILE
                     || (await run("pkg-config", ["--variable=gdk_pixbuf_cache_file", "gdk-pixbuf-2.0"]))?.trim();
-                return cache && fs.existsSync(cache) ? svgLoaderIn(fs.readFileSync(cache, "utf8")) : undefined;
+                return (cache && fs.existsSync(cache) ? svgLoaderIn(fs.readFileSync(cache, "utf8")) : undefined)
+                    ?? glycinSVGLoader();
             },
         },
         {
@@ -289,6 +338,12 @@ function macChecks(): Check[] {
             look: async () => served(newestIOSRuntime((await run("xcrun", ["simctl", "list", "runtimes", "available", "-j"])) ?? ""), "26"),
         },
         {
+            component: "an Apple Development certificate", neededBy: "UIKit on an iPhone or iPad",
+            advice: "Sign in with your Apple Account in Xcode's Settings, Accounts, and make a development certificate there;"
+                + " Xcode makes a device's profile the first time it runs an application on it.",
+            look: async () => developmentIdentityIn((await run("security", ["find-identity", "-v", "-p", "codesigning"])) ?? ""),
+        },
+        {
             component: "Swift 6.4 from swift.org, with the Swift SDK for Android of the same release", neededBy: "Android",
             advice: "Install the swift.org toolchain and its SDK: "
                 + "https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html",
@@ -360,6 +415,17 @@ function windowsChecks(): Check[] {
             },
         },
         {
+            component: "the WebView2 runtime", neededBy: "WinUI's web view (lib/Backends/WebView.WinUI)",
+            advice: "Install the Evergreen WebView2 Runtime from https://developer.microsoft.com/microsoft-edge/webview2 -"
+                + " Windows 11 has it.",
+            look: async () => {
+                const application = path.join(programs, "Microsoft", "EdgeWebView", "Application");
+                const version = fs.existsSync(application)
+                    ? fs.readdirSync(application).filter((each) => /^\d+\./.test(each)).sort(compareVersions).pop() : undefined;
+                return version && path.join(application, version);
+            },
+        },
+        {
             component: "the Windows SDK 10.0.26100", neededBy: "WinUI",
             advice: "Install the Windows 11 SDK (10.0.26100) with the Visual Studio Installer.",
             look: async () => {
@@ -374,7 +440,7 @@ function windowsChecks(): Check[] {
 /** Every component this machine needs, in the order the check reads them. */
 function checks(platform: NodeJS.Platform): Check[] {
     const own = platform === "darwin" ? macChecks() : platform === "win32" ? windowsChecks() : platform === "linux" ? linuxChecks() : [];
-    return [swift, ...own, lldbDap, node];
+    return [swift, ...own, lldbDap, git, node];
 }
 
 /** What this machine has of everything it needs, component by component. */
@@ -399,6 +465,61 @@ export function debuggerFinding(types: readonly string[]): Finding {
     return {
         component: "the LLDB DAP extension", neededBy: "Debug", found: types.includes("lldb-dap") ? "installed" : undefined,
         advice: "Install LLDB DAP (llvm-vs-code-extensions.lldb-dap) from the Extensions view.",
+    };
+}
+
+/** Why an lldb-dap did not start, read from what it said to `--version` - the library its loader found missing - or
+ *  undefined where it started. */
+export function lldbDapFailure(output: string | undefined): string | undefined {
+    if (output === undefined) {
+        return "it did not run";
+    }
+    const missing = output.match(/error while loading shared libraries: ([^:\s]+)/);
+    if (missing) {
+        return `${missing[1]} is missing`;
+    }
+    return /LLVM version/.test(output) ? undefined : output.split(/\r?\n/)[0].trim();
+}
+
+/** The Python library `lldb-dap --check-python` printed as the one it resolved, or undefined where it found none. */
+export function checkedPythonIn(output: string | undefined): string | undefined {
+    return output?.split(/\r?\n/).map((line) => line.trim()).find((line) => /^[A-Za-z]:\\.*\.dll$/i.test(line));
+}
+
+/** On Linux and Windows, whether the lldb-dap a Debug launch starts - the one LLDB DAP's `lldb-dap.executable-path`
+ *  names, else the search path's - starts with the Python its LLDB loads: on Linux the distribution's a swift.org
+ *  toolchain was built for, which another may not have; on Windows the one the Swift installer lays beside the
+ *  toolchain. Undefined on macOS, where Xcode's matches its system. */
+export async function lldbDapFinding(configured?: string): Promise<Finding | undefined> {
+    if (process.platform === "win32") {
+        return windowsLldbDapFinding(configured || onPath("lldb-dap"));
+    }
+    if (process.platform !== "linux") {
+        return undefined;
+    }
+    const executable = configured || onPath("lldb-dap");
+    const output = executable ? await run(executable, ["--version"]) : undefined;
+    const failure = executable ? lldbDapFailure(output) : "none is on the search path";
+    return {
+        component: "an lldb-dap that starts", neededBy: "Debug",
+        found: failure === undefined ? `${output?.match(/LLVM version \S+/)?.[0] ?? "it starts"} (${executable})` : undefined,
+        advice: `${executable ?? "lldb-dap"}: ${failure}. A swift.org toolchain's LLDB takes the Python library of the`
+            + " distribution it was built for: install that library - libpython3.9 is python39 from the AUR on Arch - or"
+            + " set lldb-dap.executable-path to an lldb-dap that starts.",
+    };
+}
+
+/** Windows' lldb-dap asked which Python library it loads (`--check-python`): `--version` answers before it looks. */
+async function windowsLldbDapFinding(executable: string | undefined): Promise<Finding> {
+    const output = executable ? await run(executable, ["--check-python"]) : undefined;
+    const python = checkedPythonIn(output);
+    const failure = !executable ? "none is on the search path" : output?.split(/\r?\n/)[0].trim() || "it did not run";
+    return {
+        component: "an lldb-dap that starts", neededBy: "Debug",
+        found: python && `its Python ${python} (${executable})`,
+        advice: `${executable ?? "lldb-dap"}: ${failure}. A swift.org toolchain's LLDB loads the Python its installer lays`
+            + " beside the toolchain (Programs\\Swift\\Python-<version>): repair the Swift installation, or set"
+            + " lldb-dap.executable-path to an lldb-dap that starts.",
     };
 }
 

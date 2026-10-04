@@ -20,7 +20,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
                 .height(48)
 
             HStack {
-                Label("Working")
+                Text("Working")
                     .verticalAlignment(.center)
 
                 Switch($loading)
@@ -28,7 +28,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -37,7 +37,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
                 .height(48)
 
             HStack {
-                Label("Working")
+                Text("Working")
                     .fontSize(14)
                     .verticalAlignment(.center)
 
@@ -53,20 +53,20 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("A still spinner is also an INVISIBLE one on most platforms, which is why "
+            Text("A still spinner is also an INVISIBLE one on most platforms, which is why "
                 + "`ActivityIndicator(loading)` is usually the whole of it - there is "
                 + "nothing to hide by hand.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A spinner says \"wait\"; a `ProgressBar` says \"how much longer\". Use the "
+            Text("A spinner says \"wait\"; a `ProgressBar` says \"how much longer\". Use the "
                 + "bar wherever the work can be counted.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("No binding here, unlike the inputs: nothing about a spinner is the "
+            Text("No binding here, unlike the inputs: nothing about a spinner is the "
                 + "user's to change, so the value only goes one way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

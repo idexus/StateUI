@@ -1,0 +1,6 @@
+# revision 2.1
+Menu.text: ✓ read the menu of Window: the host's menu bar entries, not UIKit's main menu
+MenuBar: ✅
+MenuBar.order: ✓ read the menu of Window: the host's menu bar entries, not UIKit's main menu
+MenuItem.clicked: ✅
+MenuItem.isEnabled: ✓ read the menu of Window: the host's menu bar entries, not UIKit's main menu

@@ -25,7 +25,8 @@ says how a child travels to the place this arithmetic gives it.
                                    there through LayoutMotion
 ```
 
-A layout's values are read off the element once, by the core, so every host
+A layout's values are read off the element once, by the host layer
+(`MountedElement.layoutValues`), so every host
 reads the same margin, alignment and stated size. The toolkit supplies only
 what it alone knows: whether the child is shown, and how big its view is for a
 width it is offered - a label wraps, an image keeps its ratio. The arithmetic
@@ -35,13 +36,13 @@ is pure, so a host calls it from its own layout pass - `layout()` on AppKit, a
 ## One axis of a slot
 
 Along each axis a child has a slot: the room its layout offers it, less its
-margin. A size the child states wins over every alignment and is held only by
-its own least and most size. Without one, a filling child takes the slot and
-any other takes its natural size, never more than the slot. Where the least
-size is larger than the most, the least wins, so contradictory bounds cannot
-leave a child with no answer. A child placed at its start sits at the slot's
-start; at its end, at the end; centred, or filling but stopped short by a
-stated or a most size, in the middle.
+margin. A size the child states wins over every alignment and is held by its
+own least and most size and by the slot. Without one, a filling child takes
+the slot and any other takes its natural size, never more than the slot.
+Where the least size is larger than the most, the least wins, so
+contradictory bounds cannot leave a child with no answer. A child placed at
+its start sits at the slot's start; at its end, at the end; centred, or
+filling but stopped short by a stated or a most size, in the middle.
 
 The layout owns the margin both ways: it takes the margin out of the width it
 offers a child and adds it to the size the child answers, and a toolkit's
@@ -73,7 +74,7 @@ measured, each within its bounds (`LayoutValues.offer`, `sized`). A host
 measures its native view at that width and nothing more.
 
 The trap is a child measured at one width and placed at another: a stated
-width wider than its room - a `FrameReader`'s width a frame late as a
+width wider than its room - a `GeometryReader`'s width a frame late as a
 window is resized - wraps its words for the stated width while it stands
 in the room. Most toolkits show the words cut; WinUI, which measures until
 its layout settles, finds the words' size changing at every pass and ends
@@ -100,9 +101,16 @@ spans.
 A fixed track is its length. An automatic track is as large as its largest
 child that spans that track alone. A proportional track divides what the
 fixed and automatic tracks and the spacing leave, by its share; measured with
-no room given, a proportional track is as large as its largest one-track
-child, so the grid's natural size holds every child. A share of nothing still
-counts as a sliver, so no division is by zero.
+no room given, the proportional tracks share the least remainder whose shares
+hold each one's largest one-track child, so the grid placed at its natural
+size, or wider, holds every child at the width it was measured for. A share of
+nothing still counts as a sliver, so no division is by zero, and asks for no
+room.
+
+The trap is a natural size taken track by track: two shares of 95 beside three
+of 300 make a remainder of 395, which placement shares as 158 and 237, and the
+words measured on one line at 300 stand wrapped at 237 - on WinUI a layout
+cycle that ends the application.
 
 The columns are settled first, and a row measures each of its children at
 the width of the columns it stands in, so words that wrap in a column make
@@ -152,10 +160,21 @@ written.
 
 ## One child
 
-A page or a pane holds one child within its padding. The child is
-measured only where its natural size places it - on an axis it does not fill
-and states no size for - so a child that fills both ways takes the room
-whatever it would measure. A container with no shown child is its padding.
+A page or a pane holds one child in its room, within the child's margin; the
+space inside a page is its view's own padding. The child is measured only where
+its natural size places it - on an axis it does not fill and states no size
+for - so a child that fills both ways takes the room whatever it would measure.
+A container with no shown child takes no room.
+
+## A button's picture and words
+
+A button's picture beside its words stands with them, the two together in the
+middle of the room inside its padding, however wide the button is laid out. A
+control that draws its picture at its own edge and its words in the middle is
+given, on each side, half of what the picture, the gap and the words leave
+(`ButtonArithmetic.sideRoom`) as more padding where it is placed; it is not the
+button's, so it is left out of what the button measures. A picture above or
+below its words is already in the middle with them.
 
 ## A row beside a page
 

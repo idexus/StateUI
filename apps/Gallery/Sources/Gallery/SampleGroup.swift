@@ -5,14 +5,14 @@ import StateUI
 /// A category of samples - one menu row, one page listing what is in it.
 ///
 /// The names are the ones a user already looks under - "Controls" for the
-/// things you tap, "Lists & cards" for the things that show many items - and
+/// things you tap, "Items and Cards" for the things that show many items - and
 /// where two groups could both claim a sample, the summary says which has it
 /// ("text fields are under Text & typing"), so nobody has to guess twice.
 ///
 /// THE FIRST GROUP IS THE CARD IN FRONT on the home page, which is what a
 /// user taps before they have read anything, so it holds what this library
 /// IS: one declaration, the reader rule, the two layers and what each costs.
-/// Chrome - styles, the window, its title bar and its lifecycle - is further
+/// Chrome - styles, the window, its bar and its lifecycle - is further
 /// down under names that say so.
 struct SampleGroup {
     /// What the menu row and the home card push - the value inside
@@ -38,7 +38,7 @@ struct SampleGroup {
 
     /// The samples a device of `formFactor` lists, through `Sample.isShown(on:)`.
     /// What every page and count reads, each passing the formFactor it resolved
-    /// with `@Environment var device: DeviceInfo`; `samples` is the whole
+    /// with `@Environment(\.device) var device`; `samples` is the whole
     /// set, which is what the pushed pages and the tests read.
     func shown(on formFactor: FormFactor) -> [Sample] {
         samples.filter { $0.isShown(on: formFactor) }

@@ -7,20 +7,20 @@ meaning.
 
 ## Composed views
 
-A `ContentView` declares one semantic component and returns the views it is
+A `View` declares one semantic component and returns the views it is
 made from:
 
 ```swift
-struct StatusBadge: ContentView {
+struct StatusBadge: View {
     let title: String
     let ready: Bool
 
-    var content: any View {
+    var body: some View {
         HStack {
             ColorBox(ready ? .green : .gray)
                 .width(8)
                 .height(8)
-            Label(title)
+            Text(title)
         }
         .spacing(8)
     }
@@ -36,7 +36,7 @@ every view; a control-specific modifier belongs inside the component, on the
 control that actually implements it.
 
 A composed view does not create an extra native wrapper. Its placeholder gives
-the differ an ownership boundary, then resolves to `content` when that boundary
+the differ an ownership boundary, then resolves to `body` when that boundary
 must be described. This keeps composition cheap while giving local state and
 invalidation a precise owner.
 
@@ -47,11 +47,11 @@ contract across the target platforms or belongs to an optional provider.
 A modifier specific to the composed concept returns another `Self`:
 
 ```swift
-struct Badge: ContentView {
+struct Badge: View {
     private var color = Color.cornflowerBlue
 
-    var content: any View {
-        Label("New")
+    var body: some View {
+        Text("New")
             .textColor(.white)
             .background(color)
     }
@@ -116,10 +116,10 @@ class instance by a stable property it owns rather than by the class value
 itself.
 
 ```swift
-struct FileRow: ContentView {
+struct FileRow: View {
     let path: String
 
-    var content: any View {
+    var body: some View {
         TextField()
             .placeholder(path)
             .id(path)
@@ -143,7 +143,7 @@ appears or disappears:
 
 VStack {
     if signedIn {
-        Label("Welcome")
+        Text("Welcome")
     }
 
     TextField($search)
@@ -166,7 +166,7 @@ let names = ["Ada", "Grace", "Linus"]
 
 VStack {
     ForEach(names) { name in
-        Label(name)
+        Text(name)
     }
 }
 ```
@@ -198,7 +198,7 @@ VStack {
     Button(visible ? "Hide" : "Show").onClicked { visible.toggle() }
 
     if visible {
-        Label("Draft")
+        Text("Draft")
             .onCreated { log.append("created") }
             .onDestroying { log.append("destroying") }
     }
@@ -225,7 +225,7 @@ carried in its previous description:
 @State var step = 0
 @State var direction = ""
 
-Label(direction)
+Text(direction)
     .onChanged(step) { old, new in
         direction = new > old ? "forward" : "back"
     }
@@ -245,14 +245,14 @@ creates a feedback loop; every such write needs a stopping condition.
 Call `debugInfo()` inside the description whose work you want to understand:
 
 ```swift
-struct BuildProbe: ContentView {
+struct BuildProbe: View {
     @State private var count = 0
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label(debugInfo())
+            Text(debugInfo())
             Button("Build").onClicked { count += 1 }
-            Label("\(count)")
+            Text("\(count)")
         }
     }
 }
@@ -269,17 +269,14 @@ its own inspector window:
 
 ```swift quote
 struct EditorScene: Scene {
-    var windows: Windows {
-        Windows {
-            WindowGroup(.debugInspector) { DebugInspector() }
-        } main: {
-            EditorWindow()
-        }
+    var body: some Scene {
+        WindowGroup { EditorPage() }
+        Window(.debugInspector) { DebugInspector() }
     }
 }
 
-// Inside a page with SceneSession and PageSession environments:
-.onCreated { page.toolbarItems = [.inspector(scene)] }
+// Inside a page with a WindowSession environment:
+.toolbar { ToolbarItem.inspector(window) }
 ```
 
 The inspector shows what caused each pass, whether a composed view was built,
@@ -290,10 +287,10 @@ it pay only disabled checks.
 Set `STATEUI_INSPECT=1` in the host process to emit the same render record as
 diagnostic text from the first pass. Use this for automated runs or a problem
 that happens before the inspector can be opened. `STATEUI_TALLY=1` writes the
-running totals instead: messages applied, controls made and kept, renders, and
-the elements alive - the numbers that tell a page left in memory from one let
-go. Both go to the standard error, which an Android application sends to
-logcat; `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the
+running totals instead: messages applied, controls made and kept, renders, the
+elements alive and the host's native views alive - the numbers that tell a page
+left in memory from one let go. Both go to the standard error, which an Android
+application sends to logcat; `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the
 shell that runs it to the application:
 
 ```bash

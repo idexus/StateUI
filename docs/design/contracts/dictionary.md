@@ -2,14 +2,15 @@
 
 `docs/controls/` holds one page per element contract and per tier, and
 `docs/platform-contract.md` is the implementation matrix. Wherever a
-contract can say it, both are rendered from the contracts and the hosts'
-declarations, so the handbook cannot drift from the code.
+contract can say it, both are rendered from the contracts and the verdicts
+the hosts' test runs write, so the handbook cannot drift from the code.
 
 ## Rendered from the contracts
 
 ```text
   an element contract
       first paragraph of its doc  ------------->  the opening of its page
+      its example  ---------------------------->  a Swift block under that paragraph
       layer  ---------------------------------->  the "Layer:" line; the meaning comes
                                                   from ElementLayer's case docs
       tiers, as worn  ------------------------->  "Inherits:", and a table per tier
@@ -20,9 +21,10 @@ declarations, so the handbook cannot drift from the code.
                                                   there, why a mark is empty
   a tier contract
       first paragraph  ------------------------>  the tier's page
+      its example  ---------------------------->  a Swift block under that paragraph
       first sentence  ------------------------->  the tier list, and the line over the
                                                   tier's table on every element page
-  each host's written declaration + its export  ->  the marks and their notes
+  each host's verdict files (exports/marks)  --->  the marks and their notes
   the matrix's native mapping  ---------------->  the hosts table's "Realization" column
   the views' on... modifiers  ----------------->  the modifier an event is heard through
 ```
@@ -39,14 +41,47 @@ opens the element's page, and a tier's first sentence stands alone in the
 tier list and above the tier's table on every element page that wears it.
 So a contract's first paragraph says what the element is, in plain words, to
 someone reading the dictionary: no example, no reference, and a first
-sentence that stands on its own. Detail and examples belong to the view's
-own documentation.
+sentence that stands on its own. Detail belongs to the view's own
+documentation, and the page's example to the dictionary (Examples).
+
+## Examples
+
+Every page shows its contract in use right under its first paragraph: a
+short Swift block, before the hosts and the members. An element's example
+declares it as an application does - a control with its purpose value and a
+modifier or two, a structure part through the modifier or the arrangement
+that declares it (`.toolbar { }`, `.overlays { }`, `ModalStack`); a tier's
+example writes its members on one of the elements wearing it.
+
+The examples are written once, in the dictionary's own source,
+`ControlDictionaryExamples.swift` beside `ControlDictionary.swift` in the
+core's tests: one entry per contract, keyed by the contract type, so an
+example of a contract that is gone does not compile.
+`ControlDictionaryTests` refuses a contract with no example or with two, and
+an example of a contract with no page. The renderer copies each into its
+page, and the Gallery's `DocumentationExamplesTests` compiles each block of
+the pages as it compiles every block of the handbook - against the public
+module, `import StateUI`, as an application is compiled. The core's own
+tests import the library `@testable`, where an internal member compiles
+too, so the examples are held as text there and proved where the handbook
+is.
+
+An example is self-contained: it declares the state it reads, as a
+function body - `@State var count = 0` beside the control - or as the types
+of a small application where its contract is one (`Application`, `Scene`,
+`Window`, an arrangement).
+
+A provider's element a host may not realize - a `Map` - shows under its
+example what an application registers with such a host
+(`ControlDictionary.registrations`): a sentence, and the
+registration quoted - `swift quote`, never compiled, since it is written
+against a host's facade and the handbook compiles against `StateUI` alone.
 
 ## Marks
 
 A mark is a test's verdict. A host's column shows only what its own suite's
 run of the conformance families said of each member on each element: the
-run writes one verdict a line under `exports/marks/<host>/<Family>.txt`,
+run writes one verdict a line under `lib/StateUI/exports/marks/<host>/<Family>.txt`,
 and the dictionary reads those files and nothing else. A host none of whose
 runs wrote a verdict has an empty column, whatever it implements.
 
@@ -57,16 +92,26 @@ a host writes by hand and what its runtime registers - and by the case:
   Button.clicked: ✅               a passing case proved it
   DatePicker.format: ☑️ <missing>  proved, while the register says what is missing
   Map: – <why>                     the host's family never has it
+  Marker.label: 🧩                    the host leaves it to the application, which
+                                   registers its own control for it
   Line.x1: not realized            empty: the host has no realization yet
   TextField.submitted: cannot ...  empty: the driver cannot do or read it, and why
   SplitView: waits on <member>     empty: realized, its case stopped by a member
                                    the host does not realize yet
   Switch.toggled: ❌ <failure>      a case proving it failed, its first failure
-  Label.lineBreak: ◐ <why>         one case proved it, another could not run or read
+  Text.lineBreak: ◐ <why>         one case proved it, another could not run or read
 ```
 
 A case runs only where the host realizes every member it covers; a member
-the register calls never is marked – without the case running. The element
+the register calls never is marked – without the case running, and one of an
+element the register leaves to the application (`byApplication`) - a map on
+a platform with none of its own - is marked 🧩 so. A – counts as met: the
+host has done all it will, and the contract is kept there by the family's
+nature. A member proven only through the host's own entry or record, ✓,
+counts as met too - it works and its effect is proven, by weaker evidence.
+A 🧩 is shown and not counted: what the user gets there is the
+application's. Every total gives each mark counted as met a row of its own,
+and 🧩 one, so the evidence stays in sight beside the sum. The element
 itself has a verdict of its own, `Button: ✅`: the creation table's mark, and
 the "Created" cell of the hosts table that opens the element's page, above
 its own members and then its tiers'. Every view has one case that proves it
@@ -95,8 +140,10 @@ reason, an unrealized one on a tier.
 
 ```text
   ✅   proven by every test of it that ran on that host
+  ✓    proven only through the host's own entry or read, which the driver names
   ☑️   proven, but the host records what is missing
   –    never on that host's family; its register or an absence case says why
+  🧩   left to the application's own registration on that host
   ❌   a test of it failed; ◐ some tests proved it, another could not
   ·    the driver cannot yet do or read what its test needs; ⏸ its test waits
   ⌛   said at another revision of its family than it stands at (Fresh verdicts)
@@ -108,7 +155,7 @@ reason, an unrealized one on a tier.
 A verdict stands until a change changes what its family's cases prove, and
 the one who makes such a change says so. The conformance package, where the
 families are, holds the revision each stands at in
-`lib/StateUI.Conformance/revisions.txt` - a line naming the family alone on
+`lib/StateUI/StateUI.Conformance/revisions.txt` - a line naming the family alone on
 every host, a line naming a host and the family on that host alone, 1 where
 no line names it (`HostVerdict.revision`). A change to the cases, or to what every host
 decides alike, raises the family's own; a change one host alone makes raises
@@ -149,6 +196,6 @@ case judges stays empty with why.
 pages and the matrix's blocks again. Without the variable, the suite refuses
 a document that differs from what the contracts render, a line that is no
 verdict, and a verdict on what no contract of its element declares. A change
-to a contract's first paragraph, a member or a layer is committed together
+to a contract's first paragraph, its example, a member or a layer is committed together
 with the pages it renders; a host's verdicts are written again through that
 host's own suite, with `STATEUI_UPDATE_EXPORTS=1`, and the pages after them.

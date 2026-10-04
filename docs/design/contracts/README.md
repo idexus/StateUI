@@ -1,13 +1,14 @@
 # Element contracts
 
 Every node type exists through one element contract: an enum in
-`lib/StateUI/Sources/Contracts/Elements` naming the node type, the layer that
+`lib/StateUI/Core/Sources/Contracts/Elements` naming the node type, the layer that
 realizes it, the tiers it wears, and each member with the type of its value.
 A tier, in `Contracts/Tiers` or - one group of members - `Contracts/Mixins`,
 is a contract with no node type of its own: members several elements share,
 declared once. The contracts stand in the same topic folders as their views:
-`Controls`, `Text`, `Layouts`, `Shapes`, `Collections`, `Structure`, `Slots`,
-`Navigation`, `Menus`. Views, the differ, the hosts,
+`Controls`, `Text`, `Layouts`, `Shapes`, `Collections`, `Structure`,
+`Navigation`, `Menus`; the slots' stand in `Slots`, their views in
+`Structure`. Views, the differ, the hosts,
 the handbook's dictionary and the guards all read the same declarations, so
 a property and its value meet in the compiler and nothing is spelled twice.
 
@@ -27,15 +28,15 @@ a property and its value meet in the compiler and nothing is spelled twice.
 ## One declaration per node type
 
 ```text
-  public enum LabelContract: ElementContract
-      nodeType   "Label"                  the name a host resolves; the contract's own name
+  public enum TextContract: ElementContract
+      nodeType   "Text"                  the name a host resolves; the contract's own name
       layer      .native                  who realizes the element
-      tiers      View, TextElement, FontElement, TextAlignmentElement,
+      tiers      View, TextualElement, FontElement, TextAlignmentElement,
                  LineHeightElement, DecorableTextElement, PaddingElement
       members    lineBreak      ElementProperty<Self, LineBreak>
                  maximumLines   ElementProperty<Self, Int>     travels: false
 
-  LabelContract.worn    Label, View, VisualElement, PropertyContainer, TextElement,
+  TextContract.worn    Text, View, VisualElement, PropertyContainer, TextualElement,
                         TextStyleElement, FontElement, TextAlignmentElement, ...
                         every tier once, nearest first
 ```
@@ -49,7 +50,7 @@ A member is one of three kinds, each carrying the types it holds:
 ```
 
 A member's name is the name of the static member holding it, and it is what
-crosses the boundary: `LabelContract.maximumLines` crosses as the property
+crosses the boundary: `TextContract.maximumLines` crosses as the property
 `maximumLines`. A node type's name is its contract's name without
 `Contract`. Every member a contract declares is on its `members` list, and
 the list names nothing else: the list is what the dictionary shows and what
@@ -60,8 +61,8 @@ a host is held to.
 ```text
   a contract: node type, layer, tiers, members and their value types
       |
-      +--> views           Node(contract: LabelContract.self)
-      |                    setValue(LabelContract.maximumLines, 3)       a modifier writes a member
+      +--> views           Node(contract: TextContract.self)
+      |                    setValue(TextContract.maximumLines, 3)       a modifier writes a member
       |                    onEvent(DatePickerContract.dateChanged) {...}  a handler hears it typed
       |                    Aim.call, stateUICall, HostEvents.on           acts and application events
       |

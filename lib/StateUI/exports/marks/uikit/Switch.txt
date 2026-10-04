@@ -1,0 +1,6 @@
+# revision 1.1
+Switch: ✅
+Switch.frameChanged: ✅
+Switch.isOn: ✅
+Switch.toggled: ✅
+Text.text: ✅

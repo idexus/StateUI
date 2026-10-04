@@ -2,7 +2,7 @@ import StateUI
 
 /// Native window identity, geometry, constraints, operations and translucency.
 struct WindowSample: SampleContent, ExampleContent {
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
     @State private var renames = 0
     @State private var maximizable = true
@@ -16,10 +16,10 @@ struct WindowSample: SampleContent, ExampleContent {
     static let summary = "Change the native window while it stays on screen."
 
     static let code = """
-        struct MainWindow: Window {
-            @Environment private var window: WindowSession
+        struct MainPage: View {
+            @Environment(\\.window) private var window
 
-            var page: any Page {
+            var body: some View {
                 HomePage()
                     .onCreated {
                         window.title = "Notes"
@@ -38,7 +38,7 @@ struct WindowSample: SampleContent, ExampleContent {
             }
         }
 
-        @Environment private var window: WindowSession
+        @Environment(\\.window) private var window
         @State private var maximizable = true
         @State private var minimizable = true
         @State private var translucent = false
@@ -70,13 +70,18 @@ struct WindowSample: SampleContent, ExampleContent {
             .onCreated { translucent = window.isTranslucent == true }
         """
 
-    var notes: Element? { nil }
+    var notes: (any View)? {
+        Text("On an iPad and a phone the system sizes and places a window - the user drags its corner - "
+            + "so the size, the place, maximizing, minimizing and translucency do nothing there.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label(window.title ?? "Platform title")
+            Text(window.title ?? "Platform title")
                 .fontSize(15)
                 .fontAttributes(.bold)
 
@@ -125,7 +130,7 @@ struct WindowSample: SampleContent, ExampleContent {
                     window.isTranslucent = translucent
                 }
 
-            Label("Sample frame: \(Int(width)) × \(Int(height))")
+            Text("Sample frame: \(Int(width)) × \(Int(height))")
                 .fontSize(13)
                 .textColor(Palette.accent)
         }
@@ -140,20 +145,20 @@ struct WindowSample: SampleContent, ExampleContent {
     }
 
     /// An action that writes the surrounding window session.
-    private func action(_ title: String, _ write: @escaping () -> Void) -> any View {
+    private func action(_ title: String, _ write: @escaping () -> Void) -> some View {
         Button(title)
             .fontSize(13)
-            .padding(16, 6)
+            .padding(horizontal: 16, vertical: 6)
             .onClicked { write() }
     }
 
     /// A native boolean window capability.
-    private func option(_ title: String, id: String, value: Binding<Bool>) -> any View {
+    private func option(_ title: String, id: String, value: Binding<Bool>) -> some View {
         HStack {
             Switch(value)
                 .accessibilityIdentifier(id)
                 .accessibilityLabel(title)
-            Label(title).verticalAlignment(.center)
+            Text(title).verticalAlignment(.center)
         }
         .spacing(8)
     }

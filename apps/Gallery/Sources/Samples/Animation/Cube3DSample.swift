@@ -54,7 +54,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
             public static let members: [any ContractMember] = [size, color, isSpinning]
         }
 
-        public struct Cube3D: View {
+        public struct Cube3D: ElementView {
             public var node = Node(contract: Cube3DContract.self)
 
             public init() {}
@@ -97,7 +97,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .color(CubeColor(rawValue: Int32(color)) ?? .teal)
                 .isSpinning(spinning)
 
-            Label()
+            Text()
                 .text($size.journey.convert { "Edge: \\(Int($0.value * 100))% of the view" })
 
             Slider($size)
@@ -106,10 +106,10 @@ struct Cube3DSample: SampleContent, ExampleContent {
 
             Picker(Self.colors)
                 .selectedIndex($color)
-                .title("Color")
+                .placeholder("Color")
 
             HStack {
-                Label("Spin")
+                Text("Spin")
 
                 Switch($spinning)
             }
@@ -841,7 +841,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
             """))
     #endif
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -853,7 +853,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Cube")
                 .horizontalAlignment(.center)
 
-            Label()
+            Text()
                 .text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
@@ -869,10 +869,10 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("cube3D.color")
                 .accessibilityLabel("Color")
                 .selectedIndex($color)
-                .title("Color")
+                .placeholder("Color")
 
             HStack {
-                Label("Spin")
+                Text("Spin")
                     .fontSize(14)
                     .verticalAlignment(.center)
 
@@ -922,13 +922,13 @@ struct Cube3DSample: SampleContent, ExampleContent {
         + "nothing is left turning behind a page you have left."
     #endif
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label(Self.drawnBy)
+            Text(Self.drawnBy)
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The edge is HANDED OVER: `.size($size)` gives the host the state "
+            Text("The edge is HANDED OVER: `.size($size)` gives the host the state "
                 + "itself, and the caption is a conversion of that same journey. Nothing "
                 + "here reads `size`, so a drag builds this example not once - the cube "
                 + "grows and the number counts up on the host's own frames. The colour "
@@ -937,19 +937,19 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Nothing about the drawing crosses. What travels is a number, a "
+            Text("Nothing about the drawing crosses. What travels is a number, a "
                 + "vocabulary member and a flag; the corners, the matrix and the frames "
                 + "are the host's own, and this side never learns they exist.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Turning the spin off stops the host's render loop rather than hiding "
+            Text("Turning the spin off stops the host's render loop rather than hiding "
                 + "it: the cube holds the angle it had, and a changed size or colour "
                 + "still draws the one frame it needs. " + Self.stopsWith)
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("One `Cube3D` on this side, drawn by each host in its own way. An "
+            Text("One `Cube3D` on this side, drawn by each host in its own way. An "
                 + "element only some hosts can honestly realize is declared only for "
                 + "them - this one stands under the same condition as its sample, so no "
                 + "other host is held to a promise it cannot keep.")

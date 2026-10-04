@@ -1,0 +1,11 @@
+# revision 2.1
+DatePicker: ✅
+DatePicker.closed: not realized
+DatePicker.date: ✅
+DatePicker.dateChanged: ✓ pickDate on DatePicker: the host's change handler called, not the picker's action
+DatePicker.format: not realized
+DatePicker.frameChanged: ✅
+DatePicker.isOpen: not realized
+DatePicker.maximumDate: ✅
+DatePicker.minimumDate: ✅
+DatePicker.opened: not realized

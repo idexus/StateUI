@@ -2,9 +2,9 @@ import StateUI
 
 /// The native window lifecycle recorded through `WindowSession.phase`.
 struct LifecycleSample: SampleContent, ExampleContent {
-    /// The window's log, kept with the gallery. It is written by `MainWindow`,
-    /// which watches its window's phase - see Gallery/MainWindow.swift - and
-    /// this sample only reads it.
+    /// The window's log, kept by its gallery window. It is written by `MainPage`
+    /// as the window is made and by `WindowPhaseLog` as its phase moves - see
+    /// Gallery/WindowLog.swift - and this sample only reads it.
     let log: WindowLog
 
     static let id = "lifecycle"
@@ -22,12 +22,12 @@ struct LifecycleSample: SampleContent, ExampleContent {
             }
         }
 
-        struct MainWindow: Window {
-            @Environment private var window: WindowSession
+        struct MainPage: View {
+            @Environment(\\.window) private var window
             @State private var menuOpen = false
             let log: WindowLog
 
-            var page: any Page {
+            var body: some View {
                 SplitView($menuOpen) { MenuPage() } detail: { HomePage() }
                     .onCreated { log.note("created") }
                     .onChanged(window.phase) { log.note("\\(window.phase)") }
@@ -38,16 +38,16 @@ struct LifecycleSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ForEach(log.events) { row in
-                Label(row)
+                Text(row)
             }
         }
         """
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label("What the window has said so far, newest last:")
+            Text("What the window has said so far, newest last:")
                 .fontSize(14)
                 .textColor(Palette.subtle)
 
@@ -55,13 +55,13 @@ struct LifecycleSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
 
                 if log.events.isEmpty {
-                    Label("nothing yet - switch away and back")
+                    Text("nothing yet - switch away and back")
                         .fontSize(15)
                         .textColor(Palette.subtle)
                 }
 
                 ForEach(log.events) { row in
-                    Label(row)
+                    Text(row)
                         .fontSize(15)
                 }
             }

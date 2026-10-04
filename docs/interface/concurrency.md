@@ -71,7 +71,7 @@ Linux: nothing drains it there. Work for the UI thread goes to `MainActor`.
 
 Each `@State` value has synchronized storage. Independent reads and writes are
 safe from any thread. A read-modify-write operation must remain one operation;
-use the projected box's `update` method:
+use the box's `update` method:
 
 ```swift
 @State var total = 0
@@ -124,12 +124,12 @@ interface clock, use `Ticker`, which advances a deadline and spends that
 lateness instead of adding it to the next interval.
 
 ```swift
-struct Countdown: ContentView {
+struct Countdown: View {
     @State private var ticker = Ticker(every: .seconds(1), limit: 10)
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label("\((ticker.limit ?? 0) - ticker.ticks)")
+            Text("\((ticker.limit ?? 0) - ticker.ticks)")
 
             Button(ticker.isRunning ? "Stop" : "Start")
                 .onClicked {
@@ -168,7 +168,7 @@ not overlap:
 @State private var status = "Waiting"
 @State private var poll = Ticker(every: .seconds(30), isRepeating: false)
 
-VStack { Label(status) }
+VStack { Text(status) }
     .onCreated {
         poll.onTick = {
             status = await service.status()

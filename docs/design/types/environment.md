@@ -2,25 +2,39 @@
 
 The battery, the network, the display, the locale, the device, the
 application's manifest and its phase are state the host holds and the core
-can only be told about. Each is a provider object of `@State` properties,
-offered to every view the way an object an ancestor provides is.
+can only be told about. Each is an object of `@State` properties, offered to
+every view the way an object an ancestor provides is, and read by its name.
 
 ## The standard environment
 
 ```text
-  Battery              chargeLevel, state, powerSource, energySaverStatus
-  Connectivity         networkAccess, connectionProfiles
-  DeviceDisplay        width, height, density, orientation, rotation, refreshRate
-  LocaleInfo           language, region, name, timeZone, uses24HourClock, firstDayOfWeek, isMetric
-  DeviceInfo           formFactor, platform, model, manufacturer, name, versionString, deviceType
-  AppInfo              name, packageName, versionString, buildString, requestedTheme
-  ApplicationSession   phase, and what the application writes: styles, motion, kept keys
+  \.device        Device
+                     info          formFactor, platform, model, manufacturer, name, versionString, deviceType
+                     display       width, height, density, orientation, rotation, refreshRate
+                     battery       chargeLevel, state, powerSource, energySaverStatus
+                     connectivity  networkAccess, connectionProfiles
+  \.locale        LocaleInfo      language, region, name, timeZone, uses24HourClock, firstDayOfWeek, isMetric
+  \.application   ApplicationSession
+                     info          name, packageName, versionString, buildString, colorScheme
+                     phase, and what the application writes: styles, motion, kept keys
+  \.scene, \.window   the sessions a view stands in
 ```
 
-A view resolves one with `@Environment var battery: Battery`. Nothing is
-registered and nothing is passed down: the type is the key, the standard
-rule. The objects live for the process, and a view that reads none of them
-costs nothing.
+A view reads one by its name, `@Environment(\.device) private var device`, and
+then the fact it shows, `device.battery.chargeLevel`. Nothing is registered
+and nothing is passed down: the name stands for the object's type, and the
+scope is keyed by type, the rule an application's own objects follow. The
+objects live for the process, and a view that reads none of them costs
+nothing.
+
+## Read by name only
+
+What the library offers has one spelling, its name (`EnvironmentValues`). The
+type spelling, `@Environment var device: Device`, compiles - nothing in the
+type system tells the library's objects from an application's - so it is
+refused as the view is made, the message naming `@Environment(\.device)`
+(`Environment.refusal`). An object the application provides with
+`.environment(_:)` has no name in the library and is read by its type.
 
 ## How the host writes it
 
@@ -28,7 +42,7 @@ The host seeds every provider before the first render, so the first tree
 already knows its form factor and its locale, and writes again whenever the
 platform reports a change. A host writes through `HostBoundary`, one setter
 per provider - `setBatteryInfo`, `setConnectivityInfo`, `setDisplayInfo`,
-`setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setTheme`, and
+`setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setColorScheme`, and
 `setApplicationPhase` - each with the whole report, typed.
 
 ## Exactly the readers rebuild
@@ -65,7 +79,7 @@ UI thread, which is why the instances can be `nonisolated(unsafe)`.
 
 ## Open sets are text
 
-`DeviceInfo.platform` is text, not a vocabulary: the set of platforms is
+`device.info.platform` is text, not a vocabulary: the set of platforms is
 open, and a host may name one this release does not know. `FormFactor`
 tells apart devices that share an operating system, such as a phone and a
 tablet, which `stateUIPlatform()`, compiled in, never can.

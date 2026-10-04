@@ -27,7 +27,7 @@ tree that holds the tabbed view is still being made.
 ## A page's phases
 
 A page tree shown hears it in its turn (`setPagePresented`): a page is
-appearing, and navigated to where it came by a move; hidden, it is navigated
+appearing, and navigated to where it came by a move; hidden, it is navigating
 from, disappearing and navigated from, the move's words around the
 disappearing. An arrangement hands it on to what it shows: a stack to its top
 page, as a move where its window came; a tabbed view to its tab and a split
@@ -70,15 +70,93 @@ A window's way back (`WindowPresentation.wayBack`) takes the top sheet first:
 its own stack's top page where it can go back, else the sheet itself; with no
 sheet, the arrangement's stack. A stack can go back where it holds more than
 one page and its top page shows its bar and its way back. Going back tells the
-stack it is one page shorter, or the window how many sheets remain
-(`HostRuntime.goBack`).
+stack it is one page shorter, or the window's modal stack how many sheets
+remain (`HostRuntime.goBack`).
 
 ## Slots
 
-A page's title view and a title bar's leading content, content and trailing
-content are slots. What stands in one is the first element under the slot
-that shows a view of its own (`slotContent`); an element with no view of its
-own is shown by the first under it that has one (`presentingElement`).
+A title view is a slot. What stands in it is the first element under the
+slot that shows a view of its own (`chromeTitleView`); an element with no
+view of its own is shown by the first under it that has one
+(`presentingElement`).
+
+A declaration - a toolbar, a title view, a menu bar, a context menu - is a
+child of whatever element it is declared on, a page, a stack or a button,
+and furnishes the chrome from there: no layout places it, and no element
+with no view of its own is shown by it (`arrangedChildren`). Every host
+lays out and flattens through that one list, so a title view's field stands
+in the bar alone, measured by itself, and never also in the page's room.
+
+## The visible path
+
+A page's chrome takes what is declared on its path (`declared`): the slots of
+each arrangement around the page, from the outermost in, then what the
+page's own tree declares, in the tree's order. Each carries its level - the
+outermost arrangement's 0, the page's own last. The path ends at the window
+and at a sheet's modal stack, so a sheet starts one of its own - a modal
+stack's root stands on the path around the stack - and so does a split
+view's sidebar, which is not on the path; a native
+collection's items belong to no page. A page that goes takes its
+declarations with it, and what the levels around it declare stands as it
+stood: nothing is restored, because nothing was overwritten.
+
+## The actions of a path
+
+One toolbar group is one declaration: its items share one background where
+the platform groups a bar's actions. A group whose `.id` was declared further
+out joins that group, which stands where its outermost declaration put it.
+At each edge the groups stand by their `order`, then with the outer ones in
+place at the edge - first at the leading edge, last at the trailing - so an
+action of the window keeps its place from page to page and a page's own come
+in from the title's side; then as declared. The same key orders the
+declarations inside a joined group. An item whose `.id` an item further out
+has stands in that item's place, which the others of that id leave; a group
+left with nothing is none. The items placed in the overflow leave their
+groups for it, in the order composed (`ChromeActions`). A bar that draws no
+groups takes the trailing actions in reading order (`primary`).
+
+## The menus of a path
+
+The menu bar a page's window shows is composed from the menu bars its path
+declares (`ChromeMenus`), by the rule the actions follow. A menu whose `.id`
+was declared further out joins that menu, which its outermost declaration
+heads - its caption, whether it opens - and places. The menus and the
+sections inside a joined one stand by their declaration's `order`, then the
+outer first, then as declared: a page's entries come after the window's as
+a section of their own, parted by a line, and a page's own menus after the
+window's. An entry whose `.id` an entry further out has stands in that
+entry's place - its words, whether it can be chosen, its element - which the
+others of that id leave; a section left with nothing is none. A menu whose
+`.id` is a `StandardMenu` names the platform's menu of that identity
+(`standard`), which the host joins by it, never by its caption.
+
+## The bar a path declares
+
+What an arrangement declares of the bar - its colours, and the application's
+name, the line under the title and its mark - is a value on the arrangement
+(`BarElement`), not a declaration: each value of a page's bar is the nearest
+on its path, its own arrangement included (`barValue`), so a stack further in
+paints its own bar and the window's page still names the application. The
+path is the declarations' (`arrangementsAround`), but for a split view's
+sidebar, which wears its own split view's bar - a split view's bar is both its
+panes', so its colours paint a sidebar's own bar where a platform draws one
+(`barArrangements`) - and nothing from around the split view; a sheet takes
+nothing from around it. The colours are `barColors`; the name, the line and
+the mark are the title area (`titleArea`), none where none is declared, an
+empty line or picture none. A host shows the title area where its platform
+names the application - a desktop's window chrome - and the line under the
+title wherever a bar has one.
+
+## The overlays of a window
+
+A window lays over what it shows the overlays declared along each page it
+shows (`WindowPresentation.overlays`): the arrangement's visible path, the
+outer under the inner, then each sheet's in turn, then the window's own - the
+library's docked inspector - over every other. Each is one layer holding the
+views declared together. A page that stops being shown - a page pushed over
+it, a tab chosen away - takes its overlays with it; nothing is restored,
+because nothing was overwritten. A modal stack standing as the window's page
+is shown as its root under its sheets.
 
 ## The window's chrome
 
@@ -87,17 +165,17 @@ of the page that names it (`titledPage`) - the visible page, but tabs on a
 stack are its last place and name the window by their own title, else by the
 page beneath, never by what they show, their pages naming their tabs alone -
 else the window's, else the host's own; the way back, in the
-words the page beneath gives, else "Back"; the visible page's actions - none
-where it hides its bar - by priority, then in the order written, those placed
-in the overflow apart; the title bar's content in the title's place, else the
-page's title view, and the title bar's leading and trailing content beside
-it; the bars' colours (`barColors`) from the nearest stack or tabbed view
-around the visible page, else the title bar, and what stands on them from the
-nearest stack, else the title bar; the visible page's menu bar; and the
-sidebar's toggle where the window shows a split view. A host lays these out
+words the page beneath gives, else "Back"; the actions the visible page's
+path declares (`chromeActions`) - none where the page hides its bar - each
+showing its words beside its picture where it says so and always where it
+has none (`showsActionWords`); the title view the path declares in the
+title's place (`chromeTitleView`); the title area and the bars' colours the
+path declares ([the bar a path declares](#the-bar-a-path-declares)); the menus
+its path declares
+(`chromeMenus`); and the sidebar's toggle where the window shows a split view. A host lays these out
 in its own chrome. A host whose pages each stand under a header bar of their
-own takes the same parts page by page: a page's actions (`chromeActions`)
-and its bar's colours.
+own takes the same parts page by page: a page's actions (`chromeActions`),
+its title view (`chromeTitleView`), and its bar's colours and the line under its title.
 
 A stack shows its bar over what stands on it once (`showsTheStacksBar`): over
 a page that keeps its bar, and over tabs or a split view only where the page

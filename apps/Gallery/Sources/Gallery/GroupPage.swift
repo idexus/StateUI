@@ -7,12 +7,9 @@ import StateUI
 /// One type for every group rather than one page per category - a group differs
 /// by what is in it, and nothing else. Adding a category is a line in the
 /// catalog, not a file.
-struct GroupPage: ContentView {
-    /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
-
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
+struct GroupPage: View {
+    /// The gallery this page is in - its scene.
+    @Environment(\.scene) var scene
 
     let group: SampleGroup
 
@@ -20,16 +17,16 @@ struct GroupPage: ContentView {
     let nav: Navigation
 
     /// Which kind of device this is - what decides which samples are listed.
-    @Environment var device: DeviceInfo
+    @Environment(\.device) var device
 
-    var content: any View {
+    var body: some View {
         ScrollView {
             VStack {
-                Label(group.title)
+                Text(group.title)
                     .fontSize(28)
                     .fontAttributes(.bold)
 
-                Label(group.summary)
+                Text(group.summary)
                     .fontSize(14)
                     .textColor(Palette.subtle)
 
@@ -38,7 +35,7 @@ struct GroupPage: ContentView {
                 // route rather than as a string in a dictionary.
                 // `shown`, not `samples`: a sample about desktop chrome is not
                 // listed on a phone.
-                ForEach(group.shown(on: device.formFactor), id: \.id) { sample in
+                ForEach(group.shown(on: device.info.formFactor), id: \.id) { sample in
                     Card(sample.title, summary: sample.summary) {
                         nav.push(.sample(sample.id))
                     }
@@ -47,6 +44,6 @@ struct GroupPage: ContentView {
             .spacing(14)
             .padding(24)
         }
-        .onCreated { page.gallery(group.title, scene: scene, nav: nav) }
+        .galleryPage(group.title)
     }
 }

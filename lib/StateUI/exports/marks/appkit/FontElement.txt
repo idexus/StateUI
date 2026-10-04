@@ -1,0 +1,41 @@
+# revision 1.1
+Button.fontAttributes: ✅
+Button.fontFamily: ✅
+Button.fontSize: ✅
+Button.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+DatePicker.fontAttributes: ✅
+DatePicker.fontFamily: ✅
+DatePicker.fontSize: ✅
+DatePicker.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+Picker.fontAttributes: ✅
+Picker.fontFamily: ✅
+Picker.fontSize: ✅
+Picker.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+RadioButton.fontAttributes: ✅
+RadioButton.fontFamily: ✅
+RadioButton.fontSize: ✅
+RadioButton.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+SearchField.fontAttributes: ✅
+SearchField.fontFamily: ✅
+SearchField.fontSize: ✅
+SearchField.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+Text.fontAttributes: ✅
+Text.fontFamily: ✅
+Text.fontSize: ✅
+Text.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+TextEditor.fontAttributes: ✅
+TextEditor.fontFamily: ✅
+TextEditor.fontSize: ✅
+TextEditor.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+TextField.fontAttributes: ✅
+TextField.fontFamily: ✅
+TextField.fontSize: ✅
+TextField.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
+TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - AppKit's driver has no path for it yet
+TextSpan.fontFamily: not realized
+TextSpan.fontSize: not realized
+TextSpan.isFontAutoScalingEnabled: not realized
+TimePicker.fontAttributes: ✅
+TimePicker.fontFamily: ✅
+TimePicker.fontSize: ✅
+TimePicker.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.

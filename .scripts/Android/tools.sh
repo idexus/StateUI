@@ -48,12 +48,12 @@ gradle_binary () {
 build_head () {
   local app="$1" product="$2" configuration="$3" abi="$4" head build java gradle apk task
   head="$app/Platforms/Android"
-  build="$app/.build-android"
+  build="$app/.build/android"
   [[ -f "$head/build.gradle.kts" ]] || { echo "ERROR: $(basename "$app") has no Android head ($head)" >&2; return 1; }
 
   # A command substitution runs this function without `set -e`, so every
   # step that can fail says so: a failed build must never package the last one.
-  STATEUI_ANDROID=1 SWIFT_CONFIG="$configuration" ABIS="$abi" \
+  STATEUI_HOST=android SWIFT_CONFIG="$configuration" ABIS="$abi" \
     "$script_dir/build-swift.sh" "$app" "$product" "$build" >&2 || return 1
 
   # Android draws no SVG: the application's pictures are drawn for it, into the APK's assets.
@@ -84,7 +84,7 @@ build_head () {
     --project-cache-dir "$build/gradle-project" \
     --console=plain --quiet \
     -Pstateui.build="$build/gradle" \
-    -Pstateui.java="$repository_dir/lib/StateUI.Android/Java" \
+    -Pstateui.java="$repository_dir/lib/StateUI/StateUI.Android/Java" \
     -Pstateui.libraries="$build/jniLibs" \
     -Pstateui.assets="$build/assets" \
     -Pstateui.res="$build/res" \

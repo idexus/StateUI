@@ -32,15 +32,18 @@ uikit_build () {
   "${build[@]}" --show-bin-path
 }
 
-# uikit_bundle <binary-dir> <product> <name> <identifier> <resources-dir or ""> <bundle> <tools-dir> [device-udid]
+# uikit_bundle <binary-dir> <product> <name> <identifier> <resources-dir or ""> <bundle> <tools-dir>
+#              <own-info-plist or ""> [device-udid]
 # Assembles <bundle> for the target set: the binary, the StateUI libraries in
 # Frameworks/, the pictures of <resources-dir>/Images with each SVG drawn
 # three times over, the icon drawn from <resources-dir>/AppIcon, an Info.plist
-# whose scenes are many. For the simulator it is signed ad hoc; for a device,
-# with the development certificate and profile that let it run on the device
+# whose scenes are many, joined by the application's own keys - theirs where
+# both say one. For the simulator it is signed ad hoc; for a device, with the
+# development certificate and profile that let it run on the device
 # <device-udid>.
 uikit_bundle () {
-  local binary_dir="$1" product="$2" name="$3" identifier="$4" resources="$5" bundle="$6" tools="$7" device="${8:-}"
+  local binary_dir="$1" product="$2" name="$3" identifier="$4" resources="$5" bundle="$6" tools="$7"
+  local own="$8" device="${9:-}"
   rm -rf "$bundle"
   mkdir -p "$bundle/Images" "$bundle/Frameworks" "$tools"
   cp "$binary_dir/$product" "$bundle/$product"
@@ -64,7 +67,7 @@ uikit_bundle () {
   plutil -insert CFBundleInfoDictionaryVersion -string 6.0 "$plist"
   plutil -insert CFBundleName -string "$name" "$plist"
   plutil -insert CFBundlePackageType -string APPL "$plist"
-  plutil -insert CFBundleShortVersionString -string 0.4.0 "$plist"
+  plutil -insert CFBundleShortVersionString -string 0.5.0 "$plist"
   plutil -insert CFBundleVersion -string 1 "$plist"
   plutil -insert CFBundleSupportedPlatforms -array "$plist"
   plutil -insert CFBundleSupportedPlatforms.0 -string "$platform" "$plist"
@@ -82,6 +85,17 @@ uikit_bundle () {
     UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown; do
     plutil -insert UISupportedInterfaceOrientations -string "$orientation" -append "$plist"
   done
+
+  if [[ -n "$own" && -f "$own" ]]; then
+    python3 - "$own" "$plist" <<'MERGE' || { echo "ERROR: $own is no property list" >&2; return 1; }
+import plistlib, sys
+own, target = sys.argv[1:3]
+with open(own, "rb") as file: keys = plistlib.load(file)
+with open(target, "rb") as file: merged = plistlib.load(file)
+merged.update(keys)
+with open(target, "wb") as file: plistlib.dump(merged, file)
+MERGE
+  fi
 
   if [[ -n "$resources" && -f "$resources/AppIcon/appicon_bkg.svg" && -f "$resources/AppIcon/appicon_mark.svg" ]]; then
     uikit_icon "$resources/AppIcon" "$bundle" "$tools" || return 1

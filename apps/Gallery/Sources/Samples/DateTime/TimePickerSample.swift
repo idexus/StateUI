@@ -21,7 +21,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
             TimePicker($alarm)
                 .format("t")
 
-            Label("Alarm at \\(alarm.text)")
+            Text("Alarm at \\(alarm.text)")
 
             HStack {
                 Button("Morning")
@@ -44,13 +44,13 @@ struct TimePickerSample: SampleContent, ExampleContent {
                     picks += 1
                 }
 
-            Label(picks == 0
+            Text(picks == 0
                 ? "onTimeChanged has not fired"
                 : "onTimeChanged: \\(alarm.text), \\(picks) so far")
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -59,24 +59,24 @@ struct TimePickerSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Alarm")
                 .format("t")
 
-            Label("Alarm at \(alarm.text)")
+            Text("Alarm at \(alarm.text)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
             HStack {
                 Button("Morning")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { alarm = ClockTime(hour: 7, minute: 30) }
 
                 Button("Lunch")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { alarm = ClockTime(hour: 12, minute: 0) }
 
                 Button("Evening")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { alarm = ClockTime(hour: 21, minute: 5) }
             }
             .spacing(10)
@@ -94,7 +94,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
                     picks += 1
                 }
 
-            Label(picks == 0
+            Text(picks == 0
                 ? "onTimeChanged has not fired"
                 : "onTimeChanged: \(alarm.text), \(picks) so far")
                 .fontSize(13)
@@ -103,9 +103,9 @@ struct TimePickerSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("A `ClockTime` rather than a Foundation value, for the reason a "
+            Text("A `ClockTime` rather than a Foundation value, for the reason a "
                 + "`CalendarDate` is not a `Date`: formatting one needs ICU, and ICU is "
                 + "the dependency this library cannot take. It is three numbers - hour, "
                 + "minute, second - and whether the user sees 21:05 or 9:05 PM is the "
@@ -113,7 +113,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`TimePicker()` says nothing about a time, so `.time` is what puts one "
+            Text("`TimePicker()` says nothing about a time, so `.time` is what puts one "
                 + "in the field - the form a `Style<TimePicker>` or a picker built "
                 + "elsewhere has to use. Nothing comes back on its own either: the "
                 + "`alarm = time` in `onTimeChanged` is exactly the write the binding "
@@ -121,7 +121,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The count answers the USER: the three buttons write `alarm` from the "
+            Text("The count answers the USER: the three buttons write `alarm` from the "
                 + "tree, both fields follow, and no event fires.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

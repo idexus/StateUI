@@ -25,10 +25,10 @@ private final class Basket {
 /// like any other as far as lending is concerned. `$basket` says: I lend you
 /// this, do with it what you want - and `basket.$note` is the note's own
 /// state, the `Binding<String>` a TextField takes and the host carries.
-private struct NoteRow: ContentView {
+private struct NoteRow: View {
     @Binding var basket: Basket
 
-    var content: any View {
+    var body: some View {
         VStack {
             // The field is handed the note's own state and reads nothing; the
             // label below READS `note`, which is what builds this again.
@@ -39,7 +39,7 @@ private struct NoteRow: ContentView {
                 .accessibilityLabel("A note on the basket")
                 .placeholder("A note on the basket")
 
-            Label(basket.note.isEmpty ? "No note yet" : "Note: \(basket.note)")
+            Text(basket.note.isEmpty ? "No note yet" : "Note: \(basket.note)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
         }
@@ -69,10 +69,10 @@ struct StateClassSample: SampleContent, ExampleContent {
             }
         }
 
-        struct NoteRow: ContentView {
+        struct NoteRow: View {
             @Binding var basket: Basket
 
-            var content: any View {
+            var body: some View {
                 VStack {
                     // The field is handed the note's own state and reads
                     // nothing; the label READS `note`, so typing rebuilds this.
@@ -81,7 +81,7 @@ struct StateClassSample: SampleContent, ExampleContent {
                     TextField(basket.$note)
                         .placeholder("A note on the basket")
 
-                    Label(basket.note.isEmpty ? "No note yet" : "Note: \\(basket.note)")
+                    Text(basket.note.isEmpty ? "No note yet" : "Note: \\(basket.note)")
                 }
             }
         }
@@ -93,9 +93,9 @@ struct StateClassSample: SampleContent, ExampleContent {
             // - while typing a note leaves it standing.
             DebugInfoLabel()
 
-            Label("\\(basket.items.count) item(s)")
+            Text("\\(basket.items.count) item(s)")
 
-            Label(basket.summary)
+            Text(basket.summary)
 
             HStack {
                 Button("Add")
@@ -113,15 +113,15 @@ struct StateClassSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label("\(basket.items.count) item(s)")
+            Text("\(basket.items.count) item(s)")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)
 
-            Label(basket.summary)
+            Text(basket.summary)
                 .fontSize(15)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -131,16 +131,16 @@ struct StateClassSample: SampleContent, ExampleContent {
                     .background(Palette.accent)
                     .textColor(.white)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { basket.items.append("Item \(basket.items.count + 1)") }
 
                 Button("Remove")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .isEnabled(!basket.items.isEmpty)
                     .onClicked { basket.items.removeLast() }
             }
@@ -151,20 +151,20 @@ struct StateClassSample: SampleContent, ExampleContent {
 
             Button("Tap a plain property (\(basket.plainTaps))")
                 .stroke(Palette.outline)
-                .strokeWidth(1)
+                .lineWidth(1)
                 .background(.transparent)
                 .textColor(Palette.subtle)
                 .shape(.roundedRectangle(8))
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .onClicked { basket.plainTaps += 1 }
 
         }
         .spacing(14)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("The basket is a class, held in @State. The view's box holds a reference "
+            Text("The basket is a class, held in @State. The view's box holds a reference "
                 + "to it, so `basket.items.append(…)` never writes through that box - the "
                 + "write lands on the property's own @State, and that is what asks for the "
                 + "render. Both are needed: @State on the properties makes the writes "
@@ -172,21 +172,21 @@ struct StateClassSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The note is written by a child row the basket was lent to - @Binding, "
+            Text("The note is written by a child row the basket was lent to - @Binding, "
                 + "the same wrapper an Int is borrowed with. `basket.$note` is the note's "
                 + "own state, handed to the field whole, and it works the same off the "
                 + "view's own @State. No handler either way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The plain property's count really is going up - press Add afterwards "
+            Text("The plain property's count really is going up - press Add afterwards "
                 + "and it jumps to where it got to. A plain `var` is stored and nothing "
                 + "more: a cache, a scratch value, anything the interface does not draw - "
                 + "and writing it asks for nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Swift's own @Observable is a different attribute reporting to a "
+            Text("Swift's own @Observable is a different attribute reporting to a "
                 + "different listener, and this library does not listen to it: a model "
                 + "marked with it can be held in @State, and its writes redraw nothing. "
                 + "The compiler says so on the line that holds it. What this library "

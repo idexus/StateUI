@@ -1,6 +1,6 @@
 # Views
 
-`lib/StateUI/Sources/Views` holds what an application writes: the structure
+`lib/StateUI/Core/Sources/Views` holds what an application writes: the structure
 (`Application`, `Scene`, `Window`, `Page`), the controls, the layouts and
 arrangements, the modifiers, the builders, the styles, and the library's own
 composed views. Each of them is a value that describes itself as a node; the
@@ -32,41 +32,37 @@ hangs off them, `Styles` the styles and `Inspector` the inspector.
 An application declares types; the tree under a window is views.
 
 ```text
-  Application ──scene──▶ Scene ──windows──▶ Windows ──main──▶ Window ──page──▶ any Page
-      │                    │                   └──groups──▶ WindowGroup ──▶ Window     │
-  ApplicationSession   SceneSession                          WindowSession            │
-                                                                                      │
-          ┌───────────────────────────────────────────────────────────────────────────┤
-          │ an arrangement - NavigationStack, TabbedView, SplitView -                  │ any other view -
-          │ is a page itself, and keys the pages it holds                              │ usually a ContentView -
-          ▼                                                                            ▼ goes on a page element
-      pages (each a view on a page element, or another arrangement)            that holds its PageSession
-                                                                                       │
-                                                                                       ▼
-                                                                          views: composed views, controls,
-                                                                          layouts, each with its modifiers
+  Application ──body──▶ Scene ──body──▶ WindowGroup, Window ──▶ view
+      │                    │                                         │
+  ApplicationSession   SceneSession            WindowSession         │
+                                                                     │
+          ┌──────────────────────────────────────────────────────────┤
+          │ an arrangement - NavigationStack, TabView, SplitView -  │ any other view
+          │ written there or built by the view's body - is the     │ goes on a page element
+          ▼ page itself, and keys the pages it holds                 ▼ that says what it says of it
+      pages (each a view on a page element, or another arrangement)
 ```
 
-A window's node carries its page and what hangs off it - the title bar and the
-modal stack from its session, the inspector's panel - and a page's node carries
-the view and its toolbar, menus and title view. See pages.md.
+A window's node carries its page and the library's overlay - the inspector's
+panel - and a page's node carries the view and what it declares: its
+toolbar, menus, title view and overlays. See pages.md.
 
 ## What a view is
 
-Everything a builder collects is an `Element`: something that answers `body`, a
+Everything a builder collects is an `Element`: something that answers `node`, a
 `Node` read afresh on every render.
 
 ```text
-  a control              struct Label: View { var node: Node }
-    Label("Total")         body is its node: Node(Label, props: [text: "Total"])
+  a control              struct Text: View { var node: Node }
+    Text("Total")         body is its node: Node(Text, props: [text: "Total"])
 
   a container            VStack { … }
                            Node(VStack) whose content closure runs only when
                            the differ reaches the stack
 
-  a composed view        struct Header: ContentView { var content: any View }
-    Header("Settings")     body is a placeholder, Node(Composed): the differ builds
-                           `content` into it, keeping the view's @State - or
+  a composed view        struct Header: View { var body: some View }
+    Header("Settings")     node is a placeholder, Node(Composed): the differ builds
+                           `body` into it, keeping the view's @State - or
                            carries the view whole
 
   a modifier             .fontSize(20)        props[fontSize] = 20
@@ -117,12 +113,12 @@ through those members, never through spelled tokens.
 
 ```text
   Contracts/Elements, Contracts/Tiers, Contracts/Mixins
-    LabelContract: ElementContract
-      nodeType "Label", layer, tiers [View, TextElement, FontElement, …]
+    TextContract: ElementContract
+      nodeType "Text", layer, tiers [View, TextualElement, FontElement, …]
       members: lineBreak, maximumLines         ElementProperty / ElementEvent / ElementAct
          │
-         ├─ Node(contract: LabelContract.self)           the control's node type
-         ├─ setValue(LabelContract.maximumLines, 3)      a property: its token, a typed value
+         ├─ Node(contract: TextContract.self)           the control's node type
+         ├─ setValue(TextContract.maximumLines, 3)      a property: its token, a typed value
          ├─ onEvent(ButtonContract.clicked) { … }        an event: a typed payload, or none
          └─ aim.call(MapContract.moveToRegion, …)        an act, called through an aim
          │

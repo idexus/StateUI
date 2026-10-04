@@ -6,20 +6,24 @@
 // one Release that run the application on it, and the suites run as it.
 
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, findApplications, hasHead } from "./applications";
+import { Application, findApplications, hasHead, keepsApps } from "./applications";
+import { isCheckout } from "./checkouts";
 import { configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
-import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
+import { applyEditorMode, cleanIndex, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
 import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn } from "./uiKitDevices";
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
-import { inAppsCommand, isCheckout, nameProblem } from "./newApplication";
+import { checkoutOf, makeApplication, nameProblem } from "./newApplication";
+import { cloneRelease, groupNameProblem, listReleases, makeProjectGroup, releaseDirectory } from "./projectGroup";
 import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
 import { Rebuild, rebuildSteps } from "./conformance";
-import { checkToolchain, debuggerFinding, report } from "./toolchain";
+import { checkToolchain, debuggerFinding, lldbDapFinding, report } from "./toolchain";
+import { Architecture, deployCommand, deployDestination, winUIArchitectures } from "./deploy";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -65,6 +69,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }
         return (available.find((each) => runnable(each.id).length > 0) ?? available[0])?.id;
     };
+    setHostEnvironment(host());
 
     /** What the suites and the editor run as: the host chosen, or plain Swift. */
     const runningAs = (): string => {
@@ -89,6 +94,56 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     // What StateUI: Check Toolchain found, component by component.
     const toolchain = vscode.window.createOutputChannel("StateUI Toolchain");
     context.subscriptions.push(toolchain);
+
+    // What the scaffolder and git said while making an application or a project group.
+    const scaffolder = vscode.window.createOutputChannel("StateUI Scaffolder");
+    context.subscriptions.push(scaffolder);
+
+    /** The repository a release is cloned from: the one the extension's manifest names. */
+    const repository: string = context.extension.packageJSON.repository.url;
+
+    /**
+     * The local StateUI checkout: a folder open here that is one, else the one
+     * `stateui.checkout` names, else asked for.
+     */
+    const localCheckout = async (): Promise<string | undefined> => {
+        const open = (vscode.workspace.workspaceFolders ?? []).map((each) => each.uri.fsPath).find(isCheckout);
+        if (open) {
+            return open;
+        }
+        const configured = vscode.workspace.getConfiguration("stateui").get<string>("checkout", "").trim()
+            .replace(/^~(?=$|[\\/])/, os.homedir());
+        if (configured && isCheckout(configured)) {
+            return configured;
+        }
+        if (configured) {
+            void vscode.window.showWarningMessage(`StateUI: stateui.checkout names ${configured}, which is not a StateUI checkout.`);
+        }
+        const picked = (await vscode.window.showOpenDialog({
+            canSelectFolders: true, canSelectFiles: false, canSelectMany: false,
+            title: "Where is the StateUI checkout? (stateui.checkout in Settings saves this question)", openLabel: "Use This Checkout",
+        }))?.[0]?.fsPath;
+        if (picked && !isCheckout(picked)) {
+            void vscode.window.showErrorMessage(`StateUI: ${picked} is not a StateUI checkout - it has no .scripts/new-app.sh and apps/HelloWorld.`);
+            return undefined;
+        }
+        return picked;
+    };
+
+    /** Asks for the name of an application made in `apps`. */
+    const askApplicationName = (apps: string, title: string): Thenable<string | undefined> => vscode.window.showInputBox({
+        title,
+        prompt: "The application's name: its directory, process and Swift module (<Name>UI).",
+        placeHolder: "MyApp",
+        ignoreFocusOut: true,
+        validateInput: (value) => nameProblem(value) ?? (fs.existsSync(path.join(apps, value)) ? `apps/${value} already exists.` : undefined),
+    });
+
+    /** What went wrong, said with the scaffolder's output, which says why. */
+    const reportFailure = (message: string): void => {
+        scaffolder.show(true);
+        void vscode.window.showErrorMessage(`StateUI: ${message} - the StateUI Scaffolder output says why.`);
+    };
 
     const refresh = (): void => {
         const chosenHost = host();
@@ -239,13 +294,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             return askForApplication(chosenHost);
         }),
         vscode.commands.registerCommand("stateui.selectAndroidDevice", async () => {
-            const root = (vscode.workspace.workspaceFolders ?? []).map((folder) => folder.uri.fsPath)
-                .find((directory) => fs.existsSync(androidScript(directory, "devices.sh")));
-            if (!root) {
-                void vscode.window.showErrorMessage("StateUI: Android devices are listed by a StateUI checkout's .scripts/Android/devices.sh, which no folder here has.");
+            const checkout = [chosen()?.checkout, ...applications().map((each) => each.checkout)]
+                .find((each): each is string => each !== undefined && fs.existsSync(androidScript(each, "devices.sh")));
+            if (!checkout) {
+                void vscode.window.showErrorMessage("StateUI: Android devices are listed by a StateUI checkout's .scripts/Android/devices.sh, and no application here names one.");
                 return;
             }
-            await askForDevice(root, state);
+            await askForDevice(checkout, state);
             refresh();
         }),
         vscode.commands.registerCommand("stateui.selectUIKitDevice", async () => {
@@ -284,41 +339,151 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                     `StateUI: ${failed.length} of ${picked.length} suites failed as ${runningAs()}: ${failed.join(", ")}. Their output is in the terminal.`);
             }
         }),
-        vscode.commands.registerCommand("stateui.newApplicationInApps", async () => {
-            const checkouts = (vscode.workspace.workspaceFolders ?? []).filter((folder) => isCheckout(folder.uri.fsPath));
-            const folder = checkouts.length > 1
-                ? (await vscode.window.showWorkspaceFolderPick({ placeHolder: "Which checkout's apps/ is the application made in?" }))
-                : checkouts[0];
-            if (!folder || !isCheckout(folder.uri.fsPath)) {
-                void vscode.window.showErrorMessage("StateUI: this workspace is not a StateUI checkout, so it has no apps/ to make an application in.");
-                return;
+        vscode.commands.registerCommand("stateui.newApplicationInApps", async (given?: { folder?: string; name?: string }) => {
+            const keeping = (vscode.workspace.workspaceFolders ?? []).filter((each) => keepsApps(each.uri.fsPath));
+            const folder = given?.folder ?? (keeping.length > 1
+                ? (await vscode.window.showWorkspaceFolderPick({ placeHolder: "Which folder's apps/ is the application made in?" }))?.uri.fsPath
+                : keeping[0]?.uri.fsPath);
+            if (!folder || !keepsApps(folder)) {
+                void vscode.window.showErrorMessage("StateUI: no folder here keeps applications in apps/ - a StateUI checkout or a project group does.");
+                return undefined;
             }
 
-            const apps = path.join(folder.uri.fsPath, "apps");
-            const name = await vscode.window.showInputBox({
-                title: "New Application in apps/",
-                prompt: "The application's name: its directory, process and Swift module (<Name>UI).",
-                placeHolder: "MyApp",
-                ignoreFocusOut: true,
-                validateInput: (value) => nameProblem(value) ?? (fs.existsSync(path.join(apps, value)) ? `apps/${value} already exists.` : undefined),
-            });
+            // The checkout its applications build with; in a group whose apps/ holds none yet, the local one.
+            const checkout = checkoutOf(folder) ?? await localCheckout();
+            if (!checkout) {
+                return undefined;
+            }
+            const apps = path.join(folder, "apps");
+            const name = given?.name ?? await askApplicationName(apps, "New Application in apps/");
             if (!name) {
-                return;
+                return undefined;
             }
 
-            const { command, args } = inAppsCommand(folder.uri.fsPath, name);
-            const task = new vscode.Task({ type: "stateui", application: name }, folder, `New application ${name}`, "StateUI",
-                new vscode.ShellExecution(command, args, { cwd: folder.uri.fsPath }), []);
-            task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-            if ((await runTask(task)) !== 0) {
-                void vscode.window.showErrorMessage(`StateUI: ${name} was not made - the terminal says why.`);
-                return;
+            const made = await makeApplication(checkout, apps, name);
+            scaffolder.appendLine(made.output);
+            if (!made.made) {
+                reportFailure(`${name} was not made`);
+                return undefined;
             }
 
             // Runnable at once: chosen, and indexed as the host the editor works as.
             await selectApplication(name);
             await applyEditorMode(host(), roots());
             void vscode.window.showInformationMessage(`StateUI: apps/${name} is made and chosen - StateUI: Debug runs it.`);
+            return path.join(apps, name);
+        }),
+        vscode.commands.registerCommand("stateui.newProjectGroup", async (given?: {
+            location?: string; name?: string; release?: string; checkout?: string; application?: string;
+        }) => {
+            const location = given?.location ?? (await vscode.window.showOpenDialog({
+                canSelectFolders: true, canSelectFiles: false, canSelectMany: false,
+                title: "New Project Group: where is it made?", openLabel: "Make the Group Here",
+            }))?.[0]?.fsPath;
+            if (!location) {
+                return undefined;
+            }
+            const taken = (value: string): string | undefined =>
+                groupNameProblem(value) ?? (fs.existsSync(path.join(location, value)) ? `${path.join(location, value)} already exists.` : undefined);
+            const name = given?.name ?? await vscode.window.showInputBox({
+                title: "New Project Group",
+                prompt: `The group's folder, made in ${location}: apps/, and what git and the editor need beside it.`,
+                placeHolder: "MyApps",
+                ignoreFocusOut: true,
+                validateInput: taken,
+            });
+            if (!name) {
+                return undefined;
+            }
+            if (taken(name)) {
+                void vscode.window.showErrorMessage(`StateUI: ${taken(name)}`);
+                return undefined;
+            }
+            const group = path.join(location, name);
+
+            // Where its StateUI comes from: a release cloned into the group, or the local checkout.
+            const minimum = vscode.workspace.getConfiguration("stateui").get<string>("minimumRelease", "0.5.0");
+            let release = given?.release;
+            let checkout = given?.checkout;
+            if (!release && !checkout) {
+                const source = await vscode.window.showQuickPick([
+                    { label: "A release from GitHub", detail: `A release, ${minimum} or newer, cloned into the group's StateUI/.`, release: true },
+                    { label: "The local checkout", detail: "The StateUI checkout open here, else the one stateui.checkout names, else asked for.", release: false },
+                ], { title: "New Project Group", placeHolder: "Which StateUI do the group's applications build with?", ignoreFocusOut: true });
+                if (!source) {
+                    return undefined;
+                }
+                if (source.release) {
+                    const listed = await vscode.window.withProgress(
+                        { location: vscode.ProgressLocation.Notification, title: `StateUI: reading the releases of ${repository}` },
+                        () => listReleases(repository, minimum));
+                    if (listed.problem) {
+                        scaffolder.appendLine(listed.problem);
+                        reportFailure(`the releases of ${repository} were not read`);
+                        return undefined;
+                    }
+                    if (listed.releases.length === 0) {
+                        void vscode.window.showWarningMessage(
+                            `StateUI: no release ${minimum} or newer is published yet - an older one builds differently from this extension. The local checkout builds with it.`);
+                        return undefined;
+                    }
+                    release = await vscode.window.showQuickPick(listed.releases, {
+                        title: "New Project Group", placeHolder: `The release the group's applications build with - ${minimum} or newer`, ignoreFocusOut: true,
+                    });
+                    if (!release) {
+                        return undefined;
+                    }
+                } else {
+                    checkout = await localCheckout();
+                    if (!checkout) {
+                        return undefined;
+                    }
+                }
+            }
+            if (checkout && !isCheckout(checkout)) {
+                void vscode.window.showErrorMessage(`StateUI: ${checkout} is not a StateUI checkout - it has no .scripts/new-app.sh and apps/HelloWorld.`);
+                return undefined;
+            }
+
+            const library = release ? releaseDirectory(group) : checkout;
+            const application = given?.application ?? await askApplicationName(path.join(group, "apps"), "New Project Group: its first application");
+            if (!library || !application) {
+                return undefined;
+            }
+
+            const made = await vscode.window.withProgress(
+                { location: vscode.ProgressLocation.Notification, title: `StateUI: making ${name}` },
+                async (progress) => {
+                    makeProjectGroup(group, repository);
+                    if (release) {
+                        progress.report({ message: `cloning StateUI ${release}` });
+                        const cloned = await cloneRelease(repository, release, group);
+                        scaffolder.appendLine(cloned.output);
+                        if (!cloned.cloned) {
+                            reportFailure(`StateUI ${release} was not cloned into ${group}`);
+                            return false;
+                        }
+                    }
+                    progress.report({ message: `making apps/${application}` });
+                    const scaffolded = await makeApplication(library, path.join(group, "apps"), application);
+                    scaffolder.appendLine(scaffolded.output);
+                    if (!scaffolded.made) {
+                        reportFailure(`${application} was not made in ${group}`);
+                    }
+                    return scaffolded.made;
+                });
+            if (!made) {
+                return undefined;
+            }
+
+            void vscode.window.showInformationMessage(
+                `StateUI: ${group} is made, building with ${release ? `StateUI ${release}` : checkout}, and holds apps/${application}.`,
+                "Open", "Open in New Window").then(async (answer) => {
+                    if (answer) {
+                        await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(group), { forceNewWindow: answer === "Open in New Window" });
+                    }
+                });
+            return group;
         }),
         vscode.commands.registerCommand("stateui.reinstallExtension", async () => {
             const folder = (vscode.workspace.workspaceFolders ?? []).find((each) => hasExtensionSources(each.uri.fsPath));
@@ -349,7 +514,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 () => checkToolchain());
             const types = vscode.extensions.all.flatMap((each) =>
                 ((each.packageJSON?.contributes?.debuggers ?? []) as { type?: string }[]).map((debug) => debug.type ?? ""));
-            const all = [...findings, debuggerFinding(types)];
+            const starts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
+            const all = [...findings, debuggerFinding(types), ...(starts ? [starts] : [])];
             const served = availableHosts().map((each) => each.label).join(", ");
             toolchain.clear();
             toolchain.appendLine(`What ${served || "StateUI"} needs on this machine (${process.platform}, ${process.arch}):`);
@@ -363,6 +529,54 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                     `StateUI: ${missing} of ${all.length} components are missing - the output says what to install.`);
             }
         }),
+        // The answers can come as an argument - the application's folder, the architecture - as the suite gives them.
+        vscode.commands.registerCommand("stateui.deploy", async (asked?: { application?: string; architecture?: Architecture }) => {
+            const forHost = host();
+            if (!forHost) {
+                void vscode.window.showErrorMessage(`StateUI: ${noHost}`);
+                return undefined;
+            }
+            const application = asked?.application
+                ? findApplications(path.dirname(path.dirname(asked.application))).find((each) => each.directory === asked.application)
+                : chosen() ?? await askForApplication(forHost);
+            if (!application) {
+                return undefined;
+            }
+            const offered = forHost === "winui" ? winUIArchitectures() : [];
+            const architecture = asked?.architecture ?? (offered.length > 1
+                ? (await vscode.window.showQuickPick(
+                    offered.map((each, index) => ({ label: each, description: index === 0 ? "this machine's own" : "run by Windows' emulation" })),
+                    { title: `StateUI: Deploy ${application.name} for which architecture?`, ignoreFocusOut: true }))?.label as Architecture | undefined
+                : offered[0]);
+            if (forHost === "winui" && !architecture) {
+                return undefined;
+            }
+            const device = forHost === "android" && application.checkout ? await androidDevice(application.checkout)
+                : forHost === "uikit" ? await uiKitDevice() : undefined;
+            if ((forHost === "android" || forHost === "uikit") && !device) {
+                return undefined;
+            }
+
+            const destination = deployDestination(application, forHost, architecture);
+            const step = deployCommand(application, forHost, destination, architecture, device);
+            if (!step || !fs.existsSync(step.script)) {
+                void vscode.window.showErrorMessage(
+                    `StateUI: ${application.name} is deployed by a StateUI checkout's .scripts/${describe(forHost).label}/${path.basename(step?.script ?? "deploy")}, which ${step ? "it does not have" : "its Package.swift names none of by path"}.`);
+                return undefined;
+            }
+            const task = new vscode.Task(
+                { type: "stateui", application: application.name, configuration: "release", device: architecture ?? device ?? forHost },
+                vscode.TaskScope.Workspace, `Deploy ${application.name} (${describe(forHost).label}${architecture ? `, ${architecture}` : ""})`,
+                "StateUI", new vscode.ProcessExecution(step.command, step.args, { cwd: path.dirname(path.dirname(application.directory)) }), []);
+            task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+            if ((await runTask(task)) !== 0) {
+                void vscode.window.showErrorMessage(`StateUI: ${application.name} was not deployed - the terminal says why.`);
+                return undefined;
+            }
+            void vscode.window.showInformationMessage(`StateUI: ${application.name} is deployed in ${destination}.`, "Reveal")
+                .then((answer) => answer && vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(destination)));
+            return destination;
+        }),
         vscode.commands.registerCommand("stateui.cleanIndex", async () => {
             await cleanIndex(roots());
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
@@ -373,7 +587,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         run: runTask,
         start: startTask,
         ready: (file, task) => readyWhen(file, task),
-        device: (folder) => androidDevice(folder.uri.fsPath),
+        device: androidDevice,
         uiKitDevice,
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);
@@ -421,12 +635,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             });
     }
 
-    const updateCheckoutContext = (): void => {
-        void vscode.commands.executeCommand("setContext", "stateui.hasCheckout",
-            (vscode.workspace.workspaceFolders ?? []).some((folder) => isCheckout(folder.uri.fsPath)));
+    // A checkout's own commands show in a checkout alone; New Application in apps/ in a checkout or a project group.
+    const updateFolderContexts = (): void => {
+        const folders = (vscode.workspace.workspaceFolders ?? []).map((folder) => folder.uri.fsPath);
+        void vscode.commands.executeCommand("setContext", "stateui.hasCheckout", folders.some(isCheckout));
+        void vscode.commands.executeCommand("setContext", "stateui.hasApps", folders.some(keepsApps));
     };
-    context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(updateCheckoutContext));
-    updateCheckoutContext();
+    context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(updateFolderContexts));
+    updateFolderContexts();
 
     refresh();
     await applyEditorMode(host(), roots());

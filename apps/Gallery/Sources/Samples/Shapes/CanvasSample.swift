@@ -21,10 +21,10 @@ private struct FollowsState: ExampleContent {
     @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
     static let code = """
-        struct FollowsState: ContentView {
+        struct FollowsState: View {
             @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
-            var content: any View {
+            var body: some View {
                 VStack {
                     // The bars are read by the drawing below, so changing
                     // one builds this closure - which is what redraws it.
@@ -42,7 +42,7 @@ private struct FollowsState: ExampleContent {
 
                             Draw.textColor(Palette.text)
                             Draw.fontSize(11)
-                            Draw.drawText(
+                            Draw.text(
                                 "\\(Int(value * 100))", x: x, y: 104, width: 32, height: 14,
                                 horizontalAlignment: .center)
                         }
@@ -56,7 +56,7 @@ private struct FollowsState: ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -71,7 +71,7 @@ private struct FollowsState: ExampleContent {
 
                     Draw.textColor(Palette.text)
                     Draw.fontSize(11)
-                    Draw.drawText(
+                    Draw.text(
                         "\(Int(value * 100))", x: x, y: 104, width: 32, height: 14,
                         horizontalAlignment: .center)
                 }
@@ -80,15 +80,15 @@ private struct FollowsState: ExampleContent {
 
             Button("Different numbers")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { bars = bars.map { _ in Double.random(in: 0.15...1) } }
         }
         .spacing(12)
     }
 
-    var notes: Element? {
-        Label("The drawing is a list of instructions described in Swift. They travel to "
+    var notes: (any View)? {
+        Text("The drawing is a list of instructions described in Swift. They travel to "
             + "the host, which draws them on the platform's canvas. The bars are read "
             + "inside the drawing, so new numbers draw it again.")
             .fontSize(12)
@@ -101,29 +101,33 @@ private struct FollowsAFinger: ExampleContent {
     @State private var trail: [Point] = []
 
     static let code = """
-        struct FollowsAFinger: ContentView {
+        struct FollowsAFinger: View {
             @State private var trail: [Point] = []
 
             // Where a finger went, drawn where it went: the canvas reports in
             // its own coordinates, which is what the instructions use.
-            var content: any View {
+            var body: some View {
                 VStack {
                     // The trail is read by the drawing, so every report the
                     // finger makes builds this closure and draws again.
                     DebugInfoLabel()
 
+                    // The outline is the canvas's own edge, and nothing is
+                    // drawn past it.
                     Canvas {
                         Draw.strokeColor(Palette.outline)
-                        Draw.strokeWidth(1)
-                        Draw.drawRoundedRectangle(
-                            x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
+                        Draw.lineWidth(1)
+                        Draw.strokeRoundedRectangle(
+                            x: 1, y: 1, width: 298, height: 118, cornerRadius: 8)
 
                         Draw.fillColor(Palette.accent)
                         for point in trail {
                             Draw.fillEllipse(x: point.x - 4, y: point.y - 4, width: 8, height: 8)
                         }
                     }
+                    .width(300)
                     .height(120)
+                    .horizontalAlignment(.center)
                     .onPressed { trail = [$0] }
                     .onDragged { trail = Array((trail + [$0]).suffix(120)) }
                     .onReleased { _ in }
@@ -136,28 +140,30 @@ private struct FollowsAFinger: ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
             Canvas {
                 Draw.strokeColor(Palette.outline)
-                Draw.strokeWidth(1)
-                Draw.drawRoundedRectangle(x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
+                Draw.lineWidth(1)
+                Draw.strokeRoundedRectangle(x: 1, y: 1, width: 298, height: 118, cornerRadius: 8)
 
                 Draw.fillColor(Palette.accent)
                 for point in trail {
                     Draw.fillEllipse(x: point.x - 4, y: point.y - 4, width: 8, height: 8)
                 }
             }
+            .width(300)
             .height(120)
+            .horizontalAlignment(.center)
             .onPressed { trail = [$0] }
             .onDragged { trail = Array((trail + [$0]).suffix(120)) }
             .onReleased { _ in }
 
             Button("Clear")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .isEnabled(!trail.isEmpty)
                 .onClicked { trail = [] }
@@ -165,8 +171,8 @@ private struct FollowsAFinger: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
-        Label("Every point the finger reports is a write: the trail changes, the "
+    var notes: (any View)? {
+        Text("Every point the finger reports is a write: the trail changes, the "
             + "drawing is described again, and the new instructions travel.")
             .fontSize(12)
             .textColor(Palette.subtle)

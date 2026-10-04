@@ -342,15 +342,15 @@ struct PlacedSample: SampleContent, ExampleContent {
 
         // One card's face - a picture and its name, and nothing at all about
         // where the card is or which way it faces. That is the placement's.
-        func face(_ card: Card) -> any View {
+        func face(_ card: Card) -> some View {
             ZStack {
                 Grid {
                     Image(ImageSource(card.art))
-                        .aspect(.fill)
+                        .contentMode(.fill)
 
                     VStack {
-                        Label(card.name)
-                        Label("Placed by arithmetic")
+                        Text(card.name)
+                        Text("Placed by arithmetic")
                     }
                     .verticalAlignment(.end)
                 }
@@ -363,7 +363,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a ring wants it all.
         Grid {
@@ -403,7 +403,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                     // THE OPENING AIM: a scroller cannot be moved before its
                     // content is laid out - asked earlier it clamps to the
                     // length it has so far - so this puts it there again
-                    // until the middle card is where it was sent.
+                    // until the card it was aimed at is where it was sent.
                     .onFrameChanged { frame in
                         guard !opened, frame.width != length else { return }
 
@@ -448,15 +448,15 @@ struct PlacedSample: SampleContent, ExampleContent {
                 // read: the switch below is the only thing here a build
                 // depends on, and the ring itself turns for no build at all.
                 DebugInfoLabel()
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
 
                 Button("Back")
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .isEnabled(!grabbing)
                     .onClicked { try await move(-1) }
 
                 Button("Next")
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .isEnabled(!grabbing)
                     .onClicked { try await move(1) }
             }
@@ -491,7 +491,7 @@ struct PlacedSample: SampleContent, ExampleContent {
 
     /// The ring of cards, placed by the arithmetic below - the same views
     /// whichever way the user turns them.
-    private var cards: any View {
+    private var cards: some View {
         PlacedLayout(Self.cards, id: \.name) { card in
             face(card)
         }
@@ -524,28 +524,28 @@ struct PlacedSample: SampleContent, ExampleContent {
     /// One card's face - a picture and its name, and nothing at all about where
     /// the card is or which way it faces. That is the placement's, and keeping
     /// the two apart is what lets one run of cards be turned into any shape.
-    private func face(_ card: Card) -> any View {
+    private func face(_ card: Card) -> some View {
         ZStack {
             Grid {
                 Image(ImageSource(card.art))
-                    .aspect(.fill)
+                    .contentMode(.fill)
 
                 VStack {
                     // ONE LINE, whatever the card's width: a caption that
                     // wrapped would change the picture's height with it.
-                    Label(card.name)
+                    Text(card.name)
                         .fontSize(18)
                         .fontAttributes(.bold)
                         .textColor(Palette.onBrand)
                         .lineBreak(.tailTruncation)
 
-                    Label("Placed by arithmetic")
+                    Text("Placed by arithmetic")
                         .fontSize(10)
                         .textColor(Palette.onBrand)
                         .opacity(0.8)
                         .lineBreak(.tailTruncation)
                 }
-                .padding(12, 10)
+                .padding(horizontal: 12, vertical: 10)
                 .spacing(1)
                 // A dark strip under the words, so a caption reads over a
                 // picture of any colour.
@@ -558,7 +558,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             .clipsContent(true)
         }
         .style("Card")
-        .strokeWidth(0)
+        .lineWidth(0)
         .shape(.roundedRectangle(16))
     }
 
@@ -625,9 +625,9 @@ struct PlacedSample: SampleContent, ExampleContent {
             Self.height * fit)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("`PlacedLayout` builds one view per card from its closure; an engine of "
+            Text("`PlacedLayout` builds one view per card from its closure; an engine of "
                 + "yours works out a `Placement` for each - where the card goes, and how it "
                 + "is turned, scaled, faded and stacked - and writes them as a `PlacedRun` on "
                 + "the state `.placement(_:)` names, in the room `.frame(_:)` reports. That is "
@@ -637,7 +637,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Swipe left or right to turn the ring; it settles on the card it is "
+            Text("Swipe left or right to turn the ring; it settles on the card it is "
                 + "nearest, and `Back` and `Next` do the same without the hand. With `Turn by "
                 + "panning` on, the cards are taken hold of instead and follow the finger, "
                 + "with no scroller over them. Otherwise a `ScrollReader` lays an empty "
@@ -646,7 +646,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Every value that turns the ring is a `@State` no body reads. The two "
+            Text("Every value that turns the ring is a `@State` no body reads. The two "
                 + "numbers, the room and where each card goes are handed on with `$`, so "
                 + "writing them describes nothing, and `.engine(following:)` says which of "
                 + "them moving runs the arithmetic again. It runs on the display's own "
@@ -656,7 +656,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The trap is a label written from a driven value: it is built again every "
+            Text("The trap is a label written from a driven value: it is built again every "
                 + "time the value moves. A placement is not, which is why the cards shrink "
                 + "as they go round the back with no view rebuilt. The ring keeps its card "
                 + "through a change of geometry - turn the phone or resize the window, and "

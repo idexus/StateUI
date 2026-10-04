@@ -16,18 +16,16 @@ a value as the thing it is, with nothing to parse and nothing to guess.
 ## Text and names
 
 A `Name` is a word an application chose that repeats across a tree and means
-the same thing every time: a style key, a font family, a radio group, a kept
-value's key. It crosses as `.name`, which a host may match by what it names.
+the same thing every time: a style key, a font family, a radio group. It
+crosses as `.name`, which a host may match by what it names.
 A member holding a `String` crosses as text an author wrote. The member's declared type
 decides which it is, so a contract declares `Name` or `String` by what the
 words are.
 
 A picture's file name crosses as text, not as a name, because its vocabulary
-has no end. An application has a handful of styles and fonts, and numbering
-them pays for itself on every row; a picture may be an address built per
-item, an avatar or a thumbnail, and the session's dictionary is never
-emptied, so numbering those would grow it without end for names used once. A
-name is text when there can be no end of them.
+has no end. An application has a handful of styles and fonts, while a picture
+may be an address built per item, an avatar or a thumbnail. A name is text
+when there can be no end of them.
 
 ## Runs of numbers
 
@@ -71,7 +69,7 @@ not read leaves the handler alone and is said once.
 
 ## Nothing said out loud
 
-A property that did not change is absent from a node. A position cannot be
+A property that did not change is absent from a patch. A position cannot be
 absent: the third argument of an act and the second value of a list are
 found by counting, so "no destructive button" or "no zone named" needs a
 value that says so. `.nothing` is that value, and an optional crosses as its

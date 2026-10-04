@@ -10,7 +10,7 @@ in [Platform contract](../platform-contract.md).
 The value that gives a control its purpose belongs in its initializer:
 
 ```swift
-Label("Account")
+Text("Account")
 Button("Save")
 Button(icon: "trash.png")
 Image("avatar.png")
@@ -22,7 +22,7 @@ Optional capabilities are modifiers:
 ```swift
 Button("Save")
     .isEnabled(true)
-    .padding(18, 10)
+    .padding(horizontal: 18, vertical: 10)
     .shape(.roundedRectangle(8))
     .onClicked { }
 ```
@@ -90,7 +90,9 @@ native report calls the setter.
 Controls with an editable purpose value accept either a value or a binding.
 Examples include `TextField`, `TextEditor`, `SearchField`, `Switch`,
 `CheckBox`, `RadioButton`, `Slider`, `Stepper`, `Picker`, `DatePicker`, and
-`TimePicker`.
+`TimePicker`. Every property is one modifier named for it, which takes the
+value itself or, where the host can carry the value, a state, `$x`
+([A property is one modifier](../concepts/why.md#a-property-is-one-modifier-a-value-or-a-state)).
 
 ```swift
 @State var enabled = false
@@ -111,10 +113,10 @@ caused by the user. Do not duplicate the assignment in the handler.
 
 ## Text display
 
-`Label` displays either one text value or a formatted sequence of runs:
+`Text` displays either one text value or a formatted sequence of runs:
 
 ```swift
-Label()
+Text()
     .spans {
         TextSpan("let ").textColor(.purple)
         TextSpan("count").fontAttributes(.bold)
@@ -122,19 +124,67 @@ Label()
     }
 ```
 
-`TextSpan` is structural text content, not a `View`. It can carry text, font,
-decoration, line-height, foreground, and run background properties, but it has
-no independent frame, margin, or gesture surface.
+`TextSpan` is structural text content, not a `View`: it stands among a label's
+runs and nowhere else. It can carry text, font, decoration, line-height,
+foreground, and run background properties, but it has no independent frame,
+margin, or gesture surface. Runs made from a list go in as an array, each
+matched by where it sits:
+
+```swift quote
+Text().spans {
+    tokens.map { TextSpan($0.text).textColor($0.colour) }
+}
+```
 
 Plain text and formatted text are mutually exclusive descriptions of one
 label. Do not rely on modifier order to keep both.
 
-Text properties distinguish their semantic tier:
+Text properties distinguish their semantic tier; [Text](../controls/Text.md)
+and the tier pages it links list each with its mark per host:
 
-- text-bearing controls can transform authored text;
-- text-styled controls can choose font family, size, attributes, color,
-  alignment, and spacing where their host surface supports it;
-- label-only properties control wrapping and maximum lines.
+- text-bearing controls - a label, a button, a radio button, the fields, a
+  span - take `textCase`, which draws the words `.uppercase` or `.lowercase`
+  while the text stays as written; a field turns what is typed into the case
+  and reports it so;
+- text-styled controls take `textColor` and `tracking`, the space between
+  letters; those in a font take `fontSize`, `fontFamily` - the name the
+  application registered the font under - `fontAttributes`, which is `.bold`,
+  `.italic`, `[.bold, .italic]` or `.none`, and `isFontAutoScalingEnabled`,
+  on unless said, which makes the text follow the user's text-size setting;
+- aligned controls take `horizontalTextAlignment` and
+  `verticalTextAlignment`: `.start`, `.center` or `.end`;
+- a label and a span take `textDecorations` - `.underline`, `.strikethrough`,
+  or both - and `lineHeight`, a multiple of the font's own;
+- a label's own properties control wrapping and maximum lines. `lineBreak` is
+  `.wordWrap`, the default, `.characterWrap`, which breaks inside a word, or
+  `.noWrap`; `.headTruncation`, `.tailTruncation` and `.middleTruncation` keep
+  one line and cut it with an ellipsis at that place, which shows only where
+  the label's width is bounded. `maximumLines` caps a wrapping label, `-1`,
+  the default, meaning no limit. A button's caption takes `lineBreak` too.
+
+```swift
+VStack {
+    Text("Underlined and struck through")
+        .textDecorations([.underline, .strikethrough])
+
+    Text("A long line that has nowhere left to go, so it is cut short with an ellipsis")
+        .lineBreak(.tailTruncation)
+        .maximumLines(1)
+
+    Text("Letters spaced out")
+        .tracking(3)
+
+    Text("Two lines,\nlineHeight 2")
+        .lineHeight(2)
+
+    Text("One string, drawn in Two Ways")
+        .textCase(.uppercase)
+
+    Text("Stays at 16 whatever the system says")
+        .fontSize(16)
+        .isFontAutoScalingEnabled(false)
+}
+```
 
 ## Text entry, caret, and selection
 
@@ -156,13 +206,65 @@ SearchField($query)
 
 `cursorPosition` and `selectionLength` describe and report the native caret
 and selection. The host remains responsible for valid positions after native
-text normalization. `maximumLength` limits accepted content; read-only,
-spell-check, prediction, password, return-key, and clear-button choices remain
-separate semantic capabilities.
+text normalization. `maximumLength` limits accepted content; the other choices
+are separate semantic capabilities, each a property of its own:
+
+| Modifier | On | Meaning |
+| --- | --- | --- |
+| `placeholder`, `placeholderColor` | every field | what an empty field says, and its colour |
+| `inputPurpose` | every field | what the text is for - `.plain`, `.text`, `.chat`, `.email`, `.numeric`, `.telephone`, `.url` - which picks the keyboard the platform offers |
+| `isReadOnly` | every field | the text can be selected and copied but not changed, which is not the same as disabled |
+| `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelt |
+| `isTextPredictionEnabled` | every field | whether the platform offers the next word |
+| `isPassword` | `TextField` | what is typed hides behind the platform's secure-entry marks |
+| `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says |
+| `showsClearButton` | `TextField` | whether the native button that empties the field shows, where the platform's field has one; it does unless told otherwise |
+
+```swift
+@State var code = ""
+@State var email = ""
+@State var hidden = true
+@State var done = 0
+
+VStack {
+    TextField($code)
+        .placeholder("a serial number")
+        .textCase(.uppercase)
+        .isSpellCheckEnabled(false)
+        .isTextPredictionEnabled(false)
+
+    TextField()
+        .placeholder("a password")
+        .isPassword(hidden)
+        .submitLabel(.done)
+
+    TextField($email)
+        .placeholder("an address, capped at 20")
+        .inputPurpose(.email)
+        .maximumLength(20)
+        .onSubmitted { done += 1 }
+}
+```
 
 Focus is not a Boolean command hidden in the description. When state needs to
 observe it, use the `isFocused` feed. When an action needs to move it, use an
-`@Aim`; see [Interaction and actions](interaction-and-actions.md).
+`@Aim`; see [Interaction and actions](interaction-and-actions.md). Where the
+field holding the keyboard is not known - a Done button above a form of
+several fields - `OnScreenKeyboard.hide()` takes the focus off whatever has it
+on the page showing. It answers a `Bool`: `true` when something was focused
+and is not any more, `false` when the keyboard was already down, which is an
+answer and not a failure:
+
+```swift
+@State var said = ""
+
+Button("Close keyboard")
+    .onClicked {
+        said = try await OnScreenKeyboard.hide()
+            ? "Focus released"
+            : "Nothing was focused"
+    }
+```
 
 ## Choices and ranges
 
@@ -189,6 +291,42 @@ The application owns the selected value. A group name on radio buttons defines
 mutual exclusion in the native control surface; the bindings remain the source
 of application truth. Range bounds are semantic constraints and are not
 animated presentation values.
+
+## Activity and progress
+
+`ActivityIndicator` is the spinner for work with no measurable length;
+`ProgressBar` says how far along measurable work is:
+
+```swift
+@State var loading = true
+@State var done = 3.0
+
+VStack {
+    ActivityIndicator(loading)
+        .height(48)
+
+    Switch($loading)
+
+    ProgressBar(done / 5)
+        .height(8)
+
+    Stepper($done)
+        .minimum(0)
+        .maximum(5)
+        .step(1)
+}
+```
+
+`isAnimating`, the indicator's one property, says whether it spins. A still
+indicator is invisible on most platforms, so `ActivityIndicator(loading)` shows
+it only while the work runs. `progress` is a fraction from 0 to 1, not a
+percentage or a count: work counted in steps divides by their total itself, and
+the host clamps a value outside that range. The initializer's argument is the
+same property as the modifier: `ProgressBar().progress(0.4)` sets what
+`ProgressBar(0.4)` sets, `.progress($done)` carries a state the host animates
+to each new value, and `.isAnimating($loading)` one it sets as it stands. Both
+take `.tint`. Nothing about either is the user's to change, so neither reports
+anything back.
 
 ## Dates and times
 
@@ -231,30 +369,173 @@ Button("Surprise me")
 `.leading`, the default, is the side a line of text starts from, so the icon
 follows the layout direction. A button with only an icon is the same control as
 one with a caption - the same outline, shape and pressed state - with
-`aspect` for how its picture fills it. A picture alone gives it no name for a
+`contentMode` for how its picture fills it. A picture alone gives it no name for a
 screen reader, so it carries a `accessibilityLabel`.
 
-## Provisional native surfaces
+## A place in a sequence
 
-The following declarations express a candidate semantic contract but are not
-part of the usable base surface until the platform matrix records a verified
-host. Their presence in the Swift module is not a support claim:
+`PositionIndicator` is a row of dots saying how many there are and which one
+is current - the dots under a run of cards, the steps of a short sequence:
 
-| Surface | Semantic contract under evaluation |
+```swift
+@State var step = 0
+
+VStack {
+    PositionIndicator()
+        .count(4)
+        .position(step)
+        .currentIndicatorColor(.cornflowerBlue)
+
+    Button("Next")
+        .onClicked { step = (step + 1) % 4 }
+}
+```
+
+StateUI composes it of colour boxes in a row, so it looks and behaves the same
+on every platform. `maximumVisible` caps the dots, the current one kept among
+them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
+`indicatorShape(.square)` draws squares. Given items,
+`PositionIndicator(items) { … }` shows each item's own mark, the current one
+whole and the others faded. Its look is written on it: being StateUI's own
+composition, it takes no `Style`.
+
+## Web content
+
+`WebView` puts a page of the web in the tree: one fetched from an address, or
+a document written in place:
+
+```swift
+WebView("https://example.com")
+```
+
+A document written in place shows without the network. Its relative links
+resolve against the address given beside it, where one is:
+
+```swift
+WebView().source(html: "<h1>Offline</h1><p>Written in place.</p>")
+```
+
+A document given no address travels as an address of its own, which on
+Android holds at most 2 MB: give a larger document an address beside it.
+
+The web content scrolls itself, so give it room of its own - a Grid row, or a
+page without a scroller - rather than a place inside a ScrollView.
+
+What the view is told to do is an act called through its aim; whether there
+is a page behind and ahead arrives in a binding:
+
+```swift
+@Aim(WebView.self) var browser
+@State var canGoBack = false
+@State var title = ""
+
+Grid {
+    HStack {
+        Button("Back")
+            .isEnabled(canGoBack)
+            .onClicked { try await browser.goBack() }
+        Button("Reload")
+            .onClicked { try await browser.reload() }
+        Button("Title?")
+            .onClicked { title = try await browser.evaluateJavaScript("document.title") }
+    }
+    WebView("https://example.com")
+        .canGoBack($canGoBack)
+        .aim(browser)
+        .gridRow(1)
+}
+.rows(.auto, .fill)
+```
+
+A script answers what it evaluated to as text: words as they are, a number as
+it is written, anything else as JSON, and nothing for no value. A navigation
+is heard as it starts, with why - a new page, back, forward, the page again -
+and as it ends, with how; the web process ending under the view is heard
+too, and `reload()` brings the page back:
+
+```swift
+@State var status = "nothing has loaded yet"
+
+WebView("https://example.com")
+    .onNavigating { navigation in status = "going to \(navigation.url)" }
+    .onNavigated { navigated in status = "\(navigated.result): \(navigated.url)" }
+    .onProcessTerminated { status = "the page's process ended" }
+```
+
+| Host | The web view |
 | --- | --- |
-| `WebView` | URL or inline-HTML source; back/forward capability feeds; navigation reports; aimed back, forward, reload, and script actions |
-| `Map` | provider-owned native map; initial region in the declaration; pins and tap reports; later region changes through an aim |
-| `PositionIndicator` | display-only count and current position with native indicator appearance |
+| AppKit | WebKit's `WKWebView` |
+| UIKit | WebKit's `WKWebView` |
+| Android Views | Android's `WebView` |
+| WinUI 3 | WinUI's `WebView2`, over the system's WebView2 runtime - a backend |
+| GTK 4 | WebKitGTK 6.0's `WebKitWebView` - a backend |
+| Web | not yet |
 
-`Map` is provider-owned because credentials, map engines, permissions, and
-feature sets are not one base-platform primitive. The other candidates enter
-the base contract only if the target native toolkits can preserve the stated
-ownership, input, accessibility, and lifecycle semantics without growing a
-second UI system in the host. A surface that cannot meet that bar is removed
-vertically from API, vocabulary, tests, Gallery, and documentation.
+Where the web engine is a library the platform does not ship with its
+toolkit - WebKitGTK, WebView2's runtime - the web view's realization is a
+backend, a package of its own in `lib/Backends`, so an application that
+shows no web page links no engine. An application showing one depends on it
+from that head and registers it before the host runs. A package reached by its
+path is known by its folder's name, `WebView.<Host>`, so the dependency gives it
+the name the head's product refers to, as the Gallery's manifest does:
 
-The intended source/event/aim shapes above keep design review explicit; they do
-not authorize production use on an unmarked host.
+```text
+Package.swift
+  dependencies:  .package(name: "StateUIWebView<Host>", path: "<StateUI>/lib/Backends/WebView.<Host>")   for GTK or WinUI
+  the head:      .product(name: "StateUIWebView<Host>", package: "StateUIWebView<Host>")
+
+Platforms/<Host>/main.swift
+  StateUIWebView<Host>.register()         before the host runs
+```
+
+## Maps
+
+`Map` shows the platform's own map of the world: MapKit's on macOS, iOS and
+iPadOS. Where the platform has no map of its own - Android, Windows, Linux -
+the application registers the one it chooses with the host, with the
+provider and the key that map needs ([Children a control
+draws](../hosts/gtk.md#children-a-control-draws), on each host's page); the
+platform matrix marks it 🧩 there.
+
+A map opens on the region its initializer gives: a centre and a radius in
+meters, the circle the map shows whole whatever its proportions. Its markers are
+its children, and a tap is heard where it fell - on the map itself, on a marker,
+or on a marker's details:
+
+```swift
+@State var said = "tap the map or a marker"
+
+Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
+    .mapType(.hybrid)
+    .markers {
+        Marker("Wawel Castle")
+            .subtitle("Wawel 5")
+            .type(.place)
+            .location(latitude: 50.0540, longitude: 19.9354)
+            .onSelected { said = "the castle" }
+            .onDetailsClicked { said = "the castle's details" }
+    }
+    .onMapClicked { place in said = "\(place.latitude), \(place.longitude)" }
+    .height(300)
+```
+
+The user pans and zooms the map as the platform lets them, and
+`isScrollEnabled` and `isZoomEnabled` say whether they may. The region in the
+initializer is where the map opens; moving it later is an act through its
+aim, which slides the map there:
+
+```swift
+@Aim(Map.self) var map
+
+Button("Kraków")
+    .onClicked { try await map.moveToRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2000) }
+```
+
+`showsUserLocation(true)` draws the user's own position. The platform asks
+the user, once, for leave to know it, in words the application gives in its
+head's property list: `NSLocationWhenInUseUsageDescription` in
+`Platforms/UIKit/Info.plist` on iOS and iPadOS, `NSLocationUsageDescription`
+in the Mac application's. Without them the position is never drawn.
 
 ## Collections
 
@@ -269,20 +550,20 @@ struct Contact: Hashable {
     let phone: String
 }
 
-struct ContactsPage: ContentView {
+struct ContactsPage: View {
     @State private var chosen: String?
     @Aim(ItemsViewContract.self) private var list
 
     let contacts: [Contact]
 
-    var content: any View {
+    var body: some View {
         Grid {
             ItemsView(contacts, id: \.name) { contact in
                 VStack {
-                    Label(contact.name).fontAttributes(.bold)
-                    Label(contact.phone)
+                    Text(contact.name).fontAttributes(.bold)
+                    Text(contact.phone)
                 }
-                .padding(14, 10)
+                .padding(horizontal: 14, vertical: 10)
             }
             .selection($chosen)
             .onItemActivated { name in chosen = name }
@@ -314,7 +595,7 @@ An item is as tall as it asks in a list and as wide as it asks in a row; a
 size written on its view is kept. A list has no height of its own: give it
 one, or a row of a grid that fills.
 
-`ItemsView(groups:)` takes `ItemsGroup`s, each named with `.id` - so two
+`ItemsView(groups:)` takes `Section`s, each named with `.id` - so two
 groups may hold equal items - and each with a `.header` and a `.footer`;
 `.header` and `.footer` on the list stand before and after everything.
 `.onEndReached(within:)` hears the user come within so many items of the
@@ -324,6 +605,6 @@ end - once, until they scroll away or the list gains items - and
 ## Choosing a control
 
 Prefer the smallest accepted native primitive that expresses the behavior.
-Compose richer application controls as `ContentView`s. Add a base control only
+Compose richer application controls as `View`s. Add a base control only
 when the capability has one coherent meaning across target toolkits or belongs
 to a clearly optional provider package.

@@ -17,12 +17,12 @@ platform matrix.
 Every eligible view can state requested, minimum, and maximum dimensions:
 
 ```swift
-Label("Summary")
+Text("Summary")
     .width(240)
     .minimumHeight(44)
     .horizontalAlignment(.center)
     .verticalAlignment(.start)
-    .margin(16, 8)
+    .margin(horizontal: 16, vertical: 8)
 ```
 
 A request is input to measurement, not a promise that the platform has that
@@ -85,7 +85,7 @@ one-axis scale after an earlier rotation—keeps its move, rotation, and sizes
 while omitting the slant. `turn` and `tilt` are flat projections rather than
 platform camera transforms, and stop shrinking at a right angle.
 
-Shapes accept the same value through `renderTransform`. A shape is redrawn
+Shapes accept the same value through `geometryTransform`. A shape is redrawn
 from the full matrix in its own coordinate system, so `skew` is preserved
 there. This is distinct from `transform`, which moves the already drawn view
 about its center.
@@ -101,7 +101,7 @@ in the [platform matrix](../platform-contract.md#shared-view-members).
 
 ```swift
 VStack {
-    Label("Account")
+    Text("Account")
 
     HStack {
         Button("Cancel")
@@ -126,7 +126,7 @@ A grid owns row and column definitions; each child states its cell and spans:
 @State var name = ""
 
 Grid {
-    Label("Name")
+    Text("Name")
 
     TextField($name)
         .gridColumn(1)
@@ -150,6 +150,10 @@ Grid {
 | `.fill` | one share of remaining room |
 | `.proportional(2)` | two shares of remaining room |
 
+A grid's own width, where its room does not decide it, is the least at which
+each proportional track holds its content at its share: shares stand as
+written, and words that fit in their column stand on one line.
+
 An omitted row or column is zero. An omitted span is one. Several children may
 occupy the same cell; they overlap and `zIndex` decides drawing order.
 
@@ -168,7 +172,7 @@ the whole room within the stack's padding, or the rectangle it names with
 ZStack {
     ColorBox(.cornflowerBlue)
 
-    Label("Bottom right")
+    Text("Bottom right")
         .horizontalAlignment(.end)
         .verticalAlignment(.end)
 
@@ -192,7 +196,7 @@ A badge over a view is a ZStack of the view and the badge aligned to a
 corner; a picture behind words is a ZStack with the picture first. Either
 counts towards the stack's room, so a badge or a picture larger than the view
 makes the stack larger - give it a size, or keep it smaller. What stays over
-every page of a window is one of the window's overlays
+every page of a window is declared with `.overlays { }` on the window's page
 (navigation-and-presentation.md).
 
 ## Scrolling
@@ -205,12 +209,12 @@ every page of a window is one of the window's overlays
 ScrollView {
     VStack {
         ForEach(1...100) { row in
-            Label("Row \(row)")
+            Text("Row \(row)")
         }
     }
 }
 .scrollOffset($offset)
-.verticalScrollBarVisibility(.default)
+.verticalScrollIndicator(.automatic)
 ```
 
 The `Point` binding is two-way. A program write moves the viewport; native
@@ -332,7 +336,7 @@ There are three readings of the same native measurement:
 | --- | --- |
 | `.frame($room)` | a one-way host feed of the parent-space rectangle into state |
 | `.onFrameChanged(in:)` | an asynchronous handler for one selected coordinate space |
-| `FrameReader` | local content rebuilt from its last measured rectangle |
+| `GeometryReader` | local content rebuilt from its last measured rectangle |
 
 The frame feed is useful when an engine or authored layout needs the native
 rectangle without making a body read it:
@@ -383,13 +387,13 @@ report never changes layout by itself. A visual transform never reports,
 because it does not alter the layout rectangle; an animated layout property
 reports the rectangles that the host actually settles.
 
-`FrameReader` owns the measured rectangle as its own state and rebuilds only
+`GeometryReader` owns the measured rectangle as its own state and rebuilds only
 its content from that value. Its closure first receives a zero rectangle; the first
 native frame report supplies the measured rectangle:
 
 ```swift
-FrameReader { frame in
-    Label("\(Int(frame.width)) x \(Int(frame.height))")
+GeometryReader { frame in
+    Text("\(Int(frame.width)) x \(Int(frame.height))")
 }
 ```
 
@@ -408,14 +412,14 @@ wrap content in for a card - the layout holding the content is the card.
 
 ```swift
 VStack {
-    Label("Cheese")
-    Label("Aged twelve months")
+    Text("Cheese")
+    Text("Aged twelve months")
 }
 .padding(14)
 .background(Color("#F4F4F4"))
 .shape(.roundedRectangle(8))
 .stroke(Color("#D0D0D0"))
-.strokeWidth(1)
+.lineWidth(1)
 .clipsContent(true)
 ```
 
@@ -436,12 +440,12 @@ to run under them, so its background colours the status bar's strip:
 ```swift
 import StateUI
 
-struct Header: ContentView {
-    var content: any View {
+struct Header: View {
+    var body: some View {
         VStack {
-            Label("StateUI")
+            Text("StateUI")
         }
-        .padding(20, 60, 20, 20)
+        .padding(left: 20, top: 60, right: 20, bottom: 20)
         .background(.steelBlue)
         .avoidsSafeArea(.none)
     }
@@ -456,13 +460,97 @@ The [platform contract](../platform-contract.md) says where each is realized.
 ## StateUI-authored layouts
 
 `PlacedLayout` and `GalleryView` are StateUI composition mechanisms, not new
-native controls. Their declarations and core tests preserve the intended
-authored-placement vocabulary, but they are deliberately outside the initial
-native-host acceptance milestone. That milestone first completes the primitive
-contract, sparse property motion, and layout motion.
+native controls. The core implements them once, over the primitives - a
+`GalleryView` is a `PlacedLayout` of its cards under a `ScrollReader` - and the
+Gallery exercises both on every host.
 
-Do not mark either composition supported merely because its Swift declaration
-compiles. A host must first have checks for every primitive it depends on, and
-the Gallery must exercise the visible behavior on that platform. Until then,
-use [Platform contract](../platform-contract.md) as the support authority and
-treat `PlacedLayout` and `GalleryView` as deferred surfaces.
+`GalleryView` shows one card at a time, swiped through, in a shape one word
+chooses:
+
+```swift
+struct Album {
+    let title: String
+}
+
+struct AlbumsPage: View {
+    @State private var shown = 0
+    @State private var opened = "Tap the card in front"
+
+    let albums: [Album]
+
+    var body: some View {
+        Grid {
+            GalleryView(albums, id: \.title) { album in
+                Text(album.title)
+            }
+            .arrangement(.fan)
+            .position($shown)
+            .onItemTapped { album in opened = album.title }
+            .gridRow(0)
+
+            Text("\(opened) · card \(shown + 1) of \(albums.count)")
+                .gridRow(1)
+        }
+        .rows(.fill, .auto)
+    }
+}
+```
+
+The initializer builds a card's face, one card per item, identified by `id:`
+or by the item itself where it is `Hashable`. Where a card stands and which
+way it faces is the arrangement's - `.default`, a wheel, `.fan` or `.row` -
+and changing it animates every card to the new shape. `.position($shown)` is
+the card in the middle, counted from 0 and two-way: a swipe writes the card it
+settled on, and a write moves the run. `.onItemTapped` hears a tap with the
+item in the middle, wherever the finger landed, and `.onPositionChanged`
+another card coming to the middle; `.itemSize(width:height:)`,
+`.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
+bounded size, as a scroller needs - a `.height`, or a `.fill` row of a `Grid`.
+No view is built again while the run moves.
+
+`PlacedLayout` places its views by arithmetic of the application's own. An
+engine works out one `Placement` per view - its bounds from the layout's top
+left, and a transform, an opacity, a shade and a `zIndex` - and writes them as
+a `PlacedRun` into the state `.placement($places)` is given. The host puts
+each view where its placement says, and no view is built again:
+
+```swift
+struct Shelf: View {
+    @State private var places = PlacedRun()
+    @State private var room = Rect(0, 0, 0, 0)
+
+    let names = ["Mural", "Nebula", "Ridge"]
+
+    var body: some View {
+        PlacedLayout(names, id: \.self) { name in
+            Text(name)
+        }
+        .placement($places)
+        .frame($room)
+        .engine(following: $room) { _ in
+            places = PlacedRun(names.indices.map { place($0) })
+        }
+    }
+
+    func place(_ index: Int) -> Placement {
+        let width = room.width / Double(names.count)
+
+        return Placement(Rect(Double(index) * width, 0, width, room.height))
+    }
+}
+```
+
+`.frame($room)` reports the room the layout is given, and the engine runs
+again whenever a state it follows is written - here the room. One placement
+stands for each view, in order. `PlacedRun(placements)` puts the views there at
+once, which arithmetic following a finger wants;
+`PlacedRun(placements, motion:)` animates them there, and `motion: .inherited`
+takes the layout's own `.motion`. On an axis nothing bounds - inside a scroller - keep the answer
+bounded: placements that grow with the room grow the room, and the layout
+never settles. A [ScrollReader](#scrollreader) hands such arithmetic the
+user's scrolling.
+
+Neither has a row of its own in the
+[Platform contract](../platform-contract.md): on a host each behaves as far as
+the primitive rows it uses - frame reporting, scrolling, driven state, layout
+motion - are checked there.

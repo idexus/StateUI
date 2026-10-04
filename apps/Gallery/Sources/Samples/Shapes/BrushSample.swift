@@ -34,7 +34,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     Self.stops,
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
-                .aspect(.stretch)        // fills the room, proportions and all
+                .contentMode(.stretch)        // fills the room, proportions and all
                 .height(80)
 
             Button("endPoint: \\(Self.ends[end].name)")
@@ -49,18 +49,18 @@ struct BrushSample: SampleContent, ExampleContent {
                 .height(96)
 
             ZStack {
-                Label("A stroke is a brush too")
-                    .padding(16, 10)
+                Text("A stroke is a brush too")
+                    .padding(horizontal: 16, vertical: 10)
             }
             .style("Card")
-            .strokeWidth(4)
+            .lineWidth(4)
             .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
             // Not a shape at all: `.background` takes a brush, so any view can
             // carry one.
             VStack {
-                Label("A whole stack, behind a gradient")
+                Text("A whole stack, behind a gradient")
                     .textColor(Palette.onAccent)
             }
             .background(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 1)))
@@ -80,7 +80,7 @@ struct BrushSample: SampleContent, ExampleContent {
         (Point(1, 1), "Point(1, 1)"),
     ]
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -92,12 +92,12 @@ struct BrushSample: SampleContent, ExampleContent {
                     Self.stops,
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
-                .aspect(.stretch)
+                .contentMode(.stretch)
                 .height(80)
 
             Button("endPoint: \(Self.ends[end].name)")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { end = (end + 1) % Self.ends.count }
 
@@ -115,17 +115,17 @@ struct BrushSample: SampleContent, ExampleContent {
             SectionTitle("On a stroke and a background")
 
             ZStack {
-                Label("A stroke is a brush too")
+                Text("A stroke is a brush too")
                     .fontSize(14)
-                    .padding(16, 10)
+                    .padding(horizontal: 16, vertical: 10)
             }
             .style("Card")
-            .strokeWidth(4)
+            .lineWidth(4)
             .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
             VStack {
-                Label("A whole stack, behind a gradient")
+                Text("A whole stack, behind a gradient")
                     .fontSize(14)
                     .textColor(Palette.onAccent)
                     .horizontalTextAlignment(.center)
@@ -136,9 +136,9 @@ struct BrushSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("A gradient's points are fractions of the thing being painted, not device "
+            Text("A gradient's points are fractions of the thing being painted, not device "
                 + "units: `Point(0, 0)` is its top left corner and `Point(1, 1)` its bottom "
                 + "right. So the axis follows the box's own corners rather than a fixed "
                 + "angle - and on a bar this wide, corner to corner is only a few degrees "
@@ -146,12 +146,12 @@ struct BrushSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.background` takes one colour or a brush; it is one property, so a "
+            Text("`.background` takes one colour or a brush; it is one property, so a "
                 + "view given both draws the one it was given last.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A stop's colour may be written `Color(light:dark:)`, and it picks its half "
+            Text("A stop's colour may be written `Color(light:dark:)`, and it picks its half "
                 + "as the view wearing the gradient is built - the first stop above is "
                 + "the gallery's accent, which is a lighter orange in the dark.")
                 .fontSize(12)

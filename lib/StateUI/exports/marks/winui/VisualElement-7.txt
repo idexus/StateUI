@@ -1,0 +1,49 @@
+# revision 1.1
+ActivityIndicator.frame: ✅
+ActivityIndicator.translationX: ✅
+Button.layoutDirection: ✅
+Canvas.frame: ✅
+Canvas.translationX: ✅
+CheckBox.layoutDirection: ✅
+ColorBox.frame: ✅
+ColorBox.translationX: ✅
+DatePicker.layoutDirection: ✅
+Ellipse.frame: ✅
+Ellipse.translationX: ✅
+Grid.layoutDirection: ✓ read layoutDirection of Grid: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+HStack.frame: ✅
+HStack.translationX: ✅
+Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ItemsView.frame: ✅
+ItemsView.translationX: ✅
+Line.frame: ✅
+Line.translationX: ✅
+Map.layoutDirection: 🧩
+Path.frame: ✅
+Path.translationX: ✅
+Picker.layoutDirection: ✅
+Polygon.frame: ✅
+Polygon.translationX: ✅
+Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ProgressBar.frame: ✅
+ProgressBar.translationX: ✅
+RadioButton.layoutDirection: ✅
+Rectangle.frame: ✅
+Rectangle.translationX: ✅
+ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+SearchField.frame: ✅
+SearchField.translationX: ✅
+Slider.layoutDirection: ✅
+Stepper.frame: ✅
+Stepper.translationX: ✅
+Switch.layoutDirection: ✅
+Text.layoutDirection: ✅
+TextEditor.frame: ✅
+TextEditor.translationX: ✅
+TextField.layoutDirection: ✅
+TimePicker.frame: ✅
+TimePicker.translationX: ✅
+VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+WebView.frame: ✅
+WebView.translationX: ✅
+ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned

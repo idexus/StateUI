@@ -63,8 +63,8 @@ disk for the next launch.
 A `Binding` is two closures - read and write - plus who it borrows from: the
 storage behind a `@State` (`lender`) and which part of it (`lent`). `$counter`
 builds a new binding every time it is written, so two spellings of one state
-are two values; the lender is how they recognize each other. Only `described`
-reads it, and it answers the storage behind a whole `@State` and nothing for a
+are two values; the lender is how they recognize each other. `described`
+reads it and answers the storage behind a whole `@State` and nothing for a
 part of one or a binding made from closures. The host's image, the journey and
 an engine's following all hang off it.
 
@@ -229,7 +229,9 @@ per take (scenes.md).
 `.environment(object)` provides an object to a subtree, and
 `@Environment var x: T` on any view below resolves the nearest object of that
 type: the annotation is the key, so there is nothing to spell and nothing to
-collide. Nothing about it crosses to the host.
+collide. What the library offers is read by its name, `@Environment(\.window)`,
+a name for its object's type, so both resolve through the same stack. Nothing
+about it crosses to the host.
 
 ```text
   .environment(obj)   stored on the node, outside the patch
@@ -243,24 +245,15 @@ collide. Nothing about it crosses to the host.
 
 A carried view's inputs cannot see a provider above it replacing its object, so
 the differ compares a snapshot of the visible providers too
-(identity-and-diffing.md). The standard providers - battery, connectivity,
-display, locale, device, application info and the four sessions - are there
+(identity-and-diffing.md). What the library offers - the device, the locale
+and the three sessions - is there
 without anybody writing `.environment()`; a slot nothing filled answers the
 standard provider of its type, which is what lets the application itself
-declare `@Environment`, its `init` and `scene` running outside the differ. A
+declare `@Environment`, its `init` and `body` running outside the differ. A
 type neither provided nor standard stops the program with its name: an
 environment that silently answered nothing would be the failure this library
 refuses everywhere. The projected binding lends the object's properties and
 refuses to replace the object, which is the ancestor's to provide.
-
-## Element sessions
-
-An `ElementSession` is an object an element holds for its life: made the first
-time the element is built, kept on its `RenderedNode`, handed back on every
-build while the same kind of view stands there, and offered to everything under
-it by its type. It is how a page has a session: the view a page shows is a
-value its parent constructs afresh on every render, so nothing stored on the
-view outlives a build - the page's element does.
 
 ## An observable model
 

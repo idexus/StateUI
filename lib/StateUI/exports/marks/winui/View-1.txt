@@ -1,0 +1,145 @@
+# revision 3.1
+ActivityIndicator.frameChanged: ✅
+ActivityIndicator.margin: ✅
+ActivityIndicator.swipeDirection: ✅
+ActivityIndicator.swipeThreshold: ✅
+ActivityIndicator.swiped: ✅
+Button.canDrag: not realized
+Button.dragEnded: not realized
+Button.dragStarting: not realized
+Button.dragText: not realized
+Button.frameChanged: ✅
+Button.gridColumn: ✅
+Button.gridRow: ✅
+Canvas.panTouchCount: ✅
+Canvas.panUpdated: ✅
+Canvas.panXChannel: ✅
+CheckBox.frameChanged: ✅
+CheckBox.horizontalAlignment: ✅
+CheckBox.pinchUpdated: ✅
+CheckBox.verticalAlignment: ✅
+ColorBox.allowsDrop: not realized
+ColorBox.dragLeave: not realized
+ColorBox.dragOver: not realized
+ColorBox.drop: not realized
+ColorBox.frameChanged: ✅
+ColorBox.gridColumnSpan: ✅
+ColorBox.gridRowSpan: ✅
+DatePicker.panYChannel: ✅
+Ellipse.area: ✅
+Ellipse.frameChanged: ✅
+Ellipse.pointerEntered: ✅
+Ellipse.pointerExited: ✅
+Ellipse.pointerMoved: ✅
+Ellipse.pointerPressed: ✅
+Ellipse.pointerReleased: ✅
+Grid.tapCount: ✅
+Grid.tapped: ✅
+HStack.frameChanged: ✅
+HStack.margin: ✅
+HStack.swipeDirection: ✅
+HStack.swipeThreshold: ✅
+HStack.swiped: ✅
+Image.canDrag: not realized
+Image.dragEnded: not realized
+Image.dragStarting: not realized
+Image.dragText: not realized
+Image.frameChanged: ✅
+Image.gridColumn: ✅
+Image.gridRow: ✅
+ItemsView.panTouchCount: ✅
+ItemsView.panUpdated: ✅
+ItemsView.panXChannel: ✅
+Line.allowsDrop: not realized
+Line.dragLeave: not realized
+Line.dragOver: not realized
+Line.drop: not realized
+Line.frameChanged: ✅
+Line.gridColumnSpan: ✅
+Line.gridRowSpan: ✅
+Map.panYChannel: 🧩
+Path.area: ✅
+Path.frameChanged: ✅
+Path.pointerEntered: ✅
+Path.pointerExited: ✅
+Path.pointerMoved: ✅
+Path.pointerPressed: ✅
+Path.pointerReleased: ✅
+Picker.tapCount: ✅
+Picker.tapped: ✅
+Polygon.frameChanged: ✅
+Polygon.margin: ✅
+Polygon.swipeDirection: ✅
+Polygon.swipeThreshold: ✅
+Polygon.swiped: ✅
+Polyline.canDrag: not realized
+Polyline.dragEnded: not realized
+Polyline.dragStarting: not realized
+Polyline.dragText: not realized
+Polyline.frameChanged: ✅
+Polyline.gridColumn: ✅
+Polyline.gridRow: ✅
+ProgressBar.panTouchCount: ✅
+ProgressBar.panUpdated: ✅
+ProgressBar.panXChannel: ✅
+RadioButton.frameChanged: ✅
+RadioButton.horizontalAlignment: ✅
+RadioButton.pinchUpdated: ✅
+RadioButton.verticalAlignment: ✅
+Rectangle.allowsDrop: not realized
+Rectangle.dragLeave: not realized
+Rectangle.dragOver: not realized
+Rectangle.drop: not realized
+Rectangle.frameChanged: ✅
+Rectangle.gridColumnSpan: ✅
+Rectangle.gridRowSpan: ✅
+ScrollView.panYChannel: ✅
+SearchField.area: ✅
+SearchField.frameChanged: ✅
+SearchField.pointerEntered: ✅
+SearchField.pointerExited: ✅
+SearchField.pointerMoved: ✅
+SearchField.pointerPressed: ✅
+SearchField.pointerReleased: ✅
+Slider.tapCount: ✅
+Slider.tapped: ✅
+Stepper.frameChanged: ✅
+Stepper.margin: ✅
+Stepper.swipeDirection: ✅
+Stepper.swipeThreshold: ✅
+Stepper.swiped: ✅
+Switch.canDrag: not realized
+Switch.dragEnded: not realized
+Switch.dragStarting: not realized
+Switch.dragText: not realized
+Switch.frameChanged: ✅
+Switch.gridColumn: ✅
+Switch.gridRow: ✅
+Text.frameChanged: ✅
+Text.horizontalAlignment: ✅
+Text.pinchUpdated: ✅
+Text.verticalAlignment: ✅
+TextEditor.panTouchCount: ✅
+TextEditor.panUpdated: ✅
+TextEditor.panXChannel: ✅
+TextField.frameChanged: ✅
+TextField.horizontalAlignment: ✅
+TextField.pinchUpdated: ✅
+TextField.verticalAlignment: ✅
+TimePicker.allowsDrop: not realized
+TimePicker.dragLeave: not realized
+TimePicker.dragOver: not realized
+TimePicker.drop: not realized
+TimePicker.frameChanged: ✅
+TimePicker.gridColumnSpan: ✅
+TimePicker.gridRowSpan: ✅
+VStack.panYChannel: ✅
+WebView.area: ✅
+WebView.frameChanged: ✅
+WebView.pointerEntered: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.pointerExited: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.pointerMoved: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.pointerPressed: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.pointerReleased: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+ZStack.tapCount: ✅
+ZStack.tapped: ✅

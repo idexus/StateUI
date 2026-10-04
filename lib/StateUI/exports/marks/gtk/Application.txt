@@ -1,0 +1,14 @@
+# revision 1.1
+Application: ✅
+Application.alert: ✅
+Application.announce: ✓ read what the screen reader said: the host's own list of what it asked GTK to announce
+Application.chooseAction: ✅
+Application.confirm: ✅
+Application.currentTime: ✅
+Application.currentTimeZone: ✅
+Application.handlerFailed: ✅
+Application.hideOnScreenKeyboard: ✅
+Application.persistSceneValue: ✅
+Application.persistValue: ✅
+Application.prompt: ✅
+Application.utcOffset: ✅

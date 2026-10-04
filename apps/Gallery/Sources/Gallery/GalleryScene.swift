@@ -1,76 +1,39 @@
 import StateUI
 
-/// One gallery - a SESSION of the application. *File ▸ New Window* opens
-/// another, and so does the windows sample's "Open another gallery"; each has
-/// state of its own, and the windows it opens beside its main one are its own.
+/// The galleries - a SCENE: as many gallery windows as the user opens, and
+/// the windows they open beside them, all sharing what the scene holds.
 ///
-/// What a gallery holds is its own objects, each a class of `@State`
-/// properties: WHERE IT IS (`Navigation` - the section, what is pushed and
-/// presented, whether the menu is open), WHAT IT LOOKS LIKE (`SessionStyle` -
-/// the font and the accent its Fonts and Colours windows choose), what its
-/// window's chrome says (`TitleBarState`) and what its window has said about
-/// its life (`WindowLog`) - and the catalog of samples it shows. `nav` and
-/// `style` are offered to every window of the gallery, which is how its windows
-/// share one context: nothing is passed between the Colours window and the
-/// bars it paints. The rest is handed to the main window, which reads it.
-///
-/// Each sample owns its own `@State`, declared on the sample itself - and since
-/// the catalog this gallery keeps carries the samples, that state survives for
-/// as long as the gallery does, pushes and pops included. A second gallery
-/// keeps a catalog of its own.
+/// What the scene holds is the gallery's LOOK (`SessionStyle` - the font and
+/// the accent its Fonts and Colours windows choose), offered to every window of
+/// it: nothing is passed between the Colours window and the bars it paints.
+/// What one gallery window is doing - where it is, its bar, its log, its
+/// catalog - is that window's own: see Gallery/GalleryWindow.swift.
 struct GalleryScene: Scene {
-    /// Where this gallery is, and every move it can make. See
-    /// Gallery/Navigation.swift.
-    @State private var nav = Navigation()
-
-    /// What this gallery looks like - kept with it. See SessionStyle.swift.
+    /// What every gallery window looks like - kept with the scene. See
+    /// SessionStyle.swift.
     @State private var style = SessionStyle()
 
-    /// What the main window's chrome says - written by the TitleBar sample.
-    @State private var bar = TitleBarState()
-
-    /// What the main window has said about its life - its phase, watched in
-    /// `MainWindow` and read by the Lifecycle sample.
-    @State private var log = WindowLog()
-
-    /// WHERE THE CATALOG IS KEPT, so that it is built once rather than on
-    /// every render - a hundred samples, each holding the gallery's objects and
-    /// bindings that go on reading through to its state.
-    @State private var kept = KeptCatalog()
-
-    /// The gallery's windows: the main one, and the ones it may open beside
-    /// it - its Fonts and Colours windows, which may step aside while another
-    /// gallery is in front or float above it, its inspector, and a swatch per
-    /// number.
-    var windows: Windows {
-        let nav = self.nav
+    /// The scene's windows: the gallery windows, which launch and *File ▸ New
+    /// Window* open; its Fonts and Colours windows, which may step aside while
+    /// another scene is in front or float above it and read the scene's look;
+    /// its inspector; and a swatch per number.
+    var body: some Scene {
         let style = self.style
-        let bar = self.bar
-        let log = self.log
 
-        return Windows {
-            WindowGroup(.fonts) { FontsWindow() }
-                .hidesWhenInactive(style.hidesTools)
-                .floatsOnTop(style.floatsTools)
+        WindowGroup { GalleryWindow(style: style) }
 
-            WindowGroup(.colours) { ColoursWindow() }
-                .hidesWhenInactive(style.hidesTools)
-                .floatsOnTop(style.floatsTools)
+        Window(.fonts) { FontsPage() }
+            .hidesWhenInactive(style.hidesTools)
+            .floatsOnTop(style.floatsTools)
+            .environment(style)
 
-            WindowGroup(.debugInspector) { DebugInspector() }
+        Window(.colours) { ColoursPage() }
+            .hidesWhenInactive(style.hidesTools)
+            .floatsOnTop(style.floatsTools)
+            .environment(style)
 
-            WindowGroup(.swatch, for: Int.self) { number in SwatchWindow(number: number) }
-        } main: {
-            MainWindow(
-                catalog: kept.catalog {
-                    Catalog(nav: nav, style: style, bar: bar, log: log)
-                },
-                nav: nav,
-                style: style,
-                log: log,
-                bar: bar)
-        }
-        .environment(nav)
-        .environment(style)
+        Window(.debugInspector) { DebugInspector() }
+
+        WindowGroup(.swatch, for: Int.self) { number in SwatchPage(number: number) }
     }
 }

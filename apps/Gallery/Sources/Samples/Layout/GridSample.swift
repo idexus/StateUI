@@ -51,12 +51,12 @@ private struct GridPlacement: ExampleContent {
             SwitchRow("Second column twice as wide", $wideSecondColumn)
         }
 
-        private struct GridCell: ContentView {
+        private struct GridCell: View {
             let text: String
             let color: String
 
-            var content: any View {
-                Label(text)
+            var body: some View {
+                Text(text)
                     .textColor(.white)
                     .background(Color(color))
                     .padding(8)
@@ -64,7 +64,7 @@ private struct GridPlacement: ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -98,22 +98,22 @@ private struct GridPlacement: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Where a view sits is written on the view - `.gridRow(1)`, "
+            Text("Where a view sits is written on the view - `.gridRow(1)`, "
                 + "`.gridColumn(1)` - and those modifiers are on every view, because any "
                 + "view can be a grid child.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A span counts from the view's own cell: `.gridRowSpan(2)` on the red "
+            Text("A span counts from the view's own cell: `.gridRowSpan(2)` on the red "
                 + "cell covers rows 0 and 1 and the spacing between them, and "
                 + "`.gridColumnSpan(2)` does the same across. A cell nothing is placed in "
                 + "stays empty.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A row or column is a `GridLength`: `.fixed(64)`, `.auto`, `.fill` "
+            Text("A row or column is a `GridLength`: `.fixed(64)`, `.auto`, `.fill` "
                 + "and `.proportional(2)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -124,12 +124,12 @@ private struct GridPlacement: ExampleContent {
 
 /// One coloured cell, composed rather than built inline - and placed with
 /// `.gridRow`, `.gridColumn` and the spans like any other view.
-private struct GridCell: ContentView {
+private struct GridCell: View {
     let text: String
     let color: String
 
-    var content: any View {
-        Label(text)
+    var body: some View {
+        Text(text)
             .fontSize(12)
             .textColor(.white)
             .background(Color(color))

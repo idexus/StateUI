@@ -13,46 +13,45 @@ struct ModalSample: SampleContent, ExampleContent {
             case settings
         }
 
-        struct MainWindow: Window {
+        struct MainPage: View {
             @State private var sheets: [Sheet] = []
 
-            var page: any Page {
-                HomePage(sheets: $sheets)
+            // The sheets stand over the window's page, the last on top.
+            var body: some View {
+                ModalStack($sheets) {
+                    HomePage(sheets: $sheets)
+                } destination: { _ in
+                    SettingsPage(sheets: $sheets)
+                }
             }
         }
 
-        struct HomePage: ContentView {
-            @Environment private var window: WindowSession
+        struct HomePage: View {
             @Binding var sheets: [Sheet]
 
-            var content: any View {
+            var body: some View {
                 VStack {
                     DebugInfoLabel()
 
                     Button("Present")
                         .onClicked { sheets.append(.settings) }
-                        .onCreated {
-                            window.modalStack = ModalStack($sheets) { _ in
-                                SettingsPage(sheets: $sheets)
-                            }
-                        }
                 }
             }
         }
 
-        struct SettingsPage: ContentView {
+        struct SettingsPage: View {
             @Binding var sheets: [Sheet]
 
-            var content: any View {
+            var body: some View {
                 Button("Close")
                     .onClicked { sheets.removeLast() }
             }
         }
         """
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -61,11 +60,11 @@ struct ModalSample: SampleContent, ExampleContent {
                 .background(Palette.accent)
                 .textColor(.white)
                 .shape(.roundedRectangle(8))
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.present(.page) }
 
-            Label(nav.sheets.isEmpty ? "Nothing presented" : "Depth: \(nav.sheets.count)")
+            Text(nav.sheets.isEmpty ? "Nothing presented" : "Depth: \(nav.sheets.count)")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)

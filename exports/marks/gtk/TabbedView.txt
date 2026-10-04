@@ -1,5 +1,0 @@
-# revision 1.1
-Label.frameChanged: ✅
-TabbedView: ✅
-TabbedView.currentPage: cannot read currentPage of TabbedView - GTK's driver has no path for it yet
-TabbedView.currentPageChanged: not realized

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Prints the revision a conformance family's verdicts on a host stand at, as
-# lib/StateUI.Conformance/revisions.txt says: the family's own on every host,
+# lib/StateUI/StateUI.Conformance/revisions.txt says: the family's own on every host,
 # then the host's own, each 1 where no line names it - `1.1`. The host's tests
 # and the dictionary's renderer read it the same way (HostVerdict.revision).
 #
@@ -20,5 +20,5 @@ while read -r first second third; do
   [[ -z "$first" || "$first" == \#* ]] && continue
   if [[ -z "$third" && "$first" == "$family" ]]; then every="$second"; fi
   if [[ "$first" == "$host" && "$second" == "$family" && -n "$third" ]]; then own="$third"; fi
-done < "$root/lib/StateUI.Conformance/revisions.txt"
+done < "$root/lib/StateUI/StateUI.Conformance/revisions.txt"
 echo "$every.$own"

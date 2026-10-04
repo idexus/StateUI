@@ -27,7 +27,7 @@ final class Catalog {
     init(
         nav: Navigation,
         style: SessionStyle,
-        bar: TitleBarState,
+        bar: WindowBarState,
         log: WindowLog
     ) {
         var groups: [SampleGroup] = [
@@ -126,13 +126,13 @@ final class Catalog {
             SampleGroup(
                 route: "text",
                 title: "Text & typing",
-                summary: "Words shown and words typed - a Label and its spans, TextField, "
+                summary: "Words shown and words typed - a Text and its spans, TextField, "
                     + "TextEditor, SearchField on the page rather than in the navigation "
                     + "bar, and giving the keyboard back.",
                 icon: ImageSource(light: "nav_text.png", dark: "nav_text_dark.png"),
                 card: ImageSource("cat_text.png"),
                 samples: [
-                    Sample(LabelSample()),
+                    Sample(TextSample()),
                     Sample(TextSpanSample()),
                     Sample(TextFieldSample()),
                     Sample(TextEditorSample()),
@@ -157,7 +157,7 @@ final class Catalog {
                     Sample(ColorBoxSample()),
                     Sample(TransformSample()),
                     Sample(LayoutDirectionSample()),
-                    Sample(FrameReaderSample()),
+                    Sample(GeometryReaderSample()),
                     Sample(LivingLayoutSample()),
                     Sample(RemovingRowSample()),
                 ]),
@@ -249,6 +249,8 @@ final class Catalog {
                     Sample(ModalSample(nav: nav)),
                     Sample(DialogsSample()),
                     Sample(ToolbarSample()),
+                    Sample(ToolbarLayersSample(nav: nav)),
+                    Sample(MenuBarSample()),
                     Sample(ContextMenuSample()),
                     Sample(SearchSample(nav: nav)),
                 ]),
@@ -257,15 +259,16 @@ final class Catalog {
                 route: "windows",
                 title: "Windows",
                 summary: "The frame around the pages - what a window is called and how "
-                    + "big it is, its title bar, more than one of them, and what it says "
+                    + "big it is, its bar, more than one of them, and what it says "
                     + "as the app comes and goes.",
                 icon: ImageSource(light: "nav_windows.png", dark: "nav_windows_dark.png"),
                 card: ImageSource("cat_windows.png"),
                 samples: [
                     Sample(WindowSample()),
-                    Sample(TitleBarSample(bar: bar)),
+                    Sample(WindowBarSample(bar: bar)),
                     Sample(MultiWindowSample(style: style)),
-                    Sample(WindowOverlaySample()),
+                    Sample(ScenesSample()),
+                    Sample(WindowOverlaySample(nav: nav)),
                     Sample(LifecycleSample(log: log)),
                     Sample(WindowPhaseSample()),
                 ]),
@@ -274,8 +277,9 @@ final class Catalog {
                 route: "environment",
                 title: "Environment",
                 summary: "What the host knows - the device, the screen, the locale, the "
-                    + "network and the battery - provided above and resolved below by "
-                    + "type; the theme is under Styles.",
+                    + "network and the battery - and the application's session, provided "
+                    + "above and resolved below by type; the theme is under Styles, the "
+                    + "scene's and the window's sessions under Windows.",
                 icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
                 card: ImageSource("cat_environment.png"),
                 samples: [
@@ -285,6 +289,7 @@ final class Catalog {
                     Sample(LocaleInfoSample()),
                     Sample(ConnectivitySample()),
                     Sample(BatterySample()),
+                    Sample(ApplicationSessionSample()),
                 ]),
 
             SampleGroup(

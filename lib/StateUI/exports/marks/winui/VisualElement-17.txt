@@ -1,0 +1,81 @@
+# revision 1.1
+ActivityIndicator.pivotX: ✅
+Button.focus: ✅
+Button.isFocusedChanged: ✅
+Button.translationY: ✅
+Button.unfocus: ✅
+Canvas.pivotX: ✅
+CheckBox.focus: ✅
+CheckBox.isFocusedChanged: ✅
+CheckBox.translationY: ✅
+CheckBox.unfocus: ✅
+ColorBox.pivotX: ✅
+DatePicker.focus: ✅
+DatePicker.isFocusedChanged: ✅
+DatePicker.translationY: ✅
+DatePicker.unfocus: ✅
+Ellipse.pivotX: ✅
+Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+Grid.translationY: ✅
+Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+HStack.pivotX: ✅
+Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+Image.translationY: ✅
+Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.pivotX: ✅
+Line.pivotX: ✅
+Map.focus: 🧩
+Map.isFocusedChanged: 🧩
+Map.translationY: 🧩
+Map.unfocus: 🧩
+Path.pivotX: ✅
+Picker.focus: ✅
+Picker.isFocusedChanged: ✅
+Picker.translationY: ✅
+Picker.unfocus: ✅
+Polygon.pivotX: ✅
+Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.translationY: ✅
+Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.pivotX: ✅
+RadioButton.focus: ✅
+RadioButton.isFocusedChanged: ✅
+RadioButton.translationY: ✅
+RadioButton.unfocus: ✅
+Rectangle.pivotX: ✅
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.translationY: ✅
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+SearchField.pivotX: ✅
+Slider.focus: ✅
+Slider.isFocusedChanged: ✅
+Slider.translationY: ✅
+Slider.unfocus: ✅
+Stepper.pivotX: ✅
+Switch.focus: ✅
+Switch.isFocusedChanged: ✅
+Switch.translationY: ✅
+Switch.unfocus: ✅
+Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.translationY: ✅
+Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+TextEditor.pivotX: ✅
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.translationY: ✅
+TextField.unfocus: ✅
+TimePicker.pivotX: ✅
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.translationY: ✅
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.pivotX: ✅
+ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.translationY: ✅
+ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

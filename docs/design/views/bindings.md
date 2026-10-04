@@ -56,10 +56,10 @@ back to its described form instead.
 ## Element side only
 
 The twins sit on the element-side tiers - `VisualElement`, `View`, `Layout`,
-`StackBase`, `Shape`, `InputView`, and the control itself where the property is
+`Stack`, `Shape`, `TextInput`, and the control itself where the property is
 one control's own - and never on the `…Properties` protocols the value forms
 sit on. A `StyleBag` wears every property protocol there is, so a twin written
-there would appear inside `Style<Label>`, where it would compile and mean
+there would appear inside `Style<Text>`, where it would compile and mean
 nothing: a style is driven by nothing. The mixins have no element half, so
 their twins are written `where Self: VisualElement`.
 
@@ -93,8 +93,8 @@ That makes a driven text the way to show a moving number - a slider, an engine
 following it, a label - for no render at all. What it costs is measuring the
 label again on the frame the words change, which any changed caption costs.
 
-There is no driven `text` on the `TextElement` tier, though the value form sits
-there. A Label's and a Button's text is `.out`, written by the host and
+There is no driven `text` on the `TextualElement` tier, though the value form sits
+there. A Text's and a Button's text is `.out`, written by the host and
 reported by nobody. The text of a `TextField`, a `TextEditor` and a
 `SearchField` goes both ways: the user types into it, and the typed words land
 on the state whole as the host's own write. The two directions differ per
@@ -103,8 +103,8 @@ control, so the driven text is written per control.
 ## Two way controls
 
 A control the user changes - a switch, a check box, a radio button, a picker,
-the date and time pickers, a slider, a stepper, the text fields, a refresh
-view - takes its binding in one of two ways, decided by the binding:
+the date and time pickers, a slider, a stepper, the text fields - takes its
+binding in one of two ways, decided by the binding:
 
 ```text
   $x of a @State or @Binding      handed over: the host sets the control from the state on

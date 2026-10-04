@@ -46,7 +46,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
         // Into the application's session as it is made, so the host knows
         // what to read before the first view is built:
-        @Environment private var application: ApplicationSession
+        @Environment(\\.application) private var application
 
         init() {
             application.persistentKeys = [.visits, .who, .shade]
@@ -62,7 +62,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             // a write rebuilds - and the reading names which one it was for.
             DebugInfoLabel()
 
-            Label("Pressed \\(visits) times, ever")
+            Text("Pressed \\(visits) times, ever")
 
             HStack {
                 Button("Press")
@@ -76,7 +76,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             TextField($who)
                 .placeholder("Your name")
 
-            Label(who.isEmpty ? "Welcome back" : "Welcome back, \\(who)")
+            Text(who.isEmpty ? "Welcome back" : "Welcome back, \\(who)")
 
             Button(shade == .quiet ? "quiet" : "bold")
                 .onClicked { shade = shade == .quiet ? .bold : .quiet }
@@ -86,14 +86,14 @@ struct PersistentStateSample: SampleContent, ExampleContent {
         }
         """
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Close the app completely and open it again: the count and the name "
+            Text("Close the app completely and open it again: the count and the name "
                 + "are where you left them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The value written beside the state - `= 0` - is what it holds when "
+            Text("The value written beside the state - `= 0` - is what it holds when "
                 + "the store has nothing under that name, so the default stays where "
                 + "it can be seen. Reading and writing are exactly what they are on any "
                 + "other @State: nothing is awaited, and a write reaches the store by "
@@ -101,14 +101,14 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The application LISTS its keys, in its session's persistentKeys. That is not "
+            Text("The application LISTS its keys, in its session's persistentKeys. That is not "
                 + "ceremony: a settings store is read one key at a time and offers no "
                 + "list of what it holds, so naming them is what puts the values in "
                 + "memory before the first view asks for one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("They are kept in the platform's own settings store - NSUserDefaults, "
+            Text("They are kept in the platform's own settings store - NSUserDefaults, "
                 + "SharedPreferences, ApplicationDataContainer - beside whatever else "
                 + "the app keeps there. So a key can hold only what such a store holds: "
                 + "a whole number, a number, true or false, or text. An enum over one of "
@@ -119,11 +119,11 @@ struct PersistentStateSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label("Pressed \(visits) times, ever")
+            Text("Pressed \(visits) times, ever")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)
 
@@ -131,16 +131,16 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 Button("Press")
                     .background(Palette.accent)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { visits += 1 }
 
                 Button("Start over")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .isEnabled(visits != 0)
                     .onClicked { visits = 0 }
             }
@@ -152,23 +152,23 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Your name")
                 .placeholder("Your name")
 
-            Label(who.isEmpty ? "Welcome back" : "Welcome back, \(who)")
+            Text(who.isEmpty ? "Welcome back" : "Welcome back, \(who)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
             // A key whose value is an enum - kept as the word it is spelled
             // with, so anything else that opens the store can read it.
             HStack {
-                Label("Shade")
+                Text("Shade")
                     .verticalAlignment(.center)
 
                 Button(shade == .quiet ? "quiet" : "bold")
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(16, 8)
+                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { shade = shade == .quiet ? .bold : .quiet }
             }
             .spacing(12)

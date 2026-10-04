@@ -1,0 +1,8 @@
+# revision 1.1
+Marker: ✅
+Marker.detailsClicked: ✓ open on Marker: the map's delegate told of the callout's button, no touch
+Marker.label: ✅
+Marker.location: ✅
+Marker.selected: ✓ open on Marker: the map's delegate told of the callout's button, no touch
+Marker.subtitle: ✅
+Marker.type: ✅

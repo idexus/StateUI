@@ -1,0 +1,145 @@
+# revision 3.1
+ActivityIndicator.canDrag: not realized
+ActivityIndicator.dragEnded: not realized
+ActivityIndicator.dragStarting: not realized
+ActivityIndicator.dragText: not realized
+ActivityIndicator.frameChanged: ✅
+ActivityIndicator.gridColumn: ✅
+ActivityIndicator.gridRow: ✅
+Button.panTouchCount: ✅
+Button.panUpdated: ✅
+Button.panXChannel: ✅
+Canvas.frameChanged: ✅
+Canvas.horizontalAlignment: ✅
+Canvas.pinchUpdated: ✅
+Canvas.verticalAlignment: ✅
+CheckBox.allowsDrop: not realized
+CheckBox.dragLeave: not realized
+CheckBox.dragOver: not realized
+CheckBox.drop: not realized
+CheckBox.frameChanged: ✅
+CheckBox.gridColumnSpan: ✅
+CheckBox.gridRowSpan: ✅
+ColorBox.panYChannel: ✅
+DatePicker.area: ✅
+DatePicker.frameChanged: ✅
+DatePicker.pointerEntered: ✅
+DatePicker.pointerExited: ✅
+DatePicker.pointerMoved: ✅
+DatePicker.pointerPressed: ✅
+DatePicker.pointerReleased: ✅
+Ellipse.tapCount: ✅
+Ellipse.tapped: ✅
+Grid.frameChanged: ✅
+Grid.margin: ✅
+Grid.swipeDirection: ✅
+Grid.swipeThreshold: ✅
+Grid.swiped: ✅
+HStack.canDrag: not realized
+HStack.dragEnded: not realized
+HStack.dragStarting: not realized
+HStack.dragText: not realized
+HStack.frameChanged: ✅
+HStack.gridColumn: ✅
+HStack.gridRow: ✅
+Image.panTouchCount: ✅
+Image.panUpdated: ✅
+Image.panXChannel: ✅
+ItemsView.frameChanged: ✅
+ItemsView.horizontalAlignment: ✅
+ItemsView.pinchUpdated: ✅
+ItemsView.verticalAlignment: ✅
+Line.panYChannel: ✅
+Map.area: 🧩
+Map.frameChanged: 🧩
+Map.pointerEntered: 🧩
+Map.pointerExited: 🧩
+Map.pointerMoved: 🧩
+Map.pointerPressed: 🧩
+Map.pointerReleased: 🧩
+Path.tapCount: ✅
+Path.tapped: ✅
+Picker.frameChanged: ✅
+Picker.margin: ✅
+Picker.swipeDirection: ✅
+Picker.swipeThreshold: ✅
+Picker.swiped: ✅
+Polygon.canDrag: not realized
+Polygon.dragEnded: not realized
+Polygon.dragStarting: not realized
+Polygon.dragText: not realized
+Polygon.frameChanged: ✅
+Polygon.gridColumn: ✅
+Polygon.gridRow: ✅
+Polyline.panTouchCount: ✅
+Polyline.panUpdated: ✅
+Polyline.panXChannel: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.horizontalAlignment: ✅
+ProgressBar.pinchUpdated: ✅
+ProgressBar.verticalAlignment: ✅
+RadioButton.allowsDrop: not realized
+RadioButton.dragLeave: not realized
+RadioButton.dragOver: not realized
+RadioButton.drop: not realized
+RadioButton.frameChanged: ✅
+RadioButton.gridColumnSpan: ✅
+RadioButton.gridRowSpan: ✅
+Rectangle.panYChannel: ✅
+ScrollView.area: ✅
+ScrollView.frameChanged: ✅
+ScrollView.pointerEntered: ✅
+ScrollView.pointerExited: ✅
+ScrollView.pointerMoved: ✅
+ScrollView.pointerPressed: ✅
+ScrollView.pointerReleased: ✅
+SearchField.tapCount: ✅
+SearchField.tapped: ✅
+Slider.frameChanged: ✅
+Slider.margin: ✅
+Slider.swipeDirection: ✅
+Slider.swipeThreshold: ✅
+Slider.swiped: ✅
+Stepper.canDrag: not realized
+Stepper.dragEnded: not realized
+Stepper.dragStarting: not realized
+Stepper.dragText: not realized
+Stepper.frameChanged: ✅
+Stepper.gridColumn: ✅
+Stepper.gridRow: ✅
+Switch.panTouchCount: ✅
+Switch.panUpdated: ✅
+Switch.panXChannel: ✅
+Text.allowsDrop: not realized
+Text.dragLeave: not realized
+Text.dragOver: not realized
+Text.drop: not realized
+Text.frameChanged: ✅
+Text.gridColumnSpan: ✅
+Text.gridRowSpan: ✅
+TextEditor.frameChanged: ✅
+TextEditor.horizontalAlignment: ✅
+TextEditor.pinchUpdated: ✅
+TextEditor.verticalAlignment: ✅
+TextField.allowsDrop: not realized
+TextField.dragLeave: not realized
+TextField.dragOver: not realized
+TextField.drop: not realized
+TextField.frameChanged: ✅
+TextField.gridColumnSpan: ✅
+TextField.gridRowSpan: ✅
+TimePicker.panYChannel: ✅
+VStack.area: ✅
+VStack.frameChanged: ✅
+VStack.pointerEntered: ✅
+VStack.pointerExited: ✅
+VStack.pointerMoved: ✅
+VStack.pointerPressed: ✅
+VStack.pointerReleased: ✅
+WebView.tapCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.tapped: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+ZStack.frameChanged: ✅
+ZStack.margin: ✅
+ZStack.swipeDirection: ✅
+ZStack.swipeThreshold: ✅
+ZStack.swiped: ✅

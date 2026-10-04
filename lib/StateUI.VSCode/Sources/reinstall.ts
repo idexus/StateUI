@@ -32,19 +32,30 @@ export function packedExtension(checkout: string): string {
 }
 
 /**
- * The command line of the VS Code installed at `appRoot` - `vscode.env.appRoot` - named as its product names it:
- * `code`, `code-insiders`.
+ * The command line of the VS Code installed at `appRoot` - `vscode.env.appRoot` - named as its product names it
+ * (`code`, `code-insiders`): in the nearest `bin/` above `appRoot` that holds it, or the name alone, found on the PATH.
  */
 export function editorCommandLine(appRoot: string, platform: NodeJS.Platform = process.platform): string {
     const product = path.join(appRoot, "product.json");
     const name = fs.existsSync(product) ? JSON.parse(fs.readFileSync(product, "utf8")).applicationName ?? "code" : "code";
-    return path.join(appRoot, "bin", platform === "win32" ? `${name}.cmd` : name);
+    const file = platform === "win32" ? `${name}.cmd` : name;
+    // macOS keeps bin/ inside appRoot; Linux and Windows at the installation's root, two levels above it.
+    for (let directory = appRoot; path.dirname(directory) !== directory; directory = path.dirname(directory)) {
+        const command = path.join(directory, "bin", file);
+        if (fs.existsSync(command)) {
+            return command;
+        }
+    }
+    return file;
 }
 
-/** The steps that build the extension in `checkout` and install it with `editor`, the editor's command line. */
-export function reinstallSteps(checkout: string, editor: string): Step[] {
+/**
+ * The steps that build the extension in `checkout` and install it with `editor`, the editor's command line. Windows
+ * runs npm by its `npm.cmd`: a terminal's PowerShell takes `npm.ps1` first, which its default policy refuses.
+ */
+export function reinstallSteps(checkout: string, editor: string, platform: NodeJS.Platform = process.platform): Step[] {
     return [
-        { command: "npm", args: ["run", "package"], cwd: extensionSources(checkout) },
+        { command: platform === "win32" ? "npm.cmd" : "npm", args: ["run", "package"], cwd: extensionSources(checkout) },
         { command: editor, args: ["--install-extension", packedExtension(checkout), "--force"], cwd: checkout },
     ];
 }

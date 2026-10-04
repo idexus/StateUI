@@ -52,12 +52,9 @@ extension Sample {
 /// Every tab stays in the tree while the sample is shown, so reading the code
 /// and coming back keeps the example's state - what a gesture sample has to
 /// show IS its state.
-struct SampleTabPage: ContentView {
-    /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
-
-    /// The page itself - what it is called, and what is on its bar.
-    @Environment private var page: PageSession
+struct SampleTabPage: View {
+    /// The gallery this page is in - its scene.
+    @Environment(\.scene) var scene
 
     let sample: Sample
 
@@ -65,8 +62,8 @@ struct SampleTabPage: ContentView {
 
     let nav: Navigation
 
-    var content: any View {
-        FrameReader { frame in
+    var body: some View {
+        GeometryReader { frame in
             held
                 .height(frame.height)
                 .width(frame.width)
@@ -75,20 +72,16 @@ struct SampleTabPage: ContentView {
         }
         // Dressed as every page of the gallery is, and named and pictured for
         // its tab: the tab's caption and icon. The window takes the sample's
-        // name from the tabs (`SamplePage.shown`). What a sample adds to the bar
-        // it writes from its own `.onCreated`, which runs after this one,
-        // being further in.
-        .onCreated {
-            page.gallery(sample.caption(of: tab), scene: scene, nav: nav)
-            page.icon = sample.icon(of: tab)
-        }
+        // name from the tabs (`SamplePage.shown`).
+        .galleryPage(sample.caption(of: tab))
+        .icon(sample.icon(of: tab))
     }
 
     /// The line under the title over what the tab shows, in one cell that
     /// fills the rest of the page.
     private var held: Grid {
         Grid {
-            Label(sample.summary)
+            Text(sample.summary)
                 .fontSize(15)
                 .textColor(Palette.subtle)
 
@@ -118,19 +111,19 @@ struct SampleTabPage: ContentView {
 
     /// One example's notes and Swift, under "Notes" and "In Swift" - and,
     /// among several examples, under the example's name as well.
-    private func explanation(of example: Example, at index: Int) -> any View {
+    private func explanation(of example: Example, at index: Int) -> some View {
         VStack {
             if sample.examples.count > 1 {
                 ExampleTitle(sample.name(ofExample: index))
             }
 
             if let notes = example.notes {
-                SamplePage.section("Notes", notes)
+                SamplePage.section("Notes", ModifiedContent(node: notes.node))
             }
 
             SamplePage.section(example.codeHeading, CodeBlock(example.code))
 
-            example.hostCode.listings.map { listing -> Element in
+            example.hostCode.listings.map { listing -> any View in
                 SamplePage.section(
                     example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }

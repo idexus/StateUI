@@ -1,5 +1,0 @@
-# revision 1.1
-ColorBox: ✅
-ColorBox.color: cannot read the colour of ColorBox - GTK's driver has no path for it yet
-ColorBox.cornerRadius: cannot read the colour of ColorBox - GTK's driver has no path for it yet
-ColorBox.frameChanged: ✅

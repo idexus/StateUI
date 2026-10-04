@@ -4,55 +4,68 @@ StateUI separates structural declarations from the identity-bearing objects
 that exist while an application runs:
 
 ```text
-declaration         runtime state
------------         ------------------
-Application         ApplicationSession
-Scene               SceneSession
-Window              WindowSession
-Page                PageSession
+declaration                     runtime state
+-----------                     ------------------
+Application                     ApplicationSession
+Scene                           SceneSession
+WindowGroup, Window             WindowSession
 ```
 
 A declaration answers what it is composed of. Its session answers what the
 particular running instance is called, where it stands in its lifecycle, and
 what actions can be taken on it. Sessions are ordinary objects with `@State`
-properties and are resolved through `@Environment`.
+properties, read by name: `@Environment(\.application)`, `\.scene`,
+`\.window`. The page a view stands on
+has no session: what it is, its view says by modifier
+([What a view says of its page](#what-a-view-says-of-its-page)).
 
 ## Application
 
-An application declares one scene shape. A window itself conforms to `Scene`,
-so a single-window application needs no extra scene type:
+An application's `body` lists its scenes. Where its windows share nothing,
+that is a `WindowGroup` showing a view: launch opens one window of it, and
+*File ▸ New Window* one more.
 
 ```swift
 struct SingleWindowApp: Application {
-    var scene: any Scene { MainWindow() }
+    var body: some Scene {
+        WindowGroup { HomePage() }
+    }
 }
 
-struct MainWindow: Window {
-    var page: any Page { HomePage() }
-}
-
-struct HomePage: ContentView {
-    var content: any View { Label("Home") }
+struct HomePage: View {
+    var body: some View { Text("Home") }
 }
 ```
+
+`Application` is a protocol with one property, `var body: some Scene`. The body
+lists scenes: a type of the application's own conforming to `Scene`, or a
+`WindowGroup` or `Window` written there, which is a scene of its own. A view
+written there does not compile, because a view stands in a window. The
+application is made once, at its first need, and kept for the life of the
+process, so a `@State` it declares outlives every window; what every scene
+shares belongs to it, offered to a scene with `.environment(_:)` on the
+scene ([Scenes](#scenes)).
 
 `ApplicationSession` owns process-wide policy and reports process-wide state:
 
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
-| `scenes` | currently open scene sessions, in opening order |
+| `info` | what the host says the application is, an `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, and `colorScheme`, the theme the system asks for, kept current as the user switches it ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
 | `persistentKeys` | state keys hydrated before the first description |
-| `openScene()` | asks for another independent scene session |
+| `openWindow()` | opens one more window of the `WindowGroup` with no name, as *File ▸ New Window* does |
+| `openWindow(_:)`, `openWindow(_:value:)` | opens a window of a kind, in the scene declaring it |
+| `closeWindow(_:)`, `closeWindow(_:value:)` | closes every window of a kind, or the one for a value |
 
 Configuration needed before the first view is built belongs in the
 application's initializer:
 
 ```swift quote
 struct NotesApp: Application {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     init() {
         application.styles = AppStyles.sheet
@@ -60,19 +73,21 @@ struct NotesApp: Application {
         application.persistentKeys = [.lastDocument]
     }
 
-    var scene: any Scene { NotesScene() }
+    var body: some Scene { NotesScene() }
 }
 ```
 
-## Scene ownership
+## Scenes
 
-A scene is one independent application session: its main window, any auxiliary
-windows opened beside it, and the state those windows share. A platform may
-restore several instances of the same scene declaration. Each instance gets a
-different `SceneSession` and different scene-owned state.
+A scene is a set of windows and the state they share. Each scene the
+application declares stands at most once: it opens with its first window and
+ends with its last, and its state goes with it.
 
-Use a dedicated scene type when there is shared session state or more than one
-window kind:
+`Scene` is a protocol with one property, `var body: some Scene`, which lists
+the scene's windows in any number and order; a view or another scene written
+there does not compile. No window is a main one: the window launch opens is
+one window of the `WindowGroup` with no name, like any other, and closing it
+closes that window alone.
 
 ```swift quote
 extension WindowType {
@@ -81,64 +96,132 @@ extension WindowType {
 }
 
 struct NotesScene: Scene {
-    @State private var selection = SelectionModel()
+    @State private var library = Library()
 
-    var windows: Windows {
-        Windows {
-            WindowGroup(.inspector) { InspectorWindow() }
-            WindowGroup(.document, for: Int.self) { number in
-                DocumentWindow(number: number)
-            }
-        } main: {
-            MainWindow()
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+            .environment(library)
+        Window(.inspector) { InspectorPage() }
+            .environment(library)
+        WindowGroup(.document, for: Int.self) { number in
+            DocumentPage(number: number)
         }
-        .environment(selection)
     }
 }
 ```
 
-The `main` window is the scene's lifetime boundary. Closing it closes the scene
-and every window belonging to it. A `WindowGroup` declares a kind the scene is
-allowed to open:
+A scene declares its windows three ways:
 
-- `WindowGroup(.inspector) { ... }` allows one window of that kind per scene;
-- `WindowGroup(.document, for: ID.self) { $id in ... }` allows one per value;
-- the value is `Codable` and `Hashable` so it can identify and restore the
-  window;
-- the value closure receives a `Binding`, so the same window can be retargeted
-  without replacing its session.
+- `WindowGroup { ... }` with no name - one in the application - is the window
+  launch opens, and *File ▸ New Window* makes one more of it;
+- `WindowGroup(.kind) { ... }` makes as many windows of the kind as are
+  opened, and `Window(.kind) { ... }` makes one;
+- `WindowGroup(.kind, for: ID.self) { $id in ... }` makes one window per
+  value. The value is `Codable` and `Hashable` so it can identify and restore
+  the window, and the closure receives a `Binding`, so the same window can be
+  retargeted without replacing its session.
+
+Every window of a scene shares the scene's `@State`. What belongs to one
+window is the `@State` of the view it shows: two windows of `NotesPage` each
+keep a place of their own, and both read the scene's `library`. An object
+reaches the views of a window by `.environment(_:)` on its `WindowGroup` or
+`Window`, and every window of a scene by `.environment(_:)` on the scene where
+the application's body names it; a nearer one of the same type overrides it
+for its own branch. What a window shows may change; which windows a scene
+declares may not.
+
+A window belongs to the scene declaring its kind. A window that belongs to
+none of the others - About, the preferences - is a scene of its own:
+
+```swift
+import StateUI
+
+extension WindowType {
+    static let editor = WindowType("notes.editor")
+    static let about = WindowType("notes.about")
+}
+
+struct NotesApp: Application {
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+        EditorScene()
+        AboutScene()
+    }
+}
+
+struct EditorScene: Scene {
+    var body: some Scene {
+        WindowGroup(.editor) { EditorPage() }
+    }
+}
+
+struct AboutScene: Scene {
+    var body: some Scene {
+        Window(.about) { Text("Notes 1.0") }
+    }
+}
+
+struct NotesPage: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        VStack {
+            Button("New editor").onClicked { try await application.openWindow(.editor) }
+            Button("About").onClicked { try await application.openWindow(.about) }
+        }
+    }
+}
+
+struct EditorPage: View {
+    @Environment(\.window) private var window
+    @Environment(\.scene) private var scene
+
+    var body: some View {
+        VStack {
+            Button("Close").onClicked { try await window.close() }
+            Button("Close every editor").onClicked { try await scene.close() }
+        }
+    }
+}
+```
+
+- A window written in the application's body, like the `WindowGroup` here, is
+  a scene of its own with no state.
+- `application.openWindow(.editor)` opens one more editor window, in the scene
+  declaring `.editor`, which opens with it where it does not stand.
+- `application.openWindow(.about)` opens the About window once, and answers
+  `WindowError.alreadyOpen` while it is open.
+- `window.close()` closes one window, and the scene ends with its last;
+  `scene.close()` closes every window of the scene at once.
 
 `WindowType` names are durable application vocabulary. Use stable,
 application-qualified names because restoration records them.
 
-Every owned window carries the same four host metadata values. `windowType`
-is the group's open and restoration identity; `windowValue` is the encoded
-per-value identity when the group has one. `hidesWhenInactive` and `floatsOnTop` are
-always explicit booleans, so changing either policy updates an existing native
-window without replacing it. The main window carries none of this group
-metadata.
+Every window carries the same four host metadata values. `windowType` is its
+kind - none for a window of the `WindowGroup` with no name - and `windowValue`
+the encoded per-value identity where the group has one. `hidesWhenInactive`
+and `floatsOnTop` are always explicit booleans, so changing either policy
+updates an existing native window without replacing it.
 
-### Auxiliary-window policy
+### Window policy
 
-`hidesWhenInactive` and `floatsOnTop` describe auxiliary windows, not new scenes:
+`hidesWhenInactive` and `floatsOnTop` describe how a group's windows stand
+beside the application's other scenes:
 
 ```swift quote
-WindowGroup(.inspector) { InspectorWindow() }
+Window(.inspector) { InspectorPage() }
     .hidesWhenInactive(true)
     .floatsOnTop(true)
 ```
 
 Both default to `false` and are independent.
 
-- `hidesWhenInactive(true)` hides each window of the group while another scene of the
-  same application is in front, then shows it again with its owning scene. It
-  does not close the window or end its `WindowSession`.
-- `floatsOnTop(true)` keeps the group's windows above the application's normal
+- `hidesWhenInactive(true)` hides each window of the group while another scene
+  of the same application is in front, then shows it again with its own scene.
+  It does not close the window or end its `WindowSession`.
+- `floatsOnTop(true)` keeps the group's windows above the application's other
   windows while the application is in front. It does not make them global
-  always-on-top windows, and it does not change their scene ownership.
-- Auxiliary windows belong to their scene and close with it. System surfaces
-  that enumerate application documents or main windows should enumerate scene
-  main windows, not these helpers.
+  always-on-top windows.
 
 Changing either policy updates windows that are already open. In particular,
 turning `hidesWhenInactive` off while a window is hidden by its scene makes that window
@@ -161,7 +244,7 @@ at different ownership scopes:
 | --- | --- | --- |
 | `.active` | one of the application's windows is in use | one of this scene's windows is in use |
 | `.inactive` | application windows remain visible while another application is in front | this scene remains visible while another scene is in front |
-| `.background` | none of the application's windows can be seen | the scene's main window is stopped, or the application is hidden |
+| `.background` | none of the application's windows can be seen | every window of the scene is out of sight, or the application is hidden |
 
 A multi-window application can therefore be `.active` while one of its scenes
 is `.inactive`. `SceneSession.phase` starts at `.active` when a new scene is
@@ -169,24 +252,24 @@ being brought up and then follows reports for that scene. Neither value
 replaces `WindowSession.phase`, which records the more detailed lifecycle of
 one particular window.
 
-The scene node has six host reports. `activated`, `deactivated`, and `stopped`
-move `SceneSession.phase`. `destroying` ends the scene after its main window is
-closed. `windowClosed` removes the exact owned-window key supplied by the host,
-while `windowRestored` offers a restored kind and optional encoded value back
-to that scene. A tree-driven close emits neither close report: the Swift tree
-already owns that decision.
+The scene node has four host reports. `activated`, `deactivated`, and
+`stopped` move `SceneSession.phase`. `windowClosed` - the user closed one of
+the scene's windows - removes the window by the key the host supplies, and the
+scene ends with its last. A tree-driven close emits no close report: the Swift
+tree already owns that decision.
 
-Lifecycle is an effective state, not a count of native callbacks. If the main
-window is minimized and the application is then hidden, showing the
-application again does not resume either the main window or its scene. They
+Lifecycle is an effective state, not a count of native callbacks. If a scene's
+only window is minimized and the application is then hidden, showing the
+application again does not resume either the window or its scene. They
 advance only after the remaining minimized cause ends. The same rule prevents
 duplicate phase changes when callbacks overlap.
 
 ## Scene-local restored state
 
-`@State(sceneKey:)` is ordinary state whose storage belongs to the current
-scene session. The host serializes it with that scene and hydrates it before
-the restored scene is described.
+`@State(sceneKey:)` is ordinary state whose storage belongs to the scene
+standing: every window of the scene reads the one value. The host keeps it
+with the scene's windows and hands it back before the restored scene is
+described.
 
 ```swift quote
 extension SceneKey {
@@ -200,27 +283,31 @@ final class SelectionModel {
 }
 ```
 
-Two scenes using the same key do not share one value. Each scene restores its
-own. Process-wide preferences use `@State(persistentKey:)` instead; see
+A scene stands once, so its key holds one value, which ends with the scene.
+Process-wide preferences use `@State(persistentKey:)` instead; see
 [State and reactivity](../concepts/state-and-reactivity.md).
 
 ## Opening and closing
 
-Session methods act on the exact session object held by the view:
+The application opens a window by its kind; a session closes the exact
+window or scene it is:
 
 ```swift quote
-@Environment private var application: ApplicationSession
-@Environment private var scene: SceneSession
-@Environment private var window: WindowSession
+@Environment(\.application) private var application
+@Environment(\.scene) private var scene
+@Environment(\.window) private var window
 
-try await application.openScene()
-try await scene.openWindow(.inspector)
-try await scene.openWindow(.document, value: 7)
-try await scene.closeWindow(.document, value: 7)
+try await application.openWindow()
+try await application.openWindow(.inspector)
+try await application.openWindow(.document, value: 7)
+try await application.closeWindow(.document, value: 7)
 try await window.close()
 try await scene.close()
 ```
 
+A window opens in the scene declaring its kind, which opens with it where it
+does not stand. Whether a window may open beside another is the platform's: a
+desktop and an iPad open one, a phone answers `.unsupported`.
 `SceneSession.windows` and `ApplicationSession.scenes` are reactive readings.
 A body that reads either is rebuilt when the collection changes.
 
@@ -232,23 +319,25 @@ does not silently start referring to a newer scene after its own scene ends.
 
 Restoration has two inputs with different owners:
 
-- the platform reconnects scene and native-window identities that were open;
-- StateUI restores declared window kinds, per-value identities, and
-  `@State(sceneKey:)` values into the matching scene session.
+- the platform keeps the windows that were open - AppKit and iPadOS by their
+  own restoration, the other hosts in a store of their own - each with its
+  kind, its value's text and its scene's `@State(sceneKey:)` values;
+- StateUI brings each back as its kind for its value, in the scene declaring
+  it, which opens with it and its kept values where it does not stand.
 
 Restoration never changes the structural contract. A window kind must still be
-declared by the scene, and its saved value must still decode as the group's
-declared type. Unsupported or obsolete records are refused rather than mapped
-onto another window.
+declared, and its saved value must still decode as the group's declared type.
+A record that no longer reads is refused rather than mapped onto another
+window.
 
-The scene declaration is rebuilt before its restored group windows are
-materialized, so every restored window receives the same session environment
-as a newly opened one.
+A restored scene's kept values land before its first build, so every window of
+it starts from what the scene kept.
 
 ## Window session
 
 `WindowSession` owns one running window's phase, title, geometry requests,
-translucency, authored title area, modal stack, and `close()` operation.
+translucency, and `close()` operation. What the window shows - its pages, its
+sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 
 | Member | Meaning |
 | --- | --- |
@@ -260,14 +349,12 @@ translucency, authored title area, modal stack, and `close()` operation.
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
 | `isTranslucent` | whether the desktop shows through the window, where the platform can show it |
-| `titleBar` | optional authored title-area content |
-| `modalStack` | pages presented over this window, with the last one on top |
-| `close()` | closes this exact window; closing the main window ends its scene |
+| `close()` | closes this exact window; its scene ends with its last |
 
 Position and size are four independent optional requests:
 
 ```swift quote
-@Environment private var window: WindowSession
+@Environment(\.window) private var window
 
 window.x = 120
 window.y = 80
@@ -297,9 +384,9 @@ requests without presenting movable or resizable window chrome.
 chrome carries the visible page - AppKit's toolbar shows the visible page's
 title, the way a Mac window is named after what it shows - names the window
 after that page while it has a title, and after `title` otherwise; native
-window menus, restoration surfaces, and accessibility follow the same name. A
-`titleBar`'s own title never names the window: it and the interactive slots
-describe only that visible area.
+window menus, restoration surfaces, and accessibility follow the same name.
+The name a window's bar declares for the application never names the window:
+it describes only what the chrome shows ([The window's bar](#the-windows-bar)).
 
 `isMaximizable` and `isMinimizable` govern the native operations, not merely
 the appearance of one button. A host blocks equivalent native commands while
@@ -315,8 +402,8 @@ colours read as written. Text belongs on a surface of its own rather than
 straight over the desktop. `nil` keeps the platform's opaque window.
 
 ```swift quote
-window.isTranslucent = true
-page.background = Color("#CC0D0B14")
+.pageBackground(Color("#CC0D0B14"))
+.onCreated { window.isTranslucent = true }
 ```
 
 The host reports `WindowPhase` through the same session:
@@ -343,130 +430,155 @@ already stored changes no state, and therefore triggers no extra reaction.
 }
 ```
 
-## Page session
+## What a view says of its page
 
-Whatever a container shows as a screen - a window's `page`, a navigation
-stack's root and destinations, a tab, either half of a split view, a sheet -
-is a `Page`. Nobody declares one by hand: every view is a page, usually a
-`ContentView` of the application's own, and so is each arrangement. The
-container puts a view on a page that owns one `PageSession` for as long as
-the same view stands on it: the same view type under the same explicit id.
-Another view in that place starts a session of its own. A write to the session
-builds the page again and carries the view on it whole. An arrangement -
-`NavigationStack`, `TabbedView`, `SplitView` - is a page already and is shown
-as it is; it is not a view, so it stands only where a page stands, and it is
-told what it is by modifier.
+Whatever a container shows as a screen - a window's view, a navigation stack's
+root and destinations, a tab, either half of a split view, a sheet - stands on
+a page. Nobody declares one: the container puts the view on a page, kept for
+as long as the same view stands there - the same view type under the same
+explicit id. Another view in that place stands on a page of its own.
 
-| Member | Meaning |
+What the page is, the view it shows says by modifier:
+
+| Modifier | Meaning |
 | --- | --- |
-| `phase` | the page's current visibility or navigation phase |
-| `title` | navigation title and the caption when the page is used as an item |
-| `icon` | the page's representative image, commonly a tab icon |
-| `padding` | space between the page edge and its content |
-| `background` | flat color behind the page |
-| `hasNavigationBar` | whether a containing navigation stack shows its bar for this page |
-| `hasBackButton` | whether that bar offers its native back affordance |
-| `backButtonTitle` | short title supplied by this page for the page pushed above it |
-| `titleView` | an authored view replacing the navigation title |
-| `toolbarItems` | actions in the page toolbar |
-| `menuBar` | menus active while the page is visible on a platform with a menu bar |
+| `.title` | navigation title, and the caption where the page is an item of something else |
+| `.icon` | the page's representative image, commonly a tab icon |
+| `.pageBackground` | flat color behind the whole page, also where the view does not reach |
+| `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
+| `.showsBackButton` | whether that bar offers its native back affordance |
+| `.backButtonTitle` | short title supplied by this page for the page pushed above it |
 
-Every optional value starts as `nil`, which leaves that choice with the host.
-The toolbar and menu collections start empty.
+What is not said is left with the host. Each takes a value, and each but
+`.icon` a state, `$x`, which the host follows with no view built again. The space between the page's
+edge and what it shows is that view's own `.padding`. These are said of the
+page only by the view it shows - or by that view's `body` - and a view further
+in that says them says nothing, and is told so once.
+
+An arrangement - `NavigationStack`, `TabView`, `SplitView`, `ModalStack` - is
+a view that stands where a page stands, as the page itself: written there, or
+the `body` of the view written there. Anywhere else - inside a `VStack`, inside
+a page's content - it is left out and said once. It fills where it stands, so
+it keeps only what its contract declares, and takes its own `.title` and
+`.icon`, for where it is an item of something else, such as a tab.
+
+What has a body of its own - the page's actions, the view in its title's place
+and its menus - is declared in the view as well, with `.toolbar { }`,
+`.titleView { }` and `.menuBar { }`, and built with the state it follows (see
+[Navigation and presentation](navigation-and-presentation.md#toolbars)). So is
+what the page lays over its window, with `.overlays { }`: declared on a
+window's page it stands over every page and sheet the window shows, declared on
+a page further in it stands while that page is shown
+([Over every page](navigation-and-presentation.md#over-every-page)).
 
 The back-button title belongs to the page being returned to, not the page
 currently on top. Hiding the native back button hides that affordance; it is
-not a cross-platform navigation lock. `titleView`, toolbar
+not a cross-platform navigation lock. Title views, toolbar
 items, and menu items are ordinary identified subtrees built where their
 native surface presents them. Modal presentation is adaptive: each host uses
-its platform's native presentation for pages in `WindowSession.modalStack`.
+its platform's native presentation for the pages a `ModalStack` presents
+([modal pages](navigation-and-presentation.md#modal-pages)).
 
 Page content remains compositional. An image behind content is an `Image` in
 the page tree, safe-area participation is a layout property, and input is
 released explicitly with `Aim.unfocus()` or `OnScreenKeyboard.hide()`. A custom title,
-including an image, belongs in `titleView`; bar foreground color
+including an image, belongs in `.titleView { }`; bar foreground color
 belongs to the containing page arrangement.
 
-Set stable page furniture when the content element is created and update it
-when the state it depends on changes:
+A value the body computes is said again whenever the body is built again:
 
 ```swift quote
-struct EditorPage: ContentView {
-    @Environment private var page: PageSession
+struct EditorPage: View {
     @State private var dirty = false
 
-    var content: any View {
+    var body: some View {
         TextEditor()
-            .onCreated {
-                page.title = "Draft"
-                page.toolbarItems = [saveItem]
+            .toolbar {
+                ToolbarItem("Save")
+                    .isEnabled(dirty)
+                    .onClicked { save() }
             }
-            .onChanged(dirty) {
-                page.title = dirty ? "Draft - Edited" : "Draft"
-            }
+            .title(dirty ? "Draft - Edited" : "Draft")
     }
 }
 ```
 
-`PagePhase` separates general visibility from navigation-specific movement:
+The page hears its phases through handlers, one per phase, which separate
+general visibility from navigation-specific movement:
 
-| Phase | Meaning |
+| Modifier | Runs |
 | --- | --- |
-| `.created` | the page has been described but has not yet appeared |
-| `.appearing` | it is about to become visible, including a return or tab selection |
-| `.navigatedTo` | a navigation move has arrived at it |
-| `.navigatingFrom` | a navigation move is about to leave it |
-| `.disappearing` | it has been covered or left, including a tab selection change |
-| `.navigatedFrom` | the navigation move away from it has completed |
+| `.onAppearing` | as the page is about to become visible, including a return or tab selection |
+| `.onNavigatedTo` | once a navigation move has arrived at it |
+| `.onNavigatingFrom` | as a navigation move is about to leave it |
+| `.onDisappearing` | as it is covered or left, including a tab selection change |
+| `.onNavigatedFrom` | once the navigation move away from it has completed |
 
-A navigation arrival normally reports `.appearing` and then `.navigatedTo`.
-A navigation departure reports `.navigatingFrom`, `.disappearing`, and then
-`.navigatedFrom`; a tab switch needs only disappearance and appearance. Each
-phase is rendered before the next report, so `.onChanged(page.phase)` sees
-every one - an arrival's `.appearing` as well as its `.navigatedTo`. A host
-does not invent navigation phases for a visibility change that was not a
-navigation move. As with windows, a duplicate report of the standing phase is
-a no-op.
+A navigation arrival runs `.onAppearing` and then `.onNavigatedTo`. A
+navigation departure runs `.onNavigatingFrom`, `.onDisappearing`, and then
+`.onNavigatedFrom`; a tab switch needs only disappearance and appearance. A
+host does not invent navigation phases for a visibility change that was not a
+navigation move, and a page whose view hears no phase is told none.
 
 `onCreated` and `onDestroying` describe the lifetime of a StateUI element;
 they are not substitutes for page appearance or window activation. Use the
 session phase whose scope matches the work.
 
-## Authored title areas
+## The window's bar
 
-`WindowSession.title` is the native window name. `TitleBar` is a
-separate, adaptive view for a host that supports an authored title area:
+The window's bar is declared on the arrangement the window's view is, as values
+read in the body - so it follows the state it reads with no write of its own:
 
-```swift quote
-window.titleBar = TitleBar("Notes")
-    .subtitle("Personal")
-    .icon("notes.png")
-    .barForegroundColor(.white)
-    .leadingContent { Button("Sidebar") }
-    .content { SearchField($query) }
-    .trailingContent { Button("Account") }
-    .background(.cornflowerBlue)
+```swift
+import StateUI
+
+struct NotesPage: View {
+    @State private var showsFolders = true
+    @State private var folder = "Personal"
+    @State private var query = ""
+
+    var body: some View {
+        SplitView($showsFolders) {
+            Text("Folders")
+        } detail: {
+            Text("Notes in \(folder)")
+        }
+        .barTitle("Notes")
+        .barSubtitle(folder)
+        .barIcon("notes.png")
+        .barBackgroundColor(.cornflowerBlue)
+        .barForegroundColor(.white)
+        .titleView {
+            SearchField($query)
+        }
+        .toolbar(.leading) {
+            ToolbarItem("New folder")
+        }
+        .toolbar {
+            ToolbarItem("Account")
+        }
+    }
+}
 ```
 
-The initializer supplies the title. `subtitle`, `icon`, and
-`barForegroundColor` supply title-area values; ordinary view modifiers such as
-`background` style the bar itself. The leading, center, and trailing
-closures are identified child subtrees, so controls in them keep ordinary
-state, events, and identity. Returning no child removes that slot; use a
-layout inside a slot when it contains several controls.
+`barTitle`, `barSubtitle` and `barIcon` are the application naming itself, the
+line under the title, and its mark; `barBackgroundColor` and
+`barForegroundColor` paint the bar and what stands on it. Each is taken from
+the nearest arrangement on the visible path that declares it, so a stack
+further in paints its own bar or says its own line while it is shown; a
+sidebar and a sheet take nothing from around them. What stands on the bar is
+declared the same way: actions with `.toolbar`, `.toolbar(.leading)` at the
+leading edge, and a view in the title's place with `.titleView`
+([Toolbars](navigation-and-presentation.md#toolbars)).
 
-The AppKit host puts the slots in the window's one native `NSToolbar`, beside
-the visible page's own furniture: the leading and trailing content as toolbar
-items and the content in the centre. The title, subtitle and icon stand as
-text at the trailing edge of the title bar. AppKit owns placement, window
-dragging, overflow and the toolbar's material, so the title area's colours are
-the system's; the slot items keep the same StateUI-created native views across
-updates.
-
-Set the title bar through the window session. A platform without an authored
-native title area may ignore it; the
-[TitleBar matrix row](../platform-contract.md#contract-members)
-must carry a check before an application relies on it.
+A desktop host shows the name, the line and the mark where its platform names
+the application - AppKit as text at the trailing edge of the title bar, WinUI
+in its title bar's title, subtitle and icon - while the visible page's title
+still names the window to the system. On a phone and a tablet each bar names
+its page: the line stands under each page's title, and the application's name
+and mark stand nowhere. [BarElement](../controls/tiers/BarElement.md) lists
+each value, and the page of each arrangement wearing it says what each host
+does with it.
 
 ## Reading support status
 
@@ -480,7 +592,7 @@ groups separately:
 - auxiliary-window metadata and policies;
 - core page properties and lifecycle;
 - adaptive page properties and structural slots;
-- authored `TitleBar` properties and slots.
+- the bar an arrangement declares.
 
 A `✅` covers the complete member group in its row. A blank cell means absent,
 partial, or unverified support, even when a related row for the same session is

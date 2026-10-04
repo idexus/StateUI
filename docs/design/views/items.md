@@ -26,8 +26,8 @@ once in the host layer.
 
 ## Built when a cell asks
 
-The element's children are the entries the host holds in cells, and no
-others. The host says which in an event, `realizedChanged`, whose identities
+The element's children are the entries within reach of the host's cells, and
+no others. The host says which in an event, `realizedChanged`, whose identities
 the ItemsView - a composed view - writes into a `@State` of its own; the
 next render reconciles the children to them. The host layer sends the event
 and renders at once, so the platform's synchronous call for a cell finds the

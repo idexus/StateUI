@@ -1,0 +1,11 @@
+# revision 1.1
+Button: ✅
+Button.clicked: ✅
+Button.frameChanged: ✅
+Button.icon: ✅
+Button.iconPosition: ✅
+Button.iconSpacing: ✅
+Button.lineBreak: ✅
+Button.pressed: ✅
+Button.released: ✅
+Text.text: ✅

@@ -19,15 +19,33 @@ A stack's bar is Android's own toolbar. It carries the title of the page the
 window is named by ([the window's chrome](../../host/pages.md#the-windows-chrome)):
 tabs pushed onto a stack by their own title, else by the page beneath. A page
 with a title view shows that view instead, across the room between the
-navigation button and the actions. The bar also carries the stack's bar
-colours and the page's actions: the primary ones beside
-the title, by priority and then in their order, the rest behind the
-toolbar's overflow - each an entry of the toolbar's menu, written as
-[menus](menus.md) says. Its navigation button is the way back on a pushed page
+navigation button and the actions. The bar also carries the line under the
+title and the colours the page's path declares, the nearest of each
+([the bar a path declares](../../host/pages.md#the-bar-a-path-declares)) -
+an arrangement changing one refreshes every bar under it. A colour that
+travels, and what a page says of the bar from a state - its title, its way
+back, the bar itself - land on a frame, where nothing arranges the stack:
+where the host layer says the frame moved the window's chrome
+([one frame](../../host/runtime.md#one-frame)), every bar the window and its
+sheets show is shown again. The bar carries the actions the page's path declares: the ones on the bar
+beside the title, as the host layer composes them - the leading groups
+first, the bar having no leading edge beside its navigation button - the rest
+behind the toolbar's overflow - each an entry of the toolbar's menu, written as
+[menus](menus.md) says, and the menus the path declares behind the overflow
+after them. Its navigation button is the way back on a pushed page
 whose back button is not taken away; at the root of a split view's detail,
-where the sidebar slides over it, it is the sidebar page's picture and opens
-the sidebar. A page without a navigation bar hides it. The bar shows only
-what changed since it last showed.
+where the sidebar slides over it, it is the sidebar page's picture - Android's
+menu glyph where the page has none - and opens the sidebar. The bar's words'
+colour - the one written, or white or black against a written background -
+is its title's, its navigation button's, its overflow button's and its
+actions' pictures'. The actions' words follow the bar's theme, as Android's
+own bars do: the toolbar is made in Android's overlay for a dark bar, its
+action words light, or for a light one, their words dark - by the host
+layer's reading of the bar's colour (`BandWords.light`), as a desktop host
+picks its bar's theme - and in the activity's theme where the tree paints no
+bar. A view's theme is fixed as it is made, so a bar painted again in the
+other shade is made again. A page without a navigation bar hides it. The bar
+shows only what changed since it last showed.
 
 A picture on the bar - the navigation button's, an action's - and a tab's
 stands at Android's icon size, 24 dp tall and as wide as its shape, whatever
@@ -43,7 +61,9 @@ wider, the sidebar stands beside the detail while it shows. The slide is
 Android's own animation, so the system's "remove animations" setting takes
 it away. Opening the drawer lays the page out again - the bar changes - and a
 layout leaves a sliding drawer sliding: only a new room, the drawer wider or
-beside the detail, puts it in place at once. Whether the sidebar shows is the split's binding: the user's
+beside the detail, puts it in place at once. A closed drawer holds nothing
+the keyboard or assistive technology reaches: it stands invisible once it has
+slid away, and shows as it starts to slide open. Whether the sidebar shows is the split's binding: the user's
 opening and closing are reported into it, and a value the tree writes moves
 the drawer. The first room at least 720 points wide shows the sidebar, said as
 the user's ([a sidebar on the first
@@ -84,28 +104,29 @@ has nowhere to go back to.
 
 ## A modal stack
 
-The pages a window's modal stack presents stand over its page in the
-activity's root, in order, the top one in front, each in a holder on the
+The pages a modal stack standing as the window's page presents stand over its
+root in the activity's root, in order, the top one in front, each in a holder on the
 theme's window background that takes every touch meant for the page beneath.
 A page rises from the bottom as it comes and goes down as it leaves - at once
 where the user asks for less motion. The page in front is the one presented:
 the page beneath hears it disappear, and appear again when the one over it
 goes. Back is the page in front's own way first - a stack inside it pops -
-and then that page going down, which the window reports as `modalPopped`
-with the pages left, so the state that holds the stack follows.
+and then that page going down, which the stack reports as `popped` with the
+pages left, so the state that holds it follows.
 
 A page the program takes off the stack has already left the tree when the
 stack is shown again, so the host holds each presented page, and the shown
 arrangement, by its mounted element, which owns its Android half: the page is
 still whole as it goes down, and is let go with its holder.
 
-## The window's overlay
+## The window's overlays
 
-What a window lays over everything it shows - the inspector docked in it -
-stands in the activity's root as its top child, over the page and over every
-page the modal stack presents: a page that rises after it lifts the overlay
-over itself again. It is laid out over the whole root, and takes no touch of
-its own, as no StateUI layout on Android does: a touch beside what it holds
-goes on to the page under it. The host holds the overlay by its mounted
-element, as it does the arrangement, and takes its view out of the root when
-the window no longer describes it.
+What a window lays over everything it shows - the overlays the pages on its
+visible path declare, then the inspector docked in it - stand in the
+activity's root as its top children, the first lowest, over the page and over
+every page the modal stack presents: a page that rises after them lifts them
+over itself again. Each is laid out over the whole root, and takes no touch
+of its own, as no StateUI layout on Android does: a touch beside what it
+holds goes on to the page under it. The host holds the overlays by their
+mounted elements, as it does the arrangement, and takes their views out of
+the root and lays them again when the list it is told changes.

@@ -13,13 +13,13 @@
 // and starts it on the device chosen, in a task whose terminal then follows its
 // log. A Debug launch is then attached to by lldb-dap: the script readies the
 // NDK's lldb-server in the application's sandbox and writes where it listens to
-// .build-android/debugger.json. A Release build cannot be debugged, and
+// .build/android/debugger.json. A Release build cannot be debugged, and
 // resolves to no session.
 //
 // A UIKit head is run by .scripts/UIKit/run-app.sh on the iPhone, iPad or
 // simulator chosen, in a task whose terminal follows what it prints. A Debug
 // launch starts it held until a debugger attaches, and the script writes where
-// to .build-uikit/debugger.json: a simulator's process is one of this Mac's, a
+// to .build/uikit/debugger.json: a simulator's process is one of this Mac's, a
 // device's is reached through the device. lldb-dap attaches, which lets it run.
 // A Release launch has no session.
 //
@@ -38,6 +38,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { Application, appKitProgram, gtkProgram, winUIProgram } from "./applications";
+import { lldbDapFinding } from "./toolchain";
 import { androidScript } from "./devices";
 import { environment, Host } from "./hosts";
 import { uiKitScript } from "./uiKitDevices";
@@ -70,9 +71,10 @@ export interface Choices {
 
     /**
      * The serial of the Android device a launch runs on - the one chosen while
-     * it is attached, else asked for - or nothing, where none is picked.
+     * it is attached, else asked for, as `checkout`'s devices.sh lists them -
+     * or nothing, where none is picked.
      */
-    device(folder: vscode.WorkspaceFolder): Promise<string | undefined>;
+    device(checkout: string): Promise<string | undefined>;
 
     /**
      * The iPhone, iPad or simulator a UIKit launch runs on - the one chosen
@@ -84,14 +86,14 @@ export interface Choices {
 /** What a machine that runs no host is told, wherever a host is asked for. */
 export const noHost = "no StateUI host runs on this machine yet - AppKit, UIKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux.";
 
-/** A script of a StateUI checkout's .scripts/WinUI, under `root`. */
-export function winUIScript(root: string, name: string): string {
-    return path.join(root, ".scripts", "WinUI", name);
+/** A script of the StateUI checkout's .scripts/WinUI, the checkout at `checkout`. */
+export function winUIScript(checkout: string, name: string): string {
+    return path.join(checkout, ".scripts", "WinUI", name);
 }
 
-/** A script of a StateUI checkout's .scripts/GTK, under `root`. */
-export function gtkScript(root: string, name: string): string {
-    return path.join(root, ".scripts", "GTK", name);
+/** A script of the StateUI checkout's .scripts/GTK, the checkout at `checkout`. */
+export function gtkScript(checkout: string, name: string): string {
+    return path.join(checkout, ".scripts", "GTK", name);
 }
 
 /** The two configurations every workspace offers. */
@@ -132,6 +134,13 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         const named = typeof launch.application === "string" ? launch.application : undefined;
         const application = await this.choices.application(root, host, named);
         if (!application) {
+            return undefined;
+        }
+
+        // A debugger that cannot start stops the launch before the build, saying why: else the build ends and nothing runs.
+        const debuggerStarts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
+        if (debuggerStarts && debuggerStarts.found === undefined) {
+            void vscode.window.showErrorMessage(`StateUI: the debugger does not start - ${debuggerStarts.advice}`);
             return undefined;
         }
 
@@ -178,20 +187,21 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const script = androidScript(root.uri.fsPath, "run-app.sh");
-        if (!fs.existsSync(script)) {
+        const checkout = application.checkout;
+        const script = checkout && androidScript(checkout, "run-app.sh");
+        if (!checkout || !script || !fs.existsSync(script)) {
             void vscode.window.showErrorMessage(
-                `StateUI: an Android head runs through a StateUI checkout's .scripts/Android/run-app.sh, which ${root.name} does not have.`);
+                `StateUI: an Android head runs through a StateUI checkout's .scripts/Android/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
             return undefined;
         }
 
-        const serial = await this.choices.device(root);
+        const serial = await this.choices.device(checkout);
         if (!serial) {
             return undefined;
         }
 
         const debug = configuration === "debug";
-        const facts = path.join(application.directory, ".build-android", "debugger.json");
+        const facts = path.join(application.directory, ".build", "android", "debugger.json");
         fs.rmSync(facts, { force: true });
         const task = new vscode.Task(
             { type: "stateui", application: application.name, configuration, device: serial }, root,
@@ -224,10 +234,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const script = uiKitScript(root.uri.fsPath, "run-app.sh");
-        if (!fs.existsSync(script)) {
+        const script = application.checkout && uiKitScript(application.checkout, "run-app.sh");
+        if (!script || !fs.existsSync(script)) {
             void vscode.window.showErrorMessage(
-                `StateUI: a UIKit head runs through a StateUI checkout's .scripts/UIKit/run-app.sh, which ${root.name} does not have.`);
+                `StateUI: a UIKit head runs through a StateUI checkout's .scripts/UIKit/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
             return undefined;
         }
 
@@ -237,7 +247,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         }
 
         const debug = configuration === "debug";
-        const facts = path.join(application.directory, ".build-uikit", "debugger.json");
+        const facts = path.join(application.directory, ".build", "uikit", "debugger.json");
         fs.rmSync(facts, { force: true });
         const task = new vscode.Task(
             { type: "stateui", application: application.name, configuration, device }, root,
@@ -269,10 +279,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const script = winUIScript(root.uri.fsPath, "run-app.ps1");
-        if (!fs.existsSync(script)) {
+        const script = application.checkout && winUIScript(application.checkout, "run-app.ps1");
+        if (!script || !fs.existsSync(script)) {
             void vscode.window.showErrorMessage(
-                `StateUI: a WinUI head is built by a StateUI checkout's .scripts/WinUI/run-app.ps1, which ${root.name} does not have.`);
+                `StateUI: a WinUI head is built by a StateUI checkout's .scripts/WinUI/run-app.ps1, and ${application.name}'s Package.swift names none by path.`);
             return undefined;
         }
 
@@ -309,10 +319,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const script = gtkScript(root.uri.fsPath, "run-app.sh");
-        if (!fs.existsSync(script)) {
+        const script = application.checkout && gtkScript(application.checkout, "run-app.sh");
+        if (!script || !fs.existsSync(script)) {
             void vscode.window.showErrorMessage(
-                `StateUI: a GTK head is built by a StateUI checkout's .scripts/GTK/run-app.sh, which ${root.name} does not have.`);
+                `StateUI: a GTK head is built by a StateUI checkout's .scripts/GTK/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
             return undefined;
         }
 
@@ -429,8 +439,8 @@ export async function buildAppKitHead(
         ? new vscode.ShellExecution(application.bundleScript, [configuration], { cwd: folder.uri.fsPath, env })
         : new vscode.ShellExecution(
             "swift",
-            ["build", "--package-path", application.directory, "--configuration", configuration,
-                "--product", `${application.name}AppKit`],
+            ["build", "--package-path", application.directory, "--scratch-path", path.join(application.directory, ".build", "appkit"),
+                "--configuration", configuration, "--product", `${application.name}AppKit`],
             { cwd: folder.uri.fsPath, env });
 
     const definition = { type: "stateui", application: application.name, configuration };

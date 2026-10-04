@@ -9,12 +9,12 @@
 #
 #   app-dir       the application's folder: Package.swift, and Platforms/GTK
 #   --detach      returns once the application has started; its output goes to
-#                 <app-dir>/.build-gtk/run.log
+#                 <app-dir>/.build/gtk/run.log
 #   --build-only  builds the head and says where it is, starting nothing
 #
 # A running copy of the head is stopped first: a GTK application is one
 # instance, and a second launch would only bring the first one forward.
-# Everything a build writes stays under <app-dir>/.build-gtk. Every STATEUI_
+# Everything a build writes stays under <app-dir>/.build/gtk. Every STATEUI_
 # variable of the calling shell - STATEUI_TALLY=1, STATEUI_INSPECT=1 - reaches
 # the application.
 set -euo pipefail
@@ -36,13 +36,13 @@ done
 app_dir="$(cd "$app_dir" && pwd)"
 application="$(basename "$app_dir")"
 product="${application}GTK"
-scratch="$app_dir/.build-gtk"
+scratch="$app_dir/.build/gtk"
 executable="$scratch/$configuration/$product"
 
 # The executable is written again; a running copy goes first, found by its path.
 pkill -f "^$executable( |$)" 2>/dev/null && sleep 0.3 || true
 
-STATEUI_GTK=1 swift build \
+STATEUI_HOST=gtk swift build \
   --package-path "$app_dir" \
   --scratch-path "$scratch" \
   --configuration "$configuration" \

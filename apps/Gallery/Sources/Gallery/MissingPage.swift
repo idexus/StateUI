@@ -2,10 +2,10 @@
 
 import StateUI
 
-/// A sample route with no sample behind it.
+/// A sample or group route with nothing behind it.
 ///
-/// Only reachable by pushing `.sample(id)` with an id nothing in the catalog
-/// claims - a renamed sample, or a card that outlived its entry. Saying so is
+/// Only reachable by pushing `.sample(id)` or `.group(id)` with an id nothing
+/// in the catalog claims - a renamed sample, or a card that outlived its entry. Saying so is
 /// better than a blank page, and better than throwing: the rest of the gallery
 /// goes on working.
 ///
@@ -13,12 +13,9 @@ import StateUI
 /// enum and the compiler answers for every case - there is no route string to
 /// mistype. What is left is the id INSIDE the case, which is data: a catalog
 /// entry renamed and a card not.
-struct MissingPage: ContentView {
-    /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
-
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
+struct MissingPage: View {
+    /// The gallery this page is in - its scene.
+    @Environment(\.scene) var scene
 
     let id: String
 
@@ -28,26 +25,26 @@ struct MissingPage: ContentView {
     /// tab's own.
     @Binding var path: [Route]
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label("No sample called \"\(id)\"")
+            Text("No sample called \"\(id)\"")
                 .fontSize(20)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("The route asked for a sample the catalog does not have. Every sample "
+            Text("The route asked for a sample the catalog does not have. Every sample "
                 + "is named in Gallery/Catalog.swift; this id is not one of them.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
             Button("Back")
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { path.removeLast() }
         }
         .spacing(16)
         .padding(24)
-        .onCreated { page.gallery("Not found", scene: scene, nav: nav) }
+        .galleryPage("Not found")
     }
 }

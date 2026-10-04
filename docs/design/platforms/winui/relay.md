@@ -25,6 +25,17 @@ and why on standard error (`report`, which names each kind), and answers
 nothing, false or 0, leaving the object as it was. An exception crossing the
 C boundary ends the process where nobody can say why; a guard reads every
 function of the relay for its catch (`testNoCppExceptionLeavesTheRelay`).
+The same holds for every handler the relay gives WinUI - an event's, a
+queued job's: WinUI calls it from its own loop, and an exception leaving it
+is stowed and ends the process. Each goes through `guarded`, which reports
+what it caught the same way (`testNoCppExceptionLeavesARelaysHandler`).
+
+A WinRT object the relay keeps for the process beside WinUI - a watcher of
+the screens, the system's settings - is made with `new` and never destroyed:
+a static one is destroyed as the process exits, after WinUI is gone, and
+Windows ends the process there. The test thread's WinUI itself is the one
+exception: destroying its statics as the process exits is its shutdown
+(`testTheWinUIRelaysDestroyNoWinRTObjectAtExit`).
 
 ## The callbacks
 

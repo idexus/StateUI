@@ -1,0 +1,39 @@
+# revision 1.1
+ActivityIndicator.accessibilityIdentifier: ✅
+Button.accessibilityIdentifier: ✅
+Canvas.accessibilityIdentifier: ✅
+CheckBox.accessibilityIdentifier: ✅
+ColorBox.accessibilityIdentifier: ✅
+DatePicker.accessibilityIdentifier: ✅
+Ellipse.accessibilityIdentifier: ✅
+Grid.accessibilityIdentifier: ✅
+HStack.accessibilityIdentifier: ✅
+Image.accessibilityIdentifier: ✅
+ItemsView.accessibilityIdentifier: ✅
+Line.accessibilityIdentifier: ✅
+Map.accessibilityIdentifier: 🧩
+MenuItem.accessibilityIdentifier: – An Android menu entry holds no identifier: automation finds it by its title.
+NavigationStack.accessibilityIdentifier: ✅
+Path.accessibilityIdentifier: ✅
+Picker.accessibilityIdentifier: ✅
+Polygon.accessibilityIdentifier: ✅
+Polyline.accessibilityIdentifier: ✅
+ProgressBar.accessibilityIdentifier: ✅
+RadioButton.accessibilityIdentifier: ✅
+Rectangle.accessibilityIdentifier: ✅
+ScrollView.accessibilityIdentifier: ✅
+SearchField.accessibilityIdentifier: ✅
+Slider.accessibilityIdentifier: ✅
+SplitView.accessibilityIdentifier: ✅
+Stepper.accessibilityIdentifier: ✅
+Switch.accessibilityIdentifier: ✅
+TabView.accessibilityIdentifier: ✅
+Text.accessibilityIdentifier: ✅
+TextEditor.accessibilityIdentifier: ✅
+TextField.accessibilityIdentifier: ✅
+TextSpan.accessibilityIdentifier: not realized
+TimePicker.accessibilityIdentifier: ✅
+ToolbarItem.accessibilityIdentifier: – An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.
+VStack.accessibilityIdentifier: ✅
+WebView.accessibilityIdentifier: ✅
+ZStack.accessibilityIdentifier: ✅

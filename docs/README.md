@@ -1,7 +1,7 @@
 # StateUI handbook
 
 This handbook is the complete conceptual guide to the current StateUI model.
-The declarations in `lib/StateUI/Sources` are the API reference, the Gallery
+The declarations in `lib/StateUI/Core/Sources` are the API reference, the Gallery
 exercises the contract, and the platform matrix records which native hosts have
 proved each part.
 
@@ -25,6 +25,9 @@ design notes beside them.
 
 - [Architecture](concepts/architecture.md) defines StateUI's two reactive
   paths, `Journey`, host-side motion, engines, and ownership split.
+- [Why StateUI is shaped this way](concepts/why.md) states the decisions every
+  API follows and the shapes deliberately rejected; read it before
+  contributing.
 - [State and reactivity](concepts/state-and-reactivity.md) is the practical
   guide to `@State`, `@Binding`, persistence, conversions, sampling, and
   engines.
@@ -88,6 +91,8 @@ process.
   implementation plus host tests.
 - [Control dictionary](controls/README.md) lists every control and part of an
   application's structure member by member, each with a mark per platform.
+- [Tested setups](tested-setups.md) names the systems, toolchains and
+  devices on which each host's suites pass and its Gallery is walked.
 - [Project structure and development](development.md) covers repository
   layout, Gallery samples, vertical feature work, tests, and native builds.
 - [Design notes](design/README.md) draw the architecture and give the reasons
@@ -111,7 +116,7 @@ StateUI uses one source for each kind of question:
 | Question | Source |
 | --- | --- |
 | What StateUI means | this handbook and public `///` documentation |
-| What an application can spell | public declarations in `lib/StateUI/Sources` |
+| What an application can spell | public declarations in `lib/StateUI/Core/Sources` |
 | What crosses a host boundary | the element contracts and [Host contract](internals/host-contract.md) |
 | What a particular host implements | [Platform contract](platform-contract.md) and the [control dictionary](controls/README.md) |
 | What works as visible behavior | the native Gallery |

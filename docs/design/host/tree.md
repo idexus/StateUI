@@ -39,12 +39,37 @@ drift: it is refused, and nothing is mounted from it.
 
 A toolkit writes only what the toolkit has: an element's view and what hangs
 off it. `NativeElement` is that half's whole contract with the tree - it hears
-that a patch is about to apply and that it applied, presents a frame's changed
-properties, arranges children, reports where a property stands natively and
-whether the toolkit animates it, and lets go when the element leaves. The
-element owns its native half; the half refers back without owning, so it can
-never outlive the element. Anything that keeps an element beyond the tree -
-a window's shown page, a sheet - holds the element, never the native half.
+that a patch applied, presents a frame's changed properties, arranges
+children, reports where a property stands natively and whether the toolkit
+animates it, and lets go when the element leaves. The element owns its native
+half; the half refers back without owning, so it can never outlive the
+element. Anything that keeps an element beyond the tree - a window's shown
+page, a sheet - holds the element, never the native half.
+
+## An arrangement's slots
+
+An arrangement's children are its pages: a stack's top is its last child, a
+split view's detail its second, a tab its place among them - and every host
+reads them so. What an arrangement declares beside its pages - its actions,
+its menus, its title view - arrives among its children in the patch, and the
+tree keeps it apart, in the arrangement's slots, so no host ever takes it for
+a page. Every walk of the tree - a search, a frame, an element leaving - takes
+the slots with the children. A page and a view keep their slots among their
+children: a page lays out only its content, and a slot has no view to lay out.
+
+## Children a view draws
+
+A registered view may draw the children of one contract itself - a map's
+pins. Its registration names their contract and what of each it realizes
+(`Registration.children`), so the realization holds that element and those
+members. Such a child is mounted like any other, with its patches and its
+handlers, and has no view of its own (`isDrawnByParent`). Whenever a patch
+changes the parent's children - the first, one added, moved, taken away, or
+one's values - the host hands the view every such child in the tree's order
+(`applyDrawnChildren`). Each is the same `HostChild` for as long as the child
+lives, so the view keeps what it drew for one and lets go of what it is no
+longer handed. A child's values reach the view at rest: a display frame moving
+one does not.
 
 ## Standing values
 
@@ -102,15 +127,14 @@ counts the numbers held to see every view let go.
 ## A window shown
 
 A window shows the first arrangement of pages among its children - a page, a
-stack of them, tabs, a split view - the pages its modal stack presents as
-sheets, what it lays over them, and whether its scene hides it ([the
+stack of them, tabs, a split view - and where that is a modal stack, the page
+it holds with the pages it presents over it as sheets; the overlays laid over
+them ([the overlays of a window](pages.md#the-overlays-of-a-window)); and
+whether its scene hides it ([the
 application's phase](runtime.md#the-applications-phase)), and says each to
-its host only when it changed (`WindowPresentation`). It says too the window
-it belongs to: a window of a kind of its own is its scene's main window's,
-and a main window is nobody's (`MountedElement.ownerWindow`); a toolkit that
-knows owned windows stands the one above the other, hides it with it and
-leaves it out of the system's list of the application's windows. The page
-the user sees hears it is shown
+its host only when it changed (`WindowPresentation`). Every window is one
+of its own: none belongs to another. The page the user sees hears it is
+shown
 ([a page's phases](pages.md#a-pages-phases)), then the window hears, once,
 that it was made - in their turn, before the host first shows the window,
 and so before it hears it came to the front. The host shows them in its
@@ -137,15 +161,14 @@ says nothing of is the toolkit's own; the rest are false until said.
 
 ## The windows a tree holds
 
-Every host keeps the windows alike (`WindowRoster`): each window element
-under the root, in the tree's order - a window holds none - with the host's
-controller of it. A window the tree keeps keeps its controller, one it no
-longer holds has its controller closed - the last first, so a window of a
-kind of its own closes before the main window it belongs to, which a
-toolkit would otherwise take down with it - and one new has one made; the first
-window's coming is said, since the screen is known only once there is one.
-A window is told apart by the element itself, since two scenes each name
-their main window alike.
+Every host but Android, which shows the first window in its activity, keeps
+the windows alike (`WindowRoster`): each window element under the root, in
+the tree's order - a window holds none - with the host's controller of it. A
+window the tree keeps keeps its controller, one it no longer holds has its
+controller closed - the last first - and one new has one made; the first
+window's coming is said, since the screen is known only once there is one. A
+window is told apart by the element itself, since two scenes may each name a
+window alike.
 
 ## Runs of words
 

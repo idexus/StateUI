@@ -16,10 +16,10 @@ view's place is, said once for each.
 
 ## Written onto the placed view
 
-Each field is a property of the view being placed, written onto it by the
-layout. A view inside a `PlacedLayout` is therefore turned, scaled and faded
-by its placement, not in the closure that builds it: the placement would
-overwrite what the closure wrote.
+Each field is drawn onto the container the layout wraps the view in, over
+what the view's own properties say. A view inside a `PlacedLayout` is turned,
+scaled and faded by its placement, and what the closure that builds it writes
+stays its own: the placement composes with it and never overwrites it.
 
 ## One picture on every platform
 
@@ -86,10 +86,10 @@ out at lane 63, so a run says exactly which of its first five views moved
 and reports the rest together. That costs nothing: a view given the place it
 already has is skipped before anything is written.
 
-`PackedPlacement` writes the same twelve numbers straight into a buffer the
-host reads by stride, on the platform's own frames: there is no identity to
-carry, no property to name and nothing to diff, since the host holds the
-views already. A layout with no shade writes -1 as the shade, a number no
-opacity can be, which tells the host to look for no shade view. An empty
+A run lies on the state image as these twelve numbers a view, which the host
+reads on the platform's own frames: there is no identity to carry, no
+property to name and nothing to diff, since the host holds the views
+already. The host finds a shade as a placed view's second child, so a layout
+with no shade draws none, whatever number its run holds for it. An empty
 image is an empty run - what a state never written stands at - so a layout
 with nothing on it yet is a picture rather than a failure.

@@ -1,8 +1,8 @@
 # The Android runtime
 
 The Android Views host is the runtime every host shares
-([the runtime](../../host/runtime.md)), over Android views: the core's host
-layer supplies the mounted tree, the patch intake, the animator, the state
+([the runtime](../../host/runtime.md)), over Android views: the host layer
+supplies the mounted tree, the patch intake, the animator, the state
 channels and the display cycle, and the Android half supplies what only the
 toolkit can - the frame signal, the doorbell's post, the views, their layout,
 and the activity around them.
@@ -32,13 +32,16 @@ asserts that isolation rather than assuming a thread.
 
 ## A later activity
 
-Back finishes the activity while the process lives on, and the launcher then
-starts another. The application's scene is connected once, by the first
-activity: every connection makes another independent scene. A later activity
-therefore takes over the scene the one before showed, with its state: the
-previous tree leaves, letting go of the old activity's views, and a renderer
-of the new activity's own, whose intake holds no message yet, asks for the
-whole tree.
+The process outlives its activity. Android makes an activity again - for a
+new configuration - while the scene stands, and every connection makes
+another independent scene, so a later activity takes over the scene the one
+before showed, with its state: the previous tree leaves, letting go of the
+old activity's views, and a renderer of the new activity's own, whose intake
+holds no message yet, asks for the whole tree, and the scenes kept pass to
+it. Back finishes the activity: the user closed its window, which hears it is
+going, and its scene that the window closed, and the scene ends with it. The
+launcher's next activity finds none standing: the scenes kept come back, as
+for the first activity.
 
 ## The doorbell
 
@@ -75,7 +78,9 @@ and stderr at a pipe whose reader writes each line to logcat under the tag
 
 What the device, its display and the application are is read as the host
 starts and whenever the activity's configuration changes, each group of
-facts in one call: the model, the maker and Android's version; the display's
+facts in one call: the model, the maker, the device's name and Android's
+version - the name its user gave it in Settings, which tells one terminal of
+a model from another, else the model's code name; the display's
 size in pixels, its density, rotation and refresh rate; the application's
 name, package and version. A device whose smallest width is 600
 density-independent pixels or more is a tablet, any other a phone. The
@@ -99,8 +104,9 @@ of the application, its scene and its window by the host layer's rule ([the
 application's phase](../../host/runtime.md#the-applications-phase)): each
 rendered before the next is heard, and a window shown again after it stopped
 resumed on its way to active. The window hears it was made as the host layer
-shows it, once; and it is going - then its scene - only when the activity
-finishes, not when Android makes the activity again for a new configuration. The window's title is the activity's, and the label its task
+shows it, once; and it is going, and its scene that it closed, only when the
+activity finishes, not when Android makes the activity again for a new
+configuration. The window's title is the activity's, and the label its task
 shows among the recent ones.
 
 ## Acts
@@ -126,8 +132,9 @@ contract declares - is performed by what the application registered for it
 contract declares and answered with those it returns, once the performer
 returns; an act nothing registered is refused by its name. An event the
 application raises (`StateUIEvents`) reaches every listener to it. Both are
-said as the library loads: `JNI_OnLoad` runs on the UI thread, before
-`StateUIAndroid.load(_:)` starts the host.
+said as the library loads: `JNI_OnLoad` runs on the UI thread and says them
+before `StateUIAndroid.load(_:)`, which registers the host's natives; the
+activity starts the host after it.
 
 ## The application's own controls
 
@@ -147,3 +154,8 @@ A kept state's key is in the platform's preferences, as the words its kind
 reads back. Every key the application lists is read before the first scene
 connects, in one call, and handed to the core ahead of the first view; a
 key's new value is written as its save arrives.
+
+Android restores no windows, so the application's scenes are kept beside the
+values, under a key of the host's own, by the host layer's rule ([kept
+scenes](../../host/runtime.md#kept-scenes)), and come back at the next
+start.

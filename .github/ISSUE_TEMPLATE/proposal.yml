@@ -5,9 +5,19 @@ body:
   - type: markdown
     attributes:
       value: |
-        For anything that adds or renames what an application can reach, moves
-        the host contract, adds a dependency, or runs long. A typo, a bug fix with its
-        test, or a sample needs none of this - open a pull request instead.
+        Use this form for anything that adds or renames what an application can
+        reach, moves the host contract, adds a dependency, or needs a substantial
+        design decision.
+
+        Read docs/concepts/why.md first: it states the decisions every API
+        follows and the shapes deliberately rejected. A proposal that changes
+        one of them answers the reason that page gives.
+
+        A bug uses the Bug form instead: every bug fix starts from a Bug issue
+        with a reproducible example before implementation begins.
+
+        A typo, a documentation-only correction, or repository maintenance may
+        go straight to a pull request.
 
         Describe the change rather than pasting an implementation: code you
         want used travels as a pull request, where the CLA covers it.
@@ -18,7 +28,7 @@ body:
       label: What you want to add or change
       description: One paragraph, and the call site as you would like to write it.
       placeholder: |
-        Label("Hello").lineBreakMode(.tailTruncation)
+        Text("Hello").lineBreakMode(.tailTruncation)
     validations:
       required: true
 
@@ -38,7 +48,7 @@ body:
     attributes:
       label: What it touches
       options:
-        - label: The public API surface - a control, a modifier, a token, an act
+        - label: The public API surface - a control, a modifier, an event, an act
         - label: The host contract
         - label: A build script, or a new dependency
         - label: One platform only, or one platform differently from the others

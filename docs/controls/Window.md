@@ -1,8 +1,26 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Window
 
 A window onto a page.
+
+```swift
+struct NotesApp: Application {
+    var body: some Scene { WindowGroup { MainPage() } }
+}
+
+struct MainPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        Text("Hello")
+            .onCreated {
+                window.title = "Notes"
+                window.minimumWidth = 480
+            }
+    }
+}
+```
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
@@ -12,10 +30,11 @@ Inherits nothing: every member below is its own.
 | :---: | --- |
 | ✅ | Proven by every test of it that ran on that host. |
 | ☑️ | Proven, the host recording what is missing. |
+| ✓ | Proven only through the host's own entry or record, not the toolkit's; it counts as met. |
 | – | Never on that host's family, which meets the contract there. |
+| 🧩 | Left to the application, which registers its own control for it with that host. |
 | ❌ | A test of it failed. |
 | ◐ | Some of its tests proved it, another could not run or read. |
-| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
 | · | The driver cannot yet do or read what its test needs. |
 | ⏸ | Its test waits on a member the host does not realize. |
 | ⌛ | Said at another revision of its family than it stands at. |
@@ -23,41 +42,63 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (23) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 15 ✅ | `NSWindow` |  |
-| UIKit | ✅ | 4 ✅ | `UIWindow` |  |
-| Android Views | ✅ | 2 ✅ | `Activity` |  |
-| WinUI 3 | ✅ | 23 ✅ | `Window` |  |
-| GTK 4 | ⏸ |  | `GtkApplicationWindow` | waits on Window.created, not realized yet |
-| Web |  |  | browser `window` | no host yet |
+<table>
+<thead><tr><th>Host</th><th>Created</th><th>Members (22)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>15 ✅ · 6 ✓</td><td><code>NSWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅ · 4 ✓ · 9 –</td><td><code>UIWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>2 ✅ · 4 ✓</td><td><code>Activity</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>22 ✅</td><td><code>Window</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 6 ✓ · 8 –</td><td><code>GtkApplicationWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>browser <code>window</code></td></tr>
+<tr><td colspan="3">no host yet</td></tr></tbody>
+</table>
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContract.swift`.
 
 ## Window's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
-| `created` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
-| `deactivated` | event |  | adaptive | 🔌 | 🔌 | 🔌 | ✅ |  |  | only through the host's own: switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: only through the host's own: switchAway on Window: the host told the scene's phase, no scene moved; Android Views: only through the host's own: switchAway on Window: the host told the activity's phase, no activity moved; GTK 4: not realized |
-| `destroying` | event |  | adaptive | ✅ | 🔌 | 🔌 | ✅ |  |  | UIKit: only through the host's own: close on Window: the host told the scene's phase, no scene moved; Android Views: only through the host's own: close on Window: the host told the activity's phase, no activity moved; GTK 4: not realized |
-| `floatsOnTop` | property | `Bool` | adaptive | 🔌 |  |  | ✅ |  |  | only through the host's own: bringToFront on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `height` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `hidesWhenInactive` | property | `Bool` | adaptive | · |  |  | ✅ |  |  | cannot read isVisible of Window - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `isMaximizable` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `isMinimizable` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `isTranslucent` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `maximumHeight` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `maximumWidth` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `minimumHeight` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `minimumWidth` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `modalPopped` | event | `Int` | adaptive | 🔌 | ✅ | · | ✅ |  |  | only through the host's own: goBack on Window: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on Window - Android's driver has no path for it yet; GTK 4: not realized |
-| `resumed` | event |  | adaptive | 🔌 | 🔌 | 🔌 | ✅ |  |  | only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: only through the host's own: minimize on Window: the host told the scene's phase, no scene moved; Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved; GTK 4: not realized |
-| `stopped` | event |  | adaptive | 🔌 | 🔌 | 🔌 | ✅ |  |  | only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: only through the host's own: minimize on Window: the host told the scene's phase, no scene moved; Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved; GTK 4: not realized |
-| `title` | property | `String` | native | ✅ | ✅ | · | ✅ |  |  | Android Views: cannot read title of Window - Android's driver has no path for it yet; GTK 4: not realized |
-| `width` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `windowType` | property | `WindowType` | structure | 🔌 |  |  | ✅ |  |  | only through the host's own: read windowType of Window: the host's restoration record; UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `windowValue` | property | `String` | structure | 🔌 |  |  | ✅ |  |  | only through the host's own: read windowValue of Window: the host's restoration record; UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `x` | property | `Double` | structure | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `y` | property | `Double` | structure | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>created</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: switchAway on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: switchAway on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>destroying</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: close on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: close on Window: the host told the activity's phase, no activity moved</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>floatsOnTop</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✓</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: bringToFront on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: iPadOS stacks its windows itself: UIKit keeps none above the others.<br>Android Views: not realized<br>GTK 4: GTK 4 keeps no window above the others: the desktop stacks them.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit: iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size.<br>Android Views: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>hidesWhenInactive</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">·</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: cannot read isVisible of Window - AppKit's driver has no path for it yet<br>UIKit: iPadOS shows an application's windows itself: UIKit hides none while another is in front.<br>Android Views: not realized<br>GTK 4: only through the host's own: bringToFront on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isMaximizable</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">UIKit: Any iPadOS window may fill the screen: UIKit keeps none from it.<br>Android Views: not realized<br>GTK 4: The desktop fills the screen with any GTK 4 window it can resize: none forbids that alone.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isMinimizable</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">UIKit: Any iPadOS window may be put away: UIKit keeps none from it.<br>Android Views: not realized<br>GTK 4: GTK 4 asks the desktop to keep no window from being put away.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isTranslucent</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">UIKit: iPadOS draws an application's window opaque: no material shows through one.<br>Android Views: not realized<br>GTK 4: GNOME draws its windows opaque: no material shows through one.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">UIKit, Android Views: not realized<br>GTK 4: GTK 4 bounds no window from above.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">UIKit, Android Views: not realized<br>GTK 4: GTK 4 bounds no window from above.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>minimumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit, Android Views: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>minimumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit, Android Views: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>resumed</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: minimize on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: minimize on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">Android Views: cannot read title of Window - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">UIKit: iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size.<br>Android Views: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>windowType</code></td><td>property</td><td><code>WindowType</code></td><td>structure</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read windowType of Window: the host's restoration record<br>UIKit, Android Views: not realized<br>GTK 4: only through the host's own: read windowType of Window: the scenes the host keeps for the next start</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>windowValue</code></td><td>property</td><td><code>String</code></td><td>structure</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read windowValue of Window: the host's restoration record<br>UIKit, Android Views: not realized<br>GTK 4: only through the host's own: read windowValue of Window: the scenes the host keeps for the next start</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>x</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">UIKit: iPadOS places its windows itself: a UIKit scene asks for no place.<br>Android Views: not realized<br>GTK 4: GNOME places its windows itself: GTK 4 asks no place of the desktop.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>y</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">UIKit: iPadOS places its windows itself: a UIKit scene asks for no place.<br>Android Views: not realized<br>GTK 4: GNOME places its windows itself: GTK 4 asks no place of the desktop.</td></tr></tbody>
+</table>

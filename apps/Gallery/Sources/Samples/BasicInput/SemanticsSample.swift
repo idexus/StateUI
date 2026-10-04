@@ -46,14 +46,14 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 describedButton
             }
 
-            Label("Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
+            Text("Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
 
             SwitchRow("Describe the second button", $described)
 
             // Read as a heading: somewhere a user jumping through the page
             // can land.
-            Label("A heading, and drawn the same")
-                .accessibilityHeadingLevel(.level1)
+            Text("A heading, and drawn the same")
+                .accessibilityHeading(.h1)
 
             // Said out loud, now, whatever the user was on. An ACT, because
             // it is something that happens at a moment rather than a value a
@@ -67,14 +67,14 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             // Shown as well as said: with no screen reader running there is
             // nothing to see otherwise, and what was said is the point.
-            Label(said.isEmpty ? "nothing said yet" : "said: \\(said)")
+            Text(said.isEmpty ? "nothing said yet" : "said: \\(said)")
 
             // One word takes the panel AND everything in it out of what a
             // screen reader walks; the rule below is a single view taken out.
             ZStack {
                 VStack {
-                    Label("Skipped")
-                    Label("Neither line is read")
+                    Text("Skipped")
+                    Text("Neither line is read")
                 }
             }
             .style("Card")
@@ -85,7 +85,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .isAccessibilityHidden(true)
         }
 
-        private var describedButton: any View {
+        private var describedButton: some View {
             let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                 .style("IconButton")
                 .accessibilityIdentifier("semantics.described")
@@ -98,7 +98,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -107,20 +107,20 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .style("IconButton")
                         .accessibilityIdentifier("semantics.bare")
-                        .aspect(.fit)
+                        .contentMode(.fit)
                         .width(64)
                         .height(64)
                         .stroke(Palette.outline)
-                        .strokeWidth(1)
+                        .lineWidth(1)
                         .shape(.roundedRectangle(12))
                         .onClicked { taps += 1 }
 
-                    Label("A user hears")
+                    Text("A user hears")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
 
-                    Label("nothing")
+                    Text("nothing")
                         .fontSize(13)
                         .fontAttributes(.italic)
                         .textColor(Palette.subtle)
@@ -132,12 +132,12 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 VStack {
                     describedButton
 
-                    Label("A user hears")
+                    Text("A user hears")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
 
-                    Label(described ? "\(Self.says)\n\(Self.hint)" : "nothing")
+                    Text(described ? "\(Self.says)\n\(Self.hint)" : "nothing")
                         .fontSize(13)
                         .fontAttributes(described ? .none : .italic)
                         .textColor(described ? Palette.accent : Palette.subtle)
@@ -149,7 +149,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            Label("Tapped \(taps) time\(taps == 1 ? "" : "s")")
+            Text("Tapped \(taps) time\(taps == 1 ? "" : "s")")
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
 
@@ -161,14 +161,14 @@ struct SemanticsSample: SampleContent, ExampleContent {
             // Drawn alike and read differently: only the second is somewhere a
             // user jumping through the page can land.
             VStack {
-                Label("Drawn large")
+                Text("Drawn large")
                     .fontSize(20)
                     .fontAttributes(.bold)
 
-                Label("A heading, and drawn the same")
+                Text("A heading, and drawn the same")
                     .fontSize(20)
                     .fontAttributes(.bold)
-                    .accessibilityHeadingLevel(.level1)
+                    .accessibilityHeading(.h1)
             }
             .spacing(4)
 
@@ -177,7 +177,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             Button("Announce the count")
                 .accessibilityIdentifier("semantics.announce")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
@@ -185,7 +185,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     said = words
                 }
 
-            Label(said.isEmpty ? "nothing said yet" : "said: \(said)")
+            Text(said.isEmpty ? "nothing said yet" : "said: \(said)")
                 .fontSize(12)
                 .textColor(said.isEmpty ? Palette.subtle : Palette.accent)
                 .horizontalTextAlignment(.center)
@@ -195,11 +195,11 @@ struct SemanticsSample: SampleContent, ExampleContent {
             HStack {
                 ZStack {
                     VStack {
-                        Label("Walked")
+                        Text("Walked")
                             .fontSize(15)
                             .fontAttributes(.bold)
 
-                        Label("Both lines are read")
+                        Text("Both lines are read")
                             .fontSize(12)
                             .textColor(Palette.subtle)
                     }
@@ -212,11 +212,11 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 // to a screen reader - one word instead of one per view.
                 ZStack {
                     VStack {
-                        Label("Skipped")
+                        Text("Skipped")
                             .fontSize(15)
                             .fontAttributes(.bold)
 
-                        Label("Neither line is read")
+                        Text("Neither line is read")
                             .fontSize(12)
                             .textColor(Palette.subtle)
                     }
@@ -242,15 +242,15 @@ struct SemanticsSample: SampleContent, ExampleContent {
     /// An absent property restores the host's native default, which is what
     /// makes a modifier written under a condition cost the property and not
     /// the control.
-    private var describedButton: any View {
+    private var describedButton: some View {
         let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
             .style("IconButton")
             .accessibilityIdentifier("semantics.described")
-            .aspect(.fit)
+            .contentMode(.fit)
             .width(64)
             .height(64)
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(12))
             .onClicked { taps += 1 }
 
@@ -259,19 +259,19 @@ struct SemanticsSample: SampleContent, ExampleContent {
             : button
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Two jobs, four modifiers, and they do not stand in for one another. "
+            Text("Two jobs, four modifiers, and they do not stand in for one another. "
                 + "`.accessibilityLabel` and `.accessibilityHint` are what a screen reader "
                 + "SAYS: the first names the control, the second says what using it does. "
-                + "`.accessibilityHeadingLevel` marks a view as a heading, which is how a "
+                + "`.accessibilityHeading` marks a view as a heading, which is how a "
                 + "user moves through a long page. `.accessibilityIdentifier` is a handle nobody "
                 + "hears - it is what a UI test, a script or an agent driving the "
                 + "application asks the platform to find.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Every control on this page carries one: the two buttons answer to "
+            Text("Every control on this page carries one: the two buttons answer to "
                 + "`semantics.bare` and `semantics.described`. An id is worth having "
                 + "wherever something outside the application has to find a control, and "
                 + "it has to stay the same between renders - one that moves with the "
@@ -279,7 +279,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Turn the switch off and the description is taken off the control it "
+            Text("Turn the switch off and the description is taken off the control it "
                 + "was on, rather than a second button being drawn: a property that goes "
                 + "away is cleared back to the host's native default. To hear any of it, turn on "
                 + "the platform's screen reader - VoiceOver on Apple, TalkBack on "

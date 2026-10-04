@@ -13,12 +13,12 @@ import XCTest
 ///
 /// A block is compiled as the BODY OF A FUNCTION, which is what lets a listing
 /// read as it would inside a page - `@State var counter = 0` beside a
-/// `Label("\(counter)")` - without every example carrying a `struct` around it:
+/// `Text("\(counter)")` - without every example carrying a `struct` around it:
 /// local types, local property wrappers, statements and `try await` are all
 /// allowed there. `private` is dropped first, because a local variable cannot
 /// wear it and a listing is not asked to know that. A block declaring what
 /// only a file can hold - an `extension`, a `protocol`, a `public` type,
-/// an `import` - is compiled at file scope instead.
+/// a class - is compiled at file scope instead.
 ///
 /// The blocks are type-checked in parallel, one `swiftc -typecheck` each,
 /// against the `.swiftmodule` this package's own build wrote - so the check
@@ -71,7 +71,7 @@ final class DocumentationExamplesTests: XCTestCase {
 
     func testEveryDocumentationExampleCompiles() throws {
         let documents = try Self.documents()
-        for topic in ["concepts", "interface", "internals", "hosts"] {
+        for topic in ["concepts", "interface", "internals", "hosts", "controls"] {
             XCTAssertTrue(documents.contains { $0.0.hasPrefix("docs/\(topic)/") }, "docs/\(topic) was not read")
         }
         let examples = try documents.flatMap { document, url in
@@ -157,8 +157,8 @@ final class DocumentationExamplesTests: XCTestCase {
     }
 
     /// README followed by every handbook document in path order: docs and each
-    /// of its topics' folders - not the design notes or the rendered control
-    /// dictionary, which hold no application code.
+    /// of its topics' folders, the control dictionary's examples included - not
+    /// the design notes, which hold no application code.
     private static func documents() throws -> [(String, URL)] {
         var found = [("README.md", repository.appendingPathComponent("README.md"))]
         let directory = repository.appendingPathComponent("docs")
@@ -169,9 +169,9 @@ final class DocumentationExamplesTests: XCTestCase {
             for name in try FileManager.default.contentsOfDirectory(atPath: url.path) {
                 let relative = folder.isEmpty ? name : "\(folder)/\(name)"
                 var isFolder: ObjCBool = false
-                FileManager.default.fileExists(atPath: url.appendingPathComponent(name).path, isDirectory: &isFolder)
-                if isFolder.boolValue {
-                    if !["design", "controls", "assets"].contains(relative) { pending.append(relative) }
+                let path = url.appendingPathComponent(name).path
+                if FileManager.default.fileExists(atPath: path, isDirectory: &isFolder), isFolder.boolValue {
+                    if !["design", "assets"].contains(relative) { pending.append(relative) }
                 } else if name.hasSuffix(".md") {
                     names.append(relative)
                 }
@@ -199,7 +199,7 @@ final class DocumentationExamplesTests: XCTestCase {
         let stripped = kept.joined(separator: "\n")
             .replacingOccurrences(of: "fileprivate ", with: "")
             .replacingOccurrences(of: "private ", with: "")
-            .replacingOccurrences(of: "{ … }", with: "{ Label(\"…\") }")
+            .replacingOccurrences(of: "{ … }", with: "{ Text(\"…\") }")
         // The gallery's own module, for the listings that show the gallery's
         // code - its palette, its sample protocol. Testable, because the
         // gallery's types are internal, as an application's are; the guide's

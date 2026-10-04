@@ -1,0 +1,5 @@
+# revision 3.1
+ToolbarItem: ✓ activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
+ToolbarItem.clicked: ✓ activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
+ToolbarItem.placement: cannot read placement of ToolbarItem - AppKit's driver has no path for it yet
+ToolbarItem.showsText: – A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.

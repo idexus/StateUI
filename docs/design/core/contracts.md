@@ -38,9 +38,17 @@ A member found as a leading-dot member of its own type cannot be paired with a
 single-value payload by the compiler, so nothing is declared for that spelling.
 The public API has no road by token.
 
+An element that wears no tier - a map's `Marker`, which stands only among its
+map's pins - carries no modifiers but its own. It writes a member on its node,
+`node.write(MarkerContract.label, value)`, and hears one,
+`node.addHandler(MarkerContract.selected, handler)`: the same typed members a
+view's `setValue` and `onEvent` are written over, so the compiler still pairs
+each member with its value.
+
 ## Member facts
 
-A property says three things about itself beside its value's type:
+A property says three things about itself beside its value's type and its
+layer:
 
 ```text
   travels  whether a change animates to the new value (the default). False
@@ -68,7 +76,7 @@ animates, is cleared, and says nothing of motion.
 ## Values that cross
 
 `HostRepresentable` is a member's value and how it crosses and comes back:
-`Bool`, `Int` (a whole `Double`, refused unless exact), `Double`, `String`, an
+`Bool`, `Int` (a `Double`, read back as its whole part), `Double`, `String`, an
 optional of any of them (nil crosses as `.nothing`), `PropValue` itself, and an
 `Int32` enum (its member's number). A list of numbers crosses as one run of
 numbers and a list of text as one list of text; any other list as a list of
@@ -94,7 +102,7 @@ name is spelled once, where a contract declares its member; the library's
 tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
 instead. A node type is the one token a contract spells, as a literal. Tokens
-compare by name, because a message writes properties and handlers in name
+compare by name, because the differ walks properties and numbers handlers in name
 order.
 
 An application's own node type can be one no host knows; the host draws an
@@ -136,7 +144,8 @@ machinery no contract describes, registers its members with `madeByHost`.
 
 A runtime hands over its registry's realization before its first render,
 through `CoreLink.setRealization`, with the library's elements it shows none
-of - its `unrealized` judgement, the same the control dictionary reads: every
+of - its `unrealized` judgement, the same the control dictionary reads, with
+what it leaves to the application and each backend no one registered: every
 other element of the library's is realized, and so is every element and member
 the registry names, the application's own controls and the events its head
 declared among them. Until a host says, the core knows of nothing realized and
@@ -147,7 +156,7 @@ says nothing.
 A `HostDeclaration` is what a host declares, read off its own runtime: the
 elements it makes a view for and, on each, the members it takes and the events
 it raises. It says presence and never ownership: a runtime does not hold the
-contracts, and `strokeWidth` on a button is the same call whether the button
+contracts, and `lineWidth` on a button is the same call whether the button
 or a tier it wears declares it. `realization` names each owner against the
 contracts themselves, so an owner is never written by hand.
 

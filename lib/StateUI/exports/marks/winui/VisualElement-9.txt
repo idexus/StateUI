@@ -1,0 +1,49 @@
+# revision 1.1
+ActivityIndicator.style: ✅
+ActivityIndicator.zIndex: not realized
+Button.pivotY: ✅
+Canvas.style: ✅
+Canvas.zIndex: not realized
+CheckBox.pivotY: ✅
+ColorBox.style: ✅
+ColorBox.zIndex: not realized
+DatePicker.pivotY: ✅
+Ellipse.style: ✅
+Ellipse.zIndex: not realized
+Grid.pivotY: ✅
+HStack.style: ✅
+HStack.zIndex: not realized
+Image.pivotY: ✅
+ItemsView.style: not realized
+ItemsView.zIndex: not realized
+Line.style: ✅
+Line.zIndex: not realized
+Map.pivotY: 🧩
+Path.style: ✅
+Path.zIndex: not realized
+Picker.pivotY: ✅
+Polygon.style: ✅
+Polygon.zIndex: not realized
+Polyline.pivotY: ✅
+ProgressBar.style: ✅
+ProgressBar.zIndex: not realized
+RadioButton.pivotY: ✅
+Rectangle.style: ✅
+Rectangle.zIndex: not realized
+ScrollView.pivotY: ✅
+SearchField.style: ✅
+SearchField.zIndex: not realized
+Slider.pivotY: ✅
+Stepper.style: ✅
+Stepper.zIndex: not realized
+Switch.pivotY: ✅
+Text.pivotY: ✅
+TextEditor.style: ✅
+TextEditor.zIndex: not realized
+TextField.pivotY: ✅
+TimePicker.style: ✅
+TimePicker.zIndex: not realized
+VStack.pivotY: ✅
+WebView.style: ✅
+WebView.zIndex: not realized
+ZStack.pivotY: ✅

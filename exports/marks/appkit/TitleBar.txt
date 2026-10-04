@@ -1,6 +1,0 @@
-# revision 1.1
-TitleBar: cannot read isVisible of TitleBar - AppKit's driver has no path for it yet
-TitleBar.barForegroundColor: cannot read barForegroundColor of TitleBar - AppKit's driver has no path for it yet
-TitleBar.icon: cannot read icon of TitleBar - AppKit's driver has no path for it yet
-TitleBar.subtitle: cannot read subtitle of TitleBar - AppKit's driver has no path for it yet
-TitleBar.title: cannot read isVisible of TitleBar - AppKit's driver has no path for it yet

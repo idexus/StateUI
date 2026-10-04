@@ -10,16 +10,17 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// same identity.
     @State private var added = 0
 
-    /// Which of the two buttons ON the bar asks to be drawn first. The number
-    /// it decides is `.priority`; the lower number appears first.
-    @State private var addFirst = false
+    /// Whether the sample's group stands after the gallery's, by its order.
+    @State private var afterGallery = false
 
-    /// The page this sample is on, whose bar and menus these are.
-    @Environment private var page: PageSession
+    /// Whether the sample's actions join the gallery's own group, by its id.
+    @State private var inGallery = false
 
-    /// What the page's bar held before this sample added to it - the
-    /// gallery's own buttons, which stay after the sample's.
-    @State private var chrome: [ToolbarItem] = []
+    /// Whether the sample's group stands at the bar's leading edge.
+    @State private var atLeading = false
+
+    /// Whether Add shows its words beside its picture on the bar.
+    @State private var addWords = false
 
     static let id = "toolbar"
     static let title = "Toolbar and menus"
@@ -29,51 +30,75 @@ struct ToolbarSample: SampleContent, ExampleContent {
         @State private var saved = 0
         @State private var recent = ["notes.txt", "budget.csv"]
         @State private var added = 0
-        @State private var addFirst = false
+        @State private var afterGallery = false
+        @State private var inGallery = false
+        @State private var atLeading = false
+        @State private var addWords = false
 
-        @Environment private var page: PageSession
-        @State private var chrome: [ToolbarItem] = []
+        var body: some View {
+            VStack {
+                // The counts are read here, so every toolbar item that acts
+                // builds this closure.
+                DebugInfoLabel()
 
-        // Both belong to the PAGE, so they are written into its session -
-        // and written again when what they say moves.
-        private var items: [ToolbarItem] {
-            [
-                // Written Save then Add whichever way the switch is set; the
-                // lower priority still appears first.
+                Text("Saved \\(saved) time(s)")
+                Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
+
+                HStack {
+                    Switch($afterGallery)
+                    Text("After the gallery's actions")
+                }
+                HStack {
+                    Switch($inGallery)
+                    Text("In the gallery's group")
+                }
+                HStack {
+                    Switch($atLeading)
+                    Text("At the leading edge")
+                }
+                HStack {
+                    Switch($addWords)
+                    Text("Add's words beside its picture")
+                }
+            }
+            // The page's actions, declared where their state lives: they
+            // follow it as the body builds, with nothing written by hand.
+            .toolbar(
+                atLeading ? .leading : .trailing,
+                id: inGallery ? "gallery" : "sample",
+                order: afterGallery ? 1 : 0
+            ) {
                 ToolbarItem("Save")
                     .id("save")
-                    .priority(addFirst ? 1 : 0)
-                    .onClicked { saved += 1 },
+                    .onClicked { saved += 1 }
 
+                // A picture alone, unless it asks for its words beside it.
                 ToolbarItem("Add")
                     .id("add")
-                    .priority(addFirst ? 0 : 1)
+                    .icon("menu_duplicate_dark.png")
+                    .showsText(addWords)
                     .onClicked {
                         added += 1
                         recent.append("file\\(added).txt")
-                    },
+                    }
 
                 ToolbarItem("Clear")
                     .id("clear")
                     .placement(.overflow)
                     .isDestructive(true)
                     .isEnabled(saved > 0)
-                    .onClicked { saved = 0 },
-            ]
-        }
-
-        private var menus: [Menu] {
-            [
+                    .onClicked { saved = 0 }
+            }
+            // The desktop File menu: Save, and the recent files following the
+            // state they list.
+            .menuBar {
                 Menu("File") {
                     MenuItem("Save")
                         .id("save")
                         .onClicked { saved += 1 }
 
-                    MenuSeparator()
-                        .id("line")
-
                     Menu("Recent") {
-                        ForEach(recent) { file in
+                        recent.map { file in
                             MenuItem(file)
                                 .id(file)
                                 .onClicked { recent.removeAll { $0 == file } }
@@ -82,79 +107,73 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .id("recent")
                     .isEnabled(!recent.isEmpty)
                 }
-                .id("file"),
-            ]
-        }
-
-        var content: any View {
-            VStack {
-                // The counts are read here, so every toolbar item that acts
-                // builds this closure.
-                DebugInfoLabel()
-
-                Label("Saved \\(saved) time(s)")
-                Label(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
-
-                HStack {
-                    Switch($addFirst)
-
-                    Label(addFirst
-                        ? "Add asks first - .priority(0), against Save's 1"
-                        : "Save asks first - .priority(0), against Add's 1")
-                }
+                .id(StandardMenu.file)
             }
-            .onCreated {
-                chrome = page.toolbarItems      // what the page put there first
-                page.toolbarItems = items + chrome
-                page.menuBar = menus
-            }
-            .onChanged(addFirst) { page.toolbarItems = items + chrome }
-            .onChanged(saved) { page.toolbarItems = items + chrome }
-            .onChanged(recent) { page.menuBar = menus }
         }
         """
 
-    /// The buttons this sample puts on the page's bar, before the gallery's
-    /// own.
-    private var items: [ToolbarItem] {
-        [
-            // Written Save then Add whichever way the switch is set; the lower
-            // priority still appears first.
+    var body: some View {
+        VStack {
+            DebugInfoLabel()
+
+            Text("Saved \(saved) time(s)")
+                .fontSize(17)
+
+            Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
+                .fontSize(13)
+                .textColor(Palette.subtle)
+
+            Text("Press Save and Add on the bar; Clear is in its overflow.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            SectionTitle("Where the actions stand")
+
+            switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
+            switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
+            switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
+
+            SectionTitle("A picture and its words")
+
+            switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
+        }
+        .spacing(12)
+        // The page's actions, declared where their state lives: they follow
+        // it as the body builds - `saved` decides whether Clear can be pressed,
+        // `addWords` Add's words, the three switches where the group stands.
+        .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
             ToolbarItem("Save")
                 .id("save")
-                .priority(addFirst ? 1 : 0)
-                .onClicked { saved += 1 },
+                .onClicked { saved += 1 }
 
+            // A picture alone, unless it asks for its words beside it. The
+            // white one reads on the accent bar in both themes.
             ToolbarItem("Add")
                 .id("add")
-                .priority(addFirst ? 0 : 1)
+                .icon("menu_duplicate_dark.png")
+                .showsText(addWords)
                 .onClicked {
                     added += 1
                     recent.append("file\(added).txt")
-                },
+                }
 
             ToolbarItem("Clear")
                 .id("clear")
                 .placement(.overflow)
                 .isDestructive(true)
                 .isEnabled(saved > 0)
-                .onClicked { saved = 0 },
-        ]
-    }
-
-    /// And the desktop menu bar's File menu.
-    private var menus: [Menu] {
-        [
+                .onClicked { saved = 0 }
+        }
+        // The desktop File menu, declared the same way: Save, and the recent
+        // files following the state.
+        .menuBar {
             Menu("File") {
                 MenuItem("Save")
                     .id("save")
                     .onClicked { saved += 1 }
 
-                MenuSeparator()
-                    .id("line")
-
                 Menu("Recent") {
-                    ForEach(recent) { file in
+                    recent.map { file in
                         MenuItem(file)
                             .id(file)
                             .onClicked { recent.removeAll { $0 == file } }
@@ -163,77 +182,45 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .id("recent")
                 .isEnabled(!recent.isEmpty)
             }
-            .id("file"),
-        ]
+            .id(StandardMenu.file)
+        }
     }
 
-    var content: any View {
-        VStack {
-            DebugInfoLabel()
+    /// A switch and what it says, told apart for scripts by `id`.
+    private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
+        HStack {
+            Switch(value)
+                .accessibilityIdentifier(id)
+                .accessibilityLabel(words)
 
-            Label("Saved \(saved) time(s)")
-                .fontSize(17)
-
-            Label(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
-            Label("Press Save and Add on the bar; Clear is in its overflow.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("Which one comes first")
-
-            HStack {
-                Switch($addFirst)
-                    .accessibilityIdentifier("toolbar.addFirst")
-                    .accessibilityLabel("Add asks first")
-
-                Label(addFirst
-                    ? "Add asks first - `.priority(0)`, against Save's 1"
-                    : "Save asks first - `.priority(0)`, against Add's 1")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-            }
-            .spacing(10)
+            Text(words)
+                .fontSize(14)
+                .verticalAlignment(.center)
         }
-        .spacing(12)
-        // The bar and the menus are the PAGE's, so this sample writes them
-        // into the page's session - its buttons before the gallery's own,
-        // which the page wrote a moment earlier, being further out.
-        .onCreated {
-            chrome = page.toolbarItems
-            page.toolbarItems = items + chrome
-            page.menuBar = menus
-        }
-        // What they say follows the state, so they are written again when it
-        // moves: `saved` decides whether Clear can be pressed, `addFirst` the
-        // priorities, `recent` the submenu.
-        .onChanged(addFirst) { page.toolbarItems = items + chrome }
-        .onChanged(saved) { page.toolbarItems = items + chrome }
-        .onChanged(recent) { page.menuBar = menus }
+        .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Save and Add are on the page's bar. Clear is a destructive item in the "
+            Text("Save and Add are on the page's bar. Clear is a destructive item in the "
                 + "native overflow, enabled once something is saved.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Lower priority appears first; equal priority keeps source order. "
-                + "Flip the switch and the same native items exchange places.")
+            Text("The gallery's own actions stand at the edge on every page; the sample's "
+                + "come in from the title's side. `order: 1` moves its group after them, "
+                + "`id: \"gallery\"` joins their group, `.leading` takes it to the other edge.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Recent files live in the desktop File menu: Add puts one there, "
-                + "choosing one removes it, and an empty submenu disables itself.")
+            Text("Add shows its picture alone, its words in its tip; `.showsText(true)` "
+                + "puts them beside it where the platform's bar can.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The bar and the menus belong to the page, so they are written into "
-                + "its `PageSession` - and written again whenever the state they show "
-                + "moves.")
+            Text("Recent files live in the desktop File menu, after Save: "
+                + "Add puts one there, choosing one removes it, and an empty submenu disables "
+                + "itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

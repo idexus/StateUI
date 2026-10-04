@@ -32,10 +32,10 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
             // `total`, and the reading says how many it was actually built for.
             DebugInfoLabel()
 
-            Label("\\(total)")
+            Text("\\(total)")
 
             // The proof: after a run, the count equals what was asked for.
-            Label(running
+            Text(running
                 ? "Counting on 200 tasks at once…"
                 : (expected == 0
                     ? "Press to count 200 × 100 on 200 concurrent tasks"
@@ -77,17 +77,17 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
         //     total = value
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label("\(total)")
+            Text("\(total)")
                 .fontSize(56)
                 .fontAttributes(.bold)
                 .textColor(total == 0 ? Palette.subtle : Palette.accent)
                 .horizontalTextAlignment(.center)
 
-            Label(running
+            Text(running
                 ? "Counting on 200 tasks at once…"
                 : (expected == 0
                     ? "Press to count 200 × 100 on 200 concurrent tasks"
@@ -102,7 +102,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .background(running ? Palette.disabled : Palette.accent)
                 .textColor(Palette.onAccent)
                 .shape(.roundedRectangle(10))
-                .padding(22, 12)
+                .padding(horizontal: 22, vertical: 12)
                 .isEnabled(!running)
                 .horizontalAlignment(.center)
                 .onClicked {
@@ -131,9 +131,9 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
         .spacing(16)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("A `@State` write is whole from ANY thread - a handler, a "
+            Text("A `@State` write is whole from ANY thread - a handler, a "
                 + "`Task.detached` that worked something out, an `async let` "
                 + "child. The value sits behind a lock and the write redraws from "
                 + "wherever it was made, and a write that "
@@ -142,7 +142,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Which is the one move that is forbidden: never post to "
+            Text("Which is the one move that is forbidden: never post to "
                 + "`DispatchQueue.main` to \"reach the UI thread\". Nothing drains it "
                 + "on Android or Windows - the UI thread turns the platform's own loop "
                 + "instead - so what is posted there never runs, "
@@ -151,7 +151,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The one thing to reach for: `update` when two tasks change the "
+            Text("The one thing to reach for: `update` when two tasks change the "
                 + "SAME state at the same moment. `count += 1` is a read and then "
                 + "a write, and two of them interleave and lose a count; "
                 + "`_count.update { $0 + 1 }` holds the state's lock across all "

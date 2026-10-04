@@ -82,11 +82,13 @@ host's library exports no other symbol, and a native Java declares that
 Swift does not register fails at load rather than at the first call.
 `NativeProjectTests` holds the two lists equal.
 
-The Java layer exists only where Android wants a subclass or an interface:
-the activity, the layout `ViewGroup`, the frame callback, the recycler an
-ItemsView stands on and its cell, and one listener for what the user does
-to a view ([controls](controls.md)). Each method forwards to a registered
-Swift function.
+The Java layer exists where Android wants a subclass or an interface - the
+activity, the layout `ViewGroup`, the views and the drawable the host makes
+of its own, the frame callback, the recycler an ItemsView stands on and its
+cell, and one listener for what the user does to a view
+([controls](controls.md)) - and where one call does what Android asks
+several for: a view's writes, a menu, a dialog, the environment's facts.
+What Android tells it is forwarded to a registered Swift function.
 
 ## What a frame writes
 

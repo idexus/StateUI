@@ -48,21 +48,21 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
             VStack {
                 if log.isEmpty {
-                    Label("nothing yet")
+                    Text("nothing yet")
                 }
 
                 ForEach(Array(log.suffix(6))) { line in
-                    Label(line)
+                    Text(line)
                 }
             }
         }
 
-        struct LifetimeCard: ContentView {
+        struct LifetimeCard: View {
             let number: Int
             @Binding var log: [String]
             @State private var taps = 0
 
-            var content: any View {
+            var body: some View {
                 Button("Card \\(number) · tapped \\(taps)")
                     .onClicked { taps += 1 }
                     // Once, after the render that brings the card in - its
@@ -79,7 +79,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -88,12 +88,12 @@ struct LifetimeSample: SampleContent, ExampleContent {
             HStack {
                 Button("A new card")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { identity += 1 }
 
                 Button("Build this again · \(builds)")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { builds += 1 }
             }
             .spacing(10)
@@ -105,13 +105,13 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
             VStack {
                 if log.isEmpty {
-                    Label("nothing yet")
+                    Text("nothing yet")
                         .fontSize(14)
                         .textColor(Palette.subtle)
                 }
 
                 ForEach(Array(log.suffix(6))) { line in
-                    Label(line)
+                    Text(line)
                         .fontSize(14)
                         .fontFamily("Menlo")
                 }
@@ -121,9 +121,9 @@ struct LifetimeSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Switch the card off and on: it is destroyed and created again - a new "
+            Text("Switch the card off and on: it is destroyed and created again - a new "
                 + "card, counting from nought. A new card does the same to the one on "
                 + "screen by giving it a new identity. Build this again builds the page "
                 + "once more, which carries the card, built with the same inputs, and "
@@ -132,7 +132,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Tap the card before it goes: what it says as it is destroyed is its "
+            Text("Tap the card before it goes: what it says as it is destroyed is its "
                 + "own count, because its state still answers - the place to save what it "
                 + "holds. Both are on every view and control and on the pages the library "
                 + "builds - a page of your own writes them on its content - and both run "
@@ -145,18 +145,21 @@ struct LifetimeSample: SampleContent, ExampleContent {
 }
 
 /// A card that says when it comes and goes, counting its own taps.
-private struct LifetimeCard: ContentView {
+private struct LifetimeCard: View {
     let number: Int
     @Binding var log: [String]
     @State private var taps = 0
 
-    var content: any View {
+    var body: some View {
+        // A card, not one more button: taller, and an outline alone.
         Button("Card \(number) · tapped \(taps)")
             .fontSize(15)
-            .textColor(.white)
-            .background(Palette.accent)
-            .shape(.roundedRectangle(10))
-            .padding(20, 12)
+            .textColor(Palette.accent)
+            .background(.transparent)
+            .stroke(Palette.accent)
+            .lineWidth(1.5)
+            .shape(.roundedRectangle(14))
+            .padding(horizontal: 32, vertical: 36)
             .horizontalAlignment(.center)
             .onClicked { taps += 1 }
             .onCreated {

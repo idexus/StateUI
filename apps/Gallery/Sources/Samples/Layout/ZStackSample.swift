@@ -31,11 +31,11 @@ private struct Areas: ExampleContent {
                     .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                 // Its natural size, where its alignments put it.
-                Marker(text: "start", color: "#E53935")
+                Badge(text: "start", color: "#E53935")
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
 
-                Marker(text: "end", color: "#00897B")
+                Badge(text: "end", color: "#00897B")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
             }
@@ -44,20 +44,20 @@ private struct Areas: ExampleContent {
             SwitchRow("Proportional area", $proportional)
         }
 
-        private struct Marker: ContentView {
+        private struct Badge: View {
             let text: String
             let color: String
 
-            var content: any View {
-                Label(text)
+            var body: some View {
+                Text(text)
                     .textColor(.white)
                     .background(Color(color))
-                    .padding(10, 6)
+                    .padding(horizontal: 10, vertical: 6)
             }
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             // NO BUILD READING HERE. `proportional` is read inside the stack's
             // own braces, and a container describes its children when the
@@ -68,11 +68,11 @@ private struct Areas: ExampleContent {
                 ColorBox(Color("#1E88E5"))
                     .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
-                Marker(text: "start", color: "#E53935")
+                Badge(text: "start", color: "#E53935")
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
 
-                Marker(text: "end", color: "#00897B")
+                Badge(text: "end", color: "#00897B")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
             }
@@ -84,8 +84,8 @@ private struct Areas: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
-        Label("Resize the window: a proportional area follows the room, an absolute one stays put.")
+    var notes: (any View)? {
+        Text("Resize the window: a proportional area follows the room, an absolute one stays put.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -121,7 +121,7 @@ private struct Layers: ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             ZStack {
                 ColorBox(Color("#E53935"))
@@ -146,20 +146,20 @@ private struct Layers: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 }
 
-/// One labelled marker, so the sample says what is being positioned rather than
+/// One labelled badge, so the sample says what is being positioned rather than
 /// how it is drawn.
-private struct Marker: ContentView {
+private struct Badge: View {
     let text: String
     let color: String
 
-    var content: any View {
-        Label(text)
+    var body: some View {
+        Text(text)
             .fontSize(12)
             .textColor(.white)
             .background(Color(color))
-            .padding(10, 6)
+            .padding(horizontal: 10, vertical: 6)
     }
 }

@@ -10,15 +10,28 @@ which, member by member - and shows any other control's name in red where the
 control belongs, so a gap is visible rather than silent.
 
 ```text
-lib/StateUI.AppKit/
+lib/StateUI/StateUI.AppKit/
   Sources/    StateUIAppKit: the renderer, windows, sessions and the registry
   Tests/      the host's suite
 .scripts/AppKit/
-  build-gallery-appkit.sh      the Gallery's bundle, in apps/Gallery/.build-appkit
+  build-gallery-appkit.sh      the Gallery's bundle, in apps/Gallery/.build/appkit
+  deploy.sh                    an application's head built for release, laid in a folder of its own
+  test-appkit.sh               runs the host's suite
 apps/<App>/Platforms/AppKit/
   main.swift                   the application's AppKit head
   Host/                        what this host answers for the application
 ```
+
+## Requirements
+
+The host builds on macOS 26 or newer, with Xcode 27 or newer and its Swift
+6.4. macOS 26 is the floor of the host's package and of the library, which an
+application's manifest cannot go below. A Debug launch runs Xcode's
+`lldb-dap`. Nothing else is installed: the `Map` and the `WebView` stand on
+MapKit and WebKit, which macOS ships. [Tested setups](../tested-setups.md)
+names the versions the host's suite passes on.
+
+## The head
 
 An application's AppKit head is `Platforms/AppKit/main.swift`. It registers the
 application, says what this host answers for it, then starts the host:
@@ -154,15 +167,42 @@ left. And a stopped loop still owes one frame to a value that changed, or a
 size moved while it is paused arrives only when the user starts it again.
 
 An element only some hosts can honestly realize is declared only for them.
-`Cube3D`'s contract and its `View` stand under `#if APPKIT || GTK` beside its
-sample - one declaration, drawn with Metal here and with OpenGL on GTK - so a
-test reading an application's elements against another host's registrations
-never demands of that host a control it cannot draw.
+`Cube3D`'s contract and its `View` stand under
+`#if APPKIT || UIKIT || GTK || WINUI || ANDROID` - one declaration, drawn with
+Metal here and on UIKit, with OpenGL on GTK, Direct3D on WinUI and OpenGL ES on
+Android - so a test reading an application's elements against another host's
+registrations never demands of that host a control it cannot draw.
 
 **A registered control has no slot on this host.** This host arranges
 children by the container classes it makes itself, so a registered view is
 handed none - a registered element's children reach nothing. An application's
-own element is a leaf here.
+own element is a leaf here: it draws the children of a contract it names
+itself, as the next section says, and no other child is shown.
+
+### Children a control draws
+
+A view may draw the children of one contract itself - a map draws its markers.
+`children` names their contract and what of each the view realizes, and hands
+it every such child, in the tree's order, whenever the element's children
+change: one added, moved, taken away, or given another value. A child is a
+`AppKitChild` - its values read as the types its contract declares, and its own
+`reports` to raise its events on it - and stays the same child for as long as
+it lives, so the view keeps what it drew for one by it. Such a child has no
+view of its own.
+
+```swift quote
+StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+    map.property(MapContract.region) { view, region in … }
+    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { view, markers in
+        view.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
+        // the user taps one: marker.reports.raise(MarkerContract.selected)
+    }
+}
+```
+
+This host draws a `Map` with MapKit itself. A library element a host does
+not realize - a `Map` on a platform with no map of its own - is registered
+the same way, with the provider and the key it needs.
 
 ### An act
 
@@ -173,7 +213,8 @@ public static func add<
     Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
 >(
     _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
-    _ perform: @escaping @MainActor (repeat each Argument) throws -> (repeat each Answer))
+    _ perform: @escaping @MainActor (repeat each Argument) async throws -> (repeat each Answer)
+)
 ```
 
 ```swift quote
@@ -197,7 +238,8 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 }
 ```
 
-- **Where it runs.** A performer runs on the main thread, where AppKit draws.
+- **Where it runs.** A performer runs on the main thread, where AppKit draws,
+  and may await: the call is answered once it returns.
 - **Its values.** The arguments and the answer are the act's own types. A call
   carrying anything else fails with the reason rather than running on a guess.
 - **Failure.** A thrown error fails the act: the awaiting Swift handler throws
@@ -248,3 +290,80 @@ declared. A `HostEvents.on` for an event nothing declared is then said once -
 *the host raises no `Notes.LowPowerChanged`: the handler will not hear it* -
 with the declared names nearest to it; so is an element the host shows none
 of, the first time it is described.
+
+## Running
+
+```bash
+.scripts/AppKit/build-gallery-appkit.sh debug
+open apps/Gallery/.build/appkit/debug/GalleryAppKit.app
+```
+
+`build-gallery-appkit.sh` builds the Gallery's head, `debug` or `release`, and
+makes it an application bundle, `apps/Gallery/.build/appkit/<configuration>/GalleryAppKit.app`:
+the head, the StateUI libraries it links, the Gallery's pictures, its icon
+drawn from `Resources/AppIcon/appicon_macos.svg`, an `Info.plist` and an
+ad-hoc signature. It prints where the bundle is. An application with no
+bundling script of its own is built by SwiftPM, and runs as the executable it
+makes:
+
+```bash
+STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
+  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
+apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit
+```
+
+Everything an AppKit build writes stays in the application's `.build/appkit/`.
+
+In VS Code, choose **AppKit** as the host and press **F5**. **StateUI: Debug**
+builds the head - with the application's bundling script,
+`.scripts/AppKit/build-<application>-appkit.sh`, where it has one, else with
+SwiftPM - and starts it under `lldb-dap`, so a breakpoint in the application,
+in StateUI or in the host holds from the first line. **StateUI: Release**
+builds and starts the optimized head the same way.
+
+## Deploying
+
+```bash
+.scripts/AppKit/deploy.sh apps/Gallery artifacts/Gallery/AppKit
+```
+
+`deploy.sh` builds an application's head for release and lays it in the
+folder named, made anew: its application bundle, where `.scripts/AppKit`
+holds a bundling script of the application's, else the head, the StateUI
+libraries it links and the application's pictures in `Images/`.
+**StateUI: Deploy** in the editor runs it for the application chosen, and
+lays the head in `artifacts/<application>/AppKit` of the folder that holds
+the application's `apps/` - a checkout's, or a project group's.
+
+## Testing
+
+```bash
+.scripts/AppKit/test-appkit.sh
+.scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests/testButton
+```
+
+`test-appkit.sh` runs `swift test` in `lib/StateUI/StateUI.AppKit`, handing
+it its arguments. The suite is XCTest. It runs the conformance families too,
+one test a family - `AppKitConformanceTests/testButton` - and the longest in
+parts, each a test of its own, which `--parallel` runs side by side.
+
+A run holds what it says to `lib/StateUI/exports/`: what the host declares to
+`appkit.txt`, and each family's verdicts to `marks/appkit/<Family>.txt`; a
+run that says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them
+instead, each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
+runs only the families whose verdicts stand at another revision, or at none:
+each other family's test ends at once. With the verdicts written, the
+[platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) are rendered from them at the
+repository's root:
+
+```bash
+STATEUI_UPDATE_EXPORTS=1 .scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests
+STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+```
+
+In the editor, with AppKit chosen, **StateUI: Conformance - Rebuild all**
+runs both: the families writing their verdicts, then the documents.
+**StateUI: Conformance - Rebuild changed** runs the stale families alone
+before it renders.

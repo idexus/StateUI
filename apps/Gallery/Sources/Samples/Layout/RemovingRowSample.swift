@@ -33,7 +33,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
 
             ForEach(Self.rows, id: \\.self) { row in
                 Grid {
-                    Label(row).gridColumn(0)
+                    Text(row).gridColumn(0)
 
                     Button("Delete")
                         .gridColumn(1)
@@ -64,7 +64,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             VStack {
                 // INSIDE the stack's own braces, because that is where `gone`
@@ -75,19 +75,19 @@ struct RemovingRowSample: SampleContent, ExampleContent {
 
                 ForEach(Self.rows, id: \.self) { row in
                     Grid {
-                        Label(row)
+                        Text(row)
                             .fontSize(15)
                             .verticalAlignment(.center)
                             .gridColumn(0)
 
                         Button("Delete")
                             .fontSize(12)
-                            .padding(10, 4)
+                            .padding(horizontal: 10, vertical: 4)
                             .gridColumn(1)
                             .onClicked { remove(row) }
                     }
                     .columns(.fill, .auto)
-                    .padding(14, 6)
+                    .padding(horizontal: 14, vertical: 6)
                     .background(Palette.raised)
                     .height(46)
                     .isVisible(!gone.contains(row) && !atOnce.contains(row))
@@ -117,23 +117,23 @@ struct RemovingRowSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Delete a row. It FADES where it stands and the rows under it "
+            Text("Delete a row. It FADES where it stands and the rows under it "
                 + "then close over the gap - a plain `VStack`, and not a line in "
                 + "the example ASKING for animation: the row is hidden, and the "
                 + "ones below it are given new places.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`The row fades first` chooses how the row itself leaves. "
+            Text("`The row fades first` chooses how the row itself leaves. "
                 + "Turned off, the row is told `.motion(.none)` and goes at "
                 + "once - the stack still closes over it, because where a "
                 + "child sits is always somewhere it travels to.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Bring them back` is the same thing the other way round: the "
+            Text("`Bring them back` is the same thing the other way round: the "
                 + "rows appear at nothing and come up while everything below "
                 + "them moves down to make room.")
                 .fontSize(12)

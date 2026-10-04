@@ -1,5 +1,0 @@
-# revision 2.1
-Label.frameChanged: ✅
-SplitView: ✅
-SplitView.isSidebarVisible: 🔌 read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it
-SplitView.isSidebarVisibleChanged: 🔌 toggle on SplitView: the host's own entry the scrim's tap and the bar's button call

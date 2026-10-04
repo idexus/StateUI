@@ -1,17 +1,18 @@
 # Items
 
 What a platform's collection holds of one ItemsView, and what it tells the
-tree, is decided once in the host layer (`ItemsCells`); a backend is the
-toolkit's collection and its calls.
+tree, is decided once in the host layer (`ItemsCells`); a host's half is the
+toolkit's collection and its calls. A collection paints nothing behind its
+rows on any host: what it stands on shows through.
 
-The entries cross as one property, every identity in order. A backend takes
+The entries cross as one property, every identity in order. A host takes
 them as they change (`takeEntries`) and shows one cell for each. When the
 collection asks a cell for an entry (`hold`) that the tree has not built,
 the host tells the tree which entries to build - the ItemsView's
 `realizedChanged` - and the turn that follows builds them as children of the
 list before the call returns: the cell shows its subtree at once. Asked
 while a turn is under way - the toolkit calling back from inside a patch -
-the entry arrives with that turn instead, and the backend puts it in its
+the entry arrives with that turn instead, and the host puts it in its
 cell as it appears.
 
 What the user chooses is told in the order the items show, and a choice the
@@ -69,6 +70,16 @@ each told in one call, in the same order.
 `endReachedWithin` items of the last one, once. It is told again only after
 the user scrolls away from the end, or once the list gains or loses items,
 so a list waiting for more is not asked for more on every frame.
+
+## The view moving
+
+A toolkit moves a list's rows as it scrolls, often laying nothing out: a
+view in a row stands elsewhere in its window though no layout placed it, and
+a scroll of less than a row brings no row in whose layout would say so. Each
+host tells the entries in view (`showing`) once the list's view has moved,
+and the host layer then says that whoever reads a frame says it on the
+display's next frame (runtime.md, `Where a view stands`). A host keeps no
+road of its own for it.
 
 ## A grid
 

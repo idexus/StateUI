@@ -51,7 +51,7 @@ struct ConverterSample: SampleContent, ExampleContent {
 
             VStack {
                 // A caption from the conversion: words the host writes.
-                Label($volume.convert { "\\(Int($0 * 100))%" })
+                Text($volume.convert { "\\(Int($0 * 100))%" })
                 DebugInfoLabel()                  // stays at one
             }
 
@@ -67,14 +67,14 @@ struct ConverterSample: SampleContent, ExampleContent {
                         .step(5)
                         .minimum(-20)
                         .maximum(60)
-                    Label($celsius.convert { "\\(Int($0)) °C" })
+                    Text($celsius.convert { "\\(Int($0)) °C" })
                 }
                 HStack {
                     Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
                         .step(9)
                         .minimum(-4)
                         .maximum(140)
-                    Label($celsius.convert { "\\(Int($0 * 9 / 5 + 32)) °F" })
+                    Text($celsius.convert { "\\(Int($0 * 9 / 5 + 32)) °F" })
                 }
                 DebugInfoLabel()                  // stays at one
             }
@@ -87,7 +87,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 Slider($height)
                     .minimum(20)
                     .maximum(200)
-                Label($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h)) = \\(Int(w * h))" })
+                Text($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h)) = \\(Int(w * h))" })
                 DebugInfoLabel()                  // stays at one
             }
 
@@ -105,14 +105,14 @@ struct ConverterSample: SampleContent, ExampleContent {
                 // two to ten of them, of any types the host carries. Nothing
                 // is read here, so typing above rewrites this caption without
                 // building it.
-                Label().text(.multi($named, $width, $height)
+                Text().text(.multi($named, $width, $height)
                     .convert { "\\($0): \\(Int($1)) × \\(Int($2))" })
                 DebugInfoLabel()                  // stays at one
             }
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             row("1 · the source, 0 to 1") {
                 Slider($volume)
@@ -135,7 +135,7 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("3 · a caption from the conversion") {
-                Label()
+                Text()
                     .text($volume.convert { "\(Int($0 * 100))%" })
                     .fontSize(17)
                 DebugInfoLabel()
@@ -153,7 +153,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                         .step(5)
                         .minimum(-20)
                         .maximum(60)
-                    Label()
+                    Text()
                         .text($celsius.convert { "\(Int($0)) °C" })
                         .fontSize(15)
                 }
@@ -165,7 +165,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                         .step(9)
                         .minimum(-4)
                         .maximum(140)
-                    Label()
+                    Text()
                         .text($celsius.convert { "\(Int($0 * 9 / 5 + 32)) °F" })
                         .fontSize(15)
                 }
@@ -184,7 +184,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Height")
                     .minimum(20)
                     .maximum(200)
-                Label()
+                Text()
                     .text($width.convert(with: $height) { w, h in "\(Int(w)) × \(Int(h)) = \(Int(w * h))" })
                     .fontSize(17)
                 DebugInfoLabel()
@@ -199,7 +199,7 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("7 · as many as you like") {
-                Label()
+                Text()
                     .text(.multi($named, $width, $height)
                         .convert { "\($0): \(Int($1)) × \(Int($2))" })
                     .fontSize(17)
@@ -209,9 +209,9 @@ struct ConverterSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("`$volume.convert { $0 * 100 }` is a second state the host carries, worked "
+            Text("`$volume.convert { $0 * 100 }` is a second state the host carries, worked "
                 + "out from the first by an engine the differ writes for you: drag either "
                 + "slider and the other follows, because `convertBack` is the engine the "
                 + "other way, landing a report on the source in the source's own terms. "
@@ -219,7 +219,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Two steppers on one Celsius state, one of them converted to Fahrenheit "
+            Text("Two steppers on one Celsius state, one of them converted to Fahrenheit "
                 + "and back; two sliders worked into one caption with "
                 + "`convert(with:)`; and `.multi($named, $width, $height)` for as many "
                 + "states as you like - two to ten, of any types, the closure taking them "
@@ -231,7 +231,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The temperature steps by 5 and by 9 on purpose, and it is the one "
+            Text("The temperature steps by 5 and by 9 on purpose, and it is the one "
                 + "thing to copy from that row. A conversion is exact; a value shown is "
                 + "rounded, and two scales round the same number their own way - step "
                 + "by one on each and the state lands on 20.56, where one caption says "
@@ -243,7 +243,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`convertBack` is meant to be the inverse of `convert`; where it is "
+            Text("`convertBack` is meant to be the inverse of `convert`; where it is "
                 + "not exactly, the source settles once on the value the round trip "
                 + "lands on.")
                 .fontSize(12)
@@ -254,10 +254,10 @@ struct ConverterSample: SampleContent, ExampleContent {
 
     /// One row: a caption, then the content in a stack of its own, so the
     /// reading taken inside the content is that stack's alone.
-    private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
+    private func row<Content: Views>(_ caption: String, @ViewBuilder _ content: @escaping () -> Content) -> some View {
         ZStack {
             VStack {
-                Label(caption)
+                Text(caption)
                     .fontSize(11)
                     .textColor(Palette.subtle)
 

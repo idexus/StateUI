@@ -1,6 +1,0 @@
-# revision 1.1
-ContextMenu: not realized
-Menu.text: not realized
-MenuItem.isEnabled: not realized
-MenuItem.text: not realized
-MenuSeparator: not realized

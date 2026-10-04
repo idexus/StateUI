@@ -1,0 +1,3 @@
+# revision 1.1
+Text.lineHeight: ✅
+TextSpan.lineHeight: not realized

@@ -1,5 +1,0 @@
-# revision 1.1
-Menu.text: not realized
-MenuBar: not realized
-MenuItem.clicked: not realized
-MenuItem.isEnabled: not realized

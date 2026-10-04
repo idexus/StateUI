@@ -31,7 +31,7 @@ private struct WebBrowserPart: ExampleContent {
     @Aim(WebView.self) private var browser
 
     static let code = """
-        struct WebBrowserPart: ContentView {
+        struct WebBrowserPart: View {
             @State private var hasBack = false
             @State private var hasForward = false
             @State private var status = "nothing has loaded yet"
@@ -39,7 +39,7 @@ private struct WebBrowserPart: ExampleContent {
 
             @Aim(WebView.self) private var browser
 
-            var content: any View {
+            var body: some View {
                 Grid {
                     VStack {
                         // The history flags are read by this bar, so every
@@ -83,7 +83,7 @@ private struct WebBrowserPart: ExampleContent {
                         }
                         .gridRow(1)
 
-                    Label(status)
+                    Text(status)
                         .gridRow(2)
 
                     Button("Title?")
@@ -92,7 +92,7 @@ private struct WebBrowserPart: ExampleContent {
                         }
                         .gridRow(3)
 
-                    Label(answer)
+                    Text(answer)
                         .gridRow(4)
                 }
                 .rows(.auto, .fill, .auto, .auto, .auto)
@@ -100,7 +100,7 @@ private struct WebBrowserPart: ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         Grid {
             VStack {
                 DebugInfoLabel()
@@ -108,16 +108,16 @@ private struct WebBrowserPart: ExampleContent {
                 HStack {
                     Button("Back")
                         .isEnabled(hasBack)
-                        .padding(14, 8)
+                        .padding(horizontal: 14, vertical: 8)
                         .onClicked { try await browser.goBack() }
 
                     Button("Forward")
                         .isEnabled(hasForward)
-                        .padding(14, 8)
+                        .padding(horizontal: 14, vertical: 8)
                         .onClicked { try await browser.goForward() }
 
                     Button("Reload")
-                        .padding(14, 8)
+                        .padding(horizontal: 14, vertical: 8)
                         .onClicked { try await browser.reload() }
                 }
                 .spacing(8)
@@ -148,21 +148,21 @@ private struct WebBrowserPart: ExampleContent {
                 }
                 .gridRow(1)
 
-            Label(status)
+            Text(status)
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
                 .gridRow(2)
 
             Button("Title?")
-                .padding(14, 8)
+                .padding(horizontal: 14, vertical: 8)
                 .horizontalAlignment(.center)
                 .onClicked {
                     answer = try await browser.evaluateJavaScript("document.title")
                 }
                 .gridRow(3)
 
-            Label(answer)
+            Text(answer)
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .gridRow(4)
@@ -171,16 +171,16 @@ private struct WebBrowserPart: ExampleContent {
         .rowSpacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Follow the page's own link, and Back lights up: `canGoBack` and "
+            Text("Follow the page's own link, and Back lights up: `canGoBack` and "
                 + "`canGoForward` are reported into bindings after every navigation. "
                 + "Back, Forward, Reload and the title question are acts aimed at the "
                 + "view with `@Aim`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.onProcessTerminated` reports what no button here can provoke: the "
+            Text("`.onProcessTerminated` reports what no button here can provoke: the "
                 + "platform runs web content in a process of its own and ends it when "
                 + "memory runs short, which leaves the view blank. `reload()` brings the "
                 + "page back.")
@@ -195,21 +195,21 @@ private struct WebBrowserPart: ExampleContent {
 /// network.
 private struct WrittenInPlacePart: ExampleContent {
     static let code = """
-        struct WrittenInPlacePart: ContentView {
-            var content: any View {
+        struct WrittenInPlacePart: View {
+            var body: some View {
                 WebView()
-                    .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
+                    .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
             }
         }
         """
 
-    var content: any View {
+    var body: some View {
         WebView()
-            .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
+            .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
     }
 
-    var notes: Element? {
-        Label("`source(html:)` shows HTML written in place, without the network. Web "
+    var notes: (any View)? {
+        Text("`source(html:)` shows HTML written in place, without the network. Web "
             + "content scrolls itself, which is why this page holds still and the view "
             + "fills the height the window gives it.")
             .fontSize(12)

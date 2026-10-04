@@ -1,5 +1,0 @@
-# revision 1.1
-Menu.text: waits on MenuBar
-MenuBar: not realized
-MenuItem.clicked: waits on MenuBar
-MenuItem.isEnabled: waits on MenuBar

@@ -29,7 +29,7 @@ struct PickerSample: SampleContent, ExampleContent {
             Picker(Self.sizes)
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
-                .title("Size")
+                .placeholder("Size")
                 // Settable, so a button elsewhere can open the list. The two
                 // events answer the user and the platform - never this
                 // side's own write.
@@ -39,8 +39,8 @@ struct PickerSample: SampleContent, ExampleContent {
 
             Button("Open the list").onClicked { showing = true }
 
-            Label(chosen)
-            Label("Changed \\(changes)x, opened \\(opened)x")
+            Text(chosen)
+            Text("Changed \\(changes)x, opened \\(opened)x")
         }
 
         /// -1 means nothing is chosen, so it is worth saying out loud.
@@ -51,7 +51,7 @@ struct PickerSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -60,7 +60,7 @@ struct PickerSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Size")
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
-                .title("Size")
+                .placeholder("Size")
                 .isOpen(showing)
                 .onOpened { opened += 1; showing = true }
                 .onClosed { showing = false }
@@ -69,38 +69,38 @@ struct PickerSample: SampleContent, ExampleContent {
                 .onClicked { showing = true }
                 .horizontalAlignment(.center)
 
-            Label(chosen)
+            Text(chosen)
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Label("Changed \(changes)x, opened \(opened)x")
+            Text("Changed \(changes)x, opened \(opened)x")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
         }
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("The items are a list of strings and the choice is an index into it; "
+            Text("The items are a list of strings and the choice is an index into it; "
                 + "-1 means nothing is chosen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`$size` and the handler are one event written twice: the binding sets "
+            Text("`$size` and the handler are one event written twice: the binding sets "
                 + "the index and registers the write-back, and an `.onSelectedIndexChanged` "
                 + "written beside it still runs - whichever order the two are written in.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`isOpen` is settable, so the button opens the list without touching "
+            Text("`isOpen` is settable, so the button opens the list without touching "
                 + "it. The platform closes it on its own - a tap outside, a choice made - "
                 + "which is why `onClosed` writes the state back rather than the state "
                 + "being trusted.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("THE COUNT ONLY MOVES FOR A USER. Opening the list with the button "
+            Text("THE COUNT ONLY MOVES FOR A USER. Opening the list with the button "
                 + "leaves `opened` where it was: that open is this side's own write, and "
                 + "a write made here never comes back as an event. Tap the field itself "
                 + "and the count goes up.")

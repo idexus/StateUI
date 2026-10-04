@@ -59,7 +59,7 @@ struct SizingSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             row("width(120)",
                 ColorBox(Palette.accent).width(120).height(24))
@@ -108,22 +108,22 @@ struct SizingSample: SampleContent, ExampleContent {
         .spacing(14)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Every one of these is a REQUEST. The layout decides, and a stack that "
+            Text("Every one of these is a REQUEST. The layout decides, and a stack that "
                 + "has no room to spare will ignore a width it cannot give - which is why "
                 + "the bounds are worth saying separately from the size.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`maximumWidth` and `maximumHeight` are the ceiling: a "
+            Text("`maximumWidth` and `maximumHeight` are the ceiling: a "
                 + "view filling its parent stops growing there, and a view that ASKED for "
                 + "more than the ceiling gets the ceiling. The minimum pair are the floor, "
                 + "and stop it being squeezed.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`clipsContent` is the LAYOUT's edge, and cuts off a child drawn "
+            Text("`clipsContent` is the LAYOUT's edge, and cuts off a child drawn "
                 + "past it - here by a translation. It is not the same as a shape given "
                 + "to one view.")
                 .fontSize(12)
@@ -134,9 +134,9 @@ struct SizingSample: SampleContent, ExampleContent {
 
     /// One example with the modifier that made it, so the column reads as a
     /// list of named cases.
-    private func row(_ caption: String, _ view: Element) -> any View {
+    private func row<Shown: View>(_ caption: String, _ view: Shown) -> some View {
         VStack {
-            Label(caption)
+            Text(caption)
                 .fontSize(11)
                 .textColor(Palette.subtle)
 

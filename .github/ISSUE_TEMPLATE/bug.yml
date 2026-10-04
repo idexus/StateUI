@@ -24,7 +24,10 @@ body:
         exercised.
       options:
         - label: AppKit / macOS
+        - label: UIKit / iOS, iPadOS
         - label: Android Views / Android
+        - label: WinUI / Windows
+        - label: GTK / Linux
 
   - type: textarea
     id: repro
@@ -41,6 +44,6 @@ body:
     attributes:
       label: Version
       description: The StateUI version and Swift toolchain if the build is what failed.
-      placeholder: StateUI 0.4.0, Swift 6.4
+      placeholder: StateUI 0.5.0, Swift 6.4
     validations:
       required: true

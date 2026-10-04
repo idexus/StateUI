@@ -11,16 +11,16 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
             // Left to right, whatever the view above says.
             HStack {
                 ColorBox(Palette.accent).width(60).height(20)
-                Label("First")
-                Label("Second")
+                Text("First")
+                Text("Second")
             }
             .layoutDirection(.leftToRight)
 
             // Mirrored: the row fills from the right, and the text with it.
             HStack {
                 ColorBox(Palette.accent).width(60).height(20)
-                Label("First")
-                Label("Second")
+                Text("First")
+                Text("Second")
             }
             .layoutDirection(.rightToLeft)
 
@@ -28,14 +28,14 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
             // application usually says it once, high up.
             HStack {
                 ColorBox(Palette.accent).width(60).height(20)
-                Label("First")
-                Label("Second")
+                Text("First")
+                Text("Second")
             }
             .layoutDirection(.inherited)
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             row("leftToRight", .leftToRight)
             row("rightToLeft", .rightToLeft)
@@ -44,16 +44,16 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
         .spacing(16)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("A view told `.rightToLeft` mirrors its layout: a row fills from the "
+            Text("A view told `.rightToLeft` mirrors its layout: a row fills from the "
                 + "right, padding swaps sides, and text finds its natural alignment at "
                 + "the other edge. It is what a language written right to left needs, "
                 + "and it is one modifier rather than a second set of layouts.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("It is INHERITED. A view left at `.inherited` - which is the default "
+            Text("It is INHERITED. A view left at `.inherited` - which is the default "
                 + "- takes whatever the view above it has, so an application usually says "
                 + "it once, high up, and everything below follows.")
                 .fontSize(12)
@@ -63,9 +63,9 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
     }
 
     /// One row laid out each way, with the value that produced it.
-    private func row(_ caption: String, _ direction: LayoutDirection) -> any View {
+    private func row(_ caption: String, _ direction: LayoutDirection) -> some View {
         VStack {
-            Label(caption)
+            Text(caption)
                 .fontSize(11)
                 .textColor(Palette.subtle)
 
@@ -74,8 +74,8 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
                     .width(60)
                     .height(20)
 
-                Label("First")
-                Label("Second")
+                Text("First")
+                Text("Second")
             }
             .spacing(10)
             .layoutDirection(direction)

@@ -6,7 +6,7 @@ import StateUI
 ///
 /// A block scrolls only horizontally. Its page keeps ownership of vertical
 /// scrolling when the pointer is over the listing.
-struct CodeBlock: ContentView {
+struct CodeBlock: View {
     private let code: String
 
     private var spoken: CodeLanguage = .swift
@@ -25,15 +25,15 @@ struct CodeBlock: ContentView {
         return copy
     }
 
-    var content: any View {
+    var body: some View {
         ScrollView {
             snippet
         }
         .orientation(.horizontal)
-        .verticalScrollBarVisibility(.never)
+        .verticalScrollIndicator(.never)
         .background(Palette.raised)
         .stroke(Palette.outline)
-        .strokeWidth(1)
+        .lineWidth(1)
         .shape(.roundedRectangle(8))
         // Code reads left to right in every language, from its first column.
         .layoutDirection(.leftToRight)
@@ -48,24 +48,19 @@ struct CodeBlock: ContentView {
     /// container's closure - which runs when the block is described, and a
     /// block built with the same code is carried whole, so the scan runs once
     /// per block rather than once per render.
-    private var snippet: any View {
+    private var snippet: some View {
         VStack {
-            Label()
+            Text()
                 .spans {
-                    // Identified by OFFSET: two runs may be the same words
-                    // in the same colour, and the snippet never changes, so
-                    // the offsets never move.
-                    ForEach(
-                        Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
-                        id: \.offset
-                    ) { run in
-                        // The size goes on every run rather than on the
-                        // Label. A span carries font properties of its own,
-                        // and what an unset one falls back to is the
-                        // platform's business - one property per run costs
-                        // nothing and leaves nothing to it.
-                        TextSpan(run.element.text)
-                            .textColor(run.element.colour)
+                    // Matched by where each run sits: two runs may be the same
+                    // words in the same colour, and the snippet never changes.
+                    // The size goes on every run rather than on the Text. A
+                    // span carries font properties of its own, and what an
+                    // unset one falls back to is the platform's business - one
+                    // property per run costs nothing and leaves nothing to it.
+                    CodeHighlight.runs(in: code, language: spoken).map { run in
+                        TextSpan(run.text)
+                            .textColor(run.colour)
                             .fontSize(size)
                     }
                 }

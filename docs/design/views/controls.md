@@ -15,7 +15,7 @@ and acts it declares, and the binding twins of its values.
       func value(_:) / minimum(_:) / …           properties, from SliderProperties
       func onValueChanged(_:)                    events, through onEvent(member)
   }
-  extension Aim where Target == Slider { … }    acts, through call(member)
+  extension Aim where Target == ItemsView { … } a control's acts, through call(member)
 ```
 
 What gives a control its purpose - a label's text, a picker's options, a
@@ -27,7 +27,7 @@ name (bindings.md, both spellings).
 ## Closed vocabularies are numbered here
 
 A closed vocabulary a control uses - `IconPosition`, `MapType`,
-`WebNavigationEvent`, `WebNavigationResult` - crosses as an `.enumeration`
+`WebNavigationType`, `WebNavigationResult` - crosses as an `.enumeration`
 whose numbers are the library's own, in declaration order, the rule of
 [closed vocabularies](../types/vocabularies.md#written-out-and-appended). A
 host translates its toolkit's value onto the member
@@ -78,9 +78,9 @@ platform's map is ready, while the act lands an instant after the native map
 exists and the platform's own opening region overwrites it. Moving a map that
 is already up is the act `moveToRegion`.
 
-A pin, a map, a web page and a navigation report what happened; handlers on
+A marker, a map, a web page and a navigation report what happened; handlers on
 them observe. A handler runs a boundary away, after the platform has already
-decided: a pin's tap handler cannot keep the callout shut, and a web view's
+decided: a marker's tap handler cannot keep the callout shut, and a web view's
 `onNavigating` cannot cancel the navigation - a page that must not be left is a
 page not navigated to.
 
@@ -113,12 +113,12 @@ same on every host.
 
 ## Text runs
 
-A `TextSpan` is one run of text inside a Label, with its own colour, size and
+A `TextSpan` is one run of text inside a Text, with its own colour, size and
 weight; text in two colours is two runs. It is named `TextSpan` rather than
 `Span` because the standard library's `Span<Element>` is in scope in every file
 without an import: an application writing `Span("…")` would get "no exact
 matches in call to initializer", and a plain `[Span]` "reference to generic
-type 'Span' requires arguments". The node in the patch is `Span` all the same,
+type 'Span' requires arguments". The node in the patch is `TextSpan` all the same,
 the vocabulary's name for a run.
 
 ## Images
@@ -135,10 +135,10 @@ is a state the tree describes and a rebuild cannot lose.
 
 ## Items that are not views
 
-A menu, a menu entry, a separator, a toolbar item and a map pin are elements
+A menu, a menu entry, a separator, a toolbar item and a map marker are elements
 but not views: each has a caption, a picture or a point and something to run,
 and no layout of its own. They take none of the modifiers a view has, belong
-in one place - a page's session, a menu, a map - and are matched by their
+in one place - a page's toolbar, a menu, a map - and are matched by their
 `.id()` or their position there.
 
 ## Radio groups
@@ -146,5 +146,5 @@ in one place - a page's session, a menu, a map - and are matched by their
 A radio button's group is a name - every button in the set writes the same one
 - and the host resolves it within one window without relying on how native
 views are nested. Picking one unchecks the others and reports both changes
-together, which is why a handler acts on `checked` alone. One state for the
+together, which is why a `toggled` handler acts on `true` alone. One state for the
 whole group, rather than one flag per button, holds what is chosen.

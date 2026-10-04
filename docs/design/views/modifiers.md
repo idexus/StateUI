@@ -13,7 +13,7 @@ working for controls, styles and composed views alike - a composed view's
 `modified` answers a `ModifiedContent` (composition.md).
 
 ```text
-  Label("Total")           Node(Label, props: [text: "Total"])
+  Text("Total")           Node(Text, props: [text: "Total"])
     .fontSize(20)          copy, props[fontSize] = 20
     .onTapped { … }        copy, events[tapped] += handler
     .id("total")           copy, id = "total"
@@ -23,7 +23,7 @@ working for controls, styles and composed views alike - a composed view's
 ## Setting a property
 
 A value modifier writes one property through its contract member:
-`setValue(LabelContract.maximumLines, 3)`. The member carries the property's
+`setValue(TextContract.maximumLines, 3)`. The member carries the property's
 token and its value's type, so a modifier cannot write the wrong type, and the
 token is what the patch names. A modifier that writes several things at once -
 `onTapped(count:)`, `onSwiped`, `transform` - does it inside one `modified`
@@ -52,13 +52,14 @@ test of the direction could tell from a real one.
 ## Slot children
 
 Some modifiers write a child rather than a property: `.contextMenu` appends a
-context menu, `.visualState` appends states, `Map.pins` writes pins and a
-`TitleBar` fills its content slots.
+context menu, `.toolbar` a group of actions, `.titleView` the view in a page's
+title place, `.overlays` the views laid over the window, and `Map.markers`
+writes markers. On an arrangement the child follows its pages, and the host
+keeps it apart from them.
 They sit after whatever the view lays out, so the view's own children keep the
 positions the differ gave them, and the host finds each by type and leaves it
 out of the arrangement. The slot a `.contextMenu` appended stays last: a
-modifier that writes other children - pins, title bar slots - puts them in
-front of it.
+modifier that writes other children - markers - puts them in front of it.
 
 ## Motion is per view
 
@@ -111,7 +112,7 @@ first time is simply shown or not, since nothing anybody saw is changing, and
 `scaleY` from one `ViewTransform`, about the view's own centre, so those five
 are its to say. The parts apply in the order written, each to what the parts
 before it made: a move written before a turn is swung round by it, one written
-after is not. `renderTransform` on a shape is the other transform: it
+after is not. `geometryTransform` on a shape is the other transform: it
 transforms the geometry, in the shape's own units, before it is drawn.
 
 ## Turning out of the screen plane
@@ -149,7 +150,7 @@ container is not.
 ## Gestures
 
 Gestures belong to every view, so a stack holding a whole row, an Image or a
-Label can answer one; a list row can be a view with a tap recognizer rather
+Text can answer one; a list row can be a view with a tap recognizer rather
 than a button disguised as a container. Tap, swipe, pan, pinch, pointer, drag
 and drop are described.
 

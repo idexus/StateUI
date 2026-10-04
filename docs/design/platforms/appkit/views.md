@@ -58,6 +58,14 @@ narrower width until it lays out again. To see the runner's bars on a
 desktop, run the suite after `defaults write com.apple.dt.xctest.tool
 AppleShowScrollBars Always`, and delete that key afterwards.
 
+## A button's icon beside its words
+
+A button keeps its icon beside its words, the two together in the middle
+(`imageHugsTitle`), however wide the layout stands it. Left to its default,
+AppKit puts the icon at the button's edge and the words alone in the middle:
+a sidebar's "Log out" stretched across the sidebar had its icon at the far
+side of it.
+
 ## A radio button's set
 
 StateUI owns a radio button's set - its name, across the whole window - and
@@ -66,3 +74,39 @@ the radio buttons of one superview sharing one action turn each other off as
 one is clicked, whatever sets StateUI put them in. So the host's radio button
 takes a turn only from StateUI's own writes and from a click on itself, which
 its cell makes; AppKit's turning off of the others is refused.
+
+## A field's placeholder
+
+A text field's, a search field's and an editor's placeholder stands where the
+field's own words would: across the field as `horizontalTextAlignment` says,
+in the field's font. A placeholder in a colour of its own is attributed text,
+which takes no alignment from its field as a plain one does, so it carries the
+field's alignment itself. An editor's placeholder is a label over the text
+view, as wide as the text view's room, so the alignment has room to move it.
+
+## What typing is given
+
+A field's traits ([what typing is given](../../host/runtime.md#what-typing-is-given))
+reach the text view a user types in: continuous spell checking, automatic
+spelling correction and text replacement, text completion and inline
+prediction, each on or off. Capitals are the text checking's own: macOS puts
+the first letter of a sentence in capitals as the user's setting says, and a
+field overrides that setting in the options the checking asks its delegate
+for - a field, a search and an editor are their text view's delegate. Plain
+words keep their letters as typed whatever the setting; text starts its
+sentences in capitals; the default leaves the setting alone. A Mac has no
+keyboard on the screen, so a purpose picks no keys - the register records it.
+
+## A web view
+
+A WebView is WebKit's own web view, as on UIKit
+([the host layer's web rules](../../host/web.md)): a page at an address is
+loaded; a document written in place with an address of its own is shown
+there, and one with none is gone to as a `data:` address. What the page does
+comes back as the element's events - a navigation as it starts, with why, and
+as it ends, with how; the way back and forward said as a navigation commits
+and ends, only a flag that changed; its web process dying. A step back,
+forward or a load again the program asks for carries that as its cause; a
+page still coming is asked for again. macOS's WebKit also declares a legacy
+`WebHistory` class, so the host names the host layer's `StateUIHost.WebHistory`
+in full.

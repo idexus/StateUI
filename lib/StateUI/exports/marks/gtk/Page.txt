@@ -1,0 +1,11 @@
+# revision 2.1
+Page: ✅
+Page.appearing: ✅
+Page.backButtonTitle: not realized
+Page.background: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Page.disappearing: ✅
+Page.navigatedFrom: ✅
+Page.navigatedTo: ✅
+Page.navigatingFrom: ✅
+Page.showsBackButton: not realized
+Page.showsNavigationBar: ✅

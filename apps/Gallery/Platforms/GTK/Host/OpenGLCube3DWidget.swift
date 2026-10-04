@@ -85,7 +85,7 @@ final class OpenGLCube3DWidget: GTKControl {
         gtk_gl_area_set_allowed_apis(area, GDK_GL_API_GL)
         gtk_gl_area_set_has_depth_buffer(area, 1)
 
-        // Each a C callback, handed the area as its data: it lives as long as its widget.
+        // Each a C callback, handed the control as its data: it lives as long as its widget.
         let me = Unmanaged.passUnretained(self).toOpaque()
         let realized: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
             MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).realize() }
@@ -105,7 +105,7 @@ final class OpenGLCube3DWidget: GTKControl {
             ("render", unsafeBitCast(render, to: GCallback.self)),
             ("map", unsafeBitCast(mapped, to: GCallback.self)),
         ] {
-            g_signal_connect_data(UnsafeMutableRawPointer(widget), signal, handler, me, nil, GConnectFlags(0))
+            g_signal_connect_data(UnsafeMutableRawPointer(widget), signal, handler, me, nil, GConnectFlags(rawValue: 0))
         }
         followClock()
     }
@@ -113,7 +113,7 @@ final class OpenGLCube3DWidget: GTKControl {
     isolated deinit {
         if tick != 0 { gtk_widget_remove_tick_callback(widget, tick) }
         g_signal_handlers_disconnect_matched(
-            UnsafeMutableRawPointer(widget), G_SIGNAL_MATCH_DATA, 0, 0, nil, nil,
+            UnsafeMutableRawPointer(widget), STATEUI_SIGNAL_MATCH_DATA, 0, 0, nil, nil,
             Unmanaged.passUnretained(self).toOpaque())
         g_object_unref(widget)
     }

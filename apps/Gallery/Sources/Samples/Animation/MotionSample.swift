@@ -80,27 +80,27 @@ struct MotionSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label("A change that travels")
+            Text("A change that travels")
                 .fontSize(11)
-                .characterSpacing(1)
+                .tracking(1)
                 .textColor(Palette.subtle)
 
             panel(travels: true)
 
-            Label("The same, told to stay still")
+            Text("The same, told to stay still")
                 .fontSize(11)
-                .characterSpacing(1)
+                .tracking(1)
                 .textColor(Palette.subtle)
 
             panel(travels: false)
 
-            Label("The same, holding only its size still")
+            Text("The same, holding only its size still")
                 .fontSize(11)
-                .characterSpacing(1)
+                .tracking(1)
                 .textColor(Palette.subtle)
 
             sized()
@@ -116,7 +116,7 @@ struct MotionSample: SampleContent, ExampleContent {
     }
 
     /// One panel, either travelling at the chosen law or arriving at once.
-    private func panel(travels: Bool) -> any View {
+    private func panel(travels: Bool) -> some View {
         ColorBox()
             .color(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
@@ -127,7 +127,7 @@ struct MotionSample: SampleContent, ExampleContent {
     }
 
     /// The same panel with a RULE: everything travels except how big it is.
-    private func sized() -> any View {
+    private func sized() -> some View {
         ColorBox()
             .color(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
@@ -138,14 +138,14 @@ struct MotionSample: SampleContent, ExampleContent {
             .motion(.none, .size)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Press Size or Colour. The first panel travels, the second "
+            Text("Press Size or Colour. The first panel travels, the second "
                 + "arrives immediately, and the third holds only its size still.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Change the law to compare eased, spring, slow and immediate "
+            Text("Change the law to compare eased, spring, slow and immediate "
                 + "motion. StateUI sends destinations; the host supplies the frames.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -21,7 +21,7 @@ struct TapSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack {
-                Label("Tap anywhere on this box")
+                Text("Tap anywhere on this box")
                     .padding(24)
             }
             .style("Card")
@@ -30,7 +30,7 @@ struct TapSample: SampleContent, ExampleContent {
             .onTapped { taps += 1 }
 
             ZStack {
-                Label("Double-tap this one to reset")
+                Text("Double-tap this one to reset")
                     .padding(24)
             }
             .style("Card")
@@ -38,47 +38,47 @@ struct TapSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(10))
             .onTapped(count: 2) { taps = 0 }
 
-            Label("Tapped \\(taps) time(s)")
+            Text("Tapped \\(taps) time(s)")
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
             ZStack {
-                Label("Tap anywhere on this box")
+                Text("Tap anywhere on this box")
                     .fontSize(15)
                     .padding(24)
                     .horizontalTextAlignment(.center)
             }
             .style("Card")
             .stroke(Palette.accent)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }
 
             ZStack {
-                Label("Double-tap this one to reset")
+                Text("Double-tap this one to reset")
                     .fontSize(15)
                     .padding(24)
                     .horizontalTextAlignment(.center)
             }
             .style("Card")
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(10))
             .onTapped(count: 2) { taps = 0 }
 
-            Label("Tapped \(taps) time(s)")
+            Text("Tapped \(taps) time(s)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
         }
         .spacing(12)
     }
 
-    var notes: Element? {
-        Label("Any view answers a tap: every card on a group's page is a view with "
+    var notes: (any View)? {
+        Text("Any view answers a tap: every card on a group's page is a view with "
             + "`.onTapped` on it.")
             .fontSize(12)
             .textColor(Palette.subtle)

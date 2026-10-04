@@ -2,7 +2,7 @@
   "name": "stateui",
   "displayName": "StateUI",
   "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI and GTK.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
   "icon": "icon.png",
@@ -17,7 +17,7 @@
     "Debuggers",
     "Other"
   ],
-  "extensionDependencies": [
+  "extensionPack": [
     "swiftlang.swift-vscode"
   ],
   "main": "./out/Sources/extension.js",
@@ -31,6 +31,23 @@
     "onDebugDynamicConfigurations:stateui"
   ],
   "contributes": {
+    "configuration": {
+      "title": "StateUI",
+      "properties": {
+        "stateui.checkout": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "markdownDescription": "The local StateUI checkout - the folder the repository was cloned into - that **StateUI: New Project Group** builds a group's applications with. Empty: the checkout open in the workspace, else asked for."
+        },
+        "stateui.minimumRelease": {
+          "type": "string",
+          "default": "0.5.0",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "markdownDescription": "The oldest StateUI release **StateUI: New Project Group** offers to clone into a group: the first whose scripts build into `.build/<host>` and name the host by `STATEUI_HOST`, as this extension does."
+        }
+      }
+    },
     "commands": [
       {
         "command": "stateui.selectHost",
@@ -53,10 +70,15 @@
         "category": "StateUI"
       },
       {
+        "command": "stateui.newProjectGroup",
+        "title": "New Project Group",
+        "category": "StateUI"
+      },
+      {
         "command": "stateui.newApplicationInApps",
         "title": "New Application in apps/",
         "category": "StateUI",
-        "enablement": "stateui.hasCheckout"
+        "enablement": "stateui.hasApps"
       },
       {
         "command": "stateui.reinstallExtension",
@@ -89,6 +111,11 @@
       {
         "command": "stateui.checkToolchain",
         "title": "Check Toolchain",
+        "category": "StateUI"
+      },
+      {
+        "command": "stateui.deploy",
+        "title": "Deploy",
         "category": "StateUI"
       }
     ],
@@ -185,7 +212,7 @@
       "commandPalette": [
         {
           "command": "stateui.newApplicationInApps",
-          "when": "stateui.hasCheckout"
+          "when": "stateui.hasApps"
         },
         {
           "command": "stateui.reinstallExtension",

@@ -1,8 +1,8 @@
 # The GTK runtime
 
 The GTK host is the runtime every host shares
-([the runtime](../../host/runtime.md)), over GTK 4 and libadwaita: the core's
-host layer supplies the mounted tree, the patch intake, the pump, the
+([the runtime](../../host/runtime.md)), over GTK 4 and libadwaita: the host layer
+supplies the mounted tree, the patch intake, the pump, the
 animator, the state channels and the display cycle, and the GTK half supplies
 what only the toolkit can - the frame signal, the doorbell's post, the
 widgets, their layout, and the window around them. It is Swift alone: GTK's
@@ -61,47 +61,83 @@ monotonic clock, in milliseconds.
 
 ## The window
 
-The first window element's arrangement of pages is the content of an
-`AdwApplicationWindow`: a page shown by itself in a frame whose header bar is
-the window's title bar, an arrangement as it stands, its pages carrying their
-own ([pages](pages.md)). The window is presented the first time it shows
-something, and told it was made once, in its turn. It opens at 560 by 440, as
-a desktop host's window does, or at the size the window element says, which a
-window already open takes too; the user may make it no smaller than the
-element's smallest size, or GNOME's own - 360 by 294 - where it says none.
-GTK 4 gives a window no largest size.
+Every window element the tree holds is shown in an `AdwApplicationWindow` of
+its own, in the tree's order, by the host layer's roster (`WindowRoster`): a
+window new in the tree opens, one gone from it closes. Its arrangement of
+pages is the window's content: a page shown by itself in a frame whose header
+bar is the window's title bar, an arrangement as it stands, its pages
+carrying their own ([pages](pages.md)). A window is presented the first time
+it shows something while its scene shows it, and told it was made once, in
+its turn. Every window is one of its own, and a window its scene hides while
+another is in front is hidden. A question, a word to the screen
+reader and the way back go to the window the user is in: the one activated
+last.
+
+## A window's frame
+
+A window opens at 560 by 440, as a desktop host's window does, or at the size
+the window element says, which a window already open takes too. Its place is
+the desktop's: GNOME places its windows itself, and GTK 4 asks no place of
+it. The user may make it no smaller than the element's smallest size, or
+GNOME's own - 360 by 294 - where it says none. GTK 4 gives a window no
+largest size.
+
+## A window's life
+
+What GTK tells of a window goes to the host layer, which settles what it means
+for the application, its scenes and its windows ([the application's
+phase](../../host/runtime.md#the-applications-phase)): whether the window is
+active, and whether it stands minimized - a Wayland desktop says nothing of
+that - told again only where one of the two changed: a surface tells every
+change of its state, its tiling and its focus among them. A window the user closes - its close button, Alt+F4, GTK's close request
+- is heard by it and its scene as it goes ([a window the user
+closes](../../host/runtime.md#a-window-the-user-closes)); one the tree or the
+host closes tells nothing. A window let go of tells nobody it went: its
+handlers leave before GTK destroys it.
 
 ## The environment
 
 As the host starts it tells the core what it stands on: a desktop, Linux, the
 machine's model and maker as the kernel reads them, the host's name, the
 system's version, whether the machine is virtual; the application's name and
-its identifier. It tells the core the desktop's style - dark or light, as
-libadwaita's style manager reads it from the desktop's settings - and again
-whenever it turns, and once the window stands, the screen it stands on: its
-size in pixels, its scale and its refresh rate.
+its identifier. It tells the core what may change, and again whenever the
+desktop says one did, through the host layer ([the
+environment](../../host/runtime.md#the-environment)): the desktop's style -
+dark or light, as libadwaita's style manager reads it from the desktop's
+settings; the locale - the language and region GLib reads from the
+environment, the local zone, and the clock, the first day of the week and the
+measures of the C library's locale, the week's first day read as GTK's own
+calendar reads it; the power - UPower's display device, whether the machine
+is on mains, and whether the power profiles save energy, no battery where
+UPower stands nowhere; and the network - GIO's monitor, and the kind of
+connection NetworkManager calls the primary one. Once the window stands it
+tells the screen it stands on: its size in pixels, its scale and its refresh
+rate.
 
 ## Acts
 
-The acts the application calls are performed after each turn's render and
-answered, a reply or a failure with its reason, so no caller waits on an act
-nobody performs. The time of day is GLib's local time; the zone is GLib's
+The acts the application calls are performed after each turn's render by
+the host layer's performer ([acts](../../host/runtime.md#acts)) - a reply or
+a failure with its reason, one question at a time - over GTK's part of them,
+its act toolkit. The time of day is GLib's local time; the zone is GLib's
 local zone, an IANA name; a zone's distance from UTC on a day is GLib's,
 taken at the day's noon, so the day decides summer time, and a zone GLib
 does not know fails the act. The screen reader is told through the window,
 GTK's own announcement. The focus is put on the view the act names, or the
 first control in it that takes it, and taken off by leaving it nowhere,
-which GTK allows. A desktop's keyboard is its own, so taking the on-screen
-keyboard down answers that no field had brought one up.
+which GTK allows. The keyboard GNOME shows on a touch screen stands for the
+field holding the focus, so taking it down lets that field's focus go, and
+answers whether a field held it.
 
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
-libadwaita's `AdwAlertDialog` over the window, and its call waits under a
-ticket the dialog's answer comes back with; a ticket is one number across
-the process, so an answer that arrives after its renderer has gone answers
-nothing of another's. A window shows one question at a time, as a desktop's
-sheets are, so a question asked while one shows waits for it to close. A
+libadwaita's `AdwAlertDialog` over the window, kept under a number its
+dialog's answer comes back with until the user answers; a number is one
+across the process, so an answer that arrives after its renderer has gone
+answers nothing of another's. The host layer shows one question at a time,
+as a desktop's sheets are, so a question asked while one shows waits for it
+to close. A
 choice of actions is a button a choice, the dangerous one first, and the
 pressed caption is the answer - the cancelling one too; a dialog dismissed
 any other way, Escape among them, answers that nothing was chosen. A
@@ -118,5 +154,8 @@ layer's text ([kept values](../../host/runtime.md#kept-values)). Every key
 the application lists is read before the first scene connects and handed to
 the core ahead of the first view; a key's new value writes the whole file
 again, beside the old one and then in its place, so a failed write leaves
-the old.
+the old. The desktop restores no windows, so the application's scenes are
+kept beside them, in `kept scenes.txt` ([kept
+scenes](../../host/runtime.md#kept-scenes)): at the next start each window kept
+comes back as its kind for its value, its scene with the values it kept.
 

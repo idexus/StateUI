@@ -1,5 +1,0 @@
-# revision 1.1
-Polygon: ✅
-Polygon.fillRule: cannot read the colour of Polygon - GTK's driver has no path for it yet
-Polygon.frameChanged: ✅
-Polygon.points: cannot read the colour of Polygon - GTK's driver has no path for it yet

@@ -24,7 +24,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label($fade.convert { "going to \\(Int($0 * 100))%" })
+                Text($fade.convert { "going to \\(Int($0 * 100))%" })
             }
 
             // THE JOURNEY - this closure reads where the value IS, which the
@@ -32,7 +32,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label("at \\(Int($fade.journey.value * 100))%")
+                Text("at \\(Int($fade.journey.value * 100))%")
             }
 
             // A READING - taken ten times a second into an ordinary state,
@@ -40,7 +40,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label("at \\(Int(shown * 100))%")
+                Text("at \\(Int(shown * 100))%")
             }
             .samples($fade, into: $shown, .every(100))
 
@@ -58,7 +58,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             // A CONVERTER. The host works the words out on its own frames and
             // wears them, so nothing here is described again - this count
@@ -66,7 +66,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label($fade.convert { "going to \(Int($0 * 100))%" })
+                Text($fade.convert { "going to \(Int($0 * 100))%" })
                     .fontSize(17)
             }
             .spacing(4)
@@ -79,7 +79,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label("at \(Int($fade.journey.value * 100))%")
+                Text("at \(Int($fade.journey.value * 100))%")
                     .fontSize(17)
             }
             .spacing(4)
@@ -91,7 +91,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label("at \(Int(shown * 100))%")
+                Text("at \(Int(shown * 100))%")
                     .fontSize(17)
             }
             .spacing(4)
@@ -113,7 +113,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .background(Palette.accent)
                     .textColor(.white)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                 Button("Back")
@@ -121,11 +121,11 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Bring the box back")
                     .fontSize(13)
                     .stroke(Palette.outline)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
             }
             .spacing(12)
@@ -134,16 +134,16 @@ struct PacedStateSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Press Fade and read the three counts. The first stands still for the "
+            Text("Press Fade and read the three counts. The first stands still for the "
                 + "whole two seconds, the second counts up once a frame, the third about "
                 + "ten times a second. One value, three ways of showing it, and the "
                 + "difference between them is the whole of what this page is about.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A state is at its value the moment it is written. `move(to:)` puts "
+            Text("A state is at its value the moment it is written. `move(to:)` puts "
                 + "the destination on the state at once and the host walks the control "
                 + "there - which is what lets the box travel without a single render. "
                 + "`fade` is that destination; `$fade.journey.value` is where the box "
@@ -151,7 +151,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A read of the journey is a build per frame. The host writes where the "
+            Text("A read of the journey is a build per frame. The host writes where the "
                 + "value is on every frame it moves, and a closure that prints it asks to "
                 + "see every one of them. A closure that prints `fade` alone is built once "
                 + "per write, the destination never moving in between. That is the honest "
@@ -159,7 +159,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A reading is the middle road: where the value had got to when the "
+            Text("A reading is the middle road: where the value had got to when the "
                 + "sample was taken, copied into an ordinary state. It stops by itself, "
                 + "because a reading writes only what changed and the host stops sending "
                 + "the moment the value lands. Reach for a converter where the value is "

@@ -30,8 +30,8 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             HStack {
                 ForEach(items) { item in
                     ZStack {
-                        Label(item)
-                            .padding(12, 8)
+                        Text(item)
+                            .padding(horizontal: 12, vertical: 8)
                     }
                     .style("Card")
                     .stroke(Palette.accent)
@@ -41,21 +41,21 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                     .draggable(text: item)
                     // The view that was DRAGGED hears when its own drag ends,
                     // wherever it ended.
-                    .onDropCompleted { finished = "\\(item): drop finished" }
+                    .onDragEnded { finished = "\\(item): drop finished" }
                     .id(item)
                 }
             }
 
-            Label(finished)
+            Text(finished)
 
             ZStack {
                 VStack {
-                    Label(over
+                    Text(over
                         ? "let go to drop it"
                         : (basket.isEmpty ? "nothing yet" : "\\(basket.count) dropped"))
 
                     ForEach(Array(basket.enumerated()), id: \\.offset) { pair in
-                        Label(pair.element)
+                        Text(pair.element)
                     }
                 }
                 .padding(24)
@@ -64,7 +64,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)
-            .strokeWidth(over ? 2 : 1)
+            .lineWidth(over ? 2 : 1)
             .shape(.roundedRectangle(10))
             .background(over ? Palette.selected : Palette.raised)
             .onDragOver { over = true }
@@ -81,7 +81,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -90,24 +90,24 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             HStack {
                 ForEach(items) { item in
                     ZStack {
-                        Label(item)
+                        Text(item)
                             .fontSize(14)
-                            .padding(12, 8)
+                            .padding(horizontal: 12, vertical: 8)
                     }
                     .style("Card")
                     .stroke(Palette.accent)
-                    .strokeWidth(1)
+                    .lineWidth(1)
                     .shape(.roundedRectangle(8))
                     .draggable(text: item)
                     // The view that was DRAGGED hears when its own drag ends,
                     // wherever it ended.
-                    .onDropCompleted { finished = "\(item): drop finished" }
+                    .onDragEnded { finished = "\(item): drop finished" }
                     .id(item)
                 }
             }
             .spacing(8)
 
-            Label(finished)
+            Text(finished)
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -116,14 +116,14 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             ZStack {
                 VStack {
-                    Label(over
+                    Text(over
                         ? "let go to drop it"
                         : (basket.isEmpty ? "nothing yet" : "\(basket.count) dropped"))
                         .fontSize(15)
                         .horizontalTextAlignment(.center)
 
                     ForEach(Array(basket.enumerated()), id: \.offset) { pair in
-                        Label(pair.element)
+                        Text(pair.element)
                             .fontSize(13)
                             .textColor(Palette.subtle)
                             .horizontalTextAlignment(.center)
@@ -136,7 +136,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)
-            .strokeWidth(over ? 2 : 1)
+            .lineWidth(over ? 2 : 1)
             .shape(.roundedRectangle(10))
             .background(over ? Palette.selected : Palette.raised)
             .onDragOver { over = true }
@@ -149,7 +149,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             Button("Empty it")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .isEnabled(!basket.isEmpty)
                 .onClicked { basket = [] }
@@ -157,30 +157,30 @@ struct DragAndDropSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("What travels is a STRING, decided before the drag starts: a native "
+            Text("What travels is a STRING, decided before the drag starts: a native "
                 + "drag session needs its payload at once, so `draggable(text:)` says it "
                 + "up front.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Reading what was dropped is asynchronous - it may be coming from "
+            Text("Reading what was dropped is asynchronous - it may be coming from "
                 + "another application - so the host reads it, and `onDrop` runs with the "
                 + "text when there is something to say.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`onDragOver` runs again and again while a drag is held over the "
+            Text("`onDragOver` runs again and again while a drag is held over the "
                 + "target, not once, so it SETS the highlight rather than counting; "
                 + "`onDragLeave` runs when the drag goes away without being let go. A "
                 + "drop is not a leave, so `onDrop` takes the highlight down as well.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both of those belong to a view that ACCEPTS a drop, and `onDrop` is "
+            Text("Both of those belong to a view that ACCEPTS a drop, and `onDrop` is "
                 + "what makes a view one - written without it, neither ever runs. "
-                + "`onDropCompleted` is the other end: it belongs to the view that was "
+                + "`onDragEnded` is the other end: it belongs to the view that was "
                 + "dragged, so it needs `draggable(text:)` beside it, and it runs when "
                 + "that drag ends wherever it ended - over the basket, or over nothing "
                 + "at all.")

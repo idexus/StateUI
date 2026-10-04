@@ -7,8 +7,8 @@ import StateUI
 /// answers about the description that is RUNNING when it is called, so a
 /// reading taken inside a container's braces counts THAT container - the very
 /// closure a state read there rebuilds. A view of its own would push a
-/// description of its own in front and answer about itself: `1 build, with its
-/// parent`, for ever, whatever the sample is doing.
+/// description of its own in front and answer about itself: `1 build, first
+/// time`, for ever, whatever the sample is doing.
 ///
 /// So it is written exactly where the question is, and the sample's `code`
 /// shows it in the same place:
@@ -18,17 +18,17 @@ import StateUI
 ///
 ///         VStack {
 ///             DebugInfoLabel()                // this one: built whenever `volume` moves
-///             Label("Volume \(volume)")
+///             Text("Volume \(volume)")
 ///         }
 ///     }
 ///
 /// - Returns: the count and the reason - `41 builds, for volume` - as a label
 ///   the caller may go on modifying, which is what a grid cell needs.
-func DebugInfoLabel() -> Label {
+func DebugInfoLabel() -> Text {
     // ANY element can be asked. The sentence is about the description that is
     // running, never about the view it is asked through, which is what lets
     // this be a function at all rather than a view.
-    Label(BuildCount.of(Label("").debugInfo()))
+    Text(BuildCount.of(Text("").debugInfo()))
         .fontSize(12)
         .textColor(Palette.accent)
         .horizontalAlignment(.end)

@@ -1,0 +1,11 @@
+# revision 1.1
+Picker.horizontalTextAlignment: ✅
+Picker.verticalTextAlignment: not realized
+SearchField.horizontalTextAlignment: ✅
+SearchField.verticalTextAlignment: not realized
+Text.horizontalTextAlignment: ✅
+Text.verticalTextAlignment: cannot read verticalTextAlignment of Text - AppKit's driver has no path for it yet
+TextEditor.horizontalTextAlignment: ✅
+TextEditor.verticalTextAlignment: not realized
+TextField.horizontalTextAlignment: ✅
+TextField.verticalTextAlignment: not realized

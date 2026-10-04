@@ -1,6 +1,6 @@
 # The core
 
-The core is `lib/StateUI/Sources/Core`: state, invalidation, keys and
+The core is `lib/StateUI/Core/Sources/Core`: state, invalidation, keys and
 diffing, the display cycle, acts, the UI thread's executor and the typed
 boundary a host reads. It holds the reasons behind the code; the code's
 comments say what a thing is and point here. Every note describes the
@@ -117,7 +117,7 @@ host and never calls the core.
      |  the host animates carried values with HostMotionLaw and reports
      |  the user's changes and its frames, lane by lane
      v                                    HostBoundary.report
-  CycleBoard.cycle(now)
+  CycleBoard.cycle(now:reducesMotion:)
      1  latch     pending writes -> image; reported lanes are never echoed
      2  engines   by ascending priority - a conversion's back (-2) and
                   forward (-1) engines ahead of the author's (0 unless said) -
@@ -159,13 +159,13 @@ UI thread under a debugger. The host asks instead (concurrency.md).
 
 ## Where things live
 
-Each folder of `lib/StateUI/Sources/Core` is one topic, and the note beside it
+Each folder of `lib/StateUI/Core/Sources/Core` is one topic, and the note beside it
 holds its reasons. A type's extensions stand in its folder, named
 `Type+Responsibility.swift`.
 
 ```text
   Core/State        @State and its storage, Binding, kept state,          state
-                    @Environment, element sessions, the @Observable refusal
+                    @Environment, the @Observable warning
   Core/Carried      what a carried value is: StateValue and its image,    state, cycle
                     the attachments, HostStorage's three copies
   Core/Journey      Journey and its lanes, the law on the image, the two  journeys
@@ -174,7 +174,7 @@ holds its reasons. A type's extensions stand in its folder, named
   Core/Render       the renderer, with its cycle, act queue and dispatch; render, acts,
                     read scopes, debugInfo()                              invalidation
   Core/Diff         the differ, Node, RenderedNode, placeholders and      identity-and-diffing
-                    inputs, .onChanged, .onCreated, .onDestroying, rows
+                    inputs, .onChanged, .onCreated, .onDestroying
   Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
                     reader, host events
   Core/Threads      the UI thread's executor, the doorbell, the lock      concurrency

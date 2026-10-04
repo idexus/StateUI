@@ -15,32 +15,54 @@ runtime (`HostRuntime`), its frame clock - a `CADisplayLink` running only
 while something holds it - and the roster of the windows it shows. The core
 is woken as on every Apple host: a thread of the host's parks until the core
 has work, and each ring puts a turn of the pump on the main queue. The
-application's delegate starts the runtime as the application launches, and
-tells it what the device, the display and the application are.
+application's delegate starts the runtime as the application launches, which
+tells what the device and the application are; each scene iOS connects tells
+what the display is.
 
 ## Scenes
 
-A StateUI scene is a window scene of UIKit's own. Each scene iOS connects -
-the one it opens at launch, and each window the user opens on an iPad - tells
-the core to connect a scene, and the StateUI window that scene's render holds
-stands in it: a window of the scene's, its root view showing the window's
-arrangement of pages within the safe area, the title of the page the user
-sees the scene's title. A window the tree lets go of lets its scene go with
-it. The application's `Info.plist` says it supports many scenes, so an iPad
-opens as many as the user asks for; a window the tree holds with no scene
-standing for it asks iOS for one, and stands in the next scene iOS connects.
+Each StateUI window stands in a window scene of UIKit's own: a window of the
+scene's, its root view showing the window's arrangement of pages within the
+safe area, the title of the page the user sees the scene's title. A window
+the tree lets go of lets its scene go with it. The application's `Info.plist`
+says it supports many scenes, so an iPad opens as many as the user asks for.
+
+A scene iOS connects is one of four (`UIKitRenderer.connect`):
+
+- the session of a window standing, which iPadOS let go of in the background,
+  brings that window back;
+- a session keeping a window's record comes in as that window, by the host
+  layer's rule ([restored windows](../../host/runtime.md#restored-windows));
+- one a window the tree holds asked iOS for stands for it;
+- any other is a new window: the first the window launch opens, another one
+  more of the group with no name. A kept window of a kind no scene declares
+  now is a new one too - iOS connected its scene, and the user is to see
+  something in it.
+
+Every window writes its record in its scene's session
+(`UISceneSession.userInfo`) - its kind, its value and what its StateUI scene
+keeps - which iOS keeps and hands back as it restores the scene. Nothing
+renders before the first scene connects ([the platform's first
+window](../../host/runtime.md#the-platforms-first-window)).
 
 A window's lifecycle is its scene's: in front of the user and active, behind
 once in the background, and neither between - each told to the host layer,
-which settles what it means for the window, its scene and the application. A
+which settles what it means for the window, its scene and the application.
+iPadOS keeps every window on screen active and dims those behind the one the
+user works in; a scene's active appearance tells which, so a window dimmed
+stands inactive, and is activated as the user comes back to it. A
 window that comes to stand in a scene already in front, or behind, is told
 where it stands. The user closing a window - swiping its scene away - is the
 scene's session discarded, which the window hears as closed by the user; a
-scene iOS only disconnects to save memory closes nothing.
+scene iOS only disconnects to save memory closes nothing: its window waits for
+the session to come back.
 
 A window the tree closes in front of the user first brings back the window
-activated last of those staying: iPadOS shows the home screen once the scene
-in front is destroyed, the application's other windows behind it.
+activated last of those staying, where that one stands off the screen under
+it: iPadOS shows the home screen once the scene in front is destroyed, the
+application's other windows behind it. One standing on the screen beside it
+is left where and as big as it is - brought back, iPadOS would stand it in
+the closing window's place, at its size.
 
 The trap: the scene of a window the tree lets go of is destroyed, and iPadOS
 ends the process once an application's last scene is destroyed. A host whose

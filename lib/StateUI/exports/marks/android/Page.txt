@@ -1,0 +1,11 @@
+# revision 2.1
+Page: ✅
+Page.appearing: ✅
+Page.backButtonTitle: – Android's way back in the bar is an arrow, with no words.
+Page.background: ✅
+Page.disappearing: ✅
+Page.navigatedFrom: ✅
+Page.navigatedTo: ✅
+Page.navigatingFrom: ✅
+Page.showsBackButton: ✅
+Page.showsNavigationBar: ✅

@@ -1,0 +1,22 @@
+# revision 1.1
+Button.lineWidth: ✅
+Button.shape: ✅
+Button.stroke: ✅
+Grid.lineWidth: ✅
+Grid.shape: ✅
+Grid.stroke: ✅
+HStack.lineWidth: ✅
+HStack.shape: ✅
+HStack.stroke: ✅
+RadioButton.lineWidth: not realized
+RadioButton.shape: not realized
+RadioButton.stroke: not realized
+ScrollView.lineWidth: ✅
+ScrollView.shape: ✅
+ScrollView.stroke: ✅
+VStack.lineWidth: ✅
+VStack.shape: ✅
+VStack.stroke: ✅
+ZStack.lineWidth: ✅
+ZStack.shape: ✅
+ZStack.stroke: ✅

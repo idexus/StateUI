@@ -1,9 +1,0 @@
-# revision 1.1
-Button.padding: ✅
-Grid.padding: ✅
-HStack.padding: ✅
-Label.padding: ✅
-RadioButton.padding: ✅
-ScrollView.padding: ✅
-VStack.padding: ✅
-ZStack.padding: ✅

@@ -20,20 +20,21 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
             // closure - one build a page, whatever the movement costs.
             DebugInfoLabel()
 
-            Label(Self.steps[step])
+            Text(Self.steps[step])
 
             PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
 
             PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
-                .indicatorsShape(.square)
+                .indicatorShape(.square)
+                .indicatorSize(10)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
 
             HStack {
                 Button("Back")
@@ -49,52 +50,52 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
             // on the DOTS and not on the items: `count` is twelve in both
             // rows, and the stepper takes the second row's dots away one at a
             // time.
-            Label("Twelve items, maximumVisible(12)")
+            Text("Twelve items, maximumVisible(12)")
 
             PositionIndicator()
                 .count(12)
                 .position(step)
                 .maximumVisible(12)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
 
-            Label("The same twelve, maximumVisible(\\(Int(cap)))")
+            Text("The same twelve, maximumVisible(\\(Int(cap)))")
 
             PositionIndicator()
                 .count(12)
                 .position(step)
                 .maximumVisible(Int(cap))
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
 
             Stepper($cap)
                 .minimum(4)
                 .maximum(12)
 
-            // One item twice. `hideSingle` is true by default, so the
+            // One item twice. `hidesForSinglePage` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
             // about where the user is - and the right-hand one asks for it.
             HStack {
                 VStack {
-                    Label("hideSingle(true)")
+                    Text("hidesForSinglePage(true)")
 
                     PositionIndicator()
                         .count(1)
                         .position(0)
-                        .hideSingle(true)
+                        .hidesForSinglePage(true)
                         .indicatorColor(Palette.outline)
-                        .selectedIndicatorColor(Palette.accent)
+                        .currentIndicatorColor(Palette.accent)
                 }
 
                 VStack {
-                    Label("hideSingle(false)")
+                    Text("hidesForSinglePage(false)")
 
                     PositionIndicator()
                         .count(1)
                         .position(0)
-                        .hideSingle(false)
+                        .hidesForSinglePage(false)
                         .indicatorColor(Palette.outline)
-                        .selectedIndicatorColor(Palette.accent)
+                        .currentIndicatorColor(Palette.accent)
                 }
             }
         }
@@ -102,11 +103,11 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
     private static let steps = ["Describe", "Diff", "Send", "Render"]
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label(Self.steps[step])
+            Text(Self.steps[step])
                 .fontSize(20)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
@@ -115,27 +116,28 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
             PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
-                .indicatorsShape(.square)
+                .indicatorShape(.square)
+                .indicatorSize(10)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
             HStack {
                 Button("Back")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(step > 0)
                     .onClicked { step -= 1 }
 
                 Button("Next")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(step < Self.steps.count - 1)
                     .onClicked { step += 1 }
             }
@@ -146,7 +148,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
             // on the DOTS and not on the items: `count` is twelve in both
             // rows, and the stepper takes the second row's dots away one at a
             // time.
-            Label("Twelve items, maximumVisible(12)")
+            Text("Twelve items, maximumVisible(12)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalAlignment(.center)
@@ -156,10 +158,10 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .position(step)
                 .maximumVisible(12)
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
-            Label("The same twelve, maximumVisible(\(Int(cap)))")
+            Text("The same twelve, maximumVisible(\(Int(cap)))")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalAlignment(.center)
@@ -169,7 +171,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .position(step)
                 .maximumVisible(Int(cap))
                 .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
+                .currentIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
             Stepper($cap)
@@ -179,12 +181,12 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .maximum(12)
                 .horizontalAlignment(.center)
 
-            // One item twice. `hideSingle` is true by default, so the
+            // One item twice. `hidesForSinglePage` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
             // about where the user is - and the right-hand one asks for it.
             HStack {
                 VStack {
-                    Label("hideSingle(true)")
+                    Text("hidesForSinglePage(true)")
                         .fontSize(12)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -192,15 +194,15 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                     PositionIndicator()
                         .count(1)
                         .position(0)
-                        .hideSingle(true)
+                        .hidesForSinglePage(true)
                         .indicatorColor(Palette.outline)
-                        .selectedIndicatorColor(Palette.accent)
+                        .currentIndicatorColor(Palette.accent)
                         .horizontalAlignment(.center)
                 }
                 .spacing(6)
 
                 VStack {
-                    Label("hideSingle(false)")
+                    Text("hidesForSinglePage(false)")
                         .fontSize(12)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -208,9 +210,9 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                     PositionIndicator()
                         .count(1)
                         .position(0)
-                        .hideSingle(false)
+                        .hidesForSinglePage(false)
                         .indicatorColor(Palette.outline)
-                        .selectedIndicatorColor(Palette.accent)
+                        .currentIndicatorColor(Palette.accent)
                         .horizontalAlignment(.center)
                 }
                 .spacing(6)
@@ -221,26 +223,26 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("The usual home for one is under a GalleryView. Both take a `position`, so "
+            Text("The usual home for one is under a GalleryView. Both take a `position`, so "
                 + "one @State joins them - which is also what makes a PositionIndicator useful "
                 + "on its own, as above.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Nothing about it is the user's to change, so there is no binding "
+            Text("Nothing about it is the user's to change, so there is no binding "
                 + "overload - `position` is told to it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`maximumVisible` is a ceiling on the DOTS: both rows above say "
+            Text("`maximumVisible` is a ceiling on the DOTS: both rows above say "
                 + "`count(12)`, and only the number drawn moves as the stepper does - "
                 + "which is what keeps a long sequence's dots a readable width.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`hideSingle` is true by default, which is why an indicator over a "
+            Text("`hidesForSinglePage` is true by default, which is why an indicator over a "
                 + "ONE-item list draws nothing at all: a lone dot says nothing about where "
                 + "the user is. The two columns above are that same one-item indicator, "
                 + "both ways round.")

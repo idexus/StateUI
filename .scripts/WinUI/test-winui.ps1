@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ---------------------------------------------------------------------------
-# Runs the WinUI host's tests: `swift test` in lib\StateUI.WinUI, whose test
-# runner is given the Windows App SDK first, as an application is - WinUI's
-# classes are found through the runner's manifest.
+# Runs the WinUI host's tests: `swift test` in lib\StateUI\StateUI.WinUI\Testing,
+# whose test runner is given the Windows App SDK first, as an application is -
+# WinUI's classes are found through the runner's manifest.
 #
 #   .\test-winui.ps1 [-Filter <test>] [-Conformance | -Stale] [-ScratchPath <dir>]
 #
@@ -28,7 +28,7 @@
 # The tests are built, the Windows App SDK laid beside the runner, and the run
 # skips the build. A run with STATEUI_UPDATE_EXPORTS=1 writes each verdict file
 # under the revision its family stands at
-# (lib/StateUI.Conformance/revisions.txt); -Stale runs only the conformance
+# (lib/StateUI/StateUI.Conformance/revisions.txt); -Stale runs only the conformance
 # families whose verdicts stand at another revision, or at none - each other
 # one's process ends at once.
 # ---------------------------------------------------------------------------
@@ -41,16 +41,17 @@ param(
 . (Join-Path $PSScriptRoot 'tools.ps1')
 
 Initialize-StateUIProjection
+$testing = Join-Path $StateUIWinUIHost 'Testing'
 $env:STATEUI_STALE_ONLY = if ($Stale) { '1' } else { '' }
 $scratch = @()
 if ($ScratchPath) { $scratch = @('--scratch-path', $ScratchPath) }
 
 Write-Host 'building the WinUI host tests - SwiftPM reads the packages first, printing nothing'
 Write-StateUIEditorBuilds
-swift build --package-path $StateUIWinUIHost --build-tests @scratch
+swift build --package-path $testing --build-tests @scratch
 if ($LASTEXITCODE) { throw 'the WinUI host tests did not build' }
 Write-Host 'laying the Windows App SDK beside the test runner'
-$bin = (swift build --package-path $StateUIWinUIHost @scratch --show-bin-path).Trim()
+$bin = (swift build --package-path $testing @scratch --show-bin-path).Trim()
 Set-StateUISelfContained -Directory $bin -Executables (Join-Path $bin 'StateUIWinUITests-test-runner.exe')
 
 # A variable's name is its parameter's whatever the case, so the arguments have one of their own.
@@ -58,5 +59,5 @@ $apart = @('--parallel', '--num-workers', '1')
 $narrowing = if ($Filter) { @('--filter', $Filter) + $apart }
     elseif ($Conformance -or $Stale) { @('--filter', 'WinUIConformanceTests') + $apart }
     else { @('--skip', 'WinUIConformanceTests') }
-swift test --package-path $StateUIWinUIHost @scratch --skip-build @narrowing
+swift test --package-path $testing @scratch --skip-build @narrowing
 exit $LASTEXITCODE

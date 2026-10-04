@@ -1,0 +1,21 @@
+# revision 2.1
+ModalStack.barBackgroundColor: ✅
+ModalStack.barForegroundColor: ✅
+ModalStack.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
+ModalStack.barSubtitle: ✅
+ModalStack.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
+NavigationStack.barBackgroundColor: ✅
+NavigationStack.barForegroundColor: ✅
+NavigationStack.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
+NavigationStack.barSubtitle: ✅
+NavigationStack.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
+SplitView.barBackgroundColor: ✅
+SplitView.barForegroundColor: ✅
+SplitView.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
+SplitView.barSubtitle: ✅
+SplitView.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
+TabView.barBackgroundColor: ✅
+TabView.barForegroundColor: ✅
+TabView.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
+TabView.barSubtitle: ✅
+TabView.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.

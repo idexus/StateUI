@@ -22,14 +22,46 @@ command.
 
 ## A new application
 
-**StateUI: New Application in apps/** - in a StateUI checkout, asks for a name
-and runs the checkout's own scaffolder, `.scripts/new-app.sh` (or
-`new-app.ps1` on Windows), which makes HelloWorld under that name. The
-application is then chosen, so **StateUI: Debug** runs it.
+**StateUI: New Application in apps/** - in a StateUI checkout or a project
+group, asks for a name and runs the scaffolder of the checkout the folder's
+applications build with, `.scripts/new-app.sh` (or `new-app.ps1` on Windows),
+which makes HelloWorld under that name - its example test in `Tests/`
+included, which **StateUI: Run Tests** runs. The application is then chosen,
+so **StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
 directory, the process, the package identifier and the Swift module
 (`<Name>UI`).
+
+## A project group
+
+**StateUI: New Project Group** makes a folder of applications outside a
+checkout. It asks where to make the group and its name, which StateUI its
+applications build with, and the name of its first application:
+
+- **A release from GitHub** - a release tag, `stateui.minimumRelease` or
+  newer, cloned into the group's `StateUI/`.
+- **The local checkout** - the StateUI checkout open in the workspace, else
+  the one `stateui.checkout` names, else asked for.
+
+The group holds `apps/`, a `.gitignore`, and `.vscode/` with **StateUI: Debug**
+and **StateUI: Release**. Its applications are HelloWorld renamed, and each
+one's `Package.swift` names its StateUI by path: `../../StateUI` for a release,
+the path from the application to the checkout for a local one. That path is how
+the extension finds the scripts that build and run the application's heads, in
+that StateUI's `.scripts/`; the group copies none of them.
+
+`StateUI/` is left out of git. A clone of the group gets it back with the
+command its `.gitignore` names:
+
+```bash
+git clone --depth 1 --branch <release> https://github.com/idexus/StateUI.git StateUI
+```
+
+| Setting | What it holds |
+| --- | --- |
+| `stateui.checkout` | the local checkout a group builds with - set on this machine, so it is not asked for |
+| `stateui.minimumRelease` | the oldest release offered, `0.5.0` - the first that builds into `.build/<host>` and reads `STATEUI_HOST`, as the extension does; until it is published, a group builds with the local checkout |
 
 ## The host
 
@@ -43,7 +75,10 @@ says **no host**, a launch says why it runs nothing, and the editor and
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
   completed while AppKit is chosen, and an application's `Platforms/AppKit`
   head belongs to its package only then. Switching restarts the Swift language
-  server; the window does not reload and no settings file is written. As
+  server; the window does not reload. From the editor's next start the Swift
+  extension loads no other host's packages - `lib/StateUI/StateUI.<Host>` and
+  `lib/Backends/*.<Host>`, set in the user's `swift.excludePathsFromActivation`
+  - so it starts sooner. As
   Android the server compiles for Android - the Swift SDK for Android of the
   toolchain's release, `aarch64-unknown-linux-android28` - so code under
   `#if ANDROID` and `Platforms/Android/Swift` resolve. With no such SDK
@@ -105,34 +140,53 @@ configuration naming `"application": "Gallery"` runs that one instead.
 **StateUI: Run Tests** offers the workspace's suites, every one ticked, and runs
 them AS THE HOST, one after another, each in a terminal of its own:
 
-- **AppKit**: the library, `lib/StateUI.AppKit`, and each application as an
-  AppKit build (`STATEUI_APPKIT=1`, on `.build-appkit`).
+- **AppKit**: the library, `lib/StateUI/StateUI.AppKit`, and each application as an
+  AppKit build (`STATEUI_HOST=appkit`, on `.build/appkit`).
 - **UIKit**: the library and each application as plain Swift, and the UIKit
-  host's own tests, `lib/StateUI.UIKit/Tests` - an application of tests - run
+  host's own tests, `lib/StateUI/StateUI.UIKit/Tests` - an application of tests - run
   on the simulator chosen by `.scripts/UIKit/test-uikit.sh`.
 - **Android**: the library and each application as plain Swift - an Android
   build runs only on a device - and the Android host's own tests,
-  `lib/StateUI.Android/Tests`, built into a test APK and run on the device
+  `lib/StateUI/StateUI.Android/Tests`, built into a test APK and run on the device
   chosen by `.scripts/Android/test-android.sh`.
 - **WinUI**: the library and each application as plain Swift, and the WinUI
-  host's own package, `lib/StateUI.WinUI`, by `.scripts/WinUI/test-winui.ps1`,
+  host's own tests, `lib/StateUI/StateUI.WinUI/Testing`, by `.scripts/WinUI/test-winui.ps1`,
   which lays the Windows App SDK beside its test runner first.
 - **GTK**: the library and each application as plain Swift, and the GTK host's
-  own package, `lib/StateUI.GTK`, by `swift test`, its windows on the
+  own tests, `lib/StateUI/StateUI.GTK/Testing`, by `swift test`, its windows on the
   desktop's display.
 - **No host**: the library and each application as plain Swift.
 
 A failure does not stop the suites after it; the summary names the ones that
 failed.
 
+## Deploy
+
+**StateUI: Deploy** builds the chosen application for release on the chosen
+host and lays it in `artifacts/<application>/<platform>` of the folder that
+keeps its `apps/` - a project group's, or a checkout's - made anew each time.
+The host's own `deploy` script of the application's checkout does it:
+
+- **WinUI**: a folder that runs on a Windows machine with nothing installed -
+  the head, StateUI, the Windows App SDK, the Swift and C++ runtimes of its
+  architecture, the pictures. Deploy asks which architecture: on an ARM64
+  machine arm64 or x64, which Windows runs emulated, into
+  `artifacts/<application>/WinUI/arm64` or `.../x64`; an x64 machine builds x64
+  without asking.
+- **GTK**: the head, the StateUI libraries it links and the pictures.
+- **AppKit**: the application bundle where the checkout bundles the
+  application, else the head and the StateUI libraries it links.
+- **UIKit**: the application bundle, for the simulator or device chosen.
+- **Android**: the APK, for the ABI of the device chosen.
+
 ## The conformance marks
 
 In a StateUI checkout, **StateUI: Conformance - Rebuild all** runs every
 conformance family as the host chosen, writing its verdicts into
-`exports/marks/<host>`, then renders the control dictionary and
+`lib/StateUI/exports/marks/<host>`, then renders the control dictionary and
 `docs/platform-contract.md` from them again. **StateUI: Conformance - Rebuild
 changed** does the same for the families whose verdicts stand at another
-revision than `lib/StateUI.Conformance/revisions.txt` says, or have none;
+revision than `lib/StateUI/StateUI.Conformance/revisions.txt` says, or have none;
 every other family's run ends at once. UIKit runs on the simulator chosen and Android on
 the device chosen, where Android rebuilds all only, its device reading no
 repository. Neither command shows outside a checkout: an application's
@@ -141,8 +195,8 @@ workspace holds no marks.
 ## The index
 
 The Swift language server indexes each application in a directory of the host's
-own, `.build-appkit/index-build`, `.build-uikit/index-build`, `.build-android/index-build`,
-`.build-winui/index-build` or `.build-gtk/index-build` - with no
+own, `.build/appkit/index-build`, `.build/uikit/index-build`, `.build/android/index-build`,
+`.build/winui/index-build` or `.build/gtk/index-build` - with no
 host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
@@ -152,10 +206,11 @@ them and restarts the server, for an index a failed build left inconsistent.
 **StateUI: Check Toolchain** looks for what this machine needs to build and run
 the hosts it runs, as [Requirements](#requirements) and the handbook's host pages
 say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
-JDK and Swift SDK on macOS; Visual Studio's C++ tools and the Windows SDK on
-Windows; GTK, libadwaita, gdk-pixbuf's SVG loader and a desktop session on
-Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch; and Node.js
-for this extension's own build. The **StateUI Toolchain** output lists each
+JDK and Swift SDK on macOS; Visual Studio's C++ tools, the Windows SDK and the
+WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
+loader and a desktop session on Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
+and Windows an `lldb-dap` that starts with the Python its LLDB loads; Git for a project group's
+releases; and Node.js for this extension's own build. The **StateUI Toolchain** output lists each
 with what was found - a version older than the one required marked as too old - and
 for each not found what to install. It looks where the build scripts look
 (the NDK as `build-swift.sh` finds it); it installs nothing.
@@ -180,7 +235,8 @@ launch file at all:
 
 ## Requirements
 
-- The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode).
+- The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode),
+  installed with StateUI.
 - For AppKit: macOS 26 or newer and the `lldb-dap` extension.
 - For UIKit: macOS with Xcode, a StateUI checkout, whose `.scripts/UIKit`
   builds and runs the head, the `lldb-dap` extension, and an iOS 26 or newer
@@ -194,13 +250,22 @@ launch file at all:
   `~/Library/Android/sdk`. The scripts fetch Gradle themselves.
 - For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds the
   head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the Windows
-  SDK; and the `lldb-dap` extension. The scripts fetch C++/WinRT and the
+  SDK; the WebView2 runtime for the web view's backend (Windows 11 has it);
+  and the `lldb-dap` extension, with the toolchain's `lldb-dap`, which loads
+  the Python the Swift installer lays beside the toolchain (Check Toolchain
+  asks it, `lldb-dap --check-python`). The scripts fetch C++/WinRT and the
   Windows App SDK themselves.
+- For a project group's releases: Git, which lists and clones them.
 - For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
   Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
-  headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); gdk-pixbuf's SVG
-  loader (`librsvg2-common`); and the `lldb-dap` extension.
+  headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); WebKitGTK 6.0 with
+  its headers for the web view's backend and the host's tests
+  (`libwebkitgtk-6.0-dev` on Ubuntu, `webkitgtk-6.0` on Arch); gdk-pixbuf's SVG
+  loader (`librsvg2-common`, or glycin's loaders where gdk-pixbuf 2.44 and
+  newer read through glycin, as on Arch); and the `lldb-dap` extension, with
+  a toolchain `lldb-dap` that starts - on a distribution other than the one
+  the toolchain was built for, its Python library installed (Check
+  Toolchain names the one missing, and F5 stops before the build).
 
-Do not set `STATEUI_APPKIT`, `STATEUI_ANDROID` or `STATEUI_WINUI` in
-`swift.swiftEnvironmentVariables`: that setting is laid over the host chosen
-here, and the extension offers to remove it.
+Do not set `STATEUI_HOST` in `swift.swiftEnvironmentVariables`: that setting
+is laid over the host chosen here, and the extension offers to remove it.

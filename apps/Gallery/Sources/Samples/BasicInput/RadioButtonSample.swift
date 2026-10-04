@@ -29,11 +29,11 @@ struct RadioButtonSample: SampleContent, ExampleContent {
                     .id(name)
             }
 
-            Label("Chosen: \\(size)")
+            Text("Chosen: \\(size)")
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -51,21 +51,21 @@ struct RadioButtonSample: SampleContent, ExampleContent {
                     .id(name)
             }
 
-            Label("Chosen: \(size)")
+            Text("Chosen: \(size)")
                 .fontSize(17)
         }
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Picking one unchecks the others in the same `groupName`, and BOTH changes "
+            Text("Picking one unchecks the others in the same `groupName`, and BOTH changes "
                 + "are reported - false on the button that lost, true on the new one. So a "
                 + "handler that writes only when it hears true is the whole of it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("One `@State` holds the whole group's choice rather than one Bool per "
+            Text("One `@State` holds the whole group's choice rather than one Bool per "
                 + "button: what is chosen is a single value, and each button is checked "
                 + "when it matches it.")
                 .fontSize(12)

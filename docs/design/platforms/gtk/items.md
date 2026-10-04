@@ -32,6 +32,18 @@ a header or a footer takes a cell of a grid as an item does, and each
 cell's margins are its entry's room. A grid's columns follow the width the
 list is given.
 
+## Behind the rows
+
+A collection paints nothing of its own behind its rows, as on every host:
+what it stands on shows through, so a list matches the page or the card
+around it. GTK's theme paints a list view in its own view colour and an item
+chosen in the desktop's accent, which matches no page of an application's
+own; so the list and the grid wear a class of the host's style sheet that
+takes the view colour away and shades an item chosen in the colour of its
+words, as GNOME's sidebars shade theirs - over any page alike. The same class
+takes away the padding the theme gives a row and a grid's child, so an item
+stands where StateUI's spacing puts it and is as wide as the list.
+
 ## A cell
 
 A cell is a StateUI panel GTK places, so it answers GTK's measure with the
@@ -56,4 +68,7 @@ in the order said.
 
 GTK brings the item into view, the shortest way; once it is laid out, the
 scrolled window stands where the anchor says, by the host layer's rule
-([scrolling to an item](../../host/items.md#scrolling-to-an-item)).
+([scrolling to an item](../../host/items.md#scrolling-to-an-item)). The item
+is laid out over the next frames, not in the next idle moment - its cell is
+bound before it has a size - so the host looks for it once a frame, for a
+second at most.

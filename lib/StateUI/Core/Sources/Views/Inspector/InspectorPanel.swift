@@ -1,0 +1,54 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+/// An inspector docked in a window of its scene, in a layout that takes no
+/// touches of its own, so the page under it stays in use.
+struct InspectorPanel: View {
+    /// The scene it looks at, by its number.
+    let scene: String
+
+    /// Where it docks.
+    let place: Inspector.Place
+
+    @Environment(\.device) private var device
+
+    var body: some View {
+        // Read here, so a panel folding or opening out is the one view built
+        // again - the window under it standing as it was.
+        let collapsed = place == .bottom && InspectorModel.shared.collapsed.contains(scene)
+        let wide = place == .bottom && device.info.formFactor != .phone && device.info.formFactor != .unknown
+
+        let panel = ZStack {
+            if collapsed {
+                InspectorStrip(scene: scene)
+            } else {
+                InspectorView(scene: scene, place: place, wide: wide)
+            }
+        }
+        .background(Look.ground)
+        .stroke(Look.edge)
+        .lineWidth(1)
+        .shape(.roundedRectangle(14))
+        .clipsContent(true)
+        .margin(8)
+
+        if place == .side {
+            // Under the bar, which keeps the page's own buttons in reach.
+            return Grid { panel.gridRow(1).gridColumn(1) }
+                .rows(.fixed(Look.bar), .fill)
+                .columns(.fill, .fixed(Look.side))
+                .letsInputThrough(true)
+        }
+
+        if collapsed {
+            // One line along the bottom, as tall as what it says.
+            return Grid { panel.gridRow(1) }
+                .rows(.fill, .auto)
+                .letsInputThrough(true)
+        }
+
+        return Grid { panel.gridRow(1) }
+            .rows(.proportional(wide ? 1.25 : 1), .proportional(1))
+            .letsInputThrough(true)
+    }
+}

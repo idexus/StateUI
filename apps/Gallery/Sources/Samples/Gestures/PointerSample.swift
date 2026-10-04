@@ -28,14 +28,14 @@ struct PointerSample: SampleContent, ExampleContent {
                 // closure - which is what a get on a per-report value costs.
                 DebugInfoLabel()
 
-                Label(hovering
+                Text(hovering
                     ? "at \\(Int(pointer.x)), \\(Int(pointer.y))"
                     : "move a pointer over this box")
 
                 // Which of the five arrived last. Pressed and released say
                 // where they happened; entered and exited carry no position at
                 // all, and moved's is the line above.
-                Label("last: \\(last)")
+                Text("last: \\(last)")
             }
             .padding(40)
         }
@@ -43,7 +43,7 @@ struct PointerSample: SampleContent, ExampleContent {
         // The box reacts, so its look is part of what it says: the outline is
         // the hover, the fill is the button held down.
         .stroke(hovering ? Palette.accent : Palette.outline)
-        .strokeWidth(hovering ? 2 : 1)
+        .lineWidth(hovering ? 2 : 1)
         .shape(.roundedRectangle(10))
         .background(pressing ? Palette.selected : Palette.raised)
         .onPointerEntered { hovering = true; last = "entered" }
@@ -66,12 +66,12 @@ struct PointerSample: SampleContent, ExampleContent {
         // The position is in the VIEW's own coordinates, not the window's.
         """
 
-    var content: any View {
+    var body: some View {
         ZStack {
             VStack {
                 DebugInfoLabel()
 
-                Label(hovering
+                Text(hovering
                     ? "at \(Int(pointer.x)), \(Int(pointer.y))"
                     : "move a pointer over this box")
                     .fontSize(15)
@@ -80,19 +80,19 @@ struct PointerSample: SampleContent, ExampleContent {
                 // Which of the five arrived last. Pressed and released say
                 // where they happened; entered and exited carry no position at
                 // all, and moved's is the line above.
-                Label("last: \(last)")
+                Text("last: \(last)")
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
             }
             .spacing(6)
-            .padding(40, 100)
+            .padding(horizontal: 40, vertical: 100)
         }
         .style("Card")
         // The box reacts, so its look is part of what it says: the outline is
         // the hover, the fill is the button held down.
         .stroke(hovering ? Palette.accent : Palette.outline)
-        .strokeWidth(hovering ? 2 : 1)
+        .lineWidth(hovering ? 2 : 1)
         .shape(.roundedRectangle(10))
         .background(pressing ? Palette.selected : Palette.raised)
         .onPointerEntered { hovering = true; last = "entered" }
@@ -113,15 +113,15 @@ struct PointerSample: SampleContent, ExampleContent {
         .onPointerExited { hovering = false; pressing = false; last = "exited" }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Five events: entered, exited, moved, pressed and released. A pointer "
+            Text("Five events: entered, exited, moved, pressed and released. A pointer "
                 + "is a mouse, a trackpad or a pen, so on a touch-only device none of "
                 + "them fires.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Three of them carry a position, in the VIEW's own coordinates and not "
+            Text("Three of them carry a position, in the VIEW's own coordinates and not "
                 + "the window's: moved says where the pointer is, pressed and released "
                 + "where the button went down and came back up. Entered and exited carry "
                 + "nothing but the fact.")

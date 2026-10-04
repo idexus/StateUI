@@ -38,6 +38,25 @@ theme, so its fill would stand under the pointer and pressed too: the class
 draws the fill a little fainter under the pointer and fainter again pressed,
 as the theme's own buttons answer.
 
+## A button's picture
+
+A button with a picture shows it as an Image draws one
+([pictures](#pictures)), as GNOME's buttons compose a picture and words:
+with words, a `GtkBox` holds the picture and a label of the button's own,
+across them or down them as the icon's position says - before, above, after
+or below - the icon spacing apart, else libadwaita's 6. The box stands in
+the button's middle however wide the button is, so a button filling its row
+keeps the picture beside its words in the middle: a box left to fill the
+button lays both from its leading edge. With no words, the
+picture alone fills the room inside the padding as its aspect says. The
+button wears GTK's own classes for each, `image-text-button` and
+`image-button`. Its words break as a label's do where the tree says how, and
+stand on one line where it says nothing, as GTK's own buttons stand.
+
+A press is heard as it goes down and as it ends, wherever the pointer ends
+up: a drag gesture of the button's own, which claims nothing, so the button
+still clicks.
+
 ## Runs of words
 
 A label's spans are its words, run by run: the label's text is their words
@@ -107,9 +126,11 @@ only where they differ from the field's own, so the render a keystroke causes
 leaves the user's words and caret alone. Words the program writes put the
 caret after them.
 
-`maximumLength` is the entry's own bound, in characters, as the contract
-counts them: GTK keeps the first characters that fit, from a key, a paste and
-a program's write alike.
+`maximumLength` and `textCase` are kept as words go in: GTK holds no case and
+bounds code points, so the entry's `insert-text` takes what goes in in the
+field's case and its first characters that fit, as the contract counts them
+([typed words](../../host/runtime.md#typed-words)) - from a key, a paste and
+a program's write alike. An editor's buffer does the same.
 
 A field submits when Enter is pressed in it, through the entry's `activate`.
 A test types by writing the entry's words outside a program's write, which
@@ -118,13 +139,19 @@ GTK reports as it reports the user's.
 A field's words stand in its `GtkText`, the text widget a `GtkEntry` and a
 `GtkSearchEntry` both hold, so the two are one view. How the words are taken
 is the tree's where it says so and GTK's where it does not: read only, and
-what the input method is told - spell checked or not, the next word
-suggested, and what the words are for, as GTK's input hints and purpose.
+what the input method is told - the traits the host layer reads once ([what
+typing is given](../../host/runtime.md#what-typing-is-given)) as GTK's input
+hints and purpose: checking, the next word suggested, emoji, capitals at a
+sentence's start, and the keys. GTK holds no hint for correction.
 GTK's text widgets mark no spelling themselves; the input method is what
 checks. A password field hides each character behind a dot. The words stand
 across the field as their alignment says, and the caret and the selection are
 put where the tree put them, in the characters GTK counts, only where the
-tree changed them: the caret at the selection's end, as GTK selects.
+tree changed them: the caret at the selection's end, as GTK selects. GNOME
+selects a field's words whole as it takes the focus; a caret or a selection
+the program put stands over the field's first focus, written again once GTK
+has selected - and once that focus has passed or the user has changed the
+words, GNOME's own way stands.
 
 A field's font and colour are a class of the display-wide sheet
 ([a widget's own box](drawing.md#a-widgets-own-box)) rather than Pango
@@ -177,17 +204,52 @@ A Picker is a `GtkDropDown` over a `GtkStringList` of its choices' words, the
 chosen one shown on its button. The chosen one is written only where the tree
 changed it or the choices changed, so the user's choice is never argued with,
 and the user's choice is reported onto the state it is carried in. GTK gives a
-drop-down no placeholder and no way to open or close its list from outside, so
-the title and the list's opening and closing are not realized.
+drop-down no placeholder and tells no one its list opened or closed, so the
+title and the list's opening and closing are not planned. The words of the
+chosen one - on the drop-down's `button` node - take the tree's font and
+colour; the list keeps the theme's. A GNOME drop-down wears no accent: a
+check in its words' colour marks the choice, so a picker takes no tint.
+
+## A day and a time
+
+A DatePicker and a TimePicker are each a `GtkMenuButton`: its words - a
+label of its own beside the button's arrow - the day or the time, and its
+popover the face the user picks from. Only the user's opening and closing of
+the face are heard, by the host layer's rule
+([a day and a time](../../host/runtime.md#a-day-and-a-time)).
+
+A DatePicker's face is a `GtkCalendar`, which stays open as the user picks,
+as GNOME's calendars do. Its day is written on the button in the user's own
+way - `%x` - and `"D"` writes the long form, the weekday and the month by
+name; another pattern writes the short form. GTK's calendar offers every
+day: the range lives in the host, and a day the user picks past it is moved
+to that end, as a day the program writes is.
+
+GTK has no time picker. A TimePicker's face is the clock GNOME's own
+applications set a time with: the hour and the minute, each an upright
+`GtkSpinButton` going round past its ends and written in two digits, and on
+a twelve-hour clock a button turning the half of the day, named as the
+locale names it. Each wheel the user moves is one change, heard at once. The
+time is written on the button in the user's clock, hours and minutes; the
+format is not read.
 
 ## What shows work
 
 A progress bar is a `GtkProgressBar` over the range 0 to 1, a fraction past
 either end standing at that end; an activity indicator is a `GtkSpinner`,
-turning while its work runs and drawing nothing while it does not. A tint is
-a class of the display-wide sheet ([a widget's own box](drawing.md#a-widgets-own-box)):
-the bar's done part - its trough's `progress` - takes it as its background,
-the spinner as its colour.
+turning while its work runs and drawing nothing while it does not.
+
+## A control's accent
+
+A control's tint is its one accent colour, where GNOME's theme draws its
+accent: a switch's track while it is on, a ticked box or radio, a slider's
+track up to its thumb, a progress bar's done part and a spinner. Each is a
+node GTK documents for the control, so the tint is a class of the
+display-wide sheet ([a widget's own box](drawing.md#a-widgets-own-box))
+filling that node - `switch:checked`, `check:checked`, `radio:checked`,
+`trough > highlight`, `trough > progress` - and the spinner's colour; the
+theme's light under the pointer and pressed lies over it as over its own
+accent.
 
 ## What assistive technology meets
 
@@ -213,3 +275,23 @@ stands a context of no assistive technology, which GTK 4.14 announces through
 a call it lacks - the process dies. There no one listens, and the act is
 answered all the same.
 
+## A web view
+
+The web view on GTK is a backend, `lib/Backends/WebView.GTK`: WebKitGTK
+6.0's web view, made through the GTK host's registration of an
+application's own controls, so an application that shows none links no
+WebKit. A page at an address is loaded; a document written in place is shown
+at its own address, and one with none is gone to as a `data:` address, which
+WebKit keeps in the page's history ([a document with no
+address](../../host/web.md#a-document-with-no-address)). A page asked for is
+loaded once the element's values are applied, so the agent the tree gives
+is the one it is asked with. What the page does comes back as WebKit tells
+it: a navigation as its load starts, why it began by the host layer's rule -
+the program's step, else what WebKit's decision on it says (a link or a form
+a new page, a reload the page again, a step through the history unknown,
+since WebKit tells no step back from one forward) - and as its load
+finishes, or fails, a load called off a cancel; whether there is a page
+behind and ahead, said as the history changes; and the end of its web
+process. A script's answer is the JSON WebKit writes its value in, read by
+the host layer's rule. WebKit's calls are declared by the backend itself
+over untyped pointers, as GTK's headers belong to the host's own module.

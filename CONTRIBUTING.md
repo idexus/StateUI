@@ -3,6 +3,53 @@
 StateUI is one platform-neutral Swift model with independent native hosts.
 Changes should make that model smaller, clearer, and more deterministic.
 
+## Know the decisions first
+
+[Why StateUI is shaped this way](docs/concepts/why.md) states the decisions
+every API follows and the shapes deliberately rejected - among them a modifier
+without an argument such as `.bold()` or `.center()`, tracking `@Observable`
+models, and routers. Every contribution follows them. A rejected shape is not a
+gap waiting to be filled: a change to one of these decisions starts as a
+**Proposal** issue that answers the reason the page gives.
+
+## Start with an issue
+
+| You have                             | Start with           |
+| ------------------------------------ | -------------------- |
+| a bug                                | a **Bug** issue      |
+| a feature, an API or a design change | a **Proposal** issue |
+| a typo, docs or maintenance          | a pull request       |
+
+Every bug fix starts with an issue. Before writing the fix:
+
+1. Open a **Bug** issue with the smallest example that reproduces it.
+2. Confirm the behavior on the current `main`.
+3. Create a branch from `main`, named for the issue:
+   `fix/<issue>-<short-name>`.
+4. Add a regression test that fails because of the reported behavior.
+5. Implement the fix.
+6. Run the suites, and the Gallery, of every host the change reaches.
+7. Open a pull request against `main` that links the issue with
+   `Fixes #<issue>`.
+
+```bash
+git switch main
+git pull
+git switch -c fix/142-button-disabled-state
+```
+
+The issue records the problem and its reproduction; the pull request records
+the solution. A bug-fix pull request without an issue is not reviewed.
+
+A **Proposal** issue comes first, agreed before any code, for a new or renamed
+public API, a change to the host contract, a new dependency, a change to one
+of the decisions in [Why StateUI is shaped this way](docs/concepts/why.md), or
+another substantial design decision. Its branch is `feature/<issue>-<short-name>`.
+
+A documentation-only correction, or repository maintenance that changes
+nothing StateUI does, needs no issue and may go straight to a pull request
+(`docs/<short-name>`, `chore/<short-name>`).
+
 ## Begin with evidence
 
 Reproduce the behavior before changing it. A testable defect should have a
@@ -15,15 +62,18 @@ proves only the contract it exercises.
 A control, property, or event decision reaches every active layer together:
 
 - Swift API and vocabulary;
-- `HostContract` ownership;
+- its `ElementContract` and the layer each member declares;
 - every applicable host;
 - focused core and host tests;
 - the Gallery, on every host the change reaches;
 - the handbook (`README.md`, `docs/`, and public `///` documentation).
 
-Update `docs/platform-contract.md` in the same slice. Add `✅` only when the
-control or complete member group is implemented and exercised by that host's
-tests; absent, partial, and unverified support stays unmarked.
+Render `docs/platform-contract.md` and `docs/controls/` again in the same
+slice. Every mark is the verdict of a test: a host's run of its suite with
+`STATEUI_UPDATE_EXPORTS=1` writes them under `lib/StateUI/exports/marks/<host>/`,
+and `STATEUI_UPDATE_DOCS=1 swift
+test --filter ControlDictionaryTests` writes the documents from them. No mark
+is written by hand.
 
 Remove obsolete API, examples, and tests when the contract deliberately drops
 the capability. Do not preserve aliases unless compatibility is an explicit
@@ -31,13 +81,13 @@ requirement.
 
 ## Keep the core platform-neutral
 
-Code under `lib/StateUI/Sources` and `lib/StateUI.Host/Sources` does not
+Code under `lib/StateUI/Core/Sources` and `lib/StateUI/StateUI.Host/Sources` does not
 import Foundation or a platform UI framework. Each host is a sibling package of
-its own - `lib/StateUI.AppKit`, `lib/StateUI.Android`, `lib/StateUI.WinUI`,
-`lib/StateUI.GTK` - standing on the host layer, with its build in
-`.scripts/<Platform>`. Swift written for one host alone stands under that
-host's condition - `#if APPKIT`, `#if ANDROID`, `#if WINUI`, `#if GTK` - which
-its builds define.
+its own - `lib/StateUI/StateUI.AppKit`, `lib/StateUI/StateUI.UIKit`, `lib/StateUI/StateUI.Android`,
+`lib/StateUI/StateUI.WinUI`, `lib/StateUI/StateUI.GTK` - standing on the host layer, with its
+build in `.scripts/<Platform>`. Swift written for one host alone stands under
+that host's condition - `#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`,
+`#if GTK` - which its builds define.
 
 The core schedules nothing on Foundation's `Timer` or `RunLoop`, or on
 `DispatchQueue.main`: nothing drains them on Android or Windows. Work for the
@@ -66,7 +116,8 @@ they need to try.
 Run the suite owned by the area while iterating, then every suite before
 handing off a complete vertical change. In VS Code, run **StateUI: Run Tests**
 once with AppKit and once with Android chosen. From a terminal,
-`.scripts/test-native.sh` runs every Swift suite on this Mac, and
+`.scripts/test-native.sh` runs the suites of the library, the host layer, the
+conformance package, the AppKit host and the applications on this Mac, and
 `.scripts/Android/test-android.sh <serial>` the Android host's on a device:
 
 ```bash
@@ -88,9 +139,10 @@ terminal:
 Run one application build at a time. Concurrent application builds share Swift
 object directories and can silently execute stale output.
 
-Open every pull request against `dev`, never `main`: `main` takes only the
-releases merged from `dev`. A pull request runs the `Tests` workflow on macOS
-and the suites on `Windows` and `Linux`.
+Open every pull request against `main`. A release is a tag on `main`. A pull
+request runs the core's workflows - `Core macOS`, `Core Windows` and
+`Core Linux` - and each host's - `AppKit`, `UIKit`, `Android`, `WinUI` and
+`GTK`.
 
 ## Keep changes reviewable
 

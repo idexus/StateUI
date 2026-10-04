@@ -4,31 +4,31 @@
 import Foundation
 import XCTest
 
-/// An element has ONE public road: its contract.
+/// The roads the public API closes, each beside the one it offers.
 ///
-/// Every road the element contract replaced - a token and a list of values
-/// where a member and its declared type now stand - and every element
-/// withdrawn by decision is written here the way an application would have
-/// written it, and must NOT compile against the library's public module; the
-/// road through the contract, beside it, must.
-/// The pair is what makes the refusal mean something: the two listings differ
-/// in that one spelling, so a failure is the spelling's and never a typo's.
+/// A member is reached through its contract, never by a token and a list of
+/// values; a view stands where a view stands, never among a text's runs or a
+/// map's markers; a scene is made of windows, and an application of scenes. Each closed road is written here
+/// the way an application would write it, and must NOT compile against the
+/// library's public module; the open road beside it must. The pair is what makes
+/// the refusal mean something: the two listings differ in that one spelling, so
+/// a failure is the spelling's and never a typo's.
 ///
 /// Compiled as an application compiles - a plain `import StateUI` - with the
 /// compiler and the module the handbook's examples are checked against.
 final class ContractRoadsTests: XCTestCase {
-    /// A road taken away, and the contract's road to the same place.
+    /// A road the API closes, and the road it offers to the same place.
     private struct Road {
         let name: String
-        let removed: String
-        let contract: String
+        let closed: String
+        let open: String
     }
 
     /// An application's own control, acts and event - what every listing leans
     /// on, declared the way an application declares them.
     private static let declarations = """
-        enum MarkerContract: ElementContract {
-            static let nodeType: NodeType = "Maps.Marker"
+        enum BeaconContract: ElementContract {
+            static let nodeType: NodeType = "Maps.Beacon"
             static let tiers: [any Contract.Type] = [ViewContract.self]
 
             static let title = ElementProperty<Self, String>("title")
@@ -38,8 +38,8 @@ final class ContractRoadsTests: XCTestCase {
             static let members: [any ContractMember] = [title, level, tapped]
         }
 
-        struct Marker: View {
-            var node = Node(contract: MarkerContract.self)
+        struct Beacon: ElementView {
+            var node = Node(contract: BeaconContract.self)
         }
 
         enum NotesContract: ApplicationTier {
@@ -53,167 +53,126 @@ final class ContractRoadsTests: XCTestCase {
         }
         """
 
-    /// Each road the contract replaced, beside the contract's own.
+    /// Each road the API closes, beside the one it offers.
     private static let roads = [
         Road(
             name: "a property set by its token",
-            removed: #"_ = Label("Hi").setValue(Prop("fontSize"), .number(20))"#,
-            contract: #"_ = Label("Hi").setValue(FontElementContract.fontSize, 20)"#),
+            closed: #"_ = Text("Hi").setValue(Prop("fontSize"), .number(20))"#,
+            open: #"_ = Text("Hi").setValue(FontElementContract.fontSize, 20)"#),
         Road(
             name: "a property driven from a state by its token",
-            removed: """
+            closed: """
                 @State var level = 0.5
-                _ = Marker().setValue(Prop("level"), on: $level, mode: .inOut, kind: .property)
+                _ = Beacon().setValue(Prop("level"), on: $level, mode: .inOut, kind: .property)
                 """,
-            contract: """
+            open: """
                 @State var level = 0.5
-                _ = Marker().setValue(MarkerContract.level, on: $level, mode: .inOut, kind: .property)
+                _ = Beacon().setValue(BeaconContract.level, on: $level, mode: .inOut, kind: .property)
                 """),
         Road(
             name: "an event heard by its token",
-            removed: #"_ = Marker().onEvent(Event("tapped")) { payload in _ = payload }"#,
-            contract: "_ = Marker().onEvent(MarkerContract.tapped) { index in _ = index }"),
+            closed: #"_ = Beacon().onEvent(Event("tapped")) { payload in _ = payload }"#,
+            open: "_ = Beacon().onEvent(BeaconContract.tapped) { index in _ = index }"),
         Road(
             name: "an act called by its token",
-            removed: #"_ = try await stateUICall(Act("Notes.Export"), [.string("draft")])"#,
-            contract: #"_ = try await stateUICall(NotesContract.export, "draft")"#),
+            closed: #"_ = try await stateUICall(Act("Notes.Export"), [.string("draft")])"#,
+            open: #"_ = try await stateUICall(NotesContract.export, "draft")"#),
         Road(
             name: "an act sent by its token",
-            removed: #"stateUISend(Act("Notes.Log"), [.string("opened")])"#,
-            contract: #"stateUISend(NotesContract.log, "opened")"#),
+            closed: #"stateUISend(Act("Notes.Log"), [.string("opened")])"#,
+            open: #"stateUISend(NotesContract.log, "opened")"#),
         Road(
             name: "an application's event heard by its token",
-            removed: #"_ = HostEvents.on(Event("Notes.Changed")) { payload in _ = payload }"#,
-            contract: "_ = HostEvents.on(NotesContract.changed) { online in _ = online }"),
+            closed: #"_ = HostEvents.on(Event("Notes.Changed")) { payload in _ = payload }"#,
+            open: "_ = HostEvents.on(NotesContract.changed) { online in _ = online }"),
         Road(
             name: "an aim's identity taken to aim by hand",
-            removed: "_ = try Aim(TextField.self).target",
-            contract: "try await Aim(TextField.self).call(VisualElementContract.unfocus)"),
+            closed: "_ = try Aim(TextField.self).target",
+            open: "try await Aim(TextField.self).call(VisualElementContract.unfocus)"),
         Road(
             name: "a node of a type named by hand",
-            removed: #"_ = Node(type: "Maps.Marker")"#,
-            contract: "_ = Node(contract: MarkerContract.self)"),
+            closed: #"_ = Node(type: "Maps.Beacon")"#,
+            open: "_ = Node(contract: BeaconContract.self)"),
         Road(
             name: "a property written into a node by its token",
-            removed: """
-                var node = Node(contract: MarkerContract.self)
+            closed: """
+                var node = Node(contract: BeaconContract.self)
                 node.props[Prop("title")] = .string("Harbour")
                 _ = node
                 """,
-            contract: #"_ = Marker().setValue(MarkerContract.title, "Harbour")"#),
+            open: #"_ = Beacon().setValue(BeaconContract.title, "Harbour")"#),
         Road(
             name: "a node's type written over",
-            removed: """
-                var node = Node(contract: MarkerContract.self)
-                node.type = "Maps.Pin"
+            closed: """
+                var node = Node(contract: BeaconContract.self)
+                node.type = "Maps.Marker"
                 _ = node
                 """,
-            contract: "_ = Node(contract: MarkerContract.self).type"),
+            open: "_ = Node(contract: BeaconContract.self).type"),
         Road(
             name: "a handler put into a node by its token",
-            removed: """
-                var node = Node(contract: MarkerContract.self)
+            closed: """
+                var node = Node(contract: BeaconContract.self)
                 node.events[Event("tapped")] = {}
                 _ = node
                 """,
-            contract: "_ = Marker().onEvent(MarkerContract.tapped) { _ in }"),
-        Road(
-            name: "the withdrawn name ControlContract",
-            removed: """
-                enum LampContract: ControlContract {
-                    static let nodeType: NodeType = "Test.Lamp"
-                    static let members: [any ContractMember] = []
-                }
-                """,
-            contract: """
-                enum LampContract: ElementContract {
-                    static let nodeType: NodeType = "Test.Lamp"
-                    static let members: [any ContractMember] = []
-                }
-                """),
-        Road(
-            name: "the withdrawn SwipeView",
-            removed: #"_ = SwipeView { Label("Row") }"#,
-            contract: #"_ = Label("Row").onSwiped { _ in }"#),
-        Road(
-            name: "the withdrawn SwipeAction",
-            removed: #"_ = SwipeAction("Delete")"#,
-            contract: #"_ = MenuItem("Delete")"#),
-        Road(
-            name: "the withdrawn named store",
-            removed: #"_ = PersistentStorage("Notes.Json")"#,
-            contract: #"_ = PersistentKey("notes.draft", of: String.self)"#),
-        Road(
-            name: "the withdrawn RefreshView",
-            removed: #"_ = RefreshView { ScrollView { Label("Rows") } }"#,
-            contract: #"_ = ScrollView { Label("Rows") }"#),
-        Road(
-            name: "a button's withdrawn borderColor",
-            removed: ##"_ = Button("Save").borderColor(Color("#888888"))"##,
-            contract: ##"_ = Button("Save").stroke(Color("#888888"))"##),
-        Road(
-            name: "a button's withdrawn borderWidth",
-            removed: #"_ = Button("Save").borderWidth(1)"#,
-            contract: #"_ = Button("Save").strokeWidth(1)"#),
-        Road(
-            name: "a button's withdrawn cornerRadius",
-            removed: #"_ = Button("Save").cornerRadius(8)"#,
-            contract: #"_ = Button("Save").shape(.roundedRectangle(8))"#),
-        Road(
-            name: "the withdrawn Border",
-            removed: ##"_ = Border { Label("Card") }.stroke(Color("#888888"))"##,
-            contract: ##"_ = ZStack { Label("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),
-        Road(
-            name: "the withdrawn AbsoluteLayout",
-            removed: #"_ = AbsoluteLayout { Label("Corner") }"#,
-            contract: #"_ = ZStack { Label("Corner") }"#),
-        Road(
-            name: "the withdrawn absolute bounds",
-            removed: #"_ = Label("Corner").absoluteLayoutBounds(Rect(0, 0, 120, 40))"#,
-            contract: #"_ = Label("Corner").area(.absolute(0, 0, 120, 40))"#),
-        Road(
-            name: "the withdrawn proportions",
-            removed: #"_ = Label("Half").absoluteLayoutProportions(.all)"#,
-            contract: #"_ = Label("Half").area(.proportional(0.5, 0, 0.5, 1))"#),
+            open: "_ = Beacon().onEvent(BeaconContract.tapped) { _ in }"),
         Road(
             name: "a visual state by a name of the author's own",
-            removed: #"_ = Button("Save").visualState(VisualState("Hovered")) { $0.opacity(0.5) }"#,
-            contract: #"_ = Button("Save").visualState(.pointerOver) { $0.opacity(0.5) }"#),
+            closed: #"_ = Button("Save").visualState(VisualState("Hovered")) { $0.opacity(0.5) }"#,
+            open: #"_ = Button("Save").visualState(.pointerOver) { $0.opacity(0.5) }"#),
         Road(
-            name: "the window's one overlay",
-            removed: "WindowSession().overlay = nil",
-            contract: #"WindowSession().overlays[OverlayKey("notice")] = nil"#),
+            name: "an action standing in a stack",
+            closed: #"_ = VStack { ToolbarItem("Save") }"#,
+            open: #"_ = VStack { Text("Notes") }.toolbar { ToolbarItem("Save") }"#),
         Road(
-            name: "the withdrawn resting state",
-            removed: "_ = RadioButton.restingVisualState",
-            contract: "_ = VisualState<RadioButton>.unchecked"),
+            name: "a run of text standing in a stack",
+            closed: #"_ = VStack { TextSpan("Hi") }"#,
+            open: #"_ = VStack { Text().spans { TextSpan("Hi") } }"#),
         Road(
-            name: "a visual state's withdrawn group",
-            removed: #"_ = Switch().visualState(.on, group: "Value") { $0.opacity(0.5) }"#,
-            contract: "_ = Switch().visualState(.on) { $0.opacity(0.5) }"),
+            name: "a window that may show nothing",
+            closed: "struct Lone: Scene { var body: some Scene { WindowGroup { if Bool.random() { Text(\"a\") } } } }",
+            open: "struct Lone: Scene { var body: some Scene { WindowGroup { if Bool.random() { Text(\"a\") } else { Text(\"b\") } } } }"),
         Road(
-            name: "the withdrawn unfocused state",
-            removed: #"_ = Button("Save").visualState(.unfocused) { $0.opacity(0.5) }"#,
-            contract: #"_ = Button("Save").visualState(.focused) { $0.opacity(1) }"#),
+            name: "a view standing among a scene's windows",
+            closed: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; Text(\"b\") } }",
+            open: "struct Notes: Scene { var body: some Scene { WindowGroup { Text(\"a\") }; Window(.debugInspector) { Text(\"b\") } } }"),
         Road(
-            name: "the withdrawn selected state",
-            removed: #"_ = Label("Row").visualState(.selected) { $0.opacity(0.5) }"#,
-            contract: #"_ = Label("Row").visualState(.pointerOver) { $0.opacity(0.5) }"#),
+            name: "a scene standing in a scene",
+            closed: "struct Tools: Scene { var body: some Scene { Window(.debugInspector) { Text(\"a\") } } }; struct Notes: Scene { var body: some Scene { Tools() } }",
+            open: "struct Tools: Scene { var body: some Scene { Window(.debugInspector) { Text(\"a\") } } }; struct Notes: Application { var body: some Scene { Tools() } }"),
         Road(
-            name: "the host's withdrawn visual state report",
-            removed: #"_ = Button("Save").onEvent(VisualElementContract.visualStateChanged) { _ in }"#,
-            contract: #"_ = Button("Save").onVisualStateChanged { _ in }"#),
+            name: "a view standing among an application's scenes",
+            closed: "struct Notes: Application { var body: some Scene { WindowGroup { Text(\"a\") }; Text(\"b\") } }",
+            open: "struct Notes: Application { var body: some Scene { WindowGroup { Text(\"a\") }; Window(.debugInspector) { Text(\"b\") } } }"),
         Road(
-            name: "the withdrawn VisualState node",
-            removed: "_ = Node(contract: VisualStateContract.self)",
-            contract: #"_ = Button("Save").visualState(.disabled) { $0.opacity(0.5) }"#),
+            name: "two views in the title's place",
+            closed: #"_ = Text("Notes").titleView { Button("Back"); Button("Next") }"#,
+            open: #"_ = Text("Notes").titleView { HStack { Button("Back"); Button("Next") } }"#),
         Road(
-            name: "the withdrawn Setters node",
-            removed: "_ = Node(contract: SettersContract.self)",
-            contract: #"_ = Button("Save").visualState(.disabled) { $0.opacity(0.5) }"#),
+            name: "two views as a composed view's content",
+            closed: "struct Pair: View { var body: some View { Text(\"a\"); Text(\"b\") } }",
+            open: "struct Pair: View { var body: some View { VStack { Text(\"a\"); Text(\"b\") } } }"),
+        Road(
+            name: "a view standing among a label's runs",
+            closed: #"_ = Text().spans { Text("Hi") }"#,
+            open: #"_ = Text().spans { TextSpan("Hi") }"#),
+        Road(
+            name: "a view standing among a map's markers",
+            closed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).markers { Text("Castle") }"#,
+            open: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).markers { Marker("Castle") }"#),
+        Road(
+            name: "a view standing on the menu bar",
+            closed: #"_ = Text("Notes").menuBar { Text("File") }"#,
+            open: #"_ = Text("Notes").menuBar { Menu("File") { MenuItem("New") } }"#),
+        Road(
+            name: "a view standing in a menu",
+            closed: #"_ = Menu("File") { Text("New") }"#,
+            open: #"_ = Menu("File") { MenuItem("New") }"#),
     ]
 
-    func testEveryUntypedRoadIsClosedAndItsContractRoadOpen() throws {
+    /// Each closed road fails to compile, and the open road beside it compiles.
+    func testEveryClosedRoadIsClosedAndItsOpenRoadOpen() throws {
         guard let module = DocumentationExamplesTests.builtModuleDirectory() else {
             // Never a skip: a check that did not run reads as one that passed.
             return XCTFail("no StateUI.swiftmodule beside the test bundle - no road was checked")
@@ -226,8 +185,8 @@ final class ContractRoadsTests: XCTestCase {
 
         // Every listing in a file of its own, a road's two side by side.
         let listings = Self.roads.flatMap { road in
-            [(road: road.name, compiles: false, source: road.removed),
-             (road: road.name, compiles: true, source: road.contract)]
+            [(road: road.name, compiles: false, source: road.closed),
+             (road: road.name, compiles: true, source: road.open)]
         }
         let files = try listings.enumerated().map { index, listing in
             let file = scratch.appendingPathComponent("road_\(index).swift")

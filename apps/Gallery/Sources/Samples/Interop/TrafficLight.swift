@@ -43,7 +43,7 @@ public enum TrafficLightContract: ElementContract {
 /// The Swift half of the traffic light: a view whose node its contract makes.
 /// `setValue` writes its property and `onEvent` hears its event; margins,
 /// alignment, opacity and gestures come with `View`.
-public struct TrafficLight: View {
+public struct TrafficLight: ElementView {
     public var node = Node(contract: TrafficLightContract.self)
 
     /// A light showing nothing until `signal(_:)` says what.

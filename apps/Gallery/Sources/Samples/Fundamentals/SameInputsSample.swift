@@ -42,42 +42,42 @@ struct SameInputsSample: SampleContent, ExampleContent {
             }
         }
 
-        private struct Block: ContentView {
+        private struct Block: View {
             let caption: String
             let value: String
 
-            var content: any View {
+            var body: some View {
                 VStack {
-                    Label("built with \\(caption): \\(value)")
+                    Text("built with \\(caption): \\(value)")
                     DebugInfoLabel()
                 }
             }
         }
 
-        private struct Reads: ContentView {
+        private struct Reads: View {
             @Binding var count: Int
 
-            var content: any View {
+            var body: some View {
                 VStack {
-                    Label("reads the count: \\(count)")
+                    Text("reads the count: \\(count)")
                     DebugInfoLabel()
                 }
             }
         }
 
-        private struct Row: ContentView {
+        private struct Row: View {
             let item: String
 
-            var content: any View {
+            var body: some View {
                 VStack {
-                    Label(item)
+                    Text(item)
                     DebugInfoLabel()
                 }
             }
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             // This closure reads the count, so a press builds it again - and
             // constructs every view below afresh. Which of them is BUILT is
@@ -85,7 +85,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Button("Count \(counter)")
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
@@ -99,7 +99,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
             // time, and reading it.
             Reads(count: $counter, tint: Palette.brand)
 
-            Label("Rows built with their item")
+            Text("Rows built with their item")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -115,16 +115,16 @@ struct SameInputsSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Press the button and read the three counts: the first block stands "
+            Text("Press the button and read the three counts: the first block stands "
                 + "still and the other two move, each for a reason of its own. The rows "
                 + "under them are built with their item alone, so the button builds none "
                 + "of them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A composed view - a ContentView of your own - is built again in two "
+            Text("A composed view - a View of your own - is built again in two "
                 + "cases and no other: when what it was built with changed, or when a "
                 + "state it read changed. Otherwise it is carried whole, with its state, "
                 + "its handlers and everything under it, however often the view around it "
@@ -132,7 +132,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("What it was built with is its stored properties. A value counts as "
+            Text("What it was built with is its stored properties. A value counts as "
                 + "the same when it is equal; a state lent to it - a Binding - when it is "
                 + "the same state, whatever the value in it; an object when it is the same "
                 + "object. A closure handed to a view always counts as changed: nothing "
@@ -140,7 +140,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The third block shows the other half of the rule. Its one input is the "
+            Text("The third block shows the other half of the rule. Its one input is the "
                 + "same state every time, so by its inputs alone it would be carried - "
                 + "but it READS that state, and whoever reads a value is built again when "
                 + "it changes.")
@@ -154,19 +154,19 @@ struct SameInputsSample: SampleContent, ExampleContent {
 /// One block: the caption, and the value it was built with. Whether it is
 /// built again is decided by that value alone, which is what its own reading
 /// says.
-private struct Block: ContentView {
+private struct Block: View {
     let caption: String
     let value: String
     let tint: Color
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label("Built with \(caption)")
+            Text("Built with \(caption)")
                 .fontSize(12)
                 .fontAttributes(.bold)
                 .textColor(tint)
 
-            Label(value)
+            Text(value)
                 .fontSize(20)
                 .fontAttributes(.bold)
 
@@ -178,18 +178,18 @@ private struct Block: ContentView {
 }
 
 /// A block lent the count, and reading it.
-private struct Reads: ContentView {
+private struct Reads: View {
     @Binding var count: Int
     let tint: Color
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label("Reads the count")
+            Text("Reads the count")
                 .fontSize(12)
                 .fontAttributes(.bold)
                 .textColor(tint)
 
-            Label("\(count)")
+            Text("\(count)")
                 .fontSize(20)
                 .fontAttributes(.bold)
 
@@ -201,17 +201,17 @@ private struct Reads: ContentView {
 }
 
 /// One row, built with its item and nothing else.
-private struct Row: ContentView {
+private struct Row: View {
     let item: String
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label(item)
+            Text(item)
                 .fontSize(15)
 
             DebugInfoLabel()
         }
         .spacing(2)
-        .padding(12, 8)
+        .padding(horizontal: 12, vertical: 8)
     }
 }

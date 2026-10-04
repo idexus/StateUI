@@ -1,0 +1,4 @@
+# revision 1.1
+ActivityIndicator: ✅
+ActivityIndicator.frameChanged: ✅
+ActivityIndicator.isAnimating: ✓ read isAnimating of ActivityIndicator: the host's own flag; the indicator holds none to read

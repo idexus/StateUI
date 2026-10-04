@@ -22,8 +22,8 @@ StateUI knows are meaningless out of the patch.
 
 ```text
   a place or a count       gridRow, gridColumn and their spans, tapCount, panTouchCount,
-                           selectedIndex, currentPage, position, count, maximumVisible,
-                           cursorPosition, selectionLength, maximumLength, maximumLines, zIndex
+                           selectedIndex, selectedTab, cursorPosition, selectionLength,
+                           maximumLength, maximumLines, zIndex
   a range or a region      a slider's and a stepper's minimum and maximum, a stepper's step,
                            a map's region, a pin's location
   a placement              area: the layout's own
@@ -31,7 +31,7 @@ StateUI knows are meaningless out of the patch.
   a state's number         panXChannel, panYChannel, scrollOffset
   a list drawn whole       a polygon's or a polyline's points, a stroke's dash pattern
   a gesture's threshold    swipeThreshold
-  where the host puts it   a toolbar item's placement and priority
+  where the host puts it   a toolbar item's placement, a toolbar group's side and order
 ```
 
 `testAPlaceOrACountNeverTravels` holds that the differ honours every member
@@ -47,11 +47,11 @@ its member says `cleared: false`, and losing it builds the whole element
 again instead:
 
 ```text
-  a gesture's settings           allowDrop, canDrag, dragText, tapCount, panTouchCount,
+  a gesture's settings           allowsDrop, canDrag, dragText, tapCount, panTouchCount,
                                  swipeDirection, swipeThreshold: they belong to the recognizer
   a list's items                 a picker's options, which are data
-  where the host puts an item    a toolbar item's placement and priority, a swipe's side
-  a choice                       selectedIndex, currentPage: clearing would move it
+  where the host puts an item    a toolbar item's placement, a toolbar group's side and order
+  a choice                       selectedIndex, selectedTab: clearing would move it
   what keeps a platform window   windowType, windowValue, floatsOnTop, hidesWhenInactive
   where a map opens              region
 ```

@@ -64,7 +64,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
 
             Switch($enabled)
 
-            Label("entered \\(entered) · pressed \\(presses) times")
+            Text("entered \\(entered) · pressed \\(presses) times")
 
             // A RadioButton has two states of its own, following isOn.
             RadioButton("Ready")
@@ -77,7 +77,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -118,7 +118,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             HStack {
-                Label("Enabled")
+                Text("Enabled")
                     .fontSize(14)
                     .verticalAlignment(.center)
 
@@ -129,7 +129,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            Label("entered \(entered) · pressed \(presses) times")
+            Text("entered \(entered) · pressed \(presses) times")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -147,8 +147,8 @@ struct VisualStateSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
-        Label("Hold each button down: the left crosses to its pressed colour, the right arrives at it. "
+    var notes: (any View)? {
+        Text("Hold each button down: the left crosses to its pressed colour, the right arrives at it. "
             + "Turn Enabled off for the disabled look, and choose a radio button for the checked one.")
             .fontSize(12)
             .textColor(Palette.subtle)

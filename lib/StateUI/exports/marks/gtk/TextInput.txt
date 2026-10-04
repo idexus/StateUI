@@ -1,0 +1,37 @@
+# revision 1.1
+SearchField.cursorPosition: ✅
+SearchField.inputPurpose: ✅
+SearchField.isEnabled: ✅
+SearchField.isReadOnly: ✅
+SearchField.isSpellCheckEnabled: ✅
+SearchField.isTextPredictionEnabled: ✅
+SearchField.maximumLength: ✅
+SearchField.placeholder: ✅
+SearchField.placeholderColor: ✓ read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+SearchField.selectionLength: ✅
+SearchField.text: ✅
+SearchField.textChanged: ✅
+TextEditor.cursorPosition: ✅
+TextEditor.inputPurpose: ✅
+TextEditor.isEnabled: ✅
+TextEditor.isReadOnly: ✅
+TextEditor.isSpellCheckEnabled: ✅
+TextEditor.isTextPredictionEnabled: ✅
+TextEditor.maximumLength: ✅
+TextEditor.placeholder: ✅
+TextEditor.placeholderColor: ✓ read placeholderColor of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+TextEditor.selectionLength: ✅
+TextEditor.text: ✅
+TextEditor.textChanged: ✅
+TextField.cursorPosition: ✅
+TextField.inputPurpose: ✅
+TextField.isEnabled: ✅
+TextField.isReadOnly: ✅
+TextField.isSpellCheckEnabled: ✅
+TextField.isTextPredictionEnabled: ✅
+TextField.maximumLength: ✅
+TextField.placeholder: ✅
+TextField.placeholderColor: ✓ read placeholderColor of TextField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+TextField.selectionLength: ✅
+TextField.text: ✅
+TextField.textChanged: ✅

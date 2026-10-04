@@ -1,9 +1,0 @@
-# revision 1.1
-Button.padding: cannot read padding of Button - AppKit's driver has no path for it yet
-Grid.padding: ✅
-HStack.padding: ✅
-Label.padding: ✅
-RadioButton.padding: cannot read padding of RadioButton - AppKit's driver has no path for it yet
-ScrollView.padding: ✅
-VStack.padding: ✅
-ZStack.padding: ✅

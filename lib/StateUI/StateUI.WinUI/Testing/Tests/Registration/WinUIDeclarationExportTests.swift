@@ -1,0 +1,86 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// What this runtime says about itself, written to lib/StateUI/exports/ and held to it (`WinUIExports`): the registrations are
+// the declaration, so nothing here can disagree with the code.
+
+import Foundation
+@_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
+@testable import StateUIWinUI
+@testable import StateUIWinUIDriver
+import XCTest
+
+final class WinUIDeclarationExportTests: XCTestCase {
+    /// The host with its backends, as an application registering them runs it.
+    override func setUp() {
+        onUIThread { WinUIBackends.registered }
+    }
+
+    /// The exports and the revisions their verdicts stand at are the library's files: a run reading another place
+    /// stops at its first family.
+    func testTheExportsAndTheirRevisionsAreTheLibrarys() {
+        XCTAssertTrue(FileManager.default.fileExists(atPath: WinUIExports.folder.appendingPathComponent("winui.txt").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: WinUIExports.revisionFile.path), WinUIExports.revisionFile.path)
+    }
+
+    /// The export is what the registry says, to the line.
+    @MainActor
+    func testWhatThisHostDeclaresIsWhatItExports() throws {
+        try WinUIExports.hold(WinUIRealization.declaration.text, at: "winui.txt")
+    }
+
+    /// The export is deterministic: the same registry writes the same text.
+    @MainActor
+    func testTheSameRegistryWritesTheSameText() {
+        XCTAssertEqual(WinUIRealization.declaration.text, WinUIRealization.declaration.text)
+    }
+
+    /// Every name in the export is one the contracts declare.
+    @MainActor
+    func testEveryNameInTheExportIsOneTheContractsKnow() {
+        let unknown = WinUIRealization.declaration.undeclared
+
+        XCTAssertTrue(
+            unknown.isEmpty,
+            "the WinUI export names what no contract declares: "
+                + unknown.map { "\($0.element).\($0.member)" }.joined(separator: ", "))
+    }
+
+    /// Every entry the host shows as unsupported is one its realization says it realizes none of, and none the
+    /// registry makes is.
+    @MainActor
+    func testWhatThisHostShowsAsUnsupportedItSaysItRealizesNoneOf() {
+        // A closure, not a key path: a key path through an existential metatype crashes Swift 6.4's SILGen.
+        let types = LibraryContracts.elements.map { $0.nodeType }
+        let unsupported = Set(types.filter { WinUIElement.showsUnsupported($0) }.map(\.name))
+        let made = Set(WinUIRegistrations.registry.realization.elements)
+
+        XCTAssertEqual(unsupported.subtracting(WinUIRealization.unmade).sorted(), [])
+        XCTAssertEqual(made.intersection(WinUIRealization.unmade).sorted(), [])
+    }
+
+    /// What this host wrote of its register by hand is true of the contracts: no record names what its owner does
+    /// not declare, none is written twice, a partial one says what is missing and a never says why.
+    @MainActor
+    func testTheRegisterThisHostWroteIsTrueOfTheContracts() {
+        XCTAssertEqual(WinUIRealization.register.problems, [])
+    }
+
+    /// A web view hears none of the user's hand on WinUI - WebView2 gives it to its page, and listened to by WinUI it
+    /// ends the process - so every gesture of the View tier is never there, and no family makes a case of it.
+    @MainActor
+    func testAWebViewsGesturesAreNeverOnWinUI() {
+        let register = WinUIDriver().register
+        let gestures = [
+            "panTouchCount", "panUpdated", "panXChannel", "panYChannel", "pinchUpdated", "pointerEntered",
+            "pointerExited", "pointerMoved", "pointerPressed", "pointerReleased", "swipeDirection", "swipeThreshold",
+            "swiped", "tapCount", "tapped",
+        ]
+        for gesture in gestures {
+            let judgement = register.judgement(of: gesture, on: "WebView", from: "View")
+            if case .notPlanned? = judgement { continue }
+            XCTFail("WebView.\(gesture) is judged \(String(describing: judgement))")
+        }
+    }
+}

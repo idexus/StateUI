@@ -147,7 +147,7 @@ book is one (cycle.md, The board): the doorbell reads it from its own thread.
 ```
 
 Where a lock would take two of these in the other order, the read goes without
-it: an engine's `stirred()` reads a storage's write count as an atomic under the
+it: an engine's `due` reads a storage's write count as an atomic under the
 board's hold (cycle.md), and `hydrate` lands stored values after letting go of
 the store (state.md).
 

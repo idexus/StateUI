@@ -6,10 +6,10 @@ the views here show it.
 
 ## What it shows
 
-An application offers the inspector in one line: `ToolbarItem.inspector(scene)`
+An application offers the inspector in one line: `ToolbarItem.inspector(window)`
 in a page's toolbar items, `InspectorButton()` anywhere a view goes, or, for a
 scene that may show it in a window of its own,
-`WindowGroup(.debugInspector) { DebugInspector() }`.
+`Window(.debugInspector) { DebugInspector() }`.
 
 Each render is listed as it happens: what caused it, which road it took, how
 long describing it took in Swift and applying it took in the host, in
@@ -22,7 +22,7 @@ it - with each one's time, its own and with what is under it.
   InspectorModel (one, shared)       places, folded, paused, revision, selected
         │ revision moves at most once per pace
         ▼
-  Inspector.panel(in: scene) ──▶ Node.overlay(InspectorPanel)   docked in the main window
+  Node.overlay(inspector:of:) ──▶ InspectorPanel   docked in the window whose ⓘ was pressed
   DebugInspector ──page──▶ InspectorPage                        in a window of its own
         │
         ▼
@@ -32,24 +32,29 @@ it - with each one's time, its own and with what is under it.
 ## Each scene has its own
 
 Every scene has its own inspector, showing the renders that reached that scene:
-the ⓘ is handed the scene it opens. It opens along the bottom of the scene's
-main window folded to one line - the last render that reached the scene -
+the ⓘ is handed its window, whose scene's inspector it opens. It opens along
+the bottom of the window its ⓘ is in, folded to one line - the last render
+that reached the scene -
 leaving the page all but uncovered while it is watched, with two buttons at the
 end of the line to open it out and to close it. Opened out, it docks down the
 side on a desktop or a tablet, or shows in the scene's `DebugInspector` window
 where the scene declares one and the platform opens windows: a window of the
-scene like any other, closed with it, hidden with it where its group says so,
+scene like any other, closed with it, hidden with it where its `Window` says so,
 and restored with it.
 
 ## Where it docks
 
-A docked inspector is one of the scene's main window's overlays: its panel is
-written into the window's session under `OverlayKey.inspector`, with a
-`zIndex` over every other layer, whenever it docks, moves or leaves - the
-window reads its overlays, so it builds again then. The panel is a layout
-that takes no touches of its own, laid over the whole window: a touch
-anywhere the panel is not goes through to the page under it, so the
-application can be used while it is watched. A panel at the side starts under
+A docked inspector is the overlay of the window its ⓘ was pressed in: where
+it docks - its place and that window - is a value of the scene
+(`dockedInspector`), written whenever it docks, moves or leaves; every window
+of the scene reads it, so they build again then, and the one it docks in lays
+the panel after every overlay a page declares - over all of them. The ⓘ of
+another window of the scene moves it there, open; pressed where it stands, it
+closes it. Where the window it docks in closes, it stands in the scene's
+first. The
+panel is a layout that takes no touches of its own, laid over the whole
+window: a touch anywhere the panel is not goes through to the page under it,
+so the application can be used while it is watched. A panel at the side starts under
 the page's bar, keeping the page's own buttons - its ⓘ among them - in reach. The buttons at the end of the bottom line are
 drawn rather than typed, because a font without the glyph draws an empty box.
 

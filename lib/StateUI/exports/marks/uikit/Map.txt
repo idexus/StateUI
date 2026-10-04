@@ -1,0 +1,11 @@
+# revision 1.1
+Map: ✅
+Map.frameChanged: ✅
+Map.isScrollEnabled: ✅
+Map.isZoomEnabled: ✅
+Map.mapClicked: ✓ tap on Map: the view's listening handed the recognizer's states, no touch sent
+Map.mapType: ✅
+Map.moveToRegion: ✅
+Map.region: ✅
+Map.showsTraffic: ✅
+Map.showsUserLocation: ✅

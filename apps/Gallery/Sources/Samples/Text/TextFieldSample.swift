@@ -8,6 +8,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
     @State private var selectAll = false
     @State private var email = ""
     @State private var done = 0
+    @State private var hidden = true
 
     static let id = "textField"
     static let title = "TextField"
@@ -20,6 +21,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
         @State private var selectAll = false
         @State private var email = ""
         @State private var done = 0
+        @State private var hidden = true
 
         VStack {
             // The greeting below reads `name` and the caret below reads `code`,
@@ -33,11 +35,11 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .showsClearButton(true)
                 .isFocused($editing)
 
-            Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
+            Text(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
 
-            Label(editing ? "the field has the focus" : "the field does not have the focus")
+            Text(editing ? "the field has the focus" : "the field does not have the focus")
 
-            Label("return pressed \\(done)x")
+            Text("return pressed \\(done)x")
 
             // A field for something that is not prose: the platform's
             // underline and its next-word guesses only get in the way, the
@@ -64,8 +66,15 @@ struct TextFieldSample: SampleContent, ExampleContent {
 
             TextField()
                 .placeholder("a password")
-                .isPassword(true)
-                .returnKey(.done)
+                .isPassword(hidden)
+                .submitLabel(.done)
+
+            HStack {
+                Text("Hidden")
+                    .verticalAlignment(.center)
+
+                Switch($hidden)
+            }
 
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
@@ -77,7 +86,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -88,16 +97,16 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .showsClearButton(true)
                 .isFocused($editing)
 
-            Label(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
+            Text(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Label(editing ? "the field has the focus" : "the field does not have the focus")
+            Text(editing ? "the field has the focus" : "the field does not have the focus")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
-            Label("return pressed \(done)x")
+            Text("return pressed \(done)x")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -123,7 +132,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
             // for the selection the field already has says nothing at all.
             Button(selectAll ? "Clear the selection" : "Select the lot")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { selectAll.toggle() }
 
@@ -136,8 +145,20 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("entry.password")
                 .accessibilityLabel("Password")
                 .placeholder("a password")
-                .isPassword(true)
-                .returnKey(.done)
+                .isPassword(hidden)
+                .submitLabel(.done)
+
+            HStack {
+                Text("Hidden")
+                    .fontSize(14)
+                    .verticalAlignment(.center)
+
+                Switch($hidden)
+                    .accessibilityIdentifier("entry.hidden")
+                    .accessibilityLabel("Password hidden")
+            }
+            .spacing(12)
+            .horizontalAlignment(.center)
 
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
@@ -152,8 +173,8 @@ struct TextFieldSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
-        Label("The binding IS the two-way part: `TextField($name)` hands the state to the "
+    var notes: (any View)? {
+        Text("The binding IS the two-way part: `TextField($name)` hands the state to the "
             + "host, which shows it in the field and lands every edit back on it. "
             + "`.onTextChanged` written afterwards runs beside it, never instead of "
             + "it, and after the state already holds the text.")

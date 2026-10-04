@@ -1,0 +1,11 @@
+# revision 1.1
+Picker.horizontalTextAlignment: – GTK's drop-down draws its choice with the factory that draws its list: the choice alone takes no alignment without redrawing GNOME's list.
+Picker.verticalTextAlignment: not realized
+SearchField.horizontalTextAlignment: ✅
+SearchField.verticalTextAlignment: not realized
+Text.horizontalTextAlignment: ✅
+Text.verticalTextAlignment: ✅
+TextEditor.horizontalTextAlignment: ✅
+TextEditor.verticalTextAlignment: not realized
+TextField.horizontalTextAlignment: ✅
+TextField.verticalTextAlignment: not realized

@@ -59,12 +59,12 @@ struct DialogsSample: SampleContent, ExampleContent {
                     answer = typed.map { "renamed to '\\($0)'" } ?? "cancelled"
                 }
 
-            Label(answer)
-            Label("the draft is called '\\(name)'")
+            Text(answer)
+            Text("the draft is called '\\(name)'")
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -101,11 +101,11 @@ struct DialogsSample: SampleContent, ExampleContent {
                     answer = typed.map { "renamed to '\($0)'" } ?? "cancelled"
                 }
 
-            Label(answer)
+            Text(answer)
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Label("the draft is called '\(name)'")
+            Text("the draft is called '\(name)'")
                 .fontSize(14)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -113,14 +113,14 @@ struct DialogsSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("A dialog is an act, not a view. The handler resumes with the "
+            Text("A dialog is an act, not a view. The handler resumes with the "
                 + "native answer after the dialog closes.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A choice of actions answers with the pressed caption, cancel and "
+            Text("A choice of actions answers with the pressed caption, cancel and "
                 + "destruction included. A prompt answers nil when cancelled - an "
                 + "accepted empty answer is \"\", which is not the same thing.")
                 .fontSize(12)

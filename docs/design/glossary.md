@@ -16,15 +16,15 @@ and this table maps the two.
 | member | property, event or method | a property, an event or an act an element declares |
 | wear (a tier) | adopt, conform to | an element contract taking a tier's members |
 | layer (`ElementLayer`) | implementation source | who realizes a node type or a member: the platform, an adaptation, StateUI, the structure or a provider |
-| slot | named placeholder | a structural child that holds authored content in a known place: `Content`, `LeadingContent`, `TitleView` |
+| `Text` (the element) | label | words shown and not edited; in a comment "a label" is a `Text`, while a member named `label` - `accessibilityLabel`, `Marker.label` - is a caption naming something else |
+| slot | named placeholder | a structural child that holds authored content in a known place: `TitleView` |
 | slot child | auxiliary child | a child a modifier appends after the laid-out ones: a context menu |
 | watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |
 | mixin tier | mixin, trait | a tier several contracts wear for one group of members |
 | Normal (visual state) | default visual state | the visual state a control is in when none of its other states holds |
-| arrangement (`PageArrangement`) | page container | a page that arranges other pages: a stack, tabs, a split view |
-| arrangement (navigation) | navigation container | `NavigationStack`, `TabbedView` and `SplitView`: what decides which page shows |
-| session | per-instance runtime state | the values one opening of an application, a scene, a window or a page holds |
-| session (`PageSession`) | per-page state | the runtime values a page holds while it is shown |
+| arrangement | page container | a page that arranges other pages: a stack, tabs, a split view, a modal stack |
+| arrangement (navigation) | navigation container | `NavigationStack`, `TabView`, `SplitView` and `ModalStack`: what decides which page shows |
+| session | per-instance runtime state | the values one opening of an application, a scene or a window holds |
 
 ## State and reactivity
 
@@ -44,7 +44,7 @@ and this table maps the two.
 | attachment, wear (a state), wearer | binding, bound control | a control property tied to a state |
 | report | input event | the user's change on its way from a control to the core |
 | feed | host-supplied value | a value only the platform knows, such as focus or a frame, read into a state |
-| kept value (`persistent`) | persisted state | a state saved in a store and read back at launch |
+| kept value (`persistentKey:`) | persisted state | a state saved in a store and read back at launch |
 | standard environment, provider | environment object | the typed values an application and its host provide down the tree |
 | themed pair, the half in force | light and dark variant, the active variant | a value with one side for each theme, and the side the theme picks |
 | engine | frame callback | application code that runs once per display frame while it follows states |
@@ -53,11 +53,13 @@ and this table maps the two.
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
-| identity, `.id()`, `ElementId` | key | what keeps an element the same element across renders: an explicit `.id()`, then the builder path, then the position |
+| identity, `.id()`, `ElementID` | key | what keeps an element the same element across renders: an explicit `.id()`, then the builder path, then the position |
 | render | reconcile | build the patch between the tree the host holds and the tree the state describes |
 | patch (`HostPatch`) | diff | the sparse change from one tree to the next |
 | road (walk, build, complete) | render mode | how a render reaches the elements it describes |
-| path (builder) | structural key | where a statement stood in its builder: `1.else.0` |
+| path (builder) | structural key | where a statement stood in its builder: `1.else` |
+| `Views` | view sequence | what a container holds: none, one or several views in order, each keyed |
+| `Statements`, `Either` | statement sequence, branch | a builder's several statements; the branches of an `if`/`else` |
 | clean walk (`revisit`) | partial re-render | only the elements whose reads meet the changes are rebuilt |
 | resync (`describeAll`) | full sync | the complete tree sent to a host that lost its generation |
 | settle pass | handler flush | the handlers a render found run, their writes merged into the same message |
@@ -103,9 +105,11 @@ and this table maps the two.
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
-| host | platform backend | the code that shows StateUI with one toolkit |
-| runtime | backend runtime | a host's elements: the host layer and its toolkit half |
-| host layer | shared backend code | the toolkit-neutral elements in `lib/StateUI.Host`, the module `StateUIHost` |
+| host | platform layer | the package that shows StateUI with one toolkit, `lib/StateUI/StateUI.<Host>` |
+| runtime | platform runtime | a host's elements: the host layer and its toolkit half |
+| host layer | shared platform code | the toolkit-neutral elements in `lib/StateUI/StateUI.Host`, the module `StateUIHost` |
+| backend | plug-in | a package of its own, `lib/Backends/<Element>.<Host>`, realizing one library element on one host where its engine is a library the platform does not ship; the application's head registers it |
+| the application's (`byApplication`, 🧩) | application-provided | an element a host leaves to a control the application registers itself - a map where the platform has none |
 | display cycle, cycle | frame update | the ordered work of one display frame |
 | frame clock | display link, vsync | what ticks once per display frame while something holds it |
 | doorbell | wake-up thread | a thread parked until the core has work, which then wakes the UI thread |

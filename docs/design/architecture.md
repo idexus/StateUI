@@ -11,37 +11,46 @@ the packages, what crosses between them, and where each part of the work runs.
   apps/<App>                              one Swift package per application
     Sources/                              views, @State, handlers, engines
     Platforms/AppKit                      the AppKit head: an executable
+    Platforms/UIKit                       the UIKit head: an application bundle
     Platforms/Android                     the Android head: Gradle and a Swift library
     Platforms/WinUI                       the WinUI head: an executable
     Platforms/GTK                         the GTK head: an executable
         |
         |  depends on
         v
-  StateUI  (lib/StateUI, a dynamic library; no Foundation; every platform)
+  StateUI  (lib/StateUI/Core, a dynamic library; no Foundation; every platform)
     Sources/Views, Types, Contracts       what an application writes with
     Sources/Core                          state, keys, diffing, cycles, the typed boundary
         |
         |  @_spi(Host)
         v
-  StateUIHost  (lib/StateUI.Host, a dynamic library)
+  StateUIHost  (lib/StateUI/StateUI.Host, a dynamic library)
     Sources                               the host layer every host stands on
         |
         |  typed HostRender / HostPatch
         v
-  StateUI.AppKit (lib/StateUI.AppKit)          StateUI.Android (lib/StateUI.Android)
-    Swift, in the application's process          Swift, in the application's process,
-    over AppKit                                  Java beneath it through JNI
+  StateUI.AppKit (lib/StateUI/StateUI.AppKit)    StateUI.UIKit (lib/StateUI/StateUI.UIKit)
+    Swift over AppKit                            Swift over UIKit
         |                                             |
         v                                             v
-    AppKit views                                  Android views
+    AppKit views                                  UIKit views
 
-  StateUI.WinUI (lib/StateUI.WinUI)            StateUI.GTK (lib/StateUI.GTK)
-    Swift, in the application's process,         Swift, in the application's process,
-    C++/WinRT beneath it behind a C ABI          over GTK 4's and libadwaita's C API
+  StateUI.Android (lib/StateUI/StateUI.Android)  StateUI.WinUI (lib/StateUI/StateUI.WinUI)
+    Swift, Java beneath it through JNI           Swift, C++/WinRT beneath it behind a C ABI
         |                                             |
         v                                             v
-    WinUI 3 elements                              GTK widgets
+    Android views                                 WinUI 3 elements
 
+  StateUI.GTK (lib/StateUI/StateUI.GTK)
+    Swift over GTK 4's and libadwaita's C API
+        |
+        v
+    GTK widgets
+
+  lib/Backends/<Element>.<Host>           a backend: one element on one host, its engine a
+                                          library the platform does not ship - WebView.GTK,
+                                          WebView.WinUI - registered by the application's head
+  lib/StateUI/StateUI.Conformance         the conformance families every host's tests run
   lib/StateUI.VSCode                      the editor extension: new application,
                                           build, run and debug for every head
 ```
@@ -92,7 +101,8 @@ frame, and never computes again what the core decides.
 ```
 
 A handler's `await` resumes on `MainActor`, whatever it awaited. The core uses
-no platform timer, run loop or main queue: time comes from the host's frame
+no platform timer or run loop, and the main queue only for the one drain it
+posts where something turns that queue: time comes from the host's frame
 clock, and work reaches the UI thread through the host's doorbell.
 
 ## Where to read next

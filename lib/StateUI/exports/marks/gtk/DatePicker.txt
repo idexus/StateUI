@@ -1,0 +1,11 @@
+# revision 2.1
+DatePicker: ✅
+DatePicker.closed: ✅
+DatePicker.date: ✅
+DatePicker.dateChanged: ✅
+DatePicker.format: ☑️ GTK writes "D" and "d" in the user's own way, and any other pattern as "d".
+DatePicker.frameChanged: ✅
+DatePicker.isOpen: ✅
+DatePicker.maximumDate: ✓ read maximumDate of DatePicker: the range the host holds the day in: GtkCalendar holds none
+DatePicker.minimumDate: ✓ read minimumDate of DatePicker: the range the host holds the day in: GtkCalendar holds none
+DatePicker.opened: ✅

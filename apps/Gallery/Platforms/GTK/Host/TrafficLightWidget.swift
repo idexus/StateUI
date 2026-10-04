@@ -57,7 +57,7 @@ final class TrafficLightWidget: GTKControl {
         }
         g_signal_connect_data(
             UnsafeMutableRawPointer(click), "released", unsafeBitCast(released, to: GCallback.self), me, nil,
-            GConnectFlags(0))
+            GConnectFlags(rawValue: 0))
         gtk_widget_add_controller(widget, click)
     }
 

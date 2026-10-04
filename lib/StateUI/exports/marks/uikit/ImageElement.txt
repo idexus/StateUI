@@ -1,0 +1,3 @@
+# revision 1.1
+Button.contentMode: not realized
+Image.contentMode: ✅

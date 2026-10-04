@@ -2,8 +2,8 @@ import StateUI
 
 /// A view dragged about under a finger, and the one write that must not travel.
 struct PanSample: SampleContent, ExampleContent {
-    /// Where the box was left. Ordinary state: it changes once per gesture, so
-    /// describing it costs one render at the end of a drag.
+    /// Where the box was left. Ordinary state, read by the handlers alone: it
+    /// changes once per gesture, and no view is built for it.
     @State private var panX = 0.0
     @State private var panY = 0.0
 
@@ -53,14 +53,14 @@ struct PanSample: SampleContent, ExampleContent {
                     .translationY($liveY)
                     .onPanUpdated { update in
                         switch update.phase {
-                        case .running:
+                        case .changed:
                             follow(panX + update.totalX, panY + update.totalY)
-                        case .completed:
+                        case .ended:
                             panX = $liveX.journey.value
                             panY = $liveY.journey.value
-                        case .canceled:
+                        case .cancelled:
                             follow(panX, panY)
-                        case .started:
+                        case .began:
                             break
                         }
                     }
@@ -70,7 +70,7 @@ struct PanSample: SampleContent, ExampleContent {
 
             // Two states into one conversion: the host works the words out
             // from where the box HAS GOT TO, on its own frames.
-            Label($liveX.journey.convert(with: $liveY.journey) { x, y in
+            Text($liveX.journey.convert(with: $liveY.journey) { x, y in
                 "Moved \\(Int(x.value)), \\(Int(y.value))"
             })
 
@@ -106,7 +106,7 @@ struct PanSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -125,25 +125,25 @@ struct PanSample: SampleContent, ExampleContent {
                     .translationY($liveY)
                     .onPanUpdated { update in
                         switch update.phase {
-                        case .running:
+                        case .changed:
                             follow(panX + update.totalX, panY + update.totalY)
-                        case .completed:
+                        case .ended:
                             panX = $liveX.journey.value
                             panY = $liveY.journey.value
-                        case .canceled:
+                        case .cancelled:
                             follow(panX, panY)
-                        case .started:
+                        case .began:
                             break
                         }
                     }
             }
             .style("Card")
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(10))
             .height(200)
 
-            Label()
+            Text()
                 .text($liveX.journey.convert(with: $liveY.journey) { x, y in
                     "Moved \(Int(x.value)), \(Int(y.value))"
                 })
@@ -154,7 +154,7 @@ struct PanSample: SampleContent, ExampleContent {
 
             Button("Put it back")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 // A SETPOINT, so the box TRAVELS home from wherever it was
                 // left - the same two states, written the other way.
@@ -188,16 +188,16 @@ struct PanSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("The totals are measured from where the pan BEGAN, not from "
-                + "the last report - which is why the running case adds them to "
-                + "where the view was, and the completed case is what commits "
+            Text("The totals are measured from where the pan BEGAN, not from "
+                + "the last report - which is why the changed case adds them to "
+                + "where the view was, and the ended case is what commits "
                 + "the move.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`The drag snaps` is the whole lesson, and on a walked state it is "
+            Text("`The drag snaps` is the whole lesson, and on a walked state it is "
                 + "the choice of which part to write. `$liveX.journey.snap(to:)` puts "
                 + "the box under the finger, going nowhere, standing still. The state "
                 + "itself is where it is GOING, so writing that on every report starts "
@@ -206,13 +206,13 @@ struct PanSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Put it back` writes the states instead, which is the same two "
+            Text("`Put it back` writes the states instead, which is the same two "
                 + "states written the other way: the box travels home rather than "
                 + "jumping there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Nothing on this page is described while the box moves. The "
+            Text("Nothing on this page is described while the box moves. The "
                 + "translation is read off the state by the host, and the caption is a "
                 + "converted text over the same two states - so a drag of a hundred "
                 + "reports costs "

@@ -23,7 +23,9 @@ nothing once the view has gone.
 
 A handler's type is the C shape GTK calls it with - the instance, what the
 signal hands, the number - one for each shape the host hears: nothing, one
-argument by address, a press (its run and point), a point, a scale. A
+argument by address, a press (its run and point), a point, a scale, a spin
+button's reading of its words, words going into a buffer or an editable, a
+place or a run of places in a list, and a request the handler answers. A
 property's change notice has a road of its own, `connectNotify`, which names
 the property alone.
 
@@ -39,7 +41,8 @@ nothing.
 
 A layout's panel is a `GtkWidget` subclass registered from Swift:
 `g_type_register_static_simple` with a class initializer that writes the
-class's measure, allocate and request-mode functions and its dispose. Each is
-a C function that reads the panel's view number from the widget's data and
-asks that view; the dispose lets the panel's children go before the widget's
-own dispose runs.
+class's measure, allocate, snapshot, request-mode and point-test functions
+and its dispose, and installs the action assistive technology presses it by.
+Each function the view answers is a C function that reads the panel's view
+number from the widget's data and asks that view; the dispose lets the
+panel's children go before the widget's own dispose runs.

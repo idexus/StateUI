@@ -50,7 +50,7 @@ line and nothing to backport to - a fix ships in the next version.
 
 ## What is in scope
 
-The Swift library, its native hosts, the Wire protocol that carries a render to
+The Swift library, its native hosts, the typed patch that carries a render to
 a host, and the build scripts. That is what this project controls.
 
 **Not in scope, and better reported where they belong:** the Swift toolchain

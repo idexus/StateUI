@@ -1,0 +1,5 @@
+# revision 2.1
+SplitView: ✅
+SplitView.showsSidebar: ✓ read showsSidebar of SplitView: the split's own flag; the drawer slides on it
+SplitView.showsSidebarChanged: ✓ toggle on SplitView: the host's own entry the scrim's tap and the bar's button call
+Text.frameChanged: ✅

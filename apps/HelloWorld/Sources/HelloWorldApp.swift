@@ -1,15 +1,17 @@
 import StateUI
 
-/// The application: one window, one page.
+/// The application: its windows, each showing MainPage.
 ///
-/// An application is its state and the scene built from it - here a window
-/// alone, which is a scene of one window. What the window SHOWS - its page and
-/// the arrangement inside it - is the window's own declaration below; what it
-/// is called and how big it opens are its session's, written from a view in it
-/// (`@Environment private var window: WindowSession`).
+/// An application is its state and the scene built from it - here a
+/// `WindowGroup`, of which launch and *File ▸ New* make a window.
+/// What a window shows is a view, MainPage.swift beside this file; where an app
+/// wants a stack, tabs or a menu, that view's `body` is a `NavigationStack`, a
+/// `TabView` or a `SplitView`, over state the view owns. What a window is
+/// called and how big it opens are its session's, written from a view in it
+/// (`@Environment(\.window) private var window`).
 struct HelloWorldApp: Application {
     /// The application as it runs - where its styles go.
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     /// The application's styles - see Styles/AppStyles.swift - written
     /// as the application is made. A colour in one follows the theme by
@@ -18,19 +20,9 @@ struct HelloWorldApp: Application {
         application.styles = AppStyles.sheet
     }
 
-    var scene: any Scene { MainWindow() }
-}
-
-/// The window, and what is in it.
-///
-/// Everything on screen is described in Swift and materialized by the selected
-/// host as native controls. The page it opens is MainPage.swift beside this
-/// file - and where an app wants a stack, tabs or a menu, a `NavigationStack`,
-/// a `TabbedView` or a `SplitView` goes in `page` instead, each over state
-/// this window owns. The sample app in the StateUI repository is written that
-/// way throughout.
-struct MainWindow: Window {
-    var page: any Page { MainPage() }
+    var body: some Scene {
+        WindowGroup { MainPage() }
+    }
 }
 
 /// The one thing this module exports - the line that names this application to

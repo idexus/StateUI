@@ -11,10 +11,10 @@ private struct LoadingList: ExampleContent {
 
         Grid {
             HStack {
-                Label(loading ? "Loading" : "\\(count) items")
                 Button("Start over")
                     .isEnabled(count > 30)
                     .onClicked { count = 30 }
+                Text(loading ? "Loading" : "\\(count) items")
             }
             .gridRow(0)
 
@@ -22,7 +22,7 @@ private struct LoadingList: ExampleContent {
                 .gridRow(0)
 
             ItemsView(0..<count) { number in
-                Label("Item \\(number + 1)").padding(14, 10)
+                Text("Item \\(number + 1)").padding(horizontal: 14, vertical: 10)
             }
             // Within five items of the end, thirty more - once each time.
             .onEndReached(within: 5) {
@@ -38,19 +38,19 @@ private struct LoadingList: ExampleContent {
         .rows(.auto, .fill)
         """
 
-    var content: any View {
+    var body: some View {
         Grid {
             HStack {
-                Label(loading ? "Loading" : "\(count) items")
+                Button("Start over")
+                    .fontSize(13)
+                    .padding(horizontal: 16, vertical: 6)
+                    .isEnabled(count > 30)
+                    .onClicked { count = 30 }
+
+                Text(loading ? "Loading" : "\(count) items")
                     .fontSize(13)
                     .textColor(Palette.accent)
                     .verticalAlignment(.center)
-
-                Button("Start over")
-                    .fontSize(13)
-                    .padding(16, 6)
-                    .isEnabled(count > 30)
-                    .onClicked { count = 30 }
             }
             .spacing(12)
             .gridRow(0)
@@ -59,9 +59,9 @@ private struct LoadingList: ExampleContent {
                 .gridRow(0)
 
             ItemsView(0..<count) { number in
-                Label("Item \(number + 1)")
+                Text("Item \(number + 1)")
                     .fontSize(14)
-                    .padding(14, 10)
+                    .padding(horizontal: 14, vertical: 10)
             }
             .onEndReached(within: 5) {
                 guard !loading, count < 300 else { return }
@@ -77,8 +77,8 @@ private struct LoadingList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
-        Label("Scroll towards the end: thirty more arrive, up to three hundred.")
+    var notes: (any View)? {
+        Text("Scroll towards the end: thirty more arrive, up to three hundred.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

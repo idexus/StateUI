@@ -24,7 +24,7 @@ beside the native API they prove.
 
 ## A case
 
-A case is written once, in `lib/StateUI.Conformance`, as a page,
+A case is written once, in `lib/StateUI/StateUI.Conformance`, as a page,
 what the user and the program do to it, and what must follow. It says which
 members of the contract it covers; it runs on a host only where the host
 realizes all of them, by the host's register (`HostRegister`), so a case can
@@ -39,8 +39,8 @@ control dictionary has one page for each: `Contract/Controls/ButtonTests.swift`
 for an element wearing View, `Contract/Structure/` for the parts of an
 application's structure, `Contract/Tiers/` for the tiers. A member's events
 and acts stand in the family of the contract declaring them. `Families.all`
-lists them, and a host's suite runs each family as one test, so a case added
-to a family runs on every host with no edit there.
+lists them, and a host's suite runs each family as one test - a large one in
+parts - so a case added to a family runs on every host with no edit there.
 
 Every cell of the dictionary has a case of its own contract's family: the
 element itself - the host makes it - each of its own members, and each
@@ -69,14 +69,26 @@ tier's case is written once and made for each element: every element the
 library declares has a specimen, the smallest of its kind standing where an
 application puts one - a control in a stack, a span in a label's words, a
 menu's item in a view's menu, a toolbar's on its page's bar, an arrangement
-as the page, a title bar over its window - which the case dresses with the
+as the page - which the case dresses with the
 members it writes, through the element's own `setValue`, and finds by its id
 or as the one element of its kind. The case runs on a host for each element
 the host realizes, and proves the member there.
 
+## A backend's element
+
+A backend - a package realizing a library element on one host,
+`lib/Backends/<Element>.<Host>`, for a library the platform does not ship -
+is registered by the host's tests before the families run, as an
+application's head registers it. From then on the element is realized
+there: its family and the families of the tiers it wears make their cases
+for it, and the verdicts stand in the host's column with the rest. What the
+driver cannot know of the backend's own widget - a member it holds, an act
+through it, what it reaches only past the toolkit - the host's tests hand the
+driver beside it (`WinUIDriver.backends`, `GTKDriver.backends`).
+
 ## The driver
 
-Each host's test target supplies a driver: how its toolkit starts a page,
+Each host supplies a driver: how its toolkit starts a page,
 turns, steps and draws a frame, what a user's act is through its toolkit's
 own input path, and what a native control holds of a member, as the contract
 writes the value. A driver reads through the element a case found by its
@@ -93,6 +105,14 @@ control's look - the host's log and what it keeps; each read a host does not
 have yet is its driver's "cannot". A case's first start of an application is
 its first launch: the driver forgets what the host's stores keep, and a
 start after it in the same case is the next launch, which finds them.
+
+A host with backends keeps its driver and its suite in a package of their own
+inside the host's folder, `Testing` - the WinUI host's `StateUIWinUIDriver`,
+the GTK host's `StateUIGTKDriver`, and their tests. They
+register the host's backends, which depend on the host, so they stand beside
+the host's package rather than in it, and everything there links the host's
+one dynamic library. The driver reads the host's own views, so it is built
+where the host is built for testing: a debug build, `swift test`.
 
 ## A session
 
@@ -122,7 +142,8 @@ nothing drawn at the point shows no colour.
 ## The runner
 
 The runner runs a family on a host and says one line for each case - passed,
-failed, not planned, a gap, or what the driver cannot do and why - and gives
+failed, never here, not planned, the application's, a gap, or what the driver
+cannot do and why - and gives
 the verdict on every member the cases cover. Each line is said as its case
 ends, with its place in the run and how long it took ("[3/15] ... passed in
 812 ms"), to standard error, which nothing buffers (`HostLog.note`): a long
@@ -137,11 +158,36 @@ once, each writing its own file of verdicts; the dictionary reads them all.
 ## What a run proves
 
 A run gives a verdict on every member its cases cover, one line each under
-`exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
+`lib/StateUI/exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
 and held to the file otherwise: ✅ where a passing case proved it, ☑️ with
 what the host's register says is missing, – with why where the host's family
-never has it or a case proved it absent, and - empty in the dictionary - "not realized" or what the
-driver cannot do and why. A member of a failing case gets no verdict from it.
+never has it or a case proved it absent, 🧩 where the host leaves it to the
+application's own registration, and - empty in the dictionary - "not
+realized" or what the driver cannot do and why. A member of a failing case
+gets ❌ with the case's first failure.
 Those files are every mark a host's column shows: nothing a host implements
 or declares by hand is marked until its own run says so. A test of a host's
 look proves no member; it proves how the host draws.
+
+## Nothing left behind
+
+A view that outlives its element is no effect a case can see: the page shows
+the same, and the host only grows. Every host's own suite runs one shared
+walk instead (`Leaving.outlived(on:)`): each element that is drawn stands on
+a page alone, and a click takes it away, shows it and takes it away again.
+Taken away the second time, the host holds as many of its views alive as the
+first time - the count its tally writes (`HostDriver.liveViews`). The first
+time is the measure, not the page before it: a toolkit may make a view of
+its own the first time a control is drawn, and keep it.
+
+A toolkit may let go of a view a while after it leaves - MapKit on the Mac
+keeps a map five seconds - so where more views are alive the second time,
+the walk steps the host up to ten seconds for them to go: a view a toolkit
+only keeps a while comes back to the count, one held for good never does.
+
+Each element walks twice: bare, then dressed - a look from every tier it
+wears and an ear for every gesture. A host answers a font, a colour or a
+gesture with a closure of its own, and a closure that holds its view keeps
+it: a bare control never builds one. The walk marks nothing; an element a
+toolkit itself never lets go stands outside it in that host's test, with its
+reason.

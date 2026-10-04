@@ -1,0 +1,223 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+
+/// `WindowContract` on a host: a window hears each phase of its life - made and brought to the front, put behind
+/// another application and back, put away and brought back, closed; it stands with the title, the size, the place,
+/// the bounds and the chrome its session asks for; a window opened by its kind is of that kind, for its value,
+/// floating or hiding as its group says, and the platform keeps it for its value.
+@_spi(Host) public enum WindowTests: ConformanceFamily {
+    public static let name = "Window"
+
+    public static var cases: [ConformanceCase] {
+        [
+            ConformanceCase("aWindowIsMadeAndComesToTheFront", proves: [
+                Covered(WindowContract.self), Covered(WindowContract.created), Covered(WindowContract.activated),
+            ]) { s in
+                let log = Received<WindowPhase>()
+                s.start { WindowPhasePage(log: log) }
+
+                s.settle { log.values.last == .activated }
+                s.expect(log.values.first, .created, "made first")
+                s.expect(log.values.last, .activated, "then in front")
+            },
+            ConformanceCase("anotherApplicationInFrontPutsItBehindAndBack", proves: [
+                Covered(WindowContract.deactivated), Covered(WindowContract.activated),
+            ]) { s in
+                let log = Received<WindowPhase>()
+                s.start { WindowPhasePage(log: log) }
+                let window = try s.element(ofType: WindowContract.nodeType)
+                s.settle { log.values.last == .activated }
+
+                try s.perform(.switchAway, on: window)
+                s.settle { log.values.last == .deactivated }
+                s.expect(log.values.last, .deactivated, "behind another application")
+                try s.perform(.switchBack, on: window)
+                s.settle { log.values.last == .activated }
+                s.expect(log.values.last, .activated, "in front again")
+            },
+            ConformanceCase("aWindowPutAwayStopsAndResumesWhenBroughtBack", proves: [
+                Covered(WindowContract.stopped), Covered(WindowContract.resumed),
+            ]) { s in
+                let log = Received<WindowPhase>()
+                s.start { WindowPhasePage(log: log) }
+                let window = try s.element(ofType: WindowContract.nodeType)
+                s.settle { log.values.last == .activated }
+
+                try s.perform(.minimize, on: window)
+                s.settle { log.values.last == .stopped }
+                s.expect(log.values.last, .stopped, "put away")
+                try s.perform(.restore, on: window)
+                s.settle { log.values.contains(.resumed) && log.values.last == .activated }
+                s.expect(log.values.suffix(2).map { $0 }, [.resumed, .activated], "brought back on its way to the front")
+            },
+            ConformanceCase("aClosedWindowHearsItIsGoing", proves: [Covered(WindowContract.destroying)]) { s in
+                let log = Received<WindowPhase>()
+                s.start { WindowPhasePage(log: log) }
+                let window = try s.element(ofType: WindowContract.nodeType)
+                s.settle { log.values.last == .activated }
+
+                try s.perform(.close, on: window)
+                s.settle { log.values.last == .destroying }
+                s.expect(log.values.last, .destroying)
+            },
+            holds(WindowContract.title, "Notes", then: "Drafts") { $0.title = $1 },
+            holds(WindowContract.width, 640, then: 800) { $0.width = $1 },
+            holds(WindowContract.height, 480, then: 600) { $0.height = $1 },
+            holds(WindowContract.x, 40, then: 120) { $0.x = $1 },
+            holds(WindowContract.y, 30, then: 90) { $0.y = $1 },
+            holds(WindowContract.minimumWidth, 300, then: 400) { $0.minimumWidth = $1 },
+            holds(WindowContract.minimumHeight, 200, then: 300) { $0.minimumHeight = $1 },
+            holds(WindowContract.maximumWidth, 1200, then: 1000) { $0.maximumWidth = $1 },
+            holds(WindowContract.maximumHeight, 900, then: 800) { $0.maximumHeight = $1 },
+            holds(WindowContract.isMaximizable, false, then: true) { $0.isMaximizable = $1 },
+            holds(WindowContract.isMinimizable, false, then: true) { $0.isMinimizable = $1 },
+            holds(WindowContract.isTranslucent, true, then: false) { $0.isTranslucent = $1 },
+            ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
+                Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
+            ]) { s in
+                try s.start(application: { NotesApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
+
+                try s.settle { try s.held(WindowContract.windowValue, on: note) == "7" }
+                s.expect(try s.held(WindowContract.windowType, on: note), NotesApplication.note)
+                s.expect(try s.held(WindowContract.windowValue, on: note), "7")
+            },
+            ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
+                Covered(WindowContract.windowValue),
+            ]) { s in
+                try s.start(application: { NotesApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+
+                try s.start(application: { NotesApplication() })
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("nothing kept") }
+                s.expect(try s.held(WindowContract.windowValue, on: note), "7", "the note kept for its number")
+            },
+            ConformanceCase("aWindowOfTheGroupFloatsWhileTheApplicationIsInFront", proves: [
+                Covered(WindowContract.floatsOnTop),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                try s.start(application: { NotesApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                let windows = s.elements(ofType: WindowContract.nodeType)
+                guard let notes = windows.first, let note = windows.last else { return s.fail("no second window") }
+
+                try s.perform(.bringToFront, on: note)
+                try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == true }
+                s.expect(try s.held(WindowContract.floatsOnTop, on: note), true, "over the application's windows")
+                try s.perform(.switchAway, on: notes)
+                try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == false }
+                s.expect(try s.held(WindowContract.floatsOnTop, on: note), false, "not over another application")
+                try s.perform(.switchBack, on: notes)
+                try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == true }
+                s.expect(try s.held(WindowContract.floatsOnTop, on: note), true, "with the application in front again")
+            },
+            ConformanceCase("aWindowOfTheGroupHidesWhileAnotherSceneIsInFront", proves: [
+                Covered(WindowContract.hidesWhenInactive),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                try s.start(application: { NotesApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
+                let first = try s.element(ofType: WindowContract.nodeType)
+                try s.perform(.bringToFront, on: first)
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == true }
+
+                try s.perform(.activate, on: s.element("another"))
+                s.settle { s.elements(ofType: SceneContract.nodeType).count == 2 }
+                guard let second = s.elements(ofType: WindowContract.nodeType)
+                    .first(where: { $0.enclosing(type: .scene) !== note.enclosing(type: .scene) })
+                else { return s.fail("no second scene") }
+                try s.perform(.bringToFront, on: second)
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == false }
+                s.expect(try s.held(VisualElementContract.isVisible, on: note), false, "another scene in front")
+
+                try s.perform(.bringToFront, on: first)
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == true }
+                s.expect(try s.held(VisualElementContract.isVisible, on: note), true, "its scene in front again")
+            },
+        ]
+    }
+
+    /// `member` of the window holds what its session writes, and what the tree changes it to.
+    static func holds<Value: HostRepresentable & Sendable & Equatable>(
+        _ member: ElementProperty<WindowContract, Value>, _ first: Value, then second: Value,
+        _ write: @escaping @Sendable (WindowSession, Value) -> Void
+    ) -> ConformanceCase {
+        ConformanceCase("Window.\(member.name).holdsWhatItsSessionWritesAndChanges", proves: [
+            Covered(member),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let value = State(wrappedValue: first)
+            s.start {
+                WindowSessionPage(beside: [Button("Change").onClicked { value.wrappedValue = second }.id("change")],
+                                  key: "\(value.wrappedValue)") { window in write(window, value.wrappedValue) }
+            }
+            let window = try s.element(ofType: WindowContract.nodeType)
+            try s.settle { try s.held(member, on: window) == first }
+            s.expect(try s.held(member, on: window), first, "what its session wrote")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(member, on: window) == second }
+            s.expect(try s.held(member, on: window), second, "what the tree changed it to")
+        }
+    }
+}
+
+/// A page saying each phase its window goes through.
+struct WindowPhasePage: View {
+    let log: Received<WindowPhase>
+
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let (log, window) = (self.log, self.window)
+        return Text("Window")
+            .onCreated { log.values.append(window.phase) }
+            .onChanged(window.phase) { log.values.append(window.phase) }
+    }
+}
+
+/// An application of two scenes: its notes - the page launch opens, and a window per note, of the note's kind, for
+/// the note's number, floating over the others and hiding while another scene is in front - and another, a window
+/// alone.
+struct NotesApplication: Application {
+    /// The kind of a note's window.
+    static let note = WindowType("conformance.note")
+
+    /// The kind of the other scene's window.
+    static let other = WindowType("conformance.other")
+
+    var body: some Scene {
+        NotesScene()
+        Window(NotesApplication.other) { Text("Another scene") }
+    }
+}
+
+/// The notes scene of `NotesApplication`.
+struct NotesScene: Scene {
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+        WindowGroup(NotesApplication.note, for: Int.self) { number in Text("Note \(number.wrappedValue)") }
+            .floatsOnTop(true)
+            .hidesWhenInactive(true)
+    }
+}
+
+/// The page launch opens in `NotesApplication`, with the buttons that open note 7 and the other scene's window.
+struct NotesPage: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return VStack {
+            Button("Open").onClicked { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
+            Button("Another").onClicked { try await application.openWindow(NotesApplication.other) }.id("another")
+        }
+    }
+}

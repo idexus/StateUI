@@ -1,6 +1,6 @@
 # Motion on GTK
 
-How the GTK host moves what the core's motion elements say
+How the GTK host moves what the host layer's motion elements say
 ([motion](../../host/motion.md)): which properties it draws on the way, how a
 widget is moved, turned and scaled, and when every animation arrives at once.
 The frames come from the window's tick callback ([runtime](runtime.md#one-frame)).
@@ -36,7 +36,11 @@ handed to GSK as it is, since both act on row vectors. So the translation, the t
 tip in depth about either axis - seen from the core's perspective distance -
 and the scale all pivot where the core says, and moving one never moves the
 layout's arithmetic. A transform the tree changes asks the parent for a new
-allocation, which draws it.
+allocation, which draws it. A matrix that stays in the plane - a move, a turn
+in the plane, a scale - is said to GSK as one in the plane, CSS's
+`matrix(a, b, c, d, e, f)`: GSK's cairo renderer, which draws where there is
+no GL, draws a matrix of no known kind as hot pink. Only a tip in depth is
+handed over as the whole matrix.
 
 ## Less motion
 

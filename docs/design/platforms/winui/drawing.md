@@ -30,8 +30,8 @@ ellipse of the layout's size, written in the arrangement that gives the size
 and only where it differs from the last. `UIElement.Clip` takes only a plain
 rectangle, and a panel's own corner radius cuts none of its children.
 
-A ColorBox is a `Border` of one colour, its four corners rounded each as the
-element says; a `Rectangle` rounds all four alike.
+A ColorBox is a figure of the relay's, a `Grid` of one colour, its four
+corners rounded each as the element says; a `Rectangle` rounds all four alike.
 
 ## A placed child
 
@@ -48,6 +48,15 @@ A test reads what is drawn: the relay renders the element through
 bitmap holds only what is drawn, from the first thing drawn, so a panel with
 no background is painted clear while it is rendered, and the bitmap then
 begins at its corner.
+
+## A tipped view
+
+A view is moved, turned and scaled flat by its render transform, about its
+pivot. A tip - `rotationX`, `rotationY`, seen from the host layer's
+perspective distance - is a `Matrix3DProjection` laid over that: the host
+layer's `HostDrawingTransform.tip`, about the pivot the translation moved, so
+the flat drawing, then the projection, is the host layer's whole matrix, as
+every host draws it. A view that tips nothing has no projection.
 
 ## The shapes
 

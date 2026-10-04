@@ -36,7 +36,7 @@ struct ColorBoxSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             HStack {
                 ColorBox(Palette.accent)
@@ -68,8 +68,8 @@ struct ColorBoxSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
-        Label("A ColorBox draws the colour its initializer takes, which is its `.color`. "
+    var notes: (any View)? {
+        Text("A ColorBox draws the colour its initializer takes, which is its `.color`. "
             + "`.background` is a second surface behind it that the corner radius "
             + "does not round. A one-pixel ColorBox is also the usual divider.")
             .fontSize(12)

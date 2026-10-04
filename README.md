@@ -27,12 +27,12 @@ contract is settled.
 ## In Action
 
 <p>
-  <img src="docs/assets/winui.jpg" alt="The Gallery's home page on WinUI 3" width="75.7%"
-  ><img src="docs/assets/uikit.jpg" alt="The Gallery's home page on UIKit, on an iPhone" width="24.1%">
+  <img src="docs/assets/winui.jpg" alt="The Gallery's home page on WinUI 3" width="76.3%"
+  ><img src="docs/assets/uikit.jpg" alt="The Gallery's home page on UIKit, on an iPhone" width="23.5%">
 </p>
 <p>
-  <img src="docs/assets/gtk.jpg" alt="The Gallery's Grid sample on GTK 4 with libadwaita" width="74.3%"
-  ><img src="docs/assets/android.jpg" alt="The Gallery's Grid sample on Android Views" width="25.5%">
+  <img src="docs/assets/gtk.jpg" alt="The Gallery's Grid sample on GTK 4 with libadwaita" width="75.0%"
+  ><img src="docs/assets/android.jpg" alt="The Gallery's Grid sample on Android Views" width="24.8%">
 </p>
 
 The same Gallery - one Swift module - on WinUI 3, UIKit, GTK 4 and Android
@@ -53,12 +53,12 @@ dragging the slider rebuilds nothing:
 ## In Code
 
 ```swift
-struct CounterPage: ContentView {
+struct CounterPage: View {
     @State private var count = 0
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label("Tapped \(count) times")
+            Text("Tapped \(count) times")
             Button("Tap me").onClicked { count += 1 }
         }
     }
@@ -87,6 +87,8 @@ that is usable now.
   state, layout, controls, interaction, concurrency, and native hosts.
 - [Architecture](docs/concepts/architecture.md) — state, reactivity, Journey, motion,
   and application sessions.
+- [Why StateUI is shaped this way](docs/concepts/why.md) — the decisions every API
+  follows, and the shapes deliberately rejected. Read it before contributing.
 - [Host contract](docs/internals/host-contract.md) — `HostPatch`, ownership, identity,
   lifetime, and native adapter rules.
 - [Platform contract](docs/platform-contract.md) — the control, property, and
@@ -101,6 +103,10 @@ that is usable now.
   — each host's heads, builds, debugging, and registrations.
 - [Project structure and development](docs/development.md) — packages, Gallery,
   build, F5, and test commands.
+- [Tested setups](docs/tested-setups.md) — the systems, toolchains and devices each
+  host's suite passes on.
+- [Design notes](docs/design/README.md) — the rule, the reason and the trap behind
+  each part of the code.
 - [Contributing](CONTRIBUTING.md) — rules for changing the public contract.
 
 Public API declarations provide the focused reference beside the code.
@@ -108,19 +114,23 @@ Public API declarations provide the focused reference beside the code.
 ## Quick start
 
 StateUI is developed and used in VS Code, through the StateUI extension in
-`lib/StateUI.VSCode`. Build and install it from the checkout (Node.js 20 or
-newer):
+`lib/StateUI.VSCode`. Clone the repository, then build and install the
+extension from the checkout (Node.js 20 or newer):
 
 ```bash
-cd lib/StateUI.VSCode
+git clone https://github.com/idexus/StateUI.git
+cd StateUI/lib/StateUI.VSCode
 npm ci
 npm run package
 code --install-extension ../../artifacts/stateui-*.vsix
 ```
 
-The AppKit host needs only Xcode 27, on macOS 26 or newer. StateUI builds
-with one Swift release everywhere, Swift 6.4: Xcode 27's on macOS and the
-swift.org 6.4.0 toolchain on the other platforms.
+The AppKit host needs only Xcode 27, on macOS 26 or newer, and the UIKit host
+adds Xcode's iOS 26 or newer simulator runtime. StateUI builds with one Swift
+release everywhere, Swift 6.4: Xcode 27's on macOS and the swift.org 6.4.0
+toolchain on the other platforms. WinUI builds on Windows and GTK on Linux;
+their pages say what each needs: [WinUI host](docs/hosts/winui.md#requirements),
+[GTK host](docs/hosts/gtk.md#requirements).
 
 Android asks for more, and builds on macOS only:
 
@@ -136,33 +146,56 @@ Then open the repository in VS Code:
 
 1. Run **StateUI: Check Toolchain** from the Command Palette. It lists what
    this machine has of the above, and what to install for the rest.
-2. Choose the host in the status bar - **AppKit** or **Android** - and the
-   application, **Gallery**.
+2. Choose the host in the status bar - **AppKit**, **UIKit** or **Android**
+   on macOS, **WinUI** on Windows, **GTK** on Linux - and the application,
+   **Gallery**. For UIKit and Android the third item picks the simulator or
+   the device.
 3. Press **F5**. **StateUI: Debug** builds the Gallery for that host and starts
    it under the debugger; **StateUI: Release** runs the optimized build.
 4. Run **StateUI: Run Tests** from the Command Palette for every suite of that
    host.
 
 [Working in VS Code](docs/getting-started.md#working-in-vs-code) covers the
-extension's hosts and commands, including **StateUI: New Application**.
+extension's hosts and commands, including **StateUI: New Application in apps/**.
 
-From a terminal, the same builds are:
+From a terminal, the same builds and suites are:
 
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug                  # the AppKit Gallery bundle
+.scripts/UIKit/run-app.sh apps/Gallery debug "iPhone 18 Pro"   # the UIKit Gallery, on a simulator
 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554   # the Android Gallery
-.scripts/test-native.sh                                        # the Swift suites
+.scripts/test-native.sh                                        # the Swift suites, the AppKit host's among them
+.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"                   # the UIKit host's suite
+.scripts/Android/test-android.sh emulator-5554                 # the Android host's suite, on a device
 ```
+
+On Linux and on Windows:
+
+```bash
+.scripts/GTK/run-app.sh apps/Gallery                           # the GTK Gallery
+.scripts/GTK/test-gtk.sh                                       # the GTK host's suite
+```
+
+```powershell
+.scripts\WinUI\run-app.ps1 -App apps\Gallery                   # the WinUI Gallery
+.scripts\WinUI\test-winui.ps1                                  # the WinUI host's suite
+```
+
+[Project structure and development](docs/development.md#test) gives every
+suite's arguments and the conformance run that writes each host's marks, and
+[Deploy](docs/development.md#deploy) the release builds.
 
 ## Continuous integration
 
-Every workflow runs on pushes and pull requests to `main` and `dev`; a pull
-request targets `dev`.
+Every workflow runs on pushes and pull requests to `main`, which every pull
+request targets. Each badge above is one workflow.
 
-`Tests` runs the StateUI, StateUI.Host, StateUI.AppKit, and Gallery suites on
-macOS. The Windows and Linux workflows run the StateUI and StateUI.Host suites
-on those machines, Linux the conformance runner too, and Windows the WinUI
-host with every verdict held.
+**Core macOS**, **Core Linux** and **Core Windows** run the core's suites on
+each machine - StateUI, the host layer and the conformance runner, and the
+Gallery's and HelloWorld's too. Each host has a workflow of its own
+that runs its suite with every verdict held: **AppKit**, **UIKit** on an
+iPhone and an iPad simulator, **Android** built on macOS and run on an
+emulator, **WinUI** on Windows and **GTK** on Linux.
 
 ## License
 

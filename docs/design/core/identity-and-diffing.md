@@ -42,9 +42,28 @@ the control, focus and caret of the one that left. Hand-written nodes, such as
 a page's appended title view, are matched by position among themselves, so a
 conditional beside them does not shift them.
 
-`ElementId` has two cases that are two namespaces: `.auto` is a number the
+`ElementID` has two cases that are two namespaces: `.auto` is a number the
 differ assigns and `.manual` is the author's text. One is a number and the
 other a string, so they can never collide.
+
+## Another kind of view
+
+A key says where an element stands, not what it is. A function that answers
+one view or another - a `switch` returning a page, where no builder records a
+branch - puts both in one place under one key. The views composed into an
+element are part of what it is: another kind of view there, or the same kind
+in another order, replaces the element, as another host type does. The host
+makes the control anew, the elements under it are created, and nothing the
+view before it watched, wrote or was told carries over - its page, its
+`onChanged` readings, its focus. A composed view keeps state only from a view
+of its own kind ([state survives a rebuild](#state-survives-a-rebuild)).
+
+The branch a composed view's content root was written in is part of it too:
+`if editing { TextField(…) } else { TextField(…) }` as a view's `body` is
+two elements, as in a container, though the placeholder's key covers the
+content root's own path (`Node.branch`, compared with the views' types). The
+composed view itself keeps its state across the swap; an `.id()` on the
+content root outweighs the branch.
 
 ## What a walk keeps
 

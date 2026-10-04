@@ -31,6 +31,26 @@ four thirds of it. The lines a label's break allows are the host layer's
 short only at their end, so a label cut at its start or in its middle is cut
 at its end.
 
+## A button
+
+A button's words are a `TextBlock` of its content, which takes the button's
+font and colour: wrapped or cut short at their end as the tree's break says,
+and on one line where it says nothing, as WinUI's own buttons stand. With a
+picture the content is composed as WinUI Gallery composes it: a `StackPanel`
+holding the picture and the words, across them or down them as the icon's
+position says - before, above, after or below - the icon spacing apart, else
+WinUI Gallery's 8 DIPs. The picture stands at its own size
+([pictures](#pictures)) in a `Viewbox` that makes it smaller, never larger,
+where the button is lower than the picture: a chip in the chrome shows it at
+the chip's height. WinUI arranges a button at no less than it measured, and
+StateUI measures it with no bound on its height, so the picture is bounded
+as the button is placed - to the room its place leaves inside the padding
+and the outline, less the words' line where it stands above or below them -
+and the words stand whole ([no room asked](layout.md#no-room-asked)). With no words the picture stands alone in a `Viewbox`
+filling the room inside the padding as its aspect says - fitted, covering it,
+stretched across it, or at its own size in the middle. Only the words
+changing writes them again in their place.
+
 A button drawn in the application's colours keeps them under the pointer and
 pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
 are, its words and outline as they are - WinUI's template otherwise draws
@@ -94,9 +114,20 @@ for the control - `CheckBoxCheckBackgroundFillChecked`, `ToggleSwitchFillOn`,
 `SliderTrackValueFill` and their kin - so the tint is written into the
 control's own resources under those names, the colour itself and fainter
 under the pointer and pressed, by the host layer's shares ([a
-box](../../host/layout.md#a-box)), as WinUI's accent brushes are. A template reads its resources as its theme is read, so the control
-reads its theme again at once; a tint changed after the control is drawn is
-drawn. No tint takes the names away, and the system's accent returns.
+box](../../host/layout.md#a-box)), as WinUI's accent brushes are - WinUI's
+lightweight styling, the same road a toggle's background and a search box's
+placeholder colour take.
+
+A new colour takes the brushes standing under those names in place, and what
+they paint follows it: a tint travelling frame by frame changes colours, not
+templates. A template reads a resource that comes or goes only as its theme is
+read, so a first colour after the control is drawn, and one taken away, have
+the control read its theme again at once - its theme set to the other and
+back, the one road WinUI's public surface offers; no tint takes the names
+away, and the system's accent returns. A control's own resources are found by
+walking them: `HasKey` and `Lookup` look on into the application's theme,
+whose brushes every control shares, and a brush found that way painted over
+is every control's.
 
 ## A picker
 
@@ -116,10 +147,14 @@ A DatePicker is WinUI's `CalendarDatePicker`: its day written short or long -
 between the bounds the tree set or WinUI's hundred years each way, and its
 calendar, whose opening and closing follow a picker's list. A day crosses as
 its year, month and day in the user's calendar, taken at noon so that no
-change of the clock moves it to another day.
+change of the clock moves it to another day. Which day it shows is the host
+layer's rule ([a day and a time](../../host/runtime.md#a-day-and-a-time)): a
+day not in the calendar leaves the day shown, one past the range stands at
+its end, and bounds given the wrong way round are read the right way.
 
 A TimePicker is WinUI's `TimePicker`, in the user's clock: hours and minutes,
-as the user's 12- or 24-hour choice writes them. WinUI's time picker has no
+as the user's 12- or 24-hour choice writes them, a time past the day added up
+from midnight by the same rule. WinUI's time picker has no
 way to open its face or to hear it open, so a time picker's `isOpen`,
 `onOpened` and `onClosed` are not realized, and a format beyond the user's
 own clock - seconds, a pattern - is not written.
@@ -147,7 +182,7 @@ was: the box is given it back, and nobody hears it as the user's.
 
 What an element says for assistive technology - its identifier, its label,
 its hint and its heading level - is WinUI's `AutomationProperties`:
-`AutomationId`, `Name`, `HelpText` and `HeadingLevel`, level for level. A word
+`AutomationId`, `Name`, `HelpText` and `AccessibilityHeadingLevel`, level for level. A word
 the element does not say is cleared, not written empty, so a control's own
 name - a button's caption - stands where no label replaces it.
 
@@ -210,12 +245,24 @@ does not type through it; a button, a switch and a slider are driven through
 their automation patterns.
 
 How the words are taken is the tree's where it says so and WinUI's where it
-does not: read only, spell checked and predicting the next word - WinUI's
-defaults, both on - and what they are for, which is the text box's input
-scope and so the on-screen keyboard. The words stand across the box as their
-alignment says, the placeholder takes its colour, and the caret and the
-selection are put where the tree put them, in the characters WinUI counts,
-only where the tree changed them.
+does not: read only, and the traits the host layer reads once ([what typing
+is given](../../host/runtime.md#what-typing-is-given)) - spell checked and
+predicting the next word, WinUI's defaults both on and plain words neither,
+and the text box's input scope, which picks the on-screen keyboard: its keys
+by the purpose, `Text` where sentences start in capitals, `Chat` where emoji
+are offered. A question's field takes the same. The words stand across the
+box as their alignment says, the placeholder takes its colour, and the caret
+and the selection are put where the tree put them, in the characters WinUI
+counts, only where the tree changed them.
+
+A search box is WinUI's `AutoSuggestBox` as it is: the text box its template
+holds takes the box's style, which carries whether it is read only, the case
+typing takes and the words typed across it. The template reads the
+placeholder's colour from theme resources, which the box's own resources name
+again - at rest, under the pointer, focused and disabled - as a control's
+accent is ([a control's accent](#a-controls-accent)). It stands the
+placeholder at the start whatever the text box says, so the register records
+the alignment in part: the host reaches into no template's parts.
 
 A test of a search box types into the text box its template holds: the
 search box's own words written from outside are the program's to it, and
@@ -223,6 +270,26 @@ reported as such. The search box tells those words a moment after it takes
 them, so a test waits for them before it submits the query - as a key is
 told before the next is pressed - and submits through the search box's
 automation peer, as its own button does.
+
+## A password
+
+WinUI's `TextBox` shows every word it holds; a password is another control,
+the `PasswordBox`. A field whose `isPassword` turns on stands a `PasswordBox`
+in its `TextBox`'s place, and one that turns off a `TextBox` again: the view
+keeps its number and its place in its layout, takes the words it held over,
+and lets the old control go. What every view hangs on its control - the
+user's input it listens for, its focus heard, whether it shows, how opaque
+and where drawn - comes off the old one and goes on the new, and its element
+writes the new one every value it holds, as it does a control just made.
+
+A `PasswordBox` reports its words from `PasswordChanging`, raised inside the
+write as a text box's `TextChanging` is, and its Enter submits. It takes the
+placeholder, its colour through the theme resources its template reads, the
+font and the words' colour, and the input scope - digits for a numeric
+purpose, a password's otherwise, the only two it takes. It has no read-only
+state, alignment, case, caret or selection, and no spell checking or
+prediction: a password field keeps none of them, which the register records
+beside `isPassword`.
 
 ## Return
 
@@ -275,3 +342,41 @@ of the room. A stretched picture keeps no proportions, and WinUI draws a
 stretched SVG at its room's size, where the SVG would keep its own and leave
 bands: the relay hands WinUI the picture from memory with its proportions
 let go (`preserveAspectRatio="none"`).
+
+Every other SVG is handed to WinUI by its file's address. An SVG read from
+memory costs WinUI far more once another window shows it: the Gallery's
+pictures, read so in a second gallery window, held some five gigabytes of
+surfaces shared between the windows, where read from their files they add
+megabytes.
+
+## A web view
+
+A WebView on WinUI is a backend, `lib/Backends/WebView.WinUI`: WinUI's
+`WebView2`, made by the backend's own C++/WinRT relay through the host's
+registration of an application's own controls, its page asked for once the
+element's values are applied. It runs over the system's WebView2 runtime: the
+WebView2 package's component and loader stand beside an application linking
+the backend, which lays them there (`SelfContained.ps1`), as the Windows App
+SDK's runtime stands beside every one. Its `CoreWebView2` stands a moment after it is
+first asked for a page, so a page asked for before then is gone to once it
+stands, in the order asked. What the page does comes back as the element's
+events: a navigation as it starts and as it ends, why it began by the host
+layer's rule - the program's step, else what WebView2 tells, which does not
+tell a step back from one forward - and whether there is a page behind and
+ahead as it changes ([a web view](../../host/web.md)). A page the program
+loads again while it is still coming, which WebView2 leaves as it is, is
+asked for again instead. A script's answer is the JSON WebView2 writes its
+value in, read by the host layer's rule, and the end of the page's web
+process is heard as WebView2 tells it. The agent it names itself by is the
+tree's, and the runtime's own where the tree gives none, taken back from
+when its `CoreWebView2` stood. Its page takes the user's hand: a web view hears none
+of it as a view does - WebView2, listened to by WinUI, ends the process - so
+its taps, pans, swipes, pinch and pointer are none on WinUI.
+
+A document written in place is what its address answers, the view serving
+it through `WebResourceRequested` whenever the view asks for it - going back
+to it too - and nothing is fetched: at its own address, which its relative
+links resolve against, else at one the host gives it, under
+`https://page.stateui.invalid/`, which no network answers. WebView2 leaves a
+`data:` address unfinished, sent to it or taken back to - `NavigateToString`
+goes to one - and every navigation after it.

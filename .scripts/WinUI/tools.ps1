@@ -24,7 +24,7 @@
 $ErrorActionPreference = 'Continue'
 
 $StateUIRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$StateUIWinUIHost = Join-Path $StateUIRepository 'lib\StateUI.WinUI'
+$StateUIWinUIHost = Join-Path $StateUIRepository 'lib\StateUI\StateUI.WinUI'
 
 # The packages, pinned: the WebView2 is the one WinUI's nuspec names.
 $StateUIPackages = [ordered]@{
@@ -90,6 +90,24 @@ function Initialize-StateUIProjection {
     Set-Content -Path $stamp -Value $versions -Encoding ascii
 }
 
+# What SwiftPM is told to build for `Architecture`: nothing for the toolchain's
+# own, `--arch` for another - its `--triple` builds the toolchain's own.
+function Get-StateUIArchitectureArguments([string]$Architecture) {
+    if ($Architecture -eq $StateUIArchitecture) { return @() }
+    return @('--arch', @{ x64 = 'x86_64'; arm64 = 'aarch64' }[$Architecture])
+}
+
+# The C++ runtime for `Architecture`, laid in `Directory` - Visual Studio's
+# app-local redistributable - which the Swift runtime links.
+function Add-StateUICppRuntime([string]$Directory, [string]$Architecture) {
+    $studio = & (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe') -latest -products * -property installationPath
+    $release = Get-ChildItem (Join-Path $studio 'VC\Redist\MSVC') -Directory | Where-Object Name -match '^\d+\.\d+\.\d+$' |
+        Sort-Object { [version]$_.Name } | Select-Object -Last 1
+    $runtime = Get-ChildItem (Join-Path $release.FullName $Architecture) -Directory -Filter 'Microsoft.VC*.CRT' | Select-Object -First 1
+    if (-not $runtime) { throw "no C++ runtime for $Architecture in $($release.FullName)" }
+    Copy-Item (Join-Path $runtime.FullName '*.dll') $Directory -Force
+}
+
 # Says so when the editor is building for its index: it shares the processor
 # with a build, and can make it minutes longer.
 function Write-StateUIEditorBuilds {
@@ -98,19 +116,28 @@ function Write-StateUIEditorBuilds {
     if ($builds) { Write-Host 'the editor is building for its index, which slows this build' }
 }
 
-# Makes `Directory` self-contained for each of `Executables`: the Windows App
-# SDK's runtime beside them, every class its components declare registered in
-# the manifest beside each one, and resources.pri. An executable is never
-# rewritten after its build: the next build would link it again.
-function Set-StateUISelfContained([string]$Directory, [string[]]$Executables) {
+# Makes `Directory` self-contained for each of `Executables`, built for
+# `Architecture`: the Windows App SDK's runtime beside them, what each backend
+# linked there needs (lib\Backends\*.WinUI\SelfContained.ps1), the Swift
+# runtime where the architecture is not the toolchain's, every class its
+# components declare registered in the manifest beside each one, and
+# resources.pri. An executable is never rewritten after its build: the next
+# build would link it again.
+function Set-StateUISelfContained([string]$Directory, [string[]]$Executables, [string]$Architecture = $StateUIArchitecture) {
     $components = 'microsoft.windowsappsdk.winui', 'microsoft.windowsappsdk.foundation',
         'microsoft.windowsappsdk.interactiveexperiences' | ForEach-Object { Get-StateUIPackage $_ }
 
     foreach ($component in $components) {
-        $native = Join-Path $component "runtimes-framework\win-$StateUIArchitecture\native"
+        $native = Join-Path $component "runtimes-framework\win-$Architecture\native"
         robocopy $native $Directory /E /XO /NFL /NDL /NJH /NJS /NP | Out-Null
         if ($LASTEXITCODE -ge 8) { throw "the Windows App SDK could not be copied from $native" }
     }
+    # What a backend's engine needs beside an application linking it, each backend lays itself.
+    foreach ($backend in Get-ChildItem (Join-Path $StateUIRepository 'lib\Backends') -Directory -Filter '*.WinUI') {
+        $lays = Join-Path $backend.FullName 'SelfContained.ps1'
+        if (Test-Path $lays) { & $lays -Directory $Directory -Architecture $Architecture }
+    }
+    if ($Architecture -ne $StateUIArchitecture) { Add-StateUISwiftRuntime -Directory $Directory -Architecture $Architecture }
     $global:LASTEXITCODE = 0
 
     $manifest = New-StateUIManifest $components
@@ -118,6 +145,99 @@ function Set-StateUISelfContained([string]$Directory, [string[]]$Executables) {
 
     # WinUI's controls find their resources in the application's index.
     Copy-Item (Join-Path $Directory 'Microsoft.UI.Xaml.Controls.pri') (Join-Path $Directory 'resources.pri') -Force
+}
+
+# The Swift runtime for `Architecture`, laid in `Directory`: the toolchain's
+# own runtime stands on PATH, another architecture's nowhere. The Swift
+# installer keeps each one as a merge module in its Redistributables - its
+# File table and its cabinet, read through msi.dll and unpacked by expand.exe.
+# Unpacked again only where the module differs from the one laid there.
+# Design: docs/design/platforms/winui/runtime.md#another-architecture
+function Add-StateUISwiftRuntime([string]$Directory, [string]$Architecture) {
+    $toolchain = Split-Path (Split-Path (Split-Path (Get-Command swift).Source))
+    $swift = Split-Path (Split-Path $toolchain)
+    $version = (Split-Path $toolchain -Leaf) -replace '\+.*$', ''
+    $module = Join-Path $swift "Redistributables\$version\rtl.shared.$(@{ x64 = 'amd64'; arm64 = 'arm64' }[$Architecture]).msm"
+    if (-not (Test-Path $module)) { throw "no Swift runtime for ${Architecture}: $module is missing" }
+    $stamp = Join-Path $Directory 'swift-runtime.txt'
+    $laid = "$module $((Get-Item $module).LastWriteTimeUtc.Ticks)"
+    if ((Test-Path $stamp) -and (Get-Content $stamp -Raw).Trim() -eq $laid) { return }
+
+    Write-Host "laying the Swift runtime for $Architecture"
+    Add-Type -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+
+public static class StateUIMergeModule {
+    [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiOpenDatabaseW(string path, IntPtr persist, out IntPtr database);
+    [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiDatabaseOpenViewW(IntPtr database, string query, out IntPtr view);
+    [DllImport("msi.dll")] static extern uint MsiViewExecute(IntPtr view, IntPtr record);
+    [DllImport("msi.dll")] static extern uint MsiViewFetch(IntPtr view, out IntPtr record);
+    [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiRecordGetStringW(IntPtr record, uint field, StringBuilder value, ref uint size);
+    [DllImport("msi.dll")] static extern uint MsiRecordReadStream(IntPtr record, uint field, byte[] buffer, ref uint size);
+    [DllImport("msi.dll")] static extern uint MsiCloseHandle(IntPtr handle);
+
+    static List<IntPtr> Rows(IntPtr database, string query) {
+        IntPtr view, record;
+        if (MsiDatabaseOpenViewW(database, query, out view) != 0) throw new Exception("cannot read " + query);
+        MsiViewExecute(view, IntPtr.Zero);
+        var rows = new List<IntPtr>();
+        while (MsiViewFetch(view, out record) == 0) rows.Add(record);
+        MsiCloseHandle(view);
+        return rows;
+    }
+
+    // Each file's key in the module's cabinet, to its name.
+    public static Dictionary<string, string> Files(string module) {
+        IntPtr database;
+        if (MsiOpenDatabaseW(module, IntPtr.Zero, out database) != 0) throw new Exception("cannot open " + module);
+        var files = new Dictionary<string, string>();
+        foreach (var row in Rows(database, "SELECT `File`, `FileName` FROM `File`")) {
+            var key = new StringBuilder(1024); var name = new StringBuilder(1024); uint size = 1024;
+            MsiRecordGetStringW(row, 1, key, ref size); size = 1024;
+            MsiRecordGetStringW(row, 2, name, ref size);
+            var bar = name.ToString().IndexOf('|');
+            files[key.ToString()] = bar < 0 ? name.ToString() : name.ToString().Substring(bar + 1);
+            MsiCloseHandle(row);
+        }
+        MsiCloseHandle(database);
+        return files;
+    }
+
+    // The module's cabinet, written to `output`.
+    public static void Cabinet(string module, string output) {
+        IntPtr database;
+        if (MsiOpenDatabaseW(module, IntPtr.Zero, out database) != 0) throw new Exception("cannot open " + module);
+        using (var file = File.Create(output)) {
+            foreach (var row in Rows(database, "SELECT `Data` FROM `_Streams` WHERE `Name` = 'MergeModule.CABinet'")) {
+                var buffer = new byte[1 << 20]; uint size;
+                do { size = (uint)buffer.Length; MsiRecordReadStream(row, 1, buffer, ref size); file.Write(buffer, 0, (int)size); } while (size > 0);
+                MsiCloseHandle(row);
+            }
+        }
+        MsiCloseHandle(database);
+    }
+}
+'@ -ErrorAction SilentlyContinue
+
+    $unpacked = Join-Path $env:TEMP "stateui-swift-runtime-$Architecture-$PID"
+    New-Item -ItemType Directory -Force $unpacked | Out-Null
+    $cabinet = Join-Path $unpacked 'runtime.cab'
+    [StateUIMergeModule]::Cabinet($module, $cabinet)
+    expand.exe $cabinet -F:* $unpacked | Out-Null
+    if ($LASTEXITCODE) { throw "the Swift runtime for $Architecture could not be unpacked from $module" }
+    $names = [StateUIMergeModule]::Files($module)
+    foreach ($each in Get-ChildItem $unpacked -Exclude 'runtime.cab') {
+        # plutil is a tool of Foundation's, no part of what a program runs with.
+        if ($names[$each.Name] -and $names[$each.Name] -ne 'plutil.exe') {
+            Copy-Item $each.FullName (Join-Path $Directory $names[$each.Name]) -Force
+        }
+    }
+    Remove-Item $unpacked -Recurse -Force
+    Set-Content -Path $stamp -Value $laid -Encoding ascii
 }
 
 # The manifest a self-contained application carries: every class each

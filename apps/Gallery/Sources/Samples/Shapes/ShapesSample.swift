@@ -51,8 +51,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .x1(0).y1(0)
                     .x2(56).y2(56)
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeLineCap(.round)
+                    .lineWidth(4)
+                    .lineCap(.round)
                     .width(56)
                     .height(56)
 
@@ -60,13 +60,13 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .x1(0).y1(28)
                     .x2(56).y2(28)
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeDashPattern([3, 2])
+                    .lineWidth(4)
+                    .dash([3, 2])
                     .width(56)
                     .height(56)
 
                 // The one shape that is whatever you can write down: SVG path
-                // syntax, normalized by StateUI for every native backend.
+                // syntax, normalized by StateUI for every native host.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
                     .width(56)
@@ -78,21 +78,21 @@ struct ShapesSample: SampleContent, ExampleContent {
                 // a Path.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .renderTransform(.skew(20, 0))
+                    .geometryTransform(.skew(20, 0))
                     .width(56)
                     .height(56)
 
                 Rectangle()
                     .fill(Palette.accent)
                     .cornerRadius(14)
-                    .renderTransform(.skew(20, 0))
+                    .geometryTransform(.skew(20, 0))
                     .width(56)
                     .height(56)
 
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeLineJoin(.round)
+                    .lineWidth(4)
+                    .lineJoin(.round)
                     .width(56)
                     .height(56)
             }
@@ -104,9 +104,9 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .x1(0).y1(4)
                     .x2(200).y2(4)
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeDashPattern([3, 2])
-                    .strokeDashOffset(0)
+                    .lineWidth(4)
+                    .dash([3, 2])
+                    .dashPhase(0)
                     .width(200)
                     .height(8)
 
@@ -114,9 +114,9 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .x1(0).y1(4)
                     .x2(200).y2(4)
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeDashPattern([3, 2])
-                    .strokeDashOffset(2.5)
+                    .lineWidth(4)
+                    .dash([3, 2])
+                    .dashPhase(2.5)
                     .width(200)
                     .height(8)
             }
@@ -127,17 +127,17 @@ struct ShapesSample: SampleContent, ExampleContent {
             HStack {
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                     .stroke(Palette.accent)
-                    .strokeWidth(8)
-                    .strokeLineJoin(.miter)
-                    .strokeMiterLimit(10)
+                    .lineWidth(8)
+                    .lineJoin(.miter)
+                    .miterLimit(10)
                     .width(56)
                     .height(72)
 
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                     .stroke(Palette.accent)
-                    .strokeWidth(8)
-                    .strokeLineJoin(.miter)
-                    .strokeMiterLimit(1)
+                    .lineWidth(8)
+                    .lineJoin(.miter)
+                    .miterLimit(1)
                     .width(56)
                     .height(72)
             }
@@ -160,7 +160,7 @@ struct ShapesSample: SampleContent, ExampleContent {
         Point(54.6, 19.3), Point(11.5, 50.6),
     ]
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -199,8 +199,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .x1(0).y1(0)
                     .x2(56).y2(56)
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeLineCap(.round)
+                    .lineWidth(4)
+                    .lineCap(.round)
                     .width(56)
                     .height(56)
 
@@ -208,8 +208,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .x1(0).y1(28)
                     .x2(56).y2(28)
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeDashPattern([3, 2])
+                    .lineWidth(4)
+                    .dash([3, 2])
                     .width(56)
                     .height(56)
 
@@ -224,21 +224,21 @@ struct ShapesSample: SampleContent, ExampleContent {
                 // a Path.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .renderTransform(.skew(20, 0))
+                    .geometryTransform(.skew(20, 0))
                     .width(56)
                     .height(56)
 
                 Rectangle()
                     .fill(Palette.accent)
                     .cornerRadius(14)
-                    .renderTransform(.skew(20, 0))
+                    .geometryTransform(.skew(20, 0))
                     .width(56)
                     .height(56)
 
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeLineJoin(.round)
+                    .lineWidth(4)
+                    .lineJoin(.round)
                     .width(56)
                     .height(56)
             }
@@ -252,9 +252,9 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .x1(0).y1(4)
                     .x2(200).y2(4)
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeDashPattern([3, 2])
-                    .strokeDashOffset(0)
+                    .lineWidth(4)
+                    .dash([3, 2])
+                    .dashPhase(0)
                     .width(200)
                     .height(8)
 
@@ -262,9 +262,9 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .x1(0).y1(4)
                     .x2(200).y2(4)
                     .stroke(Palette.accent)
-                    .strokeWidth(4)
-                    .strokeDashPattern([3, 2])
-                    .strokeDashOffset(2.5)
+                    .lineWidth(4)
+                    .dash([3, 2])
+                    .dashPhase(2.5)
                     .width(200)
                     .height(8)
             }
@@ -276,17 +276,17 @@ struct ShapesSample: SampleContent, ExampleContent {
             HStack {
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                     .stroke(Palette.accent)
-                    .strokeWidth(8)
-                    .strokeLineJoin(.miter)
-                    .strokeMiterLimit(10)
+                    .lineWidth(8)
+                    .lineJoin(.miter)
+                    .miterLimit(10)
                     .width(56)
                     .height(72)
 
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                     .stroke(Palette.accent)
-                    .strokeWidth(8)
-                    .strokeLineJoin(.miter)
-                    .strokeMiterLimit(1)
+                    .lineWidth(8)
+                    .lineJoin(.miter)
+                    .miterLimit(1)
                     .width(56)
                     .height(72)
             }
@@ -304,16 +304,16 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             Button("fillRule: .\(rule)")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
         }
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Fill, stroke and everything about the stroke form one `Shape` protocol, "
+            Text("Fill, stroke and everything about the stroke form one `Shape` protocol, "
                 + "shared by all six outlines and every native host. A shape with no "
                 + "stroke width draws no outline and one with no fill has no inside - a "
                 + "`Line` has only the first, as there is nothing to fill. A `Rectangle` "
@@ -322,14 +322,14 @@ struct ShapesSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A `Path` is whatever you can write down: `M` moves the pen, `L` draws a "
+            Text("A `Path` is whatever you can write down: `M` moves the pen, `L` draws a "
                 + "line to a point, `Z` closes the figure back to where it started - the "
                 + "same SVG path vocabulary on every StateUI host. A `Polygon` closes its "
                 + "figure for you and a `Polyline` leaves it open.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Dashes and their offset are counted in stroke widths: `[3, 2]` at "
+            Text("Dashes and their offset are counted in stroke widths: `[3, 2]` at "
                 + "width 4 repeats every 20 points, so the lower line's offset of 2.5 "
                 + "shifts it half a pattern and its dashes stand under the upper line's gaps. "
                 + "A miter join carries the two outer edges on until they cross, and the "
@@ -339,7 +339,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The star is five points, each joined to the one two along, so its outline "
+            Text("The star is five points, each joined to the one two along, so its outline "
                 + "crosses itself and the middle is enclosed twice. A `fillRule` only says "
                 + "anything there: `.evenOdd` counts that middle as outside and empties it, "
                 + "`.nonzero` counts it as inside and fills it. Everywhere else the two "

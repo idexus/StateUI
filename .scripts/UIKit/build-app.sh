@@ -20,12 +20,13 @@ configuration="${2:-debug}"
 device="${3:-}"
 name="$(basename "$app_dir")"
 product="${name}UIKit"
-scratch="$app_dir/.build-uikit"
+scratch="$app_dir/.build/uikit"
 [[ -z "$device" ]] || uikit_target iphoneos
 
-export STATEUI_UIKIT=1
+export STATEUI_HOST=uikit
 binary_dir="$(uikit_build "$app_dir" "$scratch" "$configuration" "$product")"
 bundle="$binary_dir/$product.app"
 identifier="com.stateui.$(tr '[:upper:]' '[:lower:]' <<< "$name")"
-uikit_bundle "$binary_dir" "$product" "$name" "$identifier" "$app_dir/Resources" "$bundle" "$binary_dir/tools" $device
+uikit_bundle "$binary_dir" "$product" "$name" "$identifier" "$app_dir/Resources" "$bundle" "$binary_dir/tools" \
+  "$app_dir/Platforms/UIKit/Info.plist" $device
 echo "$bundle"

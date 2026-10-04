@@ -35,7 +35,7 @@ A cell holds its entry's subtree in a single-child view, placed by the
 layer's arithmetic, and answers UIKit's question for its size with what the
 entry asks for: its height at the cell's width, or its width at the cell's
 height in a row. An entry whose size changes has its cell measured again by
-reconfiguring its item - UIKit measures the same cell. A whole invalidation
+the cell's own self-sizing invalidation - UIKit measures the same cell. A whole invalidation
 of the layout is never the answer: UIKit then configures fresh cells for the
 items on screen, and a subtree, which stands in one cell at a time, leaves
 the cell on screen empty. An entry mounting for the first time is measured by
@@ -43,6 +43,13 @@ the cell taking it, so nothing is measured again for it.
 
 The list itself asks for its width and no height: its room is what its
 layout gives it - a height, or a row of a grid that fills.
+
+A cell at rest is clear, and the page shows through the list as it does on
+every host. The user's choice and a touch lay the platform's accent - the
+cell's tint - over the page at a fifth of its strength, as Android lays its
+own; the focus keeps the list cell's look. The list cell's own colours are
+the system background at rest and a grey when chosen, which a page of
+another colour shows as blocks.
 
 ## One cell an entry
 

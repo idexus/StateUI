@@ -1,8 +1,0 @@
-# revision 1.1
-ActivityIndicator.tint: cannot read tint of ActivityIndicator - GTK's driver has no path for it yet
-CheckBox.tint: not realized
-Picker.tint: not realized
-ProgressBar.tint: cannot read tint of ProgressBar - GTK's driver has no path for it yet
-SearchField.tint: not realized
-Slider.tint: not realized
-Switch.tint: not realized

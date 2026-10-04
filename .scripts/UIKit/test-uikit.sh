@@ -13,8 +13,8 @@
 # UDID; the one booted, else an iPhone, where none is named.
 # STATEUI_FILTER=<names> runs only the tests whose "Case.test" name holds one
 # of the names, split at commas. STATEUI_UPDATE_EXPORTS=1 writes what the run
-# says into exports/ instead of holding it to them, each verdict file under the
-# revision its family stands at (lib/StateUI.Conformance/revisions.txt);
+# says into lib/StateUI/exports/ instead of holding it to them, each verdict file under the
+# revision its family stands at (lib/StateUI/StateUI.Conformance/revisions.txt);
 # STATEUI_STALE_ONLY=1 runs only the conformance families whose verdicts stand
 # at another revision, or at none.
 set -euo pipefail
@@ -22,7 +22,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_dir/tools.sh"
 repository_dir="$(cd "$script_dir/../.." && pwd)"
-package="$repository_dir/lib/StateUI.UIKit/Tests"
+package="$repository_dir/lib/StateUI/StateUI.UIKit/Tests"
 scratch="$package/.build"
 product="StateUIUIKitTests"
 identifier="com.stateui.uikit.tests"
@@ -47,7 +47,7 @@ binary_dir="$(uikit_build "$package" "$scratch" debug "$product" \
   -Xlinker -F -Xlinker "$frameworks" -Xlinker -L -Xlinker "$libraries" \
   -Xlinker -rpath -Xlinker "$frameworks" -Xlinker -rpath -Xlinker "$libraries")"
 bundle="$scratch/debug/$product.app"
-uikit_bundle "$binary_dir" "$product" "$product" "$identifier" "$package/Resources" "$bundle" "$scratch/tools"
+uikit_bundle "$binary_dir" "$product" "$product" "$identifier" "$package/Resources" "$bundle" "$scratch/tools" ""
 
 xcrun simctl install "$device" "$bundle"
 output="$(mktemp)"

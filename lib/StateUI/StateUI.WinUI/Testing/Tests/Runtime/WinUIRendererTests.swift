@@ -1,0 +1,170 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import CStateUIWinUI
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+@testable import StateUIWinUI
+@testable import StateUIWinUIDriver
+import XCTest
+
+/// A page and its counter: a click raises the count, and the caption reads it.
+struct CounterPage: View {
+    @State private var count = 0
+
+    var body: some View {
+        VStack {
+            Text("count \(count)")
+            Button("Add")
+                .onClicked { count += 1 }
+        }
+    }
+}
+
+final class WinUIRendererTests: XCTestCase {
+    /// A page's controls are WinUI's, shown in a window: the words it describes are the words WinUI holds.
+    func testThePageShowsItsControlsInAWindow() {
+        onUIThread {
+            let host = WinUIRenderer.running { CounterPage() }
+
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["count 0"])
+            XCTAssertEqual(host.views(WinUIButtonView.self).map(\.text), ["Add"])
+            XCTAssertNotNil(host.window?.content, "the window shows no page")
+        }
+    }
+
+    /// A test's window stands in the tests' room whatever the screen: Windows gives a window three quarters of it,
+    /// and a runner's screen of 1024 x 768 stood the split view's sidebar over its detail.
+    func testATestsWindowStandsInItsRoomWhateverTheScreen() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { CounterPage() }
+            var frame = [Double](repeating: 0, count: 13)
+            stateui_winui_window_frame(try XCTUnwrap(host.window).handle, &frame)
+            XCTAssertEqual(frame[2], WinUITestHost.room.width, accuracy: 0.5)
+            XCTAssertEqual(frame[3], WinUITestHost.room.height, accuracy: 0.5)
+        }
+    }
+
+    /// The proof of the host's spine: the click reaches the handler, the state it wrote renders, and the patch
+    /// reaches WinUI.
+    func testAClickRendersWhatItsHandlerChanged() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { CounterPage() }
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+
+            button.invoke()
+            button.invoke()
+
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["count 2"])
+        }
+    }
+
+    func testAControlNoRegistrationAnswersShowsItsName() {
+        onUIThread {
+            let host = WinUIRenderer.running { VStack { Map() } }
+
+            XCTAssertEqual(host.views(WinUIUnsupportedView.self).map(\.text), ["WinUI: unsupported Map"])
+        }
+    }
+
+    /// Every callback the relay declares is set: the relay calls them unchecked, and one left empty is a jump to nothing.
+    func testEveryCallbackTheRelayMakesIsSet() {
+        let fields = Mirror(reflecting: WinUICallbacks.table).children
+
+        XCTAssertEqual(fields.count, 29, "the relay's callbacks changed; this test names how many there are")
+        for field in fields {
+            let value = Mirror(reflecting: field.value)
+            XCTAssertFalse(value.displayStyle == .optional && value.children.isEmpty, "\(field.label ?? "?") is not set")
+        }
+    }
+
+    /// A window the tree closes tells nothing: WinUI says it closed, and that is the tree's own closing.
+    func testAWindowTheTreeClosesTellsNothing() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { PhasePage() }
+            let window = try XCTUnwrap(host.window)
+            let before = host.views(WinUITextView.self).map(\.text)
+
+            window.close()
+            for _ in 0..<10 { host.step() }
+
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), before, "no phase, no going")
+        }
+    }
+
+    /// A window minimized and restored as the user does it - WinUI telling its activation, its presenter and its
+    /// visibility in whatever order it tells them - stops, then stands again.
+    func testAMinimizedWindowIsStoppedWhateverOrderWinUITellsIt() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { PhasePage() }
+            let window = try XCTUnwrap(host.window)
+            let said = { host.views(WinUITextView.self).map(\.text).first ?? "" }
+
+            stateui_winui_window_show_as_user(window.handle, 6)
+            host.settle(until: { said().hasSuffix("stopped") })
+            XCTAssertEqual(said(), "background stopped")
+
+            stateui_winui_window_show_as_user(window.handle, 9)
+            host.settle(until: { !said().hasSuffix("stopped") })
+            XCTAssertFalse(said().contains("background"), said())
+            XCTAssertFalse(said().hasSuffix("stopped"), said())
+        }
+    }
+
+    /// The page reads the screen its window stands on: its size, and how it is turned - not at all on this machine.
+    func testThePageReadsTheScreenItStandsOn() {
+        onUIThread {
+            let host = WinUIRenderer.running { DisplayPage() }
+            host.settle { host.views(WinUITextView.self).first?.text != "0 unknown" }
+
+            let words = host.views(WinUITextView.self).first?.text.split(separator: " ") ?? []
+            XCTAssertGreaterThan(Double(words.first ?? "") ?? 0, 0, "a width")
+            XCTAssertEqual(words.last, "rotation0", "a screen standing as it is made")
+        }
+    }
+
+    /// The environment is Windows' own: the page reads a desktop running Windows, and the system's theme as Windows
+    /// has it now.
+    func testThePageReadsWindowsAndItsTheme() {
+        onUIThread {
+            let host = WinUIRenderer.running { EnvironmentPage() }
+            var bytes = [CChar](repeating: 0, count: 8)
+            _ = stateui_winui_facts(StateUIFactsTheme, nil, &bytes, 8)
+            let dark = bytes[0] == 0x31
+
+            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["Windows desktop", dark ? "dark" : "light"])
+        }
+    }
+}
+
+/// A page saying the application's phase and its window's.
+private struct PhasePage: View {
+    @Environment(\.application) private var application
+    @Environment(\.window) private var window
+
+    var body: some View {
+        Text("\(application.phase) \(window.phase)")
+    }
+}
+
+/// A page saying the screen's width and turn.
+private struct DisplayPage: View {
+    @Environment(\.device) private var device
+
+    var body: some View {
+        Text("\(Int(device.display.width)) \(device.display.rotation)")
+    }
+}
+
+/// A page saying what it runs on and the theme it runs in.
+private struct EnvironmentPage: View {
+    @Environment(\.device) private var device
+    @Environment(\.application) private var app
+
+    var body: some View {
+        VStack {
+            Text("\(device.info.platform) \(device.info.formFactor)")
+            Text("\(app.info.colorScheme)")
+        }
+    }
+}

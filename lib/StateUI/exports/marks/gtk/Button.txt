@@ -1,0 +1,11 @@
+# revision 1.1
+Button: ✅
+Button.clicked: ✅
+Button.frameChanged: ✅
+Button.icon: ✓ read icon of Button: the file the host's own panel draws: GTK's snapshot holds no picture's name
+Button.iconPosition: ✅
+Button.iconSpacing: ✅
+Button.lineBreak: ✅
+Button.pressed: ✅
+Button.released: ✅
+Text.text: ✅

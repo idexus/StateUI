@@ -1,26 +1,26 @@
 # Composition
 
-An application builds its interface out of composed views - `ContentView`s -
-and the library builds several of its own the same way: `FrameReader`,
+An application builds its interface out of composed views - `View`s -
+and the library builds several of its own the same way: `GeometryReader`,
 `PlacedLayout`, `ScrollReader`, `GalleryView`, the inspector. A
 composed view is a value that says what it is made of; the differ decides when
 that is read.
 
 ## A composed view is a placeholder
 
-`ContentView.body` does not build the content. It answers a placeholder node
+`View.node` does not build the content. It answers a placeholder node
 (`Node.composed`) carrying the view's value, its state boxes, its inputs and a
 closure that builds the content:
 
 ```text
   Header("Settings")                   the author's value
-    └─ body ─▶ Node(type: Composed)    placeholder: the view, its @State boxes,
-                                       its inputs, and a closure for `content`
+    └─ node ─▶ Node(type: Composed)    placeholder: the view, its @State boxes,
+                                       its inputs, and a closure for `body`
                  │
                  ▼  the differ, once it knows whether this view stood here
                     last render (by its key)
                hands the @State boxes the storage their predecessors held,
-               then runs `content` - or carries the view whole when its
+               then runs `body` - or carries the view whole when its
                inputs are unchanged and no state it read has moved
 ```
 
@@ -32,7 +32,7 @@ read, changes.
 
 ## A modifier on a composed view
 
-A composed view has no node of its own to keep a change in: `content` is built
+A composed view has no node of its own to keep a change in: `body` is built
 afresh every time it is read, so a change stored on the composed value would be
 gone by the next render. A modifier written on one therefore gives back a
 `ModifiedContent`, a wrapper holding the placeholder with the change written
@@ -41,7 +41,7 @@ That is why `PropertyContainer.Modified` is an associated type rather than
 `Self`.
 
 `ModifiedContent` offers what every view has - margin, opacity, grid placement
-- and nothing only some views have: what is inside might be a Label or a stack,
+- and nothing only some views have: what is inside might be a Text or a stack,
 and `.fontSize()` on one would be a promise the library cannot keep. Because
 those modifiers return a `ModifiedContent`, a composed view's own modifiers
 come first in a chain, and an aim is written directly on the initializer's
@@ -97,7 +97,8 @@ The differ finds a composed view's `@State` by walking its stored properties,
 into structs, enums and collections, since a view may keep another view - and
 that view's state - in a stored property. The walk stops at any class. A
 composed view that holds data - a layout's items, a list's groups, a gallery's
-cards and their face closure - keeps it behind a private class (`Source`), so
+cards and their face closure - keeps it behind a class (`Source`, a list's
+`ItemsSource`), so
 the walk does not visit every field of every item on every render to find
 state that is never there. For a list of many thousand items that is the
 difference the list exists for.

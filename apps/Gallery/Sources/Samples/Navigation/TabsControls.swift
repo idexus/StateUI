@@ -7,7 +7,7 @@ import StateUI
 /// It is on EVERY tab page rather than on one of them, because what is being
 /// watched is which tab the platform leaves showing - so wherever it lands, the
 /// same readings are under it.
-struct TabsControls: ContentView {
+struct TabsControls: View {
     /// Where the gallery is, and the moves that change the tab list.
     let nav: Navigation
 
@@ -15,7 +15,7 @@ struct TabsControls: ContentView {
     /// the binding and the screen agree.
     let thisTab: DemoTab
 
-    var content: any View {
+    var body: some View {
         VStack {
             SectionTitle("The tab bar, as Swift describes it")
 
@@ -26,20 +26,20 @@ struct TabsControls: ContentView {
             }
             .spacing(4)
 
-            Label("currentPage sent to the host · \(sentToTheHost)")
+            Text("selectedTab sent to the host · \(sentToTheHost)")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
 
             if agrees {
-                Label(verdict)
+                Text(verdict)
                     .fontSize(12)
                     .textColor(Palette.subtle)
             } else {
                 HStack {
                     WarningMark()
 
-                    Label(verdict)
+                    Text(verdict)
                         .fontSize(12)
                         .fontAttributes(.bold)
                         .textColor(Palette.accent)
@@ -59,7 +59,7 @@ struct TabsControls: ContentView {
 
             move("Reset") { nav.resetTabs() }
 
-            Label("last move · \(nav.tabsNote)")
+            Text("last move · \(nav.tabsNote)")
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.subtle)
@@ -72,20 +72,20 @@ struct TabsControls: ContentView {
     ///
     /// The last row keeps no close button: a tab bar with nothing in it draws no
     /// page, so there would be nothing left to press.
-    private func row(index: Int, tab: DemoTab) -> any View {
+    private func row(index: Int, tab: DemoTab) -> some View {
         HStack {
-            Label("\(index)")
+            Text("\(index)")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.subtle)
                 .width(24)
 
-            Label(tab.caption)
+            Text(tab.caption)
                 .fontSize(13)
                 .textColor(tab == nav.tab ? Palette.accent : Palette.text)
                 .width(90)
 
-            Label(tab == nav.tab ? "◀ selected" : " ")
+            Text(tab == nav.tab ? "◀ selected" : " ")
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .width(80)
@@ -93,7 +93,7 @@ struct TabsControls: ContentView {
             if nav.tabs.count > 1 {
                 Button("close")
                     .fontSize(12)
-                    .padding(10, 2)
+                    .padding(horizontal: 10, vertical: 2)
                     .onClicked { nav.closeTab(tab, showing: thisTab) }
             }
         }
@@ -104,12 +104,12 @@ struct TabsControls: ContentView {
     private func move(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)
-            .padding(16, 6)
+            .padding(horizontal: 16, vertical: 6)
             .horizontalAlignment(.start)
             .onClicked(act)
     }
 
-    /// The index `TabbedView.selection` sends the host for this selection -
+    /// The index `TabView.selection` sends the host for this selection -
     /// the same line the library runs, repeated here so that the number is on
     /// screen.
     ///

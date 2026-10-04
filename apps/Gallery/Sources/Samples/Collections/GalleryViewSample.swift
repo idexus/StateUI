@@ -35,6 +35,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     @State private var swipes = true
     @State private var shaded = true
     @State private var opened = "tap one"
+    @State private var moves = 0
 
     // The cards are turned by a scroller of their own, so the example is not
     // put in a second one: the page's scroller would claim the swipe before it
@@ -51,6 +52,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         @State private var swipes = true
         @State private var shaded = true
         @State private var opened = "tap one"
+        @State private var moves = 0
 
         struct Card { let name: String; let art: String }
 
@@ -82,6 +84,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .position($shown)
                 .isSwipeEnabled(swipes)
                 .onItemTapped { card in opened = "tapped \\(card.name)" }
+                // Another card in the middle, swiped or assigned.
+                .onPositionChanged { _ in moves += 1 }
                 .gridRow(0)
 
             VStack {
@@ -99,9 +103,11 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 PositionIndicator()
                     .count(cards.count)
                     .position(shown)
+                    .indicatorColor(Palette.outline)
+                    .currentIndicatorColor(Palette.accent)
 
-                Label("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
-                    + "card \\(shown + 1) of \\(cards.count) · \\(opened)")
+                Text("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
+                    + "card \\(shown + 1) of \\(cards.count) · \\(opened) · moved \\(moves)")
             }
             .gridRow(1)
 
@@ -138,17 +144,17 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             // whatever is behind it, which on a wheel is the next card - so
             // depth is a shade drawn OVER the card. It wears the card's own
             // corners, which is why the view is the application's to give.
-            // `.fading(_:)` says how much fade is left beside it.
+            // `.fade(_:)` says how much fade is left beside it.
             return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
         }
 
-        private func face(_ card: Card) -> any View {
+        private func face(_ card: Card) -> some View {
             ZStack {
                 Grid {
                     Image(ImageSource(card.art))
-                        .aspect(.fill)
+                        .contentMode(.fill)
 
-                    Label(card.name)
+                    Text(card.name)
                         .verticalAlignment(.end)
                 }
                 .clipsContent(true)
@@ -158,7 +164,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
@@ -171,6 +177,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .position($shown)
                     .isSwipeEnabled(swipes)
                     .onItemTapped { card in opened = "tapped \(card.name)" }
+                    .onPositionChanged { _ in moves += 1 }
             }
             .gridRow(0)
             // The cards stay ON the board: one mid-crossing between two shapes,
@@ -194,11 +201,11 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .count(Self.cards.count)
                     .position(shown)
                     .indicatorColor(Palette.outline)
-                    .selectedIndicatorColor(Palette.accent)
+                    .currentIndicatorColor(Palette.accent)
                     .horizontalAlignment(.center)
 
-                Label("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
-                    + "card \(shown + 1) of \(Self.cards.count) · \(opened)")
+                Text("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
+                    + "card \(shown + 1) of \(Self.cards.count) · \(opened) · moved \(moves)")
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
@@ -213,26 +220,26 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 // again.
                 Button(Self.shapes[shape].1)
                     .width(88)
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .onClicked { shape = (shape + 1) % Self.shapes.count }
 
                 Button("Back")
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .isEnabled(shown > 0)
                     .onClicked { shown -= 1 }
 
                 Button("Next")
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
                     .isEnabled(shown < Self.cards.count - 1)
                     .onClicked { shown += 1 }
 
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
 
                 SwitchRow("Swipeable", $swipes)
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
 
                 SwitchRow("Shaded", $shaded)
-                    .margin(4, 0)
+                    .margin(horizontal: 4, vertical: 0)
             }
             .spacing(8)
             .horizontalAlignment(.center)
@@ -264,38 +271,38 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     /// One card's face - a picture and its name, and nothing at all about where
     /// the card is or which way it faces. That is the gallery's, and keeping
     /// the two apart is what lets one run of cards wear three shapes.
-    private func face(_ card: Card) -> any View {
+    private func face(_ card: Card) -> some View {
         ZStack {
             Grid {
                 Image(ImageSource(card.art))
-                    .aspect(.fill)
+                    .contentMode(.fill)
 
-                Label(card.name)
+                Text(card.name)
                     .fontSize(18)
                     .fontAttributes(.bold)
                     .textColor(Palette.onBrand)
                     .lineBreak(.tailTruncation)
-                    .padding(12, 10)
+                    .padding(horizontal: 12, vertical: 10)
                     .background(Color("#B3000000"))
                     .verticalAlignment(.end)
             }
             .clipsContent(true)
         }
         .style("Card")
-        .strokeWidth(0)
+        .lineWidth(0)
         .shape(.roundedRectangle(16))
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("`GalleryView` is a run of cards the user swipes through, with "
+            Text("`GalleryView` is a run of cards the user swipes through, with "
                 + "`.arrangement` choosing the shape they stand in - `.default` is a "
                 + "wheel, `.fan` a hand of cards, `.row` a strip. The cards TRAVEL "
                 + "between the three, so the shape button carries the whole run across.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Swipe, drag with the mouse or turn a wheel: the run settles on the "
+            Text("Swipe, drag with the mouse or turn a wheel: the run settles on the "
                 + "card it is nearest. WHICH of those the run answers is the platform's: "
                 + "a finger drags the run itself, so on a phone and a tablet that is the "
                 + "whole of it, while on a desktop - where a pointer scrolls nothing - "
@@ -307,23 +314,23 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Swipeable` is `.isSwipeEnabled(false)` - the user's "
+            Text("`Swipeable` is `.isSwipeEnabled(false)` - the user's "
                 + "hand is stopped and the buttons still move the run. A gallery is "
                 + "swiped to choose and tapped to open: `.onItemTapped` is handed the "
                 + "card in the MIDDLE, and a tap beside it answers nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Shaded` is `.shade(ColorBox(Color(\"#000000\")).cornerRadius(16))`: "
+            Text("`Shaded` is `.shade(ColorBox(Color(\"#000000\")).cornerRadius(16))`: "
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded. Turn it off and watch a far card go transparent - "
                 + "what shows through is the card behind it. The shade is a view because "
-                + "it has to wear the card's own corners, and `.fading(_:)` beside it "
+                + "it has to wear the card's own corners, and `.fade(_:)` beside it "
                 + "says how much fade is left, from 0 to 1.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Nothing is described while the cards move: the one render is the "
+            Text("Nothing is described while the cards move: the one render is the "
                 + "card CHANGING. `.itemSize(width:height:)` says how big a card is, and "
                 + "the run scales down to fit a small window.")
                 .fontSize(12)

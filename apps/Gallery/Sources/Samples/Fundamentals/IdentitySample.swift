@@ -48,13 +48,13 @@ struct IdentitySample: SampleContent, ExampleContent {
             }
         }
 
-        private struct IdentityRow: ContentView {
+        private struct IdentityRow: View {
             let item: String
             @Binding var items: [String]
 
-            var content: any View {
+            var body: some View {
                 HStack {
-                    Label(item)
+                    Text(item)
                         .width(90)
                         .verticalAlignment(.center)
 
@@ -71,12 +71,12 @@ struct IdentitySample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             HStack {
                 Button("Add")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked {
                         items.append("Item \(nextItem)")
                         nextItem += 1
@@ -84,7 +84,7 @@ struct IdentitySample: SampleContent, ExampleContent {
 
                 Button("Insert at the top")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .onClicked {
                         items.insert("Item \(nextItem)", at: 0)
                         nextItem += 1
@@ -92,7 +92,7 @@ struct IdentitySample: SampleContent, ExampleContent {
 
                 Button("Rotate")
                     .fontSize(13)
-                    .padding(16, 6)
+                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(items.count > 1)
                     .onClicked {
                         items = Array(items.dropFirst()) + [items[0]]
@@ -116,14 +116,14 @@ struct IdentitySample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Type in a field, then insert a row above it: the text stays where it "
+            Text("Type in a field, then insert a row above it: the text stays where it "
                 + "is, because the control did.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A row is identified by its item, which is `ForEach`'s rule. Known by "
+            Text("A row is identified by its item, which is `ForEach`'s rule. Known by "
                 + "position, an inserted row would rewrite every row into the one below "
                 + "it, which is why a plain `for` does not compile here. A row may still "
                 + "write an `.id()` of its own, and the author's wins.")
@@ -136,13 +136,13 @@ struct IdentitySample: SampleContent, ExampleContent {
 
 /// One row, with something worth keeping in it: what is typed lives in the
 /// control, not in the tree.
-private struct IdentityRow: ContentView {
+private struct IdentityRow: View {
     let item: String
     @Binding var items: [String]
 
-    var content: any View {
+    var body: some View {
         HStack {
-            Label(item)
+            Text(item)
                 .fontSize(15)
                 .width(90)
                 .verticalAlignment(.center)
@@ -155,7 +155,7 @@ private struct IdentityRow: ContentView {
 
             Button("Remove")
                 .fontSize(12)
-                .padding(12, 6)
+                .padding(horizontal: 12, vertical: 6)
                 .onClicked {
                     items = items.filter { $0 != item }
                 }

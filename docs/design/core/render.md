@@ -41,7 +41,7 @@ ancestors contribute only the path of patches down to them. It is sound only
 when every cause of the render named the state it wrote; a plain
 `setNeedsRender()` names nothing and forces a build.
 
-The root build reads the open scenes, whatever the application's `scene`
+The root build reads the open scenes, whatever the application's `body`
 reads, and the application session's styles and motion. Those reads are kept
 as `rootReads`; a change to any of them means the application has to be
 built again.
@@ -149,9 +149,16 @@ Registering an application starts a new tree: the previous tree is forgotten
 (handlers, engines, root reads), the application session is reset, one scene
 waits for the platform's first window, and the next render describes the
 whole of the new application - every element arriving, which is what
-`.onCreated` is told. The application's own `@State` properties are named by
-reflection once, as it registers, because the application is never walked
-like a view.
+`.onCreated` is told.
+
+The application itself is made at its first need - the first render, or the
+host reading the keys it keeps (`persistentKeys`) - never as it registers: a
+head registers it before the host starts, and what its initializer reads of
+the environment - the device's form factor a style sheet is chosen by - is
+only told once the host has started. Every host tells the environment
+before it reads the kept keys and before its first render. The
+application's own `@State` properties are named by reflection once, as it is
+made, because the application is never walked like a view.
 
 Until an application registers, the tree is an application with one scene,
 one window and a page holding a label, in the shape a real one produces, so a

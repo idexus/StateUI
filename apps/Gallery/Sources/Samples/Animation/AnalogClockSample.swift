@@ -77,7 +77,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 return ColorBox(Palette.outline)
                     .width(wide)
                     .height(tall)
-                    .margin(2 * x, 2 * y, 0, 0)
+                    .margin(left: 2 * x, top: 2 * y, right: 0, bottom: 0)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
@@ -135,7 +135,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let toHour = atHour + (hour - atHour).forwardTurn
 
                     async let s: Bool = $sAngle.journey.move(to:
-                        toSecond, .eased(260, .springOut))
+                        toSecond, .eased(260, .backOut))
                     async let m: Bool = $mAngle.journey.move(to:
                         toMinute, .eased(300, .cubicOut))
                     async let h: Bool = $hAngle.journey.move(to:
@@ -178,7 +178,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .rotation(angle)
                 .width(width)
                 .height(length)
-                .margin(0, 0, 0, length)
+                .margin(left: 0, top: 0, right: 0, bottom: length)
                 .pivotY(1)
                 .horizontalAlignment(.center)
                 .verticalAlignment(.center)
@@ -194,14 +194,14 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         Grid {
             DebugInfoLabel()
 
             ZStack().style("Card")
                 .background(Palette.raised)
                 .stroke(Palette.outline)
-                .strokeWidth(2)
+                .lineWidth(2)
                 .shape(.roundedRectangle(110))
                 .width(220)
                 .height(220)
@@ -213,7 +213,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 return ColorBox(Palette.outline)
                     .width(wide)
                     .height(tall)
-                    .margin(2 * x, 2 * y, 0, 0)
+                    .margin(left: 2 * x, top: 2 * y, right: 0, bottom: 0)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
@@ -272,15 +272,15 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let toHour = atHour + (hour - atHour).forwardTurn
 
                     async let s: Bool = $sAngle.journey.move(to:
-                        toSecond, .eased(260, .springOut))
+                        toSecond, .eased(260, .backOut))
                     async let m: Bool = $mAngle.journey.move(to:
                         toMinute, .eased(300, .cubicOut))
                     async let h: Bool = $hAngle.journey.move(to:
                         toHour, .eased(300, .cubicOut))
                     _ = try await (s, m, h)
                 } else {
-                    // The first reading SETS the hands: writing `value` is a
-                    // snap, so there is no movement here and nothing to await.
+                    // The first reading SETS the hands: `value` is written, and
+                    // the state to match, so nothing travels and nothing is awaited.
                     started = true
                     ($sAngle.journey.value, $mAngle.journey.value, $hAngle.journey.value) = (second, minute, hour)
                     (sAngle, mAngle, hAngle) = (second, minute, hour)
@@ -299,9 +299,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("The time comes from the platform - `ClockTime.now()` - and the wait is "
+            Text("The time comes from the platform - `ClockTime.now()` - and the wait is "
                 + "plain `Task.sleep`, which resumes on time on every platform. Every tick "
                 + "sleeps to the NEXT whole second rather than for a fixed while - the "
                 + "reading carries milliseconds, so the spring lands just past each "
@@ -309,14 +309,14 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Each hand is a box whose bottom sits at the face's centre - "
+            Text("Each hand is a box whose bottom sits at the face's centre - "
                 + "the bottom margin equals its length, so centring the margin "
                 + "box puts the foot on the middle - and pivotY(1) makes that "
                 + "foot the pivot.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A hand's rotation is DRIVEN - .rotation($sAngle) over a state "
+            Text("A hand's rotation is DRIVEN - .rotation($sAngle) over a state "
                 + "the host moves - so a tick is that state being sent somewhere "
                 + "and the hand springs there on the display's own frames, with "
                 + "nothing described in between. sAngle answers where "
@@ -326,7 +326,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Leaving this page stops the loop, and coming back starts a "
+            Text("Leaving this page stops the loop, and coming back starts a "
                 + "fresh one. The hands are drawn wherever the angles were left, "
                 + "because the angles are state, and the first reading ASSIGNS "
                 + "the time instead of flying to it - each journey's `value` is "
@@ -353,7 +353,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             .rotation(angle)
             .width(width)
             .height(length)
-            .margin(0, 0, 0, length)
+            .margin(left: 0, top: 0, right: 0, bottom: length)
             .pivotY(1)
             .horizontalAlignment(.center)
             .verticalAlignment(.center)

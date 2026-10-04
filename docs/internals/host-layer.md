@@ -1,9 +1,9 @@
 # Host layer
 
-A host - the platform backend that shows StateUI with one toolkit - is Swift in
+A host - the platform package that shows StateUI with one toolkit - is Swift in
 the application's process, and most of what it does is the same on every
 platform. That part is the host layer: the toolkit-neutral half of every
-runtime, in `lib/StateUI.Host` - the module `StateUIHost`, a library of its own
+runtime, in `lib/StateUI/StateUI.Host` - the module `StateUIHost`, a library of its own
 beside the [`StateUI` core](core.md), which it reaches through `@_spi(Host)`.
 It holds the mounted tree, the turn and the display frame, the animations, the
 layout arithmetic, and the rules that turn what the user does into state.
@@ -22,7 +22,7 @@ the calls its toolkit alone can make. A rule found in one host belongs in the
 layer: it is written there with its tests, and every host calls it.
 
 ```text
-lib/StateUI.Host/Sources/
+lib/StateUI/StateUI.Host/Sources/
   Runtime/       the runtime's parts, the turn, the frame, the line to the core
   Tree/          the mounted tree, each element's native half, the windows
   Pages/         what an arrangement shows, a page's phases, the window's chrome
@@ -32,13 +32,17 @@ lib/StateUI.Host/Sources/
   Input/         the user's changes, gestures, scrolling, typed words, ranges
   Motion/        the animator, the state channels, described and layout motion
   Acts/          answering acts, questions for the user, the application's acts
+  Items/         what a platform's collection holds of an ItemsView, and tells back
+  Web/           the web view's rules: its history, a script's answer, a document's address
+  Maps/          how a map frames a region, and reads back the one it shows
   Environment/   the machine a host stands on, in the core's terms
 ```
 
 The design notes give each part's reasons: [the runtime](../design/host/runtime.md),
 [the mounted tree](../design/host/tree.md), [pages](../design/host/pages.md),
 [layout](../design/host/layout.md), [motion](../design/host/motion.md),
-[patches](../design/host/patches.md) and [conformance](../design/host/conformance.md).
+[patches](../design/host/patches.md), [maps](../design/host/maps.md) and
+[conformance](../design/host/conformance.md).
 The [glossary](../design/glossary.md) maps StateUI's words to the common ones.
 
 ## What a host provides
@@ -87,7 +91,8 @@ Before the first render, a host hands the core its realization
 ([environment and kept values](#environment-and-kept-values)) and the kept
 values its store holds (`persistentKeys`, `restorePersistent`). It follows the
 language's direction (`MountedTree.followTheLanguagesDirection`), connects its
-scene (`CoreLink.connectScene`) and turns the pump once. The doorbell carries
+first window - one the platform kept, or a new one - through
+`HostRuntime.connectWindow`, and turns the pump once. The doorbell carries
 every turn after.
 
 ### The roads in
@@ -242,7 +247,7 @@ toolkit's calls:
 - **`LiveViews`** holds a host's views weakly by the number each was made
   under: a callback crossing C names a view by its number and finds nothing
   once it has gone. ([Views by number](../design/host/tree.md#views-by-number))
-- **`ElementId.hostValue`** is a key as an event carries it: an author's name
+- **`ElementID.hostValue`** is a key as an event carries it: an author's name
   as its text, a counted key as its number.
 
 ## Windows
@@ -252,15 +257,13 @@ toolkit's calls:
 - **`WindowRoster`** keeps the window elements under the root in the tree's
   order, each with the host's controller of it: a window the tree keeps keeps
   its controller, a window it drops has its controller closed - the last
-  first, so a window closes before the one it belongs to - a new one has
-  one made, and the first window's coming is said. The host hands it `make`
+  first - a new one has one made, and the first window's coming is said. The host hands it `make`
   and `close`.
   ([The windows a tree holds](../design/host/tree.md#the-windows-a-tree-holds))
 - **`WindowPresentation`** says what a window shows, where it changed: its
   arrangement of pages, the pages its modal stack presents as sheets, what it
-  lays over them, its frame, bounds and traits, whether its scene hides it,
-  and the window it belongs to - its scene's main window's, for a window of a
-  kind of its own (`MountedElement.ownerWindow`). The page the user sees hears
+  lays over them, its frame, bounds and traits, and whether its scene hides
+  it. The page the user sees hears
   that it is shown, and a new window that it was made, each in its turn,
   before the host first shows the window; `wayBack` is the way back the window
   offers. The host shows each in its toolkit's window.
@@ -301,9 +304,10 @@ toolkit's calls:
 - **`WayBack`** is the way back a window offers - a stack's top page going, or
   the top sheet - which `HostRuntime.goBack` takes.
   ([The way back](../design/host/pages.md#the-way-back))
-- **`slotContent`**, **`presentingElement`** and **`arrangedChildren`** say
-  what stands in a slot, which element's view shows an element, and which
-  children a layout places - a page's slots stand in none of its room.
+- **`chromeTitleView`**, **`presentingElement`** and **`arrangedChildren`**
+  say what stands in a page's title place, which element's view shows an
+  element, and which children a layout places - a page's slots stand in none
+  of its room.
   ([Slots](../design/host/pages.md#slots))
 - **`MenuEntry`** walks a menu - its items, separators and submenus in order,
   each with its caption, whether it can be chosen and its identifier - and a
@@ -558,11 +562,11 @@ and nothing more.
 
 ## Testing
 
-- The layer's own tests, in `lib/StateUI.Host/Tests`, prove its rules and
+- The layer's own tests, in `lib/StateUI/StateUI.Host/Tests`, prove its rules and
   arithmetic, pure, in its own package's suite on every platform the core
   builds on. They need no toolkit: a hand-wound clock reproduces every frame,
   and a native half of the test's own stands for a view.
-- The conformance suite, in `lib/StateUI.Conformance`, proves the
+- The conformance suite, in `lib/StateUI/StateUI.Conformance`, proves the
   contract's effects on each real toolkit: a case is written once, and every
   host's suite runs it through the host's driver. It asserts effects - a
   state written, a handler heard, what is shown or let go - never a look, and
@@ -583,7 +587,7 @@ Something new reaches the hosts in one order:
 2. Write the shared part in the host layer, in its part's folder, one element
    a file, under `@_spi(Host)`, with its `///` and a `Design:` line naming
    its section.
-3. Prove it with pure tests in `lib/StateUI.Host/Tests`; a
+3. Prove it with pure tests in `lib/StateUI/StateUI.Host/Tests`; a
    defect is proved red before it is fixed.
 4. Give its reason a section in its design note under `docs/design/host/`,
    and the type a line in its part above.

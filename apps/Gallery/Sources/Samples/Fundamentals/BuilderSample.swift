@@ -28,7 +28,7 @@ struct BuilderSample: SampleContent, ExampleContent {
             // state and child 3 in the other - and it is the same control
             // either way, so what has been typed in it survives the toggle.
             if signedIn {
-                Label("Signed in")
+                Text("Signed in")
             }
 
             TextField($note)
@@ -50,16 +50,16 @@ struct BuilderSample: SampleContent, ExampleContent {
             // three alone.
             ForEach(0..<5) { turn in
                 if turn == chosen {
-                    return Label("turn \\(turn) - chosen")
+                    Text("turn \\(turn) - chosen")
                 } else {
-                    return Button("turn \\(turn)")
+                    Button("turn \\(turn)")
                         .onClicked { chosen = turn }
                 }
             }
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -68,13 +68,13 @@ struct BuilderSample: SampleContent, ExampleContent {
                     .accessibilityIdentifier("builder.signedIn")
                     .accessibilityLabel("Signed in")
 
-                Label("Signed in")
+                Text("Signed in")
                     .verticalAlignment(.center)
             }
             .spacing(12)
 
             if signedIn {
-                Label("Signed in")
+                Text("Signed in")
                     .fontAttributes(.bold)
             }
 
@@ -100,13 +100,13 @@ struct BuilderSample: SampleContent, ExampleContent {
 
             ForEach(0..<5) { turn in
                 if turn == chosen {
-                    return Label("turn \(turn) - chosen")
+                    Text("turn \(turn) - chosen")
                         .fontAttributes(.bold)
                         .textColor(Palette.accent)
                 } else {
-                    return Button("turn \(turn)")
+                    Button("turn \(turn)")
                         .fontSize(13)
-                        .padding(16, 6)
+                        .padding(horizontal: 16, vertical: 6)
                         .horizontalAlignment(.start)
                         .onClicked { chosen = turn }
                 }
@@ -116,21 +116,21 @@ struct BuilderSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("An `if` above a view does not move it: type in the field, flip the "
+            Text("An `if` above a view does not move it: type in the field, flip the "
                 + "switch, and the TextField keeps its control - and with it the text, the "
                 + "caret and the focus.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both branches of the `if/else` build a TextField, and they are still two "
+            Text("Both branches of the `if/else` build a TextField, and they are still two "
                 + "different elements: swapping replaces the control rather than editing "
                 + "it, which is what the two branches say.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Five rows out of one `ForEach`, each choosing what to build. Moving "
+            Text("Five rows out of one `ForEach`, each choosing what to build. Moving "
                 + "the choice sends two changes, not five: a row is identified by its "
                 + "item, whatever the rows around it decide.")
                 .fontSize(12)

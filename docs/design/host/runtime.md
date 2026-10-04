@@ -3,7 +3,7 @@
 A runtime is the part of a host that turns the core's patches and cycles into
 native views, and turns what the user does back into state. Every runtime has
 the same elements, one job each, named alike in every language. The
-toolkit-neutral elements are the host layer, `lib/StateUI.Host` - the module
+toolkit-neutral elements are the host layer, `lib/StateUI/StateUI.Host` - the module
 `StateUIHost`, which reaches the core through `@_spi(Host)` - and every host,
 Swift in the application's process, uses them as they are. Its folders are
 its parts; [the host layer](../../internals/host-layer.md) maps them.
@@ -14,12 +14,12 @@ its parts; [the host layer](../../internals/host-layer.md) maps them.
   application              views, @State, handlers, engines
        |
        v
-  StateUI core             state, keys, diffing, timing laws        lib/StateUI/Sources
+  StateUI core             state, keys, diffing, timing laws        lib/StateUI/Core/Sources
        |                   HostRender / HostPatch (typed)
        v
   host layer               CoreLink        PatchIntake
   StateUIHost             MountedTree     MountedElement
-  lib/StateUI.Host         Animator        StateChannels
+  lib/StateUI/StateUI.Host         Animator        StateChannels
                            DescribedMotion LayoutMotion
                            DisplayCycle    ProgramWrite
                            Pump            HandlerDispatch
@@ -27,10 +27,11 @@ its parts; [the host layer](../../internals/host-layer.md) maps them.
        v
   toolkit half             frame signal, each element's native half,
   one package per host     realizations, layout views, scrolling, gestures,
-  (lib/StateUI.AppKit,     focus, accessibility, windows and menus
-  lib/StateUI.Android,
-  lib/StateUI.WinUI,
-  lib/StateUI.GTK)
+  (lib/StateUI/StateUI.AppKit,     focus, accessibility, windows and menus
+  lib/StateUI/StateUI.UIKit,
+  lib/StateUI/StateUI.Android,
+  lib/StateUI/StateUI.WinUI,
+  lib/StateUI/StateUI.GTK)
        |
        v
   native views
@@ -59,8 +60,8 @@ paths, the journey's animations and the frame they run on.
 | P | presenting what D describes, reporting the user into C | the layout arithmetic: `StackArithmetic`, `GridArithmetic`, `ZStackArithmetic`, `SingleChildArithmetic`, `ScrollArithmetic`, `MeasurementCache` | host layer |
 | | | the layout views, scrolling, gestures, drawing, focus, accessibility, windows, menus | toolkit half |
 | B | transport and process | `CoreLink`; `Registry` is the core's | host layer |
-| | | `Pump`; `HostRuntime` wires every part above | host layer |
-| | | the doorbell's post, the act performer | toolkit half |
+| | | `Pump`, the act performer (`HostActPerformer`); `HostRuntime` wires every part above | host layer |
+| | | the doorbell's post, the acts' toolkit part (`ActToolkit`) | toolkit half |
 
 ## One frame
 
@@ -80,19 +81,21 @@ display cycle, in this order, in every runtime:
                                                    each changed parent arranged once,
                                                    after its children;
                                                    finished animations answer their waiters
-    5  a render, when the core needs one
-    6  the clock stays held while anything moves; it lets go only here
+    5  the clock stays held while anything moves; it lets go only here
+    6  a render, when the core needs one
 ```
 
-A user's own change drains steps 2 to 4 and 6 at once, so the followers and
+A user's own change drains steps 2 to 5 at once, so the followers and
 the engines move on the user's frame.
 
-In step 4 a backend only presents each element's moved values; what they ask
+In step 4 a host only presents each element's moved values; what they ask
 of the elements around it is decided once, for every host
 (`MountedElement.presentFrame`): the element presents itself again; its
 parent arranges again where a value that places it moved, or where it shows
 no view of its own and is drawn by its parent's; and the window's chrome is
-composed again where it shows what moved (`WindowChrome.follows`).
+composed again where it shows what moved (`WindowChrome.follows`): a window's
+frame, an arrangement's bar colours, and a page's title, bar, way back and
+back button's words said from a state, which no render follows.
 
 ## One turn
 
@@ -128,8 +131,8 @@ before what comes after it, and the turn goes round again; only then the acts.
 The core rings when it has work a turn must take - a handler resumed off the
 UI thread, a state an engine wrote. A host parks a thread of its own on the
 core (`CoreLink.ringForever`) and posts a turn onto its UI thread each time the
-core rings: AppKit onto the main queue, WinUI through its relay, GTK through
-GLib, Android onto its looper. The turn itself is the `Pump`'s.
+core rings: AppKit and UIKit onto the main queue, WinUI through its relay,
+GTK through GLib, Android onto its looper. The turn itself is the `Pump`'s.
 
 ## The handlers' order
 
@@ -186,7 +189,7 @@ native half is made, and presents a turn's and a frame's end.
 
 ## The host layer
 
-The toolkit-neutral elements live once, in the core, because every Swift host
+The toolkit-neutral elements live once, in the host layer, because every Swift host
 would otherwise carry its own copy of the same arithmetic and rules: the
 mounted tree and its patches, the animations, the state channels, the property
 and layout animations, the display cycle's order, the one mark of a program's
@@ -197,8 +200,8 @@ part by part. A toolkit gives the layer
 each element's native half through `NativeElement`, its frame signal through
 `FrameClock`, presents a frame through `FramePresenter` and a turn through
 `TurnPresenter`, and hands
-`LayoutMotion` the views it places as `PlacedView`. The core suite tests them
-on every platform the core builds on, and `RuntimeArchitectureTests` holds
+`LayoutMotion` the views it places as `PlacedView`. The host layer's own suite
+tests them on every platform it builds on, and `RuntimeArchitectureTests` holds
 every Swift runtime to them: only `Animator` samples a timing law, only
 `DisplayCycle` advances the animator and runs the core's cycle, only `Pump`
 renders and takes the acts, only `CoreLink`
@@ -219,7 +222,8 @@ one it last said (`MountedElement.reportFrame`). The runtime's
 `FrameFollowers` keeps the frames coming while a scroller moves or has
 something to say, or a frame read may have moved, and on each frame lets the
 scrollers say what they did, then the elements where they stand, each in the
-order its view was made, as one user's transaction. A host says only what its
+order its view was made, as one user's transaction. A list's view moving
+says it too (items.md, `The view moving`). A host says only what its
 toolkit knows: the numbers of the place. It says nothing while the view
 stands in no window or before a layout placed it - a view that joins a shown
 page meets a display frame before the layout pass that places it - so the
@@ -301,7 +305,7 @@ renders what it all changed.
 ## The application's phase
 
 A toolkit tells what each window does - whether it stands off the screen,
-minimized or hidden with the window it belongs to, and whether it is
+minimized or hidden by its scene, and whether it is
 activated - and whether the whole application is hidden, and every host
 tells it on alike (`ApplicationLifecycle`, `HostRuntime.windowStateChanged`).
 What it tells settles a turn later, with whatever else it tells in the same
@@ -316,10 +320,9 @@ and the two are one move, in which the application stays in use.
   moves it nowhere. Of the windows staying when one goes, the one activated
   last is the one the user comes back to (`activatedLast`), for a host whose
   toolkit leaves that choice to it.
-- A scene is activated while one of its windows is, stopped while the
-  application is hidden or its main window is off the screen, else
-  deactivated - so a tool window the user is in keeps its scene activated
-  under a minimized main window.
+- A scene is activated while one of its windows is, stopped while every
+  window of it is off the screen - the application hidden among the causes -
+  else deactivated.
 - A window is stopped while it is off the screen - minimized, hidden with
   the application, or hidden by its scene - else activated or deactivated.
   One that stands again hears first that it resumed.
@@ -335,17 +338,15 @@ They are heard in their turn, as a window's being made is, so a toolkit
 telling a state in the middle of one - a window activated as the host shows
 it - waits for it to end. What stands already tells nothing: a lifecycle is
 a state, not a count of the toolkit's callbacks. As the application ends,
-each scene's windows hear that they are going, then the scene.
+every window hears that it is going.
 
 ## A window the user closes
 
-A window the user closes hears that it is going, then its scene hears what
-that means for it, each rendered before the next (`HostRuntime.userClosed`):
-the scene's main window - one of no kind of its own - takes the scene with
-it, so the scene hears that it is going too; a window of its own kind is one
-of the scene's windows gone, and the scene hears that it closed, carrying the
-window's key, which forgets the window and its session. A window the tree
-closes tells nothing: the tree already knows.
+A window the user closes hears that it is going, then its scene hears that
+it closed, carrying the window's key - each rendered before the next
+(`HostRuntime.userClosed`). The scene forgets the window and its session, and
+ends with its last. A window the tree closes tells nothing: the tree already
+knows.
 
 ## Acts
 
@@ -358,7 +359,8 @@ none on screen, fails with that reason (`MountedTree.aimed`). One performer
 does this for every host (`HostActPerformer`): it reads each act, keeps the
 questions in line, answers and fails; a host gives it its toolkit's part
 (`ActToolkit`) - the clock and the zones, a question shown, a word to the
-screen reader, the focus, a value kept - and nothing more.
+screen reader, the focus and the on-screen keyboard, a value kept, the acts
+its own controls answer - and nothing more.
 
 ## An application's own acts
 
@@ -393,8 +395,8 @@ kept as the words its key's kind reads back, and a value of another kind is
 not kept. A key the application does not list still saves, as its value's
 own kind - true or false, a number, words - which its key's kind reads back
 once it is listed, as the application's session promises. The words stand in
-the platform's own store where it has one - the preferences on a Mac and on
-Android.
+the platform's own store where it has one - the preferences on a Mac, on iOS
+and on Android.
 
 A host whose platform keeps no store an application can use keeps them in a
 file of its own, and one codec says what the file holds (`KeptValuesText`): a
@@ -403,35 +405,77 @@ backslash in either escaped - the keys in order, so the same values write the
 same file. Where the file stands and how it is read and written is the
 host's.
 
+## The platform's first window
+
+Every platform window comes through one road (`HostRuntime.connectWindow`):
+the platform's first - the window launch opens takes it - a new one of no
+kind, or one it kept. A host connects its first window as it starts, a kept
+one or a new one, so the window launch opens is the platform's first and
+*File ▸ New* makes one more (core/scenes.md, What the platform hands over). A
+host whose windows come after its start - iOS connects its scenes then -
+holds its turns until the first comes (`Pump.waitsForFirstWindow`), so the
+scene a kept window opens is built with what it kept, never its default first.
+
 ## Kept scenes
 
 A host whose platform restores no windows keeps the application's scenes for
-its next start itself (`SceneKeeper`), in a file of its own whose text one
+its next start itself (`SceneKeeper`), in a store of its own whose text one
 codec writes (`KeptScenes`): a line for each scene, then a line for each of
 its kept values - by key, in order, the value's kind a letter before its
-words - then a line for each window of a kind of its own it has open, its
-kind and the text of the value it was opened for. At the start each scene
-kept connects before its first render, with its values, so a scene's state
-never shows its default first; one new scene connects where none was kept.
-Then each is offered the windows it had open, as the scene's
-`windowRestored`: the scene opens the ones it still declares, and a window
-of a kind it no longer declares is kept no more. The scenes are kept again
-whenever the text they write changes - a scene's value the application
-keeps, a window opened or closed, a scene ended - but not once no scene
-stands: the last scene's end is the application's, and the next start finds
-the scenes as they stood before it.
+words - then a line for each of its windows, with its kind and the text of
+the value it was opened for where it has them. At the start each window kept
+connects before the first render, as its kind for its value, with its
+scene's values, which land where the scene opens with it; a window of a kind
+no scene declares now is kept no more, and where none comes back the window
+launch opens comes. The scenes are kept again whenever the text they write
+changes - a scene's value the application keeps, a window opened or closed,
+a scene ended - but not once no scene stands: the last scene's end is the
+application's, and the next start finds the scenes as they stood before it.
+
+## Restored windows
+
+A platform that restores windows itself - AppKit's restorable state, iOS's
+scene sessions - hands each back with what the window kept of itself, its
+record (`WindowRecord`): the window's identity, its kind, the text of its
+value and the values its scene keeps - every window carries them, since any
+may be the one that opens its scene again. One text holds the record, written
+by the host layer for every such platform, so a record reads back the same on
+each.
+
+Each window restored comes in the moment it comes, as its kind for its value
+(`RestoredWindows.accept`): its scene's values land where the scene opens
+with it, before its first build, and the host keeps them for the scene
+(`SceneValues`, which mirrors the core: a scene standing keeps its own). A
+window of a kind no scene declares now, or whose value no longer reads, is
+refused, and the host lets it go. A window accepted waits for the window
+element it opened, which takes it by its kind and value
+(`RestoredWindows.take`) - a kind is one scene's, so it names the scene.
 
 ## Typed words
 
 A field holds its words in its case: the program's are written so, and what
 a user types is turned into it, then cut past the field's bound to its first
 characters that fit, as the contract counts characters (`InputWords.held`,
-`InputWords.cut`), and written back as the program's. A caret and a selection the tree puts, in characters,
-reach a toolkit counting UTF-16 units as the units those characters take
+`InputWords.cut`), and written back as the program's; a toolkit that asks
+before it inserts takes what goes in, in the case and within the bound, in
+the same terms (`InputWords.fitting`). A caret and a selection the tree
+puts, in characters, reach a toolkit counting UTF-16 units as the units those characters take
 (`InputWords.utf16Selection`), so a character outside the basic plane - an
 emoji - is never split. A picker is given its choices where they changed, and
 its choice only where the tree changed it or the choices (`PickerChoices`):
 the user's own choice is never argued with.
+
+## What typing is given
+
+What a field's keyboard and the platform's checking of its words do is read
+once from what the tree says (`InputTraits`): spell checking, prediction -
+correction goes with it - and the input purpose, which picks the keys a
+screen keyboard offers and where capitals go. Plain words are taken as typed:
+no capitals, no checking, no correction, no prediction - a login, a code a
+user types or a scanner enters. An address takes no capitals; text starts
+its sentences in them; the default leaves the platform its own. Each host
+tells its toolkit these in its own terms - a keyboard type, input flags, the
+text checking a desktop does as the user types.
 
 ## A value in a range
 
@@ -450,6 +494,21 @@ buttons is never argued with. A range that moves takes the tree's value
 again: the control stood clamped at the old range's end - a state's value
 outside it, or one travelling to the value written with the range - and a
 range widened over that value shows it rather than the end it stood at.
+
+## A day and a time
+
+A picker holds a day and a time by one arithmetic on every host
+(`CalendarArithmetic`): a day not in the Gregorian calendar - February 31st,
+a thirteenth month - is refused, and the picker goes on showing the day it
+had; a day past the range stands at its end, the range's ends in order
+whichever the tree gave first; and a time is its hours, minutes and seconds
+added up from midnight around the day, so 25:99 shows as 02:39.
+
+What a picker shows - its list, its calendar, its clock - is opened and
+closed by the program and by the user, and only the user's are heard
+(`PickerOpening`): the program asks, and the toolkit's next opening or
+closing is the echo of that request; the user's closing of what the program
+opened is the user's, and heard.
 
 ## The log
 

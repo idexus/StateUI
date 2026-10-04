@@ -13,19 +13,28 @@ the whole window.
 
 ## The safe area
 
-A page's view stands in its controller's safe area, clear of the bars and the
-notch, and out to the screen's edge on each edge its content lets itself under
+A page's view stands in its controller's safe area, clear of the bars, the
+notch and an iPad window's own controls in its corner (the safe area with its
+corner adapted), and out to the screen's edge on each edge its content lets itself under
 them ([the safe area](../../host/layout.md#the-safe-area)); the controller's
 own view shows the page's background, so it stands behind the bars either
 way. Only a page's own layout reaches under them; one deeper in stands where
-its page puts it.
+its page puts it. A frame report's safe area is that same one - the page's,
+under its stack's bar as well as the status bar - so a view at its page's top
+corner reads nothing from it.
 
 ## The bar
 
 A page's bar is its navigation item: its title - or the view standing in for
-it - its actions as the host layer orders them, those beyond the bar in a
+it - its actions as the host layer composes them along the page's path, each
+group a `UIBarButtonItemGroup` of its own, so each keeps its own shared
+background, the leading ones beside the way back, those beyond the bar in a
 menu behind its last button, whether it offers the way back, and its colours
-where the tree gives them. An action that destroys something is marked
+where the tree gives them. The view standing in for the title is fitted to
+what it holds as it comes, and a layout again at every render; a control -
+a search field - keeps the width the bar gives it: fitted to its words at
+every render, it was cut as the user typed and widened again by the bar,
+letter by letter. An action that destroys something is marked
 destructive in the menu and tinted red on the bar. A tabbed view's bar is its
 chosen tab's page's, but for its title: the page the window is named by
 ([the window's chrome](../../host/pages.md#the-windows-chrome)) - tabs pushed
@@ -50,10 +59,15 @@ going is pushed or popped as UIKit does it, unless the user asked for less
 motion. The user taking pages away - the back button, the edge swipe, the
 back button's menu - is told to the stack as how many stay, as the index of
 its top; where the application keeps its pages, the stack stays as it is.
+UIKit tells it once the move ends, so a render while the pages go still
+describes them: the stack does not show them again, which would undo the
+user's way back. A page comes in already wearing its bar: UIKit takes the
+bar's look as the move starts, and a layout in the same turn - a sidebar
+going away - can start it before the window's chrome is composed.
 
 ## Tabs
 
-A TabbedView is UIKit's tab bar controller, each tab named by its page's
+A TabView is UIKit's tab bar controller, each tab named by its page's
 title and picture. Which tab shows is the host layer's rule: none chosen
 until the tree or the user chooses one, a tab the tree asks for anew chosen,
 the user's choice standing where it is a tab there is. The user's choice is
@@ -74,6 +88,10 @@ bars inside stand as a phone's.
 
 Whether the sidebar shows is the display mode the host prefers: over or
 beside the detail while the tree asks for it, the detail alone while not.
+The tree's move is UIKit's own (`show`/`hide` of the sidebar's column), which
+moves the columns together with a page pushed in the same turn: in an
+animation of the host's own, the page's first frame was laid out inside it
+and grew from nothing.
 The sidebar showing or hiding on screen is heard as the display mode
 changes, whoever moved it; the program's own move and the host's adapting
 to a new room are not told back. The traps: sliding over the detail, UIKit
@@ -84,16 +102,16 @@ handed out bare - the one on the bar is UIKit's own.
 
 ## Sheets
 
-A window's modal stack is UIKit's page sheets, each presented over the one
+A modal stack standing as the window's page is UIKit's page sheets, each presented over the one
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented
 before, UIKit takes away again at once and tells as the user's. Those still
 asked for stay, the rest go from the top. The user swiping the top sheet down
-is the window's way back, told as how many stay; a window that leaves tells
+is the window's way back, told the stack as how many stay; a window that leaves tells
 nobody of its sheets, which leave with it.
 
-An overlay is laid over the window's pages within the safe area, and a touch
-beside what it holds reaches the page under it.
+The overlays are laid over the window's pages within the safe area, the first
+lowest, and a touch beside what one holds reaches the page under it.
 
 ## Menus
 
@@ -105,6 +123,12 @@ menu out of reach holds each of its entries out of reach.
 
 A view's context menu is UIKit's context menu interaction, which asks for
 the menu as the user holds the view; it is built then from what the tree says
-now. The menus the page the user sees puts on its menu bar are the
-application's main menu - on an iPad its menu bar - standing before UIKit's
-own Window menu, built again whenever they say something else.
+now. The menus the page the user sees composes (`chromeMenus`) are the
+application's main menu - on an iPad its menu bar. One whose identity is a
+standard menu stands as a section at the end of UIKit's own menu of that
+identity (`UIMenu.Identifier.file`), one UIKit keeps none of where UIKit's
+would stand - View after Edit, Help after Window - and any other before
+Window. The main menu is built again whenever they say something else or an
+entry answers another element: every action carries its element's identifier
+(`actionIdentifier`), which UIKit keeps in the copies it makes, so a page's
+Save standing in the window's place with the same words still rebuilds it.

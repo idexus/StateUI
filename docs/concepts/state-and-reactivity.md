@@ -18,19 +18,19 @@ for choosing and composing those paths.
 A state belongs where its lifetime belongs:
 
 ```swift
-struct Counter: ContentView {
+struct Counter: View {
     @State private var count = 0
 
-    var content: any View {
+    var body: some View {
         HStack {
-            Label("Count: \(count)")
+            Text("Count: \(count)")
             Button("Add").onClicked { count += 1 }
         }
     }
 }
 ```
 
-Reading `count` while `Counter.content` is built records `Counter` as a reader.
+Reading `count` while `Counter.body` is built records `Counter` as a reader.
 Writing it schedules another build of that reader. A read performed later by a
 button handler is not a build-time read and creates no dependency.
 
@@ -59,11 +59,11 @@ tasks must derive a new value from the same old value, use `update` on the state
 box so the transform runs under one hold:
 
 ```swift
-struct DownloadCount: ContentView {
+struct DownloadCount: View {
     @State private var completed = 0
 
-    var content: any View {
-        Label("Completed: \(completed)")
+    var body: some View {
+        Text("Completed: \(completed)")
             .onCreated {
                 await withTaskGroup(of: Void.self) { group in
                     for _ in 0..<4 {
@@ -105,13 +105,13 @@ final class Profile {
     var cachedInitials = "G"
 }
 
-struct ProfileCard: ContentView {
+struct ProfileCard: View {
     @State private var profile = Profile()
 
-    var content: any View {
+    var body: some View {
         VStack {
             TextField(profile.$name)
-            Label("\(profile.name) · \(profile.visits) visit(s)")
+            Text("\(profile.name) · \(profile.visits) visit(s)")
             Button("Visit").onClicked { profile.visits += 1 }
         }
     }
@@ -170,21 +170,21 @@ adapter whose properties are `@State`.
 another source of truth:
 
 ```swift
-struct NameEditor: ContentView {
+struct NameEditor: View {
     @Binding var name: String
 
-    var content: any View {
+    var body: some View {
         TextField($name)
     }
 }
 
-struct AccountForm: ContentView {
+struct AccountForm: View {
     @State private var name = ""
 
-    var content: any View {
+    var body: some View {
         VStack {
             NameEditor(name: $name)
-            Label(name.isEmpty ? "Choose a name" : "Hello, \(name)")
+            Text(name.isEmpty ? "Choose a name" : "Hello, \(name)")
         }
     }
 }
@@ -206,10 +206,10 @@ struct Contact {
     var subscribed = false
 }
 
-struct ContactForm: ContentView {
+struct ContactForm: View {
     @State private var contact = Contact()
 
-    var content: any View {
+    var body: some View {
         VStack {
             TextField($contact.name)
             Switch($contact.subscribed)
@@ -299,23 +299,21 @@ extension PersistentKey {
 }
 
 struct NotesApp: Application {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     init() {
         application.persistentKeys = [.appearance]
     }
 
-    var scene: any Scene { NotesWindow() }
+    var body: some Scene {
+        WindowGroup { SettingsPage() }
+    }
 }
 
-struct NotesWindow: Window {
-    var page: any Page { SettingsPage() }
-}
-
-struct SettingsPage: ContentView {
+struct SettingsPage: View {
     @State(persistentKey: .appearance) private var appearance = Appearance.system
 
-    var content: any View {
+    var body: some View {
         Button("Appearance: \(appearance.rawValue)").onClicked {
             appearance = appearance == .system ? .dark : .system
         }
@@ -344,7 +342,9 @@ the state; persistence does not depend on description invalidation. Writing the
 same value also schedules a save because the host store may not hold it yet.
 
 Kept state lives in the platform's own settings store - `UserDefaults` on
-AppKit, `SharedPreferences` on Android. An application that keeps something
+AppKit and UIKit, `SharedPreferences` on Android - and on WinUI and GTK, whose
+platforms keep no store an application can use, in a file of the host's own.
+An application that keeps something
 in a file or a database of its own reads and writes it in its own code and
 hands the values to ordinary `@State`.
 
@@ -360,15 +360,15 @@ extension SceneKey {
         of: Int.self)
 }
 
-struct SceneSidebar: ContentView {
+struct SceneSidebar: View {
     @State(sceneKey: .selectedSection) private var selectedSection = 0
 
-    var content: any View {
+    var body: some View {
         HStack {
             Button("Previous").onClicked {
                 selectedSection = max(0, selectedSection - 1)
             }
-            Label("Section \(selectedSection)")
+            Text("Section \(selectedSection)")
             Button("Next").onClicked { selectedSection += 1 }
         }
     }
@@ -400,9 +400,9 @@ VStack {
         .convertBack { $0 / 100 })
         .maximum(100)
 
-    Label($volume.convert { "\(Int($0 * 100))%" })
+    Text($volume.convert { "\(Int($0 * 100))%" })
 
-    Label($width.convert(with: $height) { width, height in
+    Text($width.convert(with: $height) { width, height in
         "\(Int(width)) × \(Int(height))"
     })
 }
@@ -419,7 +419,7 @@ Use `.multi` for a forward conversion of two through ten states:
 @State var width = 120.0
 @State var height = 80.0
 
-Label(.multi($name, $width, $height).convert { name, width, height in
+Text(.multi($name, $width, $height).convert { name, width, height in
     "\(name): \(Int(width)) × \(Int(height))"
 })
 ```
@@ -442,8 +442,8 @@ VStack {
         .width($width)
         .height(24)
 
-    Label($width.convert { "Target: \(Int($0))" })
-    Label($width.journey.convert { journey in
+    Text($width.convert { "Target: \(Int($0))" })
+    Text($width.journey.convert { journey in
         "Now: \(Int(journey.value))"
     })
 }
@@ -476,14 +476,14 @@ When a continuous value must occasionally feed description logic, sample its
 journey into another state:
 
 ```swift
-struct SampledProgress: ContentView {
+struct SampledProgress: View {
     @State private var progress = 0.0
     @State private var shown = 0.0
 
-    var content: any View {
+    var body: some View {
         VStack {
             ProgressBar().progress($progress)
-            Label("Shown: \(Int(shown * 100))%")
+            Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
                 try await $progress.journey.move(
                     to: 1,
@@ -506,10 +506,10 @@ cannot be expressed as a pure conversion. An engine is attached to an element
 and runs inside the host's display cycle.
 
 ```swift
-struct SpringDot: ContentView {
+struct SpringDot: View {
     @State(motion: .custom) private var y = 0.0
 
-    var content: any View {
+    var body: some View {
         VStack {
             ColorBox(.cornflowerBlue)
                 .width(28)

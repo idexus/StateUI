@@ -37,29 +37,36 @@ it.
   node type, its tiers and its members, and who reads it.
 - `host/`: the runtime every host shares - [the runtime](host/runtime.md),
   [the mounted tree](host/tree.md), [pages](host/pages.md), [layout](host/layout.md),
-  [motion](host/motion.md), [patches](host/patches.md), and
+  [motion](host/motion.md), [patches](host/patches.md), [items](host/items.md),
+  [maps](host/maps.md), [the web view](host/web.md), and
   [conformance](host/conformance.md), the suite every host runs.
 - `platforms/`: each platform's half of its runtime, one folder a platform.
   `platforms/appkit/`: [input](platforms/appkit/input.md),
-  [views](platforms/appkit/views.md),
+  [views](platforms/appkit/views.md), [items](platforms/appkit/items.md),
   [registrations](platforms/appkit/registrations.md),
   [runtime](platforms/appkit/runtime.md), [conformance](platforms/appkit/conformance.md).
+  `platforms/uikit/`: [the runtime](platforms/uikit/runtime.md),
+  [controls](platforms/uikit/controls.md), [drawing](platforms/uikit/drawing.md),
+  [input](platforms/uikit/input.md), [items](platforms/uikit/items.md),
+  [layout](platforms/uikit/layout.md), [motion](platforms/uikit/motion.md),
+  [pages](platforms/uikit/pages.md), [conformance](platforms/uikit/conformance.md).
   `platforms/android/`: [the runtime](platforms/android/runtime.md),
   [JNI](platforms/android/jni.md), [layout](platforms/android/layout.md),
-  [controls](platforms/android/controls.md), [motion](platforms/android/motion.md),
+  [controls](platforms/android/controls.md), [items](platforms/android/items.md),
+  [menus](platforms/android/menus.md), [motion](platforms/android/motion.md),
   [drawing](platforms/android/drawing.md), [pages](platforms/android/pages.md),
   [conformance](platforms/android/conformance.md).
   `platforms/winui/`: [the relay](platforms/winui/relay.md),
   [the runtime](platforms/winui/runtime.md), [controls](platforms/winui/controls.md),
   [drawing](platforms/winui/drawing.md), [input](platforms/winui/input.md),
-  [interop](platforms/winui/interop.md), [layout](platforms/winui/layout.md),
-  [motion](platforms/winui/motion.md),
+  [interop](platforms/winui/interop.md), [items](platforms/winui/items.md),
+  [layout](platforms/winui/layout.md), [motion](platforms/winui/motion.md),
   [pages](platforms/winui/pages.md), [conformance](platforms/winui/conformance.md).
   `platforms/gtk/`: [the C API](platforms/gtk/c-api.md), [the runtime](platforms/gtk/runtime.md),
   [controls](platforms/gtk/controls.md), [drawing](platforms/gtk/drawing.md),
   [input](platforms/gtk/input.md), [interop](platforms/gtk/interop.md),
-  [layout](platforms/gtk/layout.md), [motion](platforms/gtk/motion.md),
-  [pages](platforms/gtk/pages.md).
+  [items](platforms/gtk/items.md), [layout](platforms/gtk/layout.md),
+  [motion](platforms/gtk/motion.md), [pages](platforms/gtk/pages.md).
 
 ## Writing a note
 

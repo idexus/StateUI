@@ -1,5 +1,0 @@
-# revision 1.1
-ToolbarItem: cannot activate on ToolbarItem - GTK's driver has no path for it yet
-ToolbarItem.clicked: cannot activate on ToolbarItem - GTK's driver has no path for it yet
-ToolbarItem.placement: cannot read placement of ToolbarItem - GTK's driver has no path for it yet
-ToolbarItem.priority: cannot read priority of ToolbarItem - GTK's driver has no path for it yet

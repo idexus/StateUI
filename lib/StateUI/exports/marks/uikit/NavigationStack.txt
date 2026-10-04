@@ -1,0 +1,5 @@
+# revision 2.1
+NavigationStack: ✅
+NavigationStack.popped: ✅
+Page.title: ✅
+Text.frameChanged: ✅

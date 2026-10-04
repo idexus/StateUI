@@ -13,9 +13,9 @@
 //   - No font family. The gallery ships no fonts, and naming a family that is
 //     not installed is a way to get a different font on every platform.
 //   - Nothing a Style cannot NAME: a shadow is a property of the view that
-//     casts it, a page's appearance is its `PageSession`'s, and the bars of
-//     NavigationStack and TabbedView are written on the arrangement itself -
-//     see MainWindow.detail.
+//     casts it, a page's appearance is what its view says of it, and the bars of
+//     NavigationStack and TabView are written on the arrangement itself -
+//     see MainPage.body.
 
 import StateUI
 
@@ -30,18 +30,18 @@ enum AppStyles {
         StyleSheet {
             // MARK: Text
 
-            Style<Label>()
+            Style<Text>()
                 .textColor(Palette.text)
                 .background(.transparent)
                 .fontSize(15)                
 
             // A page's own name for itself. Tight tracking, because a large
             // size at the default spacing reads loose.
-            Style<Label>("Headline")
+            Style<Text>("Headline")
                 .textColor(Palette.text)
                 .fontSize(32)
                 .fontAttributes(.bold)
-                .characterSpacing(-0.5)
+                .tracking(-0.5)
                 .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)
 
@@ -49,14 +49,14 @@ enum AppStyles {
             // about the shape of a quotation is stated once here, and
             // "QuoteLoud" adds the one property that makes it loud. The Styles
             // sample draws both, side by side.
-            Style<Label>("Quote")
+            Style<Text>("Quote")
                 .textColor(Palette.subtle)
                 .fontSize(17)
                 .fontAttributes(.italic)
-                .characterSpacing(0.3)
+                .tracking(0.3)
                 .horizontalTextAlignment(.center)
 
-            Style<Label>("QuoteLoud")
+            Style<Text>("QuoteLoud")
                 .basedOn("Quote")
                 .textColor(Palette.accent)
 
@@ -77,57 +77,14 @@ enum AppStyles {
                 .background(Palette.accent)
                 .fontSize(14)
                 .fontAttributes(.bold)
-                .strokeWidth(0)
+                .lineWidth(0)
                 .shape(.roundedRectangle(10))                
-                .padding(16, 11)
+                .padding(horizontal: 16, vertical: 11)
                 .minimumHeight(44)
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
-                }
-
-            // A button that lives in the WINDOW's chrome rather than on a
-            // page. The implicit style above is an accent pill 44 points tall
-            // - right in the content, and a foreign object in a strip half
-            // that height: a filled pill up there reads as something stuck on,
-            // whatever colour it is painted.
-            //
-            // So a chrome button is WORDS AND AN ICON and nothing else - no
-            // fill, no outline - answering the pointer by brightening rather
-            // than by growing a frame. The icon is the one its menu row
-            // already carries, in the colour of the words beside it: see
-            // nav_surprise_chrome.svg. The MARK is left white, the colour of
-            // the application's name it stands beside - the mark and the name
-            // are one thing said twice, and the accent belongs to the one
-            // thing up here that can be pressed.
-            //
-            // The colour is the WINDOW's own yellow - read off the minimise
-            // button of a running window - so what can be pressed in the
-            // chrome matches the other things in the chrome that can be
-            // pressed. Fixed rather than `Palette.accent` - the exception
-            // Gallery/GalleryPage.swift makes for the toolbar icon: the title
-            // bar does not follow the theme, so a themed colour would be right
-            // in one theme and wrong in the other. It measures 5.0:1 on the
-            // bar's violet, where `swiftOrangeLight` is 3.4:1 and fails AA for
-            // text.
-            //
-            // A keyed style REPLACES the implicit one, so this states
-            // everything it needs, the 44-point touch floor deliberately
-            // dropped: a title bar is a desktop, and a mouse is not a thumb.
-            Style<Button>("ChromeChip")
-                .textColor(AppColors.windowYellow)
-                .background(.transparent)
-                .fontSize(13)
-                .fontAttributes(.bold)
-                .strokeWidth(0)
-                .padding(5, 0)
-                .height(26)
-                .visualState(.normal) { $0
-                    .opacity(1)
-                }
-                .visualState(.pointerOver) { $0
-                    .opacity(0.85)
                 }
 
             // A button that lives in a LIST ROW, where the touch floor is
@@ -141,15 +98,15 @@ enum AppStyles {
             // its text rather than a thumb target of its own.
             //
             // A keyed style REPLACES the implicit one, so this states
-            // everything it needs - the ChromeChip rule again.
+            // everything it needs.
             Style<Button>("RowChip")
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
                 .fontSize(13)
                 .fontAttributes(.bold)
-                .strokeWidth(0)
+                .lineWidth(0)
                 .shape(.roundedRectangle(10))
-                .padding(14, 4)
+                .padding(horizontal: 14, vertical: 4)
                 .minimumHeight(0)
                 .minimumWidth(0)
                 .visualState(.disabled) { $0
@@ -160,7 +117,7 @@ enum AppStyles {
             Style<Button>("IconButton")
                 .opacity(1)
                 .stroke(.transparent)
-                .strokeWidth(0)
+                .lineWidth(0)
                 .shape(.roundedRectangle(10))
                 .minimumHeight(44)
                 .minimumWidth(44)
@@ -169,10 +126,15 @@ enum AppStyles {
                 }
 
             // MARK: Fields
+            //
+            // A field takes the palette's own ground, so it stands in the page's
+            // violet rather than the platform's grey - and stands at all on
+            // Android, whose field a clear background leaves as bare words.
+            let field = Palette.field
 
             Style<TextField>()
                 .textColor(Palette.text)
-                .background(.transparent)
+                .background(field)
                 .placeholderColor(Palette.subtle)
                 .fontSize(15)
                 .minimumHeight(44)
@@ -183,7 +145,7 @@ enum AppStyles {
 
             Style<TextEditor>()
                 .textColor(Palette.text)
-                .background(.transparent)
+                .background(field)
                 .placeholderColor(Palette.subtle)
                 .fontSize(15)
                 .minimumHeight(44)
@@ -225,24 +187,26 @@ enum AppStyles {
             // NO background: a search field keeps the platform's own
             // look on a coloured surface, and that look is the host's. The
             // 44-point floor is a TOUCH screen's: on a desktop it shows as a
-            // dead band under the field - a mouse is not a thumb, the
-            // ChromeChip rule.
-            Style<SearchField>()
+            // dead band under the field - a mouse is not a thumb. A
+            // desktop's field keeps its platform's size of
+            // words too: a larger one grows a toolbar's search field past the
+            // bar's own controls.
+            let search = Style<SearchField>()
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)
                 .tint(Palette.accent)
-                .fontSize(15)
                 .minimumHeight(formFactor == .desktop ? 0 : 44)
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .placeholderColor(Palette.disabled)
                 }
+            if formFactor == .desktop { search } else { search.fontSize(15) }
 
             // MARK: Choices
             //
-            // All four take the accent when they are ON, which is the whole
-            // point of having one: whatever is chosen, anywhere, is orange.
+            // Switch, CheckBox and Slider wear the accent when ON, the whole
+            // point of having one: whatever is on, anywhere, is orange.
 
             Style<Switch>()
                 .tint(Palette.accent)
@@ -285,10 +249,6 @@ enum AppStyles {
                     .tint(Palette.disabled)
                 }
 
-            Style<PositionIndicator>()
-                .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
-
             // MARK: The menu's rows
             //
             // A menu row is a view like any other, so it takes a style like any
@@ -300,10 +260,10 @@ enum AppStyles {
 
             Style<HStack>("MenuRow")
                 .spacing(14)
-                .padding(18, 13)
+                .padding(horizontal: 18, vertical: 13)
                 .background(.transparent)
 
-            Style<Label>("MenuRowText")
+            Style<Text>("MenuRowText")
                 .fontSize(16)
                 .verticalAlignment(.center)
                 .textColor(Palette.subtle)
@@ -323,7 +283,7 @@ enum AppStyles {
                 .background(Palette.raised)
                 .stroke(Palette.outline)
                 .shape(.roundedRectangle(14))
-                .strokeWidth(1)
+                .lineWidth(1)
                 .clipsContent(true)
 
             // COLOUR, not background: a ColorBox draws its colour, and a

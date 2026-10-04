@@ -27,7 +27,7 @@ VStack {
             lastChange = "User chose \(newValue)"
         }
 
-    Label(lastChange)
+    Text(lastChange)
 }
 ```
 
@@ -49,7 +49,7 @@ half-configured recognizer remains in the tree.
 
 ```swift quote
 HStack {
-    Label("Open details")
+    Text("Open details")
 }
 .padding(12)
 .onTapped { path.append(.details) }
@@ -82,10 +82,10 @@ ColorBox(.cornflowerBlue)
     .translationX(x)
     .scale(scale)
     .onPanUpdated { update in
-        if update.phase == .running { x = update.totalX }
+        if update.phase == .changed { x = update.totalX }
     }
     .onPinchUpdated { update in
-        if update.phase == .running { scale *= update.scale }
+        if update.phase == .changed { scale *= update.scale }
     }
 ```
 
@@ -104,11 +104,11 @@ pointer hover; application behavior must not depend on hover as its sole route.
 Text is the portable drag payload:
 
 ```swift quote
-Label(item.title)
+Text(item.title)
     .draggable(text: item.id)
-    .onDropCompleted { dragging = nil }
+    .onDragEnded { dragging = nil }
 
-ZStack { Label("Drop here") }
+ZStack { Text("Drop here") }
     .onDrop { text in receive(text) }
     .onDragOver { highlighted = true }
     .onDragLeave { highlighted = false }
@@ -127,11 +127,11 @@ An `Aim<Target>` identifies one rendered control for a method call. It is not
 state and does not participate in tree identity:
 
 ```swift
-struct FocusForm: ContentView {
+struct FocusForm: View {
     @Aim(TextField.self) private var field
     @State private var text = ""
 
-    var content: any View {
+    var body: some View {
         VStack {
             TextField($text).aim(field)
             Button("Edit").onClicked { try await field.focus() }
@@ -281,10 +281,10 @@ event no head declared is said once, as a misspelled name would be.
 Accessibility modifiers describe meaning, not test-only metadata:
 
 ```swift
-Label("Order total")
+Text("Order total")
     .accessibilityLabel("Order total: 42 euros")
     .accessibilityHint("Updates after the cart changes")
-    .accessibilityHeadingLevel(.level1)
+    .accessibilityHeading(.h1)
     .accessibilityIdentifier("checkout.total")
 ```
 

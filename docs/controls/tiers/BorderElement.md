@@ -1,14 +1,25 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # BorderElement
 
 What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
 
+```swift
+VStack {
+    Text("Cheese")
+    Text("Aged twelve months")
+}
+.padding(14)
+.shape(.roundedRectangle(8))
+.stroke(.lightGray)
+.lineWidth(1)
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [RadioButton](../RadioButton.md) · [ScrollView](../ScrollView.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Mixins/BorderElementContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/BorderElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 
@@ -16,4 +27,4 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `shape` | property | `ContainerShape` | stateUI |
 | `stroke` | property | `Brush` | stateUI |
-| `strokeWidth` | property | `Double` | stateUI |
+| `lineWidth` | property | `Double` | stateUI |

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- A bin with its lid: an entry thrown away. -->
+  <g fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 12h34"/>
+    <path d="M18 12V7h12v5"/>
+    <path d="M11 12l2 29h22l2-29"/>
+    <path d="M20 19v15M28 19v15"/>
+  </g>
+</svg>

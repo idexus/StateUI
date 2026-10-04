@@ -9,11 +9,12 @@
 //
 // HOW THIS IS LAID OUT:
 //
-//     GalleryApp.swift   the application - its scene, what it writes into its
+//     GalleryApp.swift   the application - its scenes, what it writes into its
 //                        session, and the one function this module exports
-//     Gallery/           the gallery itself: one gallery as a scene
-//                        (GalleryScene.swift), its window and the arrangement in
-//                        it (MainWindow.swift), where it is (Navigation.swift),
+//     Gallery/           the gallery itself: the galleries as a scene
+//                        (GalleryScene.swift), one gallery window
+//                        (GalleryWindow.swift) and the arrangement in it
+//                        (MainPage.swift), where it is (Navigation.swift),
 //                        what a sample is, the catalog of them, and the pages
 //                        that show them
 //     Styles/            what the app looks like: its palette and its styles
@@ -30,28 +31,28 @@ import StateUI
 
 /// The gallery application.
 ///
-/// An application is what every gallery SHARES - its styles, and the settings
-/// it keeps between launches. Each gallery is a scene of its own, and there are
-/// as many as the user opens: see Gallery/GalleryScene.swift.
+/// An application is what every scene SHARES - its styles, and the settings
+/// it keeps between launches. The galleries are one scene, its windows as many
+/// as the user opens: see Gallery/GalleryScene.swift.
 struct GalleryApp: Application {
     /// Which kind of device this is, from the standard environment - answered
     /// by the host before the application is made, so the styles below already
     /// know whether the SearchField wants a touch floor. An APPLICATION's
     /// unfilled slot answers the standard provider directly.
-    @Environment var device: DeviceInfo
+    @Environment(\.device) var device
 
     /// The application as it runs - where its styles and its kept keys go.
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     /// What every gallery shares, written as the application is made.
     init() {
         // The styles every control in the gallery is given. The formFactor goes in
         // because one style reads
         // it: the SearchField's touch floor is a touch screen's, not the
-        // desktop's - and the host says the device before the application is
-        // made. A colour in a style follows the theme by itself. See
-        // Styles/AppStyles.swift.
-        application.styles = AppStyles.sheet(on: device.formFactor)
+        // desktop's - and the application is made at its first need, after the
+        // host says the device. A colour in a style follows the theme by itself.
+        // See Styles/AppStyles.swift.
+        application.styles = AppStyles.sheet(on: device.info.formFactor)
 
         // What the gallery KEEPS between launches - `PersistentStateSample`'s
         // three settings, and nothing else. Listed because a settings store
@@ -62,8 +63,13 @@ struct GalleryApp: Application {
         application.persistentKeys = [.visits, .who, .shade]
     }
 
-    /// One gallery, and as many more as the user opens.
-    var scene: any Scene { GalleryScene() }
+    /// The galleries - launch and *File ▸ New Window* open one more gallery window; the scratchpads; and one
+    /// About window for the whole application, in a scene of its own. See `ScenesSample`.
+    var body: some Scene {
+        GalleryScene()
+        ScratchpadScene()
+        AboutScene()
+    }
 }
 
 /// The one thing this module exports.

@@ -1,7 +1,0 @@
-# revision 1.1
-SearchField: ✅
-SearchField.frameChanged: ✅
-SearchField.returnKey: cannot read returnKey of SearchField - Android's driver has no path for it yet
-SearchField.submitted: ✅
-SearchField.text: ✅
-SearchField.textChanged: ✅

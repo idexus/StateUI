@@ -1,0 +1,21 @@
+# revision 2.1
+ModalStack.barBackgroundColor: ✅
+ModalStack.barForegroundColor: cannot read barForegroundColor of ModalStack - Android's driver has no path for it yet
+ModalStack.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
+ModalStack.barSubtitle: ✅
+ModalStack.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
+NavigationStack.barBackgroundColor: ✅
+NavigationStack.barForegroundColor: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet
+NavigationStack.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
+NavigationStack.barSubtitle: ✅
+NavigationStack.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
+SplitView.barBackgroundColor: ✅
+SplitView.barForegroundColor: cannot read barForegroundColor of SplitView - Android's driver has no path for it yet
+SplitView.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
+SplitView.barSubtitle: ✅
+SplitView.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
+TabView.barBackgroundColor: ✅
+TabView.barForegroundColor: cannot read barForegroundColor of TabView - Android's driver has no path for it yet
+TabView.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
+TabView.barSubtitle: ✅
+TabView.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.

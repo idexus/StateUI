@@ -1,0 +1,49 @@
+# revision 1.1
+ActivityIndicator.background: not realized
+Button.ignoresInput: ✅
+Button.scaleY: ✅
+Canvas.background: not realized
+CheckBox.ignoresInput: ✅
+CheckBox.scaleY: ✅
+ColorBox.background: not realized
+DatePicker.ignoresInput: ✅
+DatePicker.scaleY: ✅
+Ellipse.background: not realized
+Grid.ignoresInput: ✅
+Grid.scaleY: ✅
+HStack.background: ✅
+Image.ignoresInput: not realized
+Image.scaleY: ✅
+ItemsView.background: not realized
+Line.background: not realized
+Map.ignoresInput: 🧩
+Map.scaleY: 🧩
+Path.background: not realized
+Picker.ignoresInput: ✅
+Picker.scaleY: ✅
+Polygon.background: not realized
+Polyline.ignoresInput: not realized
+Polyline.scaleY: ✅
+ProgressBar.background: not realized
+RadioButton.ignoresInput: ✅
+RadioButton.scaleY: ✅
+Rectangle.background: not realized
+ScrollView.ignoresInput: ✅
+ScrollView.scaleY: ✅
+SearchField.background: not realized
+Slider.ignoresInput: ✅
+Slider.scaleY: ✅
+Stepper.background: not realized
+Switch.ignoresInput: ✅
+Switch.scaleY: ✅
+Text.ignoresInput: ✅
+Text.scaleY: ✅
+TextEditor.background: not realized
+TextField.ignoresInput: ✅
+TextField.scaleY: ✅
+TimePicker.background: not realized
+VStack.ignoresInput: ✅
+VStack.scaleY: ✅
+WebView.background: not realized
+ZStack.ignoresInput: ✅
+ZStack.scaleY: ✅

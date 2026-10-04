@@ -17,12 +17,12 @@ import StateUI
 /// rule for a composed view of your own: WHAT IT IS goes in the initializer -
 /// with no default, so leaving it out is not a thing that can happen - and
 /// everything a caller may leave out is a MODIFIER returning `Self`, one copy
-/// and one assignment, as this card's `picture` modifier is written.
+/// and one assignment, as this card's `icon` modifier is written.
 ///
 /// Its own modifiers are written FIRST, before the ones every view has:
 /// `.margin` and friends give back a `ModifiedContent`, which is a view and no
 /// longer a `Card`.
-struct Card: ContentView {
+struct Card: View {
     private let title: String
     private let summary: String
     private let action: EventHandler
@@ -57,13 +57,13 @@ struct Card: ContentView {
         return copy
     }
 
-    /// `ContentView`, not `Element`: the press is a piece of `@State`, and
+    /// `View`, not `Element`: the press is a piece of `@State`, and
     /// state on a view needs the placeholder a composed view puts in the tree.
     /// The differ builds the content once it knows this card stood here last
     /// render, and hands the rebuilt `dip` the storage its predecessor held;
     /// an eager `body` would hand out a fresh 1.0 on every render and the dip
     /// would have nowhere to live.
-    var content: any View {
+    var body: some View {
         // Copies for the handler to capture. The locals keep `self` out of
         // the closure, and a BINDING is copied like anything else the
         // handler holds. ConcurrencyTests pins this shape on the library's
@@ -80,11 +80,11 @@ struct Card: ContentView {
                     .verticalAlignment(.center)
 
                 VStack {
-                    Label(title)
+                    Text(title)
                         .fontSize(17)
                         .fontAttributes(.bold)
 
-                    Label(summary)
+                    Text(summary)
                         .fontSize(13)
                         .textColor(Palette.subtle)
                         .maximumLines(2)
@@ -94,26 +94,26 @@ struct Card: ContentView {
                 .horizontalAlignment(.fill)
                 .verticalAlignment(.center)
 
-                Label("›")
+                Text("›")
                     .gridColumn(2)
                     .fontSize(22)
                     .textColor(Palette.accent)
                     .verticalAlignment(.center)
             }
             .columnSpacing(14)
-            // The TEXT is the star column. An Auto column measures a Label at
+            // The TEXT is the star column. An Auto column measures a Text at
             // the width it would like - the whole summary on one line - so the
             // text ran under the chevron and out through the outline, with an
             // empty star column beside it holding the space it needed. A star
-            // column is given what the others left, and a Label given a width
+            // column is given what the others left, and a Text given a width
             // wraps to it.
             .columns(.auto, .fill, .auto)
-            .padding(16, 14)
+            .padding(horizontal: 16, vertical: 14)
         }
         .style("Card")
         // A CARD IS A ZSTACK WITH A TAP ON IT, which no platform reads as a
         // control at all: the user who cannot see it would be handed a
-        // picture, two Labels and a chevron with nothing saying they act
+        // picture, two Texts and a chevron with nothing saying they act
         // together. So the card says what it is and where it goes, and the
         // handle is worked out from the title rather than written per card -
         // see Handle.swift.

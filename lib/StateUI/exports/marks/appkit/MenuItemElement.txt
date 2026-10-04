@@ -1,0 +1,11 @@
+# revision 1.1
+MenuItem.clicked: ✅
+MenuItem.icon: cannot read icon of MenuItem - AppKit's driver has no path for it yet
+MenuItem.isDestructive: cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet
+MenuItem.isEnabled: ✅
+MenuItem.text: ✅
+ToolbarItem.clicked: ✓ activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
+ToolbarItem.icon: cannot read icon of ToolbarItem - AppKit's driver has no path for it yet
+ToolbarItem.isDestructive: not realized
+ToolbarItem.isEnabled: ✅
+ToolbarItem.text: ✅

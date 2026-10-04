@@ -1,0 +1,3 @@
+# revision 1.1
+Button.contentMode: cannot read contentMode of Button - AppKit's button has no covering scale, as the register records: a fill shows fitted
+Image.contentMode: ✅

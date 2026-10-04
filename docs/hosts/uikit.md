@@ -12,12 +12,13 @@ member - and shows any other control's name in red where the control belongs,
 so a gap is visible rather than silent.
 
 ```text
-lib/StateUI.UIKit/
+lib/StateUI/StateUI.UIKit/
   Sources/    StateUIUIKit: the renderer, scenes and windows, pages, controls and the registry
   Tests/      the host's suite - an application of tests, run on a simulator
 .scripts/UIKit/
   build-app.sh      an application's UIKit head, bundled as an .app for a simulator or a device
   run-app.sh        builds it, installs it on a simulator or a device and starts it
+  deploy.sh         builds it for release and lays the bundle in a folder of its own
   test-uikit.sh     builds and runs the host's suite on a simulator
   tools.sh          what they share: the SDK, a build, a bundle, its icon and signature, where it runs
   draw-app-icon.swift  a head's icon, drawn from the application's Resources/AppIcon
@@ -67,10 +68,32 @@ StateUI libraries in `Frameworks/`. Its icon is drawn from
 and `appicon_mark.svg` in its middle, opaque, which iOS rounds itself. Its
 `Info.plist` says the application supports many scenes.
 
-`STATEUI_UIKIT=1` is what makes a build a UIKit one: the application's
-manifest reads it, declares the `Platforms/UIKit` target and its
-`StateUIUIKit` dependency, and defines the `UIKIT` compilation condition for
-every module of the application. Swift written for this host alone stands
+An application's own keys - the reason it asks for the local network, a
+capability the device must have - stand in `Platforms/UIKit/Info.plist`,
+which the bundle's `Info.plist` takes in, the application's value where both
+name one key. The head's target leaves the file out, as a head leaves out
+anything that is not its Swift:
+
+```swift quote
+.executableTarget(
+    name: "NotesUIKit", dependencies: head, path: "Platforms/UIKit", exclude: ["Info.plist"])
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Notes reaches its server on this network.</string>
+</dict>
+</plist>
+```
+
+`STATEUI_HOST=uikit` is what makes a build a UIKit one: the application's
+manifest reads it, declares its `Platforms/UIKit` head, and defines the
+`UIKIT` compilation condition for every module of the application;
+`lib/StateUI.Head` brings the `StateUIUIKit` host to the head. Swift written for this host alone stands
 under `#if UIKIT`.
 
 A new application made in `apps/` - **StateUI: New Application in apps/**, or
@@ -87,7 +110,7 @@ before in front of them. On an iPhone one scene stands, and a second window
 has none to stand in.
 
 A window's pages are UIKit's own controllers - a navigation controller for a
-`NavigationStack`, a tab bar controller for a `TabbedView`, a split view
+`NavigationStack`, a tab bar controller for a `TabView`, a split view
 controller for a `SplitView` - and its sheets are presented over it, the user's
 swipe down taking the top one away. The application's `MenuBar` is the
 iPad's main menu.
@@ -153,7 +176,33 @@ view properties around it: margins, alignment, opacity, sizing, gestures,
 focus, and frame reports. A registered view draws however it likes, the GPU
 included: the Gallery's `Cube3D` is an `MTKView` drawing with Metal, and its
 loop pauses in `didMoveToWindow` once no window shows it. A registered element
-is a leaf here: its children reach nothing.
+is a leaf here: it draws the children of a contract it names itself, as the
+next section says, and no other child is shown.
+
+### Children a control draws
+
+A view may draw the children of one contract itself - a map draws its markers.
+`children` names their contract and what of each the view realizes, and hands
+it every such child, in the tree's order, whenever the element's children
+change: one added, moved, taken away, or given another value. A child is a
+`UIKitChild` - its values read as the types its contract declares, and its own
+`reports` to raise its events on it - and stays the same child for as long as
+it lives, so the view keeps what it drew for one by it. Such a child has no
+view of its own.
+
+```swift quote
+StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+    map.property(MapContract.region) { view, region in … }
+    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { view, markers in
+        view.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
+        // the user taps one: marker.reports.raise(MarkerContract.selected)
+    }
+}
+```
+
+This host draws a `Map` with MapKit itself. A library element a host does
+not realize - a `Map` on a platform with no map of its own - is registered
+the same way, with the provider and the key it needs.
 
 ### An act
 
@@ -211,7 +260,7 @@ or a simulator's name or UDID; with none named it is the simulator booted,
 else an iPhone. A simulator is booted where it is not running and the
 Simulator opened; a device is reached over USB or Wi-Fi, its build signed for
 it. `--no-log` returns once the application has started. Everything a build
-writes stays in the application's `.build-uikit/`.
+writes stays in the application's `.build/uikit/`.
 
 In VS Code, choose **UIKit** as the host and an iPhone, an iPad or a
 simulator, and press **F5**.
@@ -222,7 +271,7 @@ simulator, and press **F5**.
 attaches `lldb-dap` to it: a breakpoint in the application, in StateUI or in
 the host stops it from the first line, with its source, its stack and its
 variables. `--debugger` starts the application held until a debugger
-attaches, and writes where to `.build-uikit/debugger.json`: its process and,
+attaches, and writes where to `.build/uikit/debugger.json`: its process and,
 on a device, the device and the bundle built, whose symbols the debugger
 reads. A simulator's process is one of this Mac's; a device's is reached
 through the device:
@@ -234,6 +283,20 @@ lldb -o "device select <device from debugger.json>" \
 ```
 
 Only a debug build can be debugged.
+
+## Deploying
+
+```bash
+.scripts/UIKit/deploy.sh apps/Gallery artifacts/Gallery/UIKit "My iPhone"
+```
+
+`deploy.sh` builds an application's head for release as an application
+bundle for the device named - a simulator, by its name or UDID, or an iPhone
+or iPad, the bundle then signed for it as `build-app.sh` signs one - and lays
+the bundle, `<App>UIKit.app`, in the folder named, made anew.
+**StateUI: Deploy** in the editor runs it for the application and the device
+chosen, and lays the bundle in `artifacts/<application>/UIKit` of the folder
+that holds the application's `apps/` - a checkout's, or a project group's.
 
 ## Testing
 
@@ -249,6 +312,18 @@ STATEUI_FILTER=testSlider .scripts/UIKit/test-uikit.sh
 Each test and each conformance case says as it ends where the run stands, and
 the run ends with *Executed N tests, with M failures*. `STATEUI_FILTER` runs
 the tests whose name holds one of its comma-separated names;
-`STATEUI_UPDATE_EXPORTS=1` writes what the run says into `exports/` instead of
+`STATEUI_UPDATE_EXPORTS=1` writes what the run says into `lib/StateUI/exports/` instead of
 holding it to them. The suite runs with the simulator's accessibility off, as
 a simulator starts.
+
+`STATEUI_STALE_ONLY=1` runs only the conformance families whose verdicts in
+`lib/StateUI/exports/marks/uikit` stand at another revision than
+`lib/StateUI/StateUI.Conformance/revisions.txt` gives, or at none. With the
+verdicts written, `STATEUI_UPDATE_DOCS=1 swift test --filter
+ControlDictionaryTests` at the repository's root renders the
+[platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) from them. In the editor,
+with UIKit and a simulator chosen, **StateUI: Conformance - Rebuild all** runs
+both - `UIKitConformanceTests` writing its verdicts, then the documents - and
+**StateUI: Conformance - Rebuild changed** runs the stale families alone
+before it renders.

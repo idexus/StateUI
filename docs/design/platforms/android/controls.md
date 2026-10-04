@@ -53,7 +53,20 @@ a search; a text field's is the platform's until the tree names one. An
 editor takes several lines, standing from its top, and Return starts a new
 one. One that does not grow with its words is one line tall where nothing
 gives it room, and scrolls within the room it is given; one that grows is as
-tall as its lines.
+tall as its lines. The words and the placeholder stand across each kind where
+`horizontalTextAlignment` says - the view's gravity across - and down where
+its kind stands them.
+
+## What typing is given
+
+A field's traits ([what typing is given](../../host/runtime.md#what-typing-is-given))
+are its input type: numbers and telephones their own classes, an address and
+a link their text variations, capitals at each sentence where the traits put
+them, correction where they correct - not in a password - and no suggestions
+where they do not predict. A new input type resets the typeface, so the
+field puts its weight back after it, as a password does. Android has no
+switch for spell checking alone: its marks go with the suggestions, which
+prediction turns off.
 
 ## An editor a line tall
 
@@ -70,8 +83,13 @@ states still wins.
 
 A keyboard's action reaches the listener with no key event; a hardware Return
 reaches it as the key goes down and again as it comes up. The listener
-submits on the action and on the key going down, and takes the key's release
-itself, so one Return is one submission.
+submits on the action and on the key's release, and takes the key going down
+itself, so one Return is one submission. A Return submitted as it went down
+would leave its release to the view the submission put the focus on - a field
+of the page it showed - and out of touch mode Android takes a Return released
+on a one-line field it did not see go down for a move to the view below it:
+a scanner's Enter would press the button there. An editor's hardware Return
+is its own and starts a new line.
 
 ## The background a view is made with
 
@@ -124,6 +142,13 @@ then the author's, `minimumWidth` and `minimumHeight`, as on every host. The
 stepper's buttons keep a square of 48 points, the room a finger needs, as
 the stepper's own choice.
 
+Android draws a button's icon at the edge of its padding and centres the words
+in what is left, so a button laid out wider than its words would stand them
+apart. Where it is placed, the host adds to each side of the padding what the
+icon, the gap and the words leave (`ButtonArithmetic.sideRoom`,
+[a button's picture and words](../../host/layout.md#a-buttons-picture-and-words)),
+and measures the button as if that room were not there.
+
 ## A button's look
 
 A button says nothing of its look and keeps its theme's: a background with
@@ -132,7 +157,10 @@ the host's shape drawable - under Android's pressed ripple in the theme's
 highlight colour, kept within the same shape, so a drawn button still
 answers a finger as the platform's do. The shape dims while the button is
 disabled, to the theme's `disabledAlpha`, and so do words in a colour the
-tree gave, as the theme's own colours do.
+tree gave, as the theme's own colours do. The theme lifts a button, and its
+shadow falls under the whole outline: a shape the page shows through - a
+see-through fill, an outline alone - says its outline is clear, as Android's
+own drawables do, so no grey shadow shows inside it.
 
 An icon beside words is a compound drawable at the picture's own size,
 before, after, above or below them, the icon spacing apart or the
@@ -155,10 +183,11 @@ a report of that row, or of the title's, is no change. The picker is given
 its options where they changed and the choice only where the tree changed it
 or them (`PickerChoices`): a new title leaves the user's choice standing.
 
-The list opens on the user's tap, which is reported, or on `isOpen`, which
-is not. It takes the window's focus while it shows, and the focus coming back
-is the list closing - Android has no call for it. Nor does it let a program
-close the list: `isOpen` set to false leaves it to the user.
+The list opens on the user's tap or on `isOpen`; the spinner tells every
+opening and closing, and the host layer's rule (`PickerOpening`) hears only
+the user's. It takes the window's focus while it shows, and the focus coming
+back is the list closing - Android has no call for it. Nor does it let a
+program close the list: `isOpen` set to false leaves it to the user.
 
 ## A day and a time
 
@@ -166,10 +195,13 @@ A date picker and a time picker are one field of the host's, showing the day
 or the time in the user's locale - "D" and "d" the long and short day, "T" and
 "t" the long and short time, which follows the user's choice of a 24-hour
 clock, any other text a pattern - and opening the platform's own calendar or
-clock, within the bounds the tree gave. The user's choice is written into the
-field and reported; the program's day or time is only written. The dialog
-opening on the user's tap and it closing are reported; the program opening or
-closing it is not, and a field that leaves closes its dialog.
+clock, within the bounds the tree gave. A day and a time stand by the host
+layer's rule (`CalendarArithmetic`): a day not in the calendar keeps the day
+shown, one past the bounds stands at the nearer, and a time is added up from
+midnight. The user's choice is written into the field and reported; the
+program's day or time is only written. The field tells every opening and
+closing of its dialog, and only the user's are heard (`PickerOpening`); a
+field that leaves closes its dialog.
 
 ## Work under way
 
@@ -191,14 +223,18 @@ A WebView is Android's own web view, standing in a holder. Where its web
 process dies - a crash, or the system reclaiming memory - Android leaves the
 view unusable: the holder makes it again, blank, and the element hears the
 process ended; a reload shows the page again. A navigation is reported as it
-starts and as it ends, with why it happened - a new page, back, forward, a
-reload, as the act that caused it said - and how it ended: an error on the
-page itself makes it a failure, a timeout its own. A page crosses with the
-name the view asks by, the name written first: written while a page loads,
-Android leaves that page out of the history, and there is no way back to it. Whether there is a page
-behind and ahead is said when it changes. A script runs in the page and
-answers later, by ticket, with its value as text: a string as itself, none
-for null, anything else as JSON writes it. The web view runs scripts and
+starts and as it ends, with why it happened by the host layer's rule - the
+step the program asked for, else a new page, since Android tells no reason -
+and how it ended: an error on the page itself makes it a failure, a timeout
+its own. A page crosses with the name the view asks by, the name written
+first: written while a page loads, Android leaves that page out of the
+history, and there is no way back to it. A document written in place with
+no address of its own is gone to as a `data:` address, as on a WebKit web
+view (docs/design/host/web.md) - Android's web view takes an address of at most
+2 MB, so such a document stays under about 1.5 MB, or is given an address.
+Whether there is a page behind and ahead is said when it changes. A script runs in the page and answers later,
+by ticket, with the JSON Android hands back read as text by the host layer's
+rule (docs/design/host/web.md). The web view runs scripts and
 keeps the page's storage, as a browser does, and lets go of its page and its
 web process when its element leaves.
 

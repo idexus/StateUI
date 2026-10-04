@@ -1,0 +1,41 @@
+# revision 1.1
+Button.fontAttributes: ✅
+Button.fontFamily: ✅
+Button.fontSize: ✅
+Button.isFontAutoScalingEnabled: not realized
+DatePicker.fontAttributes: not realized
+DatePicker.fontFamily: not realized
+DatePicker.fontSize: not realized
+DatePicker.isFontAutoScalingEnabled: not realized
+Picker.fontAttributes: not realized
+Picker.fontFamily: not realized
+Picker.fontSize: not realized
+Picker.isFontAutoScalingEnabled: not realized
+RadioButton.fontAttributes: ✅
+RadioButton.fontFamily: ✅
+RadioButton.fontSize: ✅
+RadioButton.isFontAutoScalingEnabled: not realized
+SearchField.fontAttributes: ✅
+SearchField.fontFamily: ✅
+SearchField.fontSize: ✅
+SearchField.isFontAutoScalingEnabled: not realized
+Text.fontAttributes: ✅
+Text.fontFamily: ✅
+Text.fontSize: ✅
+Text.isFontAutoScalingEnabled: not realized
+TextEditor.fontAttributes: ✅
+TextEditor.fontFamily: ✅
+TextEditor.fontSize: ✅
+TextEditor.isFontAutoScalingEnabled: not realized
+TextField.fontAttributes: ✅
+TextField.fontFamily: ✅
+TextField.fontSize: ✅
+TextField.isFontAutoScalingEnabled: not realized
+TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - UIKit's driver has no path for it yet
+TextSpan.fontFamily: cannot read fontFamily of TextSpan - UIKit's driver has no path for it yet
+TextSpan.fontSize: cannot read fontSize of TextSpan - UIKit's driver has no path for it yet
+TextSpan.isFontAutoScalingEnabled: not realized
+TimePicker.fontAttributes: not realized
+TimePicker.fontFamily: not realized
+TimePicker.fontSize: not realized
+TimePicker.isFontAutoScalingEnabled: not realized

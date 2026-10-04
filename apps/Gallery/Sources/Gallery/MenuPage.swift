@@ -11,7 +11,7 @@ import StateUI
 /// whatever a handler can do.
 ///
 /// Its title names the pane on hosts whose navigation chrome exposes that name.
-struct MenuPage: ContentView {
+struct MenuPage: View {
     /// Everything the gallery shows - the rows are one per group.
     let catalog: Catalog
 
@@ -28,15 +28,12 @@ struct MenuPage: ContentView {
     let listsHiddenRow: Bool
 
     /// The device's facts, for the line at the bottom.
-    @Environment private var device: DeviceInfo
-
-    /// The page itself.
-    @Environment private var page: PageSession
+    @Environment(\.device) private var device
 
     /// The window the menu stands in - whether the desktop shows through it.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
-    var content: any View {
+    var body: some View {
         Grid {
             header
 
@@ -59,43 +56,39 @@ struct MenuPage: ContentView {
         // navigation bar beside it does. Every LAYOUT insets itself, so the
         // header says it too.
         .avoidsSafeArea(.none)
-        .onCreated {
-            page.title = "StateUI"
-
-            // The image hosts use for the pane's navigation affordance.
-            page.icon = "nav_menu_dark.png"
-            page.background = surface
-        }
+        .title("StateUI")
+        // The image hosts use for the pane's navigation affordance.
+        .icon("nav_menu_dark.png")
         // A window the desktop shows through shows it through the menu as well.
-        .onChanged(window.isTranslucent) { page.background = surface }
+        .pageBackground(surface)
     }
 
-    /// What the menu is drawn on: the gallery's surface - and nothing of its own
-    /// where the window shows the desktop, the sidebar's glass showing it in
-    /// the tint the window's bars lay over it.
-    private var surface: Color? {
-        window.isTranslucent == true ? nil : Palette.surface
+    /// What the menu is drawn on: the sidebar's own tone - and, where the
+    /// window shows the desktop, a thin layer of it over the sidebar's glass,
+    /// which shows the desktop in the tint the window's bars lay over it.
+    private var surface: Color {
+        window.isTranslucent == true ? Palette.sidebarOverGlass : Palette.sidebar
     }
 
     /// The mark, the name and what this is - on the gradient the home page opens
     /// with, so the menu and the page behind it are plainly one application. A
     /// phone leaves the mark out: its rows need the room to scroll.
-    private var header: any View {
+    private var header: some View {
         VStack {
-            if device.formFactor != .phone {
+            if device.info.formFactor != .phone {
                 Image("stateui_mark.png")
                     .width(51)
                     .height(51)
                     .horizontalAlignment(.start)
             }
 
-            Label("StateUI")
+            Text("StateUI")
                 .fontSize(24)
                 .fontAttributes(.bold)
-                .characterSpacing(-0.5)
+                .tracking(-0.5)
                 .textColor(Palette.onBrand)
 
-            Label("Native interfaces, written in Swift")
+            Text("Native interfaces, written in Swift")
                 .fontSize(12)
                 .textColor(Palette.onBrand)
                 .opacity(0.85)
@@ -109,13 +102,13 @@ struct MenuPage: ContentView {
         // and the name cut mid-letter). The gradient was always meant to run
         // behind the status bar anyway.
         .avoidsSafeArea(.none)
-        .padding(20, 40, 20, 22)
+        .padding(left: 20, top: 40, right: 20, bottom: 22)
         .background(Palette.identity)
     }
 
     /// Home, one row per group, the row that is not always listed, and the one
     /// row that performs an act rather than going anywhere.
-    private var rows: any View {
+    private var rows: some View {
         VStack {
             MenuRow("Home") { nav.open(.home) }
                 .icon(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png"))
@@ -141,22 +134,22 @@ struct MenuPage: ContentView {
 
             // A row that DOES something rather than going somewhere. It needs
             // no type of its own: the same view, with a different handler.
-            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.formFactor) }
+            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
                 .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
         }
     }
 
     /// What is underneath: the platform compiled in, and the formFactor the host
     /// answered before the first render.
-    private var footer: any View {
-        Label("native: \(stateUIPlatform()) · \(device.formFactor)")
+    private var footer: some View {
+        Text("native: \(stateUIPlatform()) · \(device.info.formFactor)")
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)
             // Room under it for the home indicator, the content being edge to
             // edge: a phone with no home button draws a bar across the bottom
             // of the screen, and this line would otherwise sit under it.
-            .padding(16, 16, 16, 30)
+            .padding(left: 16, top: 16, right: 16, bottom: 30)
             // The footer's own row, written on the footer.
             .gridRow(2)
     }

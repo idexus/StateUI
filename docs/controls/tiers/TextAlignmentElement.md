@@ -1,14 +1,21 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # TextAlignmentElement
 
 Where text sits inside the space its own element was given.
 
+```swift
+Text("In the middle")
+    .horizontalTextAlignment(.center)
+    .verticalTextAlignment(.center)
+    .height(80)
+```
+
 Wears: [VisualElement](VisualElement.md)
 
-Worn by: [Label](../Label.md) · [Picker](../Picker.md) · [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
+Worn by: [Picker](../Picker.md) · [SearchField](../SearchField.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Mixins/TextAlignmentElementContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/TextAlignmentElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 

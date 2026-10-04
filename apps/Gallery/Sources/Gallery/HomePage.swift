@@ -20,28 +20,22 @@ import StateUI
 /// but only when a user turns the device or drags the window past a
 /// threshold, which is a handful of times in a session rather than a handful of
 /// times a second.
-struct HomePage: ContentView {
-    /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
-
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
+struct HomePage: View {
+    /// The gallery this page is in - its scene.
+    @Environment(\.scene) var scene
 
     let catalog: Catalog
 
-    /// Where the gallery is - a card switches the section.
+    /// Where the gallery is - a card pushes its group.
     let nav: Navigation
 
     /// Which group's card is in the middle. The gallery writes it as the user
     /// swipes, so the words under the cards follow the hand.
     @State private var chosen = 0
 
-    /// The device's facts, resolved from the standard environment - the
-    /// formFactor for the count, and the footer's word.
-    @Environment var device: DeviceInfo
-
-    /// The screen, which decides whether a phone is on its side.
-    @Environment var display: DeviceDisplay
+    /// The device: its form factor for the count and the footer's word, and its
+    /// screen, which decides whether a phone is on its side.
+    @Environment(\.device) var device
 
     /// How much of the page stands beside the cards.
     ///
@@ -106,7 +100,7 @@ struct HomePage: ContentView {
     /// out of patience.
     @State private var waited = 0.0
 
-    var content: any View {
+    var body: some View {
         let groups = catalog.groups
 
         // THE CEILING AND THE CHROME ARE READ HERE, in the body, and handed to
@@ -143,13 +137,13 @@ struct HomePage: ContentView {
                             .height(84)
                             .horizontalAlignment(.start)
 
-                        Label("StateUI Gallery")
+                        Text("StateUI Gallery")
                             .fontSize(34)
                             .fontAttributes(.bold)
-                            .characterSpacing(-0.5)
+                            .tracking(-0.5)
                             .textColor(Palette.onBrand)
 
-                        Label("Native interfaces, written in Swift")
+                        Text("Native interfaces, written in Swift")
                             .fontSize(15)
                             .textColor(Palette.onBrand)
                             .opacity(0.85)
@@ -160,10 +154,10 @@ struct HomePage: ContentView {
                 .style("Card")
                 .background(Palette.identity)
                 .stroke(.transparent)
-                .strokeWidth(0)
+                .lineWidth(0)
                 .shape(.roundedRectangle(18))
 
-                SectionTitle("\(catalog.sampleCount(on: device.formFactor)) SAMPLES "
+                SectionTitle("\(catalog.sampleCount(on: device.info.formFactor)) SAMPLES "
                     + "IN \(groups.count) GROUPS")
             }
             .spacing(14)
@@ -200,7 +194,7 @@ struct HomePage: ContentView {
                 // it steps. ON A DESKTOP ONLY: a finger has the run itself and
                 // needs no buttons, where a mouse without a wheel - or a hand
                 // on a keyboard - has no way to turn it at all.
-                if device.formFactor == .desktop {
+                if device.info.formFactor == .desktop {
                     Steps(position: $chosen, count: groups.count)
                 }
 
@@ -223,7 +217,7 @@ struct HomePage: ContentView {
                 // to as many lines as it wants, the count sits under it, and
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
-                Caption(catalog: catalog, position: $chosen, formFactor: device.formFactor)
+                Caption(catalog: catalog, position: $chosen, formFactor: device.info.formFactor)
                     .height(Self.caption)
                     .verticalAlignment(.start)
             }
@@ -237,7 +231,7 @@ struct HomePage: ContentView {
             // runs short - an auto row keeps its height whatever is left, and
             // words that no longer fit would be drawn OVER what is above them.
             VStack {
-                Label("Every example here is described in Swift and rendered as real "
+                Text("Every example here is described in Swift and rendered as real "
                     + "native controls.")
                     .fontSize(15)
                     .textColor(Palette.subtle)
@@ -246,7 +240,7 @@ struct HomePage: ContentView {
                 // The platform is compiled in; the formFactor - phone, tablet,
                 // desktop - is the host's answer, which is what lets the
                 // catalog list desktop chrome only where it draws.
-                Label("native: \(stateUIPlatform()) · \(device.formFactor)")
+                Text("native: \(stateUIPlatform()) · \(device.info.formFactor)")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
@@ -259,10 +253,10 @@ struct HomePage: ContentView {
         .rowSpacing(Self.gap)
         // The margin is the rows' own to lose: the frame below is this grid's
         // outer one, so the arithmetic takes the margin off explicitly.
-        .padding(Self.margin, Self.margin)
+        .padding(horizontal: Self.margin, vertical: Self.margin)
         // THE PAGE'S OWN ROOM, written by the host and read by the arithmetic
         // that sizes the run. Nothing is built for it, which is the whole
-        // difference between this and measuring a page with a `FrameReader`:
+        // difference between this and measuring a page with a `GeometryReader`:
         // the run's height then rode a render per settling pass, and everything
         // standing under it rode them too.
         .frame($room)
@@ -318,17 +312,15 @@ struct HomePage: ContentView {
             return .wait
         }
         // AND THE SAME MEASUREMENT AGAIN, for the one answer that is DRAWN
-        // rather than worn. A driven value read in a body is a read nothing
-        // records, so a row's presence cannot be taken from `room`: it needs a
-        // report the tree hears. This one is quiet - it writes only where the
+        // rather than worn. A body reading `room` would be built again on every
+        // settling pass, so a row's presence is taken from a report the tree
+        // hears instead. This one is quiet - it writes only where the
         // answer actually flips, which a user does by turning the device or
         // dragging the window past a threshold.
         //
-        // IT IS ALSO WHAT MARKS THE PAGE MEASURED, and that is the half worth
-        // knowing: a WATCHED frame is what tells the arranger to place this
-        // page's rows at once instead of carrying them, and only a watcher
-        // sets it - the driven feed above does not. Take this away and the
-        // rows travel through the very measurement that decides them.
+        // A FRAME THE PAGE REPORTS - this watcher's, or the feed's above - is
+        // also what tells the arranger to place its rows at once, rather than
+        // travel them through the very measurement that decides them.
         .onFrameChanged { frame in
             let answer = Self.fitted(in: frame, at: ceiling).chrome
             guard answer != chrome else { return }
@@ -338,7 +330,7 @@ struct HomePage: ContentView {
         .opacity($shown)
         // No home button: this is it. The inspector stays, as it does on
         // every page - what each render cost is a question about any of them.
-        .onCreated { page.gallery("Home", scene: scene, nav: nil) }
+        .galleryPage("Home")
     }
 
     /// Where the page is in coming in.
@@ -377,9 +369,9 @@ struct HomePage: ContentView {
     /// of everything above them for nothing. Where there is never room, the
     /// answer is not to ask.
     private var affords: Chrome {
-        guard device.formFactor == .phone else { return .full }
+        guard device.info.formFactor == .phone else { return .full }
 
-        return display.orientation == .landscape ? .cards : .heading
+        return device.display.orientation == .landscape ? .cards : .heading
     }
 
     /// What the room holds, and how tall the run of cards stands in it.
@@ -487,7 +479,7 @@ struct HomePage: ContentView {
 ///
 /// It is handed the catalog rather than the group: a class, compared by
 /// identity, where a group holds its samples and could never compare cheaply.
-private struct Caption: ContentView {
+private struct Caption: View {
     /// Every group there is - a class, so this view's inputs are three cheap
     /// ones.
     let catalog: Catalog
@@ -499,19 +491,19 @@ private struct Caption: ContentView {
     /// What the device is, for the count - a phone is shown fewer samples.
     let formFactor: FormFactor
 
-    var content: any View {
+    var body: some View {
         let groups = catalog.groups
         let group = groups[min(max(position, 0), max(groups.count - 1, 0))]
 
         // THE NAME IS NOT AMONG THEM: the card carries it, and saying it again
         // a card's width below reads as two things rather than one.
         return VStack {
-            Label("\(group.shown(on: formFactor).count) samples · tap the card to open")
+            Text("\(group.shown(on: formFactor).count) samples · tap the card to open")
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)
 
-            Label(group.summary)
+            Text(group.summary)
                 .fontSize(14)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -526,14 +518,14 @@ private struct Caption: ContentView {
 /// mouse without a wheel - or a hand on a keyboard - has no way to turn it at
 /// all. A VIEW OF ITS OWN for the reason the caption is one: whether an arrow
 /// can be pressed follows the position, so this reads it and the page does not.
-private struct Steps: ContentView {
+private struct Steps: View {
     /// Which card is in the middle - read for the arrows, written by them.
     @Binding var position: Int
 
     /// How many there are, which is where the arrows stop.
     let count: Int
 
-    var content: any View {
+    var body: some View {
         HStack {
             step("‹", to: position - 1)
             step("›", to: position + 1)
@@ -543,15 +535,15 @@ private struct Steps: ContentView {
     }
 
     /// One arrow: where it goes, and whether there is anything there.
-    private func step(_ caption: String, to: Int) -> any View {
+    private func step(_ caption: String, to: Int) -> some View {
         Button(caption)
             .fontSize(18)
             .textColor(Palette.subtle)
             .background(.transparent)
             .stroke(Palette.outline)
-            .strokeWidth(1)
+            .lineWidth(1)
             .shape(.roundedRectangle(8))
-            .padding(18, 2)
+            .padding(horizontal: 18, vertical: 2)
             .isEnabled(to >= 0 && to < count)
             .onClicked { position = to }
     }
@@ -564,24 +556,24 @@ private struct Steps: ContentView {
 /// caption, for a shape, for a press - while every card is CARRIED: a
 /// composed view built with the same inputs is not built again, and the run
 /// costs what the caption costs.
-private struct GroupFace: ContentView {
+private struct GroupFace: View {
     let title: String
     let summary: String
     let picture: ImageSource
 
-    var content: any View {
+    var body: some View {
         ZStack {
             Grid {
                 Image(picture)
-                    .aspect(.fill)
+                    .contentMode(.fill)
 
                 Grid {
-                    Label(title)
+                    Text(title)
                         .fontSize(18)
                         .fontAttributes(.bold)
                         .textColor(Palette.onBrand)
                         .lineBreak(.tailTruncation)
-                        .padding(12, 10)
+                        .padding(horizontal: 12, vertical: 10)
                 }
                 .background(Color("#B3000000"))
                 .verticalAlignment(.end)
@@ -600,7 +592,7 @@ private struct GroupFace: ContentView {
         .accessibilityIdentifier(handle("group", title))
         .accessibilityLabel(title)
         .accessibilityHint(summary)
-        .strokeWidth(0)
+        .lineWidth(0)
         .shape(.roundedRectangle(16))
     }
 }

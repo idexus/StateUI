@@ -1,6 +1,0 @@
-# revision 1.1
-Label: ✅
-Label.frameChanged: ✅
-Label.lineBreak: ◐ cannot read lineBreak of Label - GTK's driver has no path for it yet
-Label.maximumLines: ◐ cannot read maximumLines of Label - GTK's driver has no path for it yet
-Label.text: ✅

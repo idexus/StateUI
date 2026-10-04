@@ -1,6 +1,6 @@
 # Motion on Android
 
-How the Android Views host moves what the core's motion elements say
+How the Android Views host moves what the host layer's motion elements say
 ([motion](../../host/motion.md)): which properties it draws on the way, how a
 view is moved, turned and scaled, and when every animation arrives at once.
 The frames come from the UI thread's choreographer ([runtime](runtime.md)).

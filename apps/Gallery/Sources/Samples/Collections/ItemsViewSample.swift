@@ -12,13 +12,13 @@ private struct LongList: ExampleContent {
             // platform's own list shows it, never before.
             ItemsView(0..<1_000) { number in
                 HStack {
-                    Label("\\(number)").width(90)
-                    Label("\\(number * number)")
+                    Text("\\(number)").width(90)
+                    Text("\\(number * number)")
                 }
-                .padding(14, 10)
+                .padding(horizontal: 14, vertical: 10)
             }
-            .header(Label("N and N², a thousand times"))
-            .footer(Label("That is all of them."))
+            .header(Text("N and N², a thousand times"))
+            .footer(Text("That is all of them."))
             .selection($chosen)
             .gridRow(0)
 
@@ -27,46 +27,46 @@ private struct LongList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(1)
 
-            Label(chosen.map { "Row \\($0) is chosen." } ?? "Tap a row.")
+            Text(chosen.map { "Row \\($0) is chosen." } ?? "Tap a row.")
                 .gridRow(1)
         }
         .rows(.fill, .auto)
         """
 
-    var content: any View {
+    var body: some View {
         Grid {
             ItemsView(0..<1_000) { number in
                 HStack {
-                    Label("\(number)")
+                    Text("\(number)")
                         .fontSize(14)
                         .width(90)
                         .verticalAlignment(.center)
 
-                    Label("\(number * number)")
+                    Text("\(number * number)")
                         .fontSize(13)
                         .textColor(Palette.subtle)
                         .verticalAlignment(.center)
                 }
                 .spacing(12)
-                .padding(14, 10)
+                .padding(horizontal: 14, vertical: 10)
             }
-            .header(Label("N and N², a thousand times")
+            .header(Text("N and N², a thousand times")
                 .fontSize(11)
                 .fontAttributes(.bold)
                 .textColor(Palette.subtle)
-                .padding(14, 8)
+                .padding(horizontal: 14, vertical: 8)
                 .background(Palette.raised))
-            .footer(Label("That is all of them.")
+            .footer(Text("That is all of them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-                .padding(14, 8))
+                .padding(horizontal: 14, vertical: 8))
             .selection($chosen)
             .gridRow(0)
 
             DebugInfoLabel()
                 .gridRow(1)
 
-            Label(chosen.map { "Row \($0) is chosen." } ?? "Tap a row.")
+            Text(chosen.map { "Row \($0) is chosen." } ?? "Tap a row.")
                 .fontSize(13)
                 .textColor(Palette.accent)
                 .gridRow(1)
@@ -75,8 +75,8 @@ private struct LongList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
-        Label("Scroll to the end, and tap a row to choose it.")
+    var notes: (any View)? {
+        Text("Scroll to the end, and tap a row to choose it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -96,7 +96,7 @@ private struct AcrossList: ExampleContent {
 
             // A row: one card beside another, each as wide as it says.
             ItemsView(1...200) { number in
-                Label("Card \\(number)")
+                Text("Card \\(number)")
                     .horizontalTextAlignment(.center)
                     .verticalTextAlignment(.center)
                     .width(120)
@@ -107,8 +107,8 @@ private struct AcrossList: ExampleContent {
 
             // Each tag as wide as its word.
             ItemsView(tags) { tag in
-                Label(tag)
-                    .padding(14, 0)
+                Text(tag)
+                    .padding(horizontal: 14, vertical: 0)
                     .verticalTextAlignment(.center)
                     .background(Palette.raised)
             }
@@ -117,12 +117,12 @@ private struct AcrossList: ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
             ItemsView(1...200) { number in
-                Label("Card \(number)")
+                Text("Card \(number)")
                     .fontSize(14)
                     .horizontalTextAlignment(.center)
                     .verticalTextAlignment(.center)
@@ -133,9 +133,9 @@ private struct AcrossList: ExampleContent {
             .height(80)
 
             ItemsView(Self.tags) { tag in
-                Label(tag)
+                Text(tag)
                     .fontSize(13)
-                    .padding(14, 0)
+                    .padding(horizontal: 14, vertical: 0)
                     .verticalTextAlignment(.center)
                     .background(Palette.raised)
             }
@@ -145,8 +145,8 @@ private struct AcrossList: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
-        Label("Swipe both strips: the cards share one width, and every tag is as wide as its word.")
+    var notes: (any View)? {
+        Text("Swipe both strips: the cards share one width, and every tag is as wide as its word.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -164,7 +164,7 @@ private struct GridList: ExampleContent {
         Grid {
             // Columns at least 100 wide: as many as the width holds.
             ItemsView(0..<120) { number in
-                Label("\\(number)")
+                Text("\\(number)")
                     .horizontalTextAlignment(.center)
                     .verticalTextAlignment(.center)
                     .height(72)
@@ -177,16 +177,16 @@ private struct GridList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(1)
 
-            Label(opened.map { "Tile \\($0) opened." } ?? "Tap a tile.")
+            Text(opened.map { "Tile \\($0) opened." } ?? "Tap a tile.")
                 .gridRow(1)
         }
         .rows(.fill, .auto)
         """
 
-    var content: any View {
+    var body: some View {
         Grid {
             ItemsView(0..<120) { number in
-                Label("\(number)")
+                Text("\(number)")
                     .fontSize(15)
                     .fontAttributes(.bold)
                     .textColor(.white)
@@ -202,7 +202,7 @@ private struct GridList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(1)
 
-            Label(opened.map { "Tile \($0) opened." } ?? "Tap a tile.")
+            Text(opened.map { "Tile \($0) opened." } ?? "Tap a tile.")
                 .fontSize(13)
                 .textColor(Palette.accent)
                 .gridRow(1)
@@ -211,8 +211,8 @@ private struct GridList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
-        Label("Turn the device or widen the window: the columns follow the width.")
+    var notes: (any View)? {
+        Text("Turn the device or widen the window: the columns follow the width.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -248,14 +248,14 @@ private struct GroupedList: ExampleContent {
 
             // A group per shelf, named so two shelves may hold the same item.
             ItemsView(groups: shelves.map { shelf in
-                let group = ItemsGroup(shelf.items) { item in
-                    Label(item).padding(14, 10)
+                let group = Section(shelf.items) { item in
+                    Text(item).padding(horizontal: 14, vertical: 10)
                 }
                 .id(shelf.name)
-                .header(Label(shelf.name).fontAttributes(.bold).padding(14, 8))
+                .header(Text(shelf.name).fontAttributes(.bold).padding(horizontal: 14, vertical: 8))
 
                 return counts
-                    ? group.footer(Label("\\(shelf.items.count) items").padding(14, 6))
+                    ? group.footer(Text("\\(shelf.items.count) items").padding(horizontal: 14, vertical: 6))
                     : group
             })
             .gridRow(1)
@@ -263,7 +263,7 @@ private struct GroupedList: ExampleContent {
         .rows(.auto, .fill)
         """
 
-    var content: any View {
+    var body: some View {
         Grid {
             SwitchRow("Counts", $counts)
                 .gridRow(0)
@@ -271,25 +271,25 @@ private struct GroupedList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(0)
 
-            ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> ItemsGroup<[String], String> in
-                let group = ItemsGroup(shelf.items) { item in
-                    Label(item)
+            ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<[String], String> in
+                let group = Section(shelf.items) { item in
+                    Text(item)
                         .fontSize(14)
-                        .padding(14, 10)
+                        .padding(horizontal: 14, vertical: 10)
                 }
                 .id(shelf.name)
-                .header(Label(shelf.name)
+                .header(Text(shelf.name)
                     .fontSize(12)
                     .fontAttributes(.bold)
                     .textColor(Palette.subtle)
-                    .padding(14, 8)
+                    .padding(horizontal: 14, vertical: 8)
                     .background(Palette.raised))
 
                 return counts
-                    ? group.footer(Label("\(shelf.items.count) items")
+                    ? group.footer(Text("\(shelf.items.count) items")
                         .fontSize(12)
                         .textColor(Palette.subtle)
-                        .padding(14, 6))
+                        .padding(horizontal: 14, vertical: 6))
                     : group
             })
             .gridRow(1)
@@ -298,8 +298,8 @@ private struct GroupedList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
-        Label("Turn Counts off: the groups close up where their footers stood.")
+    var notes: (any View)? {
+        Text("Turn Counts off: the groups close up where their footers stood.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

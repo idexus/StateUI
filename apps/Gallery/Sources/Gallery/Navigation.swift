@@ -2,7 +2,7 @@
 //
 // This file is the gallery's whole navigation model, and there is nothing in the
 // library like it - deliberately. A `NavigationStack` takes an ARRAY the author
-// holds; a `SplitView` takes a `Bool`; a `TabbedView` takes a value of the
+// holds; a `SplitView` takes a `Bool`; a `TabView` takes a value of the
 // author's own type. What is in those, what the moves are called and what a move
 // means are this application's business, so they are written here.
 //
@@ -19,7 +19,7 @@ import StateUI
 /// render, and a menu row asks `nav.showing(.home)` to know whether it is the
 /// row the user is on - a question this application answers, because this
 /// application is what holds the section.
-enum Section: Hashable {
+enum GallerySection: Hashable {
     /// What the gallery opens with, and the ROOT of the main stack - a group is
     /// pushed on top of it rather than replacing it, because choosing a group
     /// promises a page on the stack and a back button then honours that move.
@@ -29,7 +29,7 @@ enum Section: Hashable {
     case hidden
 
     /// The tabs demonstration, which is the one section arranged as a
-    /// `TabbedView` rather than as a stack. See `MainWindow.detail`.
+    /// `TabView` rather than as a stack. See `MainPage.detail`.
     case tabs
 }
 
@@ -56,13 +56,16 @@ enum Route: Hashable {
 
     /// A thing chosen from the search box - see `SearchSample`.
     case item(String)
+
+    /// One page of the toolbar's layers, by its depth - see `ToolbarLayersSample`.
+    case layer(Int)
 }
 
 /// One tab of the tabs demonstration.
 ///
 /// The tabs are a collection of the AUTHOR's type and the selection is a binding
 /// of it - so what shows is `tab == .second`, not an index into a list somebody
-/// has to keep in step. See `MainWindow.tabs`, which is the one place in the
+/// has to keep in step. See `MainPage.tabs`, which is the one place in the
 /// gallery where the detail page is not a stack.
 enum DemoTab: Hashable {
     /// The tab holding a navigation stack of its own.
@@ -103,19 +106,18 @@ enum Sheet: Hashable {
 
 /// Where one gallery is, and the moves that change it.
 ///
-/// A CLASS OF `@State` PROPERTIES, held by the gallery's scene and offered to
-/// every window of it. Each property has its own readers: a page that reads
-/// `nav.path` is built again when the path moves and a menu row that reads
-/// `nav.section` when the section does - and `nav.$path` is the state itself,
-/// handed to the `NavigationStack` that shows it. A second gallery holds a
-/// `Navigation` of its own.
+/// A CLASS OF `@State` PROPERTIES, held by its gallery window. Each property
+/// has its own readers: a page that reads `nav.path` is built again when the
+/// path moves and a menu row that reads `nav.section` when the section does -
+/// and `nav.$path` is the state itself, handed to the `NavigationStack` that
+/// shows it. A second gallery holds a `Navigation` of its own.
 ///
 /// Every move is a plain assignment. Navigation is state this side owns, so no
 /// handler waits for a parallel routing system; the next render moves the
 /// native surface.
 final class Navigation {
     /// Which section the menu has chosen.
-    @State var section: Section = .home
+    @State var section: GallerySection = .home
 
     /// What is pushed on top of it, deepest last. A platform back gesture
     /// truncates this by itself: the host reports the depth that SURVIVED and
@@ -140,14 +142,18 @@ final class Navigation {
     /// platforms make it one: a sheet may present a sheet.
     @State var sheets: [Sheet] = []
 
+    /// Whether the window's notice stands over every page - the Window
+    /// overlay sample's switch, the window's own declaration.
+    @State var windowNotice = false
+
     /// The tabs the demonstration is showing, in order - the LIST a
-    /// `TabbedView` is built over, held as state so that the user can change
+    /// `TabView` is built over, held as state so that the user can change
     /// it while a tab is selected. See `TabsControls`.
     @State var tabs: [DemoTab] = DemoTab.opening
 
     /// Which of them is showing. The tabs write it when the user taps one,
     /// and the gallery writes it to move them from code - the same state both
-    /// ways, which is what `TabbedView.selection` is.
+    /// ways, which is what `TabView.selection` is.
     @State var tab: DemoTab = .stack
 
     /// What the stack tab has pushed - its own array, which is what makes each
@@ -165,7 +171,7 @@ final class Navigation {
     /// it again, so "go home" is one move and lands where the user expects.
     /// An app that would rather each section KEPT its stack holds one array per
     /// section instead - the tabs do exactly that, in `tabsPath`.
-    func open(_ wanted: Section) {
+    func open(_ wanted: GallerySection) {
         section = wanted
         path = []
         if menuOverlays { menuOpen = false }
@@ -207,7 +213,7 @@ final class Navigation {
     /// Home answers this only when nothing is pushed over it: with a group on
     /// the stack the user is IN that group, and the menu says so on the
     /// group's own row.
-    func showing(_ wanted: Section) -> Bool {
+    func showing(_ wanted: GallerySection) -> Bool {
         wanted == .home ? section == .home && path.isEmpty : section == wanted
     }
 
@@ -236,7 +242,7 @@ final class Navigation {
 
     /// Adds a tab at the END, numbered past whatever is already there.
     ///
-    /// The selected tab keeps its index, so `TabbedView.selection` writes the
+    /// The selected tab keeps its index, so `TabView.selection` writes the
     /// same number as last render and the differ sends NO selection at all -
     /// which is the case a tab list has to survive.
     func addTab(showing: DemoTab) {
@@ -296,7 +302,7 @@ final class Navigation {
     }
 
     /// Writes the one line `TabsControls` prints, working out what the move put
-    /// to the host the same way `TabbedView.selection` does.
+    /// to the host the same way `TabView.selection` does.
     private func noteTabMove(_ what: String, was: [DemoTab], showing: DemoTab) {
         let before = was.firstIndex(of: showing)
         let after = tabs.firstIndex(of: showing)
@@ -304,13 +310,13 @@ final class Navigation {
         let sent: String
         switch (before, after) {
         case (_, nil):
-            sent = "currentPage: not sent - the selection names no tab"
+            sent = "selectedTab: not sent - the selection names no tab"
         case (let from?, let to?) where from == to:
-            sent = "index \(from) → \(to) · currentPage: NOT SENT"
+            sent = "index \(from) → \(to) · selectedTab: NOT SENT"
         case (let from?, let to?):
-            sent = "index \(from) → \(to) · currentPage: \(to)"
+            sent = "index \(from) → \(to) · selectedTab: \(to)"
         default:
-            sent = "currentPage: \(after ?? 0)"
+            sent = "selectedTab: \(after ?? 0)"
         }
 
         tabsNote = "\(what) · \(sent)"

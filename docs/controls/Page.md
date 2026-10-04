@@ -1,8 +1,18 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Page
 
 What a container shows as a screen: a window's page, a stack's root and destinations, a tab, either half of a split view, a sheet.
+
+```swift
+struct NotePage: View {
+    var body: some View {
+        Text("Nothing written yet.")
+            .title("Note")
+            .showsBackButton(true)
+    }
+}
+```
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
@@ -12,10 +22,11 @@ Inherits: [PageElement](tiers/PageElement.md)
 | :---: | --- |
 | ✅ | Proven by every test of it that ran on that host. |
 | ☑️ | Proven, the host recording what is missing. |
+| ✓ | Proven only through the host's own entry or record, not the toolkit's; it counts as met. |
 | – | Never on that host's family, which meets the contract there. |
+| 🧩 | Left to the application, which registers its own control for it with that host. |
 | ❌ | A test of it failed. |
 | ◐ | Some of its tests proved it, another could not run or read. |
-| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
 | · | The driver cannot yet do or read what its test needs. |
 | ⏸ | Its test waits on a member the host does not realize. |
 | ⌛ | Said at another revision of its family than it stands at. |
@@ -23,37 +34,46 @@ Inherits: [PageElement](tiers/PageElement.md)
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (12) | Realization | Notes |
-| --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 7 ✅ | custom `NSView` |  |
-| UIKit | ✅ | 11 ✅ | `UIViewController` |  |
-| Android Views | ✅ | 6 ✅ | custom `ViewGroup` |  |
-| WinUI 3 | ✅ | 9 ✅ | `Page` |  |
-| GTK 4 | ✅ | 3 ✅ | custom `GtkWidget` |  |
-| Web |  |  | `<section>` | no host yet |
+<table>
+<thead><tr><th>Host</th><th>Created</th><th>Members (11)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>11 ✅</td><td><code>UIViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>8 ✅ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅</td><td><code>Page</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>7 ✅ · 1 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;section&gt;</code></td></tr>
+<tr><td colspan="3">no host yet</td></tr></tbody>
+</table>
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.swift`.
 
 ## Page's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ | ✅ | ◐ | ✅ | ◐ |  | Android Views: cannot goBack on Window - Android's driver has no path for it yet; GTK 4: waits on ModalStack |
-| `backButtonTitle` | property | `String` | adaptive | · |  |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `background` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
-| `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: waits on ModalStack |
-| `hasBackButton` | property | `Bool` | adaptive | · | ✅ | · |  |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
-| `hasNavigationBar` | property | `Bool` | adaptive | · | ✅ | · | ✅ | · |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet; GTK 4: cannot read hasNavigationBar of Page - GTK's driver has no path for it yet |
-| `navigatedFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `navigatedTo` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `navigatingFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `padding` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>onAppearing</code> (<code>appearing</code>)</td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>backButtonTitle</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">AppKit: cannot read backButtonTitle of Page - AppKit's driver has no path for it yet<br>Android Views: Android's way back in the bar is an arrow, with no words.<br>WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td></td></tr>
+<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onDisappearing</code> (<code>disappearing</code>)</td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsBackButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td></td></tr>
+<tr><td colspan="9">WinUI 3, GTK 4: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsNavigationBar</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: cannot read showsNavigationBar of Page - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onNavigatedFrom</code> (<code>navigatedFrom</code>)</td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onNavigatedTo</code> (<code>navigatedTo</code>)</td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onNavigatingFrom</code> (<code>navigatingFrom</code>)</td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+</table>
 
 ## From [PageElement](tiers/PageElement.md)
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · |  |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
-| `title` | property | `String` | native | ◐ | ✅ | · | ✅ | · |  | cannot read title of Page - AppKit's driver has no path for it yet; Android Views: cannot read title of Page - Android's driver has no path for it yet; GTK 4: cannot read title of Page - GTK's driver has no path for it yet |
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
+<tr><td colspan="9">AppKit: cannot read icon of Page - AppKit's driver has no path for it yet<br>Android Views: cannot read icon of Page - Android's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">◐</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
+<tr><td colspan="9">AppKit: cannot read title of Page - AppKit's driver has no path for it yet<br>Android Views: cannot read title of Page - Android's driver has no path for it yet</td></tr></tbody>
+</table>

@@ -1,6 +1,6 @@
 # StateUI core
 
-The core is the `StateUI` library, in `lib/StateUI/Sources`: one dynamic
+The core is the `StateUI` library, in `lib/StateUI/Core/Sources`: one dynamic
 library, the same on every platform, which every application and every host
 links, so a process holds one copy of StateUI's types. It imports no
 Foundation and no platform framework, depends on no package and exports no C
@@ -48,7 +48,7 @@ decides again; one concept has one owner, one spelling and one source:
   ([One process, one host](host-contract.md#one-process-one-host))
 
 ```text
-lib/StateUI/Sources/
+lib/StateUI/Core/Sources/
   Views/         what an application writes
     Structure/ Navigation/ Menus/   the application, its pages, their furniture
     Tiers/ Mixins/ Bindings/        tier protocols, modifiers, carried twins
@@ -118,25 +118,29 @@ describes itself as a `Node`, read afresh on every render, and the differ
 turns the nodes into the patch.
 ([What a view is](../design/views/README.md#what-a-view-is))
 
-- **`Application`**, **`Scene`**, **`Window`** and **`Page`** (`Structure/`)
-  are the application's structure, one composition getter each; `Windows`,
-  `WindowGroup`, `WindowType` and `WindowError` are a scene's windows;
-  `TitleBar` is an authored title area. `stateUIUseApp` names the application
+- **`Application`** and **`Scene`** (`Structure/`) are the application's
+  structure, each a `body` built by `ApplicationBuilder` - its
+  `Scenes` - or `SceneBuilder`;
+  `WindowGroup`, `Window`, `Windows`, `WindowType` and
+  `WindowError` are a scene's windows, and `Node.page` and `Node.window` the
+  page a view stands on and the window around it.
+  `stateUIUseApp` names the application
   to the host from the application's own registration function.
   *Application.* ([Pages and windows](../design/views/pages.md);
   [applications and sessions](../interface/application-and-sessions.md))
-- **`NavigationStack`**, **`TabbedView`**, **`SplitView`** and
-  **`ModalStack`** (`Navigation/`) are arrangements: pages that key the pages
-  they hold, whose stack, chosen tab and modal stack are state. `Menu`,
-  `MenuItem`, `MenuSeparator` and `ToolbarItem` (`Menus/`) are a menu's
+- **`NavigationStack`**, **`TabView`**, **`SplitView`** and
+  **`ModalStack`** (`Navigation/`) are arrangements: views standing where a
+  page stands, which key the pages they hold, whose stack, chosen tab and
+  modal stack are state. `Menu`,
+  `MenuItem`, `Divider` and `ToolbarItem` (`Menus/`) are a menu's
   entries and a page's actions, collected without keys. *Application.*
-  ([Arrangements are pages](../design/views/pages.md#arrangements-are-pages),
+  ([An arrangement is a view](../design/views/pages.md#an-arrangement-is-a-view),
   [menus](../design/views/builders.md#menus-collect-without-keys);
   [navigation and presentation](../interface/navigation-and-presentation.md))
 - **The tier protocols** (`Tiers/`) - `PropertyContainer`,
-  `ModifiableElement`, `VisualElement`, `View`, `Layout`, `StackBase`, `Shape`
-  and `InputView`, each with the `…Properties` half a style wears - and **the
-  mixin tiers** (`Mixins/`), `TextElement`, `FontElement`, `TintElement` and
+  `ModifiableElement`, `VisualElement`, `View`, `Layout`, `Stack`, `Shape`
+  and `TextInput`, each with the `…Properties` half a style wears - and **the
+  mixin tiers** (`Mixins/`), `TextualElement`, `FontElement`, `TintElement` and
   their kin, offer the modifiers; a protocol's modifiers write the members of
   the tier contract of its name. *Application.*
   ([Two halves](../design/views/tiers.md#two-halves),
@@ -146,21 +150,21 @@ turns the nodes into the patch.
   into a state; `setValue(_:on:mode:kind:)` carries an application's own
   property. *Application.* ([Bindings](../design/views/bindings.md);
   [described and carried values](../interface/controls-and-input.md#described-and-carried-values))
-- **`ContentView`**, **`ModifiedContent`**, **`ViewBuilder`** and
+- **`View`**, **`ModifiedContent`**, **`ViewBuilder`** and
   **`ForEach`** (`Composition/`) compose: a composed view is a placeholder
   the differ builds or carries whole, a builder records the path of every
   statement, and `ForEach` keys each view by its item. *Application.*
   ([Composition](../design/views/composition.md), [builders](../design/views/builders.md);
   [composition and identity](../interface/composition-and-identity.md))
 - **The library's views** - `Controls/` (`Button`, `Slider`, `Picker`, `Map`,
-  `WebView` and the rest), `Text/` (`Label`, `TextSpan`, `TextField`,
+  `WebView` and the rest), `Text/` (`Text`, `TextSpan`, `TextField`,
   `TextEditor`, `SearchField`), `Layouts/` (`VStack`, `HStack`, `Grid`,
   `ZStack`, `ScrollView`) and `Shapes/` (`Rectangle`, `Path`, `Canvas` and
   their kin) - are each a node written through its contract, with a
   `…Properties` protocol of its own. *Application.*
   ([Controls](../design/views/controls.md);
   [controls and input](../interface/controls-and-input.md), [layout](../interface/layout.md))
-- **The composed layouts** - `FrameReader`, `ScrollReader` and `PlacedLayout`
+- **The composed layouts** - `GeometryReader`, `ScrollReader` and `PlacedLayout`
   (`Layouts/`), `GalleryView` and `PositionIndicator` (`Collections/`) - are
   StateUI's composition over measurement, placement and scrolling, which no
   host builds again. *Application.*
@@ -193,14 +197,14 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Geometry/` | `Point`, `Rect`, `Insets`, `CornerRadius`, `ViewTransform` | [runs of numbers](../design/types/values.md#runs-of-numbers), [transforms](../design/types/transforms.md) |
 | `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeArea`, `SafeAreaEdges`, `Placement`, `PlacedRun` | [placement](../design/types/placement.md) |
 | `Colour/` | `Color`, `GradientStop`, `Brush`, `Background` | [colour and theme](../design/types/colour-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
-| `Drawing/` | `ImageSource`, `ContainerShape`, `Aspect`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
-| `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `ReturnKey`, `HeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
+| `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
+| `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
 | `Time/` | `CalendarDate`, `ClockTime`, `TimeZoneInfo`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
 | `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
-| `Environment/` | the standard providers - `Battery`, `Connectivity`, `DeviceDisplay`, `DeviceInfo`, `LocaleInfo`, `AppInfo` - their vocabularies and `Theme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
-| `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, `PageSession`, their phases, `WindowOverlays` | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
-| `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarItemPlacement`, `PinType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
+| `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `AppInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
+| `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
+| `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarItemPlacement`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
 
 ## Contracts
 
@@ -212,7 +216,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
   `Structure`, `Slots`, `Navigation`, `Menus`) are one enum per node type:
   its node type, its layer, the tiers it wears and each member with its
   value's type. An application writes and hears through them, as in
-  `setValue(LabelContract.maximumLines, 3)`, and a host registers them.
+  `setValue(TextContract.maximumLines, 3)`, and a host registers them.
   *Application* and *host.*
   ([One declaration per node type](../design/contracts/README.md#one-declaration-per-node-type),
   [structure elements](../design/contracts/structure.md))
@@ -247,19 +251,17 @@ type's extensions in its folder as `Type+Responsibility.swift`
 - **`Binding`** is a state borrowed as `$x` - no second value, no second
   owner - and a part of one through dynamic member lookup. *Application.*
   ([Bindings](../design/core/state.md#bindings))
-- **`Environment`** resolves the nearest provided object by its type; the
-  standard providers and the four sessions are there with nothing provided.
+- **`Environment`** reads what the library offers by its name
+  (`EnvironmentValues`) - the standard providers and the three sessions,
+  there with nothing provided - and the nearest provided object by its type.
   *Application.* ([The environment](../design/core/state.md#the-environment);
   [environment](../concepts/environment.md))
 - **`PersistentKey`**, **`PersistentValue`** and **`PersistentKind`** are kept
   state, hydrated by the host before the first render (`PersistentStore`,
   internal). *Application.* ([Kept state](../design/core/state.md#kept-state);
   [persistent state](../concepts/state-and-reactivity.md#persistent-state))
-- **`ElementSession`** is an object an element keeps for its life - how a
-  page holds its `PageSession`. *Internal.* An `@Observable` model held in a
-  `@State` is deprecated, since nothing arms its tracking.
-  ([Element sessions](../design/core/state.md#element-sessions),
-  [an observable model](../design/core/state.md#an-observable-model))
+- An `@Observable` model held in a `@State` is deprecated, since nothing arms
+  its tracking. ([An observable model](../design/core/state.md#an-observable-model))
 
 ### Carried values
 
@@ -336,10 +338,10 @@ type's extensions in its folder as `Type+Responsibility.swift`
 
 ### Diffing and identity
 
-- **`Node`**, **`Element`**, **`PropValue`** and **`ElementId`** are one
+- **`Node`**, **`Element`**, **`PropValue`** and **`ElementID`** are one
   element as written this render, anything that describes itself as one, a
   value in the tree and at the boundary, and an element's key. *Application*;
-  a host reads `PropValue` as `HostValue` and `ElementId` in every patch.
+  a host reads `PropValue` as `HostValue` and `ElementID` in every patch.
   ([Keys](../design/core/identity-and-diffing.md#keys),
   [how a value crosses](../design/types/values.md))
 - **`Differ`** and **`RenderedNode`** walk the tree a render built against the
@@ -427,12 +429,17 @@ type's extensions in its folder as `Type+Responsibility.swift`
 
 ### Scenes
 
-- **`Scenes`**, **`SceneRecord`** and **`SceneElement`** keep the open scenes
-  as state the root reads, numbered by the core, each with its windows and
-  their sessions. *Internal*; an application opens a scene through its
-  `ApplicationSession`, and a host connects one through `HostBoundary`.
+- **`Scenes`** is what an application's body declares: its scenes, each with
+  its windows. *Application*, as the body's type; read by the core.
+  ([A scene stands once](../design/core/scenes.md#a-scene-stands-once))
+- **`OpenScenes`**, **`SceneRecord`** and **`SceneElement`** keep the scenes
+  standing as state the root reads, numbered by the core, each at most once
+  and with its windows and their sessions. *Internal*; an application opens a
+  window through its `ApplicationSession`, and a host hands one over through
+  `HostBoundary.connectWindow`.
   ([The scene tree](../design/core/scenes.md#the-scene-tree),
-  [connecting and ending](../design/core/scenes.md#connecting-and-ending))
+  [opening windows](../design/core/scenes.md#opening-windows),
+  [what the platform hands over](../design/core/scenes.md#what-the-platform-hands-over))
 - **`SceneKey`** names a value a scene keeps for the platform to restore
   (`@State(sceneKey:)`). *Application.*
   ([Scene keys](../design/core/scenes.md#scene-keys);
@@ -502,15 +509,17 @@ values ([core link](../design/host/runtime.md#core-link)). The
 - **The UI thread.** `runJobs()` drains `MainActor`'s queued jobs on the
   calling thread, and `waitForWork()` parks the doorbell until work arrives.
   ([The doorbell](../design/core/concurrency.md#the-doorbell))
-- **What the host knows.** `setTheme`, `setDeviceInfo`, `setDisplayInfo`,
+- **What the host knows.** `setColorScheme`, `setDeviceInfo`, `setDisplayInfo`,
   `setApplicationInfo`, `setBatteryInfo`, `setConnectivityInfo`,
   `setLocaleInfo` and `setApplicationPhase` each write one standard provider,
   only where a field differs; `languageDirection` reads back the way the
   user's language is written.
   ([How the host writes it](../design/types/environment.md#how-the-host-writes-it))
-- **Scenes and kept values.** `connectScene(restoring:)` hands the core a
-  scene the platform made, with what it kept; `persistentKeys` and
-  `restorePersistent(_:)` hydrate kept state before the first render.
+- **Windows and kept values.** `connectWindow(kind:value:restoring:)` hands
+  the core a window the platform made - its first, a new one, or one it kept,
+  with its scene's kept values - and answers the scene it opened in;
+  `persistentKeys` and `restorePersistent(_:)` hydrate kept state before the
+  first render.
   ([Kept state](../design/core/state.md#kept-state))
 - **Realization.** `setRealization(_:)` says what the host realizes, which
   `realizes(_:)` answers; the registrations stand in
@@ -534,7 +543,7 @@ force ([values a host is handed](host-contract.md#values-a-host-is-handed)).
 
 ## Testing
 
-The core's suite, `lib/StateUI/Tests`, is `swift test` at the repository
+The core's suite, `lib/StateUI/Core/Tests`, is `swift test` at the repository
 root. It needs no toolkit, runs on every platform the core builds on, and
 asserts on the typed patch a host is handed, by the rule each case keeps,
 never against a stored copy
@@ -561,16 +570,17 @@ never against a stored copy
   ([what a host never does](host-layer.md#what-a-host-never-does));
   `ToolchainTests`, `ReleaseTests`, `AppsTests` and `VsCodeTests` keep one
   Swift release, one version, the applications and the editor.
-- **The host layer's suite**, `swift test --package-path lib/StateUI.Host`,
+- **The host layer's suite**, `swift test --package-path lib/StateUI/StateUI.Host`,
   proves its rules with no toolkit, the core's `HostMotionLaw` among them
   (`MotionLawTests`). ([Testing](host-layer.md#testing))
-- **The conformance suite**, `lib/StateUI.Conformance`, proves the contract's
+- **The conformance suite**, `lib/StateUI/StateUI.Conformance`, proves the contract's
   effects through every host's driver; its own tests prove the runner and that
   every member has its case (`ContractCompletenessTests`).
   ([Conformance](../design/host/conformance.md))
 - **The Gallery's suite** compiles every `swift` block of the handbook
-  (`DocumentationExamplesTests`) and refuses each removed spelling at compile
-  time (`ContractRoadsTests`).
+  (`DocumentationExamplesTests`) and proves at compile time the roads the public
+  API closes - no member by token, no view where a run stands, a scene made
+  of windows and an application of scenes (`ContractRoadsTests`).
 
 ## Changing the core
 
@@ -595,8 +605,7 @@ A change to what StateUI promises is one vertical change, in one order:
 7. Give it a Gallery example and a handbook section, and render the
    dictionary again after each host's run.
 
-A removal takes the same road, and a guard refuses the removed spelling. The
-core never gains Foundation, a platform framework, a thread of its own, or
-output whose order a hash decides
+A removal takes the same road. The core never gains Foundation, a platform
+framework, a thread of its own, or output whose order a hash decides
 ([changing the public contract](../development.md#changing-the-public-contract),
 [contributing](../../CONTRIBUTING.md)).

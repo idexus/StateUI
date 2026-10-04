@@ -15,7 +15,7 @@ struct StepperSample: SampleContent, ExampleContent {
             // The count is read here, so every step builds this closure.
             DebugInfoLabel()
 
-            Label("Servings: \\(Int(servings))")
+            Text("Servings: \\(Int(servings))")
 
             Stepper($servings)
                 .minimum(1)
@@ -32,11 +32,11 @@ struct StepperSample: SampleContent, ExampleContent {
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
-            Label("Servings: \(Int(servings))")
+            Text("Servings: \(Int(servings))")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)
 
@@ -62,15 +62,15 @@ struct StepperSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("A `Stepper` is a `Slider` for a value with few enough steps to name. This "
+            Text("A `Stepper` is a `Slider` for a value with few enough steps to name. This "
                 + "one goes from 1 to 12 and never lands between two servings - which is "
                 + "what a stepper is for.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The second holds the same value, stepped by five: `step` is how far "
+            Text("The second holds the same value, stepped by five: `step` is how far "
                 + "one tap goes, and `minimum` and `maximum` are where the buttons stop.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

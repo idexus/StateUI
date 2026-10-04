@@ -43,7 +43,7 @@ final class RatingBarWidget: GTKControl {
         }
         g_signal_connect_data(
             UnsafeMutableRawPointer(click), "released", unsafeBitCast(released, to: GCallback.self),
-            Unmanaged.passUnretained(self).toOpaque(), nil, GConnectFlags(0))
+            Unmanaged.passUnretained(self).toOpaque(), nil, GConnectFlags(rawValue: 0))
         gtk_widget_add_controller(widget, click)
         repaint()
     }

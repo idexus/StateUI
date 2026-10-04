@@ -13,41 +13,43 @@ Swift protocols behind them refine each other.
   |-- VisualElement                      size, visibility, transform, input, focus, accessibility
   |   |-- View                           place in a layout, margin, gestures, drag and drop, frame
   |   |   |-- Layout  (+ PaddingElement, BorderElement) safe area, clipping, own box, input through empty space
-  |   |   |   '-- StackBase              spacing between children
-  |   |   |-- InputView                  text limits, caret, keyboard, placeholder
+  |   |   |   '-- Stack              spacing between children
+  |   |   |-- TextInput                  text limits, caret, keyboard, placeholder
   |   |   '-- Shape                      fill, stroke, a transform of its own drawing
   |   |-- PaddingElement                 space inside an element
   |   '-- TextAlignmentElement           where text sits in its element
   |-- TextStyleElement                   text colour, space between letters
-  |   '-- TextElement                    the words and their case
+  |   '-- TextualElement                    the words and their case
   |-- FontElement                        family, size, weight and slant, text-size scaling
   |-- LineHeightElement                  space between lines
   |-- DecorableTextElement               underline and strikethrough
   |-- BorderElement                      a control's own outline and corner radius
   |-- ImageElement                       how a picture fills its room
   |-- TintElement                        a control's one accent colour
-  |-- BarElement                         a page arrangement's bar colour
   '-- MenuItemElement                    an item the user chooses: caption, icon, action
 
   PageElement                            a title and an icon; wears nothing
+  BarElement                             an arrangement's bar: colours, title area;
+                                         wears nothing
 ```
 
 ## Who wears what
 
 ```text
   View               ActivityIndicator, Button, Canvas, CheckBox, ColorBox,
-                     DatePicker, Image, Label, Map, Picker, PositionIndicator,
-                     ProgressBar, RadioButton, ScrollView, Slider, Stepper,
-                     Switch, TimePicker, TitleBar, WebView
+                     DatePicker, Image, Text, Map, Picker, ProgressBar,
+                     RadioButton, ScrollView, Slider, Stepper, Switch,
+                     TimePicker, WebView, ItemsView
   Layout             Grid, ZStack
-  StackBase          HStack, VStack
-  InputView          SearchField, TextEditor, TextField
+  Stack              HStack, VStack
+  TextInput          SearchField, TextEditor, TextField
   Shape              Ellipse, Line, Path, Polygon, Polyline, Rectangle
   MenuItemElement    MenuItem, ToolbarItem
-  PageElement        Page, NavigationStack, TabbedView, SplitView
-  text tiers only    Span
-  no tier            Application, Scene, Window, Menu, MenuSeparator, ContextMenu,
-                     ModalStack, Overlay, and the slots and collections
+  PageElement        Page, NavigationStack, TabView, SplitView
+  BarElement         NavigationStack, TabView, SplitView, ModalStack
+  text tiers only    TextSpan
+  no tier            Application, Scene, Window, Menu, Divider, ContextMenu,
+                     Overlay, Marker, and the slots and collections
 ```
 
 An element adds the smaller tiers it needs beside its main one: a `Button`
@@ -68,7 +70,7 @@ write each other's key.
 
 ## Wearing without a view
 
-A tier is worn by whatever carries its values, not only by views. A `Span`,
+A tier is worn by whatever carries its values, not only by views. A `TextSpan`,
 one run of text inside a label, wears the text tiers and no view. A `Style`
 is a property container, so it can carry any member a control can. A page
 and a page arrangement say their title and icon under the same keys, so both

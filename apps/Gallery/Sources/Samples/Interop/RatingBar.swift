@@ -44,7 +44,7 @@ extension RatingBarProperties {
 
 /// Five stars drawn by a control the application registered with its host,
 /// described here like a built-in one.
-public struct RatingBar: View, RatingBarProperties {
+public struct RatingBar: ElementView, RatingBarProperties {
     public var node = Node(contract: RatingBarContract.self)
 
     /// An empty bar: the value set with `.rating(_:)`, a tap heard with

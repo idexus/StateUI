@@ -7,25 +7,22 @@ import StateUI
 /// an enum, so a row for it is optional in the plainest sense of the word -
 /// written inside an `if`, while the page behind it stays reachable from
 /// anywhere that can name the case.
-struct HiddenPage: ContentView {
-    /// The gallery this page is in - the scene its inspector button opens.
-    @Environment var scene: SceneSession
-
-    /// The page itself - what it is called, and its buttons.
-    @Environment private var page: PageSession
+struct HiddenPage: View {
+    /// The gallery this page is in - its scene.
+    @Environment(\.scene) var scene
 
     let nav: Navigation
 
-    var content: any View {
+    var body: some View {
         ScrollView {
             VStack {
                 SectionTitle("A row that is not there")
 
-                Label("Not in the list")
+                Text("Not in the list")
                     .fontSize(26)
                     .fontAttributes(.bold)
 
-                Label("The menu lists this page only when the Split view sample's "
+                Text("The menu lists this page only when the Split view sample's "
                     + "switch says so.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
@@ -34,13 +31,13 @@ struct HiddenPage: ContentView {
                     .background(Palette.accent)
                     .textColor(.white)
                     .shape(.roundedRectangle(8))
-                    .padding(20, 10)
+                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }
             }
             .spacing(14)
             .padding(24)
         }
-        .onCreated { page.gallery("Not in the list", scene: scene, nav: nav) }
+        .galleryPage("Not in the list")
     }
 }

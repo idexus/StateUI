@@ -11,7 +11,7 @@ which, member by member - and shows any other control's name in red where the co
 belongs, so a gap is visible rather than silent.
 
 ```text
-lib/StateUI.Android/
+lib/StateUI/StateUI.Android/
   Sources/StateUIAndroid/    the host: its runtime, elements, registrations, layout and JNI
   Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the log
   Java/stateui/android/      the Java layer: the activity, the layout view group, the frame callback, the listener
@@ -19,8 +19,11 @@ lib/StateUI.Android/
 .scripts/Android/
   build-swift.sh             an application's Swift for Android, for the ABIs asked
   run-app.sh                 builds an application's Android head, installs and starts it
+  deploy.sh                  builds it for release and lays its APK in a folder of its own
   test-android.sh            builds and runs the host's suite on a device
   devices.sh                 the devices attached, the emulators, and booting one
+  tools.sh                   what they share: the SDK, adb, JDK 21, Gradle, a head's APK, the device
+  draw-app-icon.swift        a head's launcher icon, drawn from the application's Resources/AppIcon
 apps/<App>/Platforms/Android/
   Swift/<App>Android.swift   the application's Android head
   Java/                      the application's own views, where it has any
@@ -67,12 +70,13 @@ needs no Java of its own. Its `build.gradle.kts` depends on AndroidX's
 keeps their Java beside the head, in `Java/`, and may extend the activity,
 declaring its own class in the manifest instead.
 
-`STATEUI_ANDROID=1` is what makes a build an Android Views one: the
-application's manifest reads it, declares the `Platforms/Android/Swift` target,
-the library it makes and the `StateUIAndroid` dependency, and defines the
-`ANDROID` compilation condition for every module of the application. Swift
-written for this host alone stands under `#if ANDROID`. `build-swift.sh` sets
-nothing else: the library itself is built as every host builds it.
+`STATEUI_HOST=android` is what makes a build an Android Views one: the
+application's manifest reads it, declares its `Platforms/Android/Swift` head
+and the library it makes, and defines the `ANDROID` compilation condition for
+every module of the application; `lib/StateUI.Head` brings the
+`StateUIAndroid` host to the head. Swift written for this host alone stands
+under `#if ANDROID`. `build-swift.sh` sets nothing else: the library itself is
+built as every host builds it.
 
 A new application made in `apps/` - **StateUI: New Application in apps/**, or
 `.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and
@@ -126,13 +130,48 @@ StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLight
 
 The host places, sizes and shows the view as it does its own - margins,
 alignment, opacity, gestures, frame reports - measuring it by the view's own
-`onMeasure`. A registered control is a leaf. The view tells its Swift half
+`onMeasure`. A registered control is a leaf: it draws the children of a
+contract it names itself, as the next section says. The view tells its Swift half
 what the user did through a native method of the application's own, found by
 its JNI name (`@_cdecl("Java_..._lampTapped")`), handed the number the
 control made it with. A control that draws with the GPU is a view like any
 other: the Gallery's `Cube3D` is a `TextureView` whose surface Swift draws
 into with OpenGL ES 3.0 over EGL, following the display's frames only while
 it spins and stands in a window - the same declaration Metal draws on AppKit.
+
+### Children a control draws
+
+A control may draw the children of one contract itself - a map draws its markers.
+`children` names their contract and what of each the control realizes, and hands
+it every such child, in the tree's order, whenever the element's children
+change: one added, moved, taken away, or given another value. A child is a
+`AndroidChild` - its values read as the types its contract declares, and its own
+`reports` to raise its events on it - and stays the same child for as long as
+it lives, so the control keeps what it drew for one by it. Such a child has no
+view of its own.
+
+```swift quote
+StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+    map.property(MapContract.region) { control, region in … }
+    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, markers in
+        control.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
+        // the user taps one: marker.reports.raise(MarkerContract.selected)
+    }
+}
+```
+
+A library element a host does not realize - a `Map` where the platform has no
+map of its own - is registered the same way, with the provider and the key it
+needs.
+
+This host leaves `Map` and its `Marker` to the application: the platform has
+no map of its own, and a map needs a provider and its key, so the host makes
+neither (`byApplication` in `AndroidRealization.swift`), and the
+[platform contract](../platform-contract.md#reading-the-matrix) marks them 🧩.
+What the user sees there is the application's own registration. Every other
+element of the library is the host's own, its `WebView` included: Android's
+web view, in the Java layer's `StateUIWebView`, which makes it again, blank,
+should its web process die. The head registers nothing for it.
 
 ### An act
 
@@ -180,9 +219,9 @@ StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
 
 `run-app.sh` builds the application's Swift for the device's ABI alone, then
 the APK, installs it, starts it and follows its log. Everything a build writes
-stays in the application's `.build-android/`. The APK carries the libraries
+stays in the application's `.build/android/`. The APK carries the libraries
 the head needs and nothing else - the Swift runtime's own among them -
-stripped, with the unstripped copies kept in `.build-android/symbols/` for
+stripped, with the unstripped copies kept in `.build/android/symbols/` for
 `ndk-stack` and a debugger. Android draws no SVG, so the application's
 `Resources/Images` are drawn for it as the APK is built: an SVG three times
 over, as a PNG, which `Image("mark.png")` finds as it finds the SVG on every
@@ -204,17 +243,17 @@ It is the application running that is attached to, so what runs before - the
 first render - runs without the debugger. Only a debug build can be debugged.
 
 `run-app.sh --debugger` readies it: the NDK's `lldb-server` runs as the
-application, in its own sandbox, and `.build-android/debugger.json` says where
+application, in its own sandbox, and `.build/android/debugger.json` says where
 it listens and which process to attach to. From a terminal, with the toolchain's
 `lldb`:
 
 ```bash
 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554 --no-logcat --debugger
-cat apps/Gallery/.build-android/debugger.json
+cat apps/Gallery/.build/android/debugger.json
 lldb -o "settings set plugin.jit-loader.gdb.enable off" \
      -o "platform select remote-android" \
      -o "platform connect unix-abstract-connect://emulator-5554/com.stateui.gallery/stateui-debugger.sock" \
-     -o "settings append target.exec-search-paths $PWD/apps/Gallery/.build-android/symbols/arm64-v8a" \
+     -o "settings append target.exec-search-paths $PWD/apps/Gallery/.build/android/symbols/arm64-v8a" \
      -o "process attach --pid <process from debugger.json>" \
      -o "process handle SIGSEGV SIGBUS --pass true --stop false --notify false"
 ```
@@ -229,6 +268,21 @@ application every time - over USB, opening a page took seconds. End a session by
 detaching - stopping the debugger itself leaves its breakpoints in the
 application, which the next of them then ends.
 
+## Deploying
+
+```bash
+.scripts/Android/deploy.sh apps/Gallery artifacts/Gallery/Android emulator-5554
+```
+
+`deploy.sh` builds an application's head for release, for the ABI of the
+device named - `ANDROID_SERIAL`, or the one device attached, where none is
+named - and lays its APK, `<application>.apk`, in the folder named, made
+anew. The APK is signed as the head's `build.gradle.kts` says: HelloWorld's
+and the Gallery's sign a release with the debug key. **StateUI: Deploy** in
+the editor runs it for the application and the device chosen, and lays the
+APK in `artifacts/<application>/Android` of the folder that holds the
+application's `apps/` - a checkout's, or a project group's.
+
 ## Testing
 
 A view exists only in an application's process, so the host's suite is a
@@ -241,7 +295,40 @@ instrumentation:
 
 The suite is XCTest. With no discovery on Android, each test case lists its
 tests in `allTests` and the runner lists the cases; `test-android.sh` refuses
-to run while a test or a case is listed nowhere.
+to run while a test or a case is listed nowhere. Each test and each
+conformance case says as it ends where the run stands, followed from the
+device's log, and the run ends with *Executed N tests, with M failures*.
+
+The suite runs the conformance families too, one test a family -
+`AndroidConformanceTests.testButton`. A whole run holds what it says to
+`lib/StateUI/exports/`: what the host declares to `android.txt`, and the
+verdicts it takes off the device to `marks/android/<Family>.txt`, each under
+the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, which the script writes over
+them, as the device reads no repository. A run that says otherwise fails;
+`STATEUI_UPDATE_EXPORTS=1` writes them instead. `STATEUI_FILTER` runs the
+tests whose `Case.test` name holds one of its comma-separated names, and then
+holds nothing to `lib/StateUI/exports/`: a part of the suite proves only part
+of what the host declares. `STATEUI_STALE_ONLY=1` runs only the families
+whose verdict files stand at another revision, or at none - the script
+chooses them - and holds or writes only theirs.
+
+```bash
+STATEUI_FILTER=testPicker,AndroidColorBoxViewTests .scripts/Android/test-android.sh emulator-5554
+STATEUI_UPDATE_EXPORTS=1 .scripts/Android/test-android.sh emulator-5554
+STATEUI_UPDATE_EXPORTS=1 STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh emulator-5554
+STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+```
+
+With the verdicts written, the last line - at the repository's root - renders
+the [platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) from them. In the editor,
+with Android and a device chosen, **StateUI: Conformance - Rebuild all** runs
+the whole suite on the device with `STATEUI_UPDATE_EXPORTS=1`, then renders
+the documents. **StateUI: Conformance - Rebuild changed** runs nothing for
+Android: the editor answers that the device reads no repository, so its marks
+are made again whole, by Rebuild all. From a terminal, `STATEUI_STALE_ONLY=1`
+runs the stale families alone, as above.
 
 The test APK can be built on one machine and run on another:
 `test-android.sh --build x86_64` builds it for that ABI with no device and

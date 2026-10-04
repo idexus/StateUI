@@ -1,0 +1,4 @@
+module CWebKitGTK [system] {
+    header "CWebKitGTK.h"
+    export *
+}

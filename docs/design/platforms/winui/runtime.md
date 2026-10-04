@@ -87,8 +87,7 @@ performance counter's, in milliseconds.
 
 Each window element the tree holds is shown in a WinUI `Window` of its own,
 kept by a window controller in the tree's order; a window the tree no longer
-holds is closed. The first is the scene's main window, where the application's
-questions stand and whose screen the environment reads. A window element's
+holds is closed. The first is the one whose screen the environment reads. A window element's
 arrangement of pages is its window's content, under the window's chrome, which
 names it after the visible page, else after the element's title
 ([the window's chrome](pages.md#the-windows-chrome)); the window is activated
@@ -126,11 +125,9 @@ also told it lost its activation, in either order; a change of its size or
 presenter tells it only where it is minimized. A window its scene hides is
 `AppWindow.Hide`, and shown again without being activated; one hidden before
 it was ever shown is activated as it is first shown. A floating window is
-`IsAlwaysOnTop` while the application is in front. A window of a kind of its
-own is owned by its scene's main window (`GWLP_HWNDPARENT`), as a tool window
-is on Windows: above it, hidden while it is minimized, and out of the
-taskbar and the switcher (`IsShownInSwitchers`). A window hidden - with its
-owner, or by its scene - tells its state as it hides and shows again
+`IsAlwaysOnTop` while the application is in front. Every window is one of
+its own, in the taskbar and the switcher. A window its scene hides tells its
+state as it hides and shows again
 (`AppWindow.Changed`), off the screen while it is hidden. A window is told it was made before it is
 first shown: WinUI tells it that it was activated inside `Activate`, before
 the call returns.
@@ -164,7 +161,12 @@ was saying. The focus
 is put on the view the act names, or the first control in it that takes it;
 WinUI has no way to leave the focus nowhere, so taking it off lends it to the
 window's content for a moment, as no control, and the on-screen keyboard goes
-with a field that loses it.
+with a field that loses it. A page asks for the focus as it appears, before
+WinUI's next layout: a view a control presents through its template - a split
+view's detail, just shown - stands in no window until that layout and refuses
+the focus, which then falls to the window's first stop, its title bar, as the
+field that held it leaves. So the window lays out what it was given before the
+focus moves.
 
 ## Questions for the user
 
@@ -181,6 +183,11 @@ button a choice, the dangerous one first, and the pressed caption is the
 answer - the cancelling one too; a dialog dismissed any other way, Escape
 among them, answers that nothing was chosen. A prompt's field takes the
 placeholder, the most characters and the keyboard its purpose asks for.
+
+A dialog needs its window's `XamlRoot`, which a window opened a moment ago -
+a page asking as it is made - does not have until WinUI has loaded it. The
+question is made at once and shown on the content's `Loaded`; answering it
+"not chosen" there would lose it without the user ever seeing it.
 
 ## Kept values
 
@@ -203,9 +210,27 @@ package: the runtime of WinUI, Foundation and InteractiveExperiences, a
 manifest registering every class each component declares - the registrations
 the SDK's own build writes - and `resources.pri`, where WinUI's controls find
 their resources. `.scripts/WinUI/tools.ps1` lays them out after each build,
-the test runner's included, and owns the versions.
+the test runner's included, and owns the versions. What a backend's engine
+needs beside an application the backend lays itself, and only beside one
+linking it: each `lib/Backends/<Element>.WinUI/SelfContained.ps1` the script
+runs looks for its own library there - the web view's lays WebView2's
+component and loader.
 
 The manifest stands beside the executable as `<name>.exe.manifest`, which
 Windows reads for an executable carrying none of its own. It is not written
 into the executable: the build records what it linked, and the next build
 links an executable changed since again, even when nothing else has.
+
+## Another architecture
+
+A head is built for the toolchain's own architecture, whose Swift runtime
+stands on the search path. An ARM64 machine builds an x64 head too, by
+SwiftPM's `--arch x86_64` (its `--triple` builds the toolchain's own whatever
+it names), in the same `.build\winui`, each architecture's head in a folder of
+its own. Such a head carries the Swift runtime of its architecture beside it,
+from the merge module the Swift installer keeps in `Redistributables` - its
+`File` table and its cabinet read through `msi.dll`, unpacked by
+`expand.exe` - and the Windows App SDK and every backend's engine of its
+architecture. A deployed head carries the Swift runtime and Visual Studio's
+app-local C++ runtime of its architecture whatever it is, so its folder runs
+where neither is installed.

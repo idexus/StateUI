@@ -16,10 +16,10 @@ enum Route: Hashable {
     case settings
 }
 
-struct MainWindow: Window {
+struct MainPage: View {
     @State private var path: [Route] = []
 
-    var page: any Page {
+    var body: some View {
         NavigationStack($path) {
             HomePage(path: $path)
         } destination: { route in
@@ -42,6 +42,13 @@ path = []               // return to root
 
 The root always exists. Each destination is identified by its route and stack
 depth, so the same route may appear more than once without sharing page state.
+A page position - what a window shows, a stack's root and destinations, a tab,
+either half of a split view, a sheet - shows one page: an `if`/`else` or a
+`switch` there chooses among pages, each a page of its own, so swapping
+branches makes the page anew even where both are the same view. An `if` with
+no `else` does not compile there: a position always shows a page. An
+arrangement stands there as the page itself, written there or as the `body` of
+the view written there, and nowhere else.
 A committed native back action truncates the bound path. A cancelled
 interactive gesture changes neither the path nor the tree.
 
@@ -50,7 +57,7 @@ only its value can read where it is, but cannot navigate on its owner's behalf.
 
 ## Tabs
 
-`TabbedView` is built from a distinct collection of application values. A
+`TabView` is built from a distinct collection of application values. A
 selection binding says which one is showing:
 
 ```swift quote
@@ -60,7 +67,7 @@ enum Tab: Hashable, CaseIterable {
 
 @State private var selected = Tab.notes
 
-TabbedView(Tab.allCases) { tab in
+TabView(Tab.allCases) { tab in
     switch tab {
     case .notes: NotesPage()
     case .search: SearchPage()
@@ -88,7 +95,7 @@ saying whether the sidebar shows:
 @State private var menuOpen = false
 
 SplitView($menuOpen, sidebar: {
-    MenuPage(isSidebarVisible: $menuOpen)
+    MenuPage(showsSidebar: $menuOpen)
 }, detail: {
     MainPage()
 })
@@ -113,23 +120,47 @@ it; on an iPad or a wide tablet it stands beside the detail.
 
 ## Modal pages
 
-Modal presentation belongs to the window. `ModalStack` maps an application
-array to pages and is installed in `WindowSession`:
+Modal presentation is an arrangement of an application array, `ModalStack`,
+standing as a window's page: the page it holds first, and a page presented
+over it for each element of the array:
 
-```swift quote
+```swift
 enum Sheet: Hashable {
     case settings
-    case rename
+    case about
 }
 
-@State private var sheets: [Sheet] = []
-@Environment private var window: WindowSession
+struct Home: View {
+    @Binding var sheets: [Sheet]
 
-.onCreated {
-    window.modalStack = ModalStack($sheets) { sheet in
-        switch sheet {
-        case .settings: SettingsPage(sheets: $sheets)
-        case .rename: RenamePage(sheets: $sheets)
+    var body: some View {
+        Button("Settings").onClicked { sheets.append(.settings) }
+    }
+}
+
+struct Presented: View {
+    let title: String
+    @Binding var sheets: [Sheet]
+
+    var body: some View {
+        VStack {
+            Text(title)
+            Button("Close").onClicked { sheets.removeLast() }
+        }
+    }
+}
+
+struct MainPage: View {
+    @State private var sheets: [Sheet] = []
+
+    var body: some View {
+        ModalStack($sheets) {
+            Home(sheets: $sheets)
+        } destination: { sheet in
+            switch sheet {
+            case .settings: Presented(title: "Settings", sheets: $sheets)
+            case .about: Presented(title: "About", sheets: $sheets)
+            }
         }
     }
 }
@@ -138,30 +169,23 @@ enum Sheet: Hashable {
 Appending presents, removing dismisses, and the last element is on top. A
 native dismissal truncates the bound array to the number of pages still
 presented. A modal page therefore carries its own dismissal route by receiving
-the binding.
-
-The stack belongs to the window rather than to whichever page happened to
-present it. Replacing or closing that window tears down every modal it owns.
+the binding. The stack is the window's page, so its sheets stand over
+everything the window shows; closing the window tears down every page it
+presents.
 
 ## Over every page
 
-A window lays views of the application's over its page and every page
-presented over it - a notice that stays while the pages change under it. They
-are the window's too, `window.overlays`, each under a key the application
-declares:
+A view declares what it lays over the window with `.overlays { }`, built
+with the state it follows - a notice comes and goes with its state:
 
 ```swift
-extension OverlayKey {
-    static let offline = OverlayKey("offline")
-}
+struct OfflineNotice: View {
+    @Binding var shown: Bool
 
-struct OfflineNotice: ContentView {
-    @Environment private var window: WindowSession
-
-    var content: any View {
+    var body: some View {
         HStack {
-            Label("Working offline")
-            Button("Dismiss").onClicked { window.overlays[.offline] = nil }
+            Text("Working offline")
+            Button("Dismiss").onClicked { shown = false }
         }
         .spacing(12)
         .horizontalAlignment(.center)
@@ -169,30 +193,34 @@ struct OfflineNotice: ContentView {
     }
 }
 
-struct LibraryPage: ContentView {
-    @Environment private var window: WindowSession
+struct LibraryPage: View {
     @State private var offline = false
 
-    var content: any View {
+    var body: some View {
         Switch($offline)
-            .onChanged(offline) { window.overlays[.offline] = offline ? OfflineNotice() : nil }
+            .overlays {
+                if offline {
+                    OfflineNotice(shown: $offline)
+                }
+            }
     }
 }
 ```
 
-The layers stand in one ZStack, each written later over the ones before, and
-`.zIndex` on a layer's view reorders them. A key is the layer's identity: a
-view written again under it replaces the one there in its place, and the
-other layers keep their controls as it comes and goes. Each view has the
-page's whole area and stands where its alignments put it. A click beside it
-goes on to what is under it; a layout of its own that fills the area passes a
-click on with `.letsInputThrough(true)`. `nil` takes a layer away. A docked
-inspector is one of these layers, over every other.
+Declared on a window's page, the overlays stand over every page the window
+shows and every sheet over it, and live as long as the window; declared on a
+page, they stand while that page is shown and go with it - a page pushed over
+it takes them away, and going back brings them again. Those declared further
+in stand over those declared around them, and `.zIndex` reorders the views of
+one declaration. Each view has the window's whole area and stands where its
+alignments put it. A click beside it goes on to what is under it. A docked
+inspector stands over every overlay.
 
 ## Page titles and navigation furniture
 
-A view shown as a page changes its `PageSession`. An arrangement is a page
-already, with no session of its own, so it is told what it is by modifier:
+A view shown as a page says what its page is by modifier - `.title("Notes")`
+([What a view says of its page](application-and-sessions.md#what-a-view-says-of-its-page)).
+An arrangement is a page already, and takes its title and icon the same way:
 
 ```swift quote
 NavigationStack($settingsPath) {
@@ -206,56 +234,111 @@ NavigationStack($settingsPath) {
 
 The container's title and icon describe it when it is an item in another
 container, such as a tab. The title shown for the top page of a navigation
-stack comes from that page's own `PageSession`.
+stack is the one its own view says.
 
-A view such as `SearchField` can occupy the current page's navigation title
-slot:
+A view such as `SearchField` can stand in the page's title slot, declared where
+the state it follows lives:
 
 ```swift quote
-@Environment private var page: PageSession
 @State private var query = ""
 
-.onCreated {
-    page.titleView = SearchField($query)
-        .placeholder("Search")
-}
+VStack { … }
+    .titleView {
+        SearchField($query)
+            .placeholder("Search")
+    }
 ```
+
+Declared on a stack or a window's page, a title view stands on every page shown
+there that declares none of its own; the innermost declaration wins.
 
 ## Toolbars
 
-Toolbar items are page furniture, not views in page layout:
+A page's actions are declared where the state they follow lives, with
+`.toolbar { }` on the page's view:
 
 ```swift quote
-@Environment private var page: PageSession
-
-page.toolbarItems = [
-    ToolbarItem("Save")
-        .id("save")
-        .priority(0)
-        .onClicked { try await save() },
-    ToolbarItem("Delete")
-        .id("delete")
-        .placement(.overflow)
-        .isDestructive(true)
-        .onClicked { try await delete() },
-]
+VStack { … }
+    .toolbar {
+        ToolbarItem("Save")
+            .id("save")
+            .isEnabled(hasChanges)
+            .onClicked { try await save() }
+        ToolbarItem("Delete")
+            .id("delete")
+            .placement(.overflow)
+            .isDestructive(true)
+            .onClicked { try await delete() }
+    }
 ```
 
-`placement` distinguishes primary actions from actions behind native overflow.
-Within either group, lower `priority` appears first and equal values retain
-source order. The host chooses the native placement appropriate to the window
-and available space. Give stable identities to items whose list can change.
+The group is built with the body declaring it, so an item follows the state it
+reads - Save enables itself as `hasChanges` moves, with nothing written by hand.
+It stands on the bar while its page is shown, and when the page goes, its
+actions go with it.
+
+One declaration is one group: its actions share one background where the
+platform groups a bar's actions, as macOS and iOS draw them on one piece of
+glass. A second group is a second declaration. A group stands at the bar's
+trailing edge unless `.toolbar(.leading)` puts it at the other.
+
+A window's page and an arrangement declare actions for every page shown in
+them. The actions declared further in join them nearer the title, so the
+outer ones keep their place at the edge from page to page:
+
+```swift quote
+NavigationStack($path) {
+    Library(path: $path)
+} destination: { book in
+    BookPage(book: book)
+}
+.toolbar(id: "library") {
+    ToolbarItem("Account").onClicked { showAccount() }
+}
+```
+
+`order` moves a group earlier or later among the others at its edge, lower
+first. `.toolbar(id:)` adds a page's actions to the group of that id instead of
+starting one of its own, and an item with the `.id` of one declared further out
+stands in that item's place while its page is shown. `placement` keeps an
+action on the bar or behind the native overflow. Give stable identities to
+items whose list can change.
+
+An item given an `icon` shows the picture alone on the bar; its words stay its
+name to assistive technology and its tip. `showsText(true)` asks for the words
+beside the picture where the platform's bar shows both - WinUI and GTK for each
+item, Android where the bar has room. A Mac leaves that choice to the user,
+through the toolbar's own display mode, and an iPhone's bar shows a picture or
+words, so there the item keeps its picture alone. An item with no picture
+always shows its words.
+
+```swift quote
+VStack { … }
+    .toolbar {
+        ToolbarItem("Add")
+            .icon("add.png")
+            .showsText(true)
+            .onClicked { add() }
+    }
+```
 
 On AppKit a page's furniture is its window's toolbar: the top page's title
-names the window, the way back is the system's back item, primary actions are
-toolbar items, and secondary ones sit in the toolbar's overflow menu. A tabbed
+names the window, the way back is the system's back item, the actions are
+toolbar items - a space between two groups, a leading group before the
+flexible space - and those placed in the overflow sit in the toolbar's
+overflow menu. Android's bar has no leading edge beside its navigation button,
+so a leading group stands first among its actions. A tabbed
 view on the window's page path shows its tabs in a row beneath the toolbar,
 beside any sidebar, the tabs sharing its width with each picture beside its
 title; one in a sidebar, a sheet or inside another tab is a tab view with its
 tabs on the top edge of its content.
 
-Page arrangements accept a flat `barBackgroundColor`. A `NavigationStack` also
-accepts `barForegroundColor` for its title and native action affordances. Native tab
+Every arrangement accepts a flat `barBackgroundColor` and a `barForegroundColor`
+for its title and native action affordances; a page's bar takes each from the
+nearest arrangement around it that declares one, so a stack further in paints
+its own - a sidebar and a sheet take nothing from around them. The
+application's name, the line under the title and its mark are declared the same
+way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
 selectors keep their selected and unselected states, legible over a written
 background. Leaving the background unwritten preserves the platform's
 material. A written colour is
@@ -268,29 +351,76 @@ remain ordinary view composition where the application owns the surface.
 
 ## Menu bars and context menus
 
-Desktop menu bars are also stored on `PageSession`:
+A page's menus are declared like its actions, with `.menuBar { }` on the
+page's view, and stand on the desktop menu bar while the page is shown:
 
 ```swift quote
-page.menuBar = [
-    Menu("File") {
-        MenuItem("Save").onClicked { try await save() }
-        MenuSeparator()
-        Menu("Recent") {
-            ForEach(recent) { file in
-                MenuItem(file.name)
-                    .id(file.id)
-                    .onClicked { open(file) }
+VStack { … }
+    .menuBar {
+        Menu("File") {
+            MenuItem("Save")
+                .id("save")
+                .isEnabled(hasChanges)
+                .onClicked { try await save() }
+            Menu("Recent") {
+                ForEach(recent) { file in
+                    MenuItem(file.name)
+                        .id(file.id)
+                        .onClicked { open(file) }
+                }
             }
         }
+        .id(StandardMenu.file)
     }
-    .id("file"),
-]
 ```
+
+A window's page and an arrangement declare menus for every page shown in
+them. A menu with the `.id` of one declared further out joins it: its
+entries stand after that menu's as a section of their own, after a line, and
+an entry with the `.id` of an entry there stands in that entry's place while
+its page is shown - a window's disabled Save becomes the document page's own,
+and the window's comes back as the page goes. Other menus follow the ones
+declared further out, before the platform's Window and Help; `order` moves a
+declaration's menus and sections earlier or later, lower first.
+
+```swift quote
+SplitView($sidebar) {
+    Library()
+} detail: {
+    Welcome()
+}
+.menuBar {
+    Menu("File") {
+        MenuItem("Save")
+            .id("save")
+            .isEnabled(false)
+    }
+    .id(StandardMenu.file)
+}
+```
+
+The platform's own menus are joined by identity, never by caption:
+`.id(StandardMenu.file)` - `edit`, `view`, `window`, `help` - puts a menu's
+entries into AppKit's File menu and UIKit's `.file` menu after the platform's
+own, whatever the menu is called, so "Plik" joins it too. On WinUI and GTK it
+is an ordinary menu of the application's. Android keeps no menu bar: a page's
+menus stand behind its stack's bar's overflow, each a submenu after the
+actions. An iPhone shows no menu bar. `Menu`
+holds only `MenuItem`, `Menu` and `Divider`, and a menu bar only `Menu`:
+anything else does not compile.
+
+A menu bar stands only while something declares a menu. On WinUI and GTK a
+window shows its menu bar while its page, or an arrangement around that page,
+declares one, and none at all otherwise; macOS and iPadOS always keep the
+platform's own menus, which a declared menu joins. So declare a menu where its
+entries act - File on the page that saves - and around every page only what
+every page offers: a menu declared on the window's page stands over every
+page, even where it holds nothing the page can do.
 
 The same item vocabulary can be attached to any view as a context menu:
 
 ```swift quote
-Label(document.title)
+Text(document.title)
     .contextMenu {
         MenuItem("Duplicate").onClicked { duplicate(document) }
         MenuItem("Delete")

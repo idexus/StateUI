@@ -1,5 +1,0 @@
-# revision 1.1
-Label.frameChanged: ✅
-TabbedView: ✅
-TabbedView.currentPage: cannot choose on TabbedView - Android's driver has no path for it yet
-TabbedView.currentPageChanged: cannot choose on TabbedView - Android's driver has no path for it yet

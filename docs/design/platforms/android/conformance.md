@@ -2,14 +2,15 @@
 
 How the conformance suite drives Android Views: `AndroidDriver` in the host's
 test APK, one test for each family of cases in `AndroidConformanceTests`,
-their verdicts written into the APK's files and held to `exports/marks/android`
+their verdicts written into the APK's files and held to `lib/StateUI/exports/marks/android`
 by `test-android.sh`.
 
 ## What the driver does
 
 A user's act goes through the path Android's own input takes into the host: a
-button's and a toggle's `performClick`, a field's words replaced in its
-editable text - which its watcher hears as it hears a key - and the keyboard's
+button's and a toggle's `performClick`, a field's words selected and
+typed over through the input connection it gives a keyboard - which its
+watcher hears as it hears a key - and the keyboard's
 action on a field, done or search as its return key says. The activity's
 lifecycle is told as the activity tells it: onResume as a window comes to the
 front, onPause as another application does, onPause and onStop as the user
@@ -24,10 +25,11 @@ a mouse entering, moving over and leaving the view as its hovering.
 
 ## Layout
 
-The test's root stands in no window, so no traversal lays it out and no
-global layout is heard: the driver measures and places the root as a window's
-traversal would, and tells the host it did, as the traversal's global layout
-does. Whoever reads its frame then says it on the next display frame.
+The test's root stands as the test activity's content, but the host the
+driver makes hears no traversal of that window (the window's listener belongs
+to the activity's start): the driver measures and places the root at once, as
+a window's traversal would, and tells the host it did, as the traversal's
+global layout does. Whoever reads its frame then says it on the next display frame.
 
 ## The UI thread's messages
 
@@ -69,15 +71,30 @@ what is asked, in the units Android keeps it in: a text view's lines,
 ellipsis, gravity, letter spacing in pixels, line spacing, paint flags, hint,
 selection and kind of input; a view's padding in whole pixels, back to whole
 points; a layout's clipping to its outline, a scroller's bars, a picture's
-scale type, a control's tint. What StateUI draws in its own views and
+scale type, a control's tint. A date field's day or time is read from the
+words it shows, in the platform's own form, and whether its dialog shows from
+the dialog; the user picks in that dialog and presses its OK, and Back
+cancels it. What StateUI draws in its own views and
 drawables - a shape's paint, a layout's box - and where StateUI's layout places
 the children hold nothing of Android's: they do not apply here, each proven by
 its effect in another case.
 
+## Menus
+
+A window's menus are read from the toolbar's menu of the stack showing its
+visible page, its submenus alone; a view's context menu is opened into an
+empty menu, as a long press opens it. An entry or an action is chosen and read
+by its item's id - its element's place (`menuPlace`) - never by its words:
+`performIdentifierAction`, which runs nothing for one that cannot be chosen,
+and the item's words, whether it can be chosen, whether its words are in the
+error colour. What the item keeps no trace of stays unread: a picture's name,
+and whether an action asks for its words beside its picture, which Android
+keeps inside its own item.
+
 ## Running the stale families
 
 The device reads no repository, so `STATEUI_STALE_ONLY=1` is the script's to
-answer: it runs the families whose verdict files in `exports/marks/android`
+answer: it runs the families whose verdict files in `lib/StateUI/exports/marks/android`
 open with another revision than `.scripts/Marks/revision.sh` gives, or with
 none, and takes only theirs off the device.
 
@@ -88,5 +105,5 @@ to the host's own entry, as no activity moves in a test's window. A few reads
 are the host's or its relay's own: a slider's range, which the SeekBar keeps
 only as steps, a picker's rows, and what the relay keeps of a dialog. The
 driver names each (`byHost`), and a member a case proves only through them is
-the host's own - 🔌 - never ✅. A frame report reads where Android holds the
+the host's own - ✓ - never ✅. A frame report reads where Android holds the
 view, not where the host placed it last.

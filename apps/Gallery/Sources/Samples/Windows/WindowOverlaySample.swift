@@ -1,81 +1,103 @@
 import StateUI
 
-extension OverlayKey {
-    /// The sample's notice.
-    static let notice = OverlayKey("notice")
-}
-
-/// A notice the window lays over every page, which stays while the pages change under it.
+/// Notices laid over the window: one the window declares, standing over every page, and one this page declares,
+/// going with it.
 struct WindowOverlaySample: SampleContent, ExampleContent {
-    @Environment private var window: WindowSession
+    /// Where the gallery is: the window's notice is its state.
+    let nav: Navigation
 
-    @State private var shown = false
+    /// Whether this page's own notice stands over the window.
+    @State private var onThisPage = false
 
     static let id = "windowOverlay"
     static let title = "Window overlay"
     static let summary = "Lay a notice over the window, then open another page."
 
     static let code = """
-        extension OverlayKey {
-            static let notice = OverlayKey("notice")
+        // The window's page declares its own, over every page.
+        struct MainPage: View {
+            @State private var notice = false
+
+            var body: some View {
+                Pages(notice: $notice)
+                    .overlays {
+                        if notice {
+                            WindowNotice(words: "Over every page", shown: $notice)
+                        }
+                    }
+            }
         }
 
-        @Environment private var window: WindowSession
-        @State private var shown = false
+        // A page declares one that goes with it.
+        @Binding var notice: Bool
+        @State private var onThisPage = false
 
-        Switch($shown).onChanged(shown) {
-            window.overlays[.notice] = shown ? WindowNotice() : nil
-        }
-
-        struct WindowNotice: ContentView {
-            @Environment private var window: WindowSession
-
-            var content: any View {
+        var body: some View {
+            VStack {
                 HStack {
-                    Label("Over every page")
-                    Button("Dismiss").onClicked { window.overlays[.notice] = nil }
+                    Switch($notice)
+                    Text("Over every page")
                 }
-                .horizontalAlignment(.center)
-                .verticalAlignment(.start)
+                HStack {
+                    Switch($onThisPage)
+                    Text("Over this page")
+                }
+            }
+            .overlays {
+                if onThisPage {
+                    WindowNotice(words: "Over this page", shown: $onThisPage)
+                        .verticalAlignment(.end)
+                }
             }
         }
         """
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 
-    var content: any View {
+    var body: some View {
+        VStack {
+            switchRow(nav.$windowNotice, "Over every page", id: "window.overlay")
+            switchRow($onThisPage, "Over this page", id: "window.overlay.page")
+        }
+        .spacing(10)
+        .overlays {
+            if onThisPage {
+                WindowNotice(words: "Over this page", shown: $onThisPage)
+                    .verticalAlignment(.end)
+            }
+        }
+    }
+
+    /// A switch and what it says, told apart for scripts by `id`.
+    private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
         HStack {
-            Switch($shown)
-                .accessibilityIdentifier("window.overlay")
-                .accessibilityLabel("Notice over the window")
-            Label("Notice over the window").verticalAlignment(.center)
+            Switch(value)
+                .accessibilityIdentifier(id)
+                .accessibilityLabel(words)
+            Text(words).verticalAlignment(.center)
         }
         .spacing(8)
-        .onChanged(shown) {
-            guard shown != (window.overlays[.notice] != nil) else { return }
-            window.overlays[.notice] = shown ? WindowNotice() : nil
-        }
-        // The switch follows the notice, which its own button takes away.
-        .onChanged(window.overlays[.notice] != nil) { shown = window.overlays[.notice] != nil }
-        .onCreated { shown = window.overlays[.notice] != nil }
     }
 }
 
-/// What the sample lays over the window: a line at the top, with its own way out.
-private struct WindowNotice: ContentView {
-    @Environment private var window: WindowSession
+/// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
+struct WindowNotice: View {
+    let words: String
 
-    var content: any View {
+    /// Whether it stands; its button takes it away.
+    @Binding var shown: Bool
+
+    var body: some View {
         HStack {
-            Label("Over every page")
+            Text(words)
                 .textColor(.white)
                 .verticalAlignment(.center)
             Button("Dismiss")
                 .accessibilityIdentifier("window.overlay.dismiss")
-                .onClicked { window.overlays[.notice] = nil }
+                .onClicked { shown = false }
         }
         .spacing(12)
-        .padding(16, 8)
+        .padding(horizontal: 16, vertical: 8)
         .background(Palette.accent)
         .shape(.roundedRectangle(10))
         .margin(12)

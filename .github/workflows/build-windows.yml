@@ -1,4 +1,6 @@
-# The core's suites on Windows; the WinUI host's stands in winui.yml.
+# The core's suites on Windows - the library, the host layer and the
+# conformance runner - and the Gallery's and the starter application's. The
+# WinUI host's stands in winui.yml.
 #
 # Windows is the second machine this library is built on, which is what makes
 # the suite worth running here: it is the other machine whose file separators,
@@ -18,9 +20,9 @@ name: Core Windows
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
   pull_request:
-    branches: [main, dev]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -45,7 +47,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
 
       # HERE it is needed: `swift test` compiles and LINKS on its own, with no
-      # build-windows.ps1 in front of it to set MSVC up, and swiftc reads the C
+      # script in front of it to set MSVC up, and swiftc reads the C
       # runtime and Windows SDK through LIB and INCLUDE.
       - name: Visual Studio developer environment
         uses: compnerd/gha-setup-vsdevenv@v7
@@ -108,9 +110,17 @@ jobs:
         run: swift test
 
       - name: Host layer tests
-        run: swift test --package-path lib/StateUI.Host
+        run: swift test --package-path lib/StateUI/StateUI.Host
 
       # The conformance runner's own rules and every contract's family complete,
       # pure Swift: no host runs here, so no verdict is read or written.
       - name: Conformance runner tests
-        run: swift test --package-path lib/StateUI.Conformance
+        run: swift test --package-path lib/StateUI/StateUI.Conformance
+
+      # In this job rather than one of their own, as on macOS and Linux: here a
+      # job sets Swift and Visual Studio up first, at the steps above.
+      - name: Gallery tests
+        run: swift test --package-path apps/Gallery
+
+      - name: HelloWorld tests
+        run: swift test --package-path apps/HelloWorld

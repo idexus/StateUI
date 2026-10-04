@@ -37,10 +37,10 @@ the final value in `HostPatch`. A matching `HostTransition` tells the host how
 to reach it:
 
 ```swift
-struct MovingPanel: ContentView {
+struct MovingPanel: View {
     @State private var expanded = false
 
-    var content: any View {
+    var body: some View {
         VStack {
             ColorBox(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
@@ -78,7 +78,7 @@ merged over that plan.
 | Group | Meaning |
 | --- | --- |
 | `.opacity` | opacity |
-| `.colour` | every color-valued property |
+| `.color` | every color-valued property |
 | `.width` | requested, minimum, maximum, or host-reported width |
 | `.height` | requested, minimum, maximum, or host-reported height |
 | `.size` | width and height plus outline and corner sizes |

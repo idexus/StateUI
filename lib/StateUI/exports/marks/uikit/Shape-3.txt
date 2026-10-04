@@ -1,0 +1,31 @@
+# revision 1.1
+Ellipse.contentMode: ✅
+Ellipse.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Ellipse.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Ellipse.stroke: ✅
+Line.contentMode: cannot read contentMode of Line - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Line.fill: ✅
+Line.geometryTransform: ✅
+Line.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Line.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Path.dash: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Path.fill: ✅
+Path.geometryTransform: cannot read geometryTransform of Path - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
+Path.lineJoin: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Path.lineWidth: ✅
+Path.stroke: ✅
+Polygon.contentMode: ✅
+Polygon.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polygon.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polygon.stroke: ✅
+Polyline.contentMode: cannot read contentMode of Polyline - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Polyline.fill: ✅
+Polyline.geometryTransform: ✅
+Polyline.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polyline.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Rectangle.dash: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Rectangle.fill: ✅
+Rectangle.geometryTransform: cannot read geometryTransform of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
+Rectangle.lineJoin: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Rectangle.lineWidth: ✅
+Rectangle.stroke: ✅

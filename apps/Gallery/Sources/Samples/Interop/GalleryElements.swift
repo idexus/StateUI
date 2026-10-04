@@ -7,8 +7,8 @@
 
 import StateUI
 
-/// The gallery's own elements: a control, a container, and a control with a
-/// declared value.
+/// The gallery's own elements: a control, a control with a declared value,
+/// and a control drawn on the GPU.
 enum GalleryElements {
     /// Every element the gallery declares, whichever host realizes it - and,
     /// under its own condition, the one element only a single host can.
@@ -22,8 +22,7 @@ enum GalleryElements {
         // UIKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI, OpenGL ES 3.0 on
         // Android. An element only some hosts can honestly realize is
         // declared only for them, so the others are never held to a promise
-        // they cannot keep - which is what the test reading this list against
-        // each host's registrations would otherwise demand of them.
+        // they cannot keep.
         all.append(Cube3DContract.self)
         #endif
 

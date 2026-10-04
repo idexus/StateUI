@@ -1,7 +1,7 @@
 import StateUI
 
-/// What a gallery's main window has said about its life, numbered, newest
-/// last - kept by the gallery's scene, written by `MainWindow` as the window
+/// What a gallery window has said about its life, numbered, newest last -
+/// kept by the window (`GalleryWindow`), written by `MainPage` as the window
 /// is made and by `WindowPhaseLog` as its phase moves, and read by the
 /// Lifecycle sample.
 final class WindowLog {
@@ -23,19 +23,19 @@ final class WindowLog {
 /// The window's phase, one line of the log per moment - a view of its own that
 /// draws nothing, so a phase change builds this and nothing else.
 ///
-/// The log's first line is `created`, which `MainWindow` writes as the window
+/// The log's first line is `created`, which `MainPage` writes as the window
 /// is made: `.onChanged` hears a CHANGE, and the phase starts there. The
 /// activated/deactivated pair follows the host's own window activation, and
 /// where the application stands is `application.phase`, which the Phases
 /// sample shows.
-struct WindowPhaseLog: ContentView {
+struct WindowPhaseLog: View {
     /// Where the moments are written.
     let log: WindowLog
 
     /// The window this view stands in, whose phase it follows.
-    @Environment private var window: WindowSession
+    @Environment(\.window) private var window
 
-    var content: any View {
+    var body: some View {
         ColorBox(Color("#00000000"))
             .width(0)
             .height(0)

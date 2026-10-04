@@ -22,7 +22,7 @@ enum GalleryEventSources {
         }
         g_signal_connect_data(
             UnsafeMutableRawPointer(device), "g-properties-changed", unsafeBitCast(changed, to: GCallback.self), nil,
-            nil, GConnectFlags(0))
+            nil, GConnectFlags(rawValue: 0))
         report()
     }
 

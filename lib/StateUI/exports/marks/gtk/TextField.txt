@@ -1,0 +1,9 @@
+# revision 1.1
+Text.text: ✅
+TextField: ✅
+TextField.frameChanged: ✅
+TextField.isPassword: ✅
+TextField.showsClearButton: not realized
+TextField.submitLabel: not realized
+TextField.submitted: ✅
+TextField.text: ✅

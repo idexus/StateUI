@@ -1,0 +1,145 @@
+# revision 3.1
+ActivityIndicator.allowsDrop: not realized
+ActivityIndicator.dragLeave: not realized
+ActivityIndicator.dragOver: not realized
+ActivityIndicator.drop: not realized
+ActivityIndicator.frameChanged: ✅
+ActivityIndicator.gridColumnSpan: ✅
+ActivityIndicator.gridRowSpan: ✅
+Button.panYChannel: ✅
+Canvas.area: ✅
+Canvas.frameChanged: ✅
+Canvas.pointerEntered: ✅
+Canvas.pointerExited: ✅
+Canvas.pointerMoved: ✅
+Canvas.pointerPressed: ✅
+Canvas.pointerReleased: ✅
+CheckBox.tapCount: ✅
+CheckBox.tapped: ✅
+ColorBox.frameChanged: ✅
+ColorBox.margin: ✅
+ColorBox.swipeDirection: ✅
+ColorBox.swipeThreshold: ✅
+ColorBox.swiped: ✅
+DatePicker.canDrag: not realized
+DatePicker.dragEnded: not realized
+DatePicker.dragStarting: not realized
+DatePicker.dragText: not realized
+DatePicker.frameChanged: ✅
+DatePicker.gridColumn: ✅
+DatePicker.gridRow: ✅
+Ellipse.panTouchCount: ✅
+Ellipse.panUpdated: ✅
+Ellipse.panXChannel: ✅
+Grid.frameChanged: ✅
+Grid.horizontalAlignment: ✅
+Grid.pinchUpdated: ✅
+Grid.verticalAlignment: ✅
+HStack.allowsDrop: not realized
+HStack.dragLeave: not realized
+HStack.dragOver: not realized
+HStack.drop: not realized
+HStack.frameChanged: ✅
+HStack.gridColumnSpan: ✅
+HStack.gridRowSpan: ✅
+Image.panYChannel: ✅
+ItemsView.area: ✅
+ItemsView.frameChanged: ✅
+ItemsView.pointerEntered: ✅
+ItemsView.pointerExited: ✅
+ItemsView.pointerMoved: ✅
+ItemsView.pointerPressed: ✅
+ItemsView.pointerReleased: ✅
+Line.frameChanged: ✅
+Line.margin: ✅
+Line.swipeDirection: ✅
+Line.swipeThreshold: ✅
+Line.swiped: ✅
+Map.canDrag: 🧩
+Map.dragEnded: 🧩
+Map.dragStarting: 🧩
+Map.dragText: 🧩
+Map.frameChanged: 🧩
+Map.gridColumn: 🧩
+Map.gridRow: 🧩
+Path.panTouchCount: ✅
+Path.panUpdated: ✅
+Path.panXChannel: ✅
+Picker.frameChanged: ✅
+Picker.horizontalAlignment: ✅
+Picker.pinchUpdated: ✅
+Picker.verticalAlignment: ✅
+Polygon.allowsDrop: not realized
+Polygon.dragLeave: not realized
+Polygon.dragOver: not realized
+Polygon.drop: not realized
+Polygon.frameChanged: ✅
+Polygon.gridColumnSpan: ✅
+Polygon.gridRowSpan: ✅
+Polyline.panYChannel: ✅
+ProgressBar.area: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.pointerEntered: ✅
+ProgressBar.pointerExited: ✅
+ProgressBar.pointerMoved: ✅
+ProgressBar.pointerPressed: ✅
+ProgressBar.pointerReleased: ✅
+RadioButton.tapCount: ✅
+RadioButton.tapped: ✅
+Rectangle.frameChanged: ✅
+Rectangle.margin: ✅
+Rectangle.swipeDirection: ✅
+Rectangle.swipeThreshold: ✅
+Rectangle.swiped: ✅
+ScrollView.canDrag: not realized
+ScrollView.dragEnded: not realized
+ScrollView.dragStarting: not realized
+ScrollView.dragText: not realized
+ScrollView.frameChanged: ✅
+ScrollView.gridColumn: ✅
+ScrollView.gridRow: ✅
+SearchField.panTouchCount: ✅
+SearchField.panUpdated: ✅
+SearchField.panXChannel: ✅
+Slider.frameChanged: ✅
+Slider.horizontalAlignment: ✅
+Slider.pinchUpdated: ✅
+Slider.verticalAlignment: ✅
+Stepper.allowsDrop: not realized
+Stepper.dragLeave: not realized
+Stepper.dragOver: not realized
+Stepper.drop: not realized
+Stepper.frameChanged: ✅
+Stepper.gridColumnSpan: ✅
+Stepper.gridRowSpan: ✅
+Switch.panYChannel: ✅
+Text.tapCount: ✅
+Text.tapped: ✅
+TextEditor.area: ✅
+TextEditor.frameChanged: ✅
+TextEditor.pointerEntered: ✅
+TextEditor.pointerExited: ✅
+TextEditor.pointerMoved: ✅
+TextEditor.pointerPressed: ✅
+TextEditor.pointerReleased: ✅
+TextField.tapCount: ✅
+TextField.tapped: ✅
+TimePicker.frameChanged: ✅
+TimePicker.margin: ✅
+TimePicker.swipeDirection: ✅
+TimePicker.swipeThreshold: ✅
+TimePicker.swiped: ✅
+VStack.canDrag: not realized
+VStack.dragEnded: not realized
+VStack.dragStarting: not realized
+VStack.dragText: not realized
+VStack.frameChanged: ✅
+VStack.gridColumn: ✅
+VStack.gridRow: ✅
+WebView.panTouchCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.panUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.panXChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+ZStack.frameChanged: ✅
+ZStack.horizontalAlignment: ✅
+ZStack.pinchUpdated: ✅
+ZStack.verticalAlignment: ✅

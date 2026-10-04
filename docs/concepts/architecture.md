@@ -43,10 +43,10 @@ final class Profile {
     @State var notifications = true
 }
 
-struct ProfileForm: ContentView {
+struct ProfileForm: View {
     @State private var profile = Profile()
 
-    var content: any View {
+    var body: some View {
         VStack {
             TextField(profile.$name)
             Switch(profile.$notifications)
@@ -56,8 +56,9 @@ struct ProfileForm: ContentView {
 ```
 
 `@Binding` borrows existing storage. It creates neither another value nor
-another owner. `@Environment` resolves the nearest object of a requested type
-and is the route for session state and shared application models.
+another owner. `@Environment` reads what the library offers by its name -
+`@Environment(\.window)` - and the nearest object an ancestor provided by its
+type; it is the route for session state and shared application models.
 
 A state's identity is its storage, not its current value. A write is serialized
 through that storage and is visible before the write returns.
@@ -70,19 +71,19 @@ StateUI rebuilds those descriptions and diffs their result against the retained
 tree.
 
 ```swift
-struct Greeting: ContentView {
+struct Greeting: View {
     @State private var name = "StateUI"
 
-    var content: any View {
+    var body: some View {
         VStack {
             TextField($name).placeholder("Name")
-            Label("Hello, \(name)")
+            Text("Hello, \(name)")
         }
     }
 }
 ```
 
-`Label` reads `name`, so an edit rebuilds `Greeting`. The resulting patch
+`Text` reads `name`, so an edit rebuilds `Greeting`. The resulting patch
 contains only values and descendants that actually changed. Reader sets are a
 function of the current tree: when a body no longer reads a state, that state
 no longer invalidates it.
@@ -104,14 +105,14 @@ typed state channel and the host can read or report it without rebuilding the
 body.
 
 ```swift
-struct Level: ContentView {
+struct Level: View {
     @State private var level = 0.25
 
-    var content: any View {
+    var body: some View {
         VStack {
             Slider($level)
             ColorBox(.cornflowerBlue).scaleX($level)
-            Label($level.convert { "\(Int($0 * 100))%" })
+            Text($level.convert { "\(Int($0 * 100))%" })
         }
     }
 }
@@ -176,12 +177,12 @@ between destinations.
 | `convert` | derive a host-driven value from the live journey |
 
 ```swift
-struct Fader: ContentView {
+struct Fader: View {
     @State private var fade = 1.0
 
-    var content: any View {
+    var body: some View {
         VStack {
-            Label("Native motion").opacity($fade)
+            Text("Native motion").opacity($fade)
             Button("Fade").onClicked {
                 try await $fade.journey.move(to: 0.15, .eased(400, .cubicOut))
             }
@@ -215,10 +216,10 @@ host has that checked matrix row, an application relies only on the final
 destination.
 
 ```swift
-struct ResizingPanel: ContentView {
+struct ResizingPanel: View {
     @State private var expanded = false
 
-    var content: any View {
+    var body: some View {
         VStack {
             ColorBox(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
@@ -259,10 +260,10 @@ display cycle, reads and writes state, and returns `.again` while it needs
 another frame or `.wait` until a followed state is written.
 
 ```swift
-struct FallingDot: ContentView {
+struct FallingDot: View {
     @State(motion: .custom) private var y = 0.0
 
-    var content: any View {
+    var body: some View {
         ColorBox(.cornflowerBlue)
             .translationY($y)
             .engine(following: $y) { cycle in
@@ -288,35 +289,49 @@ They do not await, call controls, or create another thread-bound UI model.
 The structural path is:
 
 ```text
-Application -> Scene -> Window -> Page -> View
+Application -> Scene -> WindowGroup, Window -> View
 ```
 
-Each structural protocol has one composition property. A window's page is
-any `Page` - every view is one, and so is each arrangement - and the page a
-container puts a view on holds that view's `PageSession`. Runtime values
-belong to identity-bearing sessions and are obtained with `@Environment`.
+Each structural protocol has one composition property. A window shows a view,
+which stands on a page - an arrangement is the page itself - and says what
+that page is by modifier: its values with `.title`, `.icon`,
+`.pageBackground`, `.showsNavigationBar`, `.showsBackButton` and
+`.backButtonTitle`; its phases with `.onAppearing`, `.onDisappearing`,
+`.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom`; and what stands
+on its bar and over its window with `.titleView { }`, `.toolbar { }` and
+`.overlays { }`
+([What a view says of its page](../interface/application-and-sessions.md#what-a-view-says-of-its-page)).
+A window's own policies, `.hidesWhenInactive` and `.floatsOnTop`, are written
+on its `WindowGroup` or `Window`
+([Window policy](../interface/application-and-sessions.md#window-policy)).
+Runtime values belong to identity-bearing sessions and are obtained with
+`@Environment`.
 
 ```swift
 struct HandbookApp: Application {
-    var scene: any Scene { HandbookWindow() }
+    var body: some Scene {
+        WindowGroup { HandbookPage() }
+    }
 }
 
-struct HandbookWindow: Window {
-    var page: any Page { HandbookPage() }
-}
-
-struct HandbookPage: ContentView {
-    @Environment private var page: PageSession
-
-    var content: any View {
-        Label("Hello from StateUI")
-            .onCreated { page.title = "StateUI" }
+struct HandbookPage: View {
+    var body: some View {
+        Text("Hello from StateUI")
+            .title("StateUI")
     }
 }
 ```
 
-An application can own multiple scene sessions. A scene owns its main window
-and any windows opened from its declared `WindowGroup`s. Activation,
+An application's body lists its scenes - a window written there, as above, is
+a scene of its own - and a scene's body its windows.
+`WindowGroup { MainPage() }`, one in the application, is what launch and
+*File ▸ New Window* make a window of; `WindowGroup(.kind)` makes as many
+windows of a kind as are opened, `Window(.kind)` one, and
+`WindowGroup(.kind, for:)` one per value. Each scene stands at most once, from
+its first window to its last, and its windows share its `@State`; no window is
+a main one. `application.openWindow(.kind)` opens a window in the scene
+declaring the kind, which opens with it where it does not stand
+([Scenes](../interface/application-and-sessions.md#scenes)). Activation,
 restoration, focus, hiding, and closure are mapped to those sessions while
 StateUI retains deterministic state and tree ownership.
 

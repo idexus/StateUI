@@ -1,5 +1,0 @@
-# revision 1.1
-Label.frameChanged: ✅
-SplitView: ✅
-SplitView.isSidebarVisible: cannot read isSidebarVisible of SplitView - GTK's driver has no path for it yet
-SplitView.isSidebarVisibleChanged: not realized

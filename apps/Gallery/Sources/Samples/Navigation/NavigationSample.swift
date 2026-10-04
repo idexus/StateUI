@@ -74,11 +74,11 @@ struct NavigationSample: SampleContent, ExampleContent {
             .onClicked { path = [] }
 
         // Where am I? A question Swift answers, with no host in it:
-        Label("\\(path.count) page(s) on top of \\(section)")
-        Label("Arrived home \\(arrivals) time(s)")
+        Text("\\(path.count) page(s) on top of \\(section)")
+        Text("Arrived home \\(arrivals) time(s)")
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
@@ -86,53 +86,53 @@ struct NavigationSample: SampleContent, ExampleContent {
                 .background(Palette.accent)
                 .textColor(.white)
                 .shape(.roundedRectangle(8))
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.push(.level(1)) }
 
             // No act, no await, no question asked of the host: the answer is
             // the state this page is reading.
-            Label(here)
+            Text(here)
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)
 
             Button("Go home, and count the visit")
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked {
                     nav.home()
                     arrivals += 1
                 }
 
-            Label("Arrived home \(arrivals) time(s)")
+            Text("Arrived home \(arrivals) time(s)")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
             Button("Empty the stack")
-                .padding(20, 10)
+                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.path = [] }
         }
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("The stack is this array, so where the gallery is can be read, written, "
+            Text("The stack is this array, so where the gallery is can be read, written, "
                 + "tested and serialized in Swift - and the platform's own back gesture "
                 + "writes it too, so the array is still the answer after a swipe.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Push the same route again from a pushed page and it builds another "
+            Text("Push the same route again from a pushed page and it builds another "
                 + "page: identity on a stack is the depth together with the route, so two "
                 + "`.level(2)` pages are two pages with `@State` of their own.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`home()` is three assignments - the section, the empty path and the "
+            Text("`home()` is three assignments - the section, the empty path and the "
                 + "closed menu - with nothing to await. `path = []` takes everything off, "
                 + "this page and the group page under it included, so you land on the "
                 + "home page. Assigning the state you want is the navigation, and the "

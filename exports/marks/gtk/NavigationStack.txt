@@ -1,6 +1,0 @@
-# revision 1.1
-Label.frameChanged: ✅
-NavigationStack: ✅
-NavigationStack.barForegroundColor: not realized
-NavigationStack.popped: not realized
-Page.title: cannot read title of Window - GTK's driver has no path for it yet

@@ -37,7 +37,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack {
-                Label("Animate me")
+                Text("Animate me")
             }
             .style("Card")
             // Four DRIVEN properties. Read off a state the host moves, so none
@@ -50,7 +50,7 @@ struct AnimationSample: SampleContent, ExampleContent {
 
             Picker(Self.curves)
                 .selectedIndex($curve)
-                .title("Easing")
+                .placeholder("Easing")
 
             HStack {
                 // A movement answers whether it ran to the END. Stop says
@@ -99,21 +99,21 @@ struct AnimationSample: SampleContent, ExampleContent {
             switch curve {
             case 1: return .cubicInOut
             case 2: return .bounceOut
-            case 3: return .springOut
+            case 3: return .backOut
             default: return .linear
             }
         }
         """
 
-    var content: any View {
+    var body: some View {
         VStack {
             DebugInfoLabel()
 
             ZStack {
-                Label("Animate me")
+                Text("Animate me")
                     .fontSize(17)
                     .textColor(Palette.onBrand)
-                    .padding(24, 16)
+                    .padding(horizontal: 24, vertical: 16)
             }
             .style("Card")
             // Four DRIVEN properties. Read off a state the host moves, so none
@@ -131,7 +131,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("animation.curve")
                 .accessibilityLabel("Easing curve")
                 .selectedIndex($curve)
-                .title("Easing")
+                .placeholder("Easing")
 
             HStack {
                 // A movement answers whether it ran to the END. Stop says
@@ -182,9 +182,9 @@ struct AnimationSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
-            Label("Each button moves STATE. `.opacity($fade)` DRIVES the property "
+            Text("Each button moves STATE. `.opacity($fade)` DRIVES the property "
                 + "from the state behind it, and `$fade.journey.move(to: 0.1, …)` sends "
                 + "everything driven by `fade` to 0.1. `await` says the movement "
                 + "is over and the answer says whether it reached the end, which "
@@ -192,7 +192,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The state holds BOTH readings: `fade` is 0.1 from the "
+            Text("The state holds BOTH readings: `fade` is 0.1 from the "
                 + "line after the call, while `$fade.journey.value` is wherever the "
                 + "host has got the card to. Nothing is described in between, so the "
                 + "whole 400ms costs no renders - and `$fade.journey.value = 0.5` "
@@ -200,14 +200,14 @@ struct AnimationSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("There is no relative turn and no two-axis move. Spin adds 360 "
+            Text("There is no relative turn and no two-axis move. Spin adds 360 "
                 + "to where the angle was headed and goes to the sum, so each "
                 + "press carries on from the last; Move is a single movement on "
                 + "translationX, the only axis this card uses.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Move comes back because the sample says so, not because it "
+            Text("Move comes back because the sample says so, not because it "
                 + "must: a card left at 60 stays at 60, the state holding it and "
                 + "no render being needed to say so. Stop is the other half - it "
                 + "leaves the value exactly where it stood, so a movement broken "
@@ -222,7 +222,7 @@ struct AnimationSample: SampleContent, ExampleContent {
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)
-            .padding(14, 6)
+            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
 
@@ -231,7 +231,7 @@ struct AnimationSample: SampleContent, ExampleContent {
         switch curve {
         case 1: return .cubicInOut
         case 2: return .bounceOut
-        case 3: return .springOut
+        case 3: return .backOut
         default: return .linear
         }
     }

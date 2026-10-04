@@ -1,5 +1,5 @@
 # The GTK host's suite: its own tests and every conformance family, each
-# verdict held to the marks under exports/marks/gtk, on a screen with no
+# verdict held to the marks under lib/StateUI/exports/marks/gtk, on a screen with no
 # monitor. CI never writes the marks, so a family whose verdicts changed fails
 # here and its marks are written again on a Linux machine, on purpose.
 #
@@ -9,9 +9,9 @@ name: GTK
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
   pull_request:
-    branches: [main, dev]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -26,7 +26,11 @@ jobs:
   # written against, drawn on Xvfb with a session bus. A label is measured in
   # the font GNOME gives this platform's desktop, so a verdict that reads a
   # frame holds here as it was written. gdk-pixbuf reads an SVG only through
-  # librsvg's loader, which an install without recommends leaves out.
+  # librsvg's loader, which an install without recommends leaves out. The web
+  # view's backend links WebKitGTK 6.0, which the host's tests register. Its
+  # web process runs without WebKit's sandbox: the container refuses
+  # bubblewrap the user namespace it needs, and the tests load only their own
+  # HTML.
   gtk:
     name: GTK
     runs-on: ubuntu-24.04
@@ -35,11 +39,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - name: GTK 4, libadwaita, a screen and the desktop's font
+      - name: GTK 4, libadwaita, WebKitGTK, a screen and the desktop's font
         run: |
           apt-get update
           apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev \
-            librsvg2-common xvfb xauth dbus fonts-ubuntu
+            libwebkitgtk-6.0-dev librsvg2-common xvfb xauth dbus fonts-ubuntu
           mkdir -p "$HOME/.config/gtk-4.0"
           printf '[Settings]\ngtk-font-name=Ubuntu Sans 11\n' > "$HOME/.config/gtk-4.0/settings.ini"
 
@@ -47,4 +51,6 @@ jobs:
         run: swift --version
 
       - name: GTK host tests, every verdict held
+        env:
+          WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS: "1"
         run: dbus-run-session -- xvfb-run -a env GDK_BACKEND=x11 .scripts/GTK/test-gtk.sh

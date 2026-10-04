@@ -1,234 +1,59 @@
 // swift-tools-version:6.4
-import Foundation
 import PackageDescription
 
-// The application's own Swift module.
-//
-// Beside Sources/, so SwiftPM keeps .build/ and Package.resolved out of the
-// source tree while the application code remains grouped below Sources/.
-//
-// WHY THIS FILE EXISTS:
-// SourceKit - the language server behind Swift support in VS Code and Xcode -
-// only understands code that belongs to a SwiftPM package. Without a manifest it
-// reports "No such module 'StateUI'" and offers no completion, even though the
-// build itself works fine, because the build scripts pass -I explicitly.
-//
-// HelloWorldUI is the platform-neutral application module. Executable host
-// targets import it and select a native renderer without changing the app UI.
+// The application's own Swift module, HelloWorldUI, and its head for the host a
+// build is for. SourceKit understands only code a SwiftPM package holds, so the
+// editor completes the application through this manifest as well.
 
-// WHETHER THIS BUILD HAS AN APPKIT HEAD - the same question, and the same
-// answer, as apps/Gallery/Package.swift. Platforms/AppKit is one host's half,
-// it imports StateUIAppKit, and nothing else has any business compiling it; a
-// manifest cannot read a compilation condition, which reaches a build's targets
-// and never the manifest describing them, so an AppKit build says so here.
-let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
+// The host a build is for: STATEUI_HOST - appkit, uikit, android, winui or gtk -
+// which its script or the editor sets, or none for plain Swift. The
+// application's Swift for that host alone stands under its condition -
+// `#if APPKIT` - and ../../lib/StateUI.Head brings the host itself to the head.
+let host = ["AppKit", "UIKit", "Android", "WinUI", "GTK"]
+    .first { $0.lowercased() == Context.environment["STATEUI_HOST"] }
 
-// WHETHER THIS BUILD HAS AN ANDROID HEAD - the same question for the Android
-// Views host, asked by .scripts/Android/build-swift.sh.
-let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "1"
-
-// WHETHER THIS BUILD HAS A WINUI HEAD - the same question for the WinUI 3
-// host, asked by .scripts/WinUI/run-app.ps1.
-let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
-
-// WHETHER THIS BUILD HAS A GTK HEAD - the same question for the GTK 4 host,
-// asked by .scripts/GTK/run-app.sh.
-let hasGTKHead = ProcessInfo.processInfo.environment["STATEUI_GTK"] == "1"
-
-// WHETHER THIS BUILD HAS A UIKIT HEAD - the same question for the UIKit host
-// on iOS and iPadOS, asked by .scripts/UIKit/build-app.sh.
-let hasUIKitHead = ProcessInfo.processInfo.environment["STATEUI_UIKIT"] == "1"
-
-// What every module of the application is compiled with - in an AppKit build
-// including APPKIT, in an Android Views build ANDROID, in a WinUI build WINUI,
-// in a GTK build GTK, in a UIKit build UIKIT, each defined here and nowhere
-// else. See apps/Gallery/Package.swift.
-let settings: [SwiftSetting] =
-    [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
-    + (hasAppKitHead ? [.define("APPKIT")] : [])
-    + (hasUIKitHead ? [.define("UIKIT")] : [])
-    + (hasAndroidHead ? [.define("ANDROID")] : [])
-    + (hasWinUIHead ? [.define("WINUI")] : [])
-    + (hasGTKHead ? [.define("GTK")] : [])
+// NonisolatedNonsendingByDefault is the one setting an application must not
+// leave out; see the note in ../../Package.swift.
+let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+    + (host.map { [.define($0.uppercased())] } ?? [])
 
 var products: [Product] = [
-    // Dynamic so an executable and its host share exactly one StateUI
-    // runtime and therefore one set of global runtime types.
-    .library(
-        name: "HelloWorldUI",
-        type: .dynamic,
-        targets: ["HelloWorldUI"]
-    ),
-]
-
-var dependencies: [Package.Dependency] = [
-    // A path dependency on the REPOSITORY ROOT, which is where the library's
-    // manifest lives. An app outside this repository writes the published
-    // package instead, and changes nothing else:
-    //
-    //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.4.0")
-    .package(path: "../.."),
+    // Dynamic, so a head and its host share one StateUI runtime.
+    .library(name: "HelloWorldUI", type: .dynamic, targets: ["HelloWorldUI"]),
 ]
 
 var targets: [Target] = [
-    .target(
-        name: "HelloWorldUI",
-        // Named WITHOUT `package:`. A path dependency's identity is the
-        // last component of its path, so naming it would tie this manifest
-        // to the checkout being called "StateUI" - and a zip from GitHub
-        // unpacks as "StateUI-main". A bare name is looked for among every
-        // dependency's products, and reads the same against the published
-        // package.
-        dependencies: ["StateUI"],
-        // path: "Sources" - that whole folder is the app's code: the
-        // application and its pages sit directly in it, Styles/ holds the
-        // styles, and a directory added beside them is compiled without
-        // being named here. Naming the folder rather than "." is what lets
-        // the manifest sit beside the source and Resources/ without pulling
-        // either host or artwork into the application module.
-        path: "Sources",
-        // The one setting an application must not leave out - see the note
-        // in ../../Package.swift. Handlers are safe either way,
-        // their type coming from the library; an `async func` written HERE
-        // is not, and would resume away from its caller's executor.
-        swiftSettings: settings
-    ),
+    .target(name: "HelloWorldUI", dependencies: ["StateUI"], path: "Sources", swiftSettings: settings),
+    // The application's tests - `swift test`, or StateUI: Run Tests.
+    .testTarget(name: "HelloWorldTests", dependencies: ["HelloWorldUI"], path: "Tests", swiftSettings: settings),
 ]
 
-if hasAppKitHead {
-    // The same Swift application above, launched by its AppKit host.
-    products.append(
-        .executable(
-            name: "HelloWorldAppKit",
-            targets: ["HelloWorldAppKit"]
-        ))
-
-    dependencies.append(
-        .package(name: "StateUIAppKit", path: "../../lib/StateUI.AppKit"))
-
-    targets.append(
-        .executableTarget(
-            name: "HelloWorldAppKit",
-            dependencies: [
-                "HelloWorldUI",
-                .product(name: "StateUIAppKit", package: "StateUIAppKit"),
-            ],
-            path: "Platforms/AppKit",
-            swiftSettings: settings
-        ))
-}
-
-if hasUIKitHead {
-    // The same Swift application, an executable its UIKit host runs on iOS and
-    // iPadOS: its main names the application to the host and hands it the
-    // process; the script makes it an application bundle.
-    products.append(
-        .executable(
-            name: "HelloWorldUIKit",
-            targets: ["HelloWorldUIKit"]
-        ))
-
-    dependencies.append(
-        .package(name: "StateUIUIKit", path: "../../lib/StateUI.UIKit"))
-
-    targets.append(
-        .executableTarget(
-            name: "HelloWorldUIKit",
-            dependencies: [
-                "HelloWorldUI",
-                .product(name: "StateUIUIKit", package: "StateUIUIKit"),
-            ],
-            path: "Platforms/UIKit",
-            swiftSettings: settings
-        ))
-}
-
-if hasAndroidHead {
-    // The same Swift application, loaded by Android as a library: its
-    // JNI_OnLoad names the application to the Android Views host.
-    products.append(
-        .library(
-            name: "HelloWorldAndroid",
-            type: .dynamic,
-            targets: ["HelloWorldAndroid"]
-        ))
-
-    dependencies.append(
-        .package(name: "StateUIAndroid", path: "../../lib/StateUI.Android"))
-
-    targets.append(
-        .target(
-            name: "HelloWorldAndroid",
-            dependencies: [
-                "HelloWorldUI",
-                .product(name: "StateUIAndroid", package: "StateUIAndroid"),
-            ],
-            path: "Platforms/Android/Swift",
-            swiftSettings: settings
-        ))
-}
-
-if hasWinUIHead {
-    // The same Swift application, an executable its WinUI host runs on
-    // Windows: its main names the application to the host and hands it the thread.
-    products.append(
-        .executable(
-            name: "HelloWorldWinUI",
-            targets: ["HelloWorldWinUI"]
-        ))
-
-    dependencies.append(
-        .package(name: "StateUIWinUI", path: "../../lib/StateUI.WinUI"))
-
-    targets.append(
-        .executableTarget(
-            name: "HelloWorldWinUI",
-            dependencies: [
-                "HelloWorldUI",
-                .product(name: "StateUIWinUI", package: "StateUIWinUI"),
-            ],
-            path: "Platforms/WinUI",
-            swiftSettings: settings,
-            // A windowed application: started by itself it opens no console, and started from one it writes there.
-            linkerSettings: [.unsafeFlags(["-Xlinker", "/SUBSYSTEM:WINDOWS", "-Xlinker", "/ENTRY:mainCRTStartup"])]
-        ))
-}
-
-if hasGTKHead {
-    // The same Swift application, an executable its GTK host runs on Linux:
-    // its main names the application to the host and hands it the thread.
-    products.append(
-        .executable(
-            name: "HelloWorldGTK",
-            targets: ["HelloWorldGTK"]
-        ))
-
-    dependencies.append(
-        .package(name: "StateUIGTK", path: "../../lib/StateUI.GTK"))
-
-    targets.append(
-        .executableTarget(
-            name: "HelloWorldGTK",
-            dependencies: [
-                "HelloWorldUI",
-                .product(name: "StateUIGTK", package: "StateUIGTK"),
-            ],
-            path: "Platforms/GTK",
-            swiftSettings: settings
-        ))
+// The head in Platforms/<Host>: an executable its host runs, and on Android a
+// library the platform loads. StateUIHead brings the host.
+let head: [Target.Dependency] = ["HelloWorldUI", .product(name: "StateUIHead", package: "StateUIHead")]
+switch host {
+case "Android"?:
+    products.append(.library(name: "HelloWorldAndroid", type: .dynamic, targets: ["HelloWorldAndroid"]))
+    targets.append(.target(
+        name: "HelloWorldAndroid", dependencies: head, path: "Platforms/Android/Swift", swiftSettings: settings))
+case let host?:
+    targets.append(.executableTarget(
+        name: "HelloWorld\(host)", dependencies: head, path: "Platforms/\(host)", swiftSettings: settings))
+case nil:
+    break
 }
 
 let package = Package(
     name: "HelloWorldUI",
-    // The same floor StateUI declares. SwiftPM refuses a package that depends
-    // on one requiring more than it does, so these move together - see the note
-    // in ../../Package.swift for what fixes them at 26.
+    // StateUI's floor, which an application cannot go below.
     platforms: [
         .iOS(.v26),
         .macCatalyst(.v26),
         .macOS(.v26),
     ],
     products: products,
-    dependencies: dependencies,
+    // The StateUI checkout: the library at its root, and a head's host.
+    dependencies: [.package(path: "../..")]
+        + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")]),
     targets: targets
 )

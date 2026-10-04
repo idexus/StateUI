@@ -1,0 +1,22 @@
+# revision 1.1
+Button.lineWidth: ✅
+Button.shape: ✅
+Button.stroke: ✅
+Grid.lineWidth: ✅
+Grid.shape: cannot read shape of Grid - UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it
+Grid.stroke: ✅
+HStack.lineWidth: ✅
+HStack.shape: cannot read shape of HStack - UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it
+HStack.stroke: ✅
+RadioButton.lineWidth: not realized
+RadioButton.shape: not realized
+RadioButton.stroke: not realized
+ScrollView.lineWidth: ✅
+ScrollView.shape: cannot read shape of ScrollView - UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it
+ScrollView.stroke: ✅
+VStack.lineWidth: ✅
+VStack.shape: cannot read shape of VStack - UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it
+VStack.stroke: ✅
+ZStack.lineWidth: ✅
+ZStack.shape: cannot read shape of ZStack - UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it
+ZStack.stroke: ✅

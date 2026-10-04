@@ -4,28 +4,32 @@
 // The integration suite, run inside VS Code by Tests/run.ts.
 //
 // The editor's host is asked of the LANGUAGE SERVER, which cannot be faked: a
-// symbol under `#if APPKIT` resolves only while SourceKit-LSP runs with
-// STATEUI_APPKIT, and a symbol under no condition resolves in either mode -
+// symbol of the AppKit head resolves only while SourceKit-LSP runs with
+// STATEUI_HOST=appkit, and a symbol under no condition resolves in either mode -
 // which is what tells "not this host" from "not ready yet".
 
-import { execSync } from "child_process";
+import { execSync, spawn } from "child_process";
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { findApplications, hasHead } from "../Sources/applications";
-import { StateUIDebugConfigurationProvider, uiKitAttach } from "../Sources/debug";
+import { checkoutNamedBy } from "../Sources/checkouts";
+import { configurations, StateUIDebugConfigurationProvider, uiKitAttach } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
 import { parseDevices as parseUIKitDevices, parseSimulators } from "../Sources/uiKitDevices";
-import { serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
+import { otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
-import { availableHosts, environment, hosts } from "../Sources/hosts";
+import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
-import { inAppsCommand, nameProblem } from "../Sources/newApplication";
-import { reinstallSteps } from "../Sources/reinstall";
+import { nameProblem, scaffolderCommand } from "../Sources/newApplication";
+import { cloneCommand, groupNameProblem, listReleases, releaseDirectory, releasesIn } from "../Sources/projectGroup";
+import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
+import { deployCommand, deployDestination, winUIArchitectures } from "../Sources/deploy";
 import {
-    atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report, svgLoaderIn,
-    xcodeVersion,
+    atLeast, checkedPythonIn, checkToolchain, debuggerFinding, developmentIdentityIn, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report,
+    svgLoaderIn, lldbDapFailure, lldbDapFinding, svgLoaderInGlycin, xcodeVersion,
 } from "../Sources/toolchain";
 
 const started = Date.now();
@@ -89,21 +93,21 @@ export async function run(): Promise<void> {
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
 
-        // 1-3 ask the language server as AppKit and as Android, hosts only macOS builds.
+        // 1-3 ask the language server as the hosts only macOS builds.
         if (process.platform === "darwin") {
             // 1. Android: the plain symbol resolves, the AppKit one does not.
             await api.selectHost("android");
             await until("android: a symbol under no condition resolves", () => resolves(plain, "Palette.accent"), 900);
             await until("android: neither head's own view resolves", async () => !(await appKitOnly()) && !(await uiKitOnly()), 900);
 
-            // 2. AppKit, with no reload: the conditional symbol and the head resolve.
+            // 2. AppKit, with no reload: the head's own view and the head resolve.
             await api.selectHost("appkit");
             await until("appkit: its head's own view resolves", appKitOnly, 900);
             // A target the package did not have a moment ago: the server has to
             // load it, so this is waited for rather than asked once.
             await until("appkit: Cube3DContract in Platforms/AppKit resolves", () => resolves(head, "Cube3DContract.self"), 900);
 
-            // 2b. UIKit, compiled for the iOS simulator by the triple alone: its head resolves, the AppKit symbol not.
+            // 2b. UIKit, compiled for the iOS simulator by its triple and SDK: its head resolves, the AppKit symbol not.
             await api.selectHost("uikit");
             await until("uikit: Cube3DContract in Platforms/UIKit resolves", () => resolves(uiKitHead, "Cube3DContract.self"), 900);
             await until("uikit: its head's own view resolves, and AppKit's does not", async () => (await uiKitOnly()) && !(await appKitOnly()), 900);
@@ -116,9 +120,9 @@ export async function run(): Promise<void> {
             say("skip the language server as AppKit and Android: only macOS builds those hosts");
         }
 
-        // 4. The hosts a machine is offered: AppKit and Android on macOS, WinUI
-        //    on Windows, GTK on Linux, and no .NET MAUI. A launch on a machine
-        //    that runs no host resolves to nothing.
+        // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
+        //    WinUI on Windows, GTK on Linux, and no .NET MAUI. A launch on a
+        //    machine that runs no host resolves to nothing.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
         check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, and never .NET MAUI",
             JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android"])
@@ -147,40 +151,49 @@ export async function run(): Promise<void> {
         say(`appkit suites: ${appkitSuites.join(", ")}`);
         say(`suites with no host: ${plainSuites.map((each) => each.label).join(", ")}`);
         check("appkit runs the core, StateUI.AppKit and the Gallery, and no device",
-            appkitSuites.includes("StateUI") && appkitSuites.includes("lib/StateUI.AppKit")
+            appkitSuites.includes("StateUI") && appkitSuites.includes("lib/StateUI/StateUI.AppKit")
             && appkitSuites.includes("apps/Gallery") && !appkitSuites.some((each) => each.endsWith("Tests")));
+        check("HelloWorld's example test runs with the rest - as an AppKit build on its .build/appkit, or as plain Swift",
+            findSuites(root.uri.fsPath, "appkit").some((each) => each.label === "apps/HelloWorld"
+                && each.args.join(" ").endsWith(`--scratch-path ${path.join(root.uri.fsPath, "apps", "HelloWorld", ".build", "appkit")}`))
+            && plainSuites.some((each) => each.label === "apps/HelloWorld"));
         check("with no host the core and the Gallery run as plain Swift, and no host's own package",
             plainSuites.some((each) => each.label === "StateUI") && plainSuites.some((each) => each.label === "apps/Gallery")
             && plainSuites.every((each) => each.command === "swift" && Object.keys(each.env).length === 0 && !each.onDevice)
-            && !plainSuites.some((each) => each.label === "lib/StateUI.AppKit" || each.label === "lib/StateUI.Android/Tests"));
+            && !plainSuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
 
         // 6. Android: the environment, the language server's file, the
         //    devices, and the commands a launch and a suite run - captured,
         //    not run.
-        check("each host's environment sets its own variable alone and clears every other - STATEUI_ANDROID for Android",
-            hosts.every((host) => {
-                const values = environment(host.id);
-                const set = Object.entries(values).filter((entry) => entry[1] !== undefined);
-                return JSON.stringify(Object.keys(values).sort())
-                    === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT", "STATEUI_GTK", "STATEUI_UIKIT", "STATEUI_WINUI"])
-                    && JSON.stringify(set) === JSON.stringify([[host.variable, "1"]]);
-            }) && environment("android").STATEUI_ANDROID === "1"
-            && Object.values(environment(undefined)).every((value) => value === undefined));
+        check("each host's environment names it in one variable - STATEUI_HOST=android for Android - and no host clears it",
+            hosts.every((host) => JSON.stringify(environment(host.id)) === JSON.stringify({ STATEUI_HOST: host.id }))
+            && environment("android").STATEUI_HOST === "android"
+            && JSON.stringify(Object.entries(environment(undefined))) === JSON.stringify([["STATEUI_HOST", undefined]]));
+        {
+            const asWinUI = otherHostsExcluded("winui", { "**/mine": true, "**/lib/StateUI/StateUI.WinUI": true });
+            const excluded = Object.keys(asWinUI).filter((pattern) => asWinUI[pattern]);
+            check("as WinUI the Swift extension loads no other host's package nor backend, and the user's own exclusions stay",
+                excluded.includes("**/lib/StateUI/StateUI.Android") && excluded.includes("**/lib/Backends/*.GTK")
+                && !excluded.some((pattern) => pattern.endsWith(".WinUI")) && asWinUI["**/mine"] === true
+                && Object.keys(otherHostsExcluded(undefined, {})).length === hosts.length * 2);
+            check("every host's own package stands where its exclusion names it",
+                hosts.every((host) => fs.existsSync(path.join(root.uri.fsPath, "lib", "StateUI", `StateUI.${host.label}`, "Package.swift"))));
+        }
         {
             const sdk = "swift-6.4.0-RELEASE_android";
             const android = serverConfig(
-                { swiftPM: { scratchPath: ".build-appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
+                { swiftPM: { scratchPath: ".build/appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
                 serverSettings("android", sdk));
             const back = serverConfig(android, serverSettings("appkit", sdk));
-            check("as Android the language server indexes in .build-android/index-build with the Swift SDK and aarch64-unknown-linux-android28, by building",
-                android.swiftPM?.scratchPath === ".build-android/index-build" && android.swiftPM?.swiftSDK === sdk
+            check("as Android the language server indexes in .build/android/index-build with the Swift SDK and aarch64-unknown-linux-android28, by building",
+                android.swiftPM?.scratchPath === ".build/android/index-build" && android.swiftPM?.swiftSDK === sdk
                 && android.swiftPM?.triple === "aarch64-unknown-linux-android28" && android.backgroundPreparationMode === "build");
             check("the rest of the file is kept, and back on AppKit the SDK and the triple are gone",
                 android.swiftPM?.configuration === "debug" && JSON.stringify(android.index) === JSON.stringify({ indexStorePath: "x" })
-                && back.swiftPM?.scratchPath === ".build-appkit/index-build" && back.swiftPM?.configuration === "debug"
+                && back.swiftPM?.scratchPath === ".build/appkit/index-build" && back.swiftPM?.configuration === "debug"
                 && !("swiftSDK" in back.swiftPM!) && !("triple" in back.swiftPM!));
             check("with no Swift SDK installed Android indexes for this Mac, and with no host the index is SwiftPM's own, with no SDK",
-                JSON.stringify(serverSettings("android", undefined)) === JSON.stringify({ scratchPath: ".build-android/index-build" })
+                JSON.stringify(serverSettings("android", undefined)) === JSON.stringify({ scratchPath: ".build/android/index-build" })
                 && JSON.stringify(serverSettings(undefined, sdk)) === JSON.stringify({ scratchPath: ".build/index-build" }));
 
             // The other releases are assembled, so the repository's one-release guard reads no second one here.
@@ -207,7 +220,7 @@ export async function run(): Promise<void> {
         {
             // What run-app.sh --debugger writes once the application runs, faked
             // by the task's start - or not, where the application never starts.
-            const facts = path.join(helloWorld.directory, ".build-android", "debugger.json");
+            const facts = path.join(helloWorld.directory, ".build", "android", "debugger.json");
             const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true) => {
                 const started: vscode.Task[] = [];
                 const ran: string[] = [];
@@ -280,24 +293,24 @@ export async function run(): Promise<void> {
             check("android runs the core and the Gallery as plain Swift, and no AppKit",
                 androidSuites.some((each) => each.label === "StateUI" && forDevice(each, "emulator-5554") === each)
                 && galleryRun?.args.join(" ") === `test --package-path ${gallery}` && Object.keys(galleryRun.env).length === 0
-                && !androidSuites.some((each) => each.label === "lib/StateUI.AppKit"));
+                && !androidSuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit"));
             check("android runs test-android.sh <serial> on the device, and only android does",
-                onDevice.length === 1 && onDevice[0].label === "lib/StateUI.Android/Tests"
+                onDevice.length === 1 && onDevice[0].label === "lib/StateUI/StateUI.Android/Tests"
                 && [onDevice[0].command, ...onDevice[0].args].join(" ") === `bash ${path.join(root.uri.fsPath, ".scripts", "Android", "test-android.sh")} emulator-5554`
-                && !appkitSuites.includes("lib/StateUI.Android/Tests"));
+                && !appkitSuites.includes("lib/StateUI/StateUI.Android/Tests"));
         }
         // 6a. UIKit: the language server's file, the simulators, and the
         //     commands a launch and a suite run - captured, not run.
         {
             const simulatorSDK = "/Xcode/SDKs/iPhoneSimulator.sdk";
-            const uiKit = serverConfig({ swiftPM: { scratchPath: ".build-appkit/index-build" } }, serverSettings("uikit", undefined, simulatorSDK));
+            const uiKit = serverConfig({ swiftPM: { scratchPath: ".build/appkit/index-build" } }, serverSettings("uikit", undefined, simulatorSDK));
             const back = serverConfig(uiKit, serverSettings("appkit", undefined));
-            check("as UIKit the language server indexes in .build-uikit/index-build for arm64-apple-ios26.0-simulator against Xcode's simulator SDK - and back on AppKit both are gone",
-                uiKit.swiftPM?.scratchPath === ".build-uikit/index-build" && uiKit.swiftPM?.triple === "arm64-apple-ios26.0-simulator"
+            check("as UIKit the language server indexes in .build/uikit/index-build for arm64-apple-ios26.0-simulator against Xcode's simulator SDK - and back on AppKit both are gone",
+                uiKit.swiftPM?.scratchPath === ".build/uikit/index-build" && uiKit.swiftPM?.triple === "arm64-apple-ios26.0-simulator"
                 && uiKit.swiftPM?.sdk === simulatorSDK && !("swiftSDK" in uiKit.swiftPM!)
-                && back.swiftPM?.scratchPath === ".build-appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
+                && back.swiftPM?.scratchPath === ".build/appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
             check("with no simulator SDK found UIKit indexes for this Mac",
-                JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build-uikit/index-build" }));
+                JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build/uikit/index-build" }));
         }
         check("simctl's list reads as the iOS simulators a head installs on, the newest runtime first",
             JSON.stringify(parseSimulators(JSON.stringify({ devices: {
@@ -337,7 +350,7 @@ export async function run(): Promise<void> {
         {
             const helloWorldHere = findApplications(root.uri.fsPath).find((each) => each.name === "HelloWorld")!;
             check("HelloWorld and the Gallery have UIKit heads", hasHead(helloWorldHere, "uikit") && hasHead(gallery_, "uikit"));
-            const facts = path.join(helloWorldHere.directory, ".build-uikit", "debugger.json");
+            const facts = path.join(helloWorldHere.directory, ".build", "uikit", "debugger.json");
             const launchOnUIKit = async (udid: string | undefined, configuration = "release", starts = true) => {
                 const started: vscode.Task[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
@@ -389,16 +402,16 @@ export async function run(): Promise<void> {
             const onSimulator = uiKitSuites.filter((each) => each.onDevice).map((each) => forDevice(each, "SIM-1"));
             check("uikit runs the core and the Gallery as plain Swift, and test-uikit.sh <udid> on the simulator",
                 uiKitSuites.some((each) => each.label === "StateUI")
-                && onSimulator.length === 1 && onSimulator[0].label === "lib/StateUI.UIKit/Tests"
+                && onSimulator.length === 1 && onSimulator[0].label === "lib/StateUI/StateUI.UIKit/Tests"
                 && [onSimulator[0].command, ...onSimulator[0].args].join(" ") === `bash ${path.join(root.uri.fsPath, ".scripts", "UIKit", "test-uikit.sh")} SIM-1`
-                && !uiKitSuites.some((each) => each.label === "lib/StateUI.AppKit" || each.label === "lib/StateUI.Android/Tests"));
+                && !uiKitSuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
         }
 
         // 6b. WinUI: HelloWorld's head, built by run-app.ps1 -BuildOnly and
         //     launched under lldb-dap, and the host's own package through test-winui.ps1.
-        check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build-winui/index-build",
+        check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build/winui/index-build",
             hasHead(helloWorld, "winui")
-            && JSON.stringify(serverSettings("winui", undefined)) === JSON.stringify({ scratchPath: ".build-winui/index-build" }));
+            && JSON.stringify(serverSettings("winui", undefined)) === JSON.stringify({ scratchPath: ".build/winui/index-build" }));
         {
             const ran: vscode.Task[] = [];
             const provider = new StateUIDebugConfigurationProvider({
@@ -418,23 +431,23 @@ export async function run(): Promise<void> {
                 ran.length === 1
                 && line === `powershell -NoProfile -ExecutionPolicy Bypass -File ${path.join(root.uri.fsPath, ".scripts", "WinUI", "run-app.ps1")} -App ${helloWorld.directory} -Configuration release -BuildOnly`
                 && resolved?.type === "lldb-dap" && resolved.request === "launch"
-                && resolved.program === path.join(helloWorld.directory, ".build-winui", "release", "HelloWorldWinUI.exe"));
+                && resolved.program === path.join(helloWorld.directory, ".build", "winui", "release", "HelloWorldWinUI.exe"));
         }
         {
             const winUISuites = findSuites(root.uri.fsPath, "winui");
             say(`winui suites: ${winUISuites.map((each) => each.label).join(", ")}`);
-            const own = winUISuites.find((each) => each.label === "lib/StateUI.WinUI");
+            const own = winUISuites.find((each) => each.label === "lib/StateUI/StateUI.WinUI/Testing");
             check("winui runs the core and the Gallery as plain Swift, its own package by test-winui.ps1, and no AppKit or Android",
                 winUISuites.some((each) => each.label === "StateUI")
                 && own?.command === "powershell" && own.args[own.args.length - 1].endsWith("test-winui.ps1")
-                && !winUISuites.some((each) => each.label === "lib/StateUI.AppKit" || each.label === "lib/StateUI.Android/Tests"));
+                && !winUISuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
         }
 
         // 6c. GTK: HelloWorld's head, built by run-app.sh --build-only and
         //     launched under lldb-dap, and the host's own package by swift test.
-        check("HelloWorld has a GTK head, and as GTK the language server indexes in .build-gtk/index-build",
+        check("HelloWorld has a GTK head, and as GTK the language server indexes in .build/gtk/index-build",
             hasHead(helloWorld, "gtk")
-            && JSON.stringify(serverSettings("gtk", undefined)) === JSON.stringify({ scratchPath: ".build-gtk/index-build" }));
+            && JSON.stringify(serverSettings("gtk", undefined)) === JSON.stringify({ scratchPath: ".build/gtk/index-build" }));
         {
             const ran: vscode.Task[] = [];
             const provider = new StateUIDebugConfigurationProvider({
@@ -454,16 +467,18 @@ export async function run(): Promise<void> {
                 ran.length === 1
                 && line === `bash ${path.join(root.uri.fsPath, ".scripts", "GTK", "run-app.sh")} ${helloWorld.directory} debug --build-only`
                 && resolved?.type === "lldb-dap" && resolved.request === "launch"
-                && resolved.program === path.join(helloWorld.directory, ".build-gtk", "debug", "HelloWorldGTK"));
+                && resolved.program === path.join(helloWorld.directory, ".build", "gtk", "debug", "HelloWorldGTK"));
         }
         {
             const gtkSuites = findSuites(root.uri.fsPath, "gtk");
             say(`gtk suites: ${gtkSuites.map((each) => each.label).join(", ")}`);
-            const own = gtkSuites.find((each) => each.label === "lib/StateUI.GTK");
-            check("gtk runs the core and the Gallery as plain Swift, its own package by swift test, and no other host's",
+            const own = gtkSuites.find((each) => each.label === "lib/StateUI/StateUI.GTK/Testing");
+            const testing = path.join(root.uri.fsPath, "lib", "StateUI", "StateUI.GTK", "Testing");
+            check("gtk runs the core and the Gallery as plain Swift, its own tests' package by swift test, and no other host's",
                 gtkSuites.some((each) => each.label === "StateUI")
-                && own?.command === "swift" && own.args.join(" ") === `test --package-path ${path.join(root.uri.fsPath, "lib", "StateUI.GTK")}`
-                && !gtkSuites.some((each) => ["lib/StateUI.AppKit", "lib/StateUI.WinUI", "lib/StateUI.Android/Tests"].includes(each.label)));
+                && own?.command === "swift" && own.args.join(" ") === `test --package-path ${testing}`
+                && !gtkSuites.some((each) => ["lib/StateUI/StateUI.AppKit", "lib/StateUI/StateUI.WinUI", "lib/StateUI/StateUI.Android/Tests",
+                    "lib/Backends/WebView.WinUI"].includes(each.label)));
         }
 
         const palette = await vscode.commands.getCommands(true);
@@ -480,22 +495,187 @@ export async function run(): Promise<void> {
             nameProblem("MyApp2") === undefined && nameProblem("My-App") !== undefined
             && nameProblem("2App") !== undefined && nameProblem("StateUI") !== undefined);
         {
-            const made = inAppsCommand(root.uri.fsPath, "Notes", "darwin");
-            const windows = inAppsCommand(root.uri.fsPath, "Notes", "win32");
-            check("in apps/ it is the checkout's scaffolder: new-app.sh Notes, new-app.ps1 -Name Notes",
-                made.command === "bash" && made.args[0].split(path.sep).join("/").endsWith("/.scripts/new-app.sh") && made.args[1] === "Notes"
-                && windows.command === "powershell" && windows.args.slice(-3).join(" ").endsWith("new-app.ps1 -Name Notes"));
+            const apps = path.join(root.uri.fsPath, "apps");
+            const made = scaffolderCommand(root.uri.fsPath, apps, "Notes", "darwin");
+            const windows = scaffolderCommand(root.uri.fsPath, apps, "Notes", "win32");
+            check("in apps/ it is the checkout's scaffolder: new-app.sh Notes <apps>, new-app.ps1 -Name Notes -AppsDir <apps>",
+                made.command === "bash" && made.args[0].split(path.sep).join("/").endsWith("/.scripts/new-app.sh")
+                && made.args.slice(1).join(" ") === `Notes ${apps}`
+                && windows.command === "powershell" && windows.args.slice(-5).join(" ").endsWith(`new-app.ps1 -Name Notes -AppsDir ${apps}`));
+            const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"));
+            const setting = manifest.contributes.configuration.properties;
+            check("the palette has New Project Group; New Application in apps/ shows where a folder keeps apps/; "
+                + "stateui.checkout is this machine's, stateui.minimumRelease 0.5.0",
+                commands.includes("stateui.newProjectGroup")
+                && manifest.contributes.commands.some((each: { command: string; enablement?: string }) =>
+                    each.command === "stateui.newApplicationInApps" && each.enablement === "stateui.hasApps")
+                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.5.0");
+            check("an application's Package.swift names its checkout: HelloWorld's ../.. is this one",
+                fs.realpathSync(checkoutNamedBy(path.join(apps, "HelloWorld")) ?? "/") === fs.realpathSync(root.uri.fsPath)
+                && findApplications(root.uri.fsPath).every((each) => each.checkout !== undefined));
+            check("a group's name is letters, digits, dots, hyphens and underscores",
+                groupNameProblem("My.Apps-2_x") === undefined && groupNameProblem("My Apps") !== undefined
+                && groupNameProblem("-apps") !== undefined && groupNameProblem("") !== undefined);
+            const listed = ["0.3.1", "0.4.0", "0.10.0", "0.4.1", "v1.0", "1.0.0-beta"]
+                .map((tag, at) => `${at}abc\trefs/tags/${tag}`).join("\n");
+            const clone = cloneCommand("https://github.com/idexus/StateUI.git", "0.4.0", "/Groups/Mine");
+            check("the releases offered are the tags minimumRelease or newer, the newest first; one is cloned shallow into the group's StateUI/",
+                releasesIn(listed, "0.4.0").join(" ") === "0.10.0 0.4.1 0.4.0"
+                && clone.command === "git" && clone.args.join(" ")
+                    === `-c advice.detachedHead=false clone --depth 1 --branch 0.4.0 https://github.com/idexus/StateUI.git ${path.join("/Groups/Mine", "StateUI")}`);
+        }
+        // 7a. A project group, made by the command itself with its questions answered: one building with this checkout,
+        //     one with the newest release offered cloned into it. Each application names its StateUI in its Package.swift, New
+        //     Application in apps/ makes another the same way there, and each group's Notes builds.
+        {
+            const location = process.env.STATEUI_TEST_GROUPS ?? fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "stateui-groups-")));
+            const taken = ["LocalGroup", "ReleaseGroup"].map((each) => path.join(location, each)).filter((each) => fs.existsSync(each));
+            check(`the groups are made where nothing is yet${taken.length > 0 ? ` - remove ${taken.join(", ")} first` : ""}`, taken.length === 0);
+            // The system's own spelling: the editor names a Windows folder `c:\…`, a resolved path `C:\…`.
+            const same = (a: string | undefined, b: string): boolean => a !== undefined && fs.realpathSync.native(a) === fs.realpathSync.native(b);
+            const builds = (application: string): boolean => {
+                const appKit = process.platform === "darwin";
+                const name = path.basename(application);
+                try {
+                    // As an AppKit build on macOS, as plain Swift elsewhere.
+                    const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(appKit ? "appkit" : undefined) })
+                        .filter((entry): entry is [string, string] => entry[1] !== undefined));
+                    execSync(`swift build --package-path "${application}"${appKit ? ` --scratch-path "${path.join(application, ".build", "appkit")}" --product ${name}AppKit` : ""}`,
+                        { env, stdio: "pipe" });
+                    return true;
+                } catch (error) {
+                    say(`     ${String((error as { stdout?: Buffer }).stdout ?? error).split("\n").slice(-8).join("\n     ")}`);
+                    return false;
+                }
+            };
+            const wired = (application: string): boolean => {
+                const text = fs.readFileSync(path.join(application, "Package.swift"), "utf8");
+                return [...text.matchAll(/^[^/\n]*\.package\(.*path: "([^"]+)"/gm)]
+                    .every((match) => fs.existsSync(path.join(path.resolve(fs.realpathSync(application), match[1]), "Package.swift")));
+            };
+
+            const local = await vscode.commands.executeCommand<string>("stateui.newProjectGroup",
+                { location, name: "LocalGroup", checkout: root.uri.fsPath, application: "Notes" });
+            const localNotes = path.join(local ?? "", "apps", "Notes");
+            const launch = local ? JSON.parse(fs.readFileSync(path.join(local, ".vscode", "launch.json"), "utf8")) : {};
+            check("a group is its folder: apps/, .gitignore, and the editor's settings with StateUI: Debug and Release",
+                local === path.join(location, "LocalGroup")
+                && [".gitignore", ".vscode/settings.json", "apps/Notes/Package.swift"].every((each) => fs.existsSync(path.join(local, each)))
+                && JSON.stringify(launch.configurations.map((each: vscode.DebugConfiguration) => [each.name, each.type, each.configuration]))
+                    === JSON.stringify(configurations().map((each) => [each.name, each.type, each.configuration])));
+            check("with the local checkout its application names this checkout by the path from its own folder, and nothing is copied",
+                same(checkoutNamedBy(localNotes), root.uri.fsPath) && wired(localNotes)
+                && !fs.readFileSync(path.join(localNotes, "Package.swift"), "utf8").includes('path: "../.."')
+                && !fs.existsSync(path.join(local!, "StateUI")) && !fs.existsSync(path.join(local!, ".scripts")));
+            const tasks = await vscode.commands.executeCommand<string>("stateui.newApplicationInApps", { folder: local, name: "Tasks" });
+            check("New Application in apps/ in that group names the same checkout", tasks === path.join(local!, "apps", "Tasks")
+                && same(checkoutNamedBy(tasks), root.uri.fsPath) && wired(tasks));
+            check("the local group's application builds", builds(localNotes));
+            // StateUI: Run Tests in the group: each application's example test, run as the command runs it.
+            const testHost = process.platform === "darwin" ? "appkit" : undefined;
+            const groupSuites = findSuites(local!, testHost);
+            const notesSuite = groupSuites.find((each) => each.label === "apps/Notes");
+            check("Run Tests in a group finds each application's tests",
+                groupSuites.map((each) => each.label).join(" ") === "apps/Notes apps/Tasks" && notesSuite !== undefined);
+            const passes = (() => {
+                try {
+                    const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(testHost), ...notesSuite!.env })
+                        .filter((entry): entry is [string, string] => entry[1] !== undefined));
+                    execSync([notesSuite!.command, ...notesSuite!.args].map((each) => `"${each}"`).join(" "), { cwd: local, env, stdio: "pipe" });
+                    return true;
+                } catch (error) {
+                    say(`     ${String((error as { stdout?: Buffer }).stdout ?? error).split("\n").slice(-8).join("\n     ")}`);
+                    return false;
+                }
+            })();
+            check(`Notes' example test passes as ${testHost ?? "plain Swift"}`, passes);
+
+            // StateUI: Deploy in the group: Notes built for release and laid in the group's artifacts/Notes/<platform>,
+            // on WinUI per architecture - this machine's own, and x64 too on an ARM64 machine - and run from there.
+            const notes = findApplications(local!).find((each) => each.name === "Notes")!;
+            const winUIDeploy = deployCommand(notes, "winui", "D", "x64");
+            const androidDeploy = deployCommand(notes, "android", "D", undefined, "SERIAL");
+            check("Deploy lays an application in artifacts/<application>/<platform> beside its apps/, on WinUI per architecture, by its checkout's deploy script",
+                commands.includes("stateui.deploy")
+                && JSON.stringify(winUIArchitectures("arm64")) === JSON.stringify(["arm64", "x64"])
+                && JSON.stringify(winUIArchitectures("x64")) === JSON.stringify(["x64"])
+                && deployDestination(notes, "winui", "x64") === path.join(local!, "artifacts", "Notes", "WinUI", "x64")
+                && deployDestination(notes, "gtk") === path.join(local!, "artifacts", "Notes", "GTK")
+                && same(notes.checkout, root.uri.fsPath)
+                && winUIDeploy?.script === path.join(notes.checkout!, ".scripts", "WinUI", "deploy.ps1")
+                && winUIDeploy.args.slice(-6).join(" ") === `-App ${notes.directory} -Destination D -Architecture x64`
+                && androidDeploy?.command === "bash"
+                && androidDeploy.args.join(" ") === `${path.join(notes.checkout!, ".scripts", "Android", "deploy.sh")} ${notes.directory} D SERIAL`
+                && fs.readFileSync(path.join(local!, ".gitignore"), "utf8").includes("\n/artifacts/\n"));
+            const own: Record<string, Host> = { darwin: "appkit", win32: "winui", linux: "gtk" };
+            await api.selectHost(own[process.platform]);
+            for (const architecture of process.platform === "win32" ? winUIArchitectures() : [undefined]) {
+                const laid = await vscode.commands.executeCommand<string>("stateui.deploy", { application: notes.directory, architecture });
+                const platform = describe(own[process.platform]).label;
+                check(`Deploy lays the group's Notes in its artifacts/Notes/${platform}${architecture ? `/${architecture}` : ""}`,
+                    laid === path.join(local!, "artifacts", "Notes", platform, ...(architecture ? [architecture] : []))
+                    && fs.readdirSync(laid).length > 0);
+                if (architecture) {
+                    // Its head's architecture, from its PE header; the Swift and C++ runtimes of it beside it, and no module.
+                    const head = path.join(laid!, "NotesWinUI.exe");
+                    const bytes = fs.readFileSync(head);
+                    check(`the deployed head is ${architecture}, with StateUI, the Windows App SDK and the Swift and C++ runtimes of its architecture, and nothing only a build reads`,
+                        bytes.readUInt16LE(bytes.readUInt32LE(0x3c) + 4) === (architecture === "x64" ? 0x8664 : 0xaa64)
+                        && ["StateUI.dll", "swiftCore.dll", "Foundation.dll", "vcruntime140.dll", "Microsoft.ui.xaml.dll", "resources.pri"]
+                            .every((each) => fs.existsSync(path.join(laid!, each)))
+                        && !fs.existsSync(path.join(laid!, "StateUI.swiftmodule")) && !fs.existsSync(path.join(laid!, "plutil.exe")));
+                    // Started with no Swift on the search path, as on a machine that has none.
+                    const bare = (process.env.PATH ?? "").split(";").filter((each) => !/\\Swift\\/i.test(each)).join(";");
+                    const started = spawn(head, [], { cwd: laid, env: { ...process.env, PATH: bare }, stdio: "ignore" });
+                    await new Promise((resume) => setTimeout(resume, 8000));
+                    const runs = started.exitCode === null;
+                    started.kill();
+                    check(`the deployed ${architecture} Notes runs from there with no Swift on the search path`, runs);
+                }
+            }
+
+            // A release is offered from minimumRelease on - the first whose scripts build as this extension does.
+            const minimum: string = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"))
+                .contributes.configuration.properties["stateui.minimumRelease"].default;
+            const every = await listReleases("https://github.com/idexus/StateUI.git", "0.0.0");
+            const offered = await listReleases("https://github.com/idexus/StateUI.git", minimum);
+            check(`GitHub lists its releases, and none older than ${minimum} is offered - 0.4.0 builds differently`,
+                every.releases.includes("0.4.0") && !offered.releases.includes("0.4.0")
+                && offered.releases.every((each) => every.releases.includes(each)));
+            const newest = offered.releases[0];
+            if (!newest) {
+                say(`skip a group of a release: none ${minimum} or newer is published yet`);
+            } else {
+                const release = await vscode.commands.executeCommand<string>("stateui.newProjectGroup",
+                    { location, name: "ReleaseGroup", release: newest, application: "Notes" });
+                const releaseNotes = path.join(release ?? "", "apps", "Notes");
+                check(`with a release it is cloned into the group's StateUI/ at ${newest}, and the application names ../../StateUI`,
+                    release === path.join(location, "ReleaseGroup")
+                    && execSync("git describe --tags", { cwd: releaseDirectory(release) }).toString().trim() === newest
+                    && same(checkoutNamedBy(releaseNotes), releaseDirectory(release)) && wired(releaseNotes)
+                    && fs.readFileSync(path.join(releaseNotes, "Package.swift"), "utf8").includes('.package(path: "../../StateUI")'));
+                const more = await vscode.commands.executeCommand<string>("stateui.newApplicationInApps", { folder: release, name: "Tasks" });
+                check("New Application in apps/ in that group names its release", same(checkoutNamedBy(more), releaseDirectory(release!)));
+                check("the release group's application builds", builds(releaseNotes));
+            }
+            if (!process.env.STATEUI_TEST_GROUPS) {
+                fs.rmSync(location, { recursive: true, force: true });
+            }
         }
         // 7b. The extension reinstalls itself from the checkout: packed by npm, installed by the editor's command line.
         {
             const version = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8")).version;
-            const steps = reinstallSteps(root.uri.fsPath, "/Editor/bin/code");
+            const steps = reinstallSteps(root.uri.fsPath, "/Editor/bin/code", "linux");
             check("Reinstall VS Code Extension packs it with npm in lib/StateUI.VSCode, then installs artifacts/stateui-<version>.vsix with --force",
                 commands.includes("stateui.reinstallExtension") && steps.length === 2
                 && `${steps[0].command} ${steps[0].args.join(" ")}` === "npm run package"
                 && steps[0].cwd === path.join(root.uri.fsPath, "lib", "StateUI.VSCode")
                 && steps[1].command === "/Editor/bin/code"
                 && steps[1].args.join(" ") === `--install-extension ${path.join(root.uri.fsPath, "artifacts", `stateui-${version}.vsix`)} --force`);
+            check("on Windows it packs with npm.cmd, which a terminal whose policy refuses scripts (npm.ps1) still runs",
+                reinstallSteps(root.uri.fsPath, "C:\\Editor\\bin\\code.cmd", "win32")[0].command === "npm.cmd");
+            check("the command line that installs it is the running editor's own, where its platform keeps it",
+                fs.existsSync(editorCommandLine(vscode.env.appRoot)));
         }
         // 7c. The chosen host's marks are made again - every family, or the stale ones - then the documents rendered,
         //     from a checkout alone.
@@ -530,8 +710,8 @@ export async function run(): Promise<void> {
                 ...(svg ? ['"/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-svg.so"',
                     '"svg" 6 "gdk-pixbuf" "Scalable Vector Graphics" "LGPL"', '"image/svg+xml" "image/svg" ""', ""] : []),
             ].join("\n");
-            check("Check Toolchain compares versions part by part, reads Xcode's, simctl's, a toolchain's, an NDK's and "
-                + "gdk-pixbuf's words, and says a version too old",
+            check("Check Toolchain compares versions part by part, reads Xcode's, simctl's, a toolchain's, an NDK's, the "
+                + "keychain's and gdk-pixbuf's words, and says a version too old",
                 commands.includes("stateui.checkToolchain")
                 && atLeast("6.4.1", "6.4") && atLeast("26", "26.0") && !atLeast("6.3.9", "6.4") && !atLeast("4.13", "4.14")
                 && xcodeVersion("Xcode 27.0\nBuild version 27A123") === "27.0"
@@ -541,20 +721,36 @@ export async function run(): Promise<void> {
                     { platform: "iOS", version: "26.0", isAvailable: true }, { platform: "iOS", version: "26.2", isAvailable: true },
                     { platform: "watchOS", version: "27.0", isAvailable: true }] })) === "26.2"
                 && svgLoaderIn(loaders(true)) === "libpixbufloader-svg.so" && svgLoaderIn(loaders(false)) === undefined
+                && svgLoaderInGlycin("[loader:image/png]\nExec = /usr/libexec/glycin-loaders/2+/glycin-image-rs\n\n"
+                    + "[loader:image/svg+xml]\nExec = /usr/libexec/glycin-loaders/2+/glycin-svg\n") === "glycin-svg"
+                && svgLoaderInGlycin("[loader:image/png]\nExec = /usr/libexec/glycin-loaders/2+/glycin-image-rs\n") === undefined
+                && lldbDapFailure("lldb-dap: LLVM (http://llvm.org/):\n  LLVM version 21.0.0\n") === undefined
+                && lldbDapFailure(".../usr/bin/lldb-dap: error while loading shared libraries: libpython3.9.so.1.0: cannot open"
+                    + " shared object file: No such file or directory\n") === "libpython3.9.so.1.0 is missing"
+                && lldbDapFailure(undefined) === "it did not run"
+                && checkedPythonIn("C:\\Swift\\Python-3.10.1\\usr\\bin\\python310.dll\r\n") === "C:\\Swift\\Python-3.10.1\\usr\\bin\\python310.dll"
+                && checkedPythonIn("error: unable to find 'python310.dll'.\r\nEnsure Python 3.10 (arm64) is installed and available"
+                    + " in your Path.\r\n") === undefined
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
                 && ndkRevisionIn("Pkg.Desc = Android NDK\nPkg.Revision = 30.0.16248370\n") === "30.0.16248370"
+                && developmentIdentityIn('  1) 0A1B "Apple Development: Ann Doe (AB12CD34EF)"\n     1 valid identities found\n')
+                    === "Apple Development: Ann Doe (AB12CD34EF)"
+                && developmentIdentityIn("     0 valid identities found\n") === undefined
                 && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]
                     === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it.");
-            const findings = await checkToolchain();
+            // As the command asks: the components, then whether the lldb-dap a launch takes starts (Linux, Windows).
+            const starts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
+            const findings = [...await checkToolchain(), ...(starts ? [starts] : [])];
             report(findings).forEach((line) => say(`     ${line}`));
             const own: Record<string, string> = { linux: "GTK 4.14 or newer, with its headers", darwin: "Xcode 27 or newer",
                 win32: "Visual Studio 2026 with the C++ tools for this machine" };
             const missing = findings.filter((each) => each.found === undefined).map((each) => each.component);
-            check(`Check Toolchain looks for Swift, this platform's own and lldb-dap, and finds them all here${
+            check(`Check Toolchain looks for Swift, this platform's own, lldb-dap - one that starts, off the Mac - and Git, and finds them all here${
                 missing.length > 0 ? ` - not ${missing.join(", ")}` : ""}`,
                 findings[0]?.component === "Swift 6.4 or newer" && findings.some((each) => each.component === own[process.platform])
-                && findings.some((each) => each.component === "lldb-dap") && missing.length === 0
-                && findings.every((each) => each.advice.length > 0));
+                && findings.some((each) => each.component === "lldb-dap") && findings.some((each) => each.component === "Git")
+                && (process.platform === "darwin" || starts?.component === "an lldb-dap that starts")
+                && missing.length === 0 && findings.every((each) => each.advice.length > 0));
         }
         // 8. The package holds what the sources build today and nothing an
         //    older build left in out/.
@@ -588,9 +784,9 @@ export async function run(): Promise<void> {
             check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 600_000))]);
-            check("an lldb-dap session starts on HelloWorldAppKit", String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/debug/HelloWorldAppKit"));
+            check("an lldb-dap session starts on HelloWorldAppKit", String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit"));
             await new Promise((resume) => setTimeout(resume, 4000));
-            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
+            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldAppKit process is running", alive);
             await vscode.debug.stopDebugging(running);
 
@@ -661,7 +857,7 @@ export async function run(): Promise<void> {
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
             check("an lldb-dap session starts on HelloWorldWinUI.exe",
-                String(running?.configuration.program ?? "").endsWith(path.join("apps", "HelloWorld", ".build-winui", "debug", "HelloWorldWinUI.exe")));
+                String(running?.configuration.program ?? "").endsWith(path.join("apps", "HelloWorld", ".build", "winui", "debug", "HelloWorldWinUI.exe")));
             const alive = (): boolean => {
                 try {
                     return execSync('tasklist /FI "IMAGENAME eq HelloWorldWinUI.exe" /NH').toString().includes("HelloWorldWinUI.exe");
@@ -687,9 +883,9 @@ export async function run(): Promise<void> {
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
             check("an lldb-dap session starts on HelloWorldGTK",
-                String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build-gtk/debug/HelloWorldGTK"));
+                String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/gtk/debug/HelloWorldGTK"));
             await new Promise((resume) => setTimeout(resume, 4000));
-            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build-gtk/debug/HelloWorldGTK").toString().trim().length > 0; } catch { return false; } })();
+            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/gtk/debug/HelloWorldGTK").toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldGTK process is running", alive);
             await vscode.debug.stopDebugging(running);
         }

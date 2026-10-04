@@ -1,0 +1,5 @@
+# revision 2.1
+ToolbarItem.clicked: ✅
+ToolbarItemGroup: ✅
+ToolbarItemGroup.order: ✅
+ToolbarItemGroup.side: ✅

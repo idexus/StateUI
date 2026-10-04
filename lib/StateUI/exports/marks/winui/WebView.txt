@@ -1,0 +1,14 @@
+# revision 1.2
+WebView: ✅
+WebView.canGoBackChanged: ✅
+WebView.canGoForwardChanged: ✅
+WebView.evaluateJavaScript: ✅
+WebView.frameChanged: ✅
+WebView.goBack: ✅
+WebView.goForward: ✅
+WebView.navigated: ✅
+WebView.navigating: ✅
+WebView.processTerminated: ✅
+WebView.reload: ✅
+WebView.source: ✅
+WebView.userAgent: ✅

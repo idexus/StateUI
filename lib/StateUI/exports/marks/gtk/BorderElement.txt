@@ -1,0 +1,22 @@
+# revision 1.1
+Button.lineWidth: ✓ read lineWidth of Button: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
+Button.shape: ✓ read shape of Button: the class of the host's style sheet the widget wears: GTK reads back no shape
+Button.stroke: ✓ read stroke of Button: the class of the host's style sheet the widget wears: GTK reads back no stroke
+Grid.lineWidth: cannot read lineWidth of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
+Grid.shape: cannot read shape of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
+Grid.stroke: cannot read stroke of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
+HStack.lineWidth: cannot read lineWidth of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
+HStack.shape: cannot read shape of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
+HStack.stroke: cannot read stroke of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
+RadioButton.lineWidth: not realized
+RadioButton.shape: not realized
+RadioButton.stroke: not realized
+ScrollView.lineWidth: cannot read lineWidth of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
+ScrollView.shape: cannot read shape of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
+ScrollView.stroke: cannot read stroke of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
+VStack.lineWidth: cannot read lineWidth of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
+VStack.shape: cannot read shape of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
+VStack.stroke: cannot read stroke of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
+ZStack.lineWidth: cannot read lineWidth of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
+ZStack.shape: cannot read shape of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
+ZStack.stroke: cannot read stroke of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it

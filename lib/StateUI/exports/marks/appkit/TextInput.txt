@@ -1,0 +1,37 @@
+# revision 1.2
+SearchField.cursorPosition: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet
+SearchField.inputPurpose: ✓ read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks
+SearchField.isEnabled: ✅
+SearchField.isReadOnly: ✅
+SearchField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet
+SearchField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet
+SearchField.maximumLength: ✅
+SearchField.placeholder: ✅
+SearchField.placeholderColor: cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet
+SearchField.selectionLength: cannot read selectionLength of SearchField - AppKit's driver has no path for it yet
+SearchField.text: ✅
+SearchField.textChanged: ✅
+TextEditor.cursorPosition: ✅
+TextEditor.inputPurpose: ✓ read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks
+TextEditor.isEnabled: ✅
+TextEditor.isReadOnly: ✅
+TextEditor.isSpellCheckEnabled: ✅
+TextEditor.isTextPredictionEnabled: ✅
+TextEditor.maximumLength: ✅
+TextEditor.placeholder: ✅
+TextEditor.placeholderColor: ✅
+TextEditor.selectionLength: ✅
+TextEditor.text: ✅
+TextEditor.textChanged: ✅
+TextField.cursorPosition: cannot read cursorPosition of TextField - AppKit's driver has no path for it yet
+TextField.inputPurpose: ✓ read inputPurpose of TextField: the traits the host keeps; a Mac shows no keys a purpose picks
+TextField.isEnabled: ✅
+TextField.isReadOnly: ✅
+TextField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet
+TextField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet
+TextField.maximumLength: ✅
+TextField.placeholder: ✅
+TextField.placeholderColor: cannot read placeholderColor of TextField - AppKit's driver has no path for it yet
+TextField.selectionLength: cannot read selectionLength of TextField - AppKit's driver has no path for it yet
+TextField.text: ✅
+TextField.textChanged: ✅

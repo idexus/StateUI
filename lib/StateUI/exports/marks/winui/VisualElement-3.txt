@@ -1,0 +1,49 @@
+# revision 1.1
+ActivityIndicator.isEnabled: not realized
+ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
+Button.accessibilityHeading: ✅
+Canvas.isEnabled: not realized
+Canvas.rotationY: ✓ read rotationY of Canvas: the host's own tip, checked against the projection it laid on the element
+CheckBox.accessibilityHeading: ✅
+ColorBox.isEnabled: not realized
+ColorBox.rotationY: ✓ read rotationY of ColorBox: the host's own tip, checked against the projection it laid on the element
+DatePicker.accessibilityHeading: ✅
+Ellipse.isEnabled: not realized
+Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
+Grid.accessibilityHeading: ✅
+HStack.isEnabled: not realized
+HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked against the projection it laid on the element
+Image.accessibilityHeading: ✅
+ItemsView.isEnabled: not realized
+ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own tip, checked against the projection it laid on the element
+Line.isEnabled: not realized
+Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
+Map.accessibilityHeading: 🧩
+Path.isEnabled: not realized
+Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
+Picker.accessibilityHeading: ✅
+Polygon.isEnabled: not realized
+Polygon.rotationY: ✓ read rotationY of Polygon: the host's own tip, checked against the projection it laid on the element
+Polyline.accessibilityHeading: ✅
+ProgressBar.isEnabled: not realized
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
+RadioButton.accessibilityHeading: ✅
+Rectangle.isEnabled: not realized
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
+ScrollView.accessibilityHeading: ✅
+SearchField.isEnabled: ✅
+SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
+Slider.accessibilityHeading: ✅
+Stepper.isEnabled: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
+Switch.accessibilityHeading: ✅
+Text.accessibilityHeading: ✅
+TextEditor.isEnabled: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.accessibilityHeading: ✅
+TimePicker.isEnabled: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.accessibilityHeading: ✅
+WebView.isEnabled: not realized
+WebView.rotationY: ✓ read rotationY of WebView: the host's own tip, checked against the projection it laid on the element
+ZStack.accessibilityHeading: ✅

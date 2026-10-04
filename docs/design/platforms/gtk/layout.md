@@ -1,12 +1,12 @@
 # Layout on GTK
 
-StateUI's layouts place their children by the core's arithmetic
+StateUI's layouts place their children by the host layer's arithmetic
 ([layout](../../host/layout.md)); GTK measures and draws each widget.
 
 ## A layout is a panel
 
 Every StateUI layout is a `StateUIPanel`, a widget subclass whose measure and
-allocate call the host, which answers with the core's arithmetic and measures
+allocate call the host, which answers with the host layer's arithmetic and measures
 and places each child. GTK lays out by asking: a child is allocated only
 inside its parent's allocation, so a layout never places a child outside the
 pass GTK runs. A child's size is whole logical pixels, and never less than the
@@ -61,10 +61,17 @@ layout has placed yet - neither StateUI's nor GTK's allocation - stands
 nowhere and says nothing: a frame's tick comes before its layout, so a view
 made just before it would otherwise say it stands at zero.
 
+A scroll moves where a view stands in its window with no layout of its own:
+the adjustment changes first, and the viewport moves the document in the
+frame's layout after it, by a transform alone, which allocates nothing of
+StateUI's. So the scroller asks for its document's allocation again as its
+adjustment changes; allocated where the viewport now puts it, the document
+says it moved, and the views read say where they stand on the next frame.
+
 ## Scrolling
 
 A ScrollView is a StateUI layout holding GTK's `GtkScrolledWindow`, which
-holds the document the core's scroll arithmetic lays out - never smaller than
+holds the document the host layer's scroll arithmetic lays out - never smaller than
 the viewport, and several children stacked down. GTK puts the document in a
 `GtkViewport`, which the host tells to give it its natural size along the ways
 the view scrolls and the viewport's own size across them; the document's
@@ -79,8 +86,26 @@ movement is joined up to the display's next frame, which reports it to its
 state and its handlers, and rests once it has stood still, as on every host
 ([a scroller's movement](../../host/runtime.md#a-scrollers-movement)). The
 program moves the view by setting the adjustments, which GTK tells inside the
-program's write: `ProgramWrite` drops that echo, and nothing else is kept.
+program's write: `ProgramWrite` drops that echo. An offset written before the
+first layout waits for it.
 
 A viewport owns its child: a view whose parent is not a StateUI panel is not
 taken out by the view as it goes, and the scroller takes its document out of
 the viewport before it goes itself.
+
+## Right to left
+
+A layout mirrors its children by the host layer's arithmetic, never by GTK's
+direction ([right to left](../../host/layout.md#right-to-left)). What a widget
+draws of itself - where a field's words start, which end a slider fills from,
+the side a check box's mark stands on - follows GTK's own direction, which
+each element's widget takes from the element as it is made and as it turns.
+
+GTK hands a widget's direction to none of its parts: below it, every widget
+keeps the language's. So the host hands it on where words are written: to
+the text a field, a search field or a stepper edit by, which GTK names
+publicly as the editable's delegate (`gtk_editable_get_delegate`); to an
+editor's text view; to the box a button stands its picture and caption in,
+made in the button's direction whenever it is made again. An editor's
+placeholder is laid over its text at a place from the left edge, and stays
+there.

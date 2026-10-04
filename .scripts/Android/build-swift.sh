@@ -17,12 +17,12 @@
 # Environment:
 #   SWIFT_CONFIG=debug|release   (default: debug)
 #   ABIS="arm64-v8a x86_64"      (default: both)
-#   SCRATCH_PATH=<dir>           SwiftPM's build directory (default: <app>/.build-android)
+#   SCRATCH_PATH=<dir>           SwiftPM's build directory (default: <app>/.build/android)
 #   SWIFT_BIN=<path>             the compiler, where PATH has the wrong one
 #   ANDROID_NDK_ROOT=<path>      the NDK, 30 or newer, where it is not found on its own
 #   ANDROID_NDK_HOME=<path>      the same, read after ANDROID_NDK_ROOT
 #
-# The application's manifest reads STATEUI_ANDROID to declare its Android
+# The application's manifest reads STATEUI_HOST=android to declare its Android
 # head; the caller sets it for an Android Views build.
 set -euo pipefail
 
@@ -39,7 +39,7 @@ fi
 APP_PACKAGE="$(cd "$APP_PACKAGE" && pwd)"
 CONFIG="${SWIFT_CONFIG:-debug}"
 ABIS="${ABIS:-arm64-v8a x86_64}"
-SCRATCH_PATH="${SCRATCH_PATH:-$APP_PACKAGE/.build-android}"
+SCRATCH_PATH="${SCRATCH_PATH:-$APP_PACKAGE/.build/android}"
 SWIFT_BIN="${SWIFT_BIN:-swift}"
 API=28
 

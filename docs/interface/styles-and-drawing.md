@@ -13,7 +13,7 @@ every control of its target type. A keyed style is selected with `.style(...)`:
 enum HandbookStyles {
     static var sheet: StyleSheet {
         StyleSheet {
-            Style<Label>()
+            Style<Text>()
                 .fontSize(15)
                 .textColor(Color(light: .black, dark: .white))
 
@@ -34,13 +34,13 @@ Install the sheet on `ApplicationSession` when the application is made:
 
 ```swift quote
 struct NotesApp: Application {
-    @Environment private var application: ApplicationSession
+    @Environment(\.application) private var application
 
     init() {
         application.styles = HandbookStyles.sheet
     }
 
-    var scene: any Scene { MainWindow() }
+    var body: some Scene { WindowGroup { MainPage() } }
 }
 ```
 
@@ -99,8 +99,8 @@ The differ resolves the theme variant for the element wearing it. A system
 theme change invalidates those resolved uses. The host therefore receives one
 concrete color or resource name and needs no parallel theme binding model.
 
-Use `@Environment var app: AppInfo` only when application logic needs the
-theme as a value. A themed color or image follows the theme without an
+Read `app.info.colorScheme`, with `@Environment(\.application) private var
+app`, only when application logic needs the theme as a value. A themed color or image follows the theme without an
 application branch.
 
 ## Visual states
@@ -198,7 +198,7 @@ let wash = Brush.linearGradient(
     endPoint: Point(1, 1))
 
 VStack {
-    Label("Gradient")
+    Text("Gradient")
         .textColor(.white)
 }
 .background(wash)
@@ -224,7 +224,7 @@ vocabulary:
 - `Polygon` and `Polyline` with `Point` values.
 
 Common shape modifiers include fill, stroke, stroke width and dash
-settings, aspect, and `renderTransform`. Geometry-specific modifiers such as a
+settings, aspect, and `geometryTransform`. Geometry-specific modifiers such as a
 rectangle's corner radius or line endpoints remain on the matching shape.
 
 ```swift
@@ -235,7 +235,7 @@ Rectangle()
         startPoint: Point(0, 0),
         endPoint: Point(1, 0)))
     .stroke(.solidColor(.white))
-    .strokeWidth(2)
+    .lineWidth(2)
     .height(80)
 ```
 
@@ -260,7 +260,7 @@ Canvas {
 
     Draw.textColor(.white)
     Draw.fontSize(15)
-    Draw.drawText(
+    Draw.text(
         "Ready",
         x: 0,
         y: 0,

@@ -44,14 +44,13 @@ different name.** You are welcome to say that it is *based on StateUI* or *a for
 of StateUI*; please do not release it as StateUI, because someone downloading it
 will reasonably expect the original.
 
-The name is not scattered through the sources. It is in two places, and a fork
-that changes them is rebranded:
+The name stands in the identifiers a fork renames to be rebranded:
 
-- the `Package.swift` manifests - the Swift module names, which is what
-  `import StateUI` reads.
-- `lib/StateUI/Sources/Bridge/Exports.swift` - the `@_cdecl("stateui_…")` names.
-  They are the C ABI between the Swift library and a host written in another
-  language, so a fork that does not also fork such a host can leave them alone.
+- the `Package.swift` manifests - the Swift module and product names, which is
+  what `import StateUI` reads;
+- the relays beneath the hosts - the Java package `stateui.android` and the
+  WinUI relay's `stateui_winui_…` functions;
+- the editor extension's identity in `lib/StateUI.VSCode/package.json`.
 
 ## The logo
 
