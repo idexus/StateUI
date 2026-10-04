@@ -27,7 +27,10 @@ jobs:
   # the font GNOME gives this platform's desktop, so a verdict that reads a
   # frame holds here as it was written. gdk-pixbuf reads an SVG only through
   # librsvg's loader, which an install without recommends leaves out. The web
-  # view's backend links WebKitGTK 6.0, which the host's tests register.
+  # view's backend links WebKitGTK 6.0, which the host's tests register. Its
+  # web process runs without WebKit's sandbox: the container refuses
+  # bubblewrap the user namespace it needs, and the tests load only their own
+  # HTML.
   gtk:
     name: GTK
     runs-on: ubuntu-24.04
@@ -48,4 +51,6 @@ jobs:
         run: swift --version
 
       - name: GTK host tests, every verdict held
+        env:
+          WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS: "1"
         run: dbus-run-session -- xvfb-run -a env GDK_BACKEND=x11 .scripts/GTK/test-gtk.sh
