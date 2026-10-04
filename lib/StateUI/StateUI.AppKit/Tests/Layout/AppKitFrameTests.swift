@@ -63,6 +63,36 @@ final class AppKitFrameTests: XCTestCase {
         XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 20, 120, 60])
     }
 
+    /// A list's scroll moves its rows with no layout: a view in a row says where it stands once the list moved - by
+    /// less than a row, so no row coming into view lays anything out.
+    @MainActor
+    func testAViewInAListSaysWhereItStandsOnceTheListMoved() throws {
+        let heard = Received<[Double]>()
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ItemsView(0..<100) { item in
+                    ColorBox(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
+                        .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
+                }
+                .width(200).height(300)
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { renderer.closeForTesting() }
+        settle(renderer) { !heard.values.isEmpty }
+        let before = try XCTUnwrap(heard.values.last)
+        let scroller = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first?.collection.enclosingScrollView)
+
+        scroller.contentView.scroll(to: NSPoint(x: 0, y: 30))
+        scroller.reflectScrolledClipView(scroller.contentView)
+        settle(renderer) { heard.values.last?[5] != before[5] }
+
+        let after = try XCTUnwrap(heard.values.last)
+        XCTAssertEqual(after[5], before[5] - 30, "30 higher in its window")
+        XCTAssertEqual(Array(after.prefix(4)), Array(before.prefix(4)), "where it was in its cell")
+    }
+
     @MainActor
     func testFrameReportUsesParentWindowAndSafeAreaCoordinates() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)

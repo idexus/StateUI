@@ -107,4 +107,33 @@ final class UIKitFrameReportTests: XCTestCase {
         XCTAssertEqual(after[5], before[5] - 100, "its place in the window moved with the scroll")
         XCTAssertEqual(Array(after.prefix(4)), Array(before.prefix(4)), "its place in its parent stays")
     }
+
+    /// A list's scroll moves its rows with no layout: a view in a row says where it stands once the list moved - by
+    /// less than a row, so no row coming into view lays anything out.
+    @MainActor
+    func testAViewInAListSaysWhereItStandsOnceTheListMoved() throws {
+        let heard = Received<[Double]>()
+        let host = UIKitRenderer.running {
+            VStack {
+                ItemsView(0..<100) { item in
+                    ColorBox(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
+                        .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
+                }
+                .width(200).height(300)
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { host.finish() }
+        host.settle { !heard.values.isEmpty }
+        let before = try XCTUnwrap(heard.values.last)
+        let list = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+
+        list.collection.setContentOffset(CGPoint(x: 0, y: 30), animated: false)
+        host.settle { heard.values.last?[5] != before[5] }
+
+        let after = try XCTUnwrap(heard.values.last)
+        XCTAssertEqual(after[5], before[5] - 30, "30 higher in its window")
+        XCTAssertEqual(Array(after.prefix(4)), Array(before.prefix(4)), "where it was in its cell")
+    }
 }

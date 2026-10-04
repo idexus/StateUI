@@ -181,9 +181,13 @@
         element.send(.itemActivated, [.string(identity)], in: runtime)
     }
 
-    /// The entries in view now: the end is told reached as the last item among them comes near the last of all.
+    /// The entries in view now, the list's view moved: whoever reads a frame says it on the display's next frame, and
+    /// the end is told reached as the last item among them comes near the last of all.
+    /// Design: docs/design/host/items.md#the-view-moving
     public func showing(_ inView: some Sequence<String>) {
-        guard let element, let runtime, element.handler(.endReached) != nil else { return }
+        guard let element, let runtime else { return }
+        runtime.frames.laidOut()
+        guard element.handler(.endReached) != nil else { return }
         let last = inView.compactMap { itemPositions[$0] }.max() ?? -1
         let within = element.value(.endReachedWithin)?.number.map { Int($0) } ?? 0
         guard endWatch.reached(count: itemPositions.count, last: last, within: within) else { return }

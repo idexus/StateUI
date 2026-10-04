@@ -71,6 +71,16 @@ each told in one call, in the same order.
 the user scrolls away from the end, or once the list gains or loses items,
 so a list waiting for more is not asked for more on every frame.
 
+## The view moving
+
+A toolkit moves a list's rows as it scrolls, often laying nothing out: a
+view in a row stands elsewhere in its window though no layout placed it, and
+a scroll of less than a row brings no row in whose layout would say so. Each
+host tells the entries in view (`showing`) once the list's view has moved,
+and the host layer then says that whoever reads a frame says it on the
+display's next frame (runtime.md, `Where a view stands`). A host keeps no
+road of its own for it.
+
 ## A grid
 
 `ItemsGrid`: a grid holds as many columns as fit items at least the

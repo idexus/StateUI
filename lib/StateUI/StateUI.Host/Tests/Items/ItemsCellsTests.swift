@@ -196,4 +196,38 @@ final class ItemsCellsTests: XCTestCase {
         cells.showing(["96", "99"])
         XCTAssertEqual(Heard.ends, 1)
     }
+
+    /// A list's view moving moves its items in the window though nothing is laid out: whoever reads a frame says it
+    /// on the display's next frame, whatever the list hears.
+    func testAListsViewMovingSaysWhereItsItemsStand() throws {
+        stateUIUseApp(PlainListApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
+        cells.takeEntries()
+        let reader = Reader()
+        runtime.frames.follow(reader, order: 1, reads: true)
+        runtime.frames.commit(now: 16)
+        reader.said = 0
+
+        cells.showing(["3", "4", "5"])
+        runtime.frames.commit(now: 32)
+
+        XCTAssertEqual(reader.said, 1)
+    }
+}
+
+private struct PlainListApplication: Application {
+    var body: some Scene { WindowGroup { ItemsView(0..<100) { Text("\($0)") } } }
+}
+
+/// An element whose frame the tree reads, counting how often it said where it stands.
+@MainActor
+private final class Reader: FrameReporter {
+    var said = 0
+
+    func reportFrame() {
+        said += 1
+    }
 }
