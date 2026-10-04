@@ -38,10 +38,10 @@ struct SceneElement: Element {
 
         // Read here, so this scene is what builds again when a window of it opens or closes.
         var children: [Node] = []
-        for (position, opened) in record.windows.enumerated() {
+        for opened in record.windows {
             guard let declaration = windows.declaration(of: opened.type) else { continue }
 
-            var window = window(declaration, opened: opened, record, docks: position == 0)
+            var window = window(declaration, opened: opened, record)
             window.id = opened.key
 
             // Written either way, so none of them is ever cleared off a window.
@@ -74,15 +74,12 @@ struct SceneElement: Element {
         return node
     }
 
-    /// One window the scene has open, with what was offered it - the scene's inspector docked in it where `docks`
-    /// says: its first.
+    /// One window the scene has open, with what was offered it - and the scene's inspector, where it docks in it.
     /// Design: docs/design/views/inspector.md#where-it-docks
-    private static func window(
-        _ declared: DeclaredWindows, opened: OpenedWindow, _ record: SceneRecord, docks: Bool
-    ) -> Node {
+    private static func window(_ declared: DeclaredWindows, opened: OpenedWindow, _ record: SceneRecord) -> Node {
         var node = Node.window(
             showing: { declared.page(opened, record) }, kind: declared.kind,
-            session: record.windowSession(opened.key), inspector: docks ? { record.dockedInspector } : nil)
+            session: record.windowSession(opened.key), inspector: { Inspector.docked(in: record, window: opened.key) })
         node.environments.insert(contentsOf: declared.environments, at: 0)
         return node
     }

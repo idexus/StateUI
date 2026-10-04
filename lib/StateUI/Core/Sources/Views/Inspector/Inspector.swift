@@ -7,20 +7,20 @@
 
 /// What each render costs and what it builds, shown inside the application.
 ///
-///     @Environment(\.scene) private var scene
+///     @Environment(\.window) private var window
 ///
 ///     VStack { … }
-///         .toolbar { ToolbarItem.inspector(scene) }
+///         .toolbar { ToolbarItem.inspector(window) }
 ///
 /// Each render is listed as it happens - its cause, its road, the time Swift
 /// took to describe it and the host to apply it, and how many composed views
 /// it built and carried - and a chosen render shows its tree of composed
 /// views with each one's time.
 ///
-/// Each scene has its own. It opens along the bottom of the scene's first
-/// window folded to one line, the last render; opened out, it docks at the
-/// side on a desktop or a tablet, or shows in the scene's own window where the
-/// scene declares one:
+/// Each scene has its own. It opens along the bottom of the window its ⓘ is
+/// in, folded to one line, the last render - the ⓘ of another window of the
+/// scene moves it there; opened out, it docks at the side on a desktop or a
+/// tablet, or shows in the scene's own window where the scene declares one:
 ///
 ///     Window(.debugInspector) { DebugInspector() }
 ///
@@ -28,11 +28,11 @@
 public enum Inspector {
     /// Where an inspector shows.
     public enum Place: Sendable, Equatable {
-        /// Along the bottom of its scene's first window, the page going on above
+        /// Along the bottom of the window it docks in, the page going on above
         /// it - where the ⓘ opens it, folded to one line.
         case bottom
 
-        /// Down the trailing side of the scene's first window, under the bar.
+        /// Down the trailing side of the window it docks in, under the bar.
         case side
 
         /// In the scene's `DebugInspector` window - where the scene declares
@@ -40,43 +40,53 @@ public enum Inspector {
         case window
     }
 
-    /// Whether a scene's inspector shows.
+    /// Whether the inspector of a window's scene shows, in whichever window.
     ///
-    /// - Parameter scene: the scene - the session a view in it holds.
-    public static func isOpen(in scene: SceneSession) -> Bool {
-        scene.record.map(showing(in:)) ?? false
+    /// - Parameter window: the window - the session a view in it holds.
+    public static func isOpen(in window: WindowSession) -> Bool {
+        window.record.map(showing(in:)) ?? false
     }
 
-    /// Shows a scene's inspector, and records from now on.
+    /// Shows the inspector of a window's scene, docked in that window, and
+    /// records from now on.
     ///
-    ///     @Environment(\.scene) private var scene
+    ///     @Environment(\.window) private var window
     ///
-    ///     Button("Inspect").onClicked { Inspector.open(.side, in: scene) }
+    ///     Button("Inspect").onClicked { Inspector.open(.side, in: window) }
     ///
     /// - Parameters:
     ///   - place: where it shows, whole - or, left out, along the bottom and
     ///     folded to its last render, which is what the ⓘ does.
-    ///   - scene: the scene - the session a view in it holds.
-    public static func open(_ place: Place? = nil, in scene: SceneSession) {
-        guard let record = scene.record else { return }
+    ///   - window: the window it docks in - the session a view in it holds.
+    public static func open(_ place: Place? = nil, in window: WindowSession) {
+        guard let record = window.record else { return }
 
-        show(in: record, place ?? .bottom, folded: place == nil)
+        show(in: record, place ?? .bottom, folded: place == nil, window: window.key)
     }
 
-    /// Hides a scene's inspector.
+    /// Hides the inspector of a window's scene, wherever it shows.
     ///
-    /// - Parameter scene: the scene - the session a view in it holds.
-    public static func close(in scene: SceneSession) {
-        guard let record = scene.record else { return }
+    /// - Parameter window: the window - the session a view in it holds.
+    public static func close(in window: WindowSession) {
+        guard let record = window.record else { return }
 
         hide(in: record)
     }
 
-    /// Hides a scene's inspector where it shows, and shows it otherwise.
+    /// Shows the inspector of a window's scene docked in that window - moving it
+    /// there from another window of the scene - and hides it where it shows
+    /// there already.
     ///
-    /// - Parameter scene: the scene - the session a view in it holds.
-    public static func toggle(in scene: SceneSession) {
-        isOpen(in: scene) ? close(in: scene) : open(in: scene)
+    /// - Parameter window: the window - the session a view in it holds.
+    public static func toggle(in window: WindowSession) {
+        guard let record = window.record else { return }
+
+        if let docking = record.dockedInspector, docking.window != window.key {
+            let folded = InspectorModel.shared.collapsed.contains(record.id)
+            show(in: record, docking.place, folded: folded, window: window.key)
+        } else {
+            showing(in: record) ? hide(in: record) : open(in: window)
+        }
     }
 
     /// How often, at most, an inspector is built again while renders land, in
@@ -96,6 +106,23 @@ public enum Inspector {
         OpenScenes.shared.declares(.debugInspector, in: record) && OpenScenes.opensWindows
     }
 
+    /// Where a scene's inspector is docked: its place, in the window keyed `window`.
+    struct Docking: Equatable {
+        let place: Place
+        let window: String
+    }
+
+    /// Where `record`'s inspector stands in its window keyed `key`: docked there - or in the scene's first window,
+    /// where the one it docked in has closed; nil where it does not stand in that window.
+    /// Design: docs/design/views/inspector.md#where-it-docks
+    static func docked(in record: SceneRecord, window key: String) -> Place? {
+        guard let docking = record.dockedInspector else { return nil }
+
+        let open = record.windows.map(\.key)
+        let standing = open.contains(docking.window) ? docking.window : open.first
+        return standing == key ? docking.place : nil
+    }
+
     /// Whether a scene's inspector shows, docked or in its window.
     static func showing(in record: SceneRecord) -> Bool {
         InspectorModel.shared.places[record.id] != nil
@@ -103,9 +130,9 @@ public enum Inspector {
     }
 
     /// Shows a scene's inspector at a place - docked where it cannot show in a
-    /// window - and records from now on; `folded` folds a bottom panel to its
-    /// last render.
-    static func show(in record: SceneRecord, _ place: Place, folded: Bool = false) {
+    /// window, in the window keyed `window`, else where it docks now - and
+    /// records from now on; `folded` folds a bottom panel to its last render.
+    static func show(in record: SceneRecord, _ place: Place, folded: Bool = false, window: String? = nil) {
         let model = InspectorModel.shared
 
         if place == .window, windowed(record) {
@@ -116,7 +143,7 @@ public enum Inspector {
                 try? record.close(.debugInspector, value: nil)
             }
 
-            dock(place == .window ? (offersSide ? .side : .bottom) : place, in: record)
+            dock(place == .window ? (offersSide ? .side : .bottom) : place, in: record, window: window)
         }
 
         if folded, model.places[record.id] == .bottom {
@@ -153,11 +180,13 @@ public enum Inspector {
         model.settle()
     }
 
-    /// Docks a scene's inspector at `place` in its first window, or nowhere: a value of the scene, whose panel the
-    /// library lays over every overlay that window's page declares.
+    /// Docks a scene's inspector at `place` in the window keyed `window` - else where it docks now, else the scene's
+    /// first window - or nowhere: a value of the scene, whose panel the library lays over every overlay that
+    /// window's page declares.
     /// Design: docs/design/views/inspector.md#where-it-docks
-    private static func dock(_ place: Place?, in record: SceneRecord) {
+    private static func dock(_ place: Place?, in record: SceneRecord, window: String? = nil) {
+        let key = window ?? record.dockedInspector?.window ?? record.windows.first?.key
         InspectorModel.shared.places[record.id] = place
-        record.dockedInspector = place
+        record.dockedInspector = place.flatMap { place in key.map { Docking(place: place, window: $0) } }
     }
 }

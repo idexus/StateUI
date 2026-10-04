@@ -275,8 +275,8 @@ struct EditorScene: Scene {
     }
 }
 
-// Inside a page with a SceneSession environment:
-.toolbar { ToolbarItem.inspector(scene) }
+// Inside a page with a WindowSession environment:
+.toolbar { ToolbarItem.inspector(window) }
 ```
 
 The inspector shows what caused each pass, whether a composed view was built,

@@ -50,10 +50,6 @@ struct MainPage: View {
     /// window is sure to be built.
     @Environment(\.window) private var window
 
-    /// The galleries' scene this window is in - the one the ⓘ opens the
-    /// inspector of.
-    @Environment(\.scene) private var scene
-
     // MARK: - What the user is looking at
 
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
@@ -78,7 +74,7 @@ struct MainPage: View {
             // Icons give both a stable native footprint; their captions remain
             // available to accessibility and to platforms that show text.
             .toolbar(id: "gallery") {
-                ToolbarItem.inspector(scene)
+                ToolbarItem.inspector(window)
                     .text("Inspector")
                     .icon("nav_inspect_dark.png")
 

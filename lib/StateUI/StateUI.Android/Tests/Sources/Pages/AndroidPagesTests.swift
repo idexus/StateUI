@@ -611,13 +611,13 @@ extension AndroidPagesTests {
     func testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough() throws {
         try onMainActor {
             let sheets = State(wrappedValue: [Int]())
-            let scenes = Received<SceneSession>()
-            let host = AndroidRenderer.running(reducesMotion: true) { sheetsPage(sheets, scenes: scenes) }
-            let scene = try XCTUnwrap(scenes.values.last)
-            defer { Inspector.close(in: scene) }
+            let windows = Received<WindowSession>()
+            let host = AndroidRenderer.running(reducesMotion: true) { sheetsPage(sheets, windows: windows) }
+            let session = try XCTUnwrap(windows.values.last)
+            defer { Inspector.close(in: session) }
             host.layOut()
 
-            Inspector.open(in: scene)
+            Inspector.open(in: session)
             host.runtime.pump.turn()
             host.layOut()
             let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? AndroidElement)?.view, "no overlay view")
@@ -633,7 +633,7 @@ extension AndroidPagesTests {
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 3)
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 2, "under the sheet")
 
-            Inspector.close(in: scene)
+            Inspector.close(in: session)
             host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 2, "the page and the sheet")
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), -1)
@@ -671,10 +671,10 @@ private struct SearchingPage: View {
 
 /// A page under the sheets one state lists, telling its scene - the window's page, a modal stack.
 private func sheetsPage(
-    _ sheets: State<[Int]>, log: Received<String> = Received(), scenes: Received<SceneSession> = Received()
+    _ sheets: State<[Int]>, log: Received<String> = Received(), windows: Received<WindowSession> = Received()
 ) -> ModalStack {
     ModalStack(sheets.projectedValue) {
-        ScenePage(log: log, scenes: scenes)
+        ScenePage(log: log, windows: windows)
     } destination: { number in
         TitledPage(title: "Sheet \(number)", log: log)
     }
@@ -683,13 +683,13 @@ private func sheetsPage(
 /// A page that tells its scene as it comes.
 private struct ScenePage: View {
     let log: Received<String>
-    let scenes: Received<SceneSession>
+    let windows: Received<WindowSession>
 
-    @Environment(\.scene) private var scene
+    @Environment(\.window) private var window
 
     var body: some View {
-        let (scenes, scene) = (self.scenes, self.scene)
-        return TitledPage(title: "Page", log: log).onCreated { scenes.values.append(scene) }
+        let (windows, window) = (self.windows, self.window)
+        return TitledPage(title: "Page", log: log).onCreated { windows.values.append(window) }
     }
 }
 

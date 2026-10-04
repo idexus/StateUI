@@ -28,15 +28,15 @@ private struct OverlaidPage: View {
 
 /// A page filled by a button, which tells its scene.
 private struct ScenePage: View {
-    let scenes: Received<SceneSession>
-    @Environment(\.scene) private var scene
+    let windows: Received<WindowSession>
+    @Environment(\.window) private var window
 
     var body: some View {
-        let (scenes, scene) = (self.scenes, self.scene)
+        let (windows, window) = (self.windows, self.window)
         return Button("Beneath")
             .horizontalAlignment(.fill)
             .verticalAlignment(.fill)
-            .onCreated { scenes.values.append(scene) }
+            .onCreated { windows.values.append(window) }
     }
 }
 
@@ -70,16 +70,16 @@ final class GTKOverlayTests: XCTestCase {
     /// goes on to the page; closed, it is gone.
     func testTheWindowsOverlayStandsOverItsPageLettingAClickBesideItThrough() throws {
         try onUIThread {
-            let scenes = Received<SceneSession>()
-            let host = GTKRenderer.running { ScenePage(scenes: scenes) }
+            let windows = Received<WindowSession>()
+            let host = GTKRenderer.running { ScenePage(windows: windows) }
             let window = try XCTUnwrap(host.window)
-            let scene = try XCTUnwrap(scenes.values.last)
-            defer { Inspector.close(in: scene) }
+            let session = try XCTUnwrap(windows.values.last)
+            defer { Inspector.close(in: session) }
             let beneath = try XCTUnwrap(host.views(GTKButtonView.self).first)
             let size = beneath.frame
             XCTAssertTrue(beneath.reaches(size.width / 2, size.height - 20), "nothing over the page yet")
 
-            Inspector.open(in: scene)
+            Inspector.open(in: session)
             host.settle { !window.overlays.isEmpty }
             let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? GTKElement)?.view)
             XCTAssertTrue(window.overlays.elementsEqual([overlay], by: ===))
@@ -89,7 +89,7 @@ final class GTKOverlayTests: XCTestCase {
             XCTAssertTrue(overlay.reaches(strip.x, strip.y), "the overlay spans the window, its header bars too")
             XCTAssertTrue(beneath.reaches(size.width / 2, 20), "a click beside it reaches the page")
 
-            Inspector.close(in: scene)
+            Inspector.close(in: session)
             host.settle { window.overlays.isEmpty }
             XCTAssertTrue(window.overlays.isEmpty)
             XCTAssertTrue(beneath.reaches(size.width / 2, size.height - 20), "taken out of the window")

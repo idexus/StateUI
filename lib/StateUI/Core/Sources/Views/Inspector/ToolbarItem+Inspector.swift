@@ -2,19 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extension ToolbarItem {
-    /// The button that shows a scene's inspector and hides it again - for a
-    /// page's `.toolbar { }`. See `Inspector`.
+    /// The button that shows its scene's inspector docked in its window, and
+    /// hides it again - for a page's `.toolbar { }`. See `Inspector`.
     ///
-    ///     @Environment(\.scene) private var scene
+    ///     @Environment(\.window) private var window
     ///
     ///     VStack { … }
-    ///         .toolbar { ToolbarItem.inspector(scene) }
+    ///         .toolbar { ToolbarItem.inspector(window) }
     ///
-    /// - Parameter scene: the scene whose inspector it shows - the page's own.
-    public static func inspector(_ scene: SceneSession) -> ToolbarItem {
+    /// - Parameter window: the window it stands in - the page's own.
+    public static func inspector(_ window: WindowSession) -> ToolbarItem {
         ToolbarItem("ⓘ")
             .id("stateui.inspector")
             .accessibilityIdentifier("stateui.inspector")
-            .onClicked { Inspector.toggle(in: scene) }
+            .onClicked { Inspector.toggle(in: window) }
     }
 }

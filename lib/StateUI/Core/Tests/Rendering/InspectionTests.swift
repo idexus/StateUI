@@ -179,6 +179,14 @@ final class InspectionTests: XCTestCase {
         }
     }
 
+    /// Whether each window of the first scene holds the docked inspector.
+    private func windowsHoldingTheInspector() -> [Bool] {
+        let scene = Renders().render(tree()).children[0]
+        return scene.children.map { window in
+            window.children.contains { $0.type == .overlay && !words(in: $0).isEmpty }
+        }
+    }
+
     /// The word `first` and the one after it - how the two drawn buttons at
     /// the end of a panel's head are read, the list's rows coming after them.
     private func pair(from first: String, in words: [String]) -> [String] {
@@ -403,7 +411,7 @@ final class InspectionTests: XCTestCase {
         let record = try XCTUnwrap(OpenScenes.shared.list.first)
 
         Inspector.show(in: record, .bottom)
-        XCTAssertEqual(record.dockedInspector, .bottom)
+        XCTAssertEqual(record.dockedInspector?.place, .bottom)
         let built = try XCTUnwrap(Renders().render(tree()).children.first?.children.first)
         XCTAssertEqual(built.children.last?.type, .overlay)
         XCTAssertEqual(built.children.last?.children.first?.type, .zStack)
@@ -459,20 +467,44 @@ final class InspectionTests: XCTestCase {
         XCTAssertEqual(OpenScenes.shared.list[0].windows.map(\.key), ["window 1"])
     }
 
-    /// The ⓘ opens the inspector of the scene whose session it is handed, and
+    /// The ⓘ opens the inspector of the scene whose window it is handed, and
     /// closes it again - which is what makes each scene's its own.
     func testAButtonOpensTheInspectorOfItsOwnScene() {
         twoScenes()
 
-        let second = OpenScenes.shared.list[1].session
+        let second = OpenScenes.shared.list[1]
+        let window = second.windowSession(second.windows[0].key)
 
-        Inspector.toggle(in: second)
+        Inspector.toggle(in: window)
         XCTAssertEqual(Array(InspectorModel.shared.places.keys), ["2"])
-        XCTAssertTrue(Inspector.isOpen(in: second))
-        XCTAssertFalse(Inspector.isOpen(in: OpenScenes.shared.list[0].session))
+        XCTAssertTrue(Inspector.isOpen(in: window))
+        let other = OpenScenes.shared.list[0]
+        XCTAssertFalse(Inspector.isOpen(in: other.windowSession(other.windows[0].key)))
+
+        Inspector.toggle(in: window)
+        XCTAssertTrue(InspectorModel.shared.places.isEmpty)
+    }
+
+    /// The ⓘ docks the inspector in the window it is pressed in; pressed in
+    /// another window of the scene, it moves the inspector there, open; pressed
+    /// again where the inspector stands, it closes it.
+    func testTheButtonDocksTheInspectorInItsOwnWindow() {
+        HostBoundary.connectWindow()
+        HostBoundary.connectWindow()
+        _ = pass { Renders().render(tree()) }
+        let scene = OpenScenes.shared.list[0]
+        XCTAssertEqual(scene.windows.count, 2)
+        let (first, second) = (scene.windowSession(scene.windows[0].key), scene.windowSession(scene.windows[1].key))
 
         Inspector.toggle(in: second)
-        XCTAssertTrue(InspectorModel.shared.places.isEmpty)
+        XCTAssertEqual(windowsHoldingTheInspector(), [false, true], "in the window it was pressed in")
+
+        Inspector.toggle(in: first)
+        XCTAssertEqual(windowsHoldingTheInspector(), [true, false], "moved, and open")
+        XCTAssertTrue(Inspector.isOpen(in: second), "open in every window's sense")
+
+        Inspector.toggle(in: first)
+        XCTAssertFalse(Inspector.isOpen(in: second), "pressed where it stands, it closes")
     }
 
     /// A scene that ends takes its docked inspector with it - and the record
@@ -525,7 +557,7 @@ final class InspectionTests: XCTestCase {
 
         _ = pass { Renders().render(tree()) }
 
-        let first = OpenScenes.shared.list[0].session
+        let first = OpenScenes.shared.list[0].windowSession(OpenScenes.shared.list[0].windows[0].key)
 
         Inspector.toggle(in: first)
 

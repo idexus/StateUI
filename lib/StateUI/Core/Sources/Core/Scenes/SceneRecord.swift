@@ -13,8 +13,8 @@ final class SceneRecord: @unchecked Sendable {
     /// Its windows, in the order they opened.
     @State var windows: [OpenedWindow]
 
-    /// Where the scene's inspector is docked - in its first window - nil where it is not.
-    @State var dockedInspector: Inspector.Place?
+    /// Where the scene's inspector is docked - its place, and the window - nil where it is not.
+    @State var dockedInspector: Inspector.Docking?
 
     /// Its session - what a view in the scene resolves as `SceneSession`.
     let session: SceneSession
