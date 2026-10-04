@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.pointerEntered: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.pointerExited: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.pointerMoved: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent

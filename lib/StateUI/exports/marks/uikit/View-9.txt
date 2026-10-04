@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.swipeDirection: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.swipeThreshold: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.swiped: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent

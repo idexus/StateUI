@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridRow: ✅

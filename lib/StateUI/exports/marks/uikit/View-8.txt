@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.panYChannel: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 Button.tapCount: ✓ tap on Button: the view's listening handed the recognizer's states, no touch sent
 Button.tapped: ✓ tap on Button: the view's listening handed the recognizer's states, no touch sent

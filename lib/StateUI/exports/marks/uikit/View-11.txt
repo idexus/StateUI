@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.pointerEntered: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.pointerExited: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.pointerMoved: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent

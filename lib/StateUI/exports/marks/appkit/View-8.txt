@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.panYChannel: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 Button.tapCount: ✓ tap on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.tapped: ✓ tap on Button: handed to the host's recognizer or handler, no NSEvent sent
