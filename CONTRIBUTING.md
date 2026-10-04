@@ -5,6 +5,12 @@ Changes should make that model smaller, clearer, and more deterministic.
 
 ## Start with an issue
 
+| You have                             | Start with           |
+| ------------------------------------ | -------------------- |
+| a bug                                | a **Bug** issue      |
+| a feature, an API or a design change | a **Proposal** issue |
+| a typo, docs or maintenance          | a pull request       |
+
 Every bug fix starts with an issue. Before writing the fix:
 
 1. Open a **Bug** issue with the smallest example that reproduces it.
