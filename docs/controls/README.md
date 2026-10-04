@@ -94,11 +94,11 @@ The scene, the window and the page an application is made of, the arrangements a
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
-| [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – |  |
+| [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ · 9 – | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – |  |
 | ✅ |  | 67 | 70 | 42 | 110 | 75 |  |
 | ✓ |  | 15 | 12 | 10 | 0 | 7 |  |
-| – |  | 1 | 9 | 13 | 0 | 27 |  |
-| **Met** | 121 | **83** | **91** | **65** | **110** | **109** |  |
+| – |  | 1 | 18 | 13 | 0 | 27 |  |
+| **Met** | 121 | **83** | **100** | **65** | **110** | **109** |  |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 |  |
 <!-- structure:end -->
 

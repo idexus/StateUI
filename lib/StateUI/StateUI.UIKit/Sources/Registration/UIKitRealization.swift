@@ -88,10 +88,29 @@ enum UIKitRealization {
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),
+        .notPlanned("Window", "floatsOnTop", reason: "iPadOS stacks its windows itself: UIKit keeps none above the others."),
+        .notPlanned("Window", "height", reason: Self.sizedBySystem),
+        .notPlanned("Window", "hidesWhenInactive",
+                    reason: "iPadOS shows an application's windows itself: UIKit hides none while another is in front."),
+        .notPlanned("Window", "isMaximizable",
+                    reason: "Any iPadOS window may fill the screen: UIKit keeps none from it."),
+        .notPlanned("Window", "isMinimizable", reason: "Any iPadOS window may be put away: UIKit keeps none from it."),
+        .notPlanned("Window", "isTranslucent",
+                    reason: "iPadOS draws an application's window opaque: no material shows through one."),
         .complete("Window", "resumed"),
         .complete("Window", "stopped"),
         .complete("Window", "title"),
+        .notPlanned("Window", "width", reason: Self.sizedBySystem),
+        .notPlanned("Window", "x", reason: Self.placedBySystem),
+        .notPlanned("Window", "y", reason: Self.placedBySystem),
     ]
+
+    /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.
+    private static let sizedBySystem =
+        "iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size."
+
+    /// Why a window takes no place.
+    private static let placedBySystem = "iPadOS places its windows itself: a UIKit scene asks for no place."
 
     /// What UIKit's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {

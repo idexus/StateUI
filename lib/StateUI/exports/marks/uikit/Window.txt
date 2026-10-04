@@ -4,12 +4,12 @@ Window.activated: ✅
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the host told the scene's phase, no scene moved
 Window.destroying: ✓ close on Window: the host told the scene's phase, no scene moved
-Window.floatsOnTop: not realized
-Window.height: not realized
-Window.hidesWhenInactive: not realized
-Window.isMaximizable: not realized
-Window.isMinimizable: not realized
-Window.isTranslucent: not realized
+Window.floatsOnTop: – iPadOS stacks its windows itself: UIKit keeps none above the others.
+Window.height: – iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size.
+Window.hidesWhenInactive: – iPadOS shows an application's windows itself: UIKit hides none while another is in front.
+Window.isMaximizable: – Any iPadOS window may fill the screen: UIKit keeps none from it.
+Window.isMinimizable: – Any iPadOS window may be put away: UIKit keeps none from it.
+Window.isTranslucent: – iPadOS draws an application's window opaque: no material shows through one.
 Window.maximumHeight: not realized
 Window.maximumWidth: not realized
 Window.minimumHeight: not realized
@@ -17,8 +17,8 @@ Window.minimumWidth: not realized
 Window.resumed: ✓ minimize on Window: the host told the scene's phase, no scene moved
 Window.stopped: ✓ minimize on Window: the host told the scene's phase, no scene moved
 Window.title: ✅
-Window.width: not realized
+Window.width: – iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size.
 Window.windowType: not realized
 Window.windowValue: not realized
-Window.x: not realized
-Window.y: not realized
+Window.x: – iPadOS places its windows itself: a UIKit scene asks for no place.
+Window.y: – iPadOS places its windows itself: a UIKit scene asks for no place.
