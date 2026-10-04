@@ -150,10 +150,10 @@ them AS THE HOST, one after another, each in a terminal of its own:
   `lib/StateUI/StateUI.Android/Tests`, built into a test APK and run on the device
   chosen by `.scripts/Android/test-android.sh`.
 - **WinUI**: the library and each application as plain Swift, and the WinUI
-  host's own package, `lib/StateUI/StateUI.WinUI`, by `.scripts/WinUI/test-winui.ps1`,
+  host's own tests, `lib/StateUI/StateUI.WinUI/Testing`, by `.scripts/WinUI/test-winui.ps1`,
   which lays the Windows App SDK beside its test runner first.
 - **GTK**: the library and each application as plain Swift, and the GTK host's
-  own package, `lib/StateUI/StateUI.GTK`, by `swift test`, its windows on the
+  own tests, `lib/StateUI/StateUI.GTK/Testing`, by `swift test`, its windows on the
   desktop's display.
 - **No host**: the library and each application as plain Swift.
 

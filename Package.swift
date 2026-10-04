@@ -18,8 +18,8 @@ import PackageDescription
 // say. Native host packages remain siblings so their platform dependencies do
 // not enter the cross-platform core.
 //
-// Sources are never listed: SwiftPM globs the target's path, and the build
-// scripts glob the same tree. A new .swift file is picked up by both.
+// Sources are never listed: SwiftPM globs the target's path, and every build
+// of the library goes through SwiftPM. A new .swift file is picked up by itself.
 let package = Package(
     name: "StateUI",
     // iOS 26, Mac Catalyst 26 and macOS 26: the releases StateUI is built and
@@ -50,11 +50,11 @@ let package = Package(
         // at the repository root without moving the sources.
         //
         // NonisolatedNonsendingByDefault (SE-0461) is the reason for
-        // swiftSettings, and it is set wherever Swift is compiled here - the two
-        // other manifests and both build scripts. Without it a plain `async`
+        // swiftSettings, and it is set wherever Swift is compiled here - in every
+        // manifest of the repository. Without it a plain `async`
         // function runs on Swift's cooperative pool whoever calls it, so a
         // handler awaiting one resumes away from its caller's executor. The library
-        // says `nonisolated(nonsending)` on its own six regardless; the flag is
+        // says `nonisolated(nonsending)` on its own async functions regardless; the flag is
         // what extends that to the functions an APPLICATION writes, which no
         // annotation of ours can reach. It becomes the default in Swift 7.
         .target(

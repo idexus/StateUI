@@ -6,8 +6,7 @@
 // keeps its apps/: a project group's, or a checkout's. A WinUI head is laid
 // per architecture - this machine's own, and on an ARM64 machine x64 too,
 // which Windows runs emulated. The host's own deploy script of the
-// application's checkout builds and lays it, as its run-app script builds and
-// runs it.
+// application's checkout builds and lays it.
 
 import * as os from "os";
 import * as path from "path";

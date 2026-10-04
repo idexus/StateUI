@@ -4,7 +4,7 @@
 // The integration suite, run inside VS Code by Tests/run.ts.
 //
 // The editor's host is asked of the LANGUAGE SERVER, which cannot be faked: a
-// symbol under `#if APPKIT` resolves only while SourceKit-LSP runs with
+// symbol of the AppKit head resolves only while SourceKit-LSP runs with
 // STATEUI_HOST=appkit, and a symbol under no condition resolves in either mode -
 // which is what tells "not this host" from "not ready yet".
 
@@ -93,21 +93,21 @@ export async function run(): Promise<void> {
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
 
-        // 1-3 ask the language server as AppKit and as Android, hosts only macOS builds.
+        // 1-3 ask the language server as the hosts only macOS builds.
         if (process.platform === "darwin") {
             // 1. Android: the plain symbol resolves, the AppKit one does not.
             await api.selectHost("android");
             await until("android: a symbol under no condition resolves", () => resolves(plain, "Palette.accent"), 900);
             await until("android: neither head's own view resolves", async () => !(await appKitOnly()) && !(await uiKitOnly()), 900);
 
-            // 2. AppKit, with no reload: the conditional symbol and the head resolve.
+            // 2. AppKit, with no reload: the head's own view and the head resolve.
             await api.selectHost("appkit");
             await until("appkit: its head's own view resolves", appKitOnly, 900);
             // A target the package did not have a moment ago: the server has to
             // load it, so this is waited for rather than asked once.
             await until("appkit: Cube3DContract in Platforms/AppKit resolves", () => resolves(head, "Cube3DContract.self"), 900);
 
-            // 2b. UIKit, compiled for the iOS simulator by the triple alone: its head resolves, the AppKit symbol not.
+            // 2b. UIKit, compiled for the iOS simulator by its triple and SDK: its head resolves, the AppKit symbol not.
             await api.selectHost("uikit");
             await until("uikit: Cube3DContract in Platforms/UIKit resolves", () => resolves(uiKitHead, "Cube3DContract.self"), 900);
             await until("uikit: its head's own view resolves, and AppKit's does not", async () => (await uiKitOnly()) && !(await appKitOnly()), 900);
@@ -120,9 +120,9 @@ export async function run(): Promise<void> {
             say("skip the language server as AppKit and Android: only macOS builds those hosts");
         }
 
-        // 4. The hosts a machine is offered: AppKit and Android on macOS, WinUI
-        //    on Windows, GTK on Linux, and no .NET MAUI. A launch on a machine
-        //    that runs no host resolves to nothing.
+        // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
+        //    WinUI on Windows, GTK on Linux, and no .NET MAUI. A launch on a
+        //    machine that runs no host resolves to nothing.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
         check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, and never .NET MAUI",
             JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android"])
@@ -526,7 +526,7 @@ export async function run(): Promise<void> {
         }
         // 7a. A project group, made by the command itself with its questions answered: one building with this checkout,
         //     one with the newest release offered cloned into it. Each application names its StateUI in its Package.swift, New
-        //     Application in apps/ makes another the same way there, and every one of them builds.
+        //     Application in apps/ makes another the same way there, and each group's Notes builds.
         {
             const location = process.env.STATEUI_TEST_GROUPS ?? fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "stateui-groups-")));
             const taken = ["LocalGroup", "ReleaseGroup"].map((each) => path.join(location, each)).filter((each) => fs.existsSync(each));
@@ -537,7 +537,7 @@ export async function run(): Promise<void> {
                 const appKit = process.platform === "darwin";
                 const name = path.basename(application);
                 try {
-                    // As an AppKit build, or plain Swift - whichever host the editor works as at the moment.
+                    // As an AppKit build on macOS, as plain Swift elsewhere.
                     const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(appKit ? "appkit" : undefined) })
                         .filter((entry): entry is [string, string] => entry[1] !== undefined));
                     execSync(`swift build --package-path "${application}"${appKit ? ` --scratch-path "${path.join(application, ".build", "appkit")}" --product ${name}AppKit` : ""}`,

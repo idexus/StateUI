@@ -1,6 +1,6 @@
 # The core's suites on macOS - the library, the host layer and the conformance
-# runner - and the Gallery's, with the starter application built, since no
-# suite compiles it. Each host's own suite runs in a workflow of its own.
+# runner - and the Gallery's and the starter application's. Each host's own
+# suite runs in a workflow of its own.
 
 name: Core macOS
 

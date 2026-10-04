@@ -1,6 +1,6 @@
 # The core's suites on Windows - the library, the host layer and the
-# conformance runner - and the Gallery's, with the starter application built,
-# since no suite compiles it. The WinUI host's stands in winui.yml.
+# conformance runner - and the Gallery's and the starter application's. The
+# WinUI host's stands in winui.yml.
 #
 # Windows is the second machine this library is built on, which is what makes
 # the suite worth running here: it is the other machine whose file separators,
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
 
       # HERE it is needed: `swift test` compiles and LINKS on its own, with no
-      # build-windows.ps1 in front of it to set MSVC up, and swiftc reads the C
+      # script in front of it to set MSVC up, and swiftc reads the C
       # runtime and Windows SDK through LIB and INCLUDE.
       - name: Visual Studio developer environment
         uses: compnerd/gha-setup-vsdevenv@v7

@@ -30,7 +30,7 @@ export interface Suite {
 
 /**
  * The suites under `root` for `host`, in the order they are best run: the
- * library first, the hosts' packages next, the applications last.
+ * library first, the hosts' packages next, the applications, then a device's suite.
  *
  * - A Swift package with a test target runs with `swift test`. For AppKit an
  *   APPLICATION runs as the host - `STATEUI_HOST=appkit` on `.build/appkit`.

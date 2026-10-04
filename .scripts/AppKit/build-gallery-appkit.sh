@@ -15,8 +15,8 @@ product="GalleryAppKit"
 scratch_dir="$gallery_dir/.build/appkit"
 
 # THE ONE THING THAT MAKES THIS AN APPKIT BUILD. The manifest reads it and then
-# declares the AppKit head - the target, its product and the StateUIAppKit
-# dependency - and defines APPKIT for every module of the application. A
+# declares the AppKit head - the target and StateUIHead, which brings
+# StateUIAppKit - and defines APPKIT for every module of the application. A
 # manifest cannot read a compiler flag, so it is told this way, and no flag is
 # given beside it. See apps/Gallery/Package.swift.
 export STATEUI_HOST=appkit

@@ -151,7 +151,7 @@ function Set-StateUISelfContained([string]$Directory, [string[]]$Executables, [s
 # own runtime stands on PATH, another architecture's nowhere. The Swift
 # installer keeps each one as a merge module in its Redistributables - its
 # File table and its cabinet, read through msi.dll and unpacked by expand.exe.
-# Unpacked again only where the module is newer than what stands there.
+# Unpacked again only where the module differs from the one laid there.
 # Design: docs/design/platforms/winui/runtime.md#another-architecture
 function Add-StateUISwiftRuntime([string]$Directory, [string]$Architecture) {
     $toolchain = Split-Path (Split-Path (Split-Path (Get-Command swift).Source))
