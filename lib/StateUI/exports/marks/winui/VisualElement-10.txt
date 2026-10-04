@@ -1,111 +1,49 @@
 # revision 1.1
 ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
-Button.isAccessibilityHidden: ✅
-Button.isEnabled: ✅
-Button.scaleX: ✅
-Canvas.ignoresInput: ✅
-Canvas.layoutDirection: ✓ read layoutDirection of Canvas: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Canvas.translationY: ✅
+Button.isVisible: ✅
+Button.rotation: ✅
+Canvas.accessibilityLabel: ✅
+CheckBox.isVisible: ✅
 CheckBox.rotation: ✅
-CheckBox.style: ✅
-ColorBox.accessibilityHeading: ✅
-ColorBox.opacity: ✅
-ColorBox.scale: ✅
-DatePicker.background: not realized
-DatePicker.frameChanged: ✅
-DatePicker.maximumHeight: ✅
-DatePicker.maximumWidth: ✅
-DatePicker.minimumHeight: ✅
-DatePicker.minimumWidth: ✅
-DatePicker.translationX: ✅
-Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Ellipse.pivotY: ✅
-Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.accessibilityHint: ✅
+ColorBox.accessibilityLabel: ✅
+DatePicker.isVisible: ✅
+DatePicker.rotation: ✅
+Ellipse.accessibilityLabel: ✅
 Grid.isVisible: ✅
-Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
-HStack.automationExcludedWithChildren: ✅
-HStack.frameChanged: ✅
-HStack.height: ✅
-HStack.scaleY: ✅
-HStack.width: ✅
-Image.frame: ✅
-Image.pivotX: ✅
-Image.zIndex: not realized
+Grid.rotation: ✅
+HStack.accessibilityLabel: ✅
+Image.isVisible: ✅
+Image.rotation: ✅
 ItemsView.accessibilityLabel: ✅
-ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own tip, checked against the projection it laid on the element
-Line.ignoresInput: not realized
-Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Line.translationY: ✅
+Line.accessibilityLabel: ✅
+Map.isVisible: 🧩
 Map.rotation: 🧩
-Map.style: 🧩
-Path.accessibilityHeading: ✅
-Path.opacity: ✅
-Path.scale: ✅
-Picker.background: not realized
-Picker.frameChanged: ✅
-Picker.maximumHeight: ✅
-Picker.maximumWidth: ✅
-Picker.minimumHeight: ✅
-Picker.minimumWidth: ✅
-Picker.translationX: ✅
-Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polygon.pivotY: ✅
-Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.accessibilityHint: ✅
+Path.accessibilityLabel: ✅
+Picker.isVisible: ✅
+Picker.rotation: ✅
+Polygon.accessibilityLabel: ✅
 Polyline.isVisible: ✅
-Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
-ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.height: ✅
-ProgressBar.scaleY: ✅
-ProgressBar.width: ✅
-RadioButton.frame: ✅
-RadioButton.pivotX: ✅
-RadioButton.zIndex: not realized
+Polyline.rotation: ✅
+ProgressBar.accessibilityLabel: ✅
+RadioButton.isVisible: ✅
+RadioButton.rotation: ✅
 Rectangle.accessibilityLabel: ✅
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
-ScrollView.isAccessibilityHidden: ✅
-ScrollView.isEnabled: not realized
-ScrollView.scaleX: ✅
-SearchField.ignoresInput: ✅
-SearchField.layoutDirection: ✅
-SearchField.translationY: ✅
+ScrollView.isVisible: ✅
+ScrollView.rotation: ✅
+SearchField.accessibilityLabel: ✅
+Slider.isVisible: ✅
 Slider.rotation: ✅
-Slider.style: ✅
-Stepper.accessibilityHeading: ✅
-Stepper.opacity: ✅
-Stepper.scale: ✅
-Switch.background: ✅
-Switch.frameChanged: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
-Switch.translationX: ✅
-Text.isAccessibilityHidden: ✅
-Text.isEnabled: not realized
-Text.scaleX: ✅
-TextEditor.focus: ✅
-TextEditor.isFocusedChanged: ✅
-TextEditor.pivotY: ✅
-TextEditor.unfocus: ✅
-TextField.accessibilityHint: ✅
+Stepper.accessibilityLabel: ✅
+Switch.isVisible: ✅
+Switch.rotation: ✅
+Text.isVisible: ✅
+Text.rotation: ✅
+TextEditor.accessibilityLabel: ✅
 TextField.isVisible: ✅
-TextField.rotationY: ✓ read rotationY of TextField: the host's own tip, checked against the projection it laid on the element
-TimePicker.automationExcludedWithChildren: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.scaleY: ✅
-TimePicker.width: ✅
-VStack.frame: ✅
-VStack.pivotX: ✅
-VStack.zIndex: not realized
+TextField.rotation: ✅
+TimePicker.accessibilityLabel: ✅
+VStack.isVisible: ✅
+VStack.rotation: ✅
 WebView.accessibilityLabel: ✅
-WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
-ZStack.isAccessibilityHidden: ✅
-ZStack.isEnabled: not realized
-ZStack.scaleX: ✅
+ZStack.isVisible: ✅
+ZStack.rotation: ✅

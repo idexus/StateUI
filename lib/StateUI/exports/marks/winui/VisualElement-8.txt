@@ -1,113 +1,81 @@
 # revision 1.1
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
-ActivityIndicator.pivotY: ✅
+ActivityIndicator.translationY: ✅
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
-Button.accessibilityHint: ✅
-Button.isVisible: ✅
-Button.rotationY: ✓ read rotationY of Button: the host's own tip, checked against the projection it laid on the element
-Canvas.automationExcludedWithChildren: ✅
-Canvas.frameChanged: ✅
-Canvas.height: ✅
-Canvas.scaleY: ✅
-Canvas.width: ✅
-CheckBox.frame: ✅
+Button.pivotX: ✅
+Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
+Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
+Canvas.translationY: ✅
+Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.pivotX: ✅
-CheckBox.zIndex: not realized
-ColorBox.accessibilityLabel: ✅
-ColorBox.rotationX: ✓ read rotationX of ColorBox: the host's own tip, checked against the projection it laid on the element
-DatePicker.isAccessibilityHidden: ✅
-DatePicker.isEnabled: ✅
-DatePicker.scaleX: ✅
-Ellipse.ignoresInput: not realized
-Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.translationY: ✅
+ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+DatePicker.pivotX: ✅
+Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
+Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.translationY: ✅
-Grid.rotation: ✅
-Grid.style: ✅
-HStack.accessibilityHeading: ✅
-HStack.opacity: ✅
-HStack.scale: ✅
-Image.background: not realized
-Image.frameChanged: ✅
-Image.maximumHeight: ✅
-Image.maximumWidth: ✅
-Image.minimumHeight: ✅
-Image.minimumWidth: ✅
-Image.translationX: ✅
+Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
+Grid.pivotX: ✅
+HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
+HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
+HStack.translationY: ✅
+HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
+Image.pivotX: ✅
 ItemsView.focus: ✅
 ItemsView.isFocusedChanged: ✅
-ItemsView.pivotY: ✅
+ItemsView.translationY: ✅
 ItemsView.unfocus: ✅
-Line.automationExcludedWithChildren: ✅
-Line.frameChanged: ✅
-Line.height: ✅
-Line.scaleY: ✅
-Line.width: ✅
-Map.frame: 🧩
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.translationY: ✅
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Map.pivotX: 🧩
-Map.zIndex: 🧩
-Path.accessibilityLabel: ✅
-Path.rotationX: ✓ read rotationX of Path: the host's own tip, checked against the projection it laid on the element
-Picker.isAccessibilityHidden: ✅
-Picker.isEnabled: ✅
-Picker.scaleX: ✅
-Polygon.ignoresInput: not realized
-Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Path.translationY: ✅
+Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Picker.pivotX: ✅
+Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.translationY: ✅
-Polyline.rotation: ✅
-Polyline.style: ✅
-ProgressBar.accessibilityHeading: ✅
-ProgressBar.opacity: ✅
-ProgressBar.scale: ✅
-RadioButton.background: ✅
-RadioButton.frameChanged: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.translationX: ✅
+Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.pivotX: ✅
+ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.translationY: ✅
+ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+RadioButton.pivotX: ✅
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
-Rectangle.pivotY: ✅
+Rectangle.translationY: ✅
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.accessibilityHint: ✅
-ScrollView.isVisible: ✅
-ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own tip, checked against the projection it laid on the element
-SearchField.automationExcludedWithChildren: ✅
-SearchField.frameChanged: ✅
-SearchField.height: ✅
-SearchField.scaleY: ✅
-SearchField.width: ✅
-Slider.frame: ✅
+ScrollView.pivotX: ✅
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.translationY: ✅
+SearchField.unfocus: ✅
 Slider.pivotX: ✅
-Slider.zIndex: not realized
-Stepper.accessibilityLabel: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
-Switch.isAccessibilityHidden: ✅
-Switch.isEnabled: ✅
-Switch.scaleX: ✅
-Text.accessibilityHint: ✅
-Text.isVisible: ✅
-Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
-TextEditor.ignoresInput: ✅
-TextEditor.layoutDirection: ✅
+Stepper.focus: ✅
+Stepper.isFocusedChanged: ✅
+Stepper.translationY: ✅
+Stepper.unfocus: ✅
+Switch.pivotX: ✅
+Text.pivotX: ✅
+TextEditor.focus: ✅
+TextEditor.isFocusedChanged: ✅
 TextEditor.translationY: ✅
-TextField.rotation: ✅
-TextField.style: ✅
-TimePicker.accessibilityHeading: ✅
-TimePicker.opacity: ✅
-TimePicker.scale: ✅
-VStack.background: ✅
-VStack.frameChanged: ✅
-VStack.maximumHeight: ✅
-VStack.maximumWidth: ✅
-VStack.minimumHeight: ✅
-VStack.minimumWidth: ✅
-VStack.translationX: ✅
+TextEditor.unfocus: ✅
+TextField.pivotX: ✅
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.translationY: ✅
+TimePicker.unfocus: ✅
+VStack.pivotX: ✅
 WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.pivotY: ✅
+WebView.translationY: ✅
 WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.accessibilityHint: ✅
-ZStack.isVisible: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
+ZStack.pivotX: ✅

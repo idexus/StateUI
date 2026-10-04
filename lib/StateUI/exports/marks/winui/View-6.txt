@@ -1,0 +1,145 @@
+# revision 3.1
+ActivityIndicator.tapCount: ✅
+ActivityIndicator.tapped: ✅
+Button.frameChanged: ✅
+Button.margin: ✅
+Button.swipeDirection: ✅
+Button.swipeThreshold: ✅
+Button.swiped: ✅
+Canvas.canDrag: not realized
+Canvas.dragEnded: not realized
+Canvas.dragStarting: not realized
+Canvas.dragText: not realized
+Canvas.frameChanged: ✅
+Canvas.gridColumn: ✅
+Canvas.gridRow: ✅
+CheckBox.panTouchCount: ✅
+CheckBox.panUpdated: ✅
+CheckBox.panXChannel: ✅
+ColorBox.frameChanged: ✅
+ColorBox.horizontalAlignment: ✅
+ColorBox.pinchUpdated: ✅
+ColorBox.verticalAlignment: ✅
+DatePicker.allowsDrop: not realized
+DatePicker.dragLeave: not realized
+DatePicker.dragOver: not realized
+DatePicker.drop: not realized
+DatePicker.frameChanged: ✅
+DatePicker.gridColumnSpan: ✅
+DatePicker.gridRowSpan: ✅
+Ellipse.panYChannel: ✅
+Grid.area: ✅
+Grid.frameChanged: ✅
+Grid.pointerEntered: ✅
+Grid.pointerExited: ✅
+Grid.pointerMoved: ✅
+Grid.pointerPressed: ✅
+Grid.pointerReleased: ✅
+HStack.tapCount: ✅
+HStack.tapped: ✅
+Image.frameChanged: ✅
+Image.margin: ✅
+Image.swipeDirection: ✅
+Image.swipeThreshold: ✅
+Image.swiped: ✅
+ItemsView.canDrag: not realized
+ItemsView.dragEnded: not realized
+ItemsView.dragStarting: not realized
+ItemsView.dragText: not realized
+ItemsView.frameChanged: ✅
+ItemsView.gridColumn: ✅
+ItemsView.gridRow: ✅
+Line.frameChanged: ✅
+Line.horizontalAlignment: ✅
+Line.pinchUpdated: ✅
+Line.verticalAlignment: ✅
+Map.allowsDrop: 🧩
+Map.dragLeave: 🧩
+Map.dragOver: 🧩
+Map.drop: 🧩
+Map.frameChanged: 🧩
+Map.gridColumnSpan: 🧩
+Map.gridRowSpan: 🧩
+Path.panYChannel: ✅
+Picker.area: ✅
+Picker.frameChanged: ✅
+Picker.pointerEntered: ✅
+Picker.pointerExited: ✅
+Picker.pointerMoved: ✅
+Picker.pointerPressed: ✅
+Picker.pointerReleased: ✅
+Polygon.tapCount: ✅
+Polygon.tapped: ✅
+Polyline.frameChanged: ✅
+Polyline.margin: ✅
+Polyline.swipeDirection: ✅
+Polyline.swipeThreshold: ✅
+Polyline.swiped: ✅
+ProgressBar.canDrag: not realized
+ProgressBar.dragEnded: not realized
+ProgressBar.dragStarting: not realized
+ProgressBar.dragText: not realized
+ProgressBar.frameChanged: ✅
+ProgressBar.gridColumn: ✅
+ProgressBar.gridRow: ✅
+RadioButton.panTouchCount: ✅
+RadioButton.panUpdated: ✅
+RadioButton.panXChannel: ✅
+Rectangle.frameChanged: ✅
+Rectangle.horizontalAlignment: ✅
+Rectangle.pinchUpdated: ✅
+Rectangle.verticalAlignment: ✅
+ScrollView.allowsDrop: not realized
+ScrollView.dragLeave: not realized
+ScrollView.dragOver: not realized
+ScrollView.drop: not realized
+ScrollView.frameChanged: ✅
+ScrollView.gridColumnSpan: ✅
+ScrollView.gridRowSpan: ✅
+SearchField.panYChannel: ✅
+Slider.area: ✅
+Slider.frameChanged: ✅
+Slider.pointerEntered: ✅
+Slider.pointerExited: ✅
+Slider.pointerMoved: ✅
+Slider.pointerPressed: ✅
+Slider.pointerReleased: ✅
+Stepper.tapCount: ✅
+Stepper.tapped: ✅
+Switch.frameChanged: ✅
+Switch.margin: ✅
+Switch.swipeDirection: ✅
+Switch.swipeThreshold: ✅
+Switch.swiped: ✅
+Text.panTouchCount: ✅
+Text.panUpdated: ✅
+Text.panXChannel: ✅
+TextEditor.canDrag: not realized
+TextEditor.dragEnded: not realized
+TextEditor.dragStarting: not realized
+TextEditor.dragText: not realized
+TextEditor.frameChanged: ✅
+TextEditor.gridColumn: ✅
+TextEditor.gridRow: ✅
+TextField.panTouchCount: ✅
+TextField.panUpdated: ✅
+TextField.panXChannel: ✅
+TimePicker.frameChanged: ✅
+TimePicker.horizontalAlignment: ✅
+TimePicker.pinchUpdated: ✅
+TimePicker.verticalAlignment: ✅
+VStack.allowsDrop: not realized
+VStack.dragLeave: not realized
+VStack.dragOver: not realized
+VStack.drop: not realized
+VStack.frameChanged: ✅
+VStack.gridColumnSpan: ✅
+VStack.gridRowSpan: ✅
+WebView.panYChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+ZStack.area: ✅
+ZStack.frameChanged: ✅
+ZStack.pointerEntered: ✅
+ZStack.pointerExited: ✅
+ZStack.pointerMoved: ✅
+ZStack.pointerPressed: ✅
+ZStack.pointerReleased: ✅

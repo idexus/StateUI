@@ -69,25 +69,37 @@ final class WinUIConformanceTests: XCTestCase {
     func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
     func testWindow() { conform(WindowTests.self) }
     func testPropertyContainer() { conform(PropertyContainerTests.self) }
-    func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 10)) }
-    func testVisualElement2() { conform(VisualElementTests.self, part: Conformance.Part(2, of: 10)) }
-    func testVisualElement3() { conform(VisualElementTests.self, part: Conformance.Part(3, of: 10)) }
-    func testVisualElement4() { conform(VisualElementTests.self, part: Conformance.Part(4, of: 10)) }
-    func testVisualElement5() { conform(VisualElementTests.self, part: Conformance.Part(5, of: 10)) }
-    func testVisualElement6() { conform(VisualElementTests.self, part: Conformance.Part(6, of: 10)) }
-    func testVisualElement7() { conform(VisualElementTests.self, part: Conformance.Part(7, of: 10)) }
-    func testVisualElement8() { conform(VisualElementTests.self, part: Conformance.Part(8, of: 10)) }
-    func testVisualElement9() { conform(VisualElementTests.self, part: Conformance.Part(9, of: 10)) }
-    func testVisualElement10() { conform(VisualElementTests.self, part: Conformance.Part(10, of: 10)) }
-    func testView1() { conform(ViewTests.self, part: Conformance.Part(1, of: 5)) }
-    func testView2() { conform(ViewTests.self, part: Conformance.Part(2, of: 5)) }
-    func testView3() { conform(ViewTests.self, part: Conformance.Part(3, of: 5)) }
-    func testView4() { conform(ViewTests.self, part: Conformance.Part(4, of: 5)) }
-    func testView5() { conform(ViewTests.self, part: Conformance.Part(5, of: 5)) }
+    func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 18)) }
+    func testVisualElement2() { conform(VisualElementTests.self, part: Conformance.Part(2, of: 18)) }
+    func testVisualElement3() { conform(VisualElementTests.self, part: Conformance.Part(3, of: 18)) }
+    func testVisualElement4() { conform(VisualElementTests.self, part: Conformance.Part(4, of: 18)) }
+    func testVisualElement5() { conform(VisualElementTests.self, part: Conformance.Part(5, of: 18)) }
+    func testVisualElement6() { conform(VisualElementTests.self, part: Conformance.Part(6, of: 18)) }
+    func testVisualElement7() { conform(VisualElementTests.self, part: Conformance.Part(7, of: 18)) }
+    func testVisualElement8() { conform(VisualElementTests.self, part: Conformance.Part(8, of: 18)) }
+    func testVisualElement9() { conform(VisualElementTests.self, part: Conformance.Part(9, of: 18)) }
+    func testVisualElement10() { conform(VisualElementTests.self, part: Conformance.Part(10, of: 18)) }
+    func testVisualElement11() { conform(VisualElementTests.self, part: Conformance.Part(11, of: 18)) }
+    func testVisualElement12() { conform(VisualElementTests.self, part: Conformance.Part(12, of: 18)) }
+    func testVisualElement13() { conform(VisualElementTests.self, part: Conformance.Part(13, of: 18)) }
+    func testVisualElement14() { conform(VisualElementTests.self, part: Conformance.Part(14, of: 18)) }
+    func testVisualElement15() { conform(VisualElementTests.self, part: Conformance.Part(15, of: 18)) }
+    func testVisualElement16() { conform(VisualElementTests.self, part: Conformance.Part(16, of: 18)) }
+    func testVisualElement17() { conform(VisualElementTests.self, part: Conformance.Part(17, of: 18)) }
+    func testVisualElement18() { conform(VisualElementTests.self, part: Conformance.Part(18, of: 18)) }
+    func testView1() { conform(ViewTests.self, part: Conformance.Part(1, of: 8)) }
+    func testView2() { conform(ViewTests.self, part: Conformance.Part(2, of: 8)) }
+    func testView3() { conform(ViewTests.self, part: Conformance.Part(3, of: 8)) }
+    func testView4() { conform(ViewTests.self, part: Conformance.Part(4, of: 8)) }
+    func testView5() { conform(ViewTests.self, part: Conformance.Part(5, of: 8)) }
+    func testView6() { conform(ViewTests.self, part: Conformance.Part(6, of: 8)) }
+    func testView7() { conform(ViewTests.self, part: Conformance.Part(7, of: 8)) }
+    func testView8() { conform(ViewTests.self, part: Conformance.Part(8, of: 8)) }
     func testLayout() { conform(LayoutTests.self) }
     func testStack() { conform(StackTests.self) }
     func testTextInput() { conform(TextInputTests.self) }
-    func testShape() { conform(ShapeTests.self) }
+    func testShape1() { conform(ShapeTests.self, part: Conformance.Part(1, of: 2)) }
+    func testShape2() { conform(ShapeTests.self, part: Conformance.Part(2, of: 2)) }
     func testTextualElement() { conform(TextualElementTests.self) }
     func testTextStyleElement() { conform(TextStyleElementTests.self) }
     func testFontElement() { conform(FontElementTests.self) }
