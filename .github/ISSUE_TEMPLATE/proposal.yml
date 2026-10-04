@@ -5,9 +5,15 @@ body:
   - type: markdown
     attributes:
       value: |
-        For anything that adds or renames what an application can reach, moves
-        the host contract, adds a dependency, or runs long. A typo, a bug fix with its
-        test, or a sample needs none of this - open a pull request instead.
+        Use this form for anything that adds or renames what an application can
+        reach, moves the host contract, adds a dependency, or needs a substantial
+        design decision.
+
+        A bug uses the Bug form instead: every bug fix starts from a Bug issue
+        with a reproducible example before implementation begins.
+
+        A typo, a documentation-only correction, or repository maintenance may
+        go straight to a pull request.
 
         Describe the change rather than pasting an implementation: code you
         want used travels as a pull request, where the CLA covers it.

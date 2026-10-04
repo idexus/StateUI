@@ -3,6 +3,37 @@
 StateUI is one platform-neutral Swift model with independent native hosts.
 Changes should make that model smaller, clearer, and more deterministic.
 
+## Start with an issue
+
+Every bug fix starts with an issue. Before writing the fix:
+
+1. Open a **Bug** issue with the smallest example that reproduces it.
+2. Confirm the behavior on the current `main`.
+3. Create a branch from `main`, named for the issue:
+   `fix/<issue>-<short-name>`.
+4. Add a regression test that fails because of the reported behavior.
+5. Implement the fix.
+6. Run the suites, and the Gallery, of every host the change reaches.
+7. Open a pull request against `main` that links the issue with
+   `Fixes #<issue>`.
+
+```bash
+git switch main
+git pull
+git switch -c fix/142-button-disabled-state
+```
+
+The issue records the problem and its reproduction; the pull request records
+the solution. A bug-fix pull request without an issue is not reviewed.
+
+A **Proposal** issue comes first, agreed before any code, for a new or renamed
+public API, a change to the host contract, a new dependency, or another
+substantial design decision. Its branch is `feature/<issue>-<short-name>`.
+
+A documentation-only correction, or repository maintenance that changes
+nothing StateUI does, needs no issue and may go straight to a pull request
+(`docs/<short-name>`, `chore/<short-name>`).
+
 ## Begin with evidence
 
 Reproduce the behavior before changing it. A testable defect should have a
@@ -33,11 +64,11 @@ requirement.
 
 Code under `lib/StateUI/Core/Sources` and `lib/StateUI/StateUI.Host/Sources` does not
 import Foundation or a platform UI framework. Each host is a sibling package of
-its own - `lib/StateUI/StateUI.AppKit`, `lib/StateUI/StateUI.Android`, `lib/StateUI/StateUI.WinUI`,
-`lib/StateUI/StateUI.GTK` - standing on the host layer, with its build in
-`.scripts/<Platform>`. Swift written for one host alone stands under that
-host's condition - `#if APPKIT`, `#if ANDROID`, `#if WINUI`, `#if GTK` - which
-its builds define.
+its own - `lib/StateUI/StateUI.AppKit`, `lib/StateUI/StateUI.UIKit`, `lib/StateUI/StateUI.Android`,
+`lib/StateUI/StateUI.WinUI`, `lib/StateUI/StateUI.GTK` - standing on the host layer, with its
+build in `.scripts/<Platform>`. Swift written for one host alone stands under
+that host's condition - `#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`,
+`#if GTK` - which its builds define.
 
 The core schedules nothing on Foundation's `Timer` or `RunLoop`, or on
 `DispatchQueue.main`: nothing drains them on Android or Windows. Work for the
@@ -88,9 +119,9 @@ terminal:
 Run one application build at a time. Concurrent application builds share Swift
 object directories and can silently execute stale output.
 
-Open every pull request against `dev`, never `main`: `main` takes only the
-releases merged from `dev`. A pull request runs the `Tests` workflow on macOS
-and the suites on `Windows` and `Linux`.
+Open every pull request against `main`. A release is a tag on `main`. A pull
+request runs the `Tests` workflow on macOS and the suites on `Windows` and
+`Linux`.
 
 ## Keep changes reviewable
 

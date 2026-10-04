@@ -24,7 +24,10 @@ body:
         exercised.
       options:
         - label: AppKit / macOS
+        - label: UIKit / iOS, iPadOS
         - label: Android Views / Android
+        - label: WinUI / Windows
+        - label: GTK / Linux
 
   - type: textarea
     id: repro
