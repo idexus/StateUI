@@ -47,11 +47,15 @@
                 .verticalAlignment(.start)
             }
             s.settle { !frames.values.isEmpty }
+            for time in stride(from: 16.0, through: 400, by: 16) {
+                clock.now = time
+                s.frame()
+            }
             let before = frames.values.last ?? []
 
             try s.perform(.scroll(to: Point(0, 200)), on: s.element("scroller"))
             s.turn()
-            for time in stride(from: 16.0, through: 400, by: 16) {
+            for time in stride(from: 416.0, through: 800, by: 16) {
                 clock.now = time
                 s.frame()
             }
