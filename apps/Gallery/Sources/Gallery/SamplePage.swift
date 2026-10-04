@@ -8,9 +8,9 @@ import StateUI
 /// PUSHED - it arrives as `.sample(id)` on the bound path - so the platform's
 /// back button and back gesture work as they do anywhere else, and two samples
 /// can be on the stack at once. A sample whose examples must hold the page
-/// still is shown as tabs instead - see `shown(_:nav:)` and `SampleTabPage`.
+/// still is shown as tabs instead - see `shown(_:nav:bar:)` and `SampleTabPage`.
 struct SamplePage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let sample: Sample

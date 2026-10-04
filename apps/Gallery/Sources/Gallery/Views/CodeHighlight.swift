@@ -5,10 +5,9 @@
 //
 // ASCII only, on purpose. Deciding what is a letter with `Character.isLetter`
 // would work, but the whole question of which Unicode tables that reaches is one
-// this repository would rather not open - the README's rule against ICU-backed
-// APIs, and the per-platform measurements behind it, say why. Every
-// keyword and every type name in a listing is ASCII, and anything else
-// falls through as plain text, which is the right answer for it anyway.
+// this repository would rather not open. Every keyword and every type name in a
+// listing is ASCII, and anything else falls through as plain text, which is the
+// right answer for it anyway.
 
 import StateUI
 

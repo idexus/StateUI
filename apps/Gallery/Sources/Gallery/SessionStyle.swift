@@ -13,9 +13,9 @@ extension WindowType {
     static let swatch = WindowType("gallery.swatch")
 }
 
-/// What one gallery KEEPS with itself - handed back with it when the system
-/// restores the application's windows, so each gallery comes back in the font
-/// and the colour it was left in.
+/// What the galleries' scene KEEPS with itself - handed back with it when the
+/// system restores the application's windows, so the galleries come back in the
+/// font and the colour they were left in.
 extension SceneKey {
     /// The font the gallery's preview is set in.
     static let font = SceneKey("gallery.font", of: String.self)
@@ -78,11 +78,11 @@ final class SessionStyle {
     /// The accent the gallery's bars are painted in.
     @State(sceneKey: .accent) var accent = AccentChoice.violet
 
-    /// Whether the Fonts and Colours windows hide while another gallery is the
+    /// Whether the Fonts and Colours windows hide while another scene is the
     /// one in front.
     @State var hidesTools = false
 
-    /// Whether the Fonts and Colours windows float above the gallery's main
-    /// window rather than going under it.
+    /// Whether the Fonts and Colours windows float above the application's
+    /// other windows rather than going under them.
     @State var floatsTools = false
 }

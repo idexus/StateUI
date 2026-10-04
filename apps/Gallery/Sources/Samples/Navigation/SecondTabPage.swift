@@ -3,11 +3,11 @@ import StateUI
 /// The other tab: a plain page, and the one that writes the selection.
 ///
 /// A tab is nothing but a page in a list, so this one says its own caption
-/// and its own picture through its session's `title` and `icon`.
+/// and its own picture by modifier, `title` and `icon`.
 /// Its button is `nav.tab = .stack`: the selection is a binding of the
 /// gallery's own type, so moving the tabs from code is an assignment.
 struct SecondTabPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let nav: Navigation

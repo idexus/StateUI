@@ -5,7 +5,7 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
     /// The application as it runs.
     @Environment(\.application) var application
 
-    /// This gallery - the scene the page is in.
+    /// The galleries - the scene the page is in.
     @Environment(\.scene) var scene
 
     /// The window this page is in.

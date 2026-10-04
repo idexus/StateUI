@@ -22,7 +22,7 @@ import StateUI
 struct MainPage: View {
     /// Which kind of device this is, from the standard environment - answered by
     /// the host before the first render, so the first window build already knows
-    /// whether to wear a title bar.
+    /// whether the menu stands beside the page.
     @Environment(\.device) private var device
 
     /// Every sample there is, already built.

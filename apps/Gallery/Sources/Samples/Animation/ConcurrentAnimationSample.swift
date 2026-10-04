@@ -13,9 +13,9 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     @State private var hop2 = 0.0
     @State private var hop3 = 0.0
 
-    /// What the stage is washing to. A `Color(light:dark:)` cannot be driven -
-    /// nothing here is described, so nothing can pick a half - so the palette
-    /// is asked for the one colour and that is what travels.
+    /// What the stage is washing to - a `Color(light:dark:)`, driven: the host
+    /// carries the half in force, and a change of theme carries it to the
+    /// other half.
     @State private var wash = Palette.accent
 
     /// How opaque the caption is.

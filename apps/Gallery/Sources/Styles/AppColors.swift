@@ -100,7 +100,7 @@ enum AppColors {
     /// Body text in the dark.
     static let inkDark = Color("#F4F2FA")
 
-    /// Anything secondary, in the dark. 7.1:1 on the page behind it.
+    /// Anything secondary, in the dark. 7.2:1 on the page behind it.
     static let inkMutedDark = Color("#A09AB4")
 
     /// Outlines and dividers, in the dark.

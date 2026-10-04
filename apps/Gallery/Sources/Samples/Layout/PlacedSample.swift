@@ -403,7 +403,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                     // THE OPENING AIM: a scroller cannot be moved before its
                     // content is laid out - asked earlier it clamps to the
                     // length it has so far - so this puts it there again
-                    // until the middle card is where it was sent.
+                    // until the card it was aimed at is where it was sent.
                     .onFrameChanged { frame in
                         guard !opened, frame.width != length else { return }
 

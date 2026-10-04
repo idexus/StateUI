@@ -2,8 +2,8 @@ import StateUI
 
 /// A view dragged about under a finger, and the one write that must not travel.
 struct PanSample: SampleContent, ExampleContent {
-    /// Where the box was left. Ordinary state: it changes once per gesture, so
-    /// describing it costs one render at the end of a drag.
+    /// Where the box was left. Ordinary state, read by the handlers alone: it
+    /// changes once per gesture, and no view is built for it.
     @State private var panX = 0.0
     @State private var panY = 0.0
 

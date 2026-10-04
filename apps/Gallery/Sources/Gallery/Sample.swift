@@ -240,8 +240,8 @@ struct Sample {
 
     /// What the page calls example `index`: "Example" where it is the only one,
     /// "Example 2" among several. Its words and its code are always "Notes"
-    /// and "In Swift", followed by the heading an example gives its host half
-    /// where it has one; among several examples the example's name heads them.
+    /// and its `codeHeading`, followed by the heading its host half has, where
+    /// it has one; among several examples the example's name heads them.
     func name(ofExample index: Int) -> String {
         examples.count == 1 ? "Example" : "Example \(index + 1)"
     }

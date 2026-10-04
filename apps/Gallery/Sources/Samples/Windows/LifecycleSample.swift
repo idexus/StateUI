@@ -2,9 +2,9 @@ import StateUI
 
 /// The native window lifecycle recorded through `WindowSession.phase`.
 struct LifecycleSample: SampleContent, ExampleContent {
-    /// The window's log, kept with the gallery. It is written by `MainPage`,
-    /// which watches its window's phase - see Gallery/MainPage.swift - and
-    /// this sample only reads it.
+    /// The window's log, kept by its gallery window. It is written by `MainPage`
+    /// as the window is made and by `WindowPhaseLog` as its phase moves - see
+    /// Gallery/WindowLog.swift - and this sample only reads it.
     let log: WindowLog
 
     static let id = "lifecycle"

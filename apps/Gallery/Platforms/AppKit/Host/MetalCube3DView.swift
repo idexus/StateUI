@@ -314,9 +314,9 @@ extension MetalCube3DView {
     /// A view that draws on the GPU registers exactly like one that draws with a
     /// layer: an `MTKView` is an `NSView`. It reports nothing, so `create` only
     /// makes it - every member here goes one way, from the description to the
-    /// frames. The cube is declared for this host alone, and this file names it
-    /// with no condition around it because nothing but an AppKit build compiles
-    /// this folder.
+    /// frames. The cube is declared only for the hosts that draw it, and this
+    /// file names it with no condition around it because nothing but an AppKit
+    /// build compiles this folder.
     @MainActor
     static func register() {
         StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in

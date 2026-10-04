@@ -85,7 +85,7 @@ final class OpenGLCube3DWidget: GTKControl {
         gtk_gl_area_set_allowed_apis(area, GDK_GL_API_GL)
         gtk_gl_area_set_has_depth_buffer(area, 1)
 
-        // Each a C callback, handed the area as its data: it lives as long as its widget.
+        // Each a C callback, handed the control as its data: it lives as long as its widget.
         let me = Unmanaged.passUnretained(self).toOpaque()
         let realized: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
             MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).realize() }

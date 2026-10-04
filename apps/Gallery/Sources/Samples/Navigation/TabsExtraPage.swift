@@ -8,7 +8,7 @@ import StateUI
 /// written out by hand. Adding one is `tabs.append`, and this page is what the
 /// `TabView`'s closure answers for the value.
 struct TabsExtraPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     /// Where the gallery is, and the moves that change the tab list.

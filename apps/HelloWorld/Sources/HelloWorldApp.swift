@@ -3,7 +3,7 @@ import StateUI
 /// The application: its windows, each showing MainPage.
 ///
 /// An application is its state and the scene built from it - here a
-/// `WindowGroup`, which opens a window for every session of the application.
+/// `WindowGroup`, of which launch and *File ▸ New* make a window.
 /// What a window shows is a view, MainPage.swift beside this file; where an app
 /// wants a stack, tabs or a menu, that view's `body` is a `NavigationStack`, a
 /// `TabView` or a `SplitView`, over state the view owns. What a window is

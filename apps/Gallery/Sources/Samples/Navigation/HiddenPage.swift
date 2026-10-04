@@ -8,7 +8,7 @@ import StateUI
 /// written inside an `if`, while the page behind it stays reachable from
 /// anywhere that can name the case.
 struct HiddenPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let nav: Navigation

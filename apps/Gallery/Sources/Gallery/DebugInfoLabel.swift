@@ -7,8 +7,8 @@ import StateUI
 /// answers about the description that is RUNNING when it is called, so a
 /// reading taken inside a container's braces counts THAT container - the very
 /// closure a state read there rebuilds. A view of its own would push a
-/// description of its own in front and answer about itself: `1 build, with its
-/// parent`, for ever, whatever the sample is doing.
+/// description of its own in front and answer about itself: `1 build, first
+/// time`, for ever, whatever the sample is doing.
 ///
 /// So it is written exactly where the question is, and the sample's `code`
 /// shows it in the same place:

@@ -5,7 +5,7 @@ import StateUI
 /// A category of samples - one menu row, one page listing what is in it.
 ///
 /// The names are the ones a user already looks under - "Controls" for the
-/// things you tap, "Lists & cards" for the things that show many items - and
+/// things you tap, "Items and Cards" for the things that show many items - and
 /// where two groups could both claim a sample, the summary says which has it
 /// ("text fields are under Text & typing"), so nobody has to guess twice.
 ///

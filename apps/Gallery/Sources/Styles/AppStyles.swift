@@ -15,7 +15,7 @@
 //   - Nothing a Style cannot NAME: a shadow is a property of the view that
 //     casts it, a page's appearance is what its view says of it, and the bars of
 //     NavigationStack and TabView are written on the arrangement itself -
-//     see MainPage.detail.
+//     see MainPage.body.
 
 import StateUI
 
@@ -205,8 +205,8 @@ enum AppStyles {
 
             // MARK: Choices
             //
-            // All four take the accent when they are ON, which is the whole
-            // point of having one: whatever is chosen, anywhere, is orange.
+            // Switch, CheckBox and Slider wear the accent when ON, the whole
+            // point of having one: whatever is on, anywhere, is orange.
 
             Style<Switch>()
                 .tint(Palette.accent)

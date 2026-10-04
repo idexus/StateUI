@@ -18,7 +18,7 @@ import XCTest
 /// allowed there. `private` is dropped first, because a local variable cannot
 /// wear it and a listing is not asked to know that. A block declaring what
 /// only a file can hold - an `extension`, a `protocol`, a `public` type,
-/// an `import` - is compiled at file scope instead.
+/// a class - is compiled at file scope instead.
 ///
 /// The blocks are type-checked in parallel, one `swiftc -typecheck` each,
 /// against the `.swiftmodule` this package's own build wrote - so the check

@@ -1,8 +1,8 @@
 import StateUI
 
-/// A strip of tiles a fixed distance apart - the shape the grid and throw
-/// examples are cut from. A tile is 140 wide with 20 between them, so one
-/// starts every 160, which is the interval a snapping strip is told to rest on.
+/// A strip of tiles a fixed distance apart - the shape both strips of the rest
+/// example are cut from. A tile is 140 wide with 20 between them, so one
+/// starts every 160, which is the interval the first strip is brought to rest on.
 private func tileStrip() -> ScrollView {
     ScrollView {
         HStack {
@@ -375,7 +375,7 @@ private struct OffsetStrips: ExampleContent {
     ///
     /// A journey is awaited and answers when the glide has FINISHED, so the
     /// three strips move in turn rather than together - which is what `await`
-    /// on a write to `scroll($:)` means, said on the screen.
+    /// on a journey's `move(to:)` means, said on the screen.
     ///
     /// - Parameter y: how far down each strip is sent.
     private func move(to y: Double) async throws {

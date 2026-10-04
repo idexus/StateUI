@@ -11,7 +11,7 @@ extension View {
     ///
     /// Said once here instead of on every page. **What is NOT here is the
     /// bar**: a `NavigationStack` owns its bar, so its appearance is written
-    /// once in `MainPage.detail`, and the inspector and the way home stand
+    /// once in `MainPage.body`, and the inspector and the way home stand
     /// on every page because `MainPage` declares them once, around all of
     /// them. What a PAGE can still ask of the stack it is on - whether there
     /// is a bar at all, whether there is a way back, what the back button

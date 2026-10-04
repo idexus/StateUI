@@ -53,7 +53,7 @@ extension Sample {
 /// and coming back keeps the example's state - what a gesture sample has to
 /// show IS its state.
 struct SampleTabPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let sample: Sample

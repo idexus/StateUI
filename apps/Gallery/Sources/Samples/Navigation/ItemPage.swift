@@ -7,7 +7,7 @@ import StateUI
 /// The value never crosses to the host: the host is sent the page built from
 /// it, and knows nothing about routes or their arguments.
 struct ItemPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let item: String

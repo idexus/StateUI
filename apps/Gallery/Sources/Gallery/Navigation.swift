@@ -106,12 +106,11 @@ enum Sheet: Hashable {
 
 /// Where one gallery is, and the moves that change it.
 ///
-/// A CLASS OF `@State` PROPERTIES, held by the gallery's scene and offered to
-/// every window of it. Each property has its own readers: a page that reads
-/// `nav.path` is built again when the path moves and a menu row that reads
-/// `nav.section` when the section does - and `nav.$path` is the state itself,
-/// handed to the `NavigationStack` that shows it. A second gallery holds a
-/// `Navigation` of its own.
+/// A CLASS OF `@State` PROPERTIES, held by its gallery window. Each property
+/// has its own readers: a page that reads `nav.path` is built again when the
+/// path moves and a menu row that reads `nav.section` when the section does -
+/// and `nav.$path` is the state itself, handed to the `NavigationStack` that
+/// shows it. A second gallery holds a `Navigation` of its own.
 ///
 /// Every move is a plain assignment. Navigation is state this side owns, so no
 /// handler waits for a parallel routing system; the next render moves the

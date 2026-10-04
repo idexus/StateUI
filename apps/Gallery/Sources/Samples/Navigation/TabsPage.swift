@@ -7,7 +7,7 @@ import StateUI
 /// is shown in. All three are pages, and pages nest - so a tab may hold a
 /// stack, and the stack it holds is its own array.
 struct TabsPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let nav: Navigation

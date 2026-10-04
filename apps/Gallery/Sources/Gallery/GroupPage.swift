@@ -8,7 +8,7 @@ import StateUI
 /// by what is in it, and nothing else. Adding a category is a line in the
 /// catalog, not a file.
 struct GroupPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let group: SampleGroup

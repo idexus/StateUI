@@ -21,12 +21,12 @@ import StateUI
 /// threshold, which is a handful of times in a session rather than a handful of
 /// times a second.
 struct HomePage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let catalog: Catalog
 
-    /// Where the gallery is - a card switches the section.
+    /// Where the gallery is - a card pushes its group.
     let nav: Navigation
 
     /// Which group's card is in the middle. The gallery writes it as the user
@@ -312,17 +312,15 @@ struct HomePage: View {
             return .wait
         }
         // AND THE SAME MEASUREMENT AGAIN, for the one answer that is DRAWN
-        // rather than worn. A driven value read in a body is a read nothing
-        // records, so a row's presence cannot be taken from `room`: it needs a
-        // report the tree hears. This one is quiet - it writes only where the
+        // rather than worn. A body reading `room` would be built again on every
+        // settling pass, so a row's presence is taken from a report the tree
+        // hears instead. This one is quiet - it writes only where the
         // answer actually flips, which a user does by turning the device or
         // dragging the window past a threshold.
         //
-        // IT IS ALSO WHAT MARKS THE PAGE MEASURED, and that is the half worth
-        // knowing: a WATCHED frame is what tells the arranger to place this
-        // page's rows at once instead of carrying them, and only a watcher
-        // sets it - the driven feed above does not. Take this away and the
-        // rows travel through the very measurement that decides them.
+        // A FRAME THE PAGE REPORTS - this watcher's, or the feed's above - is
+        // also what tells the arranger to place its rows at once, rather than
+        // travel them through the very measurement that decides them.
         .onFrameChanged { frame in
             let answer = Self.fitted(in: frame, at: ceiling).chrome
             guard answer != chrome else { return }

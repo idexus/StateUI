@@ -393,10 +393,6 @@ private final class Renders {
     }
 }
 
-/// The `tapped` closure on the tab captioned `title`, wherever it is.
-///
-/// A tab is a caption over a rule with a tap on the pair, so the node that
-/// answers is the one holding a Text that says so - see Gallery/Views/Tabs.swift.
 private extension String {
     /// How many times a one-character marker appears.
     func count(of marker: String) -> Int {
@@ -424,13 +420,6 @@ private func countsTo(_ character: Character?) -> Bool {
     return character.isLetter || character.isNumber || "_$-([".contains(character)
 }
 
-/// The elision a line of sample code hides behind, where it hides behind one.
-///
-/// An elision is a `…`, or three dots standing on their own - `VStack { ... }`,
-/// a lone `...` under a signature, `. . .` spread out. None of it compiles, and
-/// a snippet carrying one is a sketch rather than the code it claims to be.
-///
-/// Two things spell three dots and are not elisions. Swift's RANGE operators
 /// A sample's code with its `//` comments taken off, so a word written ABOUT
 /// the example is not read as a word the example runs.
 ///
@@ -487,6 +476,13 @@ private func bareProjections(in code: String) -> Set<String> {
     return found
 }
 
+/// The elision a line of sample code hides behind, where it hides behind one.
+///
+/// An elision is a `…`, or three dots standing on their own - `VStack { ... }`,
+/// a lone `...` under a signature, `. . .` spread out. None of it compiles, and
+/// a snippet carrying one is a sketch rather than the code it claims to be.
+///
+/// Two things spell three dots and are not elisions. Swift's RANGE operators
 /// have an operand against them on one side or the other - `1...5`, `2...`,
 /// `...5`, and `items.count + 1 ... items.count + 30` spread out - so the
 /// neighbours are what tell them apart, and `..<` is never an elision at all.
@@ -901,11 +897,6 @@ final class CatalogTests: XCTestCase {
         }
     }
 
-    /// A READING IS TAKEN WHERE THE REBUILD IS, AND THE LISTING SHOWS IT -
-    /// the gallery's own rule.
-    ///
-    /// `DebugInfoLabel()` answers about the closure it is WRITTEN in, so where
-    /// it sits is the whole of what it measures: one inside a container's
     /// THE GALLERY CARRIES ITS SEMANTICS AND ITS LISTINGS DO NOT.
     ///
     /// Every control the gallery hands a user says what it is - so a screen
@@ -938,6 +929,11 @@ final class CatalogTests: XCTestCase {
         }
     }
 
+    /// A READING IS TAKEN WHERE THE REBUILD IS, AND THE LISTING SHOWS IT -
+    /// the gallery's own rule.
+    ///
+    /// `DebugInfoLabel()` answers about the closure it is WRITTEN in, so where
+    /// it sits is the whole of what it measures: one inside a container's
     /// braces counts that container, and one outside them counts a description
     /// that a read deeper down never reaches. A user looking at the example
     /// therefore has to be able to see the place, which is what the `code`
@@ -1342,7 +1338,6 @@ final class CatalogTests: XCTestCase {
         XCTAssertNotNil(prop(second, .icon))
     }
 
-    /// Each tab keeps its own place because the ARRAYS are separate - which is
     /// Reversing the tabs from the MIDDLE of three describes the same
     /// `selectedTab` as before it - which is the whole point of the move.
     ///
@@ -1393,6 +1388,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(place.tabs.wrappedValue, [.stack])
     }
 
+    /// Each tab keeps its own place because the ARRAYS are separate - which is
     /// the one claim the tabs sample makes that nothing else would catch.
     func testATabsStackIsAnArrayOfItsOwn() throws {
         let place = Place()
@@ -1453,20 +1449,6 @@ final class CatalogTests: XCTestCase {
         }
     }
 
-    /// The home page's run of cards is sized by the CYCLE, not by a render.
-    ///
-    /// The run is given what the page's other rows can spare, and what they can
-    /// spare is not known until the page has been laid out - so this page is
-    /// arranged from its own measurement, and a measurement settles over
-    /// several passes. DESCRIBED, that is a render per pass with the whole page
-    /// rebuilt inside each one, and everything standing under the run riding
-    /// every step. DRIVEN, the host wears the answer on its own frames and the
-    /// tree says nothing at all.
-    ///
-    /// What holds the second is registrations rather than values: the page
-    /// feeds its room onto a number, an engine over that number answers the
-    /// run's height, and the entrance is a number too - so even coming in
-    /// costs no render.
     /// A CARD CROSSED DESCRIBES THE WORDS UNDER THE RUN AND NOTHING ELSE.
     ///
     /// The page holds the heading, the run of cards and the footer; what
@@ -1548,6 +1530,20 @@ final class CatalogTests: XCTestCase {
             .compactMap { $0.properties[.text]?.string }
     }
 
+    /// The home page's run of cards is sized by the CYCLE, not by a render.
+    ///
+    /// The run is given what the page's other rows can spare, and what they can
+    /// spare is not known until the page has been laid out - so this page is
+    /// arranged from its own measurement, and a measurement settles over
+    /// several passes. DESCRIBED, that is a render per pass with the whole page
+    /// rebuilt inside each one, and everything standing under the run riding
+    /// every step. DRIVEN, the host wears the answer on its own frames and the
+    /// tree says nothing at all.
+    ///
+    /// What holds the second is registrations rather than values: the page
+    /// feeds its room onto a number, an engine over that number answers the
+    /// run's height, and the entrance is a number too - so even coming in
+    /// costs no render.
     func testTheHomePageIsSizedByTheCycleRatherThanByARender() throws {
         let page = HomePage(catalog: catalog(), nav: Place().nav).node.built
         var heights: [String] = []

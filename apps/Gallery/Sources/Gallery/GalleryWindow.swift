@@ -24,8 +24,8 @@ struct GalleryWindow: View {
     /// What this window's bar says - written by the Window bar sample.
     @State private var bar = WindowBarState()
 
-    /// What this window has said about its life - its phase, watched in
-    /// `MainPage` and read by the Lifecycle sample.
+    /// What this window has said about its life - its phase, watched by
+    /// `WindowPhaseLog` and read by the Lifecycle sample.
     @State private var log = WindowLog()
 
     /// WHERE THE CATALOG IS KEPT, so that it is built once rather than on

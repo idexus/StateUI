@@ -21,10 +21,10 @@ extension ToolbarItem {
     /// come in from the title's side.
     ///
     /// The picture is the WHITE house in both themes, which is the one that
-    /// reads on the accent bar `MainPage` paints - see the note in
-    /// GalleryPage.swift on why a ToolbarItem's icon cannot be tinted and has to
-    /// be chosen instead. The file is named for the theme it was drawn for; what
-    /// decides here is the colour behind it, and that colour does not change.
+    /// reads on the accent bar `MainPage` paints: a ToolbarItem's icon has no
+    /// tint, so it is chosen instead. The file is named for the theme it was
+    /// drawn for; what decides here is the colour behind it, and that colour
+    /// does not change.
     ///
     /// **One assignment.** `nav.home()` sets the section and empties the path,
     /// and there is no other stack anywhere to go stale - the page the user

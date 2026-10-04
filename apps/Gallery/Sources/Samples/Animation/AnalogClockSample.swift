@@ -279,8 +279,8 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                         toHour, .eased(300, .cubicOut))
                     _ = try await (s, m, h)
                 } else {
-                    // The first reading SETS the hands: writing `value` is a
-                    // snap, so there is no movement here and nothing to await.
+                    // The first reading SETS the hands: `value` is written, and
+                    // the state to match, so nothing travels and nothing is awaited.
                     started = true
                     ($sAngle.journey.value, $mAngle.journey.value, $hAngle.journey.value) = (second, minute, hour)
                     (sAngle, mAngle, hAngle) = (second, minute, hour)

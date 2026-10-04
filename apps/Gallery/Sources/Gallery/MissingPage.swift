@@ -2,10 +2,10 @@
 
 import StateUI
 
-/// A sample route with no sample behind it.
+/// A sample or group route with nothing behind it.
 ///
-/// Only reachable by pushing `.sample(id)` with an id nothing in the catalog
-/// claims - a renamed sample, or a card that outlived its entry. Saying so is
+/// Only reachable by pushing `.sample(id)` or `.group(id)` with an id nothing
+/// in the catalog claims - a renamed sample, or a card that outlived its entry. Saying so is
 /// better than a blank page, and better than throwing: the rest of the gallery
 /// goes on working.
 ///
@@ -14,7 +14,7 @@ import StateUI
 /// mistype. What is left is the id INSIDE the case, which is data: a catalog
 /// entry renamed and a card not.
 struct MissingPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let id: String

@@ -8,7 +8,7 @@ import StateUI
 /// itself belonging to the arrangement: its view says those requests by
 /// modifier.
 struct LevelPage: View {
-    /// The gallery this page is in - the scene its inspector button opens.
+    /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
     let level: Int
