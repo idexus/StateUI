@@ -93,7 +93,7 @@ final class WinUIDriver: HostDriver {
                   case .manual(let identity) = element.id, items.activateForTesting(identity)
             else { throw DriverCannot(act, on: element) }
         case (.choose(let place), let items as WinUIItemsView): items.chooseForTesting(place)
-        case (.scroll(let target), let items as WinUIItemsView): items.scrollForTesting(to: target)
+        case (.scroll(let target), let items as WinUIItemsView): scroll(items, to: target)
         case (.activate, _): try activate(element, view)
         case (.toggle, let toggle as WinUIToggleView): toggle.toggle()
         case (.toggle, _) where element.type == .splitView: try window().titleBar.chose(-2)
@@ -243,6 +243,18 @@ final class WinUIDriver: HostDriver {
         }
         let row: WinUIView = tabs.tabsShownByWindow ? try window().tabRow : tabs.row
         stateui_winui_tabs_choose_as_user(row.handle, Int32(place))
+    }
+
+    /// Scrolls the list to `target` as the user does, as far as it reaches: WinUI's compositor moves the view a moment
+    /// later, so the act is done once the view stands there.
+    private func scroll(_ items: WinUIItemsView, to target: Point) {
+        let reach = items.standingForTesting.reach
+        let landing = Point(x: min(max(target.x, 0), reach.x), y: min(max(target.y, 0), reach.y))
+        items.scrollForTesting(to: target)
+        renderer?.settle {
+            let offset = items.standingForTesting.offset
+            return abs(offset.x - landing.x) < 0.5 && abs(offset.y - landing.y) < 0.5
+        }
     }
 
     /// Answers the question showing as the user does, by its button of `caption`, its field first holding `words`:

@@ -450,6 +450,20 @@ extern "C" void stateui_winui_items_scroll_as_user(StateUIObjectRef handle, doub
     }
 }
 
+extern "C" void stateui_winui_items_offset(StateUIObjectRef handle, double *offset) {
+    offset[0] = offset[1] = offset[2] = offset[3] = 0;
+    try {
+        auto scroller = borrow<controls::ItemsView>(handle).ScrollView();
+        if (!scroller) return;
+        offset[0] = scroller.HorizontalOffset();
+        offset[1] = scroller.VerticalOffset();
+        offset[2] = scroller.ScrollableWidth();
+        offset[3] = scroller.ScrollableHeight();
+    } catch (...) {
+        report("reading an ItemsView's view");
+    }
+}
+
 extern "C" void stateui_winui_items_name(StateUIObjectRef handle, int64_t cell, char const *words) {
     try {
         auto container = cellsOf(borrow<controls::ItemsView>(handle))->holding(cell);

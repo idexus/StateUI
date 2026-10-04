@@ -218,9 +218,16 @@ final class WinUIItemsView: WinUILayoutView {
         return stateui_winui_items_invoke_as_user(cell.handle)
     }
 
-    /// Scrolls to `target`, as far as the list reaches.
+    /// Scrolls to `target`, as far as the list reaches: WinUI's compositor moves the view a moment later.
     func scrollForTesting(to target: Point) {
         stateui_winui_items_scroll_as_user(list.handle, target.x, target.y)
+    }
+
+    /// Where the list's view stands, and the farthest it reaches, in DIPs.
+    var standingForTesting: (offset: Point, reach: Point) {
+        var values = [0.0, 0.0, 0.0, 0.0]
+        stateui_winui_items_offset(list.handle, &values)
+        return (Point(x: values[0], y: values[1]), Point(x: values[2], y: values[3]))
     }
 }
 

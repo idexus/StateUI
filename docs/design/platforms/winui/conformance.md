@@ -28,6 +28,13 @@ A dialog takes a press only once WinUI has shown it whole, and the next
 question stands only once the last has closed; the driver presses the
 button of the caption asked until the press lands.
 
+## A list's scroll
+
+WinUI's compositor moves an ItemsView's view a moment after it is asked, so
+the driver's scroll of a list is done once the view stands where it was
+asked, as far as the list reaches. A list asked to move before its first
+frames are composed stays where it is.
+
 ## A colour at a point
 
 A bitmap WinUI renders of an element that is no panel - a shape, a picture -

@@ -91,10 +91,12 @@ A view whose frame the tree reads - a state its frame drives, or a handler
 for its changes - says where it stands on the display's next frame after a
 layout pass or a scroll: its frame in its parent, its place in the window's
 content, and that place from the page's corner, all in DIPs. The host hears
-every StateUI layout WinUI arranges and every scroller's movement, and asks
-only the views that are read, in the order they were made; a view that did
-not move says nothing. It speaks on a frame rather than inside WinUI's pass,
-so what a handler renders is laid out in a pass of its own.
+every StateUI layout WinUI arranges, every scroller's movement and every
+change of an ItemsView's view - WinUI's compositor moves a list's rows and
+lays nothing out - and asks only the views that are read, in the order they
+were made; a view that did not move says nothing. It speaks on a frame rather
+than inside WinUI's pass, so what a handler renders is laid out in a pass of
+its own.
 
 ## Right to left
 

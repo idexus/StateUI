@@ -150,7 +150,10 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.invoked(identity) }
             },
             itemsShowing: { view, first, last in
-                MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.showing(Int(first)...Int(last)) }
+                MainActor.assumeIsolated {
+                    WinUIItemsList.owner(of: view)?.showing(Int(first)...Int(last))
+                    WinUIRenderer.shared?.runtime.frames.laidOut()
+                }
             })
     }
 }

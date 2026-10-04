@@ -702,8 +702,12 @@ void stateui_winui_items_choose_as_user(StateUIObjectRef items, int32_t index);
 /// is none.
 bool stateui_winui_items_invoke_as_user(StateUIObjectRef cell);
 
-/// What a test does as the user scrolls the list to `x`, `y` DIPs, at once.
+/// What a test does as the user scrolls the list to `x`, `y` DIPs, unanimated: the list's view stands there once
+/// WinUI's compositor has moved it, a moment later.
 void stateui_winui_items_scroll_as_user(StateUIObjectRef items, double x, double y);
+
+/// Where the list's view stands, then the farthest it reaches across and down, in DIPs: four values.
+void stateui_winui_items_offset(StateUIObjectRef items, double *offset);
 
 /// Names the row holding the cell numbered `cell` `words`: what Narrator reads of it, which reads no further.
 void stateui_winui_items_name(StateUIObjectRef items, int64_t cell, char const *words);
