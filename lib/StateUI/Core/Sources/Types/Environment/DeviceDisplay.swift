@@ -25,7 +25,6 @@ public final class DeviceDisplay {
     /// it does not.
     @State public var refreshRate: Double = 0
 
-    /// A fresh instance, for providing a fake to one branch with
-    /// `.environment(...)`. The values start as a headless host's do.
+    /// A fresh instance, its values starting as a headless host's do.
     public init() {}
 }

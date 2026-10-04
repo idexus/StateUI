@@ -4,7 +4,7 @@
 // Acts sent from more than one thread at once.
 //
 // `async let` runs its child on the cooperative pool - Swift's design, a child
-// task does not inherit the parent's actor - so two animations started with
+// task does not inherit the parent's actor - so two acts started with
 // `async let` reach `Renderer.send` from pool threads while the host thread is
 // taking acts and dispatching completions. The registry behind that is a
 // dictionary and an array, and unguarded they are a data race: a lost
@@ -20,9 +20,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// The gallery Card's exact shape: the handler literal written inside a
-/// conforming struct's `node` GETTER, an `async let` child inside it, and
-/// GETTER LOCALS carrying the stored properties into the closure.
+/// The gallery Card's shape: the handler literal written inside a conforming
+/// struct's GETTER - the Card's `body`, here `node` - an `async let` child inside
+/// it, and GETTER LOCALS carrying the stored properties into the closure.
 ///
 /// The locals keep `self` out of the closure; an explicit capture list -
 /// `{ [press, action] in ... }` - holds the handler on this library's
@@ -82,7 +82,7 @@ final class ConcurrencyTests: XCTestCase {
         acts.compactMap(\.completion)
     }
 
-    /// The host's whole loop, against a handler whose animations run as child
+    /// The host's whole loop, against a handler whose acts run as child
     /// tasks: take what was queued, answer each act, run the jobs the resumes
     /// produce, until the handler says it has finished or the patience runs out.
     @MainActor
@@ -137,10 +137,10 @@ final class ConcurrencyTests: XCTestCase {
     }
 
     /// A handler with a child STARTED below its first await, held to the
-    /// counters the HOST polls: after the first act's completion is
+    /// counters a test waits on: after the first act's completion is
     /// dispatched, the resumed handler must be visible - as a pending resume
-    /// or a landed job - or the drain gives up and the handler sits until
-    /// the next event. The method-written closure; `PressCard` above is the
+    /// or a landed job - or it went to another scheduler, which the UI
+    /// thread never drains. The method-written closure; `PressCard` above is the
     /// same contract for the getter-written one.
     @MainActor
     func testAHandlerWithAChildBelowStaysOnTheLibrarysExecutor() async throws {
@@ -167,7 +167,7 @@ final class ConcurrencyTests: XCTestCase {
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(first))
 
-        // The host's two questions, asked the way ScheduleDrain asks them.
+        // The two counters a test waits on for a queue gone quiet.
         // The job may take a moment to land; what may NOT happen is quiet.
         var visible = false
         let deadline = Date().addingTimeInterval(2)
@@ -190,7 +190,7 @@ final class ConcurrencyTests: XCTestCase {
     }
 
     /// The same contract, written where the gallery writes it: in a
-    /// conforming struct's `node` getter; see the doc on `PressCard`.
+    /// conforming struct's getter; see the doc on `PressCard`.
     @MainActor
     func testACardShapedHandlerStaysOnTheLibrarysExecutor() async throws {
         let renders = Renders()
@@ -271,7 +271,7 @@ final class ConcurrencyTests: XCTestCase {
         XCTAssertTrue(reached, "the handler never came back")
     }
 
-    /// The counters the host polls, asked from the host's side of the race: a
+    /// The counters a test polls, asked from the host's side of the race: a
     /// resume can be owed with the queue still empty, and a job can be waiting
     /// with no resume owed - a parent whose children have already lowered the
     /// count. The drain loop asks BOTH, so both have to be visible.
@@ -298,7 +298,7 @@ final class ConcurrencyTests: XCTestCase {
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(completion))
 
-        // Between the report and the drain, the host's two questions: the job
+        // Between the report and the drain, the two counters: the job
         // may not exist yet, but SOMETHING must say work is coming or already
         // there - this is what the drain loop keeps looking on.
         let deadline = Date().addingTimeInterval(2)

@@ -59,8 +59,8 @@
     /// Nothing told yet.
     public init() {}
 
-    /// The toolkit told what `window` does now: whether it stands off the screen - minimized, or hidden with the
-    /// window it belongs to - and whether it is activated.
+    /// The toolkit told what `window` does now: whether it stands off the screen - minimized - and whether it is
+    /// activated.
     public func report(_ window: MountedElement, minimized: Bool, activated: Bool) {
         reports.removeAll { $0.window == nil || $0.window === window }
         reports.append(Report(window: window, minimized: minimized, activated: activated))

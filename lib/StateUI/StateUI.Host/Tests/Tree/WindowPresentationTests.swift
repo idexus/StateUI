@@ -41,7 +41,7 @@ final class WindowPresentationTests: XCTestCase {
         return patch
     }
 
-    /// An overlay declared with `layer`.
+    /// An overlay `id`, holding one layer.
     private func overlay(_ id: String) -> HostPatch {
         node(id, .overlay, [node("\(id).layer", .zStack)])
     }

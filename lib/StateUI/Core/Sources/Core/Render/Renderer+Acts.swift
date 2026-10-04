@@ -116,7 +116,7 @@ extension Renderer {
             return queued
         }
 
-        // And what the open scenes keep, the same way (Scenes.swift).
+        // And what the open scenes keep, the same way (OpenScenes.swift).
         return queued + saves + OpenScenes.shared.takeSaves()
     }
 }

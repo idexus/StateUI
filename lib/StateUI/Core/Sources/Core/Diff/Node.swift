@@ -23,7 +23,7 @@ public enum PropValue: Equatable, Sendable {
     case nothing
 
     /// A name from an open vocabulary - a style key, a visual state, a font family,
-    /// a radio group. It crosses as the session's number for it.
+    /// a radio group. It crosses as its spelling.
     case name(String)
 
     /// A number. Everything numeric crosses as a Double.
@@ -246,8 +246,8 @@ public struct Node {
     /// The element's properties, by token.
     var props: [Prop: PropValue]
 
-    /// Nested nodes: the slot children modifiers append. A container's own content
-    /// waits in its producer until the differ describes the element.
+    /// Nested nodes: those it was made with and the slot children modifiers append;
+    /// a container's own content waits in its producer until the differ describes it.
     public var children: [Node]
 
     /// The container's content, run when the differ describes this element; nil once
@@ -287,7 +287,7 @@ public struct Node {
     }
 
     /// How this element's values animate - what `.motion(_:)` wrote - or nil for the
-    /// application's. Per node, never inherited (Motion.swift).
+    /// application's. Per node, never inherited (MotionPlan.swift).
     var motion: MotionPlan?
 
     /// The values `.onChanged` watches, in written order (Changes.swift).

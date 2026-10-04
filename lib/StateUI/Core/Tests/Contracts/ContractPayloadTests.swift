@@ -20,7 +20,7 @@ final class ContractPayloadTests: XCTestCase {
         let frame: [Double] = [0, 0, 100, 40, 0, 0, 100, 40]
         let address = PropValue.string("https://example.com")
 
-        // What every drawn element and every view reports.
+        // What the tiers and mixins report.
         check(VisualElementContract.isFocusedChanged, [.bool(true)])
         check(ViewContract.dragLeave)
         check(ViewContract.dragOver)

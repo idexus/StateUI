@@ -164,7 +164,7 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertTrue(cells.childrenChanged().isEmpty, "nothing more to change")
     }
 
-    /// The user's choice reaches the page as the item's id, and a choice the page already holds is not told again.
+    /// The user's choice reaches the page as the item's id; what the program selects is not told.
     func testTheUsersChoiceReachesThePage() {
         cells.userChose(["7"])
         XCTAssertEqual(Heard.chosen, [7])

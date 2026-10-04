@@ -5,7 +5,7 @@ extension View {
     /// A view on the bar in place of the page's title, declared where the
     /// state it follows lives.
     ///
-    ///     List { … }
+    ///     VStack { … }
     ///         .titleView {
     ///             SearchField($query).placeholder("Search")
     ///         }

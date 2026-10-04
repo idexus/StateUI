@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `PageElementContract` on a host: a page and an arrangement stand under the title and with the icon the tree gives
-/// them where another container presents them - a tabbed view's tab - and under the titles the tree changes them to;
-/// the visible page's title names its window, from a state too. Each case made for every element wearing the tier.
+/// them where another container presents them - a tabbed view's tab - and under the titles the tree changes them to,
+/// each case made for every element wearing the tier; the visible page's title names its window, from a state too.
 @_spi(Host) public enum PageElementTests: ConformanceFamily {
     public static let name = "PageElement"
 

@@ -177,7 +177,7 @@ final class MotionTests: XCTestCase {
         // EVERY ONE OF THEM, not just the one above. What this holds is that
         // the DIFFER honours the whole list rather than the one property a
         // test happened to write: taking the check out of the differ fails
-        // here naming `maximumLength`, `gridRowSpan` and `position`.
+        // here naming `maximumLength`, `gridRowSpan` and `zIndex`.
         //
         // WHAT IT CANNOT HOLD is a member that stops saying so, since the
         // members are what it walks. That belongs to whoever changes one, and

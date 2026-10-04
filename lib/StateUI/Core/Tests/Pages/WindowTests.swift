@@ -3,7 +3,7 @@
 
 // What a Window puts on the host boundary.
 //
-// A window declares its page, its title bar and its modal stack; what it is
+// A window declares its page; what it is
 // called, where it stands, how big it is and where it is in its life are its
 // SESSION's - state a view in it writes and reads - carried on the window node
 // under StateUI's property names and units. Everything here is about the

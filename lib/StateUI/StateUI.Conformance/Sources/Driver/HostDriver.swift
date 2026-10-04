@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// A host as the conformance suite drives it: what a user does to its native controls, and what they hold. Each
-/// host's test target implements one over its toolkit, and names no widget to a case.
+/// host's tests implement one over its toolkit, which names no widget to a case.
 /// Design: docs/design/host/conformance.md#the-driver
 @MainActor
 @_spi(Host) public protocol HostDriver: AnyObject {
@@ -15,7 +15,7 @@
     /// What the host realizes, member by member: whether a case runs on it, and what its verdict says.
     var register: HostRegister { get }
 
-    /// What this driver cannot do on its host yet, each with why: a case needing it is not run, and says so.
+    /// What this driver cannot do on its host yet, each with why: a case needing it stops there, and says so.
     var cannot: [String: String] { get }
 
     /// What its platform holds nothing of - a value no control of it keeps, its effect proven by another case - each

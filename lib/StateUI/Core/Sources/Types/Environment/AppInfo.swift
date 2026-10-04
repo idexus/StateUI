@@ -22,7 +22,6 @@ public final class AppInfo {
     /// that branches on the theme.
     @State public var colorScheme: ColorScheme = .system
 
-    /// A fresh instance, for providing a fake to one branch with
-    /// `.environment(...)`. The values start as a headless host's do.
+    /// A fresh instance, its values starting as a headless host's do.
     public init() {}
 }

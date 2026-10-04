@@ -237,9 +237,6 @@ final class PersistenceTests: XCTestCase {
         XCTAssertNil(acts.first?.completion)
     }
 
-    /// A key written many times between two drains is saved ONCE, holding the
-    /// last value - which is what keeps a TextField bound to kept state from
-    /// saving on every letter.
     /// A write and the record beside it happen under ONE hold, so no other
     /// write can land between them.
     ///
@@ -300,6 +297,9 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(drainedActs().first?.arguments, [.name("test.name"), .string("Grace")])
     }
 
+    /// A key written many times between two drains is saved ONCE, holding the
+    /// last value - which is what keeps a TextField bound to kept state from
+    /// saving on every letter.
     func testAKeyWrittenManyTimesIsSavedOnceHoldingTheLastValue() {
         let preferences = Preferences()
 

@@ -29,7 +29,7 @@ public enum DrawingBuilder {
         component ?? []
     }
 
-    /// Both branches of an if/else.
+    /// The `if` branch of an if/else.
     public static func buildEither(first component: [DrawCommand]) -> [DrawCommand] {
         component
     }

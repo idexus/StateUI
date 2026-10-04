@@ -5,7 +5,7 @@
 /// structure, then the tiers.
 /// Design: docs/design/host/conformance.md#one-family-per-contract
 @_spi(Host) public enum Families {
-    /// Every family, in the dictionary's order.
+    /// Every family, section by section as the dictionary has them.
     public static let all: [any ConformanceFamily.Type] = [
         ActivityIndicatorTests.self,
         ButtonTests.self,

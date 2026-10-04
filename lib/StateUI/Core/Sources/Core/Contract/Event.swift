@@ -4,8 +4,8 @@
 /// One semantic event a control can report, with the same stable StateUI name
 /// its matching modifier uses, such as `textChanged` or `clicked`.
 ///
-/// Comparable by name because a message writes a node's handlers in name
-/// order, exactly as it writes the properties.
+/// Comparable by name because the differ numbers a node's handlers in name
+/// order, so two runs of one tree number alike.
 public struct Event: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     CustomStringConvertible {
     /// The event's stable StateUI name.
@@ -25,7 +25,7 @@ public struct Event: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     /// The name, so an interpolated diagnostic prints it plainly.
     public var description: String { name }
 
-    /// Name order - the order a message writes handlers in.
+    /// Name order - the order the differ numbers handlers in.
     public static func < (lhs: Event, rhs: Event) -> Bool {
         lhs.name < rhs.name
     }

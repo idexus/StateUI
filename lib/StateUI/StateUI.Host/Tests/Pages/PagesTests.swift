@@ -540,7 +540,7 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(file.last?.entries.map(\.isEnabled), [false])
     }
 
-    /// A menu bar the path declares, each of its menus captioned and holding `entries`.
+    /// A menu bar the path declares, holding `menus`, in `order`.
     private func menuBar(_ id: String, _ menus: [HostPatch], order: Double = 0) -> HostPatch {
         node(id, .menuBar, [.order: .number(order)], children: menus)
     }

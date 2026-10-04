@@ -26,7 +26,7 @@ public enum Draw {
         DrawCommand(.fillColor, [value.propValue])
     }
 
-    /// The colour the `draw…` instructions outline with.
+    /// The colour the `stroke…` instructions outline with.
     public static func strokeColor(_ value: Color) -> DrawCommand {
         DrawCommand(.strokeColor, [value.propValue])
     }
@@ -133,7 +133,7 @@ public enum Draw {
     ///     Draw.strokePath("M 0,20 L 20,0 L 40,20 Z")
     ///
     /// The path's own numbers are canvas coordinates, so a shape is moved with
-    /// `translate` rather than by rewriting them.
+    /// `translateBy` rather than by rewriting them.
     public static func strokePath(_ data: String) -> DrawCommand {
         DrawCommand(.strokePath, [.string(data)])
     }

@@ -15,7 +15,7 @@ extension Aim {
     /// - Returns: true when the view took the focus. False is an ordinary
     ///   answer, not a failure: a view that is disabled, or not on screen, or
     ///   has nothing to focus refuses it.
-    /// - Throws: `StateUIError` when no view of that id is being shown.
+    /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
     @discardableResult
     public nonisolated(nonsending) func focus() async throws -> Bool {
         try await call(VisualElementContract.focus)
@@ -29,7 +29,7 @@ extension Aim {
     /// For a keyboard whose view is not known here - a Done button above a form
     /// of several fields - use `OnScreenKeyboard.hide()`, which asks the page.
     ///
-    /// - Throws: `StateUIError` when no view of that id is being shown.
+    /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
     public nonisolated(nonsending) func unfocus() async throws {
         try await call(VisualElementContract.unfocus)
     }

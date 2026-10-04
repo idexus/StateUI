@@ -50,7 +50,7 @@ final class ElementReleaseTests: XCTestCase {
     /// whether the object it returned was let go.
     ///
     /// The second render is the whole instrument: a tree that stops naming a
-    /// view is how a page is left, and it is what runs `Diff.forget(_:)`.
+    /// view is how a page is left, and it is what runs `Differ.forget(_:)`.
     /// Without it a test proves only that nothing holds the object at all,
     /// which is a different and much weaker sentence.
     private func released(_ build: (Renders) -> AnyObject) -> Bool {
@@ -84,7 +84,7 @@ final class ElementReleaseTests: XCTestCase {
 
     /// A state an ENGINE follows. The board holds an armed engine and the
     /// engine holds what it follows, so the element handing its numbers back
-    /// at `Diff.forget(_:)` is what ends it.
+    /// at `Differ.forget(_:)` is what ends it.
     func testAnEngineGoesWithTheElement() {
         XCTAssertTrue(released { renders in
             let step = State(0)

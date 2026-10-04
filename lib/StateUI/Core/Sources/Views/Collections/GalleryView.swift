@@ -14,11 +14,11 @@
 ///     }
 ///     .arrangement(.default)
 ///     .position($shown)
-///     .onItemTapped { open(albums[shown]) }
+///     .onItemTapped { album in open(album) }
 ///
 /// The initializer is the card's face, one card per item; where a card goes
 /// and which way it faces is the arrangement's. Give the gallery a bounded
-/// size, as a scroller needs - a `.height`, or a star row of a Grid - and the
+/// size, as a scroller needs - a `.height`, or a `.fill` row of a Grid - and the
 /// cards are fitted to it.
 ///
 /// A swipe settles on a card, and `.position($:)` says which; assigning it
@@ -147,7 +147,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     ///     GalleryView(albums) { … }.arrangement(.fan)
     ///
-    /// - Parameter style: the arrangement.
+    /// - Parameter arrangement: the arrangement.
     /// - Returns: the gallery, in that shape.
     public func arrangement(_ arrangement: GalleryArrangement) -> Self {
         var copy = self

@@ -161,7 +161,7 @@ final class AimTests: XCTestCase {
     /// An aim on the composed view at the call site and one on its content's
     /// root name the SAME element - which a string id inside the content never
     /// could, the identity being fixed on the placeholder before the content
-    /// exists. See Aim.swift's header.
+    /// exists. See docs/design/core/identity-and-diffing.md.
     func testAnAimOnTheComposedViewAndInsideItAgree() throws {
         let renders = Renders()
         let outer = Aim(Carded.self)
@@ -278,7 +278,7 @@ final class AimTests: XCTestCase {
     /// control's aim.
     ///
     /// `Aim.call` is public because an application that can register a
-    /// control (`StateUIControls.Add`) and register an act (`StateUIActs.Add`)
+    /// control (`StateUIControls.add`) and register an act (`StateUIActs.add`)
     /// must be able to AIM one at the other, in a surface whose whole promise
     /// is that an application writes what the library writes.
     func testAnApplicationsOwnActAimsThroughTheSamePublicCall() async throws {

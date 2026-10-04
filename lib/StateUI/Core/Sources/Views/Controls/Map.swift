@@ -51,10 +51,9 @@ extension MapProperties {
 /// call `map.moveToRegion(latitude:longitude:radiusMeters:)`. Where it opens
 /// is the initializer below.
 ///
-/// The platform's own map draws it. Where that is Google Maps, an Android app
-/// needs an API key in its manifest (`com.google.android.geo.API_KEY`) or the
-/// map stays a grey grid; a host with no map provider shows its
-/// unsupported-control marker instead.
+/// The platform's own map draws it where the platform ships one; elsewhere
+/// the application registers its own map with the host, and until it does
+/// the host shows its unsupported-control marker instead.
 public struct Map: ElementView, MapProperties {
     /// The node this control describes.
     public var node: Node
@@ -275,8 +274,8 @@ extension Aim where Target == Map {
     ///
     /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
     ///   a plain number, its unit in its name.
-    /// - Throws: `StateUIError` when no view of that id is being shown, or
-    ///   the view it names is not a Map.
+    /// - Throws: `StateUIError` when the aim is on no view or on two, or its
+    ///   view is no longer shown.
     public nonisolated(nonsending) func moveToRegion(
         latitude: Double,
         longitude: Double,

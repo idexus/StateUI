@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUI
 
-/// What a tap on an item does where the toolkit's collection decides nothing of it: it chooses the item - adding it
-/// to a choice of many or taking it away - and opens it, unless it changes a choice of many.
+/// What a tap on an item does where the toolkit's collection decides nothing of it: it chooses the item where the
+/// list chooses - adding it to a choice of many or taking it away - and opens it, unless it changes a choice of many.
 /// Design: docs/design/host/items.md#a-tap
 @_spi(Host) public struct ItemsTap: Equatable, Sendable {
     /// The items chosen after the tap; nil where the choice stays as it was.

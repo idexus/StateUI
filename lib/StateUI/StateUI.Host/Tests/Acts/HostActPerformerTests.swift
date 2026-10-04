@@ -108,7 +108,7 @@ final class HostActPerformerTests: XCTestCase {
     }
 
     /// The focus goes to the element the act names: whether it took it is the answer; an element with no view, or
-    /// none named, fails.
+    /// one not on screen, fails.
     func testTheFocusGoesWhereTheActAimsIt() {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("root"), type: .vStack)

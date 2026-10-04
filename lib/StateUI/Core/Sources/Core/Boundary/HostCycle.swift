@@ -15,7 +15,7 @@
     /// The state channel whose value changed.
     public let state: Int32
 
-    /// The lanes that changed, or every bit for text.
+    /// The lanes that changed, or every bit where the value's length changed.
     public let changed: UInt64
 
     /// The complete value after the cycle.

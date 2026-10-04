@@ -81,7 +81,7 @@ final class ApplicationLifecycleTests: XCTestCase {
     }
 
     /// The scene in front is the one whose window was activated last: the application going behind another moves it
-    /// nowhere, another scene's window activated moves it there - the scene left hears it first.
+    /// nowhere, another scene's window activated moves it there - and that scene hears it.
     func testOnlyAnotherScenesWindowMovesTheSceneInFront() throws {
         let (runtime, lifecycle) = Self.application([("1", [Self.window("window 1")]), ("2", [Self.window("window 1")])])
         let first = try Self.window("window 1", in: "1", of: runtime)

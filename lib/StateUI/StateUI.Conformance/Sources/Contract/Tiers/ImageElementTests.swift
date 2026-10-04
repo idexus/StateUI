@@ -4,9 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ImageElementContract` on a host: a picture is placed in its room as its aspect says - fitted whole, filling it,
-/// stretched across it, or centred at its own size - and the aspect the tree changes it to held; each case made for
-/// every element wearing the tier.
+/// `ImageElementContract` on a host: an image's picture is placed in its room as its aspect says - fitted whole,
+/// filling it, stretched across it, or centred at its own size - and the aspect the tree changes it to held on every
+/// element wearing the tier.
 ///
 /// The picture is the suite's test_wide.svg: 40 by 20, of one colour.
 @_spi(Host) public enum ImageElementTests: ConformanceFamily {

@@ -5,9 +5,9 @@
 @_spi(Host) import StateUIHost
 
 /// `WindowContract` on a host: a window hears each phase of its life - made and brought to the front, put behind
-/// another application and back, put away and brought back, closed - and a modal the user takes away; it stands with
-/// the title, the size, the place, the bounds and the chrome its session asks for; a window opened by its kind is of
-/// that kind, for its value, floating or hiding as its group says, and the platform keeps it for its value.
+/// another application and back, put away and brought back, closed; it stands with the title, the size, the place,
+/// the bounds and the chrome its session asks for; a window opened by its kind is of that kind, for its value,
+/// floating or hiding as its group says, and the platform keeps it for its value.
 @_spi(Host) public enum WindowTests: ConformanceFamily {
     public static let name = "Window"
 

@@ -23,7 +23,7 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// The items, their identities and their views - one source a build.
     private let source: ItemsSource<Items, ID>
 
-    /// The identities the host holds in its cells, as it last said.
+    /// The identities within reach of the host's cells, as it last said.
     @State private var realized: [String] = []
 
     private var layout = ItemsLayout.list()

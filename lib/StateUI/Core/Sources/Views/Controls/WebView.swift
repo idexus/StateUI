@@ -257,16 +257,16 @@ extension Aim where Target == WebView {
     ///         .isEnabled(hasBack)
     ///         .onClicked { try await browser.goBack() }
     ///
-    /// - Throws: `StateUIError` when no view of that id is being shown, or
-    ///   the view it names is not a WebView.
+    /// - Throws: `StateUIError` when the aim is on no view or on two, or its
+    ///   view is no longer shown.
     public nonisolated(nonsending) func goBack() async throws {
         try await call(WebViewContract.goBack)
     }
 
     /// Goes forward again, after going back.
     ///
-    /// - Throws: `StateUIError` when no view of that id is being shown, or
-    ///   the view it names is not a WebView.
+    /// - Throws: `StateUIError` when the aim is on no view or on two, or its
+    ///   view is no longer shown.
     public nonisolated(nonsending) func goForward() async throws {
         try await call(WebViewContract.goForward)
     }
@@ -274,8 +274,8 @@ extension Aim where Target == WebView {
     /// Fetches the current page again - and puts a view back on its feet after
     /// `onProcessTerminated`.
     ///
-    /// - Throws: `StateUIError` when no view of that id is being shown, or
-    ///   the view it names is not a WebView.
+    /// - Throws: `StateUIError` when the aim is on no view or on two, or its
+    ///   view is no longer shown.
     public nonisolated(nonsending) func reload() async throws {
         try await call(WebViewContract.reload)
     }
@@ -287,8 +287,8 @@ extension Aim where Target == WebView {
     /// - Returns: What the script's last expression evaluated to, written as
     ///   text by the platform - a number arrives as `"42"`, an object as its
     ///   JSON. Empty when the page answered nothing.
-    /// - Throws: `StateUIError` when no view of that id is being shown, or
-    ///   the view it names is not a WebView.
+    /// - Throws: `StateUIError` when the aim is on no view or on two, or its
+    ///   view is no longer shown.
     public nonisolated(nonsending) func evaluateJavaScript(_ script: String) async throws -> String {
         let answer: String? = try await call(WebViewContract.evaluateJavaScript, script)
         return answer ?? ""

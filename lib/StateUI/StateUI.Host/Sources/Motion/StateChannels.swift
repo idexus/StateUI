@@ -142,13 +142,13 @@
         return true
     }
 
-    /// Takes values emitted since the previous host pump.
+    /// Takes values emitted since the previous take.
     public func takeOutputs() -> [StateChannelOutput] {
         defer { outputs.removeAll(keepingCapacity: true) }
         return outputs
     }
 
-    /// Takes journey completions emitted since the previous host pump.
+    /// Takes journey completions emitted since the previous take.
     public func takeCompletions() -> [JourneyCompletion] {
         defer { completions.removeAll(keepingCapacity: true) }
         return completions

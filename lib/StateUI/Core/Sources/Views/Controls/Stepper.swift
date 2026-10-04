@@ -65,8 +65,8 @@ public struct Stepper: ElementView, StepperProperties {
     ///
     ///     Stepper($count)
     ///
-    /// A Stepper draws its two buttons and no number: show `count` beside it,
-    /// or a driven text an engine writes, which costs no render.
+    /// A Stepper draws its number on some platforms and not on others: show
+    /// `count` beside it, or a driven text an engine writes, which costs no render.
     public init(_ value: Binding<Double>) {
         self = Stepper().value(value)
     }

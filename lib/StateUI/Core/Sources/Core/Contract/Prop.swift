@@ -4,8 +4,8 @@
 /// One semantic property of a control, with the same spelling the matching
 /// modifier writes.
 ///
-/// Comparable by name because a message writes a node's properties in name
-/// order - that is what makes two renders of the same tree byte-identical.
+/// Comparable by name because the differ walks a node's driven and cleared
+/// properties in name order - that is what makes two renders of one tree alike.
 public struct Prop: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     CustomStringConvertible {
     /// The property's stable StateUI name.
@@ -25,7 +25,7 @@ public struct Prop: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     /// The name, so an interpolated diagnostic prints it plainly.
     public var description: String { name }
 
-    /// Name order - the order a message writes properties in.
+    /// Name order - the order the differ walks properties in.
     public static func < (lhs: Prop, rhs: Prop) -> Bool {
         lhs.name < rhs.name
     }

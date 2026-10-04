@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // `.onChanged` runs when the value is not what the element carried last render
-// - and only then. See Changes.swift for the four rules these tests pin.
+// - and only then. Design: docs/design/core/identity-and-diffing.md#watching-values
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -372,10 +372,10 @@ final class ChangesTests: XCTestCase {
         Renderer.shared.clearInvalidation()
     }
 
-    /// The road OUT: a change handler may animate, and may await the answer.
+    /// The road OUT: a change handler may call an act, and may await the answer.
     ///
     /// The message carrying the changed value is packed before the handler is
-    /// queued - see Changes.swift - so the act is asked for against an
+    /// queued - see docs/design/core/render.md - so the act is asked for against an
     /// interface already showing the change. The handler then resumes with the
     /// act's own answer, exactly as a button's handler would.
     @MainActor

@@ -427,8 +427,8 @@
         }
     }
 
-    /// A view that can be dragged, dragged across one that takes drops and onto another, carries its words there:
-    /// its drag heard starting and ending, the one it crossed hearing it come and go, the one it landed on the words.
+    /// A view that can be dragged, dragged onto one that takes drops, carries its words there: its drag heard
+    /// starting and ending, the one it landed on the words.
     static func dragged(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDragFromItCarriesItsWords", proves: [
             Covered(ViewContract.canDrag, on: element), Covered(ViewContract.dragText, on: element),

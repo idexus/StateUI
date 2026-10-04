@@ -180,10 +180,9 @@ final class ActCallTests: XCTestCase {
     /// themselves and nothing is substituted for them anywhere: the batch stays
     /// readable, and every argument after one is still at its own place.
     ///
-    /// The refusal happens in the host instead, which is where it belongs -
-    /// the HOST's typed accessors answer "not a number" for a non-finite, so a
-    /// value nobody could act on is refused by whoever would have acted on it.
-    /// That half is each host's to pin.
+    /// A refusal belongs in the host instead - a value nobody could act on is
+    /// refused by whoever would have acted on it. That half is each host's to
+    /// pin.
     func testANumberThatIsNotFiniteCrossesAsItsOwnBits() throws {
         drain()
 

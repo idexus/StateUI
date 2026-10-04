@@ -11,9 +11,9 @@ extension TextProperties {
         setValue(TextContract.lineBreak, value)
     }
 
-    /// How many lines to show before the text is cut - what the cut LOOKS like
-    /// is `lineBreak`'s business. A count of -1 means no limit, which is
-    /// the default.
+    /// How many lines a wrapping text shows before it is cut; a `lineBreak`
+    /// that keeps one line keeps it whatever this says. A count of -1 means
+    /// no limit, which is the default.
     public func maximumLines(_ value: Int) -> Modified {
         setValue(TextContract.maximumLines, value)
     }

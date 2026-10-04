@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// `@Observable` held in a `@State` is refused with a warning: nothing here arms
+// `@Observable` held in a `@State` draws a warning: nothing here arms
 // an observation scope, so its writes would reach no renderer.
 // Design: docs/design/core/state.md#an-observable-model
 

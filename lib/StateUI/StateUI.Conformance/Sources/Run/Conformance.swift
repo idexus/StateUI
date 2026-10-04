@@ -36,9 +36,9 @@
 
     /// Runs `family` - or `part` of it - on `driver`'s host, handing every failure to `report` and a line for each
     /// case to `log`, or, where none is given, saying each as it ends - its place in the run and how long it took
-    /// (`HostLog.note`); the verdict on each member its cases prove - ✅ or ☑️ where a passing case proved it, –
-    /// where the host's family never has it, ❌ with the first failure where a case failed, and why it stays empty
-    /// otherwise - the worst its cases gave.
+    /// (`HostLog.note`); the verdict on each member its cases prove - ✅, ☑️ or ✓ where a passing case proved it, –
+    /// where the host's family never has it, 🧩 where it is the application's, ❌ with the first failure where a case
+    /// failed, and why it stays empty otherwise - the worst its cases gave.
     @discardableResult
     public static func run(
         _ family: any ConformanceFamily.Type, part: Part = .whole, on driver: any HostDriver,

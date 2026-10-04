@@ -4,7 +4,7 @@
 import Foundation
 import XCTest
 
-/// Every Swift runtime keeps one architecture: the core's host layer holds
+/// Every Swift runtime keeps one architecture: the host layer holds
 /// the elements every toolkit shares, each host holds only what its toolkit
 /// makes it write, and no host does again what an element of the layer does.
 /// These guards read the layer and every Swift host's sources as text.

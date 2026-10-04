@@ -290,7 +290,7 @@
     /// Raises an event of the application's - one no control raises - with
     /// the values its contract declares, as the platform reported them: every
     /// `HostEvents.on` subscription to the member hears them, each handler
-    /// queued on this library's executor for the next `runJobs`. Typed at the
+    /// started on `MainActor` at once, up to its first suspension. Typed at the
     /// call: the values are the member's, so a raise of another shape does not
     /// compile.
     ///

@@ -3,7 +3,7 @@
 
 // The library's own vocabulary: one token per member the sources and the hosts
 // name, made from the member, for the hosts behind `@_spi(Host)`. A token is a
-// name only, whose number the session's dictionary settles, and carries no
+// name only - a host reads it by that name - and carries no
 // `///`: its documentation is its member's.
 // Design: docs/design/core/contracts.md#tokens
 

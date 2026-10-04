@@ -19,10 +19,10 @@
     /// The native control cannot be updated into what the node now says, so the
     /// host discards it and builds it again from this complete patch.
     ///
-    /// Set when the element type changed, and for a property that has gone away
-    /// which no host-neutral operation can put back - a member that says it is
-    /// not `cleared`, and nothing else. Every other lost property is named in `clearedProperties`
-    /// instead, which costs one property rather than the element and its subtree.
+    /// Set when the element type, or the views composed into it, changed, and for
+    /// a lost property no host-neutral operation can put back - a member that says
+    /// it is not `cleared`, and nothing else. Every other lost property is named in
+    /// `clearedProperties` instead, which costs one property rather than the element and its subtree.
     public var replace = false
 
     /// Whether this render brings the complete element. Renderer-only merge
@@ -60,8 +60,8 @@
     /// Nil means unchanged; `.replace([:])` removes every handler.
     public var events: HostEventUpdate?
 
-    /// How this element's children animate when it puts them somewhere new,
-    /// sent when it changed and only by an element that places children.
+    /// How this element's children animate when it puts them somewhere new, sent when
+    /// it changed - by the application, a layout placing children, or a `.motion(_:)`.
     public var motion: HostLayoutMotion?
 
     /// The sparse or complete change to this element's children.

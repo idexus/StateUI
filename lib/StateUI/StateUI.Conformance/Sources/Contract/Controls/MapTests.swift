@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `MapContract` on a host: a map shows the region the tree gives it and the one an act moves it to, the kind of map
-/// and what the user may do with it as the tree says, and a click on it heard where it fell.
+/// and what the user may do with it as the tree says, and a click on it heard once.
 @_spi(Host) public enum MapTests: ConformanceFamily {
     public static let name = "Map"
 

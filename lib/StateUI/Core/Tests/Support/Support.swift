@@ -825,10 +825,7 @@ enum SourceTree {
 }
 
 extension String {
-    /// Every piece of text between an opening marker and the next closing one.
-    /// An empty opening marker means "from here". The ONE copy of this helper,
-    /// internal so BridgeTests and the token guard read with the same eyes.
-    /// The same, but only where `opening` starts a WORD.
+    /// The pieces `occurrences(between:and:)` finds, but only where `opening` starts a WORD.
     ///
     /// `set(.` is the private setter a type that cannot write `setValue` keeps
     /// - and it is also the tail of `offset(.` and `inset(.`, which set
@@ -854,6 +851,9 @@ extension String {
         return found
     }
 
+    /// Every piece of text between an opening marker and the next closing one.
+    /// An empty opening marker means "from here". The ONE copy of this helper,
+    /// internal so every guard reading a source reads it with the same eyes.
     func occurrences(between opening: String, and closing: String) -> [String] {
         var found: [String] = []
         var rest = Substring(self)
@@ -1024,7 +1024,7 @@ private func hostBinding(of number: Int32) -> HostStateBinding? {
     return HostStateBinding(state: number, mode: .inOut, kind: kind)
 }
 
-/// The same, for the one-lane values a scroller and a drag report.
+/// The same, for a value of one lane.
 func moved(_ number: Int32, to value: Double) {
     moved(number, to: [value], mask: 1)
 }

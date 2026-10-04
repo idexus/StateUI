@@ -31,7 +31,7 @@ public struct EngineCycle: Sendable {
     /// Which clock this cycle belongs to.
     public let sync: Sync
 
-    /// Milliseconds on that clock since its first cycle.
+    /// Milliseconds on that clock, as the host tells them; never before the last cycle's.
     public let now: Double
 
     /// Milliseconds since this engine last ran - nought or more, never more than

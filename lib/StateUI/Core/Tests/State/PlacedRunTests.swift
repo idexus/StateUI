@@ -11,7 +11,7 @@
 // way describes not one property of a placement.
 //
 // The types are in Types/Layout, PlacedRun.swift and Placement.swift; the
-// host's half is MotionPlacement in StateUI.Runtime's MotionTargets.cs.
+// host layer reads a run through `HostBoundary.placements(from:)`.
 
 import XCTest
 @_spi(Host) @testable import StateUI

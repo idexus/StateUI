@@ -32,7 +32,7 @@ final class VsCodeTests: XCTestCase {
 
     /// The launches are the StateUI extension's: ONE Debug and ONE Release of
     /// type `stateui`, which the extension resolves into the chosen host's own
-    /// debugger - AppKit's or Android's. No launch names a host or an
+    /// debugger, whatever the host. No launch names a host or an
     /// application of its own, so none can drift from the extension that
     /// chooses them.
     func testTheLaunchesAreTheExtensions() throws {
@@ -120,8 +120,8 @@ final class VsCodeTests: XCTestCase {
             "settings.json sets the editor's host, over the StateUI extension's choice.")
     }
 
-    /// Each host's suite is a task of its own, beside the default that runs
-    /// the Swift ones.
+    /// The core's, the AppKit host's and the Gallery's suites are each a task
+    /// of their own, beside the default that runs the Swift ones.
     func testEveryHostsSuiteIsATaskOfItsOwn() throws {
         let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
         let labels = Set(array(tasks, "tasks").compactMap { $0["label"] as? String })

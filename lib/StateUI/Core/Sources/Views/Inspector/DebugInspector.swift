@@ -6,10 +6,10 @@
 ///     Window(.debugInspector) { DebugInspector() }
 ///
 /// A window of the scene that declares it, showing the renders that reached
-/// that scene - opened by the ⓘ of any of the scene's pages, or by
+/// that scene - opened by a docked inspector's "Open in a window", or by
 /// `application.openWindow(.debugInspector)`. Where a scene declares none, or
-/// the platform opens no second window, the inspector docks in the scene's
-/// first window instead.
+/// the platform opens no second window, the inspector docks in a window of
+/// the scene instead.
 public struct DebugInspector: View {
     /// The scene it inspects - the one it is a window of.
     @Environment(\.scene) private var scene

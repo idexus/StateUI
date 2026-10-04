@@ -4,8 +4,7 @@
 @_spi(Host) import StateUI
 
 /// The windows a tree holds, the same on every host: its window elements in the tree's order, each with the host's
-/// controller of it - the one a window the tree keeps had, made for one new, closed for one gone, the last first, so
-/// a window closes before the one it belongs to.
+/// controller of it - the one a window the tree keeps had, made for one new, closed for one gone, the last first.
 /// Design: docs/design/host/tree.md#the-windows-a-tree-holds
 @_spi(Host) @MainActor public final class WindowRoster<Controller: AnyObject> {
     private struct Entry {

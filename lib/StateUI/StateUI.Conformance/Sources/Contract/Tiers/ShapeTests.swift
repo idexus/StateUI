@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ShapeContract` on a host: a shape is filled and outlined as the tree says, the colours the tree changes them to
+/// `ShapeContract` on a host: a shape is filled and outlined as the tree says, the fill the tree changes it to
 /// drawn, and every way its outline is drawn - its width, dashes, ends, joins - its placement in its room and its
 /// transform held as the tree gives them; each case made for every shape.
 @_spi(Host) public enum ShapeTests: ConformanceFamily {

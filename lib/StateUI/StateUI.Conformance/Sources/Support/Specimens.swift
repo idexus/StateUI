@@ -6,7 +6,7 @@
 
 /// One element of each kind the library declares, as small as it can be and standing where an application puts
 /// one: a control in a stack, a span in a label's words, a menu's item in a view's menu, a toolbar's on its page's
-/// bar, an arrangement as the page, a title bar over its window. What a tier's cases dress, so a case written once
+/// bar, an arrangement as the page. What a tier's cases dress, so a case written once
 /// covers its member on every element wearing the tier.
 /// Design: docs/design/host/conformance.md#a-tiers-cases
 @_spi(Host) public enum Specimens {

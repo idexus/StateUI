@@ -442,23 +442,6 @@ final class UIThreadTests: XCTestCase {
             """)
     }
 
-    /// And the same rule for the code this library cannot annotate.
-    ///
-    /// `nonisolated(nonsending)` is a spelling, so it only ever covers the six
-    /// functions here that say it. An application's own `async func` is beyond
-    /// reach - and measured, it is exactly where the rule breaks: a helper an
-    /// author writes and awaits from a handler runs on the cooperative pool and
-    /// comes back off the thread the host draws on, with no diagnostic anywhere.
-    ///
-    /// The upcoming feature makes caller-inheriting the DEFAULT, which closes
-    /// that. It is per-module, so it has to be set in every manifest and in both
-    /// build scripts - Apple and Windows call swiftc directly and would
-    /// otherwise compile the same sources with different defaults from Android.
-    /// That spread is the reason this is a test: missing one of them costs
-    /// nothing at build time and everything at run time.
-    ///
-    /// Every application's manifest is FOUND rather than listed, so a scaffolded
-    /// app is covered the moment it exists.
     /// THE FOUR NON-NEGOTIABLES, checked instead of remembered - CONTRIBUTING.md
     /// states them, under "Keep the core platform-neutral". Every
     /// one of them breaks a platform silently and far from the cause, which is
@@ -586,6 +569,21 @@ final class UIThreadTests: XCTestCase {
         return out
     }
 
+    /// And the same rule for the code this library cannot annotate.
+    ///
+    /// `nonisolated(nonsending)` is a spelling, so it only ever covers the
+    /// functions here that say it. An application's own `async func` is beyond
+    /// reach - and measured, it is exactly where the rule breaks: a helper an
+    /// author writes and awaits from a handler runs on the cooperative pool and
+    /// comes back off the thread the host draws on, with no diagnostic anywhere.
+    ///
+    /// The upcoming feature makes caller-inheriting the DEFAULT, which closes
+    /// that. It is per-module, so it has to be set in every manifest.
+    /// That spread is the reason this is a test: missing one of them costs
+    /// nothing at build time and everything at run time.
+    ///
+    /// Every application's manifest is FOUND rather than listed, so a scaffolded
+    /// app is covered the moment it exists.
     func testEverywhereSwiftIsCompiledInheritsTheCallersExecutor() throws {
         var places = [
             "Package.swift",
@@ -746,9 +744,6 @@ final class UIThreadTests: XCTestCase {
         return !text.hasSuffix("-> Void")
     }
 
-    /// Waits for something the runtime will do shortly, without a fixed sleep.
-    ///
-    /// A resumed continuation arrives when the scheduler gets to it. In an app
     /// A drain is BOUNDED, so a job that queues another for ever cannot take
     /// the thread the host draws on with it.
     ///

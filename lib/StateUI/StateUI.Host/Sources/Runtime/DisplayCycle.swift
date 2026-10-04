@@ -5,10 +5,10 @@
 
 /// What a frame presents through: the toolkit's mounted tree and the windows around it.
 @_spi(Host) @MainActor public protocol FramePresenter: AnyObject {
-    /// Whether a scroller still moves or owes a report, and so wants frames.
+    /// Whether a scroller still moves or owes a report, or a frame read may have moved: it wants frames.
     var wantsFrames: Bool { get }
 
-    /// Commits what the user did on the scrollers since the last frame, as one batch.
+    /// Commits what the user did on the scrollers since the last frame, then where read frames stand, as one batch.
     func commitUserReports(now: Double)
 
     /// Presents one frame's batch in one walk: bound states' values and moved properties.
@@ -58,7 +58,7 @@
         self.reducesMotion = reducesMotion
     }
 
-    /// One frame: the user's reports, the animations, the core's cycle, one walk, a render, the hold.
+    /// One frame: the user's reports, the animations, the core's cycle, one walk, the hold, a render.
     public func frame(now: Double) {
         presenter?.commitUserReports(now: now)
         drain(now: now)
@@ -99,7 +99,7 @@
         present()
     }
 
-    /// Holds the frame clock while an animation, the core's cycle or a scroller still moves.
+    /// Holds the frame clock while an animation or the core's cycle moves, or the presenter wants frames.
     public func hold() {
         clock.held = continues
             || animator.isMoving

@@ -39,7 +39,7 @@ final class ActCallShapeTests: XCTestCase {
 
     /// One act a caller waits for, made by `body`, taken, checked and
     /// finished. Takes Void so the compiler does not have to prove an
-    /// arbitrary result Sendable; an animation call wraps itself in `_ =`.
+    /// arbitrary result Sendable; a call with a result wraps itself in `_ =`.
     private func check(
         _ act: String,
         _ arguments: [PropValue],
@@ -146,7 +146,7 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// The one act with no view in it: the host asks the page which of its
+    /// An act with no view in it: the host asks the page which of its
     /// views has the focus, because the Swift side cannot know.
     func testClosingTheKeyboardCrossesWithItsArgumentsInPlace() async throws {
         try await check("hideOnScreenKeyboard", []) {
@@ -259,7 +259,7 @@ final class ActCallShapeTests: XCTestCase {
 
     /// A scene's kept value on its way to the platform's record of that scene:
     /// the scene and the key as NAMES, then the value, and nobody waiting -
-    /// the act `Scenes.takeSaves` queues, which SceneTests reads off a live
+    /// the act `OpenScenes.takeSaves` queues, which SceneTests reads off a live
     /// scene.
     func testASceneValueCrossesWithItsArgumentsInPlace() throws {
         let call = ActCall(ApplicationContract.persistSceneValue, Name("2"), Name("shade"), PropValue.string("dusk"))

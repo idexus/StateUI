@@ -43,7 +43,7 @@ extension ElementAct: ActShape {
     fileprivate var answerType: Any.Type { Answer.self }
 }
 
-/// docs/controls as the contracts and the hosts' declarations say it is.
+/// docs/controls as the contracts and the hosts' runs say it is.
 struct ControlDictionary {
     /// Every host the matrix has a column for, in the columns' order.
     static let platforms = ["AppKit", "UIKit", "Android Views", "WinUI 3", "GTK 4", "Web"]
@@ -144,8 +144,8 @@ struct ControlDictionary {
         var byApplication = 0
         var byHost = 0
 
-        /// The members the host meets the contract on: realized in full, not planned for its family, or left to the
-        /// application's own registration.
+        /// The members the host meets the contract on: realized in full, proven only through the host's own, or not
+        /// planned for its family.
         var met: Int { done + notPlanned + byHost }
 
         /// Whether the host has any mark that is counted or shown in a total.

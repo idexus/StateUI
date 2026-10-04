@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `NavigationStackContract` on a host: the top page of the path shows, named on the window; the user's way back
-/// takes it off the path, which is heard; the bar's words stand in the colour the tree gives them.
+/// takes it off the path, which is heard.
 @_spi(Host) public enum NavigationStackTests: ConformanceFamily {
     public static let name = "NavigationStack"
 

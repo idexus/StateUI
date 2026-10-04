@@ -79,7 +79,7 @@ extension ViewProperties {
 }
 
 extension View {
-    /// A menu on the view itself, opened with a right-click.
+    /// A menu on the view itself, opened with a secondary click or a long press.
     ///
     ///     Text(item.name)
     ///         .contextMenu {
@@ -91,9 +91,8 @@ extension View {
     /// The same entries a menu bar takes - `MenuItem`, `Menu`
     /// and `Divider` - attached to a view instead of to a page.
     ///
-    /// Context menus are a desktop interaction. A host with no native context
-    /// menu interaction leaves this modifier inert, so do not put the only way
-    /// to perform an essential action behind it.
+    /// The menu stays hidden until the user asks for it, so do not put the
+    /// only way to perform an essential action behind it.
     ///
     /// - Parameter items: the entries, in the order they are shown.
     public func contextMenu(@MenuBuilder _ items: () -> [Element]) -> Modified {

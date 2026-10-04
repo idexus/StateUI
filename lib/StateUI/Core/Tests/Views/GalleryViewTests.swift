@@ -64,8 +64,6 @@ final class GalleryViewTests: XCTestCase {
         return found
     }
 
-    /// Renders, tells every reader how big the room is, and renders again -
-    /// which is the state a gallery is in the moment it is on screen.
     /// The room the last `laid` laid out in - what `placements` feeds, so a
     /// test that states a room reads the cards that room put there.
     private var room = Rect(0, 0, 352, 400)
@@ -81,6 +79,8 @@ final class GalleryViewTests: XCTestCase {
     private var placer: Int32?
     private var feeder: Int32?
 
+    /// Renders, tells every reader how big the room is, and renders again -
+    /// which is the state a gallery is in the moment it is on screen.
     private func laid(
         _ renders: Renders,
         _ tree: () -> Node,
@@ -204,8 +204,6 @@ final class GalleryViewTests: XCTestCase {
 
     // MARK: - The three shapes
 
-    /// The card the run is ON stands in the middle of the room, at the size it
-    /// was told, and its neighbours stand out from it.
     /// A CHANGE OF POSITION DOES NOT DESCRIBE THE CARDS.
     ///
     /// Where each card GOES is the engine's, worked out from the offset on the
@@ -288,6 +286,8 @@ final class GalleryViewTests: XCTestCase {
         }
     }
 
+    /// The card the run is ON stands in the middle of the room, at the size it
+    /// was told, and its neighbours stand out from it.
     func testTheChosenCardStandsInTheMiddle() {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).node }).patch
@@ -395,9 +395,7 @@ final class GalleryViewTests: XCTestCase {
 
     // MARK: - What the user swipes
 
-    /// The run is the room plus one card's travel per card past the first, and
-    /// it comes to rest on a card.
-     /// A gallery told to darken puts most of what a far card wears into the
+    /// A gallery told to darken puts most of what a far card wears into the
     /// SHADE and keeps the card nearly opaque - which is the whole point, a
     /// faded card on a wheel showing the card behind it rather than the page.
     func testAShadedGalleryDarkensWhereItWouldHaveFaded() {

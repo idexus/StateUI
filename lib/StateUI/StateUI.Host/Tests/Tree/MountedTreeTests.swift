@@ -493,8 +493,8 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(tree.root?.takeCreatedHandlers(), [])
     }
 
-    /// A radio button's peers are its group's in the whole tree, or every radio button beside it where it
-    /// names none.
+    /// A radio button's peers are its group's in its window, the whole tree where it stands in none, or every radio
+    /// button beside it where it names none.
     @MainActor
     func testARadioButtonsPeersAreItsGroupOrItsSiblings() {
         let (tree, _) = Self.tree()

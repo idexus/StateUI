@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-/// What applying one message costs the runtime, kept while an inspector records.
+/// What applying one message costs the runtime, kept while an inspector records or the tally is written.
 /// Design: docs/design/host/patches.md#what-a-message-costs
 struct RenderTally {
     let began = ContinuousClock.now

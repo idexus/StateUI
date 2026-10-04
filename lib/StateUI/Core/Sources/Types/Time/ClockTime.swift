@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A time of day: hour, minute, second, and nothing else.
+/// A time of day: hour, minute, second and millisecond.
 ///
 ///     ClockTime(hour: 9, minute: 30)
 ///

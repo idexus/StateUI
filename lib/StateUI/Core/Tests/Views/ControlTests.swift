@@ -332,8 +332,8 @@ final class ControlTests: XCTestCase {
 
             // The case's source is the URL form; HTML written in place
             // travels as a list under the same name - the brush rule, one
-            // level up. The canGoBack and canGoForward bindings are watches
-            // rather than events.
+            // level up. The canGoBack and canGoForward bindings are written by
+            // their events.
             ControlCase("WebView", source: "WebView.swift",
                 WebView("https://example.com/docs")
                     .userAgent("StateUI/1.0")
@@ -420,14 +420,14 @@ final class ControlTests: XCTestCase {
                 .onDragged { _ in }
                 .onReleased { _ in }),
 
-            // The protocol tiers, once, on the three controls it takes to reach all
+            // The protocol tiers, once, on the four controls it takes to reach all
             // of them: a stack for spacing and padding, a label for text, font and
-            // alignment, and a shape for what a shape is drawn with. The grid
-            // placement is on the label because that is where a placement
-            // lives - on the child, not the grid.
+            // alignment, a shape for what a shape is drawn with, and a field for
+            // input. The grid placement is on the label because that is where a
+            // placement lives - on the child, not the grid.
             ControlCase("Elements", sources: SourceTree.sharedTier,
                 VStack {
-                    // The Shape tier, which all seven shapes share - so it is
+                    // The Shape tier, which all six shapes share - so it is
                     // checked here rather than in each of their cases, exactly
                     // as the font tier is.
                     Ellipse()
@@ -500,7 +500,7 @@ final class ControlTests: XCTestCase {
                         .selectionLength(2)
                 }
                 .spacing(12)
-                // The safe strip is the LAYOUT tier's one property of its own;
+                // The safe strip is one of the LAYOUT tier's own properties;
                 // the four-value form markers its full spelling in the patch.
                 .avoidsSafeArea(.none, .keyboard, .container, .all)
                 .clipsContent(true)
@@ -1007,8 +1007,8 @@ final class ControlTests: XCTestCase {
     /// A time of day READS AND WRITES its text form, which is a convenience for
     /// an author and not the form it travels in: in the patch it is its numbers,
     /// for the reason a date is - a formatter would mean ICU. The patch's rule is
-    /// `testATwoWayInputWritesBackWhatArrives`, which fires `timeChanged` with
-    /// three numbers, and the TimePicker case.
+    /// `testATwoWayInputWritesBackWhatArrives`, which lands a time as three
+    /// numbers, and the TimePicker case.
     func testATimeOfDayReadsAndWritesItsTextForm() {
         XCTAssertEqual(ClockTime(hour: 9, minute: 5).text, "09:05:00")
         XCTAssertEqual(ClockTime(hour: 21, minute: 5, second: 30).text, "21:05:30")

@@ -37,7 +37,6 @@ public final class DeviceInfo {
     /// Real hardware or an emulator.
     @State public var deviceType: DeviceType = .unknown
 
-    /// A fresh instance, for providing a fake to one branch with
-    /// `.environment(...)`. The values start as a headless host's do.
+    /// A fresh instance, its values starting as a headless host's do.
     public init() {}
 }

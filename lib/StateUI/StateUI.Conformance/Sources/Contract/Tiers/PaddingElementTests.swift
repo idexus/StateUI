@@ -5,8 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `PaddingElementContract` on a host: what an element holds stands its padding in from its edges - a layout's
-/// children, a control's words - and the padding the tree changes it to; each case made for every element wearing
-/// the tier.
+/// children, a control's words - and the padding the tree changes it to, on every element wearing the tier.
 @_spi(Host) public enum PaddingElementTests: ConformanceFamily {
     public static let name = "PaddingElement"
 

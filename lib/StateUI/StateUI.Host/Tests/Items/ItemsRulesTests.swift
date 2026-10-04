@@ -107,7 +107,7 @@ final class ItemsRulesTests: XCTestCase {
     }
 
     /// The end is told once as the last item in view comes within reach of the last of all; again only after the
-    /// user scrolled away, or once the list gained items.
+    /// user scrolled away, or once the list gained or lost items.
     func testTheEndIsToldOnceUntilTheUserLeavesItOrMoreArrive() {
         var watch = EndReachedWatch()
         XCTAssertFalse(watch.reached(count: 30, last: 20, within: 5))

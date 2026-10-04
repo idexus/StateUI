@@ -38,7 +38,7 @@ public enum Easing: Int32, Sendable {
     /// Slow at both ends, and more pronounced than `.sineInOut`.
     case cubicInOut = 6
 
-    /// Overshoots at the end and settles back, twice.
+    /// Reaches the end and bounces back off it three times, each lower.
     case bounceOut = 7
 
     /// Bounces before it sets off.

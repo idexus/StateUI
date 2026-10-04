@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The numbers a view's frame report carries, read as a case compares them: in whole pixels, which every host's
+/// The numbers a view's frame report carries, read as a case compares them: in whole points, which every host's
 /// layout gives alike.
 public enum FrameReport {
     /// Where the view stands in its parent: x, y, width, height.

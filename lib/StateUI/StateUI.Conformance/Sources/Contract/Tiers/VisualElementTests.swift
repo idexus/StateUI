@@ -198,7 +198,7 @@
         }
     }
 
-    /// A view's frame lands in the state the tree gives it, and again where the tree moves it.
+    /// A view's frame lands in the state the tree gives it, and again as the tree widens it.
     static func framed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).itsFrameLandsInItsState", proves: [
             Covered(VisualElementContract.frame, on: element),

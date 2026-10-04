@@ -71,7 +71,6 @@ private struct Panel: View {
     }
 }
 
-/// Owns a flag it never reads - only lends. The reader is what depends on it.
 /// A parent that hands its own state to the child as a plain value.
 private struct Handing: View {
     let builds: Builds
@@ -84,6 +83,7 @@ private struct Handing: View {
     }
 }
 
+/// Owns a flag it never reads - only lends. The reader is what depends on it.
 private struct FlagOwner: View {
     let builds: Builds
     let reader: Builds
@@ -120,7 +120,7 @@ private struct TapCounter: View {
 
 /// Its body's ROOT depends on its own state - a Button in one state, a Text
 /// in the other. No stored class here: in the test package a handler closure
-/// capturing a plain class inside a `content` getter hops to MainActor
+/// capturing a plain class inside a `body` getter hops to MainActor
 /// silently, so state stays in `@State` boxes the way an application holds it.
 private struct Switcher: View {
     @State var editing = false

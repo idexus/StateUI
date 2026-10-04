@@ -54,8 +54,8 @@ final class VisibilityCrossingTests: XCTestCase {
         XCTAssertTrue(view.isShown)
     }
 
-    /// An element shown from nothing fades in from no opacity; a child joining a standing layout fades in unless a
-    /// state owns its opacity or it is already on its way.
+    /// An element shown from nothing fades in from no opacity; a child joining a standing layout fades in where its
+    /// view presents its opacity and no state owns it, unless it is already on its way.
     func testAnElementShownFromNothingFadesIn() throws {
         let (runtime, _, element) = Self.label(visible: true)
         let view = Faded()

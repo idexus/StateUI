@@ -37,7 +37,7 @@ final class CompositionTests: XCTestCase {
     ///
     /// Both halves of the repository, because the rule is one rule - the
     /// library's own composed views and every view an application declares.
-    /// The property named `node` is exempt: it is `VisualElement`'s
+    /// The property named `node` is exempt: it is `Element`'s
     /// requirement, not a caller's knob.
     func testAComposedViewTakesNoConfigurationInItsInitializer() throws {
         var checked = 0
@@ -176,11 +176,10 @@ final class CompositionTests: XCTestCase {
     /// Every composed view in the repository: the library's `View`s with a
     /// `body` and every view an application declares.
     ///
-    /// An application's views are taken whatever they conform to - `MenuRow` is
-    /// an `Element` rather than a `View`, being a row with no state, and
-    /// the rule is the same for it. The LIBRARY's `ElementView`s are its
-    /// controls, which the control recipe and ControlTests already hold to
-    /// their own shape.
+    /// An application's views are taken whatever they conform to - a `View`,
+    /// an `Element` or an `ElementView` - and the rule is the same for each.
+    /// The LIBRARY's `ElementView`s are its controls, which the control recipe
+    /// and ControlTests already hold to their own shape.
     private func composedViews() throws -> [ComposedView] {
         let repository = SourceTree.repository
         var found: [ComposedView] = []
@@ -191,7 +190,7 @@ final class CompositionTests: XCTestCase {
         ]
 
         // Protocols that REFINE View carry the rule with them -
-        // `SampleContent` is what every gallery sample is written against. An
+        // `ExampleContent` is what every gallery example is written against. An
         // `ElementView` and the tiers refining it are elements, never composed.
         var composed = Set(["View"])
         var elements = Set(["ElementView"])

@@ -2,8 +2,8 @@
 import PackageDescription
 
 // The conformance suite: what executing StateUI's contract does, written once
-// and run on every host against its real toolkit. Each host's test target
-// links it and supplies a driver. A package of its own beside the core's tests,
+// and run on every host against its real toolkit. Each host's tests link it
+// and supply a driver. A package of its own beside the core's tests,
 // as the hosts are packages of their own, so the one dynamic StateUI runtime is
 // linked rather than copied.
 let package = Package(

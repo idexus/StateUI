@@ -19,8 +19,8 @@
 ///
 /// Each scene has its own. It opens along the bottom of the window its ⓘ is
 /// in, folded to one line, the last render - the ⓘ of another window of the
-/// scene moves it there; opened out, it docks at the side on a desktop or a
-/// tablet, or shows in the scene's own window where the scene declares one:
+/// scene moves it there; opened out, it can dock at the side on a desktop or a
+/// tablet, or show in the scene's own window where the scene declares one:
 ///
 ///     Window(.debugInspector) { DebugInspector() }
 ///

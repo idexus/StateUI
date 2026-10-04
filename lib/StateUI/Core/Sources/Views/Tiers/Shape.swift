@@ -79,8 +79,8 @@ extension ShapeProperties {
 }
 
 extension Shape {
-    /// `aspect` from a state, `$x`: the host sets each new value as it stands,
-    /// and no view is rebuilt for it.
+    /// `contentMode` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func contentMode(_ state: Binding<ContentMode>) -> Modified {
         plain(ShapeContract.contentMode, by: state)
     }

@@ -89,7 +89,7 @@ private final class Placed: PlacedView {
     var placedFrame = Rect(x: 0, y: 0, width: 0, height: 0)
 }
 
-/// A clock the test winds by hand.
+/// A clock no display drives.
 @MainActor
 private final class HandClock: FrameClock {
     let now: () -> Double = { 0 }

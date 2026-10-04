@@ -58,8 +58,8 @@ extension ValueText {
         static func quote(_ value: String, into text: inout String) {
             text += "\""
 
-            // By the scalar's number: the quote, the backslash and the three
-            // controls JSON has a letter for, then every other control as four
+            // By the scalar's number: the quote, the backslash and three
+            // controls by their letter, then every other control as four
             // hex digits.
             for scalar in value.unicodeScalars {
                 switch scalar.value {

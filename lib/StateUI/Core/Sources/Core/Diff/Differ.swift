@@ -59,7 +59,7 @@ final class Differ {
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
     var handlers: [Int: EventHandler] = [:]
 
-    /// The scene the walk is inside; `Scenes.building` follows it.
+    /// The scene the walk is inside; `OpenScenes.building` follows it.
     var sceneRecord: SceneRecord? {
         didSet { OpenScenes.shared.building = sceneRecord }
     }

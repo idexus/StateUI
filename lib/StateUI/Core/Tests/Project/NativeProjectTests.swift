@@ -43,7 +43,7 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// Every head gets its host from `lib/StateUI.Head`, which reads the build's
-    /// `STATEUI_` variable once for every application: it depends on that host's
+    /// `STATEUI_HOST` variable once for every application: it depends on that host's
     /// package alone and re-exports it, and a WinUI head links as a windowed
     /// application. No application names a host's package itself, and each
     /// reads the same hosts the head package does.
@@ -690,7 +690,7 @@ final class NativeProjectTests: XCTestCase {
     /// one.
     ///
     /// An application declares that target, the product it makes and the
-    /// StateUIAppKit dependency only when `STATEUI_HOST` is `appkit`, so that
+    /// StateUIHead dependency only when `STATEUI_HOST` is `appkit`, so that
     /// `swift test` compiles no part of one host's half. A build that leaves
     /// the variable out asks for a product the manifest never declared, and a
     /// page that leaves it out hands a reader a command that cannot work.

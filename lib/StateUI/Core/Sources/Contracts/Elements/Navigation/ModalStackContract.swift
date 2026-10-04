@@ -7,7 +7,7 @@ public enum ModalStackContract: ElementContract {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "ModalStack"
 
-    /// It carries structure; each platform presents its sheets its own way.
+    /// Each platform presents its sheets its own way.
     public static let layer: ElementLayer = .adaptive
 
     /// A modal stack declares the bar over what it holds.

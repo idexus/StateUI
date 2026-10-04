@@ -298,7 +298,7 @@ extension Differ {
         }
 
         // The style is applied here, so a host receives every value already on the
-        // control (Style.swift).
+        // control (StyleSheet.swift).
         node = styled(node, with: styles)
 
         // And its visual states resolved, the element reading what they follow.
@@ -631,8 +631,6 @@ extension Differ {
         states.map { named[$0] ?? "state" }.sorted().joined(separator: ", ")
     }
 
-    /// Whether the parent wrote the same things on a composed view as last render.
-    /// Design: docs/design/core/identity-and-diffing.md#what-the-parent-wrote
     /// Whether two writings say the same of their page.
     private func samePageValues(_ fresh: PageValues?, _ kept: PageValues?) -> Bool {
         switch (fresh, kept) {
@@ -642,6 +640,8 @@ extension Differ {
         }
     }
 
+    /// Whether the parent wrote the same things on a composed view as last render.
+    /// Design: docs/design/core/identity-and-diffing.md#what-the-parent-wrote
     private func sameWriting(_ node: Node, as kept: Node) -> Bool {
         guard node.props == kept.props,
             node.motion == kept.motion,

@@ -5,9 +5,9 @@
 // where the reads are.
 //
 // The mechanism is in Environment.swift (the wrapper and the slots),
-// Differ.swift (the scope, kept through both walks, and the memo's
-// environment snapshot) and Stateful.swift (the slots collected beside
-// the state boxes, and the structural `built` path). The promises pinned
+// Differ.swift and Differ+Element.swift (the scope, kept through both walks,
+// and the memo's environment snapshot) and Stateful.swift (the slots collected
+// beside the state boxes, and the structural `built` path). The promises pinned
 // here, each proven to fail without its half of the mechanism:
 //
 //   - a child resolves the NEAREST provided object of its type, and a nearer

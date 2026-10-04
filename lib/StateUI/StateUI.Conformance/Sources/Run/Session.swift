@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// A case's road to the host it runs on: the page it shows, the elements it finds by their ids, what the user does
-/// to them, what their native controls hold, and what the case expects - never a widget, a pixel or a place.
+/// to them, what their native controls hold, and what the case expects - never a widget.
 /// Design: docs/design/host/conformance.md#a-session
 @MainActor
 @_spi(Host) public final class Session {

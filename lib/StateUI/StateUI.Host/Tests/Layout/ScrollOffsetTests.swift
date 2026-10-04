@@ -20,7 +20,7 @@ final class ScrollOffsetTests: XCTestCase {
                        Point(x: 0, y: 90))
     }
 
-    /// An offset stands within what the scroller reaches.
+    /// An offset written before the first layout waits for it, the last one written - but not where nothing scrolls.
     func testAnOffsetWrittenBeforeTheFirstLayoutWaitsForIt() {
         var written = WrittenScrollOffset()
         XCTAssertNil(written.written(Point(x: 0, y: 40), standing: .zero, orientation: .vertical), "no layout yet")

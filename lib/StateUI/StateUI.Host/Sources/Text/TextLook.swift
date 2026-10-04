@@ -76,8 +76,8 @@
 }
 
 extension MountedElement {
-    /// The look this element's own values give its words: its font, its colour, what stands behind them, the space
-    /// between its letters, its lines' height and its decorations - each nil or empty where it says nothing.
+    /// The look this element's own values give its words: its font, its colour, the space between its letters, its
+    /// lines' height and its decorations - each nil or empty where it says nothing.
     public var textLook: TextLook {
         var look = TextLook()
         look.size = number(.fontSize)
