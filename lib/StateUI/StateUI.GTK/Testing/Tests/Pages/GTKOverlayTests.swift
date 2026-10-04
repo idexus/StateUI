@@ -26,7 +26,7 @@ private struct OverlaidPage: View {
     }
 }
 
-/// A page filled by a button, which tells its scene.
+/// A page filled by a button, which tells its window.
 private struct ScenePage: View {
     let windows: Received<WindowSession>
     @Environment(\.window) private var window

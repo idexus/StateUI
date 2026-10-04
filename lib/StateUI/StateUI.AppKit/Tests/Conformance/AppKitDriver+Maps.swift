@@ -62,7 +62,7 @@ extension AppKitDriver {
         return (map, pin)
     }
 
-    /// The marker MapKit drew for `marker`.
+    /// The marker MapKit drew for `pin`.
     private func marker(of pin: AppKitMapMarker, on map: AppKitMapView) throws -> MKMarkerAnnotationView {
         for _ in 0..<50 where map.view(for: pin) == nil { step() }
         guard let marker = map.view(for: pin) as? MKMarkerAnnotationView else {

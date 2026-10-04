@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A Grid: the core's grid arithmetic over a `StateUIViewGroup`.
+/// A Grid: the host layer's grid arithmetic over a `StateUIViewGroup`.
 @MainActor
 final class AndroidGridView: AndroidTravellingLayout {
     var rows: [GridLength] = [] {

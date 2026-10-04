@@ -300,8 +300,6 @@ final class AppKitMeasurementTests: XCTestCase {
         }
     }
 
-    /// A page shaped like a Gallery sample: an example in a bordered card,
-    /// its notes, and a long code listing in a horizontal scroller below it.
     /// A change inside a pane is laid out inside it: a pane gives its page all
     /// of its room, so neither the pane nor anything around it is asked. A
     /// label's report that reached a split view item's glass container held
@@ -454,6 +452,8 @@ final class AppKitMeasurementTests: XCTestCase {
         XCTAssertEqual(child.measured, 0)
     }
 
+    /// A page shaped like a Gallery sample: an example in a bordered card,
+    /// its notes, and a long code listing in a horizontal scroller below it.
     private func samplePage() -> HostPatch {
         func label(_ id: String, _ text: String) -> HostPatch {
             var label = HostPatch(id: .manual(id), type: .text)

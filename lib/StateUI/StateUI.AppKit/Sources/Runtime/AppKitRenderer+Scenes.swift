@@ -18,7 +18,7 @@ extension AppKitRenderer {
         }
     }
 
-    /// Opens one more window of the group with no name - *File ▸ New*, or the Dock with none open.
+    /// Opens one more window of the group with no name - *File ▸ New Window*, or the Dock with none open.
     func openNewWindow() {
         runtime.connectWindow()
         runtime.pump.turn()

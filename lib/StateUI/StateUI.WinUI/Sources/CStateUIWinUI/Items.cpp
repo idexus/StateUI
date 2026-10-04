@@ -193,7 +193,7 @@ namespace {
         if (first >= 0 && last >= first) callbacks.itemsShowing(view, first, last);
     }
 
-    /// The scroller moves across for a row, down otherwise, and tells what stands in view as it moves.
+    /// The scroller moves across for a row, down otherwise.
     void standScroller(controls::ItemsView const &list, int32_t shape) {
         auto scroller = list.ScrollView();
         if (!scroller) return;

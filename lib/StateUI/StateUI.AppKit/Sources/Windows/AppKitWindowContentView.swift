@@ -130,8 +130,6 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     }
 }
 
-/// Full-window hit-test surface whose empty area deliberately falls through
-/// to the page below it.
 /// The window's overlays, one layer over another, each over the whole area; a click beside what they hold goes on
 /// to the page under them.
 @MainActor

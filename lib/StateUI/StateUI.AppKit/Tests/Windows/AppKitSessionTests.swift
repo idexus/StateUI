@@ -322,8 +322,8 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(controller.restorationRecordForTesting.kind, "appkit.test.editor")
     }
 
-    /// *File ▸ New* and `openWindow()` each open one more window of the group with no name, in the scene standing;
-    /// a window another scene declares opens that scene.
+    /// *File ▸ New Window* and `openWindow()` each open one more window of the group with no name, in the scene
+    /// standing; a window another scene declares opens that scene.
     @MainActor
     func testNewWindowAndOpenWindowEachOpenOneMore() async throws {
         stateUIUseApp(AppKitKindsApp())

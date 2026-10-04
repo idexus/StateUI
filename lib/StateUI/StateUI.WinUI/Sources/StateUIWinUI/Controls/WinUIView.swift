@@ -284,8 +284,8 @@ class WinUIView {
     /// The user clicked the view.
     func clicked() {}
 
-    /// The user chose one of the view's entries by its place: an action of the window's chrome, or its way back (-1)
-    /// or sidebar toggle (-2); a tab.
+    /// The user chose one of the view's entries by its place: an action of the window's chrome, or its way back (-1),
+    /// sidebar toggle (-2) or Escape (-3); a tab; a picker's choice.
     func chose(_ index: Int) {}
 
     /// What the view presents opened or closed of WinUI's accord: a split view's sidebar, a picker's list, a date

@@ -66,7 +66,7 @@ final class WinUITitleBarView: WinUIView {
         if previous.center !== chrome.center { stateui_winui_title_bar_set_title_view(handle, chrome.center?.handle) }
     }
 
-    /// The user pressed the way back (-1), the sidebar's toggle (-2), or an action by its place.
+    /// The user pressed the way back (-1), the sidebar's toggle (-2), Escape (-3), or an action by its place.
     override func chose(_ index: Int) {
         switch index {
         case -1: if let sheet = chrome.sheet { sheet.back() } else { chrome.back?.perform() }

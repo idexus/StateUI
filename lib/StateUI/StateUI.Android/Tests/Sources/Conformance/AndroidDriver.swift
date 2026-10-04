@@ -165,8 +165,8 @@ final class AndroidDriver: HostDriver {
             field: words[2])
     }
 
-    /// The colour the view draws at `point` of its own, as Android draws it into a bitmap; nil where it draws
-    /// nothing there.
+    /// The colour the window shows at `point` of the view, as the user sees it (`TestPixels.color`); nil where the
+    /// view draws nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         guard let view = (element.native as? AndroidElement)?.view else {
             throw DriverCannot("read the colour of \(element.type.name)")

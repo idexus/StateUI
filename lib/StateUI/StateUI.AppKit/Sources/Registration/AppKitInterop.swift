@@ -139,8 +139,8 @@ public enum StateUIEvents {
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a view of its own:
     /// how the view is made, and which of the element's members it takes and
-    /// raises. A library element this host does not realize - a `Map`, its markers
-    /// drawn through `children` - is added the same way.
+    /// raises. A library element - a `Map`, its markers drawn through `children` -
+    /// is added the same way.
     ///
     /// The Swift half is the application's already - a contract, and a `View`
     /// whose node that contract makes. This is the other half, and the only

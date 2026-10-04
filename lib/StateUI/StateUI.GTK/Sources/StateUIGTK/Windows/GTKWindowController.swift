@@ -6,7 +6,7 @@
 import CStateUIGTK
 
 /// One window element shown in a GTK window: what the host layer says it shows - its arrangement of pages, its
-/// overlays, its size, its bounds, whether its scene hides it and the window it belongs to - and the chrome on its
+/// overlays, its size, its bounds and whether its scene hides it - and the chrome on its
 /// pages' header bars, in step with the element as the tree changes.
 /// Design: docs/design/platforms/gtk/runtime.md#the-window
 @MainActor

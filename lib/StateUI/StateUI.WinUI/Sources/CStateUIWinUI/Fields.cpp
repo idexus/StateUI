@@ -4,7 +4,7 @@
 // The words the user types: a field on one line, whose Enter submits - a
 // PasswordBox while it holds a password; an editor of several lines, whose
 // Enter starts a new one; and a search box, WinUI's AutoSuggestBox, whose query
-// submits. Each change of the words is told through `textChanged` as it happens.
+// submits. Each change the user makes is told through `textChanged` as it happens.
 // Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
 
 #include "Automation.h"

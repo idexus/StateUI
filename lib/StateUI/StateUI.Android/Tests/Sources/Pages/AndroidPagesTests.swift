@@ -669,7 +669,7 @@ private struct SearchingPage: View {
     }
 }
 
-/// A page under the sheets one state lists, telling its scene - the window's page, a modal stack.
+/// A page under the sheets one state lists, telling its window - the window's page, a modal stack.
 private func sheetsPage(
     _ sheets: State<[Int]>, log: Received<String> = Received(), windows: Received<WindowSession> = Received()
 ) -> ModalStack {
@@ -680,7 +680,7 @@ private func sheetsPage(
     }
 }
 
-/// A page that tells its scene as it comes.
+/// A page that tells its window as it comes.
 private struct ScenePage: View {
     let log: Received<String>
     let windows: Received<WindowSession>

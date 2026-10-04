@@ -25,8 +25,6 @@ private struct RewrittenPage: View {
 }
 
 final class GTKTextInputViewTests: XCTestCase {
-    /// Typing stops at the most characters allowed - an emoji one character, whole or not at all - in a field and an
-    /// editor alike.
     /// GNOME selects a field's words whole as it takes the focus: a caret or a selection the program put there stands
     /// over the field's first focus - and once the user has acted in the field, GNOME's own way stands.
     func testTheProgramsCaretOutlastsTheFieldsFirstFocus() throws {
@@ -55,6 +53,8 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
+    /// Typing stops at the most characters allowed - an emoji one character, whole or not at all - in a field and an
+    /// editor alike.
     func testTypingStopsAtTheMostCharactersAllowed() throws {
         try onUIThread {
             let host = GTKRenderer.running {

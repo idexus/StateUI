@@ -4,7 +4,7 @@
 import CStateUIGTK
 @testable import StateUIGTK
 
-/// A dialog a test meets over a window: found, read and answered as the user answers it.
+/// A dialog, its field or its button a test looks for over a window and does not find.
 struct GTKNoDialog: Error, CustomStringConvertible {
     let description: String
 }

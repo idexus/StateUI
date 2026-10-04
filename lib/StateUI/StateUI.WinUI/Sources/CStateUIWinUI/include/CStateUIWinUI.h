@@ -110,7 +110,7 @@ typedef struct {
     /// A field's words changed, all of them handed over in UTF-8.
     void (*textChanged)(int64_t view, char const *utf8);
 
-    /// A single-line field's Enter.
+    /// A single-line field's Enter, or a search box's query.
     void (*submitted)(int64_t view);
 
     /// A scroller's view changed: where it stands now, in DIPs.
@@ -119,14 +119,14 @@ typedef struct {
     /// The user holds a view down or lets it go: a scroller taken hold of, a button held by a pointer or a key.
     void (*held)(int64_t view, bool holding);
 
-    /// The user chose an entry by its place: an action of a window's chrome, or its way back (-1) or sidebar toggle
-    /// (-2); a tab.
+    /// The user chose an entry by its place: an action of a window's chrome, or its way back (-1), sidebar toggle
+    /// (-2) or Escape (-3); a tab; a picker's choice.
     void (*chosen)(int64_t view, int32_t index);
 
-    /// A split view's sidebar opened or closed of WinUI's accord: a click beside it, or the window's room.
+    /// What a view presents opened or closed of WinUI's accord: a split view's sidebar, a picker's list, a calendar.
     void (*presented)(int64_t view, bool open);
 
-    /// Something the environment reports changed: the theme, the power, the network.
+    /// Something the environment reports changed: the theme, the power, the network, a screen.
     void (*environmentChanged)(void);
 
     /// What a view heard of the user's input, as `StateUIHeard` says: `phase` a tap's place or a gesture's phase.
@@ -209,7 +209,7 @@ StateUIObjectRef stateui_winui_retain(StateUIObjectRef object);
 /// Lets go of a handle.
 void stateui_winui_release(StateUIObjectRef object);
 
-/// A window, its activation and its minimizing told through `phaseChanged` under the number `window`.
+/// A window, its activation and its minimizing told through `windowStateChanged` under the number `window`.
 StateUIObjectRef stateui_winui_window_make(int64_t window);
 void stateui_winui_window_set_title(StateUIObjectRef window, char const *title);
 void stateui_winui_window_set_content(StateUIObjectRef window, StateUIObjectRef content);
@@ -640,7 +640,7 @@ StateUIObjectRef stateui_winui_canvas_make(int64_t view);
 void stateui_winui_canvas_draw(StateUIObjectRef canvas, int32_t const *ints, int32_t intCount, double const *numbers,
                                int32_t numberCount, char const *words, int32_t const *lengths, int32_t wordCount);
 
-/// A ColorBox: a Border filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
+/// A ColorBox: a figure filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
 /// bottom left.
 StateUIObjectRef stateui_winui_color_box_make(int64_t view);
 void stateui_winui_color_box_set(StateUIObjectRef box, uint32_t argb, double const *corners);
@@ -771,8 +771,8 @@ void stateui_winui_tabs_choose_as_user(StateUIObjectRef tabs, int32_t index);
 /// screen `window` stands on. Answers the length the facts need, their end not counted.
 int32_t stateui_winui_facts(StateUIFacts kind, StateUIObjectRef window, char *utf8, int32_t capacity);
 
-/// Watches the theme, the power and the network, `environmentChanged` called in the UI thread's turn after each
-/// change; once.
+/// Watches the theme, the power, the network and the screens, `environmentChanged` called in the UI thread's turn
+/// after each change; once.
 void stateui_winui_watch_environment(void);
 
 /// Listens on `element`, which the view `view` shows, for what `hearing` names, each heard through `heard`; 0
@@ -819,8 +819,8 @@ void stateui_winui_panel_hide_children(StateUIObjectRef panel, bool hidden);
 /// name, 1 its help text, 2 its automation id, in UTF-8; the length they need, their end not counted.
 int32_t stateui_winui_automation_words(StateUIObjectRef element, int32_t what, char *utf8, int32_t capacity);
 
-/// Its heading level, whether it is a control element and a content element, and how many children it has: four
-/// values.
+/// Its heading level, whether it is a control element and a content element, and how many of what stands in it
+/// assistive technology meets, to the deepest part: four values.
 void stateui_winui_automation_facts(StateUIObjectRef element, int32_t *facts);
 
 /// How many canvases WinUI holds - what a test counts to see every one let go.
@@ -853,8 +853,8 @@ int32_t stateui_winui_tab(StateUIObjectRef element, char *utf8, int32_t capacity
 /// Takes the focus off a field typed into in `element`'s window, so the on-screen keyboard goes; whether one was.
 bool stateui_winui_hide_keyboard(StateUIObjectRef element);
 
-/// Puts `question` to the user in WinUI's dialog over `element`'s window, at once - the host asks one at a time;
-/// the answer comes back through `answered`, under `ticket`.
+/// Puts `question` to the user in WinUI's dialog over `element`'s window once that window is loaded - the host asks
+/// one at a time; the answer comes back through `answered`, under `ticket`.
 void stateui_winui_ask(StateUIObjectRef element, int64_t ticket, StateUIQuestion const *question);
 
 /// Answers the dialog showing over `element`'s window as the user would: `button` 0 accepts, 1 cancels, 2 and on

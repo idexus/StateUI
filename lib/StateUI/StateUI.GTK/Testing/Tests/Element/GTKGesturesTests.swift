@@ -33,7 +33,7 @@ private struct TapsPage: View {
     }
 }
 
-/// A box a press drags across, a swipe told apart, and what the pan, the pinch and the pointer said last.
+/// A box a press drags across, a swipe told apart, and what the pan, the pinch and the pointer said, in order.
 private struct DragPage: View {
     @State private var x = 10.0
     @State private var said = ""
@@ -191,7 +191,7 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
-    /// A view listens for what its handlers ask, and its controllers come off once it leaves the runtime.tree.
+    /// A view listens for what its handlers ask, and its controllers come off once it leaves the tree.
     func testAViewListensForWhatItsHandlersAskAndStopsAsItLeaves() throws {
         try onUIThread {
             let host = GTKRenderer.running { TapsPage(count: 1) }

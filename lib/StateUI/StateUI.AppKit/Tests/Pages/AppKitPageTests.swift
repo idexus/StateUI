@@ -481,10 +481,9 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// A tabbed view in a split view's detail shows its tabs in the row
-    /// beneath the toolbar - across that column as its own accessory on macOS
-    /// 26 and later, beneath the title bar before - and a detail that is no
-    /// tabbed view takes the row away; a tabbed view in the sidebar keeps its
-    /// tabs on its content.
+    /// beneath the toolbar - across that column as its own accessory - and a
+    /// detail that is no tabbed view takes the row away; a tabbed view in the
+    /// sidebar keeps its tabs on its content.
     @MainActor
     func testATabbedDetailShowsItsTabsBeneathTheToolbar() throws {
         let renderer = testRenderer(

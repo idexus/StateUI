@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a ScrollView's Android scroller moves: its content where the core's scroll arithmetic puts it,
+/// What a ScrollView's Android scroller moves: its content where the host layer's scroll arithmetic puts it,
 /// in a document the scroller makes at least as large as its viewport.
 /// Design: docs/design/platforms/android/layout.md#scrolling
 @MainActor

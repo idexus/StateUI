@@ -120,7 +120,7 @@ private struct Calling: View {
 /// What an application registers with this host: the acts it performs, the events it raises, and its own elements,
 /// each realized by a view of its own.
 final class UIKitInteropTests: XCTestCase {
-    /// Registers the lamp once for the process - a registry keeps what it is told.
+    /// Registers the lamp - a registry keeps what it is told, each registration in place of the last.
     @MainActor
     private static func registerLamp() {
         StateUIControls.add(LampContract.self, create: { reports -> LampView in

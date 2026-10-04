@@ -6,7 +6,7 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// AppKit's native drawing surface for StateUI's rectangle primitive.
+/// AppKit's native drawing surface for StateUI's `ColorBox`.
 @MainActor
 final class AppKitColorBoxView: AppKitHitTestView {
     private(set) var backgroundColor = NSColor.clear

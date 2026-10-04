@@ -119,8 +119,8 @@ final class UIKitWindowController {
         UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
     }
 
-    /// Takes the window out of its scene, which stays: its sheets go first, heard by nobody - the tree that asked for
-    /// them is gone.
+    /// Takes the window out of its scene, which stays: its sheets go with it, heard by nobody - the tree that asked
+    /// for them is gone.
     func hide() {
         stopWatchingFront()
         root.letGo()

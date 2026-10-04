@@ -100,8 +100,8 @@ private struct Pulling: View {
 /// application's own: made by its registration, taking the members its
 /// contract declares, raising its events, and answering an act aimed at it.
 final class AppKitApplicationRegistrationTests: XCTestCase {
-    /// Registers the lamp once for the process - a registry keeps what it is
-    /// told, so registering it per test would only replace the same entry.
+    /// Registers the lamp - a registry keeps what it is told, so each test's
+    /// registration only replaces the same entry.
     @MainActor
     private func registerLamp() {
         StateUIControls.add(LampContract.self, create: { reports -> LampView in

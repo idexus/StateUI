@@ -8,7 +8,7 @@ import CStateUIWinUI
 @testable import StateUIWinUIDriver
 import XCTest
 
-/// A canvas that says where a press on it went, a switch that widens it, and one that takes it away.
+/// A canvas that says where a press on it went, a button that widens it, and one that takes it away.
 private struct PressPage: View {
     @State private var said = ""
     @State private var wide = false

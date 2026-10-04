@@ -23,7 +23,7 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
     /// Whether the stack the tabs stand on shows its bar over them, as the host layer says (`showsTheStacksBar`) -
-    /// laid here on a stack of UIKit's own, a collapsed split view's, where no StateUI stack lays it.
+    /// laid here on a stack of UIKit's own, a split view column's, where no StateUI stack lays it.
     /// Design: docs/design/platforms/uikit/pages.md#a-split-view
     var showsTheStacksBar = true {
         didSet { if showsTheStacksBar != oldValue { layTheStacksBar(animated: false) } }

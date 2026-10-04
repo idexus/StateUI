@@ -161,13 +161,13 @@ final class AndroidRenderer {
         runtime.userClosed(window)
     }
 
-    /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
-    /// and the window laid out again.
     /// The zone, the clock, the battery or the network changed.
     func environmentChanged() {
         runtime.environmentChanged { AndroidEnvironment.reportChanging(to: runtime.core, context: context.reference) }
     }
 
+    /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
+    /// and the window laid out again.
     func configured() {
         runtime.environmentChanged {
             AndroidEnvironment.report(to: runtime.core, activity: context.reference)

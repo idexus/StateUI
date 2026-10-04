@@ -76,7 +76,7 @@ extension AppKitElement {
             return AppKitTextView()
 
         case .toolbarItem:
-            // The window's toolbar makes the native item; see visibleToolbarActions.
+            // The window's toolbar makes the native item; see refreshVisiblePageChrome.
             return nil
 
         default:

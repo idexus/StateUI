@@ -98,8 +98,8 @@ extension AppKitWindowController {
         (presentation.sheets.last ?? presentation.arrangement)?.visiblePage?.chromeMenus.menus ?? []
     }
 
-    /// A window's tabs stand beneath its toolbar: on macOS 26 and later across
-    /// the split view detail the tabbed view stands in, as that column's own
+    /// A window's tabs stand beneath its toolbar: across the split view detail
+    /// the tabbed view stands in, where it stands in one, as that column's own
     /// accessory; otherwise as the title bar's bottom accessory.
     private func synchronizeTabRow(_ window: NSWindow, _ placement: AppKitTabsPlacement?) {
         if let placement { tabRow.apply(placement.tabs) }

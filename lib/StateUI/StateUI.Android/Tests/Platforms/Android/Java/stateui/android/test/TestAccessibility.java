@@ -13,11 +13,6 @@ import java.util.List;
 public final class TestAccessibility {
     private TestAccessibility() {}
 
-    /**
-     * What TalkBack and a test find of the view: "id", "label" and "hint" and their words, "heading", and "met",
-     * "hidden" or "hidden with children" - separated by ", ", none said as nothing. A view in no window makes
-     * a node without its own words, so the label and the heading are read from the view, the rest from its node.
-     */
     /** One of the words assistive technology meets of the view - "label", "hint" or "id" - or none. */
     public static String word(View view, String name) {
         AccessibilityNodeInfo info = view.createAccessibilityNodeInfo();
@@ -31,6 +26,11 @@ public final class TestAccessibility {
         return word == null ? null : word.toString();
     }
 
+    /**
+     * What TalkBack and a test find of the view: "id", "label" and "hint" and their words, "heading", and "met",
+     * "hidden" or "hidden with children" - separated by ", ", none said as nothing. A view in no window makes
+     * a node without its own words, so all but the id and the hint are read from the view, those from its node.
+     */
     public static String describe(View view) {
         AccessibilityNodeInfo info = view.createAccessibilityNodeInfo();
         List<String> words = new ArrayList<>();

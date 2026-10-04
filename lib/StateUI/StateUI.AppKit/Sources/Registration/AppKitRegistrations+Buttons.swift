@@ -88,8 +88,8 @@ extension AppKitRegistrations {
     /// How an icon fills the room it is given.
     ///
     /// `.fit` and `.fill` come out the same: a native button has no covering
-    /// scale, which is what this host's declaration says about `aspect` on a
-    /// button.
+    /// scale, which is what this host's declaration says about `contentMode`
+    /// on a button.
     private static func imageScaling(_ aspect: ContentMode) -> NSImageScaling {
         switch aspect {
         case .stretch: .scaleAxesIndependently

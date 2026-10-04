@@ -109,7 +109,7 @@ final class UIKitCanvasView: UIView {
         context.fillPath()
     }
 
-    /// Text in its box: placed by the box's two alignments - its top the box's - and cut to it.
+    /// Text in its box: placed by the box's two alignments, and cut to it.
     private func write(
         _ text: String, in room: Rect, _ across: TextAlignment, _ down: TextAlignment, _ pen: CanvasPen,
         _ context: CGContext

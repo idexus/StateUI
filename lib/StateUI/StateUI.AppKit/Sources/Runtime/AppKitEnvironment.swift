@@ -15,7 +15,6 @@ import Network
 final class AppKitEnvironment {
     private let core: CoreLink
 
-    /// Called after each locale report, so the tree follows the language's direction.
     /// How a change is reported: what the report tells the core, run as the runtime's step for a change of what
     /// the application stands on.
     private var reportChange: (() -> Void) -> Void = { $0() }

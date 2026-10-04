@@ -50,7 +50,7 @@ public enum StateUIAppKit {
     }
 
     /// The menu bar every StateUI application stands with: the application's own, File with a new window for
-    /// `newScene`, Edit with the text commands a field answers through the responder chain, and Window. A page's
+    /// `newWindow`, Edit with the text commands a field answers through the responder chain, and Window. A page's
     /// menus join it as it shows.
     /// Design: docs/design/platforms/appkit/runtime.md#the-menu-bar
     static func mainMenu(newWindow: AnyObject?) -> NSMenu {

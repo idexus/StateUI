@@ -31,7 +31,7 @@ final class GTKWindow {
     /// The layers the window's content and its overlays stand in.
     private let layers: GTKWidget
 
-    /// What the window lays over everything it shows; nil for nothing.
+    /// What the window lays over everything it shows; empty for nothing.
     private(set) var overlays: [GTKView] = []
 
     private var presented = false
@@ -85,7 +85,6 @@ final class GTKWindow {
         }
     }
 
-    /// Whether the user is in the window now.
     /// Whether the window is active and whether it stands minimized, as it last told them.
     private var told: (active: Bool, minimized: Bool)?
 
@@ -97,6 +96,7 @@ final class GTKWindow {
         return told.map { $0 != now } ?? true
     }
 
+    /// Whether the user is in the window now.
     var isActive: Bool {
         gtk_window_is_active(widget.of(GtkWindow.self)) != 0
     }

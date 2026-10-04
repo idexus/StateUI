@@ -145,13 +145,13 @@ final class GTKActToolkit: ActToolkit {
 }
 
 extension GTKActToolkit {
+    /// What the host asked GTK to announce, in order, since it started.
+    private(set) static var announced: [String] = []
+
     /// Whether what `widget` announces reaches a screen reader: through GTK's AT-SPI context alone. Without the
     /// accessibility bus GTK stands a context of no assistive technology, which GTK 4.14 announces through a call it
     /// lacks - a crash.
     /// Design: docs/design/platforms/gtk/controls.md#what-assistive-technology-meets
-    /// What the host asked GTK to announce, in order, since it started.
-    private(set) static var announced: [String] = []
-
     static func reachesAScreenReader(_ widget: GTKWidget) -> Bool {
         let atSpi = g_type_from_name("GtkAtSpiContext")
         guard atSpi != 0, let context = gtk_accessible_get_at_context(widget.opaque) else { return false }

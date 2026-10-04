@@ -6,7 +6,7 @@ import AppKit
 @_spi(Host) import StateUI
 
 /// A day and a time of day held by AppKit's field and stepper: an instant of the Gregorian calendar in the user's
-/// zone - a day at its noon, a time on the calendar's first day - so no zone moves the user's value.
+/// zone - a day at its noon, a time on 1 January 2001 - so no zone moves the user's value.
 extension NSDatePicker {
     /// Dresses the picker as a field and stepper showing `elements` in the user's Gregorian calendar.
     func dressCivil(_ elements: NSDatePicker.ElementFlags) {

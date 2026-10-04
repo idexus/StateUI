@@ -42,7 +42,6 @@ extension UIKitDriver {
         return Color(red: channel(0), green: channel(1), blue: channel(2))
     }
 
-    /// A view's context menu, or a window's menus on the menu bar, as UIKit is handed them.
     /// The bar `page` shows, read from its navigation item: its leading and trailing groups, the overflow's entries -
     /// each action told by the element whose identifier it carries.
     func bar(of page: MountedElement) throws -> String {
@@ -72,6 +71,7 @@ extension UIKitDriver {
         (root.type == .toolbarItem ? [root] : []) + (root.children + root.slots).flatMap { toolbarItems(in: $0) }
     }
 
+    /// A view's context menu, or a window's menus on the menu bar, as UIKit is handed them.
     func menu(of element: MountedElement) throws -> String {
         if element.type == .window { return UIKitMenus.said(renderer?.menuBar ?? []) }
         guard let native = element.native as? UIKitElement, native.view != nil else {

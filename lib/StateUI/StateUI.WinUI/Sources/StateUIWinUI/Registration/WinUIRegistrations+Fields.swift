@@ -6,8 +6,8 @@
 
 extension WinUIRegistrations {
     /// A TextField, a TextEditor and a SearchField: their words are `TextualElementContract.text` and the change they
-    /// report is `TextInputContract.textChanged`. Each member reaches the view only where the tree changed it,
-    /// which keeps the user's typing and caret their own.
+    /// report is `TextInputContract.textChanged`. Their words and caret reach the view only where the tree changed
+    /// them, which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<WinUIView>) {
         registry.add(TextFieldContract.self, create: { reports in
             let field = WinUITextFieldView()

@@ -19,7 +19,7 @@ final class AndroidCanvasViewTests: XCTestCase {
     static let red: UInt32 = 0xFFFF_0000
     static let blue: UInt32 = 0xFF00_00FF
 
-    /// A red square in the top left, then a blue one moved 10 points right: at two pixels a point, the left
+    /// A red rectangle in the top left, then a blue square moved 10 points right: at two pixels a point, the left
     /// half is red, the right half blue, and a later instruction paints over an earlier one.
     func testTheInstructionsDrawInPointsAndInOrder() throws {
         try onMainActor {

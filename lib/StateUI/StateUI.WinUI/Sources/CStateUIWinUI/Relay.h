@@ -34,7 +34,7 @@ namespace stateui {
     namespace controls = winrt::Microsoft::UI::Xaml::Controls;
     using winrt::Windows::Foundation::IInspectable;
 
-    /// The host's callbacks, set once by run or embed.
+    /// The host's callbacks, set by run or embed.
     extern StateUIWinUICallbacks callbacks;
 
     /// Runs `work` on the UI thread, in its turn; from any thread.

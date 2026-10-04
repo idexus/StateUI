@@ -27,14 +27,13 @@ struct AppKitWindowTabs {
 struct AppKitTabsPlacement {
     let tabs: AppKitWindowTabs
 
-    /// The split view whose detail the tabbed view stands in, if any. On a
-    /// system that has column accessories the tabs stand across that column;
-    /// otherwise beneath the title bar.
+    /// The split view whose detail the tabbed view stands in, if any: the tabs
+    /// stand across that column; with none, beneath the title bar.
     weak var split: AppKitSplitView?
 }
 
-/// A window's tabs as a Mac draws them beneath its toolbar: one row - on
-/// macOS 26 and later across the split view detail the tabbed view stands in,
+/// A window's tabs as a Mac draws them beneath its toolbar: one row - across
+/// the split view detail the tabbed view stands in, where it stands in one,
 /// as that column's own accessory; otherwise the title bar's bottom
 /// accessory, which AppKit lays beside a full-height sidebar. A native
 /// select-one segmented control whose tabs share the width equally, each

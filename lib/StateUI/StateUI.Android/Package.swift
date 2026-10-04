@@ -17,8 +17,8 @@ let package = Package(
         .package(name: "StateUIHost", path: "../StateUI.Host"),
     ],
     targets: [
-        // The NDK's C surface: JNI, the main thread's looper, the display's
-        // frames, the log.
+        // The NDK's C surface: JNI, the main thread's looper, the doorbell's
+        // eventfd, the log.
         .target(
             name: "CStateUIAndroid",
             path: "Sources/CStateUIAndroid",

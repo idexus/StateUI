@@ -9,7 +9,7 @@ import CStateUIWinUI
 import StateUIConformance
 import XCTest
 
-/// A page filled by a button, declaring its menus while a state says so, which tells its scene.
+/// A page filled by a button, declaring its menus while a state says so, which tells its window.
 private struct OverlaidPage: View {
     let menus: State<Bool>
     let windows: Received<WindowSession>

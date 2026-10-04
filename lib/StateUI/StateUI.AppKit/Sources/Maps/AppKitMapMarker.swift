@@ -6,7 +6,7 @@ import AppKit
 import MapKit
 @_spi(Host) import StateUI
 
-/// A map's marker as MapKit holds it: its place, its label and address as the marker's title and subtitle, its kind,
+/// A map's marker as MapKit holds it: its place, its label and subtitle as the marker's title and subtitle, its kind,
 /// and the child it stands for, whose events it raises.
 @MainActor
 final class AppKitMapMarker: NSObject, @MainActor MKAnnotation {

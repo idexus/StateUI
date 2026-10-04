@@ -50,7 +50,6 @@ enum AndroidPictures {
         return Set(Java.texts(Java.callObject(assets, JavaAPI.listAssets, .object(Java.string("images")))))
     }
 
-    /// The display's pixels per inch.
     /// The host's density, in pixels per inch: what every picture is read, measured and drawn at.
     static var displayDensity: Int32 { Int32((AndroidRenderer.density * 160).rounded()) }
 

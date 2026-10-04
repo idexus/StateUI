@@ -155,7 +155,7 @@ final class AppKitRenderer: @unchecked Sendable {
         runtime.tree.root?.first(id: id)?.appKit.view
     }
 
-    /// The window the user is looking at: the key window, else the main one.
+    /// The window the user is looking at: the key window, else the tree's first.
     var userWindow: NSWindow? {
         NSApp.keyWindow ?? windowControllers.first?.window
     }

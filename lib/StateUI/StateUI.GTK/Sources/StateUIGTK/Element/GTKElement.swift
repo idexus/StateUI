@@ -19,8 +19,6 @@ final class GTKElement: NativeElement {
     /// Whether a label shows its spans' runs in place of its own words.
     var hasRuns = false
 
-    /// Where the element last said it stands; empty before it has said.
-
     init(_ element: MountedElement, host: GTKRenderer) {
         self.element = element
         self.host = host

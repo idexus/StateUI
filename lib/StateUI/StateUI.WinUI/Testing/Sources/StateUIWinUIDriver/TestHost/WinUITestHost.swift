@@ -229,7 +229,7 @@ extension WinUIView {
         return (read(0), read(1), read(2))
     }
 
-    /// And its heading level, whether it is a control element and a content element, and how many children it has.
+    /// And its heading level, whether it is a control element and a content element, and how many within it are met.
     var automationFacts: (heading: Int32, isControl: Bool, isContent: Bool, children: Int32) {
         var facts = [Int32](repeating: 0, count: 4)
         stateui_winui_automation_facts(handle, &facts)

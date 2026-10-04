@@ -17,7 +17,7 @@ final class GTKDriver: HostDriver {
     let platformHasNone = GTKDriver.none()
 
     /// What GTK holds none of: what StateUI draws on GTK's snapshot, where StateUI's layout places the children,
-    /// what StateUI measures and what the host cuts - each proven by its effect in another case.
+    /// what StateUI measures, what the host cuts - each proven by its effect in another case - and a clock's format.
     private static func none() -> [String: String] {
         var none = [
             "read growsWithText of TextEditor":
@@ -225,9 +225,9 @@ final class GTKDriver: HostDriver {
             guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }
             return (0..<g_list_model_get_n_items(model)).map { String(cString: gtk_string_list_get_string(model, $0)) }
                 .propValue
-        // Shown in its window: GTK maps a widget only while it and everything around it show there.
         case (.selectionMode, let items as GTKItemsView): return items.choiceMode.map { $0.propValue }
         case (.selectedItems, let items as GTKItemsView): return items.chosenIdentities.propValue
+        // Shown in its window: GTK maps a widget only while it and everything around it show there.
         case (.isVisible, let view?): return (gtk_widget_get_mapped(view.widget) != 0).propValue
         case (.opacity, let view?): return gtk_widget_get_opacity(view.widget).propValue
         case (.isEnabled, let view?): return (gtk_widget_get_sensitive(view.widget) != 0).propValue

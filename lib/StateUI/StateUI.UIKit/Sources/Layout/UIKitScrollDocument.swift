@@ -29,7 +29,7 @@ final class UIKitScrollDocument: UIKitLayoutView {
         ScrollArithmetic.contentSize(of: items.first, padding: padding, orientation: orientation, width: width)
     }
 
-    /// The document's size in a viewport of `size`.
+    /// The document's size in `viewport`.
     func documentSize(in viewport: LayoutSize) -> LayoutSize {
         guard let item = items.first, item.isShown else { return viewport }
         return ScrollArithmetic.arrange(item, padding: padding, orientation: orientation, in: viewport).document
