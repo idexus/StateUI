@@ -71,7 +71,7 @@ says it moved, and the views read say where they stand on the next frame.
 ## Scrolling
 
 A ScrollView is a StateUI layout holding GTK's `GtkScrolledWindow`, which
-holds the document the core's scroll arithmetic lays out - never smaller than
+holds the document the host layer's scroll arithmetic lays out - never smaller than
 the viewport, and several children stacked down. GTK puts the document in a
 `GtkViewport`, which the host tells to give it its natural size along the ways
 the view scrolls and the viewport's own size across them; the document's
@@ -86,7 +86,8 @@ movement is joined up to the display's next frame, which reports it to its
 state and its handlers, and rests once it has stood still, as on every host
 ([a scroller's movement](../../host/runtime.md#a-scrollers-movement)). The
 program moves the view by setting the adjustments, which GTK tells inside the
-program's write: `ProgramWrite` drops that echo, and nothing else is kept.
+program's write: `ProgramWrite` drops that echo. An offset written before the
+first layout waits for it.
 
 A viewport owns its child: a view whose parent is not a StateUI panel is not
 taken out by the view as it goes, and the scroller takes its document out of

@@ -23,8 +23,8 @@ come back down. It tells a leaked page from memory the allocator has not handed
 back yet, which a process's resident size cannot. A host reads the tally
 through `HostBoundary.tally` - a Swift runtime writes it with its own totals
 under `STATEUI_TALLY=1` (host/patches.md) - and the per-cycle trace through
-`HostBoundary.cycleTrace`, built only when the host's trace switch is on: this
-side has no environment to read.
+`HostBoundary.cycleTrace`, built only when a host asks for it: this side has
+no environment to read.
 
 ## The inspector
 

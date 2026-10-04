@@ -39,12 +39,12 @@ drift: it is refused, and nothing is mounted from it.
 
 A toolkit writes only what the toolkit has: an element's view and what hangs
 off it. `NativeElement` is that half's whole contract with the tree - it hears
-that a patch is about to apply and that it applied, presents a frame's changed
-properties, arranges children, reports where a property stands natively and
-whether the toolkit animates it, and lets go when the element leaves. The
-element owns its native half; the half refers back without owning, so it can
-never outlive the element. Anything that keeps an element beyond the tree -
-a window's shown page, a sheet - holds the element, never the native half.
+that a patch applied, presents a frame's changed properties, arranges
+children, reports where a property stands natively and whether the toolkit
+animates it, and lets go when the element leaves. The element owns its native
+half; the half refers back without owning, so it can never outlive the
+element. Anything that keeps an element beyond the tree - a window's shown
+page, a sheet - holds the element, never the native half.
 
 ## An arrangement's slots
 
@@ -161,13 +161,14 @@ says nothing of is the toolkit's own; the rest are false until said.
 
 ## The windows a tree holds
 
-Every host keeps the windows alike (`WindowRoster`): each window element
-under the root, in the tree's order - a window holds none - with the host's
-controller of it. A window the tree keeps keeps its controller, one it no
-longer holds has its controller closed - the last first - and one new has
-one made; the first window's coming is said, since the screen is known only
-once there is one. A window is told apart by the element itself, since two
-scenes may each name a window alike.
+Every host but Android, which shows the first window in its activity, keeps
+the windows alike (`WindowRoster`): each window element under the root, in
+the tree's order - a window holds none - with the host's controller of it. A
+window the tree keeps keeps its controller, one it no longer holds has its
+controller closed - the last first - and one new has one made; the first
+window's coming is said, since the screen is known only once there is one. A
+window is told apart by the element itself, since two scenes may each name a
+window alike.
 
 ## Runs of words
 

@@ -27,7 +27,7 @@ tree that holds the tabbed view is still being made.
 ## A page's phases
 
 A page tree shown hears it in its turn (`setPagePresented`): a page is
-appearing, and navigated to where it came by a move; hidden, it is navigated
+appearing, and navigated to where it came by a move; hidden, it is navigating
 from, disappearing and navigated from, the move's words around the
 disappearing. An arrangement hands it on to what it shows: a stack to its top
 page, as a move where its window came; a tabbed view to its tab and a split
@@ -70,8 +70,8 @@ A window's way back (`WindowPresentation.wayBack`) takes the top sheet first:
 its own stack's top page where it can go back, else the sheet itself; with no
 sheet, the arrangement's stack. A stack can go back where it holds more than
 one page and its top page shows its bar and its way back. Going back tells the
-stack it is one page shorter, or the window how many sheets remain
-(`HostRuntime.goBack`).
+stack it is one page shorter, or the window's modal stack how many sheets
+remain (`HostRuntime.goBack`).
 
 ## Slots
 
@@ -93,7 +93,8 @@ A page's chrome takes what is declared on its path (`declared`): the slots of
 each arrangement around the page, from the outermost in, then what the
 page's own tree declares, in the tree's order. Each carries its level - the
 outermost arrangement's 0, the page's own last. The path ends at the window
-and at a modal stack, so a sheet starts one of its own, and so does a split
+and at a sheet's modal stack, so a sheet starts one of its own - a modal
+stack's root stands on the path around the stack - and so does a split
 view's sidebar, which is not on the path; a native
 collection's items belong to no page. A page that goes takes its
 declarations with it, and what the levels around it declare stands as it

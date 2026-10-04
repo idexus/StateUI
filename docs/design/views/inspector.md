@@ -22,7 +22,7 @@ it - with each one's time, its own and with what is under it.
   InspectorModel (one, shared)       places, folded, paused, revision, selected
         │ revision moves at most once per pace
         ▼
-  Inspector.panel(in: scene) ──▶ Node.overlay(InspectorPanel)   docked in the first window
+  Node.overlay(inspector:of:) ──▶ InspectorPanel   docked in the window whose ⓘ was pressed
   DebugInspector ──page──▶ InspectorPage                        in a window of its own
         │
         ▼
@@ -32,8 +32,9 @@ it - with each one's time, its own and with what is under it.
 ## Each scene has its own
 
 Every scene has its own inspector, showing the renders that reached that scene:
-the ⓘ is handed the scene it opens. It opens along the bottom of the scene's
-first window folded to one line - the last render that reached the scene -
+the ⓘ is handed its window, whose scene's inspector it opens. It opens along
+the bottom of the window its ⓘ is in, folded to one line - the last render
+that reached the scene -
 leaving the page all but uncovered while it is watched, with two buttons at the
 end of the line to open it out and to close it. Opened out, it docks down the
 side on a desktop or a tablet, or shows in the scene's `DebugInspector` window

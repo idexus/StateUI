@@ -97,7 +97,8 @@ The differ finds a composed view's `@State` by walking its stored properties,
 into structs, enums and collections, since a view may keep another view - and
 that view's state - in a stored property. The walk stops at any class. A
 composed view that holds data - a layout's items, a list's groups, a gallery's
-cards and their face closure - keeps it behind a private class (`Source`), so
+cards and their face closure - keeps it behind a class (`Source`, a list's
+`ItemsSource`), so
 the walk does not visit every field of every item on every render to find
 state that is never there. For a list of many thousand items that is the
 difference the list exists for.

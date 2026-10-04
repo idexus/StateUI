@@ -35,8 +35,9 @@ again when that state moves.
 
 ## Collections as one node
 
-A page's toolbar items hang off it as one `ToolbarItemGroup` node holding them
-all, its menus as one `MenuBar`, and a label's runs as one `TextSpans`. The host
+A page's toolbar items hang off it as one `ToolbarItemGroup` node for each
+`.toolbar` declaration, holding its items, its menus as one `MenuBar`, and a
+label's runs as one `TextSpans`. The host
 has a list to keep in step, and a list needs a parent of its own to be matched
 against. Where the host
 puts an item of such a collection - a toolbar item's placement - is a value no default answers for, so its member is not cleared; see

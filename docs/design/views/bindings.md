@@ -103,8 +103,8 @@ control, so the driven text is written per control.
 ## Two way controls
 
 A control the user changes - a switch, a check box, a radio button, a picker,
-the date and time pickers, a slider, a stepper, the text fields, a refresh
-view - takes its binding in one of two ways, decided by the binding:
+the date and time pickers, a slider, a stepper, the text fields - takes its
+binding in one of two ways, decided by the binding:
 
 ```text
   $x of a @State or @Binding      handed over: the host sets the control from the state on

@@ -39,8 +39,8 @@ C ABI - takes the whole drawing in one crossing, however many instructions it
 holds, as `HostDrawing` lays it out in three flat lists:
 
 - `ints`: each instruction's kind, then its whole numbers - a colour as ARGB,
-  a flag as 0 or 1, an alignment as its member's number, a text's index in
-  `strings`, a path's count of curves;
+  an alignment as its member's number, a text's index in `strings`, a path's
+  count of curves;
 - `numbers`: each instruction's numbers in order, a path's curves among them,
   each curve its kind (0 move, 1 line, 2 cubic, 3 quadratic, 4 close) and
   then its points;

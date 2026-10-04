@@ -14,8 +14,9 @@ page is, its view says.
                                    └──▶ Window, WindowGroup(for:) ──▶ view
 
   ApplicationSession    SceneSession        WindowSession             said by its view
-  styles, motion,       open and close      title, frame,             title, background,
-  kept values           its windows         lifecycle                 bar requests, phases
+  styles, motion,       closes, with        title, frame,             title, background,
+  kept values, opens    its windows         lifecycle                 bar requests, phases
+  windows
 ```
 
 `Application` and `Scene` are protocols with one composition getter each,
@@ -58,10 +59,10 @@ more, `openWindow` one of a kind - and ends with its last
 - A scene's body takes windows in any number and order (`SceneBuilder`), and
   refuses a view or another scene; an application's body takes scenes
   (`ApplicationBuilder`), a window written there being a scene of its own,
-  and refuses a view. A refused expression gets unavailable blocks of its own
-  type: an unavailable overload of `buildExpression` beside an available
-  generic one would lose to it, as the type checker penalizes what is
-  unavailable.
+  and refuses a view. A refused expression meets an unavailable
+  `buildExpression` of its own, one no available generic overload also
+  matches: beside such an overload it would lose, as the type checker
+  penalizes what is unavailable.
 - An object is offered to a window by `.environment(_:)` on its `WindowGroup`
   or `Window`, and to every window of a scene by `.environment(_:)` on the
   scene where the application names it.
@@ -85,10 +86,11 @@ A window's node is a placeholder like a composed view's (`Node.window`), so it
 is built again on its own when what it reads moves; the view it shows holds the
 state. Its `WindowSession` is handed to it by its scene, which keeps it.
 
-The session and, for a scene's first window, the panel its inspector docks in
-are asked for inside the window's build, so the window is what builds again
-when either moves. The session is also offered on the placeholder itself, so
-the window's own `@Environment` resolves it as well as everything under it.
+The session and the place its scene's inspector docks in, where it docks in
+this window, are asked for inside the window's build, so the window is what
+builds again when either moves. The session is also offered on the
+placeholder itself, so the window's own `@Environment` resolves it as well as
+everything under it.
 
 ## The children of a window
 
@@ -112,7 +114,7 @@ were. The host lays the overlays of the path it shows - the outer under the
 inner - and the library's own over them all
 ([the overlays of a window](../host/pages.md#the-overlays-of-a-window)). The
 inspector docks by a value of its scene (`dockedInspector`), whose panel the
-scene's first window lays as it builds.
+window it docks in lays as it builds.
 
 ## Lifecycle reports one by one
 
@@ -304,10 +306,10 @@ one: a sheet may present a sheet.
 
 `ModalStack` is an arrangement of `NavigationStack`'s shape, standing as a
 window's page: the page it holds first, the sheets after it, each built as
-the arrangement builds from the array as it stands then, so the window is
-what builds again when the array moves. A sheet's identity carries its depth
-and its value, as a stack's page does. The report that a sheet has gone is
-the stack's own (`popped`), with how many remain.
+the arrangement builds from the array as it stands then, so what builds the
+arrangement is what builds again when the array moves. A sheet's identity
+carries its depth and its value, as a stack's page does. The report that a
+sheet has gone is the stack's own (`popped`), with how many remain.
 
 ## What an arrangement does not offer
 
@@ -335,9 +337,9 @@ startup. That function lives in the application's own module and cannot move
 into the library: on Android and Windows the application is a separate native
 library, and nothing in it runs until something calls into it by name.
 
-The application is made there, after anything an earlier one wrote into the
+The application is made at its first need - the first render, or the host
+reading the keys it keeps - after anything an earlier one wrote into the
 application's session has been forgotten, so its `init` starts from nothing.
 It is kept for the life of the process, so `@State` declared on it is the
 state that outlives every window. Its `init` is where the kept state's keys
-are written: the host reads them as the application registers, before the
-first view is built.
+are written: the host reads them before the first view is built.

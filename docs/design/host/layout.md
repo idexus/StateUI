@@ -36,13 +36,13 @@ is pure, so a host calls it from its own layout pass - `layout()` on AppKit, a
 ## One axis of a slot
 
 Along each axis a child has a slot: the room its layout offers it, less its
-margin. A size the child states wins over every alignment and is held only by
-its own least and most size. Without one, a filling child takes the slot and
-any other takes its natural size, never more than the slot. Where the least
-size is larger than the most, the least wins, so contradictory bounds cannot
-leave a child with no answer. A child placed at its start sits at the slot's
-start; at its end, at the end; centred, or filling but stopped short by a
-stated or a most size, in the middle.
+margin. A size the child states wins over every alignment and is held by its
+own least and most size and by the slot. Without one, a filling child takes
+the slot and any other takes its natural size, never more than the slot.
+Where the least size is larger than the most, the least wins, so
+contradictory bounds cannot leave a child with no answer. A child placed at
+its start sits at the slot's start; at its end, at the end; centred, or
+filling but stopped short by a stated or a most size, in the middle.
 
 The layout owns the margin both ways: it takes the margin out of the width it
 offers a child and adds it to the size the child answers, and a toolkit's

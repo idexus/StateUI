@@ -26,10 +26,11 @@ Swift protocols behind them refine each other.
   |-- BorderElement                      a control's own outline and corner radius
   |-- ImageElement                       how a picture fills its room
   |-- TintElement                        a control's one accent colour
-  |-- BarElement                         an arrangement's bar: colours, title area
   '-- MenuItemElement                    an item the user chooses: caption, icon, action
 
   PageElement                            a title and an icon; wears nothing
+  BarElement                             an arrangement's bar: colours, title area;
+                                         wears nothing
 ```
 
 ## Who wears what
@@ -38,9 +39,9 @@ Swift protocols behind them refine each other.
   View               ActivityIndicator, Button, Canvas, CheckBox, ColorBox,
                      DatePicker, Image, Text, Map, Picker, ProgressBar,
                      RadioButton, ScrollView, Slider, Stepper, Switch,
-                     TimePicker, WebView
+                     TimePicker, WebView, ItemsView
   Layout             Grid, ZStack
-  Stack          HStack, VStack
+  Stack              HStack, VStack
   TextInput          SearchField, TextEditor, TextField
   Shape              Ellipse, Line, Path, Polygon, Polyline, Rectangle
   MenuItemElement    MenuItem, ToolbarItem
@@ -48,7 +49,7 @@ Swift protocols behind them refine each other.
   BarElement         NavigationStack, TabView, SplitView, ModalStack
   text tiers only    TextSpan
   no tier            Application, Scene, Window, Menu, Divider, ContextMenu,
-                     Overlay, and the slots and collections
+                     Overlay, Marker, and the slots and collections
 ```
 
 An element adds the smaller tiers it needs beside its main one: a `Button`

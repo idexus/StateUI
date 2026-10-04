@@ -28,6 +28,7 @@ its parts; [the host layer](../../internals/host-layer.md) maps them.
   toolkit half             frame signal, each element's native half,
   one package per host     realizations, layout views, scrolling, gestures,
   (lib/StateUI/StateUI.AppKit,     focus, accessibility, windows and menus
+  lib/StateUI/StateUI.UIKit,
   lib/StateUI/StateUI.Android,
   lib/StateUI/StateUI.WinUI,
   lib/StateUI/StateUI.GTK)
@@ -59,8 +60,8 @@ paths, the journey's animations and the frame they run on.
 | P | presenting what D describes, reporting the user into C | the layout arithmetic: `StackArithmetic`, `GridArithmetic`, `ZStackArithmetic`, `SingleChildArithmetic`, `ScrollArithmetic`, `MeasurementCache` | host layer |
 | | | the layout views, scrolling, gestures, drawing, focus, accessibility, windows, menus | toolkit half |
 | B | transport and process | `CoreLink`; `Registry` is the core's | host layer |
-| | | `Pump`; `HostRuntime` wires every part above | host layer |
-| | | the doorbell's post, the act performer | toolkit half |
+| | | `Pump`, the act performer (`HostActPerformer`); `HostRuntime` wires every part above | host layer |
+| | | the doorbell's post, the acts' toolkit part (`ActToolkit`) | toolkit half |
 
 ## One frame
 
@@ -80,11 +81,11 @@ display cycle, in this order, in every runtime:
                                                    each changed parent arranged once,
                                                    after its children;
                                                    finished animations answer their waiters
-    5  a render, when the core needs one
-    6  the clock stays held while anything moves; it lets go only here
+    5  the clock stays held while anything moves; it lets go only here
+    6  a render, when the core needs one
 ```
 
-A user's own change drains steps 2 to 4 and 6 at once, so the followers and
+A user's own change drains steps 2 to 5 at once, so the followers and
 the engines move on the user's frame.
 
 In step 4 a host only presents each element's moved values; what they ask
@@ -130,8 +131,8 @@ before what comes after it, and the turn goes round again; only then the acts.
 The core rings when it has work a turn must take - a handler resumed off the
 UI thread, a state an engine wrote. A host parks a thread of its own on the
 core (`CoreLink.ringForever`) and posts a turn onto its UI thread each time the
-core rings: AppKit onto the main queue, WinUI through its relay, GTK through
-GLib, Android onto its looper. The turn itself is the `Pump`'s.
+core rings: AppKit and UIKit onto the main queue, WinUI through its relay,
+GTK through GLib, Android onto its looper. The turn itself is the `Pump`'s.
 
 ## The handlers' order
 
@@ -304,7 +305,7 @@ renders what it all changed.
 ## The application's phase
 
 A toolkit tells what each window does - whether it stands off the screen,
-minimized or hidden with the window it belongs to, and whether it is
+minimized or hidden by its scene, and whether it is
 activated - and whether the whole application is hidden, and every host
 tells it on alike (`ApplicationLifecycle`, `HostRuntime.windowStateChanged`).
 What it tells settles a turn later, with whatever else it tells in the same
@@ -358,7 +359,8 @@ none on screen, fails with that reason (`MountedTree.aimed`). One performer
 does this for every host (`HostActPerformer`): it reads each act, keeps the
 questions in line, answers and fails; a host gives it its toolkit's part
 (`ActToolkit`) - the clock and the zones, a question shown, a word to the
-screen reader, the focus, a value kept - and nothing more.
+screen reader, the focus and the on-screen keyboard, a value kept, the acts
+its own controls answer - and nothing more.
 
 ## An application's own acts
 
@@ -393,8 +395,8 @@ kept as the words its key's kind reads back, and a value of another kind is
 not kept. A key the application does not list still saves, as its value's
 own kind - true or false, a number, words - which its key's kind reads back
 once it is listed, as the application's session promises. The words stand in
-the platform's own store where it has one - the preferences on a Mac and on
-Android.
+the platform's own store where it has one - the preferences on a Mac, on iOS
+and on Android.
 
 A host whose platform keeps no store an application can use keeps them in a
 file of its own, and one codec says what the file holds (`KeptValuesText`): a
@@ -409,10 +411,10 @@ Every platform window comes through one road (`HostRuntime.connectWindow`):
 the platform's first - the window launch opens takes it - a new one of no
 kind, or one it kept. A host connects its first window as it starts, a kept
 one or a new one, so the window launch opens is the platform's first and
-*File ▸ New* makes one more (scenes.md, What the platform hands over). A host
-whose windows come after its start - iOS connects its scenes then - holds its
-turns until the first comes (`Pump.waitsForFirstWindow`), so the scene a kept
-window opens is built with what it kept, never its default first.
+*File ▸ New* makes one more (core/scenes.md, What the platform hands over). A
+host whose windows come after its start - iOS connects its scenes then -
+holds its turns until the first comes (`Pump.waitsForFirstWindow`), so the
+scene a kept window opens is built with what it kept, never its default first.
 
 ## Kept scenes
 

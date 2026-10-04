@@ -101,7 +101,8 @@ frame, and never computes again what the core decides.
 ```
 
 A handler's `await` resumes on `MainActor`, whatever it awaited. The core uses
-no platform timer, run loop or main queue: time comes from the host's frame
+no platform timer or run loop, and the main queue only for the one drain it
+posts where something turns that queue: time comes from the host's frame
 clock, and work reaches the UI thread through the host's doorbell.
 
 ## Where to read next

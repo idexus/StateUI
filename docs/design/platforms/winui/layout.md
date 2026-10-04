@@ -119,7 +119,7 @@ other way.
 ## Scrolling
 
 A ScrollView is a StateUI layout holding WinUI's `ScrollViewer`, which holds
-the document the core's scroll arithmetic lays out - never smaller than the
+the document the host layer's scroll arithmetic lays out - never smaller than the
 viewport, and several children stacked down. The scroller is measured with no
 room in the directions it scrolls: it measures its document without bound
 there itself, so the extent is the document's, and asking for no room it

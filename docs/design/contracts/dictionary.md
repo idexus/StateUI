@@ -2,8 +2,8 @@
 
 `docs/controls/` holds one page per element contract and per tier, and
 `docs/platform-contract.md` is the implementation matrix. Wherever a
-contract can say it, both are rendered from the contracts and the hosts'
-declarations, so the handbook cannot drift from the code.
+contract can say it, both are rendered from the contracts and the verdicts
+the hosts' test runs write, so the handbook cannot drift from the code.
 
 ## Rendered from the contracts
 
@@ -24,7 +24,7 @@ declarations, so the handbook cannot drift from the code.
       its example  ---------------------------->  a Swift block under that paragraph
       first sentence  ------------------------->  the tier list, and the line over the
                                                   tier's table on every element page
-  each host's written declaration + its export  ->  the marks and their notes
+  each host's verdict files (exports/marks)  --->  the marks and their notes
   the matrix's native mapping  ---------------->  the hosts table's "Realization" column
   the views' on... modifiers  ----------------->  the modifier an event is heard through
 ```
@@ -73,7 +73,7 @@ of a small application where its contract is one (`Application`, `Scene`,
 
 A provider's element a host may not realize - a `Map` - shows under its
 example what an application registers with such a host
-(`ControlDictionaryExamples.registrations`): a sentence, and the
+(`ControlDictionary.registrations`): a sentence, and the
 registration quoted - `swift quote`, never compiled, since it is written
 against a host's facade and the handbook compiles against `StateUI` alone.
 
@@ -110,8 +110,8 @@ host has done all it will, and the contract is kept there by the family's
 nature. A member proven only through the host's own entry or record, ✓,
 counts as met too - it works and its effect is proven, by weaker evidence.
 A 🧩 is shown and not counted: what the user gets there is the
-application's. Every total gives each mark a row of its own, so the evidence
-stays in sight beside the sum. The element
+application's. Every total gives each mark counted as met a row of its own,
+and 🧩 one, so the evidence stays in sight beside the sum. The element
 itself has a verdict of its own, `Button: ✅`: the creation table's mark, and
 the "Created" cell of the hosts table that opens the element's page, above
 its own members and then its tiers'. Every view has one case that proves it
@@ -140,8 +140,10 @@ reason, an unrealized one on a tier.
 
 ```text
   ✅   proven by every test of it that ran on that host
+  ✓    proven only through the host's own entry or read, which the driver names
   ☑️   proven, but the host records what is missing
   –    never on that host's family; its register or an absence case says why
+  🧩   left to the application's own registration on that host
   ❌   a test of it failed; ◐ some tests proved it, another could not
   ·    the driver cannot yet do or read what its test needs; ⏸ its test waits
   ⌛   said at another revision of its family than it stands at (Fresh verdicts)

@@ -31,7 +31,7 @@ allowed can be written" a compiler rule rather than a convention.
       TextAlignmentElement  PaddingElement             └── TextInput
       LineHeightElement  DecorableTextElement
       BorderElement  ImageElement  TintElement
-      BarElement  PageElement  MenuItemElement
+      BarElement  MenuItemElement
 ```
 
 A control conforms on the element side - `View`, `Layout`, `Shape`,
@@ -62,14 +62,15 @@ container, modifiable element, visual element, view, layout, stack, shape and
 input view - a file for each, and one more for a larger group of a tier's
 modifiers: a view's gestures, where it sits, what it says about itself.
 `testTheSharedTierIsCoveredOnce` checks the properties declared in those files
-against one case, built from a stack and a label, so those properties are
-covered once rather than in every control's case.
+against one case, built from a stack holding a shape, a label and a text
+field, so those properties are covered once rather than in every control's
+case.
 
 ## One file per mixin tier
 
 A tier worn by some controls and not others - text, font, alignment, padding,
-line height, decoration, border, image, tint, bar, page and menu item - has a
-file of its own in `Mixins` rather than a block in a shared tier's file. Its
+line height, decoration, border, image, tint, bar and menu item - has a file
+of its own in `Mixins` rather than a block in a shared tier's file. Its
 properties are then not part of the shared tier the case checks, and a
 control that does not wear the tier is never offered its modifiers.
 
@@ -120,9 +121,9 @@ path; `.transform` moves what was drawn, after layout.
 
 A layout's outline, `BorderElement`'s `stroke` and `lineWidth`, carries the
 same properties as a shape's rather than wearing the shape tier, because that
-tier also carries `fill`, `geometryTransform`, `aspect` and the dash pattern, a
-drawn figure's properties and none of them a layout's. In the patch they are the
-same properties.
+tier also carries `fill`, `geometryTransform`, `contentMode` and the dash
+pattern, a drawn figure's properties and none of them a layout's. In the patch
+they are the same properties.
 
 ## Borders
 

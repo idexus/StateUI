@@ -15,8 +15,9 @@ runtime (`HostRuntime`), its frame clock - a `CADisplayLink` running only
 while something holds it - and the roster of the windows it shows. The core
 is woken as on every Apple host: a thread of the host's parks until the core
 has work, and each ring puts a turn of the pump on the main queue. The
-application's delegate starts the runtime as the application launches, and
-tells it what the device, the display and the application are.
+application's delegate starts the runtime as the application launches, which
+tells what the device and the application are; each scene iOS connects tells
+what the display is.
 
 ## Scenes
 

@@ -11,8 +11,8 @@ once. The frames come from `CompositionTarget.Rendering`
 What moves is the host layer's list ([what
 travels](../../host/motion.md#what-travels)), and WinUI draws every pair it
 names on each frame through the same setters a patch uses. A tint moving
-reads its control's theme again on every frame - a template reads its
-resources only as its theme is read ([a control's
+recolours, on every frame, the brushes its control's template reads; the theme
+is read again only where a brush comes or goes ([a control's
 accent](controls.md#a-controls-accent)); a bar's colour moving composes the
 window's chrome again, and a window's place and size stand the window again.
 

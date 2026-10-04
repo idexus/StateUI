@@ -40,7 +40,7 @@ layout view group is told not to, at its content and at its padding.
 ## Scrolling
 
 A ScrollView is a StateUI layout like any other to its parent, measured by
-the core's scroll arithmetic, and inside it stands Android's own scroller: a
+the host layer's scroll arithmetic, and inside it stands Android's own scroller: a
 `ScrollView` to scroll down, a `HorizontalScrollView` to scroll across, and
 the second inside the first to scroll both ways, each axis native. The
 innermost holds the document, a StateUI layout that stands the content where

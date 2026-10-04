@@ -43,16 +43,15 @@ that goes takes its declarations with it and nothing needs restoring.
 
 ## Values written into a session
 
-A value written into a session is put on the node as the window builds, and a colour or a picture with a half for each theme is picked
-there, so it is right in both themes whenever it was written.
+A value written into a window's session is put on the window's node as the
+window builds.
 
 ## Collections hang as one node
 
-A page's menus hang off the page as one node holding the collection,
-`MenuBar`, and each toolbar group off the element declaring it as one
-`ToolbarItemGroup` node, rather than as one node each. The host has a list to keep
-in step, and a list needs a parent of its own to be matched against; a swipe
-view's actions hang the same way.
+A page's menus hang off the element declaring them as one node holding the
+collection, `MenuBar`, and each toolbar group off the element declaring it as
+one `ToolbarItemGroup` node, rather than as one node each. The host has a list
+to keep in step, and a list needs a parent of its own to be matched against.
 
 ## Scenes and windows are read not held
 

@@ -44,7 +44,7 @@ and this table maps the two.
 | attachment, wear (a state), wearer | binding, bound control | a control property tied to a state |
 | report | input event | the user's change on its way from a control to the core |
 | feed | host-supplied value | a value only the platform knows, such as focus or a frame, read into a state |
-| kept value (`persistent`) | persisted state | a state saved in a store and read back at launch |
+| kept value (`persistentKey:`) | persisted state | a state saved in a store and read back at launch |
 | standard environment, provider | environment object | the typed values an application and its host provide down the tree |
 | themed pair, the half in force | light and dark variant, the active variant | a value with one side for each theme, and the side the theme picks |
 | engine | frame callback | application code that runs once per display frame while it follows states |

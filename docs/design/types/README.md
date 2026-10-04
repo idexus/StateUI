@@ -15,7 +15,8 @@ keyboard vocabularies; `Time` days, times of day and zones; `Motion` the
 timing laws and their groups; `Gestures` what a gesture reports;
 `Environment` the standard providers and their vocabularies; `Sessions` the
 application, scene and window sessions; `Controls` the vocabularies one
-control takes.
+control takes; `Collections` an items view's entries, layout, selection and
+scroll anchor.
 
 ## The notes
 
@@ -35,8 +36,8 @@ control takes.
   without Foundation.
 - [Gestures](gestures.md) - what a gesture report carries.
 - [The standard environment](environment.md) - what the host knows, as state.
-- [Sessions](sessions.md) - the application, a scene, a window and a page as
-  they run.
+- [Sessions](sessions.md) - the application, a scene and a window as they
+  run.
 
 ## From a value to a host
 
@@ -93,7 +94,7 @@ back as the types `ApplicationContract.currentTime` declares.
 | Kind | What it carries | Used by |
 | --- | --- | --- |
 | `.string` | text an author wrote | captions, placeholders, picture file names, path data, formats |
-| `.name` | a word from an open vocabulary | `Name`: style keys, font families, radio groups, kept keys |
+| `.name` | a word from an open vocabulary | `Name`: style keys, font families, radio groups |
 | `.enumeration` | a member's number, or a flag set's bits | every closed vocabulary, `FontAttributes`, `SwipeDirection` |
 | `.number` | one number | `Double`, `Int`, a uniform `CornerRadius` |
 | `.bool` | true or false | `Bool` |
@@ -148,4 +149,4 @@ writes them into one provider object each, and a view reads a provider with
 
 [The standard environment](environment.md) has the reasons, and
 [sessions](sessions.md) the objects that describe the application, its
-scenes, windows and pages as they run.
+scenes and windows as they run.

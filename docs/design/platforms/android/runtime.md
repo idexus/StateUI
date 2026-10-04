@@ -1,8 +1,8 @@
 # The Android runtime
 
 The Android Views host is the runtime every host shares
-([the runtime](../../host/runtime.md)), over Android views: the core's host
-layer supplies the mounted tree, the patch intake, the animator, the state
+([the runtime](../../host/runtime.md)), over Android views: the host layer
+supplies the mounted tree, the patch intake, the animator, the state
 channels and the display cycle, and the Android half supplies what only the
 toolkit can - the frame signal, the doorbell's post, the views, their layout,
 and the activity around them.
@@ -132,8 +132,9 @@ contract declares - is performed by what the application registered for it
 contract declares and answered with those it returns, once the performer
 returns; an act nothing registered is refused by its name. An event the
 application raises (`StateUIEvents`) reaches every listener to it. Both are
-said as the library loads: `JNI_OnLoad` runs on the UI thread, before
-`StateUIAndroid.load(_:)` starts the host.
+said as the library loads: `JNI_OnLoad` runs on the UI thread and says them
+before `StateUIAndroid.load(_:)`, which registers the host's natives; the
+activity starts the host after it.
 
 ## The application's own controls
 

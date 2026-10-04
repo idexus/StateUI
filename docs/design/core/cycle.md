@@ -12,7 +12,7 @@ frame.
     |
     |  HostBoundary.report                          the user's changes, by lane
     v
-  CycleBoard.cycle(now:)
+  CycleBoard.cycle(now:reducesMotion:)
     1 READ      every write waiting since the last cycle is latched into the image
     2 WORK OUT  the engines with a reason run, in order, over that one picture
     3 WRITE     the image is published; what moved is marked dirty
@@ -109,9 +109,6 @@ clears nothing: a registration needs the value and where it is going both.
 Every read goes through `HostStorage.crossing()`, which resolves an inherited
 law (journeys.md).
 
-A read into a buffer too small clears nothing, so it can be made again with
-room.
-
 ## A start is a gap
 
 The first cycle, and any cycle after a silence longer than
@@ -125,13 +122,13 @@ nothing was cycling is a reason to run.
 ## Engines
 
 An engine is the application's arithmetic run on the host's frames, written
-with `.engine(following:)`: the only place in the library where code runs
-outside a render. What it may do is narrow on purpose - read states, write
-states, and say whether it has more to do. It may not await, ask the host for
-anything or touch a control, because it runs inside the frame the platform is
-drawing. The closure captures the view by value, so everything it reads that
-can move is a state and everything else is a copy of what the render saw;
-anything it must remember between cycles lives in a `@State`.
+with `.engine(following:)`: the only code the display cycle runs. What it may
+do is narrow on purpose - read states, write states, and say whether it has
+more to do. It may not await, ask the host for anything or touch a control,
+because it runs inside the frame the platform is drawing. The closure captures
+the view by value, so everything it reads that can move is a state and
+everything else is a copy of what the render saw; anything it must remember
+between cycles lives in a `@State`.
 
 ```text
   EngineCycle    the instant, and how long since THIS engine ran (at most 100 ms)
@@ -154,9 +151,9 @@ state rebuilds nothing and arms nothing. A value the arithmetic needs is
 followed, or read in the body and handed over as a local.
 
 An engine's own write to a state it follows is no reason either: where
-everything it follows stands is noted after the run (`noticed()`), so what it
-changed itself is what it has already seen. A render that describes the view
-again arms the engine once with the new closure (`rearm`).
+everything it follows stands is noted after the run (`ran(at:answering:)`), so
+what it changed itself is what it has already seen. A render that describes the
+view again arms the engine once with the new closure (`rearm`).
 
 ```text
   stamp      every write counts, this side's and the host's, equal bytes included
@@ -169,9 +166,9 @@ again arms the engine once with the new closure (`rearm`).
 A state's stamp is its storage's own write count plus its image's, because a
 value has two homes in its life. The storage's count is an atomic read without
 the storage's lock, on purpose: `carry()` takes the board's hold while holding
-the storage's lock, and `stirred()` reads stamps under the board's hold, so
-taking the storage's lock there would take the two in the other order. A write
-from a detached task is seen a cycle late at worst.
+the storage's lock, and an engine's `due` reads stamps under the board's hold,
+so taking the storage's lock there would take the two in the other order. A
+write from a detached task is seen a cycle late at worst.
 
 A render that names different states to follow forgets the stamps, so the next
 cycle runs over the new list; one naming the same states leaves them, or every

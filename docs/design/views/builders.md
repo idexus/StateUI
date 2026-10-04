@@ -5,8 +5,9 @@ holds, or into one view. StateUI has one for views - a page position takes one
 view through it, an `if`/`else` or `switch` keying each branch - one each for
 an application's scenes and a scene's windows (`ApplicationBuilder`,
 `SceneBuilder`), and one each for
-menu entries, toolbar items, text runs, markers and styles. The
-view builder also gives every view it collects a key.
+a menu bar's menus, menu entries, toolbar items, text runs, markers, styles
+and a canvas's drawing. The view builder also gives every view it collects a
+key.
 
 ## The result says what was written
 
@@ -89,7 +90,7 @@ and so is a `ForEach` row's, whose builder takes an `if`/`else` too.
 
 ## No plain for loop
 
-The builders have no `buildArray`, so a plain `for` does not compile in them. A turn of a loop has no identity but its number, and its
+The builders but `StyleBuilder` and `DrawingBuilder` have no `buildArray`, so a plain `for` does not compile in them. A turn of a loop has no identity but its number, and its
 number is its position: a collection that gains a row at the top renumbers
 every turn below it, and every view would be rebuilt as though it had changed.
 `ForEach` is where repetition is written, and it keys each view by its item;

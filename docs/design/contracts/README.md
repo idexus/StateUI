@@ -6,8 +6,9 @@ realizes it, the tiers it wears, and each member with the type of its value.
 A tier, in `Contracts/Tiers` or - one group of members - `Contracts/Mixins`,
 is a contract with no node type of its own: members several elements share,
 declared once. The contracts stand in the same topic folders as their views:
-`Controls`, `Text`, `Layouts`, `Shapes`, `Collections`, `Structure`, `Slots`,
-`Navigation`, `Menus`. Views, the differ, the hosts,
+`Controls`, `Text`, `Layouts`, `Shapes`, `Collections`, `Structure`,
+`Navigation`, `Menus`; the slots' stand in `Slots`, their views in
+`Structure`. Views, the differ, the hosts,
 the handbook's dictionary and the guards all read the same declarations, so
 a property and its value meet in the compiler and nothing is spelled twice.
 

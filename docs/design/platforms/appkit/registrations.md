@@ -3,8 +3,8 @@
 The AppKit half realizes the element contracts through the core's registry:
 how each element's view is made, which of its members the view takes, and
 what it reports. `AppKitRegistrations` builds the registry once, one family a
-file - indicators, toggles, values, pickers, fields, shapes, buttons,
-pictures, drawing, layouts, presentation - and the members every element
+file - indicators, items, maps, web, toggles, values, pickers, fields,
+shapes, buttons, pictures, drawing, layouts, presentation - and the members every element
 shares. An element no registration answers is still made by `AppKitElement`.
 
 ## Shared members
@@ -45,7 +45,7 @@ A declaration says what the host does, not what a tier offers:
   only, which only a record with its note can say.
 - `allowsDrop`, `canDrag` and `dragText` are absent: AppKit realizes no
   dragging.
-- `clipsContent` and `avoidsSafeArea` are absent: this host reads neither.
+- `avoidsSafeArea` is absent: this host does not read it.
 - `background` and `isEnabled` are taken by the registrations of the controls
   that have them. A background is a partial realization on this host, which
   only a record with its note can say.

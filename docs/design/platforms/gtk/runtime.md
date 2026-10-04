@@ -1,8 +1,8 @@
 # The GTK runtime
 
 The GTK host is the runtime every host shares
-([the runtime](../../host/runtime.md)), over GTK 4 and libadwaita: the core's
-host layer supplies the mounted tree, the patch intake, the pump, the
+([the runtime](../../host/runtime.md)), over GTK 4 and libadwaita: the host layer
+supplies the mounted tree, the patch intake, the pump, the
 animator, the state channels and the display cycle, and the GTK half supplies
 what only the toolkit can - the frame signal, the doorbell's post, the
 widgets, their layout, and the window around them. It is Swift alone: GTK's
@@ -156,6 +156,6 @@ the core ahead of the first view; a key's new value writes the whole file
 again, beside the old one and then in its place, so a failed write leaves
 the old. The desktop restores no windows, so the application's scenes are
 kept beside them, in `kept scenes.txt` ([kept
-scenes](../../host/runtime.md#kept-scenes)): each comes back at the next start
-with its values, and is offered the windows it had open.
+scenes](../../host/runtime.md#kept-scenes)): at the next start each window kept
+comes back as its kind for its value, its scene with the values it kept.
 

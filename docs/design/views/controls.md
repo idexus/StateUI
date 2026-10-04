@@ -15,7 +15,7 @@ and acts it declares, and the binding twins of its values.
       func value(_:) / minimum(_:) / …           properties, from SliderProperties
       func onValueChanged(_:)                    events, through onEvent(member)
   }
-  extension Aim where Target == Slider { … }    acts, through call(member)
+  extension Aim where Target == ItemsView { … } a control's acts, through call(member)
 ```
 
 What gives a control its purpose - a label's text, a picker's options, a
@@ -115,10 +115,10 @@ same on every host.
 
 A `TextSpan` is one run of text inside a Text, with its own colour, size and
 weight; text in two colours is two runs. It is named `TextSpan` rather than
-`TextSpan` because the standard library's `TextSpan<Element>` is in scope in every file
-without an import: an application writing `TextSpan("…")` would get "no exact
-matches in call to initializer", and a plain `[TextSpan]` "reference to generic
-type 'TextSpan' requires arguments". The node in the patch is `TextSpan` all the same,
+`Span` because the standard library's `Span<Element>` is in scope in every file
+without an import: an application writing `Span("…")` would get "no exact
+matches in call to initializer", and a plain `[Span]` "reference to generic
+type 'Span' requires arguments". The node in the patch is `TextSpan` all the same,
 the vocabulary's name for a run.
 
 ## Images
@@ -146,5 +146,5 @@ in one place - a page's toolbar, a menu, a map - and are matched by their
 A radio button's group is a name - every button in the set writes the same one
 - and the host resolves it within one window without relying on how native
 views are nested. Picking one unchecks the others and reports both changes
-together, which is why a handler acts on `checked` alone. One state for the
+together, which is why a `toggled` handler acts on `true` alone. One state for the
 whole group, rather than one flag per button, holds what is chosen.

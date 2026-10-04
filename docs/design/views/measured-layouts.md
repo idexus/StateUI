@@ -34,15 +34,15 @@ for an answer nobody wanted.
 
 A view reports when its own frame settles or moves - its first layout
 included - when an ancestor's does, and when a scroll among its ancestors
-moves it against the window. A view that asked about its frame listens to the
-chain above it up to its page, attached on its first report and again
-wherever a report finds its parent is no longer the one listened to, because
-scrolling changes the window and safe-area answers without the view's own
-frame moving. Each report is deduplicated against the last, so a layout pass
-that writes four components is one report, and each handler deduplicates again
-in its own space, so a parent-space listener hears nothing of a scroll. A
-handler's memory starts afresh when the view is rebuilt, which costs one
-repeated report that the handler's own state write absorbs.
+moves it against the window. A view that asked about its frame says where it
+stands on the display's next frame after anything was laid out or moved,
+itself or not, because scrolling changes the window and safe-area answers
+without the view's own frame moving. Each report is deduplicated against the
+last, so a layout pass that writes four components is one report, and each
+handler deduplicates again in its own space, so a parent-space listener hears
+nothing of a scroll. A handler's memory starts afresh when the view is
+rebuilt, which costs one repeated report that the handler's own state write
+absorbs.
 
 Translation, rotation and scale are drawing transforms, not layout: an
 animated translation reports nothing, while an animated width reports every

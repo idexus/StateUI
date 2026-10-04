@@ -37,9 +37,10 @@ member declares, checked on the way back: an answer of another shape throws.
 Acts wait in the renderer's queue until the host takes them, at the end of its
 turn, after the render - so an act lands on the interface its handler just
 changed. The queue and the completion registry are behind the renderer's lock
-because they are the one part of it a child task reaches: `async let` runs its
-child on the cooperative pool, so two animations started that way send from
-pool threads while the UI thread takes acts and dispatches completions.
+because a child task reaches them, as it reaches the record of what changed:
+`async let` runs its child on the cooperative pool, so two animations started
+that way book their waiters from pool threads while the UI thread takes acts
+and dispatches completions.
 Unguarded, that race loses a continuation (a handler frozen at its `await`) on
 a good day and corrupts memory on a bad one.
 
@@ -139,8 +140,8 @@ key is stable, so the write is idempotent.
 An aim takes no part in matching: a view carrying only an aim is identified by
 its builder path or position, as if nothing were written on it. A named row
 that an act can also reach is `.id("row-7").aim(row)`. The identity of a manual
-key crosses as text, exactly as an element's own manual id does; it is not a
-vocabulary entry the dictionary numbers.
+key crosses as text, exactly as an element's own manual id does: a `.string`,
+not a `.name` of the open vocabulary.
 
 An aim put on two views in one walk is a conflict; the next act reports it and
 the next walk's first attachment clears it. An act on an aim that reached no view
@@ -188,11 +189,11 @@ row - and nothing happens where no screen reader runs.
 An event the host raises by name has no element behind it - connectivity
 changing, the battery reporting - so the application declares it in an
 `ApplicationTier`, registers the raise with the host, and subscribes with
-`HostEvents.on`. The name crosses in the buffer and the values arrive as the
-types the member declares; a raise of another shape is reported once and does
-not reach the handler. Handlers run in subscription order, each started on
-`MainActor` exactly as a control's handler is, taken under the lock and started
-outside it. Subscription ids are never reused, so a cancelled subscription
-cannot take a newer listener with it. A raise nobody subscribed to is an
-ordinary zero, and prefixing event names with the application's own keeps them
-from ever meeting one this library adds.
+`HostEvents.on`. A raise reaches the subscriptions by the member's name, and
+the values arrive as the types the member declares; a raise of another shape
+is reported once and does not reach the handler. Handlers run in subscription
+order, each started on `MainActor` exactly as a control's handler is, taken
+under the lock and started outside it. Subscription ids are never reused, so a
+cancelled subscription cannot take a newer listener with it. A raise nobody
+subscribed to is an ordinary zero, and prefixing event names with the
+application's own keeps them from ever meeting one this library adds.

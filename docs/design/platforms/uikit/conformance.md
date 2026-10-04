@@ -9,7 +9,7 @@ their verdicts held to `lib/StateUI/exports/marks/uikit`.
 A view stands in a window only in an application's process, and a window only
 in a scene iOS connected. So the host's tests are an application of their
 own, which `test-uikit.sh` builds, installs on a simulator and starts: once
-its first scene connects, the runner reads every test case of its own binary
+its first scene connects and stands in front, the runner reads every test case of its own binary
 by name - a class of the whole process may be no object at all - and runs
 each test in a turn of the main run loop of its own, saying each as it ends.
 A turn of the run loop, not a block on the main queue: a test turns the run
@@ -71,7 +71,7 @@ acts to the host's own entry: the gestures and the pointer to the view's
 listening as the recognizers' states, a picker's choice and a question's answer
 to the host, a scene's phases to the renderer, and a web view's end of content
 to its delegate. A few reads are the host's own too: a check's and a picker's
-state, the split view's flag, the menu bar's entries, a question's captions,
+state, the menu bar's entries, a question's captions,
 what it announced, and a transform checked against the layer it composed. The
 driver names each (`byHost`), and a member a case proves only through them is
 the host's own - ✓ - never ✅.

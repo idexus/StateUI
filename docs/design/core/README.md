@@ -117,7 +117,7 @@ host and never calls the core.
      |  the host animates carried values with HostMotionLaw and reports
      |  the user's changes and its frames, lane by lane
      v                                    HostBoundary.report
-  CycleBoard.cycle(now)
+  CycleBoard.cycle(now:reducesMotion:)
      1  latch     pending writes -> image; reported lanes are never echoed
      2  engines   by ascending priority - a conversion's back (-2) and
                   forward (-1) engines ahead of the author's (0 unless said) -
@@ -165,7 +165,7 @@ holds its reasons. A type's extensions stand in its folder, named
 
 ```text
   Core/State        @State and its storage, Binding, kept state,          state
-                    @Environment, element sessions, the @Observable refusal
+                    @Environment, the @Observable warning
   Core/Carried      what a carried value is: StateValue and its image,    state, cycle
                     the attachments, HostStorage's three copies
   Core/Journey      Journey and its lanes, the law on the image, the two  journeys
@@ -174,7 +174,7 @@ holds its reasons. A type's extensions stand in its folder, named
   Core/Render       the renderer, with its cycle, act queue and dispatch; render, acts,
                     read scopes, debugInfo()                              invalidation
   Core/Diff         the differ, Node, RenderedNode, placeholders and      identity-and-diffing
-                    inputs, .onChanged, .onCreated, .onDestroying, rows
+                    inputs, .onChanged, .onCreated, .onDestroying
   Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
                     reader, host events
   Core/Threads      the UI thread's executor, the doorbell, the lock      concurrency

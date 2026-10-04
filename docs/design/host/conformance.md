@@ -39,8 +39,8 @@ control dictionary has one page for each: `Contract/Controls/ButtonTests.swift`
 for an element wearing View, `Contract/Structure/` for the parts of an
 application's structure, `Contract/Tiers/` for the tiers. A member's events
 and acts stand in the family of the contract declaring them. `Families.all`
-lists them, and a host's suite runs each family as one test, so a case added
-to a family runs on every host with no edit there.
+lists them, and a host's suite runs each family as one test - a large one in
+parts - so a case added to a family runs on every host with no edit there.
 
 Every cell of the dictionary has a case of its own contract's family: the
 element itself - the host makes it - each of its own members, and each
@@ -106,9 +106,9 @@ have yet is its driver's "cannot". A case's first start of an application is
 its first launch: the driver forgets what the host's stores keep, and a
 start after it in the same case is the next launch, which finds them.
 
-A host's driver and its suite are a package of their own inside the host's
-folder, `Testing` - the WinUI host's `StateUIWinUIDriver`, the GTK host's
-`StateUIGTKDriver`, and their tests. They
+A host with backends keeps its driver and its suite in a package of their own
+inside the host's folder, `Testing` - the WinUI host's `StateUIWinUIDriver`,
+the GTK host's `StateUIGTKDriver`, and their tests. They
 register the host's backends, which depend on the host, so they stand beside
 the host's package rather than in it, and everything there links the host's
 one dynamic library. The driver reads the host's own views, so it is built
@@ -142,7 +142,8 @@ nothing drawn at the point shows no colour.
 ## The runner
 
 The runner runs a family on a host and says one line for each case - passed,
-failed, not planned, a gap, or what the driver cannot do and why - and gives
+failed, never here, not planned, the application's, a gap, or what the driver
+cannot do and why - and gives
 the verdict on every member the cases cover. Each line is said as its case
 ends, with its place in the run and how long it took ("[3/15] ... passed in
 812 ms"), to standard error, which nothing buffers (`HostLog.note`): a long
@@ -160,8 +161,10 @@ A run gives a verdict on every member its cases cover, one line each under
 `lib/StateUI/exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
 and held to the file otherwise: ✅ where a passing case proved it, ☑️ with
 what the host's register says is missing, – with why where the host's family
-never has it or a case proved it absent, and - empty in the dictionary - "not realized" or what the
-driver cannot do and why. A member of a failing case gets no verdict from it.
+never has it or a case proved it absent, 🧩 where the host leaves it to the
+application's own registration, and - empty in the dictionary - "not
+realized" or what the driver cannot do and why. A member of a failing case
+gets ❌ with the case's first failure.
 Those files are every mark a host's column shows: nothing a host implements
 or declares by hand is marked until its own run says so. A test of a host's
 look proves no member; it proves how the host draws.

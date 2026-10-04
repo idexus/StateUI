@@ -8,8 +8,9 @@ by `test-android.sh`.
 ## What the driver does
 
 A user's act goes through the path Android's own input takes into the host: a
-button's and a toggle's `performClick`, a field's words replaced in its
-editable text - which its watcher hears as it hears a key - and the keyboard's
+button's and a toggle's `performClick`, a field's words selected and
+typed over through the input connection it gives a keyboard - which its
+watcher hears as it hears a key - and the keyboard's
 action on a field, done or search as its return key says. The activity's
 lifecycle is told as the activity tells it: onResume as a window comes to the
 front, onPause as another application does, onPause and onStop as the user
@@ -24,10 +25,11 @@ a mouse entering, moving over and leaving the view as its hovering.
 
 ## Layout
 
-The test's root stands in no window, so no traversal lays it out and no
-global layout is heard: the driver measures and places the root as a window's
-traversal would, and tells the host it did, as the traversal's global layout
-does. Whoever reads its frame then says it on the next display frame.
+The test's root stands as the test activity's content, but the host the
+driver makes hears no traversal of that window (the window's listener belongs
+to the activity's start): the driver measures and places the root at once, as
+a window's traversal would, and tells the host it did, as the traversal's
+global layout does. Whoever reads its frame then says it on the next display frame.
 
 ## The UI thread's messages
 

@@ -9,7 +9,7 @@ walk needs two facts recorded as they happen.
 
 ```text
   reads     while a body or a container's content is built, every state it
-            reads is recorded against THAT element (ReadScope, Core/Invalidation)
+            reads is recorded against THAT element (ReadScope, Core/Render)
   changes   every write names the state it wrote (Renderer.stateChanged)
 
   next render:  element.reads ∩ changed  ≠ ∅   ->  build that element again

@@ -9,10 +9,9 @@ every runtime.
 `AppKitRenderer` holds the host layer's runtime (`HostRuntime`) and adds what
 is AppKit's: the windows, native window restoration, the page menus in the
 application's menu bar, the pictures, the doorbell on the main queue. It presents what a turn rendered through the `Pump`
-(`TurnPresenter`): the windows kept in step with the tree, the restored
-windows offered to their scenes - a restored window no scene claims by the
-presentation after its offer is declined - and it performs the acts the
-application calls. A window's or a scene's phase, and what the user settled
+(`TurnPresenter`): the windows kept in step with the tree, a window element
+new to it taking the window the system restored for it where one waits - and
+it performs the acts the application calls. A window's or a scene's phase, and what the user settled
 on a native control after the phases it moved, wait in the pump's queue and
 are rendered in their turn.
 

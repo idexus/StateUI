@@ -63,8 +63,8 @@ disk for the next launch.
 A `Binding` is two closures - read and write - plus who it borrows from: the
 storage behind a `@State` (`lender`) and which part of it (`lent`). `$counter`
 builds a new binding every time it is written, so two spellings of one state
-are two values; the lender is how they recognize each other. Only `described`
-reads it, and it answers the storage behind a whole `@State` and nothing for a
+are two values; the lender is how they recognize each other. `described`
+reads it and answers the storage behind a whole `@State` and nothing for a
 part of one or a binding made from closures. The host's image, the journey and
 an engine's following all hang off it.
 
@@ -249,7 +249,7 @@ the differ compares a snapshot of the visible providers too
 and the three sessions - is there
 without anybody writing `.environment()`; a slot nothing filled answers the
 standard provider of its type, which is what lets the application itself
-declare `@Environment`, its `init` and `scene` running outside the differ. A
+declare `@Environment`, its `init` and `body` running outside the differ. A
 type neither provided nor standard stops the program with its name: an
 environment that silently answered nothing would be the failure this library
 refuses everywhere. The projected binding lends the object's properties and

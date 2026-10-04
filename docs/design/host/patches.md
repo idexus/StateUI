@@ -39,8 +39,8 @@ the rest - and how long each scene's part took, by the scene's place in the appl
 mounted tree keeps that tally, `RenderTally`, for the message the intake is
 applying, and tells it through the core link once the message is in. A typed
 patch is read off no buffer, so its read time is nothing. While no inspector
-records there is no tally: each count is one test of a nil, and no clock is
-read.
+records and `STATEUI_TALLY` is off there is no tally: each count is one test
+of a nil, and no clock is read.
 
 ## What a runtime writes out
 
