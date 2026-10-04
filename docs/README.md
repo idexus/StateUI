@@ -25,6 +25,9 @@ design notes beside them.
 
 - [Architecture](concepts/architecture.md) defines StateUI's two reactive
   paths, `Journey`, host-side motion, engines, and ownership split.
+- [Why StateUI is shaped this way](concepts/why.md) states the decisions every
+  API follows and the shapes deliberately rejected; read it before
+  contributing.
 - [State and reactivity](concepts/state-and-reactivity.md) is the practical
   guide to `@State`, `@Binding`, persistence, conversions, sampling, and
   engines.
