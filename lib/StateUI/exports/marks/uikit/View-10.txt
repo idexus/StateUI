@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.pinchUpdated: ✓ pinch on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 Button.panYChannel: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.tapCount: ✓ tap on Canvas: the view's listening handed the recognizer's states, no touch sent

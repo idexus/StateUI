@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.allowsDrop: not realized
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: not realized
@@ -136,7 +136,7 @@ ColorBox.dragOver: not realized
 ColorBox.dragStarting: not realized
 ColorBox.dragText: not realized
 ColorBox.drop: not realized
-ColorBox.frameChanged: ✅
+ColorBox.frameChanged: ◐ cannot scroll on ScrollView - Android's driver has no path for it yet
 ColorBox.gridColumn: ✅
 ColorBox.gridColumnSpan: ✅
 ColorBox.gridRow: ✅

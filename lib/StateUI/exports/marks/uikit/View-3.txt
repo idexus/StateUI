@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.area: ✅
 ActivityIndicator.frameChanged: ✅
 Button.canDrag: not realized

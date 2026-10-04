@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.tapCount: ✓ tap on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.tapped: ✓ tap on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 Button.frameChanged: ✅

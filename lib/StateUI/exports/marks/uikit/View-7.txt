@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.panTouchCount: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.panUpdated: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.panXChannel: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent

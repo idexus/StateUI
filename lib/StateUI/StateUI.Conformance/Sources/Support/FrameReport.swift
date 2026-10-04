@@ -14,6 +14,11 @@ public enum FrameReport {
         Array(place(numbers).dropFirst(2))
     }
 
+    /// Where the view's corner stands in its window: x, y.
+    public static func inWindow(_ numbers: [Double]) -> [Double] {
+        numbers.count >= 6 ? [numbers[4].rounded(), numbers[5].rounded()] : []
+    }
+
     /// Where the view's corner stands from the corner of its window's content, clear of the chrome: x, y.
     public static func inContent(_ numbers: [Double]) -> [Double] {
         numbers.count >= 8 ? [numbers[6].rounded(), numbers[7].rounded()] : []

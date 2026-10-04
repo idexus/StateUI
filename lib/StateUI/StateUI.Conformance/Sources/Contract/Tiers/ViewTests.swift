@@ -7,7 +7,8 @@
 /// `ViewContract` on a host: where a view stands in its parent - its margin, its alignment, its area in a layered
 /// stack, its cell in a grid - as the frame it reports says, StateUI's arithmetic alike on every host; and what it
 /// hears of the user's hand - taps counted, a pan carrying its states and ending as a swipe, a pinch, the pointer
-/// coming, moving, pressing and going, a drag and a drop; each case made for every element wearing the tier.
+/// coming, moving, pressing and going, a drag and a drop; each case made for every element wearing the tier. And
+/// where a view stands in its window as a scroll moves it, and from the safe area at its page's corner.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
     public static let name = "View"
 
@@ -18,6 +19,71 @@
                 tapped(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
                 dragged(element), droppedOn(element),
             ]
+        } + [scrolledInItsWindow, atItsPagesCorner]
+    }
+
+    /// A scroll moves where a view stands in its window, though nothing lays it out anew: its place in its parent
+    /// stays.
+    static var scrolledInItsWindow: ConformanceCase {
+        ConformanceCase("aScrollMovesWhereAViewStandsInItsWindow", proves: [
+            Covered(ViewContract.frameChanged, on: "ColorBox"),
+        ], needs: [Covered(ScrollViewContract.self)]) { s in
+            let clock = TestClock()
+            let frames = Received<[Double]>()
+            s.start(clock: clock) {
+                VStack {
+                    ScrollView {
+                        VStack {
+                            ColorBox(.red).width(120).height(60)
+                                .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                            ColorBox(.blue).width(120).height(2000)
+                        }
+                        .horizontalAlignment(.start)
+                    }
+                    .width(200).height(300).id("scroller")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.settle { !frames.values.isEmpty }
+            let before = frames.values.last ?? []
+
+            try s.perform(.scroll(to: Point(0, 200)), on: s.element("scroller"))
+            s.turn()
+            for time in stride(from: 16.0, through: 400, by: 16) {
+                clock.now = time
+                s.frame()
+            }
+            let corner = FrameReport.inWindow(before)
+            let moved = corner.count == 2 ? [corner[0], corner[1] - 200] : []
+            s.settle { frames.values.last.map(FrameReport.inWindow) == moved }
+
+            s.expect(frames.values.last.map(FrameReport.inWindow), moved, "200 higher in its window")
+            s.expect(frames.values.last.map(FrameReport.place), FrameReport.place(before), "where it was in its parent")
+        }
+    }
+
+    /// The safe area is where a page's content may stand: a view at its page's top corner, under the stack's bar,
+    /// stands at the safe area's corner.
+    static var atItsPagesCorner: ConformanceCase {
+        ConformanceCase("aViewAtItsPagesCornerStandsAtTheSafeAreasCorner", proves: [
+            Covered(ViewContract.frameChanged, on: "ColorBox"),
+        ], needs: [Covered(NavigationStackContract.self)]) { s in
+            let frames = Received<[Double]>()
+            s.start {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    VStack {
+                        ColorBox(.red).width(120).height(60)
+                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                    .title("Corner")
+                } destination: { _ in Text("Below") }
+            }
+
+            s.settle { frames.values.last.map(FrameReport.inContent) == [0, 0] }
+            s.expect(frames.values.last.map(FrameReport.inContent), [0, 0], "at the safe area's corner, under the bar")
         }
     }
 
