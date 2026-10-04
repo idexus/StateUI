@@ -70,7 +70,9 @@ A view whose frame the tree reads - a state its frame drives, or a handler
 for its changes - says where it stands on the display's next frame after
 Android laid the window out or scrolled it: its frame in its parent as the
 view holds it (`getLeft`, `getTop`, `getRight`, `getBottom`), its place in the
-window, and that place from the safe area's corner, all in points. The host hears every layout pass and scroll of the window once, and
+window, and that place from the safe area's corner - the corner of the page it
+stands on, under the page's stack's bar, or the window content's where no page
+holds it - all in points. The host hears every layout pass and scroll of the window once, and
 asks only the views that are read; a view that did not move says nothing. A
 view reports on a frame rather than inside Android's layout pass, so what a
 handler renders is laid out in a pass of its own. A view no layout has placed
