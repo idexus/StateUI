@@ -148,10 +148,13 @@ feed, or another declared host shape.
 
 On a native display frame the host:
 
-1. applies pending program writes;
+1. commits the user's reports since the last frame as one batch;
 2. advances active property transitions, layout motion, and journey channels;
-3. runs StateUI engines in deterministic priority order;
-4. publishes the complete value and changed-lane mask for every changed state;
+3. runs the core's cycle: pending program writes latched, StateUI engines run
+   in deterministic priority order, and the complete value and changed-lane
+   mask published for every changed state;
+4. presents what moved in one walk of the mounted tree, then renders when the
+   core needs one;
 5. requests another display frame only while motion or an engine continues.
 
 All journey values emitted by one clock tick are applied in one post-order tree

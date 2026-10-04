@@ -460,13 +460,97 @@ The [platform contract](../platform-contract.md) says where each is realized.
 ## StateUI-authored layouts
 
 `PlacedLayout` and `GalleryView` are StateUI composition mechanisms, not new
-native controls. Their declarations and core tests preserve the intended
-authored-placement vocabulary, but they are deliberately outside the initial
-native-host acceptance milestone. That milestone first completes the primitive
-contract, sparse property motion, and layout motion.
+native controls. The core implements them once, over the primitives - a
+`GalleryView` is a `PlacedLayout` of its cards under a `ScrollReader` - and the
+Gallery exercises both on every host.
 
-Do not mark either composition supported merely because its Swift declaration
-compiles. A host must first have checks for every primitive it depends on, and
-the Gallery must exercise the visible behavior on that platform. Until then,
-use [Platform contract](../platform-contract.md) as the support authority and
-treat `PlacedLayout` and `GalleryView` as deferred surfaces.
+`GalleryView` shows one card at a time, swiped through, in a shape one word
+chooses:
+
+```swift
+struct Album {
+    let title: String
+}
+
+struct AlbumsPage: View {
+    @State private var shown = 0
+    @State private var opened = "Tap the card in front"
+
+    let albums: [Album]
+
+    var body: some View {
+        Grid {
+            GalleryView(albums, id: \.title) { album in
+                Text(album.title)
+            }
+            .arrangement(.fan)
+            .position($shown)
+            .onItemTapped { album in opened = album.title }
+            .gridRow(0)
+
+            Text("\(opened) · card \(shown + 1) of \(albums.count)")
+                .gridRow(1)
+        }
+        .rows(.fill, .auto)
+    }
+}
+```
+
+The initializer builds a card's face, one card per item, identified by `id:`
+or by the item itself where it is `Hashable`. Where a card stands and which
+way it faces is the arrangement's - `.default`, a wheel, `.fan` or `.row` -
+and changing it animates every card to the new shape. `.position($shown)` is
+the card in the middle, counted from 0 and two-way: a swipe writes the card it
+settled on, and a write moves the run. `.onItemTapped` hears a tap with the
+item in the middle, wherever the finger landed, and `.onPositionChanged`
+another card coming to the middle; `.itemSize(width:height:)`,
+`.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
+bounded size, as a scroller needs - a `.height`, or a `.fill` row of a `Grid`.
+No view is built again while the run moves.
+
+`PlacedLayout` places its views by arithmetic of the application's own. An
+engine works out one `Placement` per view - its bounds from the layout's top
+left, and a transform, an opacity, a shade and a `zIndex` - and writes them as
+a `PlacedRun` into the state `.placement($places)` is given. The host puts
+each view where its placement says, and no view is built again:
+
+```swift
+struct Shelf: View {
+    @State private var places = PlacedRun()
+    @State private var room = Rect(0, 0, 0, 0)
+
+    let names = ["Mural", "Nebula", "Ridge"]
+
+    var body: some View {
+        PlacedLayout(names, id: \.self) { name in
+            Text(name)
+        }
+        .placement($places)
+        .frame($room)
+        .engine(following: $room) { _ in
+            places = PlacedRun(names.indices.map { place($0) })
+        }
+    }
+
+    func place(_ index: Int) -> Placement {
+        let width = room.width / Double(names.count)
+
+        return Placement(Rect(Double(index) * width, 0, width, room.height))
+    }
+}
+```
+
+`.frame($room)` reports the room the layout is given, and the engine runs
+again whenever a state it follows is written - here the room. One placement
+stands for each view, in order. `PlacedRun(placements)` puts the views there at
+once, which arithmetic following a finger wants;
+`PlacedRun(placements, motion:)` animates them there, and `motion: .inherited`
+takes the layout's own `.motion`. On an axis nothing bounds - inside a scroller - keep the answer
+bounded: placements that grow with the room grow the room, and the layout
+never settles. A [ScrollReader](#scrollreader) hands such arithmetic the
+user's scrolling.
+
+Neither has a row of its own in the
+[Platform contract](../platform-contract.md): on a host each behaves as far as
+the primitive rows it uses - frame reporting, scrolling, driven state, layout
+motion - are checked there.

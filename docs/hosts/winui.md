@@ -33,6 +33,7 @@ lib/StateUI/StateUI.WinUI/
 .scripts/WinUI/
   tools.ps1                  the Windows App SDK's versions, the projection, a directory made self-contained
   run-app.ps1                builds an application's WinUI head and starts it
+  deploy.ps1                 builds it for release and lays it in a folder of its own, with what it runs with
   test-winui.ps1             builds and runs the host's suite
 apps/<App>/Platforms/WinUI/
   main.swift                 the application's WinUI head
@@ -65,8 +66,14 @@ runtime beside it from the merge module the Swift installer keeps in its
 `Redistributables`. `deploy.ps1` - **StateUI: Deploy** in the editor - builds
 a head for release and lays it in a folder of its own with StateUI, the
 Windows App SDK and the Swift and C++ runtimes of its architecture: a folder
-that runs on a Windows machine with nothing of them installed. A debugger
-here follows the machine's own architecture alone.
+that runs on a Windows machine with nothing of them installed. The editor
+lays it in `artifacts\<application>\WinUI\<architecture>` of the folder that
+holds the application's `apps\`, asking on an ARM64 machine whether for ARM64
+or x64. A debugger here follows the machine's own architecture alone.
+
+```powershell
+.scripts\WinUI\deploy.ps1 -App apps\Gallery -Destination artifacts\Gallery\WinUI\x64 -Architecture x64
+```
 
 ## The head
 
@@ -177,6 +184,17 @@ A library element a host does not realize - a `Map` where the platform has no
 map of its own - is registered the same way, with the provider and the key it
 needs.
 
+This host leaves `Map` and its `Marker` to the application: the platform has
+no map of its own, and a map needs a provider and its key, so the host makes
+neither (`byApplication` in `WinUIRealization.swift`), and the
+[platform contract](../platform-contract.md#reading-the-matrix) marks them 🧩.
+What the user sees there is the application's own registration. The
+`WebView` is a backend, as [Requirements](#requirements) says: the
+application's manifest depends on the package `lib/Backends/WebView.WinUI` by
+its path and its WinUI head on that package's `StateUIWebViewWinUI`, and the
+head calls `StateUIWebViewWinUI.register()` before `StateUIWinUI.run()`, as
+the Gallery's does. Until then the host realizes no web view.
+
 ### An act
 
 `StateUIActs.add` registers a function the application calls by its act, and
@@ -237,3 +255,31 @@ The suite is XCTest, run by `swift test` in `lib\StateUI\StateUI.WinUI\Testing`.
 WinUI's controls stand on the test thread with no loop of WinUI's running, and
 a test lets the thread's messages run where WinUI lays out. The test runner is given
 the Windows App SDK as an application is, before the run.
+
+Alone, `test-winui.ps1` runs the host's own tests, in one process.
+`-Conformance` runs the conformance families, one test a family -
+`WinUIConformanceTests.testButton` - and the longest in parts, each test in a
+process of its own, as WinUI keeps GDI objects of every window a test closes
+and a process holds only so many: some fifteen minutes. `-Filter` runs the
+tests it names, each in a process of its own.
+
+```powershell
+.scripts\WinUI\test-winui.ps1 -Filter WinUIConformanceTests.testButton
+.scripts\WinUI\test-winui.ps1 -Conformance
+```
+
+A run holds what it says to `lib\StateUI\exports\`: the host's own tests what
+it declares to `winui.txt`, and each family its verdicts to
+`marks\winui\<Family>.txt`; a run that says otherwise fails. With
+`STATEUI_UPDATE_EXPORTS=1` in its environment it writes them instead, each
+verdict file under the revision its family stands at in
+`lib\StateUI\StateUI.Conformance\revisions.txt`. `-Stale` runs only the
+families whose verdicts stand at another revision, or at none: each other
+one's process ends at once. With the verdicts written,
+`swift test --filter ControlDictionaryTests` at the repository's root, with
+`STATEUI_UPDATE_DOCS=1` in its environment, renders the
+[platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) from them. In the editor,
+with WinUI chosen, **StateUI: Conformance - Rebuild all** runs both -
+`-Conformance` writing its verdicts, then the documents - and
+**StateUI: Conformance - Rebuild changed** runs `-Stale` before it renders.

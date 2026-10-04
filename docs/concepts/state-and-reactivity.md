@@ -30,7 +30,7 @@ struct Counter: View {
 }
 ```
 
-Reading `count` while `Counter.content` is built records `Counter` as a reader.
+Reading `count` while `Counter.body` is built records `Counter` as a reader.
 Writing it schedules another build of that reader. A read performed later by a
 button handler is not a build-time read and creates no dependency.
 
@@ -342,7 +342,9 @@ the state; persistence does not depend on description invalidation. Writing the
 same value also schedules a save because the host store may not hold it yet.
 
 Kept state lives in the platform's own settings store - `UserDefaults` on
-AppKit, `SharedPreferences` on Android. An application that keeps something
+AppKit and UIKit, `SharedPreferences` on Android - and on WinUI and GTK, whose
+platforms keep no store an application can use, in a file of the host's own.
+An application that keeps something
 in a file or a database of its own reads and writes it in its own code and
 hands the values to ordinary `@State`.
 

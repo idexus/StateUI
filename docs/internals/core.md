@@ -203,7 +203,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
 | `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
 | `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `AppInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
-| `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases, `WindowOverlays` | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
+| `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
 | `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarItemPlacement`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
 
 ## Contracts
@@ -251,8 +251,9 @@ type's extensions in its folder as `Type+Responsibility.swift`
 - **`Binding`** is a state borrowed as `$x` - no second value, no second
   owner - and a part of one through dynamic member lookup. *Application.*
   ([Bindings](../design/core/state.md#bindings))
-- **`Environment`** resolves the nearest provided object by its type; the
-  standard providers and the three sessions are there with nothing provided.
+- **`Environment`** reads what the library offers by its name
+  (`EnvironmentValues`) - the standard providers and the three sessions,
+  there with nothing provided - and the nearest provided object by its type.
   *Application.* ([The environment](../design/core/state.md#the-environment);
   [environment](../concepts/environment.md))
 - **`PersistentKey`**, **`PersistentValue`** and **`PersistentKind`** are kept
@@ -578,8 +579,8 @@ never against a stored copy
   ([Conformance](../design/host/conformance.md))
 - **The Gallery's suite** compiles every `swift` block of the handbook
   (`DocumentationExamplesTests`) and proves at compile time the roads the public
-  API closes - no member by token, no view where a run stands, one main
-  window to a scene (`ContractRoadsTests`).
+  API closes - no member by token, no view where a run stands, a scene made
+  of windows and an application of scenes (`ContractRoadsTests`).
 
 ## Changing the core
 
@@ -604,8 +605,7 @@ A change to what StateUI promises is one vertical change, in one order:
 7. Give it a Gallery example and a handbook section, and render the
    dictionary again after each host's run.
 
-A removal takes the same road, and a guard refuses the removed spelling. The
-core never gains Foundation, a platform framework, a thread of its own, or
-output whose order a hash decides
+A removal takes the same road. The core never gains Foundation, a platform
+framework, a thread of its own, or output whose order a hash decides
 ([changing the public contract](../development.md#changing-the-public-contract),
 [contributing](../../CONTRIBUTING.md)).

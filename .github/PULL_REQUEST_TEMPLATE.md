@@ -19,6 +19,8 @@ without this change and passes with it.
 ## Checks
 
 - [ ] The pull request targets `main`
+- [ ] The change follows `docs/concepts/why.md` and brings back no shape it
+      rejects
 - [ ] A Bug or Proposal issue is linked with `Fixes #...`, unless this is a
       documentation-only or repository-maintenance change
 - [ ] A bug fix includes a regression test that reproduces the linked issue

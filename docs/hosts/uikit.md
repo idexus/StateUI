@@ -18,6 +18,7 @@ lib/StateUI/StateUI.UIKit/
 .scripts/UIKit/
   build-app.sh      an application's UIKit head, bundled as an .app for a simulator or a device
   run-app.sh        builds it, installs it on a simulator or a device and starts it
+  deploy.sh         builds it for release and lays the bundle in a folder of its own
   test-uikit.sh     builds and runs the host's suite on a simulator
   tools.sh          what they share: the SDK, a build, a bundle, its icon and signature, where it runs
   draw-app-icon.swift  a head's icon, drawn from the application's Resources/AppIcon
@@ -283,6 +284,20 @@ lldb -o "device select <device from debugger.json>" \
 
 Only a debug build can be debugged.
 
+## Deploying
+
+```bash
+.scripts/UIKit/deploy.sh apps/Gallery artifacts/Gallery/UIKit "My iPhone"
+```
+
+`deploy.sh` builds an application's head for release as an application
+bundle for the device named - a simulator, by its name or UDID, or an iPhone
+or iPad, the bundle then signed for it as `build-app.sh` signs one - and lays
+the bundle, `<App>UIKit.app`, in the folder named, made anew.
+**StateUI: Deploy** in the editor runs it for the application and the device
+chosen, and lays the bundle in `artifacts/<application>/UIKit` of the folder
+that holds the application's `apps/` - a checkout's, or a project group's.
+
 ## Testing
 
 A view exists only in an application's process, so the host's suite is an
@@ -300,3 +315,15 @@ the tests whose name holds one of its comma-separated names;
 `STATEUI_UPDATE_EXPORTS=1` writes what the run says into `lib/StateUI/exports/` instead of
 holding it to them. The suite runs with the simulator's accessibility off, as
 a simulator starts.
+
+`STATEUI_STALE_ONLY=1` runs only the conformance families whose verdicts in
+`lib/StateUI/exports/marks/uikit` stand at another revision than
+`lib/StateUI/StateUI.Conformance/revisions.txt` gives, or at none. With the
+verdicts written, `STATEUI_UPDATE_DOCS=1 swift test --filter
+ControlDictionaryTests` at the repository's root renders the
+[platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) from them. In the editor,
+with UIKit and a simulator chosen, **StateUI: Conformance - Rebuild all** runs
+both - `UIKitConformanceTests` writing its verdicts, then the documents - and
+**StateUI: Conformance - Rebuild changed** runs the stale families alone
+before it renders.

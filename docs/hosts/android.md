@@ -19,8 +19,11 @@ lib/StateUI/StateUI.Android/
 .scripts/Android/
   build-swift.sh             an application's Swift for Android, for the ABIs asked
   run-app.sh                 builds an application's Android head, installs and starts it
+  deploy.sh                  builds it for release and lays its APK in a folder of its own
   test-android.sh            builds and runs the host's suite on a device
   devices.sh                 the devices attached, the emulators, and booting one
+  tools.sh                   what they share: the SDK, adb, JDK 21, Gradle, a head's APK, the device
+  draw-app-icon.swift        a head's launcher icon, drawn from the application's Resources/AppIcon
 apps/<App>/Platforms/Android/
   Swift/<App>Android.swift   the application's Android head
   Java/                      the application's own views, where it has any
@@ -161,6 +164,15 @@ A library element a host does not realize - a `Map` where the platform has no
 map of its own - is registered the same way, with the provider and the key it
 needs.
 
+This host leaves `Map` and its `Marker` to the application: the platform has
+no map of its own, and a map needs a provider and its key, so the host makes
+neither (`byApplication` in `AndroidRealization.swift`), and the
+[platform contract](../platform-contract.md#reading-the-matrix) marks them 🧩.
+What the user sees there is the application's own registration. Every other
+element of the library is the host's own, its `WebView` included: Android's
+web view, in the Java layer's `StateUIWebView`, which makes it again, blank,
+should its web process die. The head registers nothing for it.
+
 ### An act
 
 `StateUIActs.add` registers a function the application calls by its act, and
@@ -256,6 +268,21 @@ application every time - over USB, opening a page took seconds. End a session by
 detaching - stopping the debugger itself leaves its breakpoints in the
 application, which the next of them then ends.
 
+## Deploying
+
+```bash
+.scripts/Android/deploy.sh apps/Gallery artifacts/Gallery/Android emulator-5554
+```
+
+`deploy.sh` builds an application's head for release, for the ABI of the
+device named - `ANDROID_SERIAL`, or the one device attached, where none is
+named - and lays its APK, `<application>.apk`, in the folder named, made
+anew. The APK is signed as the head's `build.gradle.kts` says: HelloWorld's
+and the Gallery's sign a release with the debug key. **StateUI: Deploy** in
+the editor runs it for the application and the device chosen, and lays the
+APK in `artifacts/<application>/Android` of the folder that holds the
+application's `apps/` - a checkout's, or a project group's.
+
 ## Testing
 
 A view exists only in an application's process, so the host's suite is a
@@ -268,7 +295,40 @@ instrumentation:
 
 The suite is XCTest. With no discovery on Android, each test case lists its
 tests in `allTests` and the runner lists the cases; `test-android.sh` refuses
-to run while a test or a case is listed nowhere.
+to run while a test or a case is listed nowhere. Each test and each
+conformance case says as it ends where the run stands, followed from the
+device's log, and the run ends with *Executed N tests, with M failures*.
+
+The suite runs the conformance families too, one test a family -
+`AndroidConformanceTests.testButton`. A whole run holds what it says to
+`lib/StateUI/exports/`: what the host declares to `android.txt`, and the
+verdicts it takes off the device to `marks/android/<Family>.txt`, each under
+the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, which the script writes over
+them, as the device reads no repository. A run that says otherwise fails;
+`STATEUI_UPDATE_EXPORTS=1` writes them instead. `STATEUI_FILTER` runs the
+tests whose `Case.test` name holds one of its comma-separated names, and then
+holds nothing to `lib/StateUI/exports/`: a part of the suite proves only part
+of what the host declares. `STATEUI_STALE_ONLY=1` runs only the families
+whose verdict files stand at another revision, or at none - the script
+chooses them - and holds or writes only theirs.
+
+```bash
+STATEUI_FILTER=testPicker,AndroidColorBoxViewTests .scripts/Android/test-android.sh emulator-5554
+STATEUI_UPDATE_EXPORTS=1 .scripts/Android/test-android.sh emulator-5554
+STATEUI_UPDATE_EXPORTS=1 STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh emulator-5554
+STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+```
+
+With the verdicts written, the last line - at the repository's root - renders
+the [platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) from them. In the editor,
+with Android and a device chosen, **StateUI: Conformance - Rebuild all** runs
+the whole suite on the device with `STATEUI_UPDATE_EXPORTS=1`, then renders
+the documents. **StateUI: Conformance - Rebuild changed** runs nothing for
+Android: the editor answers that the device reads no repository, so its marks
+are made again whole, by Rebuild all. From a terminal, `STATEUI_STALE_ONLY=1`
+runs the stale families alone, as above.
 
 The test APK can be built on one machine and run on another:
 `test-android.sh --build x86_64` builds it for that ABI with no device and

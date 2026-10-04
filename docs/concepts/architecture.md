@@ -56,8 +56,9 @@ struct ProfileForm: View {
 ```
 
 `@Binding` borrows existing storage. It creates neither another value nor
-another owner. `@Environment` resolves the nearest object of a requested type
-and is the route for session state and shared application models.
+another owner. `@Environment` reads what the library offers by its name -
+`@Environment(\.window)` - and the nearest object an ancestor provided by its
+type; it is the route for session state and shared application models.
 
 A state's identity is its storage, not its current value. A write is serialized
 through that storage and is visible before the write returns.
@@ -293,8 +294,18 @@ Application -> Scene -> WindowGroup, Window -> View
 
 Each structural protocol has one composition property. A window shows a view,
 which stands on a page - an arrangement is the page itself - and says what
-that page is by modifier. Runtime values belong to identity-bearing sessions
-and are obtained with `@Environment`.
+that page is by modifier: its values with `.title`, `.icon`,
+`.pageBackground`, `.showsNavigationBar`, `.showsBackButton` and
+`.backButtonTitle`; its phases with `.onAppearing`, `.onDisappearing`,
+`.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom`; and what stands
+on its bar and over its window with `.titleView { }`, `.toolbar { }` and
+`.overlays { }`
+([What a view says of its page](../interface/application-and-sessions.md#what-a-view-says-of-its-page)).
+A window's own policies, `.hidesWhenInactive` and `.floatsOnTop`, are written
+on its `WindowGroup` or `Window`
+([Window policy](../interface/application-and-sessions.md#window-policy)).
+Runtime values belong to identity-bearing sessions and are obtained with
+`@Environment`.
 
 ```swift
 struct HandbookApp: Application {
@@ -311,10 +322,18 @@ struct HandbookPage: View {
 }
 ```
 
-An application declares its scenes, each standing at most once with the
-windows it has open, which share its state. Activation, restoration, focus,
-hiding, and closure are mapped to those sessions while StateUI retains
-deterministic state and tree ownership.
+An application's body lists its scenes - a window written there, as above, is
+a scene of its own - and a scene's body its windows.
+`WindowGroup { MainPage() }`, one in the application, is what launch and
+*File ▸ New Window* make a window of; `WindowGroup(.kind)` makes as many
+windows of a kind as are opened, `Window(.kind)` one, and
+`WindowGroup(.kind, for:)` one per value. Each scene stands at most once, from
+its first window to its last, and its windows share its `@State`; no window is
+a main one. `application.openWindow(.kind)` opens a window in the scene
+declaring the kind, which opens with it where it does not stand
+([Scenes](../interface/application-and-sessions.md#scenes)). Activation,
+restoration, focus, hiding, and closure are mapped to those sessions while
+StateUI retains deterministic state and tree ownership.
 
 Navigation paths, tab selections, sidebar visibility, and modal stacks are
 state. A control method is invoked through an `@Aim`; an aim identifies a

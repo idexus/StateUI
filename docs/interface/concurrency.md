@@ -71,7 +71,7 @@ Linux: nothing drains it there. Work for the UI thread goes to `MainActor`.
 
 Each `@State` value has synchronized storage. Independent reads and writes are
 safe from any thread. A read-modify-write operation must remain one operation;
-use the projected box's `update` method:
+use the box's `update` method:
 
 ```swift
 @State var total = 0

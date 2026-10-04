@@ -26,6 +26,8 @@ lib/StateUI/StateUI.GTK/
                              and the driver every conformance run on GTK goes through
 .scripts/GTK/
   run-app.sh                 builds an application's GTK head and starts it
+  deploy.sh                  builds it for release and lays it in a folder of its own
+  test-gtk.sh                runs the host's suite
 apps/<App>/Platforms/GTK/
   main.swift                 the application's GTK head
 ```
@@ -156,6 +158,17 @@ A library element a host does not realize - a `Map` where the platform has no
 map of its own - is registered the same way, with the provider and the key it
 needs.
 
+This host leaves `Map` and its `Marker` to the application: the platform has
+no map of its own, and a map needs a provider and its key, so the host makes
+neither (`byApplication` in `GTKRealization.swift`), and the
+[platform contract](../platform-contract.md#reading-the-matrix) marks them 🧩.
+What the user sees there is the application's own registration. The
+`WebView` is a backend, as [Requirements](#requirements) says: the
+application's manifest depends on the package `lib/Backends/WebView.GTK` by
+its path and its GTK head on that package's `StateUIWebViewGTK`, and the head
+calls `StateUIWebViewGTK.register()` before `StateUIGTK.run`, as the
+Gallery's does. Until then the host realizes no web view.
+
 ### An act
 
 `StateUIActs.add` registers a function the application calls by its act, and
@@ -210,14 +223,54 @@ In VS Code, with **GTK** chosen in the status bar, **StateUI: Debug** builds
 the head with `run-app.sh --build-only` and starts it under `lldb-dap`, so a
 breakpoint in the application's Swift holds from the first line.
 
+## Deploying
+
+```bash
+.scripts/GTK/deploy.sh apps/Gallery artifacts/Gallery/GTK
+```
+
+`deploy.sh` builds an application's head for release, as
+`run-app.sh release --build-only` does, and lays it in the folder named, made
+anew: the head, the StateUI libraries it links, and its pictures in
+`Images/`. It lays nothing the system provides - GTK, libadwaita,
+WebKitGTK: the machine that runs the folder has them installed.
+**StateUI: Deploy** in the editor runs it for the application chosen,
+and lays the head in `artifacts/<application>/GTK` of the folder that holds
+the application's `apps/` - a checkout's, or a project group's.
+
 ## Testing
 
 ```bash
 swift test --package-path lib/StateUI/StateUI.GTK/Testing
+.scripts/GTK/test-gtk.sh --filter GTKConformanceTests/testButton
 ```
 
 The suite is XCTest. GTK's widgets stand on the test thread with no main loop
 running: the suite starts libadwaita once, registers an application for its
 windows, and turns GLib's loop itself where GTK lays out and draws. The
 windows open on the desktop's display, so the suite runs in a desktop
-session.
+session. `.scripts/GTK/test-gtk.sh` runs the same `swift test`, handing it
+its arguments.
+
+The suite runs the conformance families too, one test a family -
+`GTKConformanceTests/testButton` - with the web view's backend registered.
+A run holds what it says to `lib/StateUI/exports/`: what the host declares to
+`gtk.txt`, and each family's verdicts to `marks/gtk/<Family>.txt`; a run that
+says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them instead, each
+verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
+runs only the families whose verdicts stand at another revision, or at none:
+each other family's test ends at once. With the verdicts written, the
+[platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) are rendered from them at the
+repository's root:
+
+```bash
+STATEUI_UPDATE_EXPORTS=1 .scripts/GTK/test-gtk.sh --filter GTKConformanceTests
+STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+```
+
+In the editor, with GTK chosen, **StateUI: Conformance - Rebuild all** runs
+both: the families writing their verdicts, then the documents.
+**StateUI: Conformance - Rebuild changed** runs the stale families alone
+before it renders.

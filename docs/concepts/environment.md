@@ -130,7 +130,7 @@ StateUI's contract:
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
 | `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
-| `locale` - `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric` | host-normalized language, region, IANA zone, clock and calendar conventions; text starts empty, the clock starts 12-hour, the week on Sunday, and units metric |
+| `locale` - `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
 | `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme` | manifest identity and live requested appearance; text starts empty and theme `.system` |
 | `application.phase` - `ApplicationPhase` | | process-wide visibility state; the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
@@ -155,6 +155,7 @@ The closed vocabulary used by these fields is:
 | `DisplayOrientation` | `unknown`, `portrait`, `landscape` |
 | `DisplayRotation` | `unknown`, `rotation0`, `rotation90`, `rotation180`, `rotation270` |
 | `Weekday` | `sunday` through `saturday` |
+| `LayoutDirection` | `inherited`, `leftToRight`, `rightToLeft` |
 | `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
 | `DeviceType` | `unknown`, `physical`, `virtual` |
 | `ColorScheme` | `system`, `light`, `dark` |
@@ -202,8 +203,8 @@ The three sessions are read the same way, by name:
 | Name - session | Lifetime and ownership |
 | --- | --- |
 | `\.application` - `ApplicationSession` | one process; its facts, styles, default motion, persistent keys and storage, application phase, and open scenes |
-| `\.scene` - `SceneSession` | one application scene; scene phase, its windows, and scene/window operations |
-| `\.window` - `WindowSession` | one native window; lifecycle, title, geometry requests, chrome, modal stack, and close operation |
+| `\.scene` - `SceneSession` | one application scene; scene phase, its windows, and its close operation |
+| `\.window` - `WindowSession` | one native window; lifecycle, title, geometry requests, chrome, translucency, and close operation |
 
 Each scene and window provides its own session nearer than the inert
 fallback instance. A descendant therefore acts on the session it is inside:

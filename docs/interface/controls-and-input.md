@@ -90,7 +90,9 @@ native report calls the setter.
 Controls with an editable purpose value accept either a value or a binding.
 Examples include `TextField`, `TextEditor`, `SearchField`, `Switch`,
 `CheckBox`, `RadioButton`, `Slider`, `Stepper`, `Picker`, `DatePicker`, and
-`TimePicker`.
+`TimePicker`. Every property is one modifier named for it, which takes the
+value itself or, where the host can carry the value, a state, `$x`
+([A property is one modifier](../concepts/why.md#a-property-is-one-modifier-a-value-or-a-state)).
 
 ```swift
 @State var enabled = false
@@ -137,12 +139,52 @@ Text().spans {
 Plain text and formatted text are mutually exclusive descriptions of one
 label. Do not rely on modifier order to keep both.
 
-Text properties distinguish their semantic tier:
+Text properties distinguish their semantic tier; [Text](../controls/Text.md)
+and the tier pages it links list each with its mark per host:
 
-- text-bearing controls can transform authored text;
-- text-styled controls can choose font family, size, attributes, color,
-  alignment, and spacing where their host surface supports it;
-- label-only properties control wrapping and maximum lines.
+- text-bearing controls - a label, a button, a radio button, the fields, a
+  span - take `textCase`, which draws the words `.uppercase` or `.lowercase`
+  while the text stays as written; a field turns what is typed into the case
+  and reports it so;
+- text-styled controls take `textColor` and `tracking`, the space between
+  letters; those in a font take `fontSize`, `fontFamily` - the name the
+  application registered the font under - `fontAttributes`, which is `.bold`,
+  `.italic`, `[.bold, .italic]` or `.none`, and `isFontAutoScalingEnabled`,
+  on unless said, which makes the text follow the user's text-size setting;
+- aligned controls take `horizontalTextAlignment` and
+  `verticalTextAlignment`: `.start`, `.center` or `.end`;
+- a label and a span take `textDecorations` - `.underline`, `.strikethrough`,
+  or both - and `lineHeight`, a multiple of the font's own;
+- a label's own properties control wrapping and maximum lines. `lineBreak` is
+  `.wordWrap`, the default, `.characterWrap`, which breaks inside a word, or
+  `.noWrap`; `.headTruncation`, `.tailTruncation` and `.middleTruncation` keep
+  one line and cut it with an ellipsis at that place, which shows only where
+  the label's width is bounded. `maximumLines` caps a wrapping label, `-1`,
+  the default, meaning no limit. A button's caption takes `lineBreak` too.
+
+```swift
+VStack {
+    Text("Underlined and struck through")
+        .textDecorations([.underline, .strikethrough])
+
+    Text("A long line that has nowhere left to go, so it is cut short with an ellipsis")
+        .lineBreak(.tailTruncation)
+        .maximumLines(1)
+
+    Text("Letters spaced out")
+        .tracking(3)
+
+    Text("Two lines,\nlineHeight 2")
+        .lineHeight(2)
+
+    Text("One string, drawn in Two Ways")
+        .textCase(.uppercase)
+
+    Text("Stays at 16 whatever the system says")
+        .fontSize(16)
+        .isFontAutoScalingEnabled(false)
+}
+```
 
 ## Text entry, caret, and selection
 
@@ -164,13 +206,65 @@ SearchField($query)
 
 `cursorPosition` and `selectionLength` describe and report the native caret
 and selection. The host remains responsible for valid positions after native
-text normalization. `maximumLength` limits accepted content; read-only,
-spell-check, prediction, password, return-key, and clear-button choices remain
-separate semantic capabilities.
+text normalization. `maximumLength` limits accepted content; the other choices
+are separate semantic capabilities, each a property of its own:
+
+| Modifier | On | Meaning |
+| --- | --- | --- |
+| `placeholder`, `placeholderColor` | every field | what an empty field says, and its colour |
+| `inputPurpose` | every field | what the text is for - `.plain`, `.text`, `.chat`, `.email`, `.numeric`, `.telephone`, `.url` - which picks the keyboard the platform offers |
+| `isReadOnly` | every field | the text can be selected and copied but not changed, which is not the same as disabled |
+| `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelt |
+| `isTextPredictionEnabled` | every field | whether the platform offers the next word |
+| `isPassword` | `TextField` | what is typed hides behind the platform's secure-entry marks |
+| `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says |
+| `showsClearButton` | `TextField` | whether the native button that empties the field shows, where the platform's field has one; it does unless told otherwise |
+
+```swift
+@State var code = ""
+@State var email = ""
+@State var hidden = true
+@State var done = 0
+
+VStack {
+    TextField($code)
+        .placeholder("a serial number")
+        .textCase(.uppercase)
+        .isSpellCheckEnabled(false)
+        .isTextPredictionEnabled(false)
+
+    TextField()
+        .placeholder("a password")
+        .isPassword(hidden)
+        .submitLabel(.done)
+
+    TextField($email)
+        .placeholder("an address, capped at 20")
+        .inputPurpose(.email)
+        .maximumLength(20)
+        .onSubmitted { done += 1 }
+}
+```
 
 Focus is not a Boolean command hidden in the description. When state needs to
 observe it, use the `isFocused` feed. When an action needs to move it, use an
-`@Aim`; see [Interaction and actions](interaction-and-actions.md).
+`@Aim`; see [Interaction and actions](interaction-and-actions.md). Where the
+field holding the keyboard is not known - a Done button above a form of
+several fields - `OnScreenKeyboard.hide()` takes the focus off whatever has it
+on the page showing. It answers a `Bool`: `true` when something was focused
+and is not any more, `false` when the keyboard was already down, which is an
+answer and not a failure:
+
+```swift
+@State var said = ""
+
+Button("Close keyboard")
+    .onClicked {
+        said = try await OnScreenKeyboard.hide()
+            ? "Focus released"
+            : "Nothing was focused"
+    }
+```
 
 ## Choices and ranges
 
@@ -197,6 +291,42 @@ The application owns the selected value. A group name on radio buttons defines
 mutual exclusion in the native control surface; the bindings remain the source
 of application truth. Range bounds are semantic constraints and are not
 animated presentation values.
+
+## Activity and progress
+
+`ActivityIndicator` is the spinner for work with no measurable length;
+`ProgressBar` says how far along measurable work is:
+
+```swift
+@State var loading = true
+@State var done = 3.0
+
+VStack {
+    ActivityIndicator(loading)
+        .height(48)
+
+    Switch($loading)
+
+    ProgressBar(done / 5)
+        .height(8)
+
+    Stepper($done)
+        .minimum(0)
+        .maximum(5)
+        .step(1)
+}
+```
+
+`isAnimating`, the indicator's one property, says whether it spins. A still
+indicator is invisible on most platforms, so `ActivityIndicator(loading)` shows
+it only while the work runs. `progress` is a fraction from 0 to 1, not a
+percentage or a count: work counted in steps divides by their total itself, and
+the host clamps a value outside that range. The initializer's argument is the
+same property as the modifier: `ProgressBar().progress(0.4)` sets what
+`ProgressBar(0.4)` sets, `.progress($done)` carries a state the host animates
+to each new value, and `.isAnimating($loading)` one it sets as it stands. Both
+take `.tint`. Nothing about either is the user's to change, so neither reports
+anything back.
 
 ## Dates and times
 
@@ -239,7 +369,7 @@ Button("Surprise me")
 `.leading`, the default, is the side a line of text starts from, so the icon
 follows the layout direction. A button with only an icon is the same control as
 one with a caption - the same outline, shape and pressed state - with
-`aspect` for how its picture fills it. A picture alone gives it no name for a
+`contentMode` for how its picture fills it. A picture alone gives it no name for a
 screen reader, so it carries a `accessibilityLabel`.
 
 ## A place in a sequence
@@ -345,11 +475,13 @@ Where the web engine is a library the platform does not ship with its
 toolkit - WebKitGTK, WebView2's runtime - the web view's realization is a
 backend, a package of its own in `lib/Backends`, so an application that
 shows no web page links no engine. An application showing one depends on it
-from that head and registers it before the host runs:
+from that head and registers it before the host runs. A package reached by its
+path is known by its folder's name, `WebView.<Host>`, so the dependency gives it
+the name the head's product refers to, as the Gallery's manifest does:
 
 ```text
 Package.swift
-  dependencies:  .package(path: "<StateUI>/lib/Backends/WebView.<Host>")   for GTK or WinUI
+  dependencies:  .package(name: "StateUIWebView<Host>", path: "<StateUI>/lib/Backends/WebView.<Host>")   for GTK or WinUI
   the head:      .product(name: "StateUIWebView<Host>", package: "StateUIWebView<Host>")
 
 Platforms/<Host>/main.swift

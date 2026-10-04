@@ -37,18 +37,28 @@ struct HomePage: View {
 }
 ```
 
+`Application` is a protocol with one property, `var body: some Scene`. The body
+lists scenes: a type of the application's own conforming to `Scene`, or a
+`WindowGroup` or `Window` written there, which is a scene of its own. A view
+written there does not compile, because a view stands in a window. The
+application is made once, at its first need, and kept for the life of the
+process, so a `@State` it declares outlives every window; what every scene
+shares belongs to it, offered to a scene with `.environment(_:)` on the
+scene ([Scenes](#scenes)).
+
 `ApplicationSession` owns process-wide policy and reports process-wide state:
 
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
+| `info` | what the host says the application is, an `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, and `colorScheme`, the theme the system asks for, kept current as the user switches it ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
 | `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
 | `persistentKeys` | state keys hydrated before the first description |
 | `openWindow()` | opens one more window of the `WindowGroup` with no name, as *File ▸ New Window* does |
 | `openWindow(_:)`, `openWindow(_:value:)` | opens a window of a kind, in the scene declaring it |
-| `closeWindow(_:)`, `closeWindow(_:value:)` | closes a window of a kind |
+| `closeWindow(_:)`, `closeWindow(_:value:)` | closes every window of a kind, or the one for a value |
 
 Configuration needed before the first view is built belongs in the
 application's initializer:
@@ -72,6 +82,12 @@ struct NotesApp: Application {
 A scene is a set of windows and the state they share. Each scene the
 application declares stands at most once: it opens with its first window and
 ends with its last, and its state goes with it.
+
+`Scene` is a protocol with one property, `var body: some Scene`, which lists
+the scene's windows in any number and order; a view or another scene written
+there does not compile. No window is a main one: the window launch opens is
+one window of the `WindowGroup` with no name, like any other, and closing it
+closes that window alone.
 
 ```swift quote
 extension WindowType {
@@ -109,8 +125,10 @@ Every window of a scene shares the scene's `@State`. What belongs to one
 window is the `@State` of the view it shows: two windows of `NotesPage` each
 keep a place of their own, and both read the scene's `library`. An object
 reaches the views of a window by `.environment(_:)` on its `WindowGroup` or
-`Window`. What a window shows may change; which windows a scene declares may
-not.
+`Window`, and every window of a scene by `.environment(_:)` on the scene where
+the application's body names it; a nearer one of the same type overrides it
+for its own branch. What a window shows may change; which windows a scene
+declares may not.
 
 A window belongs to the scene declaring its kind. A window that belongs to
 none of the others - About, the preferences - is a scene of its own:
@@ -431,8 +449,8 @@ What the page is, the view it shows says by modifier:
 | `.showsBackButton` | whether that bar offers its native back affordance |
 | `.backButtonTitle` | short title supplied by this page for the page pushed above it |
 
-What is not said is left with the host. Each takes a value, or a state, `$x`,
-which the host follows with no view built again. The space between the page's
+What is not said is left with the host. Each takes a value, and each but
+`.icon` a state, `$x`, which the host follows with no view built again. The space between the page's
 edge and what it shows is that view's own `.padding`. These are said of the
 page only by the view it shows - or by that view's `body` - and a view further
 in that says them says nothing, and is told so once.
@@ -447,7 +465,11 @@ it keeps only what its contract declares, and takes its own `.title` and
 What has a body of its own - the page's actions, the view in its title's place
 and its menus - is declared in the view as well, with `.toolbar { }`,
 `.titleView { }` and `.menuBar { }`, and built with the state it follows (see
-[Navigation and presentation](navigation-and-presentation.md#toolbars)).
+[Navigation and presentation](navigation-and-presentation.md#toolbars)). So is
+what the page lays over its window, with `.overlays { }`: declared on a
+window's page it stands over every page and sheet the window shows, declared on
+a page further in it stands while that page is shown
+([Over every page](navigation-and-presentation.md#over-every-page)).
 
 The back-button title belongs to the page being returned to, not the page
 currently on top. Hiding the native back button hides that affordance; it is
@@ -554,8 +576,9 @@ the application - AppKit as text at the trailing edge of the title bar, WinUI
 in its title bar's title, subtitle and icon - while the visible page's title
 still names the window to the system. On a phone and a tablet each bar names
 its page: the line stands under each page's title, and the application's name
-and mark stand nowhere. [BarElement](../controls/tiers/BarElement.md) says what
-each host does with each value.
+and mark stand nowhere. [BarElement](../controls/tiers/BarElement.md) lists
+each value, and the page of each arrangement wearing it says what each host
+does with it.
 
 ## Reading support status
 

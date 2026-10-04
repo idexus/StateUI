@@ -9,6 +9,10 @@ body:
         reach, moves the host contract, adds a dependency, or needs a substantial
         design decision.
 
+        Read docs/concepts/why.md first: it states the decisions every API
+        follows and the shapes deliberately rejected. A proposal that changes
+        one of them answers the reason that page gives.
+
         A bug uses the Bug form instead: every bug fix starts from a Bug issue
         with a reproducible example before implementation begins.
 
@@ -44,7 +48,7 @@ body:
     attributes:
       label: What it touches
       options:
-        - label: The public API surface - a control, a modifier, a token, an act
+        - label: The public API surface - a control, a modifier, an event, an act
         - label: The host contract
         - label: A build script, or a new dependency
         - label: One platform only, or one platform differently from the others

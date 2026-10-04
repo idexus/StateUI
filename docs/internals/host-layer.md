@@ -304,9 +304,10 @@ toolkit's calls:
 - **`WayBack`** is the way back a window offers - a stack's top page going, or
   the top sheet - which `HostRuntime.goBack` takes.
   ([The way back](../design/host/pages.md#the-way-back))
-- **`slotContent`**, **`presentingElement`** and **`arrangedChildren`** say
-  what stands in a slot, which element's view shows an element, and which
-  children a layout places - a page's slots stand in none of its room.
+- **`chromeTitleView`**, **`presentingElement`** and **`arrangedChildren`**
+  say what stands in a page's title place, which element's view shows an
+  element, and which children a layout places - a page's slots stand in none
+  of its room.
   ([Slots](../design/host/pages.md#slots))
 - **`MenuEntry`** walks a menu - its items, separators and submenus in order,
   each with its caption, whether it can be chosen and its identifier - and a

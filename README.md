@@ -87,6 +87,8 @@ that is usable now.
   state, layout, controls, interaction, concurrency, and native hosts.
 - [Architecture](docs/concepts/architecture.md) — state, reactivity, Journey, motion,
   and application sessions.
+- [Why StateUI is shaped this way](docs/concepts/why.md) — the decisions every API
+  follows, and the shapes deliberately rejected. Read it before contributing.
 - [Host contract](docs/internals/host-contract.md) — `HostPatch`, ownership, identity,
   lifetime, and native adapter rules.
 - [Platform contract](docs/platform-contract.md) — the control, property, and
@@ -101,6 +103,10 @@ that is usable now.
   — each host's heads, builds, debugging, and registrations.
 - [Project structure and development](docs/development.md) — packages, Gallery,
   build, F5, and test commands.
+- [Tested setups](docs/tested-setups.md) — the systems, toolchains and devices each
+  host's suite passes on.
+- [Design notes](docs/design/README.md) — the rule, the reason and the trap behind
+  each part of the code.
 - [Contributing](CONTRIBUTING.md) — rules for changing the public contract.
 
 Public API declarations provide the focused reference beside the code.
@@ -150,15 +156,34 @@ Then open the repository in VS Code:
    host.
 
 [Working in VS Code](docs/getting-started.md#working-in-vs-code) covers the
-extension's hosts and commands, including **StateUI: New Application**.
+extension's hosts and commands, including **StateUI: New Application in apps/**.
 
-From a terminal, the same builds are:
+From a terminal, the same builds and suites are:
 
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug                  # the AppKit Gallery bundle
+.scripts/UIKit/run-app.sh apps/Gallery debug "iPhone 18 Pro"   # the UIKit Gallery, on a simulator
 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554   # the Android Gallery
-.scripts/test-native.sh                                        # the Swift suites
+.scripts/test-native.sh                                        # the Swift suites, the AppKit host's among them
+.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"                   # the UIKit host's suite
+.scripts/Android/test-android.sh emulator-5554                 # the Android host's suite, on a device
 ```
+
+On Linux and on Windows:
+
+```bash
+.scripts/GTK/run-app.sh apps/Gallery                           # the GTK Gallery
+.scripts/GTK/test-gtk.sh                                       # the GTK host's suite
+```
+
+```powershell
+.scripts\WinUI\run-app.ps1 -App apps\Gallery                   # the WinUI Gallery
+.scripts\WinUI\test-winui.ps1                                  # the WinUI host's suite
+```
+
+[Project structure and development](docs/development.md#test) gives every
+suite's arguments and the conformance run that writes each host's marks, and
+[Deploy](docs/development.md#deploy) the release builds.
 
 ## Continuous integration
 
@@ -166,8 +191,8 @@ Every workflow runs on pushes and pull requests to `main`, which every pull
 request targets. Each badge above is one workflow.
 
 **Core macOS**, **Core Linux** and **Core Windows** run the core's suites on
-each machine - StateUI, the host layer and the conformance runner, and on
-macOS the Gallery's and HelloWorld's too. Each host has a workflow of its own
+each machine - StateUI, the host layer and the conformance runner, and the
+Gallery's and HelloWorld's too. Each host has a workflow of its own
 that runs its suite with every verdict held: **AppKit**, **UIKit** on an
 iPhone and an iPad simulator, **Android** built on macOS and run on an
 emulator, **WinUI** on Windows and **GTK** on Linux.
