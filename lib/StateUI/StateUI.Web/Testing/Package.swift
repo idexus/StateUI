@@ -3,7 +3,7 @@ import PackageDescription
 
 // The Web host's own suite and its conformance run: XCTest compiled to WebAssembly, which .scripts/Web/test-web.sh
 // runs in Node over a page with just enough of a DOM (JavaScript/page.mjs) - and, for the conformance suite, in a
-// browser (JavaScript/conformance.mjs) - the host's own relay beneath it, and the driver's functions reading what
+// browser (JavaScript/run-in-browser.mjs) - the host's own relay beneath it, and the driver's functions reading what
 // the page holds, which CWebTesting declares. It builds under STATEUI_HOST=web, which links every library into the
 // one module.
 let package = Package(

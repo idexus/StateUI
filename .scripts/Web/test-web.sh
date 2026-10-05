@@ -4,9 +4,10 @@
 #
 # Builds the Web host's suite, lib/StateUI/StateUI.Web/Testing, for WebAssembly
 # and runs it: the host's own tests in Node over a page with just enough of a
-# DOM, through the host's own relay - or, with --conformance, the conformance
-# suite in a browser, headless, whose layout, focus, dialogs and input its cases
-# need: Google Chrome or Chromium, or the one STATEUI_BROWSER names. A
+# DOM, through the host's own relay - or, with --browser, the tests that need a
+# browser's own page, in one, headless: the conformance suite, whose layout,
+# focus, dialogs and input its cases need, and the host's tests that run a host.
+# The browser is Google Chrome or Chromium, or the one STATEUI_BROWSER names. A
 # conformance run with STATEUI_UPDATE_EXPORTS=1 writes each verdict file under
 # the revision its family stands at (lib/StateUI/StateUI.Conformance/revisions.txt);
 # STATEUI_STALE_ONLY=1 runs only the families whose verdicts stand at another
@@ -14,7 +15,7 @@
 #
 # USAGE:
 #   test-web.sh [<Class>[/<test>]]
-#   test-web.sh --conformance [<Family>...]
+#   test-web.sh --browser [<Family>...]
 #
 #   a test class, or one test of it, runs that alone; a family named - Button,
 #   TextField - its conformance alone
@@ -32,6 +33,8 @@ products="$(STATEUI_HOST=web swift build --package-path "$package" --scratch-pat
 program="$products/StateUIWebTests-test-runner.wasm"
 relay="$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"
 conformance="StateUIWebTests.WebConformanceTests"
+# The classes whose tests need a browser's own page.
+in_browser="$conformance,StateUIWebTests.WebDrawnChildrenTests"
 
 browser () {
   if [[ -n "${STATEUI_BROWSER:-}" ]]; then echo "$STATEUI_BROWSER"; return; fi
@@ -46,20 +49,20 @@ browser () {
   exit 1
 }
 
-if [[ "${1:-}" == "--conformance" ]]; then
+if [[ "${1:-}" == "--browser" ]]; then
   shift
-  selected="$conformance"
+  selected="$in_browser"
   if [[ $# -gt 0 ]]; then
     selected="$(printf "$conformance/test%s," "$@")"
     selected="${selected%,}"
   fi
-  exec node "$package/JavaScript/conformance.mjs" "$(browser)" "$program" "$selected"
+  exec node "$package/JavaScript/run-in-browser.mjs" "$(browser)" "$program" "$selected"
 fi
 
-# The host's own tests, every one but the conformance suite's where none is named.
+# The host's own tests, every one but those the browser runs where none is named.
 selected="${1:-}"
 if [[ -z "$selected" ]]; then
   selected="$(node "$package/JavaScript/run.mjs" "$relay" "$program" --list-tests \
-    | grep -E '^StateUIWebTests\.' | grep -v "^$conformance/" | paste -sd, -)"
+    | grep -E '^StateUIWebTests\.' | grep -v -E "^(${in_browser//,/|})/" | paste -sd, -)"
 fi
 exec node "$package/JavaScript/run.mjs" "$relay" "$program" "$selected"

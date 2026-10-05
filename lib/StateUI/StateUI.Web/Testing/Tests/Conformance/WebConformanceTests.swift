@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIConformance
 import XCTest
 
-/// The conformance suite on the Web, in a browser (`test-web.sh --conformance`): a family a contract, each one test,
+/// The conformance suite on the Web, in a browser (`test-web.sh --browser`): a family a contract, each one test,
 /// its verdicts the Web's column of the control dictionary.
 @MainActor
 final class WebConformanceTests: XCTestCase {

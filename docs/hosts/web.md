@@ -30,13 +30,13 @@ lib/StateUI/StateUI.Web/
     stateui-web.js           the relay, and the system interface a Swift program asks of its machine
     index.html               the page a head runs in
   Testing/                   a package of its own: the host's suite, compiled for WebAssembly, the page in
-                             Node it runs over, and the conformance run in a browser
+                             Node it runs over, and what it runs in a browser
 .scripts/Web/
   run-app.sh                 builds an application's Web head, lays its page out, serves it and opens it
   serve.py                   serves the page on this machine
   browsers.sh                lists the browsers installed, and opens a page in one
   deploy.sh                  builds it for release and lays the page in a folder of its own
-  test-web.sh                runs the host's suite, or the conformance suite in a browser
+  test-web.sh                runs the host's suite, or what of it needs a browser
 apps/<App>/Platforms/Web/
   main.swift                 the application's Web head
 ```
@@ -118,7 +118,33 @@ StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { c
 
 The host places, sizes and shows the element as it does its own, and lets
 go of it with its element. The Gallery's cube - `<gallery-cube3d>`, WebGL 2
-on a canvas of its own - is `apps/Gallery/Platforms/Web/`.
+on a canvas of its own - is `apps/Gallery/Platforms/Web/`. An element tells
+a number in its event's `detail` to `listen(_:_:)` handed a `Double`, and
+words to `listen(_:words:)`.
+
+### Children a control draws
+
+A control may draw the children of one contract itself - a map draws its markers.
+`children` names their contract and what of each the control realizes, and hands
+it every such child, in the tree's order, whenever the element's children
+change: one added, moved, taken away, or given another value. A child is a
+`WebChild` - its values read as the types its contract declares, and its own
+`reports` to raise its events on it - and stays the same child for as long as
+it lives, so the control keeps what it drew for one by it. Such a child has no
+element of its own on the page.
+
+```swift quote
+StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
+    map.property(MapContract.region) { control, region in … }
+    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, markers in
+        control.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
+        // the user taps one: marker.reports.raise(MarkerContract.selected)
+    }
+}
+```
+
+A `Map` is the application's on the Web - the browser has no map of its own -
+registered the same way, with the provider and the key it needs.
 
 ### Acts and events
 
@@ -217,13 +243,14 @@ what the page holds through functions of its own. It proves what the host
 does to the page's elements, not how a browser draws them.
 
 ```bash
-.scripts/Web/test-web.sh --conformance
-.scripts/Web/test-web.sh --conformance Button TextField
+.scripts/Web/test-web.sh --browser
+.scripts/Web/test-web.sh --browser Button TextField
 ```
 
-The conformance suite runs in Google Chrome or Chromium, headless - or the
-browser `STATEUI_BROWSER` names - with the user's input as the browser takes
-it: every family, or those named. A run with `STATEUI_UPDATE_EXPORTS=1` writes
+What needs a browser's own page runs in Google Chrome or Chromium, headless -
+or the browser `STATEUI_BROWSER` names: the conformance suite, with the user's
+input as the browser takes it - every family, or those named - and the host's
+tests that run a host. A run with `STATEUI_UPDATE_EXPORTS=1` writes
 each family's verdicts under `lib/StateUI/exports/marks/web`, and
 `STATEUI_STALE_ONLY=1` runs only the families whose verdicts stand at another
 revision.

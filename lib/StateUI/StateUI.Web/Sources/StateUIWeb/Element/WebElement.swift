@@ -55,6 +55,7 @@ final class WebElement: NativeElement {
         host?.placements.beforeChange()
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        if let view, let host { element.applyDrawnChildren(to: view, through: WebRegistrations.registry, in: host.runtime) }
         followPages(changed: changed, wasDescribed: wasDescribed)
         configureLayoutMotion()
         arrangeChildren()

@@ -58,6 +58,12 @@ public final class WebPageElement {
         listen(event) { action(WebRelay.eventDetail) }
     }
 
+    /// Runs `action` whenever the element raises `event`, handed the words its `detail` carries - a custom element's
+    /// `CustomEvent`, `new CustomEvent("mapclick", { detail: "50.06 19.94" })`.
+    public func listen(_ event: String, words action: @escaping @MainActor (String) -> Void) {
+        listen(event) { action(WebRelay.eventWords) }
+    }
+
     /// Calls the element's own method `name`, with nothing - a custom element's, `flash()`.
     public func call(_ name: String) {
         WebRelay.callMethod(node, name)
@@ -243,6 +249,45 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
     public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         registration.raises(event)
+    }
+
+    /// The children of one contract the control draws itself - a map's markers - handed over whole, in the tree's
+    /// order, whenever the element's children change: one added, moved, taken away, or given another value. Such a
+    /// child has no element of its own on the page. `members` are what the control realizes of each child - a
+    /// property or an event of the child's contract or of a tier it wears; anything else is left out, and said once.
+    ///
+    ///     map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, markers in
+    ///         control.show(markers)
+    ///     }
+    public func children<Child: ElementContract>(
+        _ contract: Child.Type,
+        members: [any ContractMember],
+        _ apply: @escaping (Made, [WebChild<Child>]) -> Void
+    ) {
+        registration.children(contract, members: members) { hosted, children in
+            apply(hosted.control, children.map(WebChild.init))
+        }
+    }
+}
+
+/// A child element the control draws itself - a map's marker: its values as the types its contract declares, and the
+/// reports its events leave through. Two are equal when they are the same child, for as long as it lives, so a
+/// control keeps what it drew for one by it.
+public struct WebChild<Child: ElementContract>: Hashable {
+    private let child: ChildElement<Child>
+
+    init(_ child: ChildElement<Child>) {
+        self.child = child
+    }
+
+    /// One of the child's values, as the type its contract declares - nil where it is not described.
+    public func value<Owner: Contract, Value: HostRepresentable>(_ property: ElementProperty<Owner, Value>) -> Value? {
+        child.value(property)
+    }
+
+    /// What the child's events and the user's values on it leave through.
+    public var reports: WebReports<Child> {
+        WebReports(child.reports)
     }
 }
 

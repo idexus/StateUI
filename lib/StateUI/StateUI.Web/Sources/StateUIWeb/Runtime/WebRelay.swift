@@ -225,6 +225,9 @@ enum WebRelay {
     /// The number the event being heard carries in its `detail` - a custom element's, or a click's count.
     static var eventDetail: Double { stateui_web_event_number(0) }
 
+    /// The words the event being heard carries in its `detail` - a custom element's own.
+    static var eventWords: String { copyRead(length: stateui_web_event_words()) }
+
     /// The `<iframe>` `element` shows `source`.
     static func showInFrame(_ element: Int32, _ source: WebViewSource) {
         switch source {

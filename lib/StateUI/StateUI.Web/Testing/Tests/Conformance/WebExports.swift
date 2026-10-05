@@ -8,7 +8,7 @@ import XCTest
 
 /// What this host's conformance runs write into the library's `exports` folder: the verdicts its cases gave - held
 /// to the family's file, or written there on a run with STATEUI_UPDATE_EXPORTS=1, then read in the diff. The page
-/// reaches no file: the controller beside the browser reads and writes them (Testing/JavaScript/conformance.mjs).
+/// reaches no file: the controller beside the browser reads and writes them (Testing/JavaScript/run-in-browser.mjs).
 @MainActor
 enum WebExports {
     /// The revision `family`'s verdicts on this host stand at.

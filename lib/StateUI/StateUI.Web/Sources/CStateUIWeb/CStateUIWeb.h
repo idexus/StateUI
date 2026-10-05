@@ -79,6 +79,8 @@ STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, 
 /// mouse, 1 a pen, 2 a touch - 7 its button; 8 a wheel's turn down, 9 whether a key made it a pinch, 10 a gesture's
 /// scale; 11 and 12 the listening element's size.
 STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
+/// The words the event being heard carries in its `detail`, read by `copy_read`: their length.
+STATEUI_WEB(event_words) int32_t stateui_web_event_words(void);
 
 /// Calls `listener` as the element comes near the view of the scroller `root` - within half its size - and as it
 /// goes away: the event's number 0 is 1 near, 0 away.
