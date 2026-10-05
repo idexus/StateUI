@@ -65,8 +65,17 @@ final class WebActToolkit: ActToolkit {
     }
 
     func keep(_ call: HostActCall) -> Bool {
-        guard call.act == .persistValue else { return false }
-        WebKeptValues.keep(call, core: renderer.runtime.core, application: renderer.applicationName)
+        switch call.act {
+        case .persistValue:
+            WebKeptValues.keep(call, core: renderer.runtime.core, application: renderer.applicationName)
+        case .persistSceneValue:
+            let scenes = renderer.scenes
+            if scenes.keep(call.arguments), let text = scenes.changed(root: renderer.runtime.tree.root) {
+                WebKeptValues.writeScenes(text, application: renderer.applicationName)
+            }
+        default:
+            return false
+        }
         return true
     }
 

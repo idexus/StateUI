@@ -110,7 +110,10 @@ A kept value stands in the browser's storage for the page's site, under the
 application's name, in the host layer's text (`KeptValuesText`): read before
 the first render, written whole as one changes. Where the browser keeps
 nothing - a private window, storage turned off - the value lives as long as
-the page.
+the page. A scene's kept values stand beside them in the host layer's text of
+the scenes (`SceneKeeper`, `KeptScenes`), written as they change and as the
+scenes do: the page's next start brings its scene back with them, where
+another host's next launch would.
 
 A question for the user is the browser's modal dialog
 ([pages](pages.md#questions-for-the-user)), held by the acts' part of the

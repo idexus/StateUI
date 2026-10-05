@@ -43,6 +43,9 @@ final class WebRenderer {
     /// The windows the tree holds, each with its controller, in the tree's order. The browser shows the first.
     let roster = WindowRoster<WebWindowController>()
 
+    /// What is kept of the scenes for the page's next start.
+    let scenes = SceneKeeper()
+
     /// A runtime of the application `applicationName`, on the page's clock or on `clock`, with the motion
     /// `reducesMotion` allows.
     init(
@@ -75,7 +78,8 @@ final class WebRenderer {
             self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
         }
         WebRelay.afterEntry = { [weak self] in self?.entryEnded() }
-        runtime.connectWindow()
+        // The scenes kept when the page was left come back; else the window launch opens.
+        scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime)
         entryEnded()
     }
 
@@ -126,6 +130,7 @@ final class WebRenderer {
 extension WebRenderer: TurnPresenter {
     func presentRendered() {
         showWindows()
+        if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
     }
 
     func perform(_ call: HostActCall) {
