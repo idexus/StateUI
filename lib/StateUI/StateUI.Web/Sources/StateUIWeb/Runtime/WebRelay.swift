@@ -213,6 +213,9 @@ enum WebRelay {
 
     static var prefersDark: Bool { stateui_web_prefers_dark() != 0 }
 
+    /// The screen's smallest width where its user points by touch; 0 where by a mouse or a pen.
+    static var touchScreen: Double { stateui_web_touch_screen() }
+
     /// Whether the user asked for less motion.
     static var reducesMotion: Bool { stateui_web_reduces_motion() != 0 }
 

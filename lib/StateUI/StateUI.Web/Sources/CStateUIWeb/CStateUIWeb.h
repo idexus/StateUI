@@ -112,5 +112,8 @@ STATEUI_WEB(now) double stateui_web_now(void);
 STATEUI_WEB(prefers_dark) int32_t stateui_web_prefers_dark(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);
 
+/// The smallest width of the screen in CSS pixels where its user points by touch; 0 where by a mouse or a pen.
+STATEUI_WEB(touch_screen) double stateui_web_touch_screen(void);
+
 /// Whether the user asked for less motion.
 STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);

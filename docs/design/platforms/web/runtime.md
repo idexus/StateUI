@@ -73,9 +73,12 @@ the program stops where it overflowed.
 
 ## The environment
 
-The page tells the core it stands on a desktop, as a browser, and whether the
-user's system is dark or light; a change of the appearance renders the
-application again in the other.
+The page tells the core it stands in a browser, and on what: where its user
+points by touch (`pointer: coarse`), a phone or a tablet by the screen's
+smallest width, as the host layer decides it for every touch screen
+(`FormFactor.touchScreen`); else a desktop. It tells too whether the user's
+system is dark or light; a change of the appearance renders the application
+again in the other.
 
 ## One frame
 

@@ -4,14 +4,16 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What the page tells the core it stands on: a browser on a desktop, and the user's appearance.
+/// What the page tells the core it stands on: a browser on a phone or a tablet where its user points by touch, on a
+/// desktop else, and the user's appearance.
 /// Design: docs/design/platforms/web/runtime.md#the-environment
 @MainActor
 enum WebEnvironment {
     static func report(to core: CoreLink, applicationName: String) {
+        let touch = WebRelay.touchScreen
         core.setDeviceInfo(HostDeviceInfo(
-            formFactor: .desktop, platform: "Web", model: "", manufacturer: "", name: "", versionString: "",
-            deviceType: .physical))
+            formFactor: touch > 0 ? .touchScreen(smallestWidth: touch) : .desktop, platform: "Web", model: "",
+            manufacturer: "", name: "", versionString: "", deviceType: .physical))
         core.setApplicationInfo(HostApplicationInfo(
             name: applicationName, packageName: applicationName, versionString: "", buildString: ""))
         reportChanging(to: core)
