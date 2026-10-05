@@ -34,6 +34,21 @@ line breaks. A font, a colour and the room around the words are CSS's
 `padding`; what the application leaves unsaid is the page's, and the page's
 font is the system's own.
 
+## Runs of words
+
+A Text holding spans shows its runs in place of its own words, each a `<span>`
+of its own look (`MountedElement.textRuns`). A run says only what it says
+itself - its font, its colour, the space between its letters, its lines'
+height, its decorations, what stands behind it - and takes the rest from the
+text around it, as the page's styles inherit. A span is kept for each run by
+its place, so the runs that change are the only ones written.
+
+A text's lines break as its line break says: at words or anywhere onto more
+lines, or on one line, cut short where they do not fit; the page cuts words
+only at their end, so a cut at their head or in their middle stands at the end
+too. The most lines a text stands on is `-webkit-line-clamp`, where its words
+wrap (`LineBreak.lines`).
+
 ## A button
 
 A Button is a `<button>`. With no fill, outline or shape of its own it is the

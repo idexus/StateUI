@@ -5,11 +5,31 @@
 @_spi(Host) import StateUIHost
 
 extension WebRegistrations {
-    /// A Text and a Button: their words in their case, their font and colour and the room around them; a button's
-    /// box, whether it takes a click, and the click.
+    /// A Text and a Button: their words in their case, their font and colour and the room around them; a text's
+    /// lines, alignment, spacing, decorations and background; a button's box, whether it takes a click, and the click.
     static func words(_ registry: Registry<WebDOMView>) {
         registry.add(TextContract.self, create: { _ in WebTextView() }) { text in
             text.applies(TextMembers.members) { view, values in applyWords(view, values) }
+            text.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
+                view.setLines(breaking: values[TextContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
+            }
+            text.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
+                view.setAlignment(horizontal: alignment ?? .start)
+            }
+            text.property(TextAlignmentElementContract.verticalTextAlignment) { view, alignment in
+                view.setAlignment(vertical: alignment ?? .start)
+            }
+            text.property(VisualElementContract.background) { view, background in view.setBackground(background?.propValue) }
+            text.applies([
+                TextStyleElementContract.tracking, LineHeightElementContract.lineHeight,
+                DecorableTextElementContract.textDecorations,
+            ]) { view, values in
+                var look = TextLook()
+                look.letterSpacing = values[TextStyleElementContract.tracking] ?? 0
+                look.lineHeight = values[LineHeightElementContract.lineHeight]
+                look.decorations = values[DecorableTextElementContract.textDecorations] ?? .none
+                view.setSpacing(look)
+            }
         }
 
         registry.add(ButtonContract.self, create: { reports in

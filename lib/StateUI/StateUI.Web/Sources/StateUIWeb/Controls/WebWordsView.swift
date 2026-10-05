@@ -18,10 +18,6 @@ extension WebWordsView {
     /// The words' font and colour; what the look leaves unsaid is the page's.
     /// Design: docs/design/platforms/web/controls.md#words
     func setLook(_ look: TextLook) {
-        style("font-size", WebCSS.pixels(look.size))
-        style("font-weight", look.attributesGiven ? (look.attributes.contains(.bold) ? "700" : "400") : nil)
-        style("font-style", look.attributesGiven ? (look.attributes.contains(.italic) ? "italic" : "normal") : nil)
-        style("font-family", look.family.map(WebCSS.string))
-        style("color", WebCSS.color(look.color))
+        for (name, value) in WebCSS.font(look) { style(name, value) }
     }
 }

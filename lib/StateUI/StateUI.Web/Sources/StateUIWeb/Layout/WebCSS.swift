@@ -75,6 +75,24 @@ enum WebCSS {
         }
     }
 
+    /// A look's font and colour as CSS - what it leaves unsaid none, so the words take it from around them.
+    static func font(_ look: TextLook) -> [(String, String?)] {
+        [("font-size", pixels(look.size)),
+         ("font-weight", look.attributesGiven ? (look.attributes.contains(.bold) ? "700" : "400") : nil),
+         ("font-style", look.attributesGiven ? (look.attributes.contains(.italic) ? "italic" : "normal") : nil),
+         ("font-family", look.family.map(string)),
+         ("color", color(look.color))]
+    }
+
+    /// The rest of a look: the space between the letters, the lines' height and the lines under or through.
+    static func spacing(_ look: TextLook) -> [(String, String?)] {
+        let lines = [(TextDecorations.underline, "underline"), (.strikethrough, "line-through")]
+            .filter { look.decorations.contains($0.0) }.map(\.1)
+        return [("letter-spacing", look.letterSpacing == 0 ? nil : signedPixels(look.letterSpacing)),
+                ("line-height", look.lineHeight.map(number)),
+                ("text-decoration-line", lines.isEmpty ? nil : lines.joined(separator: " "))]
+    }
+
     /// A colour as CSS's `rgb()`; nil for a value that is none.
     static func color(_ value: HostValue?) -> String? {
         guard let channels = value?.color else { return nil }
