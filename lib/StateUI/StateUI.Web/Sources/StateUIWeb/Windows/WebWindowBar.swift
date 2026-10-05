@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name
-/// and mark, the page's title, and the actions its path declares - the host layer's `WindowChrome`, laid out as a
-/// web page's top bar.
+/// and mark, the page's title, and the actions its path declares - the host layer's `WindowChrome`. Beside a sidebar
+/// shown, the bar stands in two parts: the name and the toggle over the sidebar, the rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar
 @MainActor
 final class WebWindowBar: WebDOMView {
@@ -18,8 +18,10 @@ final class WebWindowBar: WebDOMView {
     private let name = WebDOMView(tag: "span")
     private let subtitle = WebDOMView(tag: "span")
     private let title = WebDOMView(tag: "span")
+    private let lead = WebDOMView(tag: "div")
+    private let side = WebDOMView(tag: "div")
+    private let start = WebDOMView(tag: "div")
     private let leading = WebDOMView(tag: "div")
-    private let spacer = WebDOMView(tag: "div")
     private let trailing = WebDOMView(tag: "div")
 
     /// The button of each action shown, by the item it stands for.
@@ -34,24 +36,28 @@ final class WebWindowBar: WebDOMView {
         attribute("class", "stateui-bar")
         attribute("role", "toolbar")
         for (part, kind) in [(brand, "brand"), (heading, "heading"), (name, "name"), (subtitle, "subtitle"),
-                             (title, "title"), (spacer, "spacer"), (leading, "actions"), (trailing, "actions")] {
+                             (title, "title"), (lead, "lead"), (side, "side"), (start, "start"),
+                             (leading, "actions"), (trailing, "actions")] {
             part.attribute("class", "stateui-bar-\(kind)")
         }
         glyph(toggle, "sidebar", label: "Sidebar")
         glyph(back, "back", label: "Back")
         toggle.listen("click") { [weak self] in self?.onToggle() }
         back.listen("click") { [weak self] in self?.onBack() }
-        for (index, part) in [toggle, back, brand, leading, title, spacer, trailing].enumerated() {
-            WebRelay.insert(part.node, into: node, at: index)
-        }
+        for (index, part) in [lead, title, trailing].enumerated() { WebRelay.insert(part.node, into: node, at: index) }
+        for (index, part) in [side, start].enumerated() { WebRelay.insert(part.node, into: lead.node, at: index) }
+        for (index, part) in [brand, toggle].enumerated() { WebRelay.insert(part.node, into: side.node, at: index) }
+        for (index, part) in [back, leading].enumerated() { WebRelay.insert(part.node, into: start.node, at: index) }
         WebRelay.insert(mark.node, into: brand.node, at: 0)
         WebRelay.insert(heading.node, into: brand.node, at: 1)
         WebRelay.insert(name.node, into: heading.node, at: 0)
         WebRelay.insert(subtitle.node, into: heading.node, at: 1)
     }
 
-    /// Shows `chrome`: its parts where it has them, its actions in their groups, its colours.
-    func show(_ chrome: WindowChrome, title shown: String) {
+    /// Shows `chrome`: its parts where it has them, its actions in their groups, its colours; `sidebar` says whether
+    /// the split view the toggle serves shows its sidebar, nil where there is none.
+    func show(_ chrome: WindowChrome, title shown: String, sidebar: Bool?) {
+        attribute("data-sidebar", sidebar.map { $0 ? "shown" : "hidden" })
         toggle.setShown(chrome.sidebarToggle != nil)
         back.setShown(chrome.back != nil)
         back.attribute("title", chrome.back?.title)
@@ -64,7 +70,8 @@ final class WebWindowBar: WebDOMView {
         mark.apply(source: area?.icon.map { ImageSource($0) }, aspect: .fit)
         mark.setShown(area?.icon?.isEmpty == false)
         WebRelay.setText(title.node, shown)
-        title.setShown(!shown.isEmpty && shown != area?.title)
+        title.setShown(!shown.isEmpty)
+        title.attribute("data-repeats", shown == area?.title ? "" : nil)
 
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
         style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
@@ -95,7 +102,9 @@ final class WebWindowBar: WebDOMView {
 
     override func detach() {
         for button in buttons.values { button.detach() }
-        for part in [toggle, back, mark, name, subtitle, heading, brand, title, leading, spacer, trailing] { part.detach() }
+        for part in [toggle, back, mark, name, subtitle, heading, brand, title, leading, trailing, side, start, lead] {
+            part.detach()
+        }
         super.detach()
     }
 }

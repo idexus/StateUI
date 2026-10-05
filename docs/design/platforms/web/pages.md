@@ -8,16 +8,25 @@ beneath it. What the bar shows is the host layer's `WindowChrome`
 ## The window's bar
 
 The bar is a `<header>` with the role of a toolbar, over the window's room. It
-shows, from the start: the split view's toggle where the window shows a split
-view, the way back where the visible stack offers it, the application's name,
-mark and the line under it where the arrangement declares them, the visible
-page's title, and the actions its path declares - the leading ones after the
-title, the trailing ones and the overflow at the end - each a button with its
-picture, its words beside it where it shows them, its name for assistive
+leads with the split view's toggle where the window shows a split view, the
+way back where the visible stack offers it, and the leading actions the
+visible page's path declares; the page's title stands in its middle, and the
+trailing actions and the overflow at its end. Each action is a button with
+its picture, its words beside it where it shows them, its name for assistive
 technology and its tooltip. The bar's colours are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the
 page's surface, translucent over what scrolls beneath. The same title names
 the browser's tab.
+
+Beside a sidebar shown, the bar stands in two parts as wide as the split
+view's columns: over the sidebar the application's name, mark and the line
+under it, centred, with the toggle at the sidebar's edge; over the detail
+the rest, its title centred over the detail. With the sidebar hidden, or over
+the detail as a drawer, the name stands in the sidebar alone, and the title
+is centred over the whole bar. Without a split view the name leads the bar,
+and a page's title the same as the name is not said twice. The parts follow
+from the split view's `data-sidebar`, which the bar repeats, and the page's
+width, so no measuring moves them.
 
 The page is one window: an application's second window has no place of its
 own in it.

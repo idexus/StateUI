@@ -37,7 +37,8 @@ final class WebWindowController {
         guard let element else { return }
         let chrome = WindowChrome(window: element, arrangement: presentation.arrangement)
         let title = chrome.title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string ?? ""
-        window.bar.show(chrome, title: title)
+        let split = chrome.sidebarToggle?.web.view as? WebSplitView
+        window.bar.show(chrome, title: title, sidebar: split?.isPresented)
         WebRelay.setTitle(title)
     }
 
@@ -54,5 +55,6 @@ final class WebWindowController {
               let view = split.web.view as? WebSplitView
         else { return }
         view.userPresents(!view.isPresented)
+        refreshChrome()
     }
 }

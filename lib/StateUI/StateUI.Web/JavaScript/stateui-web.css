@@ -57,63 +57,102 @@ body {
 }
 .stateui-room { display: grid; min-height: 0; min-width: 0; position: relative; }
 
+/* The bar: what leads it, the page's title centred, the trailing actions. Beside a sidebar shown it stands in two
+   parts, the application's name and the toggle over the sidebar, the title centred over the detail. */
 .stateui-bar {
   position: relative;
   z-index: 10;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   min-height: var(--stateui-bar-height);
-  padding: 0 14px;
+  padding: 0 12px;
   background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
   color: var(--stateui-bar-foreground, var(--stateui-text));
   border-bottom: 1px solid var(--stateui-line);
   backdrop-filter: saturate(180%) blur(18px);
   -webkit-backdrop-filter: saturate(180%) blur(18px);
 }
-.stateui-bar-brand { display: flex; align-items: center; gap: 10px; margin-inline-end: 8px; min-width: 0; }
+.stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.stateui-bar[data-sidebar] .stateui-bar-brand { display: none; }
+.stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
+.stateui-bar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar-brand img { width: 28px; height: 28px; border-radius: 8px; }
-.stateui-bar-name { font-weight: 650; font-size: 16px; letter-spacing: -0.01em; white-space: nowrap; }
+.stateui-bar-name { font-weight: 650; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
 .stateui-bar-subtitle { font-size: 12.5px; opacity: 0.72; white-space: nowrap; }
 .stateui-bar-heading { display: flex; flex-direction: column; min-width: 0; }
 .stateui-bar-title {
+  grid-column: 2;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 17px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-inline-start: 6px;
 }
-.stateui-bar-spacer { flex: 1; }
-.stateui-bar-actions { display: flex; align-items: center; gap: 2px; }
+.stateui-bar > .stateui-bar-actions { grid-column: 3; justify-self: end; }
+@media (min-width: 901px) {
+  .stateui-bar[data-sidebar="shown"] {
+    grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr) auto minmax(0, 1fr);
+    padding-inline-start: 0;
+  }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-lead { display: contents; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-side {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    padding-inline: 12px;
+  }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-brand { display: flex; grid-column: 2; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-side > button { grid-column: 3; justify-self: end; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-title { grid-column: 3; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-title[data-repeats] { visibility: hidden; }
+  .stateui-bar[data-sidebar="shown"] > .stateui-bar-actions { grid-column: 4; }
+}
 
+/* Its buttons: round and glassy, each on its own, an action group's sharing one capsule. */
 .stateui-bar button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 38px;
-  min-width: 38px;
+  min-height: 42px;
+  min-width: 42px;
   justify-content: center;
-  padding: 0 10px;
+  padding: 0 11px;
   border: 0;
-  border-radius: var(--stateui-radius);
-  background: transparent;
+  border-radius: 999px;
+  background: var(--stateui-glass);
+  box-shadow: var(--stateui-glass-edge);
   color: inherit;
   font: inherit;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 550;
+  white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
-.stateui-bar button:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
-.stateui-bar button:active { background: color-mix(in srgb, currentColor 18%, transparent); }
+.stateui-bar {
+  --stateui-glass: color-mix(in srgb, currentColor 13%, transparent);
+  --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
+}
+.stateui-bar-actions {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  border-radius: 999px;
+  background: var(--stateui-glass);
+  box-shadow: var(--stateui-glass-edge);
+}
+.stateui-bar-actions:empty { display: none; }
+.stateui-bar-actions button { background: transparent; box-shadow: none; }
+.stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
+.stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
 .stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 .stateui-bar button:disabled { opacity: 0.4; cursor: default; }
-.stateui-bar button img { width: 20px; height: 20px; }
+.stateui-bar button img { width: 22px; height: 22px; }
 .stateui-glyph {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   background: currentColor;
   -webkit-mask: var(--stateui-glyph) center / contain no-repeat;
   mask: var(--stateui-glyph) center / contain no-repeat;

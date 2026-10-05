@@ -14,7 +14,8 @@ The page's colours, its radius and its bar's height are CSS variables on the
 root, given once for the light appearance and again for the dark. The font is
 the system's own. The bar stands over the room, translucent and blurred over
 what scrolls beneath where the application paints it nothing; its buttons are
-pictures with a background where the pointer is. The sidebar is a surface of
+round and glassy - a veil of the bar's own foreground colour - and the
+buttons of one group of actions share one capsule. The sidebar is a surface of
 its own beside the page, a drawer over it where the page is narrow. Buttons
 and fields take a border, rounded corners and a ring in the accent colour
 where the keyboard's focus is; a checkbox, a radio button, a slider and a
