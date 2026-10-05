@@ -564,6 +564,21 @@ final class PagesTests: XCTestCase {
         }.joined(separator: " ")
     }
 
+    /// An element as a menu's entry: a menu its submenu with its entries, anything else an item with its caption.
+    func testAnElementIsAMenusEntryByWhatItIs() throws {
+        let runtime = runtime(pathWindow(
+            outer: [menuBar("window", [menu("file", "File", [menuItem("new", "New"), menuItem("close", "Close")])])],
+            inner: [])) { _ in }
+        let file = try XCTUnwrap(runtime.tree.root?.first(id: .manual("file")))
+        let new = try XCTUnwrap(runtime.tree.root?.first(id: .manual("new")))
+
+        let submenu = MenuEntry.entry(of: file)
+        XCTAssertEqual(submenu.kind, .submenu)
+        XCTAssertEqual(submenu.entries.map(\.title), ["New", "Close"])
+        XCTAssertEqual(MenuEntry.entry(of: new).kind, .item)
+        XCTAssertEqual(MenuEntry.entry(of: new).title, "New")
+    }
+
     /// A menu of an id declared further in joins the one around it as a section after its entries; the others follow
     /// the menus declared around them.
     func testTheMenusOfAPathJoinByIdInSections() throws {
