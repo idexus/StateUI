@@ -70,7 +70,10 @@ with its words stands as tall as they are, rather than scrolling them. A
 field is as wide as its words or its placeholder - `field-sizing: content`,
 and its `size` where the browser sizes no field by its content - as a native
 field measures, not the browser's twenty characters, which in a row of a
-phone's width would push what follows it out of the row.
+phone's width would push what follows it out of the row. On iOS the page keeps
+its scale as a field takes the keyboard - Safari zooms into a field whose words
+are smaller than 16 points, and no native field does - by a viewport of at most
+scale 1, set on iOS alone, where the user's fingers still zoom the page.
 
 ## Toggles
 

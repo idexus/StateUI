@@ -8,6 +8,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+  // Safari on iOS zooms the page into a field it gives the keyboard to, losing where the user was: no native field
+  // does. A scale of at most 1 keeps it still there, and Safari still lets the user's fingers zoom.
+  if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+    document.querySelector('meta[name="viewport"]').content += ", maximum-scale=1";
+  }
+</script>
 <meta name="color-scheme" content="light dark">
 <title>{{application}}</title>
 <link rel="stylesheet" href="./stateui-web.css?v={{stamp}}">
