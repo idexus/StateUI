@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The extension: a host and an application chosen once - and for Android a
-// device, for UIKit an iPhone, an iPad or a simulator - the editor working as that host, one Debug and
+// device, for UIKit an iPhone, an iPad or a simulator, for the Web a browser - the editor working as that host, one Debug and
 // one Release that run the application on it, and the suites run as it.
 
 import * as fs from "fs";
@@ -13,6 +13,7 @@ import { Application, findApplications, hasHead, keepsApps } from "./application
 import { isCheckout } from "./checkouts";
 import { configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
+import { askForBrowser, Browser, browserToRunOn, chosenBrowser, webScript } from "./browsers";
 import { applyEditorMode, cleanIndex, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
 import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn } from "./uiKitDevices";
@@ -45,6 +46,7 @@ const heads: Record<Host, string> = {
     android: "an Android head (Platforms/Android/build.gradle.kts)",
     winui: "a WinUI head (Platforms/WinUI/main.swift)",
     gtk: "a GTK head (Platforms/GTK/main.swift)",
+    web: "a Web head (Platforms/Web/main.swift)",
 };
 
 export async function activate(context: vscode.ExtensionContext): Promise<StateUIApi> {
@@ -167,7 +169,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         applicationItem.tooltip = `The application StateUI: Debug and StateUI: Release run on ${described.label}. Click to change.`;
         candidates.length > 0 ? applicationItem.show() : applicationItem.hide();
 
-        if (described.id === "uikit") {
+        if (described.id === "web") {
+            const browser = chosenBrowser(state);
+            deviceItem.command = "stateui.selectBrowser";
+            deviceItem.text = `$(globe) ${browser?.name ?? "Select Browser"}`;
+            deviceItem.tooltip = "The browser StateUI: Debug and StateUI: Release open the application in - one of Chromium's under VS Code's debugger. Click to change.";
+        } else if (described.id === "uikit") {
             const device = chosenUIKitDevice(state);
             deviceItem.command = "stateui.selectUIKitDevice";
             deviceItem.text = `$(device-mobile) ${device?.name ?? "Select UIKit Device"}`;
@@ -178,7 +185,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             deviceItem.text = `$(device-mobile) ${device?.name ?? "Select Android Device"}`;
             deviceItem.tooltip = `The Android device StateUI: Debug, StateUI: Release and StateUI: Run Tests run on${device ? ` - ${device.serial}` : ""}. Click to change.`;
         }
-        described.id === "android" || described.id === "uikit" ? deviceItem.show() : deviceItem.hide();
+        ["android", "uikit", "web"].includes(described.id) ? deviceItem.show() : deviceItem.hide();
     };
 
     const selectHost = async (picked: Host): Promise<void> => {
@@ -234,12 +241,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return id;
     };
 
+    /** The browser a Web launch opens the page in - asked for where none chosen is installed. */
+    const browser = async (checkout: string): Promise<Browser | undefined> => {
+        const found = await browserToRunOn(checkout, state);
+        refresh();
+        return found;
+    };
+
     /** The chosen host's marks made again in the checkout - `rebuild` says which families - and the documents rendered. */
     const rebuildConformance = async (rebuild: Rebuild): Promise<void> => {
         const folder = (vscode.workspace.workspaceFolders ?? []).find((each) => isCheckout(each.uri.fsPath));
         const chosen = host();
         if (!folder || !chosen) {
             void vscode.window.showErrorMessage(`StateUI: the marks are made in a StateUI checkout, as the host chosen - ${folder ? noHost : "no folder here is one"}.`);
+            return;
+        }
+        if (chosen === "web") {
+            void vscode.window.showInformationMessage("StateUI: the Web host has no conformance driver yet, so it makes no marks.");
             return;
         }
         if (chosen === "android" && rebuild === "changed") {
@@ -273,8 +291,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return;
             }
             const picked = await vscode.window.showQuickPick(
-                // Android and UIKit are offered where an application has their head.
-                availableHosts().filter((each) => (each.id !== "android" && each.id !== "uikit") || runnable(each.id).length > 0).map((each) => ({
+                // Android, UIKit and the Web are offered where an application has their head.
+                availableHosts().filter((each) => !["android", "uikit", "web"].includes(each.id) || runnable(each.id).length > 0).map((each) => ({
                     label: each.label,
                     description: each.id === host() ? "current" : undefined,
                     detail: each.detail,
@@ -305,6 +323,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }),
         vscode.commands.registerCommand("stateui.selectUIKitDevice", async () => {
             await askForUIKitDevice(state);
+            refresh();
+        }),
+        vscode.commands.registerCommand("stateui.selectBrowser", async () => {
+            const checkout = [chosen()?.checkout, ...applications().map((each) => each.checkout)]
+                .find((each): each is string => each !== undefined && fs.existsSync(webScript(each, "browsers.sh")));
+            if (!checkout) {
+                void vscode.window.showErrorMessage("StateUI: browsers are listed by a StateUI checkout's .scripts/Web/browsers.sh, and no application here names one.");
+                return;
+            }
+            await askForBrowser(checkout, state);
             refresh();
         }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
@@ -589,6 +617,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         ready: (file, task) => readyWhen(file, task),
         device: androidDevice,
         uiKitDevice,
+        browser,
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);
 

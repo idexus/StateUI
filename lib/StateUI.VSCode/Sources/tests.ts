@@ -49,6 +49,9 @@ export interface Suite {
  *   App SDK beside its test runner first.
  * - For the GTK host an application runs as plain Swift, and the host's own
  *   package with `swift test`, its windows on the desktop's display.
+ * - For the Web host an application runs as plain Swift, and the host's own
+ *   package - `lib/StateUI/StateUI.Web/Testing`, compiled for WebAssembly - by
+ *   `.scripts/Web/test-web.sh`, in Node over a page with just enough of a DOM.
  * - With no host - a machine that runs none - every package but the hosts'
  *   own runs as plain Swift.
  */
@@ -72,7 +75,7 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
         // A label reads the same on every platform: a path written with forward slashes.
         const name = directory === root ? path.basename(root) : path.relative(root, directory).split(path.sep).join("/");
         const owner = path.basename(directory) === "Testing" ? path.dirname(directory) : directory;
-        const forHost = path.basename(owner).match(/\.(AppKit|UIKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
+        const forHost = path.basename(owner).match(/\.(AppKit|UIKit|Android|WinUI|GTK|Web)$/)?.[1]?.toLowerCase();
         if (forHost && forHost !== host) {
             continue;
         }
@@ -85,7 +88,13 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
 
         const base = ["test", "--package-path", directory];
         const winUITests = path.join(root, ".scripts", "WinUI", "test-winui.ps1");
-        if (hostPackage === "winui" && fs.existsSync(winUITests)) {
+        const webTests = path.join(root, ".scripts", "Web", "test-web.sh");
+        if (hostPackage === "web" && fs.existsSync(webTests)) {
+            suites.push({
+                label: name, detail: "test-web.sh - the Web host's own package, compiled for WebAssembly and run in Node",
+                command: "bash", args: [webTests], env: {},
+            });
+        } else if (hostPackage === "winui" && fs.existsSync(winUITests)) {
             suites.push({
                 label: name, detail: "test-winui.ps1 - the WinUI host's own package, the Windows App SDK beside its runner",
                 command: "powershell", args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", winUITests], env: {},

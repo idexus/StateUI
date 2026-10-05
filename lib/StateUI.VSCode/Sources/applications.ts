@@ -31,6 +31,9 @@ export interface Application {
     /** Whether it has a GTK head: `Platforms/GTK/main.swift`. */
     readonly hasGTKHead: boolean;
 
+    /** Whether it has a Web head: `Platforms/Web/main.swift`. */
+    readonly hasWebHead: boolean;
+
     /**
      * The script that builds the application's AppKit bundle, where it has one
      * - `.scripts/AppKit/build-gallery-appkit.sh`. Without one the head is
@@ -72,8 +75,9 @@ function describeApplication(root: string, directory: string): Application | und
     const hasAndroidHead = fs.existsSync(path.join(directory, "Platforms", "Android", "build.gradle.kts"));
     const hasWinUIHead = fs.existsSync(path.join(directory, "Platforms", "WinUI", "main.swift"));
     const hasGTKHead = fs.existsSync(path.join(directory, "Platforms", "GTK", "main.swift"));
+    const hasWebHead = fs.existsSync(path.join(directory, "Platforms", "Web", "main.swift"));
 
-    if (!hasAppKitHead && !hasUIKitHead && !hasAndroidHead && !hasWinUIHead && !hasGTKHead) {
+    if (!hasAppKitHead && !hasUIKitHead && !hasAndroidHead && !hasWinUIHead && !hasGTKHead && !hasWebHead) {
         return undefined;
     }
 
@@ -88,6 +92,7 @@ function describeApplication(root: string, directory: string): Application | und
         hasAndroidHead,
         hasWinUIHead,
         hasGTKHead,
+        hasWebHead,
         bundleScript: fs.existsSync(script) ? script : undefined,
         checkout: checkoutNamedBy(directory),
     };
@@ -102,6 +107,7 @@ export function hasHead(application: Application, host: Host): boolean {
     case "android": return application.hasAndroidHead;
     case "winui": return application.hasWinUIHead;
     case "gtk": return application.hasGTKHead;
+    case "web": return application.hasWebHead;
     }
 }
 
@@ -129,6 +135,11 @@ export function appKitProgram(application: Application, configuration: "debug" |
 /** Where an application's GTK head is, once `.scripts/GTK/run-app.sh` built it in `configuration`. */
 export function gtkProgram(application: Application, configuration: "debug" | "release"): string {
     return path.join(application.directory, ".build", "gtk", configuration, `${application.name}GTK`);
+}
+
+/** Where an application's Web page is laid out, once `.scripts/Web/run-app.sh` built it in `configuration`. */
+export function webSite(application: Application, configuration: "debug" | "release"): string {
+    return path.join(application.directory, ".build", "web", "site", configuration);
 }
 
 /** Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`. */

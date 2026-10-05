@@ -1,7 +1,7 @@
 {
   "name": "stateui",
   "displayName": "StateUI",
-  "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI and GTK.",
+  "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI, GTK and the Web.",
   "version": "0.5.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
@@ -27,6 +27,7 @@
     "workspaceContains:**/Platforms/Android/build.gradle.kts",
     "workspaceContains:**/Platforms/WinUI/main.swift",
     "workspaceContains:**/Platforms/GTK/main.swift",
+    "workspaceContains:**/Platforms/Web/main.swift",
     "onDebugResolve:stateui",
     "onDebugDynamicConfigurations:stateui"
   ],
@@ -67,6 +68,11 @@
       {
         "command": "stateui.selectUIKitDevice",
         "title": "Select UIKit Device",
+        "category": "StateUI"
+      },
+      {
+        "command": "stateui.selectBrowser",
+        "title": "Select Browser",
         "category": "StateUI"
       },
       {

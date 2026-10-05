@@ -5,7 +5,7 @@
 // editor - one host's.
 
 /** A host an application is built for and run on. */
-export type Host = "appkit" | "uikit" | "android" | "winui" | "gtk";
+export type Host = "appkit" | "uikit" | "android" | "winui" | "gtk" | "web";
 
 /** What the extension knows about one host. */
 export interface HostDescription {
@@ -29,7 +29,7 @@ export interface HostDescription {
     readonly target?: {
         readonly triple: string;
 
-        /** What names the Swift SDK in its id: `android` in `swift-6.4.0-RELEASE_android`. */
+        /** What ends the Swift SDK's id: `android` in `swift-6.4.0-RELEASE_android`. */
         readonly swiftSDK?: string;
 
         /** Where that Swift SDK is installed from. */
@@ -61,6 +61,14 @@ export const hosts: readonly HostDescription[] = [
     },
     { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", indexPath: ".build/winui/index-build", platforms: ["win32"] },
     { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process", indexPath: ".build/gtk/index-build", platforms: ["linux"] },
+    {
+        id: "web", label: "Web", detail: "a page in the browser chosen, the application a WebAssembly module in it",
+        indexPath: ".build/web/index-build", platforms: ["darwin", "linux"],
+        target: {
+            triple: "wasm32-unknown-wasip1", swiftSDK: "wasm",
+            swiftSDKGuide: "https://www.swift.org/documentation/articles/wasm-getting-started.html",
+        },
+    },
 ];
 
 /**
@@ -69,7 +77,7 @@ export const hosts: readonly HostDescription[] = [
  */
 export const plainIndexPath = ".build/index-build";
 
-/** The hosts this machine builds and runs - AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux. */
+/** The hosts this machine builds and runs - AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, Web on macOS and Linux. */
 export function availableHosts(platform: NodeJS.Platform = process.platform): HostDescription[] {
     return hosts.filter((each) => each.platforms.includes(platform));
 }
