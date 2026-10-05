@@ -52,6 +52,9 @@ STATEUI_WEB(read_flag) int32_t stateui_web_read_flag(int32_t element, const char
 STATEUI_WEB(set_number) void stateui_web_set_number(int32_t element, const char *name, int32_t length, double value);
 STATEUI_WEB(read_number) double stateui_web_read_number(int32_t element, const char *name, int32_t length);
 
+/// Selects `length` UTF-16 units of a field's words from `start`, its caret there where `length` is 0.
+STATEUI_WEB(select) void stateui_web_select(int32_t element, int32_t start, int32_t length);
+
 /// Steps a number field `by` steps, up or down, within its range - its own `stepUp`.
 STATEUI_WEB(step) void stateui_web_step(int32_t element, int32_t by);
 

@@ -112,6 +112,11 @@ enum WebRelay {
         utf8(name) { stateui_web_read_number(element, $0, $1) }
     }
 
+    /// Selects `length` UTF-16 units of a field's words from `start`.
+    static func select(_ element: Int32, from start: Int, length: Int) {
+        stateui_web_select(element, Int32(start), Int32(length))
+    }
+
     /// Steps a number field `by` steps within its range.
     static func step(_ element: Int32, by steps: Int32) {
         stateui_web_step(element, steps)

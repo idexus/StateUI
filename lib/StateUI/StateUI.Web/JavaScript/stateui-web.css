@@ -215,7 +215,16 @@ body {
   color: var(--stateui-text);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.stateui-room input::placeholder, .stateui-room textarea::placeholder { color: var(--stateui-muted); }
+.stateui-room input::placeholder, .stateui-room textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
+.stateui-room textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
+.stateui-room input[type="search"] {
+  padding-inline-start: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 11px center;
+  background-size: 16px;
+}
+[dir="rtl"] .stateui-room input[type="search"] { background-position: right 11px center; }
 .stateui-room :is(button, input, textarea, select):focus-visible {
   outline: none;
   border-color: var(--stateui-accent);

@@ -27,6 +27,8 @@ final class WebSwitchView: WebDOMView {
 
     override var role: String? { nil }
 
+    override var isControl: Bool { true }
+
     func setOn(_ on: Bool) {
         WebRelay.setFlag(node, "checked", on)
     }

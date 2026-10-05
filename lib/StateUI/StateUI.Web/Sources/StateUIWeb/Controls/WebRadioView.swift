@@ -29,6 +29,8 @@ final class WebRadioView: WebDOMView, WebWordsView {
 
     override var role: String? { nil }
 
+    override var isControl: Bool { true }
+
     func setText(_ text: String) {
         WebRelay.setText(caption.node, text)
     }

@@ -20,6 +20,8 @@ final class WebButtonView: WebDOMView, WebWordsView {
     /// A button is a button of itself.
     override var role: String? { nil }
 
+    override var isControl: Bool { true }
+
     override func setEnabled(_ enabled: Bool) {
         attribute("disabled", enabled ? nil : "")
     }

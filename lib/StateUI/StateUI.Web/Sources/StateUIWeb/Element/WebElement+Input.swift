@@ -22,7 +22,7 @@ extension WebElement {
                 view.listen(event) { [weak self] in self?.heard(.pointer, .pointer(said, WebRelay.eventPoint)) }
             }
         }
-        view.isTapped = hearing.contains(.taps) && !(view is WebButtonView) && !(view is WebTextFieldView)
+        view.isTapped = hearing.contains(.taps) && !view.isControl
     }
 
     /// The DOM's pointer events, and what each says to the element.

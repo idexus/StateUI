@@ -24,6 +24,8 @@ final class WebPickerView: WebDOMView, WebWordsView {
 
     override var role: String? { nil }
 
+    override var isControl: Bool { true }
+
     /// The choices and the tree's choice, each written only where the tree changed it.
     func setChoices(_ choices: [String], chosen: Int, writeChosen: Bool) {
         let write = written.write(choices, chosen: chosen, choiceChanged: writeChosen)

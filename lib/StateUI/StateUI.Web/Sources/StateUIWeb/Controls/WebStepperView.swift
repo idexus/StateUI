@@ -40,6 +40,8 @@ final class WebStepperView: WebDOMView {
 
     override var role: String? { "group" }
 
+    override var isControl: Bool { true }
+
     /// The range and the step, then `value`, kept inside the range; written with as many decimals as they take.
     func apply(value: Double, minimum: Double, maximum: Double, step: Double) {
         range = ValueArithmetic.range(minimum, maximum)

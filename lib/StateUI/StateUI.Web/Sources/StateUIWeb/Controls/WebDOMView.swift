@@ -125,6 +125,9 @@ class WebDOMView {
         attribute("aria-hidden", words.presence == .hiddenWithChildren ? "true" : nil)
     }
 
+    /// Whether the view is a control of the browser's own, which takes taps, the keyboard and a role of itself.
+    var isControl: Bool { false }
+
     /// The role the view plays where nothing says otherwise: a container the user taps is a button.
     var role: String? {
         isTapped ? "button" : nil

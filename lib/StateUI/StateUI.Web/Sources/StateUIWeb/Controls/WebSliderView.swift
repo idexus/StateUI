@@ -23,6 +23,8 @@ final class WebSliderView: WebDOMView {
 
     override var role: String? { nil }
 
+    override var isControl: Bool { true }
+
     /// The value the thumb stands at.
     var value: Double {
         WebRelay.number(of: node, "valueAsNumber")

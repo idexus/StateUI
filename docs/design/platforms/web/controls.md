@@ -57,9 +57,16 @@ its border, its corners - and the browser's look goes.
 
 ## A field
 
-A TextField is an `<input>`, reporting each change of its words and the Return
-key. The tree writes its words only where they differ from what the field
-holds: writing the same words again would move the user's caret to their end.
+A TextField is an `<input>`, a SearchField a search `<input>` and a TextEditor
+a `<textarea>`, each reporting every change of its words, and a field the
+Return key. The tree writes its words only where they differ from what the
+field holds: writing the same words again would move the user's caret to
+their end. The keyboard and the help the user's typing gets are the host
+layer's traits (`InputTraits`): `inputmode`, `autocapitalize`, `spellcheck`,
+`autocorrect` and `autocomplete`, and what the Return key says
+`enterkeyhint`. The caret and the selection are placed in the page's own
+units, UTF-16, counted from the characters the tree names. An editor growing
+with its words stands as tall as they are, rather than scrolling them.
 
 ## Toggles
 
