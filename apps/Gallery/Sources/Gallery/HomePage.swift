@@ -238,10 +238,12 @@ struct HomePage: View {
                 #if WEB
                 Text()
                     .spans {
-                        TextSpan("Copyright 2026 Paweł Krzywdziński and Contributors · ")
+                        TextSpan("Copyright © 2026 Paweł Krzywdziński and Contributors · ")
                             .fontSize(11).textColor(Palette.subtle)
                         TextSpan("StateUI").fontAttributes(.bold).fontSize(11).textColor(Palette.subtle)
-                        TextSpan(" is a trademark of Paweł Krzywdziński.").fontSize(11).textColor(Palette.subtle)
+                        TextSpan(" is a trademark of Paweł Krzywdziński. ").fontSize(11).textColor(Palette.subtle)
+                        TextSpan("Swift").fontAttributes(.bold).fontSize(11).textColor(Palette.subtle)
+                        TextSpan(" is a trademark of Apple Inc.").fontSize(11).textColor(Palette.subtle)
                     }
                     .fontSize(11)
                     .lineBreak(.wordWrap)
@@ -517,10 +519,10 @@ struct HomePage: View {
 
     /// The two lines at the foot, their gap included - both what they take out
     /// of the page and what they give it back by going: on the Web the line
-    /// saying whose it is, wrapped onto two where the page is narrow.
+    /// saying whose it is, wrapped onto three where the page is narrow.
     private static var footer: Double {
         #if WEB
-        40
+        50
         #else
         54
         #endif
