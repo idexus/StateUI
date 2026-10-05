@@ -15,10 +15,10 @@ extension WebElement {
 
     /// Stands an arrangement's pages where they go: a stack's one over another, a split view's in its panes.
     func arrangePages() -> Bool {
-        let arranged = element.arrangedChildren.compactMap(\.web.layoutItem)
+        let arranged = element.arrangedChildren.compactMap(\.web.placedElement).map { ($0.view!, $0.element.layoutValues) }
         switch view {
         case let stack as WebNavigationView:
-            stack.show(arranged.map(\.view))
+            stack.show(arranged.map(\.0))
         case let split as WebSplitView:
             split.sidebar.setItems(Array(arranged.prefix(1)))
             split.detail.setItems(Array(arranged.dropFirst().prefix(1)))

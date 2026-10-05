@@ -11,12 +11,15 @@ extension WebElement {
         if let text = view as? WebTextView { return text.setRuns(element.textRuns) }
         if arrangePages() { return }
         guard let layout = view as? WebLayoutView else { return }
-        layout.setItems(element.arrangedChildren.compactMap(\.web.layoutItem))
+        let items = element.arrangedChildren.compactMap(\.web.placedElement)
+        layout.setItems(
+            items.map { ($0.view!, $0.element.layoutValues) },
+            travellers: items.map { item in (item.element.mount, { [weak item] motion in item?.fadeIn(under: motion) }) })
     }
 
-    /// What this element gives the layout it stands in: its view, or the first view of an element with none.
-    var layoutItem: (view: WebDOMView, values: LayoutValues)? {
-        guard let view else { return element.arrangedChildren.lazy.compactMap(\.web.layoutItem).first }
-        return (view, element.layoutValues)
+    /// The element whose view stands in the layout for this one: itself, or the first with a view of an element with
+    /// none.
+    var placedElement: WebElement? {
+        view != nil ? self : element.arrangedChildren.lazy.compactMap(\.web.placedElement).first
     }
 }

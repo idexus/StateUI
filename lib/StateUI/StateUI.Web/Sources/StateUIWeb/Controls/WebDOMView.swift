@@ -29,6 +29,25 @@ class WebDOMView {
     /// The layout this view stands in, which writes its place.
     weak var placingLayout: WebLayoutView?
 
+    /// Where the browser lays the view out in its layout, as last read; nil before, or where it lays it out nowhere.
+    var slot: Rect?
+
+    /// Where the view is drawn while its place travels; nil at its slot.
+    var travelling: Rect?
+
+    /// How far the view is drawn from where the browser lays it out while its place travels.
+    var travelOffset: (x: Double, y: Double)?
+
+    /// The CSS properties written over its layout's while its place travels, whose own values the cache keeps.
+    var overridden: Set<String> = []
+
+    /// The direction the view writes in, which its logical sides follow.
+    private(set) var isRightToLeft = false
+
+    /// Whether the view shows, and the opacity it stands at - what the host layer's fades read.
+    private(set) var isShown = true
+    private(set) var opacity = 1.0
+
     /// The box the view paints of its own, and whether its size is followed for a gradient in it.
     private var box = WebBox()
     private var followsSize = false
@@ -68,11 +87,16 @@ class WebDOMView {
         WebRelay.listen(node, event, listener)
     }
 
-    /// Sets a CSS property, or takes it away for nil.
+    /// Sets a CSS property, or takes it away for nil; one written over while a place travels waits for it to land.
     func style(_ name: String, _ value: String?) {
         guard styles[name] != value else { return }
         styles[name] = value
-        WebRelay.setStyle(node, name, value)
+        if !overridden.contains(name) { WebRelay.setStyle(node, name, value) }
+    }
+
+    /// The value of a CSS property as the view's own say keeps it.
+    func styled(_ name: String) -> String? {
+        styles[name]
     }
 
     /// Sets an attribute, or takes it away for nil.
@@ -81,6 +105,7 @@ class WebDOMView {
     }
 
     func setOpacity(_ opacity: Double) {
+        self.opacity = opacity
         style("opacity", opacity >= 1 ? nil : WebCSS.number(max(0, opacity)))
     }
 
@@ -89,8 +114,10 @@ class WebDOMView {
         attribute("aria-disabled", enabled ? nil : "true")
     }
 
-    /// Whether the view shows; a hidden one takes no room.
+    /// Whether the view shows; a hidden one takes no room, so its layout's places are read before it goes or comes.
     func setShown(_ shown: Bool) {
+        if shown != isShown { placingLayout?.placing?.beforeChange() }
+        isShown = shown
         attribute("hidden", shown ? nil : "")
     }
 
@@ -110,18 +137,21 @@ class WebDOMView {
         writeTransform()
     }
 
-    private func writeTransform() {
+    /// The view's drawing: moved where its place travels, then as its transform says, for its size as drawn.
+    func writeTransform(size drawn: LayoutSize? = nil) {
         let transform = ownDrawing.under(placedDrawing)
+        let moved = travelOffset.map { "translate(\(WebCSS.signedPixels($0.x)), \(WebCSS.signedPixels($0.y)))" }
         guard !transform.isIdentity else {
-            style("transform", nil)
+            style("transform", moved)
             return style("transform-origin", nil)
         }
-        let size = WebRelay.size(of: node)
+        let size = drawn ?? WebRelay.size(of: node)
         let m = transform.matrix(width: size.width, height: size.height)
         let values = [m.m11, m.m12, m.m13, m.m14, m.m21, m.m22, m.m23, m.m24,
                       m.m31, m.m32, m.m33, m.m34, m.m41, m.m42, m.m43, m.m44]
         style("transform-origin", "0 0")
-        style("transform", "matrix3d(" + values.map(WebCSS.number).joined(separator: ", ") + ")")
+        let matrix = "matrix3d(" + values.map(WebCSS.number).joined(separator: ", ") + ")"
+        style("transform", moved.map { $0 + " " + matrix } ?? matrix)
     }
 
     /// What assistive technology meets of the view: its name and what it does, its level as a heading, whether it
@@ -157,7 +187,8 @@ class WebDOMView {
 
     /// The direction the view lays out and writes in.
     func setDirection(_ direction: LayoutDirection) {
-        attribute("dir", direction == .rightToLeft ? "rtl" : "ltr")
+        isRightToLeft = direction == .rightToLeft
+        attribute("dir", isRightToLeft ? "rtl" : "ltr")
     }
 
     /// Paints the view's own box - its fill, its outline, its shape - again as its size changes where a gradient is in it.

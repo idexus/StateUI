@@ -34,6 +34,35 @@ child stood at an index before a move is the trap: the moves before it in the
 same pass shift the elements, and three children turned about - `[a, b, c]`
 to `[c, b, a]` - stand `[c, a, b]`.
 
+## Places that travel
+
+A stack's, a grid's and a ZStack's children travel to their places by the
+host layer's layout motion (`TravellingPlaces`, `LayoutMotion`): what the
+layout says - travel, arrive, fade in as it joins - is the host layer's; the
+browser only lays out. So the places are read around each call from the page.
+Before the first change the call makes - a patch reaching an element, an
+element leaving, a view hidden or shown - every child standing in a followed
+layout is read where the browser laid it out (`WebPlacements.beforeChange`);
+once the call's changes are all in, each layout the call arranged is read
+again, and the host layer's motion takes each child from where it stood to
+where it now stands. Both reads are one call to the page each, of the
+children's places in their layout from its own layout - `offsetLeft`,
+`offsetTop` and their size, which no transform moves.
+
+A child is drawn where its place stands on the way: moved from where the
+browser lays it out by a translation before its own transform, and sized as
+the place passes through, its end margins making up the rest of its slot -
+so the room it takes in its layout is its slot's from the first frame, and
+everything around it stands where it is going. A view laying out words keeps
+the size it is bound for and only moves. At rest the view's own CSS stands
+again.
+
+The trap: the place a child sets out from must be read before anything
+moves it. Read after the call's changes, every child already stands at its
+new place and nothing travels; read from a measurement kept since the last
+change, a child the browser moved meanwhile - an image arriving, the room
+resized - sets out from where it no longer is.
+
 ## A placing run
 
 A ZStack whose children a placing run stands - an engine's - stands each

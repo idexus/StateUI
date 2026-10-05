@@ -85,6 +85,11 @@ STATEUI_WEB(read_box) void stateui_web_read_box(int32_t element, double *into);
 /// Writes the element's size in its layout, before any transform, into `into`: width, height.
 STATEUI_WEB(read_size) void stateui_web_read_size(int32_t element, double *into);
 
+/// Where each child of `count` pairs `(layout, child)` stands in its layout, before any transform: four numbers a
+/// child - from the layout's top left, then its size - and four NaN for one the page lays out nowhere; a pair whose
+/// child is its layout reads the layout's own size.
+STATEUI_WEB(read_places) void stateui_web_read_places(const int32_t *pairs, int32_t count, double *into);
+
 /// Writes how far the element is scrolled into `into`: across, down.
 STATEUI_WEB(read_scroll) void stateui_web_read_scroll(int32_t element, double *into);
 

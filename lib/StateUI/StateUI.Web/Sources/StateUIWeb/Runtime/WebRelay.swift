@@ -163,6 +163,21 @@ enum WebRelay {
         return LayoutSize(width: read[0], height: read[1])
     }
 
+    /// Where each child stands in its layout, before any transform, by `(layout, child)` pairs; nil for a child laid
+    /// out nowhere, and a layout's own size for a pair of it with itself.
+    static func places(_ pairs: [(layout: Int32, child: Int32)]) -> [Rect?] {
+        guard !pairs.isEmpty else { return [] }
+        let flat = pairs.flatMap { [$0.layout, $0.child] }
+        let read = flat.withUnsafeBufferPointer { list in
+            numbers(pairs.count * 4) { stateui_web_read_places(list.baseAddress, Int32(pairs.count), $0) }
+        }
+        return (0..<pairs.count).map { index in
+            let at = index * 4
+            guard !read[at].isNaN else { return nil }
+            return Rect(x: read[at], y: read[at + 1], width: read[at + 2], height: read[at + 3])
+        }
+    }
+
     /// How far the element is scrolled.
     static func scroll(of element: Int32) -> Point {
         let read = numbers(2) { stateui_web_read_scroll(element, $0) }

@@ -31,6 +31,14 @@ class WebLayoutView: WebDOMView {
     private(set) var children: [WebDOMView] = []
     private var values: [LayoutValues] = []
 
+    /// Each child's mounted element, by number, and how it fades in as it joins: what its place travels by.
+    private var travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
+
+    /// Where the children travel to their places, and who reads their places on the page; nil while they stand at
+    /// once wherever the browser lays them out.
+    let places = TravellingPlaces()
+    weak var placing: WebPlacements?
+
     /// A grid's tracks as the element defines them.
     private var rows: [GridLength] = []
     private var columns: [GridLength] = []
@@ -108,7 +116,10 @@ class WebLayoutView: WebDOMView {
     /// Puts `items` in the element in their order, where it holds them otherwise, and writes each one's place; a
     /// child this layout no longer holds leaves the element.
     /// Design: docs/design/platforms/web/layout.md#children-in-order
-    func setItems(_ items: [(view: WebDOMView, values: LayoutValues)]) {
+    func setItems(
+        _ items: [(view: WebDOMView, values: LayoutValues)],
+        travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
+    ) {
         let views = items.map(\.view)
         if views.count != children.count || !zip(views, children).allSatisfy({ $0 === $1 }) {
             for (index, view) in views.enumerated() { WebRelay.insert(view.node, into: node, at: index) }
@@ -121,12 +132,29 @@ class WebLayoutView: WebDOMView {
         }
         children = views
         values = items.map(\.values)
+        self.travellers = travellers
         for view in views { view.placingLayout = self }
         if arrangement == .grid { writeTracks() }
         placeAll()
     }
 
+    /// Whether the children travel to their places: a stack's, a grid's, a ZStack's in their areas.
+    var travels: Bool {
+        switch arrangement {
+        case .stack, .grid: true
+        case .layers: placement == nil
+        case .single: false
+        }
+    }
+
+    /// Stands the child at `index` at `slot`, where the browser laid it out, or on its way there.
+    func place(_ child: WebDOMView, at index: Int, slot: Rect) {
+        let traveller = index < travellers.count ? travellers[index] : (mount: 0, fadeIn: nil)
+        places.place(child, mount: traveller.mount, at: slot, values: values[index], fadeIn: traveller.fadeIn)
+    }
+
     private func placeAll() {
+        if travels { placing?.arrange(self) }
         let run = arrangement == .layers ? placement?.placements ?? [] : []
         let order = ZStackArithmetic.drawingOrder(of: children.count, placedBy: run)
         for (index, view) in children.enumerated() {

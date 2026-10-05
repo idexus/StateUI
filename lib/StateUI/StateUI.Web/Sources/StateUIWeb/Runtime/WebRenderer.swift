@@ -16,6 +16,9 @@ final class WebRenderer {
 
     let frameClock = WebFrameClock()
 
+    /// Where the children of the page's travelling layouts stand, read around each call's changes.
+    let placements = WebPlacements()
+
     /// The application's name, which the core tells the application.
     let applicationName: String
 
@@ -57,6 +60,7 @@ final class WebRenderer {
     /// Design: docs/design/platforms/web/runtime.md#the-relay
     func entryEnded() {
         runtime.pump.turn()
+        placements.settle()
         if let wait = runtime.core.nextWake { WebRelay.wake(after: wait) }
     }
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CWebTesting
+@_spi(Host) import StateUI
 @testable import StateUIWeb
 
 /// What the page holds, as the suite reads it - an element's children, its style, its attributes, its words and a
@@ -44,6 +45,11 @@ enum WebPage {
     static func leave(_ element: Int32) {
         WebRelay.start()
         stateui_web_testing_leave(element)
+    }
+
+    /// The page lays the element out at `place` in its parent.
+    static func layOut(_ element: Int32, at place: Rect) {
+        stateui_web_testing_lay_out(element, place.x, place.y, place.width, place.height)
     }
 
     private static func read(_ name: String, _ reading: (UnsafePointer<CChar>?, Int32) -> Int32) -> String {

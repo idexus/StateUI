@@ -45,8 +45,11 @@ final class WebElement: NativeElement {
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
+        host?.placements.beforeChange()
+        if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
         followPages(changed: changed, wasDescribed: wasDescribed)
+        configureLayoutMotion()
         arrangeChildren()
         listenForTheUser()
         followFrame()
@@ -61,6 +64,7 @@ final class WebElement: NativeElement {
     }
 
     func leave() {
+        host?.placements.beforeChange()
         if let view { host?.runtime.frames.follow(self, order: view.serial, reads: false) }
         view?.detach()
     }
