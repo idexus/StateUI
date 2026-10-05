@@ -470,16 +470,17 @@ struct HomePage: View {
     }
 
     /// What the room holds on the Web, and how tall the run of cards stands in
-    /// it: the foot first, the heading while it leaves a run worth drawing, and
-    /// under the cards the words, then the buttons stepping them where they
-    /// stand - each only where the run still reaches its ceiling beside it.
+    /// it. The foot stands always; the buttons stepping the run stand only
+    /// beside a run at its ceiling, so they go first; the run then gives up its
+    /// height down to the least worth drawing, and only past that the words
+    /// under it go, and then the heading.
     private static func webFitted(in room: Rect, at most: Chrome, stepping: Bool) -> (chrome: Chrome, run: Double) {
         let usable = room.height - 2 * margin - gap - footer
         let spare = usable - heading - gap
         let heads = most.heads && spare >= least
-        let worded = most == .full && heads && spare - words >= gallery
-        let stepped = worded && spare - words - (stepping ? gap + buttons : 0) >= gallery
-        let run = !heads ? usable : stepped ? spare - words - (stepping ? gap + buttons : 0) : worded ? spare - words : spare
+        let worded = heads && spare - words >= least
+        let stepped = worded && stepping && spare - words - gap - buttons >= gallery
+        let run = !heads ? usable : stepped ? spare - words - gap - buttons : worded ? spare - words : spare
         return (stepped ? .full : worded ? .worded : heads ? .heading : .cards, max(min(run, gallery), least))
     }
 
