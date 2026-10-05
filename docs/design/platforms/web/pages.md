@@ -31,6 +31,17 @@ width, so no measuring moves them.
 The page is one window: an application's second window has no place of its
 own in it.
 
+## Overlays
+
+What a window lays over its pages - the overlays its pages declare and the
+library's own, in the host layer's order (`WindowPresentation`) - stands in
+one layer over the window's room, each overlay the room whole, the first
+lowest. A touch beside what they hold goes on to the pages: the layer, each
+overlay and the layout in it take no touch of their own
+(`pointer-events: none`), what they hold does - a layout letting touches
+through gives that back to its children only where a child does not let
+them through itself.
+
 ## A split view
 
 A split view stands its sidebar in an `<aside>` beside the detail. Where the

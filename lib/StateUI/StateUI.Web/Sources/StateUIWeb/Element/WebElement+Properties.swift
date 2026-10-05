@@ -24,6 +24,10 @@ extension WebElement {
         case .navigationStack: return WebNavigationView()
         case .splitView: return WebSplitView()
         case .tabView: return WebTabView()
+        case .overlay:
+            let layer = WebLayoutView(arrangement: .single)
+            layer.setLetsInputThrough(true)
+            return layer
         default: return WebUnsupportedView(type)
         }
     }

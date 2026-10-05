@@ -15,11 +15,18 @@ final class WebWindow {
     /// The room under the bar, where the pages stand.
     let room = WebLayoutView(arrangement: .single)
 
+    /// What the window lays over its pages, each layer over the room whole, the first lowest; a touch beside what
+    /// they hold goes on to the pages.
+    let overlays = WebLayoutView(arrangement: .single)
+
     init() {
         frame.attribute("class", "stateui-window")
         room.attribute("class", "stateui-room")
+        overlays.attribute("class", "stateui-overlays")
+        overlays.setLetsInputThrough(true)
         WebRelay.insert(bar.node, into: frame.node, at: 0)
         WebRelay.insert(room.node, into: frame.node, at: 1)
+        WebRelay.insert(overlays.node, into: frame.node, at: 2)
         WebRelay.insert(frame.node, into: WebRelay.body, at: 0)
     }
 
@@ -28,9 +35,16 @@ final class WebWindow {
         room.setItems(view.map { [($0, LayoutValues())] } ?? [])
     }
 
+    /// Lays `layers` over the room, the first lowest.
+    /// Design: docs/design/platforms/web/pages.md#overlays
+    func showOverlays(_ layers: [WebDOMView]) {
+        overlays.setItems(layers.map { ($0, LayoutValues()) })
+    }
+
     func close() {
         bar.detach()
         room.detach()
+        overlays.detach()
         frame.detach()
     }
 }
