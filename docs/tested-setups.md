@@ -7,7 +7,7 @@ what its hosts need ([Getting started](getting-started.md#requirements)).
 
 ## A Mac: AppKit, UIKit, Android Views, Web
 
-Last verified 2026-10-03.
+Last verified 2026-10-05.
 
 | | |
 | --- | --- |
