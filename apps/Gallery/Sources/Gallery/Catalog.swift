@@ -307,8 +307,7 @@ final class Catalog {
                     Sample(TickerSample()),
                     Sample(PollSample()),
                     Sample(TaskSleepSample()),
-                    Sample(FoundationProbeSample()),
-                ]),
+                ] + Self.foundationProbe),
         ]
 
 
@@ -331,6 +330,16 @@ final class Catalog {
         #endif
 
         self.groups = groups
+    }
+
+    /// What Foundation answers of the clock and the calendar, where the application links Foundation: the Web links
+    /// none, so its module stays small.
+    private static var foundationProbe: [Sample] {
+        #if WEB
+        []
+        #else
+        [Sample(FoundationProbeSample())]
+        #endif
     }
 
     /// The animation the host draws on the GPU, on the hosts that draw it.
