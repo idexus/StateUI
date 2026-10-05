@@ -175,6 +175,40 @@ enum WebRelay {
     /// Whether the element the nearness being heard is of came near.
     static var eventNear: Bool { stateui_web_event_number(0) != 0 }
 
+    /// The `<iframe>` `element` shows `source`.
+    static func showInFrame(_ element: Int32, _ source: WebViewSource) {
+        switch source {
+        case .url(let address):
+            utf8(address) { stateui_web_frame_show(element, 0, $0, $1, nil, 0) }
+        case .html(let document, let base):
+            utf8(document) { words, length in
+                utf8(base ?? "") { stateui_web_frame_show(element, 1, words, length, $0, $1) }
+            }
+        }
+    }
+
+    /// What the page can know of the frame's document: whether it is of the page's own site, and its history.
+    static func frameState(_ element: Int32) -> (reachable: Bool, back: Bool, forward: Bool) {
+        let state = stateui_web_frame_state(element)
+        return (state & 1 != 0, state & 2 != 0, state & 4 != 0)
+    }
+
+    /// The frame's document's address where it is of the page's own site; "" where not.
+    static func frameAddress(_ element: Int32) -> String {
+        copyRead(length: stateui_web_frame_address(element))
+    }
+
+    /// A step of the frame's own - back, forward, the page again; whether it could take it.
+    static func frameStep(_ element: Int32, _ step: Int32) -> Bool {
+        stateui_web_frame_step(element, step) != 0
+    }
+
+    /// The JSON a script run in the frame's document answers; nil where it could not run.
+    static func evaluateInFrame(_ element: Int32, _ script: String) -> String? {
+        let length = utf8(script) { stateui_web_frame_evaluate(element, $0, $1) }
+        return length < 0 ? nil : copyRead(length: length)
+    }
+
     /// Shows the popover `element` under `anchor`, or beside it, else at `point` in the window.
     static func showPopover(
         _ element: Int32, under anchor: Int32 = 0, at point: Point = Point(x: 0, y: 0), beside: Bool = false

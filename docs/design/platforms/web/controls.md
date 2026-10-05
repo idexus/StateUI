@@ -126,6 +126,27 @@ has no spinner of its own - with the role of a busy progress bar; stopped, it
 shows nothing and keeps its room, and it turns slower where the user asks for
 less motion.
 
+## A web view
+
+A WebView is the browser's own `<iframe>`: an address it loads, a document
+written in place its `srcdoc` - of the page's own site, a `<base>` before it
+where the document says where its links resolve - told by the same `data:`
+address every host tells such a document by (`WebDocument`). The page hears
+the frame's document load, and tells it navigated, for the reason the
+program asked where it asked one (`WebNavigationCause`).
+
+The browser keeps a document of another site to itself: the page cannot
+read where its user went inside it, nor its history, nor run a script in
+it. So of such a document the page tells the address it gave the frame,
+no step back or forward is offered, going back, forward or running a script
+fails with that reason, and the page again loads the address the page
+gave. A document of the page's own site - one written in place - the page
+reaches whole: its address, its history where the browser says it
+(`navigation.canGoBack`), its steps, and a script's answer by the host
+layer's reading of its JSON (`ScriptAnswer`). A frame has no agent of its
+own and no process the page could see end: `userAgent` and
+`processTerminated` stay unrealized.
+
 ## Pictures
 
 An Image is an `<img>` showing one of the application's pictures, which

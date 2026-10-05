@@ -21,6 +21,7 @@ enum WebRegistrations {
         shapes(registry)
         canvas(registry)
         items(registry)
+        web(registry)
         fields(registry)
         layouts(registry)
         pictures(registry)

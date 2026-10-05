@@ -6,7 +6,8 @@
 
 /// The Web's part of the acts every host performs (`HostActPerformer`): the clock and the zones as the browser has
 /// them, a question in the browser's modal dialog, a word to the screen reader through the page's live region, the
-/// focus, a value kept in the browser's storage for the page's site, and a list scrolled to an item.
+/// focus, a value kept in the browser's storage for the page's site, a list scrolled to an item, and a web view's
+/// steps and scripts.
 /// Design: docs/design/platforms/web/runtime.md#acts
 @MainActor
 final class WebActToolkit: ActToolkit {
@@ -69,19 +70,42 @@ final class WebActToolkit: ActToolkit {
         return true
     }
 
-    /// An ItemsView's scroll to an item.
+    /// An ItemsView's scroll to an item, and a web view's steps and scripts - which a document of another site takes
+    /// none of.
     func performOwn(_ call: HostActCall) -> Bool {
-        guard call.act == .scrollTo else { return false }
+        let owners: [Act: String] = [
+            .scrollTo: "an ItemsView",
+            .goBack: "a web view", .goForward: "a web view", .reload: "a web view", .evaluateJavaScript: "a web view",
+        ]
+        guard let owner = owners[call.act] else { return false }
         let core = renderer.runtime.core
+        let elsewhere = "the page cannot reach into a document of another site"
         do {
             let element = try renderer.runtime.tree.aimed(call)
-            guard let items = (element.native as? WebElement)?.view as? WebItemsView else {
-                core.fail(call, "scrollTo is an act of an ItemsView", log: log)
+            switch (call.act, (element.native as? WebElement)?.view) {
+            case (.scrollTo, let items as WebItemsView):
+                items.scroll(
+                    to: call.arguments.value(1)?.string ?? "",
+                    anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+            case (.goBack, let frame as WebFrameView), (.goForward, let frame as WebFrameView),
+                 (.reload, let frame as WebFrameView):
+                let step: WebNavigationType = call.act == .goBack ? .back : call.act == .goForward ? .forward : .reload
+                guard frame.step(step) else {
+                    core.fail(call, elsewhere, log: log)
+                    return true
+                }
+            case (.evaluateJavaScript, let frame as WebFrameView):
+                let ran = frame.evaluate(call.arguments.value(1)?.string ?? "")
+                guard ran.ran else {
+                    core.fail(call, elsewhere, log: log)
+                    return true
+                }
+                core.reply(call, [ran.answer.propValue])
+                return true
+            default:
+                core.fail(call, "\(call.act.name) is an act of \(owner)", log: log)
                 return true
             }
-            items.scroll(
-                to: call.arguments.value(1)?.string ?? "",
-                anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
             core.reply(call, [])
         } catch {
             core.fail(call, error.reason, log: log)

@@ -90,6 +90,23 @@ STATEUI_WEB(show_popover) void stateui_web_show_popover(
     int32_t element, int32_t anchor, double x, double y, int32_t side);
 STATEUI_WEB(hide_popover) void stateui_web_hide_popover(int32_t element);
 
+/// The `<iframe>` shows the address `words` for `kind` 0, or for 1 the document `words`, its links resolved against
+/// `base` where one is given.
+STATEUI_WEB(frame_show) void stateui_web_frame_show(
+    int32_t element, int32_t kind, const char *words, int32_t length, const char *base, int32_t baseLength);
+
+/// What the page can know of the frame's document: 1 it is of the page's own site, 2 it can go back, 4 forward.
+STATEUI_WEB(frame_state) int32_t stateui_web_frame_state(int32_t element);
+
+/// The frame's document's address where it is of the page's site, read in two steps: its length, then `copy_read`.
+STATEUI_WEB(frame_address) int32_t stateui_web_frame_address(int32_t element);
+
+/// A step of the frame's own - 0 back, 1 forward, 2 the page again; whether it could take it.
+STATEUI_WEB(frame_step) int32_t stateui_web_frame_step(int32_t element, int32_t step);
+
+/// Runs the script in the frame's document: its value as JSON, read as `copy_read` reads; -1 where it could not.
+STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, const char *script, int32_t length);
+
 /// Shows the `<dialog>` element over the page, which takes no input but it until it closes; `close_modal` closes it.
 STATEUI_WEB(show_modal) void stateui_web_show_modal(int32_t element);
 STATEUI_WEB(close_modal) void stateui_web_close_modal(int32_t element);
