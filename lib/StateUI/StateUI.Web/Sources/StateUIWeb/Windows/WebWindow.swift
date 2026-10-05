@@ -17,7 +17,7 @@ final class WebWindow {
 
     /// What the window lays over its pages, each layer over the room whole, the first lowest; a touch beside what
     /// they hold goes on to the pages.
-    let overlays = WebLayoutView(arrangement: .single)
+    let overlays = WebLayoutView(arrangement: .layers)
 
     init() {
         frame.attribute("class", "stateui-window")
