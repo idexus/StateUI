@@ -392,6 +392,25 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(notOpen, .notOpen)
     }
 
+    /// A phone and a page in a browser open no window beside their own: a second one is refused as unsupported,
+    /// while a desktop opens it.
+    func testAPhoneOrAPageOpensNoSecondWindow() async {
+        Renders().render(tree())
+        let was = (StandardEnvironment.device.info.formFactor, StandardEnvironment.device.info.platform)
+        defer {
+            (StandardEnvironment.device.info.formFactor, StandardEnvironment.device.info.platform) = was
+        }
+
+        for (formFactor, platform, refused) in [
+            (FormFactor.phone, "iOS", WindowError.unsupported), (.desktop, "Web", .unsupported), (.desktop, "macOS", nil),
+        ] {
+            StandardEnvironment.device.info.formFactor = formFactor
+            StandardEnvironment.device.info.platform = platform
+            let refusal = await refusal { try await self.application.openWindow(.note) }
+            XCTAssertEqual(refusal, refused, "\(formFactor) on \(platform)")
+        }
+    }
+
     // MARK: - A scene ends with its last window
 
     /// A scene ENDS WITH ITS LAST WINDOW, its state with it: the next window of it opens a fresh scene.

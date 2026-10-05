@@ -17,7 +17,10 @@ user's system, until the application gives it a look of its own. The browser
 lays them out: each child's margin, alignments and sizes are written as its
 CSS, so it stands where StateUI places it on every host. It shows any other
 control's name in red where the control belongs, so a gap is visible rather
-than silent. The page the user sees names the browser's tab.
+than silent. The page the user sees names the browser's tab. A page is one
+window, the browser's own: `openWindow` asking for another is refused with
+`WindowError.unsupported`, as on a phone, and the inspector offers no window
+of its own.
 
 ```text
 lib/StateUI/StateUI.Web/
