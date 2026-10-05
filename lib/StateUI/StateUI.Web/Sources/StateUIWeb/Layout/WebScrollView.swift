@@ -40,6 +40,7 @@ final class WebScrollView: WebLayoutView, FramedScroller {
     func apply(orientation: ScrollOrientation, bars: ScrollIndicatorVisibility, offset: Point?) {
         let across = orientation != .vertical
         let down = orientation != .horizontal
+        scrolls = (across, down)
         style("overflow-x", across ? "auto" : "hidden")
         style("overflow-y", down ? "auto" : "hidden")
         // Its own ways it keeps to itself; across them the user's scrolling goes on to the scroller around it.

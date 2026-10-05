@@ -485,11 +485,11 @@ body {
 }
 .stateui-room :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
 /* A bar of work done, a ring while work goes on, a radio button with its caption, a choice from a list. */
+.stateui-progress { display: grid; align-items: center; min-width: 80px; }
 .stateui-room progress {
   appearance: none;
   -webkit-appearance: none;
   width: 100%;
-  min-width: 80px;
   height: 6px;
   border: 0;
   border-radius: 999px;
@@ -509,7 +509,8 @@ body {
   visibility: hidden;
 }
 .stateui-activity[data-running] { visibility: visible; animation: stateui-turn 0.8s linear infinite; }
-/* A toggle and a ring stand at their own size in the middle of the frame the layout gives their view. */
+/* A toggle and a ring stand at their own size in the middle of the frame the layout gives their view, a bar of work
+   done across its middle. */
 .stateui-toggle, .stateui-indicator { display: inline-grid; place-items: center; }
 .stateui-toggle { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .stateui-toggle[aria-disabled] { cursor: default; }
@@ -593,7 +594,9 @@ body {
 [data-lets-through] { pointer-events: none; }
 [data-lets-through] > :not([data-lets-through]) { pointer-events: auto; }
 
-.stateui-shape { display: block; overflow: visible; width: 100%; height: 100%; }
+/* A shape: its drawing on a surface over the room its layout gives it, the surface taking no room of its own. */
+.stateui-shape { position: relative; min-width: 0; min-height: 0; }
+.stateui-shape > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 
 .stateui-unsupported {
   align-self: start;

@@ -133,7 +133,8 @@ calendar opening and closing reach no event of the page's, so `isOpen`,
 
 A ProgressBar is the browser's `<progress>`, its share of the work done from 0
 to 1, drawn as a thin rounded bar in the accent colour or the application's
-tint. An ActivityIndicator is a ring turning while work goes on - the browser
+tint across the middle of a box that takes the view's frame - a cell taller
+than the bar leaves the bar thin and the frame the cell's. An ActivityIndicator is a ring turning while work goes on - the browser
 has no spinner of its own - with the role of a busy progress bar; stopped, it
 shows nothing and keeps its room, and it turns slower where the user asks for
 less motion. The ring stands at its own size in the middle of the view's

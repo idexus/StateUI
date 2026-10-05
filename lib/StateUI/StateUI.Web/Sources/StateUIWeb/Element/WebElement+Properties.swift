@@ -22,7 +22,11 @@ extension WebElement {
 
         switch type {
         case .page: return WebLayoutView(tag: "section", arrangement: .single)
-        case .navigationStack: return WebNavigationView()
+        case .navigationStack:
+            let stack = WebNavigationView()
+            // A page arriving moves on the browser's own animation, which nothing else tells has ended.
+            stack.listen("animationend") { [weak self] in self?.host?.runtime.frames.laidOut() }
+            return stack
         case .splitView: return WebSplitView()
         case .tabView: return WebTabView()
         case .overlay:

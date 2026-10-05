@@ -21,8 +21,12 @@ width and height, their least and most, and its alignment across its slot -
 in a grid's cell along both axes. Start, centre and end are CSS's start,
 center and end; a filling child stretches, unless a stated or a most size
 stops it short of its slot, when it stands in the middle, as the host layer
-places it. A hidden child is `hidden`, which takes it out of the layout: it
-takes no room and no spacing.
+places it. The least size a control's look gives it - a button's, a
+field's, a slider's - is its own size, and yields where the tree states a
+size or a most, where the child fills its slot and in an area: CSS's least
+wins over a stated size, so a button stated 30 high stood 36. A hidden child
+is `hidden`, which takes it out of the layout: it takes no room and no
+spacing.
 
 ## Children in order
 
@@ -105,12 +109,15 @@ same rule.
 A view the tree reads where it stands says so as soon as the page laid it
 out - at the end of the call from the page that changed it, the layout read
 then, and again when its `ResizeObserver` tells it moved, which the browser
-does before it draws - and after a scroll on the display's frame: its box in
-its layout parent's, its corner in the page, and that corner from the
-window's room - the page below the bar (`MountedElement.frameNumbers`). What
+does before it draws - and after a display frame that wrote a value or a
+scroll: its box in its layout parent's, its corner in the page, and that
+corner from the window's room - the page below the bar (`MountedElement.frameNumbers`). What
 the report changes is rendered in the same call, so a page sized by its own
 frame - the Gallery's tabs - never stands a frame at no width. A view the
-browser lays out nowhere - a covered page - says nothing.
+browser lays out nowhere - a covered page - says nothing. The trap: a
+padding, a spacing or a track on its way moves a child without resizing it,
+which no observer of the page tells - so every frame that wrote something
+counts as laid out.
 
 ## Values in CSS
 

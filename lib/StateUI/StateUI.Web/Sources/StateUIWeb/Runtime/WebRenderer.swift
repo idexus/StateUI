@@ -144,6 +144,8 @@ extension WebRenderer: FramePresenter {
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
         if runtime.tree.present(states: states, properties: properties).windowChrome { showWindows() }
+        // What a frame wrote may move a view without resizing it, which no observer of the page tells.
+        if !states.isEmpty || !properties.isEmpty { runtime.frames.laidOut() }
     }
 
     func renderIfNeeded() {

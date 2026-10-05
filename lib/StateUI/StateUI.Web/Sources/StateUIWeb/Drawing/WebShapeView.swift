@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A shape: an `<svg>` holding one path, drawn again as its room changes - a rectangle and an ellipse filling the
-/// room, half their outline in from its edges, and a geometry of the shape's own placed in it by the host layer's
+/// A shape: a box taking no room of its own, as a shape has no size of its own, and over it an `<svg>` holding one
+/// path, drawn again as its room changes - a rectangle and an ellipse filling the room, half their outline in from its edges, and a geometry of the shape's own placed in it by the host layer's
 /// arithmetic - filled and outlined by its brushes, the outline never scaled with it.
 /// Design: docs/design/platforms/web/drawing.md#a-shape
 @MainActor
@@ -17,6 +17,7 @@ final class WebShapeView: WebDOMView {
         case authored([Double], evenOdd: Bool, aspect: ContentMode, transform: [Double]?)
     }
 
+    private let surface = WebDOMView(vector: "svg")
     private let path = WebDOMView(vector: "path")
     private let brushes = WebDOMView(vector: "defs")
     private var shown: [WebDOMView] = []
@@ -27,10 +28,11 @@ final class WebShapeView: WebDOMView {
     private var lineWidth = 1.0
 
     init() {
-        super.init(vector: "svg")
+        super.init(tag: "div")
         attribute("class", "stateui-shape")
-        WebRelay.insert(brushes.node, into: node, at: 0)
-        WebRelay.insert(path.node, into: node, at: 1)
+        WebRelay.insert(surface.node, into: node, at: 0)
+        WebRelay.insert(brushes.node, into: surface.node, at: 0)
+        WebRelay.insert(path.node, into: surface.node, at: 1)
         WebRelay.observeSize(node, WebRelay.listener { [weak self] in self?.redraw() })
     }
 
@@ -113,6 +115,7 @@ final class WebShapeView: WebDOMView {
         for each in shown { each.detach() }
         path.detach()
         brushes.detach()
+        surface.detach()
         super.detach()
     }
 }

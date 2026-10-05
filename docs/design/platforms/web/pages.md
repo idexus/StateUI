@@ -139,7 +139,10 @@ pages and the state, and the bar follows the page the user now sees.
 
 A stack holds its pages one over another in one cell, the top one shown:
 those beneath stay in the page, hidden, where the user left them - scrolled
-as they were - and a page pushed arrives with a short rise. A covered page is
+as they were - and a page pushed arrives with a short rise, at whose end
+every view the tree reads says where it stands: the rise moves the page on
+the browser's own animation, which no observer of the page tells, so a frame
+read during it stood 6 points low until something else moved. A covered page is
 hidden over its own inline `display`, the stylesheet's rule being
 `!important`: an element's own style wins over a rule otherwise. The way
 back is the bar's: the host layer goes back (`HostRuntime.goBack`), and the

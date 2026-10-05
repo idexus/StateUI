@@ -34,7 +34,8 @@ extension WebDriver {
         case (.maximum, is WebSliderView): return try WebBrowser.number("Number(e.max)", on: e)?.propValue
         case (.value, is WebStepperView): return try WebBrowser.number("Number(e.querySelector('input').value)", on: e)?.propValue
         case (.progress, is WebProgressView):
-            return .some(try WebBrowser.evaluate("e.hasAttribute('value') ? e.value : null", on: e).flatMap(Double.init)?.propValue)
+            let bar = view.named.node
+            return .some(try WebBrowser.evaluate("e.hasAttribute('value') ? e.value : null", on: bar).flatMap(Double.init)?.propValue)
         case (.isAnimating, is WebActivityView): return try WebBrowser.truth("!!e.querySelector('[data-running]')", on: e).propValue
         case (.selectedIndex, is WebPickerView):
             return .some(try WebBrowser.number("e.selectedIndex", on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })

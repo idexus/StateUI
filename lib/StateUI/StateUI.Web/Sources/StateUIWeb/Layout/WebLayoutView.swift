@@ -49,6 +49,11 @@ class WebLayoutView: WebDOMView {
     /// A ZStack's placing run; nil while each child stands in its own area.
     private var placement: HostPlacementRun?
 
+    /// The ways the layout scrolls its child, which there is no larger than its room.
+    var scrolls = (across: false, down: false) {
+        didSet { if scrolls != oldValue { placeAll() } }
+    }
+
     init(tag: String = "div", arrangement: Arrangement) {
         self.arrangement = arrangement
         super.init(tag: tag)
@@ -176,13 +181,24 @@ class WebLayoutView: WebDOMView {
         for (side, length) in WebCSS.sides(values.margin) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
-        view.style("min-width", WebCSS.pixels(values.minimumWidth))
-        view.style("min-height", WebCSS.pixels(values.minimumHeight))
-        view.style("max-width", WebCSS.pixels(values.maximumWidth))
-        view.style("max-height", WebCSS.pixels(values.maximumHeight))
-
-        let across = WebCSS.alignment(values.horizontal, stops: values.width != nil || values.maximumWidth != nil)
-        let down = WebCSS.alignment(values.vertical, stops: values.height != nil || values.maximumHeight != nil)
+        // A child is no larger than its slot - across a stack, in a cell, an area or a room it does not scroll in.
+        let boundAcross = arrangement != .stack(.horizontal) && !scrolls.across
+        let boundDown = arrangement != .stack(.vertical) && !scrolls.down
+        view.style("max-width", WebCSS.most(values.maximumWidth, bound: boundAcross))
+        view.style("max-height", WebCSS.most(values.maximumHeight, bound: boundDown))
+        let stopsAcross = values.width != nil || values.maximumWidth != nil
+        let stopsDown = values.height != nil || values.maximumHeight != nil
+        let across = WebCSS.alignment(values.horizontal, stops: stopsAcross)
+        let down = WebCSS.alignment(values.vertical, stops: stopsDown)
+        // The least a control's look gives it is its own size, which a size or a most the tree states, a slot it
+        // fills and an area it stands in win over.
+        let sized = arrangement == .layers && values.area != nil
+        let fillsAcross = across == "stretch" && arrangement != .stack(.horizontal)
+        let fillsDown = down == "stretch" && arrangement != .stack(.vertical)
+        let yieldsAcross = stopsAcross || fillsAcross || sized
+        let yieldsDown = stopsDown || fillsDown || sized
+        view.style("min-width", WebCSS.pixels(values.minimumWidth) ?? (yieldsAcross ? "0" : nil))
+        view.style("min-height", WebCSS.pixels(values.minimumHeight) ?? (yieldsDown ? "0" : nil))
         switch arrangement {
         case .stack(let axis):
             view.style("flex", "none")

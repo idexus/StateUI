@@ -7,8 +7,12 @@ host.
 
 ## A shape
 
-A shape is an `<svg>` holding one `<path>` and the `<defs>` of its brushes,
-drawn again whenever its room changes size. A rectangle and an ellipse fill
+A shape is a box with no size of its own, as on every host - it takes the
+room its layout gives it, and none along a stack - and over that box an
+`<svg>` holding one `<path>` and the `<defs>` of its brushes, drawn again
+whenever its room changes size. The trap: an `<svg>` as the view itself,
+sized `100%`, took the stack's whole height, and what stood after it in the
+stack fell out of the window. A rectangle and an ellipse fill
 the room, set in by half their outline so the outline stays inside it, a
 rectangle's corners fitted as the host layer fits a box's
 (`BoxArithmetic.fitted`). A geometry of the shape's own is written from the

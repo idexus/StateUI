@@ -111,6 +111,16 @@ enum WebCSS {
 
     /// Where a child stands across a slot: its start, its middle, its end, or the whole of it. A filling child its
     /// own size stops short of the slot stands in the middle, as the host layer's arithmetic places it.
+    /// The most a child's length may be: `most` where it is stated, and no more than its slot where it is `bound`.
+    static func most(_ most: Double?, bound: Bool) -> String? {
+        switch (pixels(most), bound) {
+        case (let stated?, true): "min(\(stated), 100%)"
+        case (let stated?, false): stated
+        case (nil, true): "100%"
+        case (nil, false): nil
+        }
+    }
+
     static func alignment(_ option: Int32, stops stated: Bool) -> String {
         switch option {
         case 0: "start"
