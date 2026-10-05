@@ -15,6 +15,8 @@ enum WebRegistrations {
         words(registry)
         toggles(registry)
         values(registry)
+        indicators(registry)
+        pickers(registry)
         fields(registry)
         layouts(registry)
         pictures(registry)

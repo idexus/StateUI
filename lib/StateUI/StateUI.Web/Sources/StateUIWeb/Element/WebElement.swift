@@ -70,10 +70,12 @@ final class WebElement: NativeElement {
         element.send(event, values, in: host.runtime)
     }
 
-    /// A value the user changed in the view.
+    /// A value the user changed in the view; a radio button's peers turned off on their own buttons.
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
-        element.reportUserChange(property, event, value, in: host.runtime) { _ in }
+        element.reportUserChange(property, event, value, in: host.runtime) { peer in
+            ((peer.native as? WebElement)?.view as? WebRadioView)?.setOn(false)
+        }
     }
 }
 

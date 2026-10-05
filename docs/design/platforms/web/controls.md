@@ -52,7 +52,10 @@ A Switch is the browser's checkbox with the role of a switch, drawn as one -
 a track and a knob, the accent colour while it is on, the application's tint
 in its place where it gives one - and a CheckBox the checkbox as it is. Each
 says when the user turns it (`change`), and the tree turns it through its
-`checked`.
+`checked`. A RadioButton is a `<label>` holding the browser's radio button and
+its caption, so a click anywhere on it chooses it. Its group is the host
+layer's: the button holds no `name`, so the browser turns no peer off of
+itself, and the peers the host layer turns off are turned off on the page.
 
 ## Values in a range
 
@@ -65,6 +68,23 @@ and the number of decimals are the host layer's (`ValueArithmetic`), and a
 value the tree writes reaches the control only where the tree changed it or
 its ends (`ElementValues.written`), so a hand on the thumb is never argued
 with. The value standing on the page is where an animation of it starts.
+
+## A picker
+
+A Picker is the browser's `<select>`, an `<option>` for each choice. The
+choices and the choice are written only where the tree changed them
+(`PickerChoices`), so the user's own choice is never argued with; no choice
+stands as no option selected. The choice the user makes is heard on
+`change`.
+
+## Indicators
+
+A ProgressBar is the browser's `<progress>`, its share of the work done from 0
+to 1, drawn as a thin rounded bar in the accent colour or the application's
+tint. An ActivityIndicator is a ring turning while work goes on - the browser
+has no spinner of its own - with the role of a busy progress bar; stopped, it
+shows nothing and keeps its room, and it turns slower where the user asks for
+less motion.
 
 ## Pictures
 

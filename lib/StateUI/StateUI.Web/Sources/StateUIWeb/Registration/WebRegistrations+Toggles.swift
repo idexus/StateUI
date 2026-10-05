@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension WebRegistrations {
-    /// A Switch and a CheckBox: whether it is on, whether it can be turned, its colour, and the turn the user makes.
+    /// A Switch, a CheckBox and a RadioButton: whether it is on, whether it can be turned, its colour, and the turn the
+    /// user makes; a radio button's caption too.
     static func toggles(_ registry: Registry<WebDOMView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = WebSwitchView(switch: true)
@@ -26,6 +27,16 @@ extension WebRegistrations {
             box.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             box.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             box.raises(CheckBoxContract.toggled)
+        })
+        registry.add(RadioButtonContract.self, create: { reports in
+            let radio = WebRadioView()
+            radio.onToggled = { on in reports.report(RadioButtonContract.isOn, on, as: RadioButtonContract.toggled) }
+            return radio
+        }, members: { radio in
+            radio.applies(TextMembers.members) { view, values in applyWords(view, values) }
+            radio.property(RadioButtonContract.isOn) { view, on in view.setOn(on ?? false) }
+            radio.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            radio.raises(RadioButtonContract.toggled)
         })
     }
 }

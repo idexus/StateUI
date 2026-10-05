@@ -222,6 +222,45 @@ body {
   box-shadow: var(--stateui-focus);
 }
 .stateui-room :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
+/* A bar of work done, a ring while work goes on, a radio button with its caption, a choice from a list. */
+.stateui-room progress {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-width: 80px;
+  height: 6px;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--stateui-line-strong);
+  color: var(--stateui-on, var(--stateui-accent));
+}
+.stateui-room progress::-webkit-progress-bar { background: var(--stateui-line-strong); border-radius: 999px; }
+.stateui-room progress::-webkit-progress-value { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; transition: width 0.2s ease; }
+.stateui-room progress::-moz-progress-bar { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; }
+.stateui-activity {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid color-mix(in srgb, var(--stateui-on, var(--stateui-accent)) 22%, transparent);
+  border-top-color: var(--stateui-on, var(--stateui-accent));
+  visibility: hidden;
+}
+.stateui-activity[data-running] { visibility: visible; animation: stateui-turn 0.8s linear infinite; }
+.stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
+.stateui-room select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-inline-end: 34px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+[dir="rtl"] .stateui-room select { background-position: left 10px center; }
+
 /* A switch drawn as one, a slider across its room, a stepper's field between its buttons. */
 .stateui-room input.stateui-switch {
   appearance: none;
@@ -300,7 +339,9 @@ body {
 .stateui-failure { margin: 16px; color: #e5484d; white-space: pre-wrap; }
 
 @keyframes stateui-fade-in { from { opacity: 0; } }
+@keyframes stateui-turn { to { transform: rotate(1turn); } }
 @keyframes stateui-arrive { from { opacity: 0; transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) {
   .stateui-sidebar, .stateui-stack > [data-arriving], .stateui-scrim { transition: none !important; animation: none !important; }
+  .stateui-activity[data-running] { animation-duration: 2.4s; }
 }
