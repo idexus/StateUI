@@ -14,6 +14,7 @@ import WASILibc
 extension WebDriver {
     func perform(_ act: UserAct, on element: MountedElement) throws {
         if element.type == .toolbarItem, act == .activate { return try chooseAction(element) }
+        if element.type == .menuItem, act == .activate { return try choose(element) }
         if case .answer(let caption, let typing) = act { return try answer(caption, typing: typing, on: element) }
         // The browser's way back, over the page's own entry: from one it did not put there, the user leaves the site.
         if act == .goBack {
@@ -54,6 +55,15 @@ extension WebDriver {
         case (.pickTime(let time), is WebTimePickerView):
             try pick(String(time.hour).leftPadded(2) + ":" + String(time.minute).leftPadded(2) + ":"
                 + String(time.second).leftPadded(2), on: e)
+        case (.choose(let place), is WebItemsView):
+            let item = "[...e.querySelectorAll(':scope > .stateui-items-content > .stateui-item:not([data-part])')][\(place)]"
+            guard let node = try WebBrowser.number("((c) => c ? stateui.numberOf(c) : null)(\(item))", on: e) else {
+                throw DriverCannot(act, on: element)
+            }
+            try click(Int32(node))
+        case (.scroll(let offset), is WebItemsView):
+            try WebBrowser.run("e.scrollTo(\(offset.x), \(offset.y))", on: e)
+            WebBrowser.pause()
         case (.scroll(let offset), is WebScrollView):
             // The browser says a scroll on its next frame.
             try WebBrowser.run("e.scrollTo(\(offset.x), \(offset.y))", on: e)
@@ -81,8 +91,15 @@ extension WebDriver {
         part.map { "e.querySelector(\(WebBrowser.quoted($0)))" } ?? "e"
     }
 
-    /// Where the element `e` - or its part `part` names - stands in the browser's window, brought into it first.
+    /// Where the element `e` - or its part `part` names - stands in the browser's window, brought into it first, once
+    /// the page's pictures have come and stand at their size: one coming moves what stands after it, as the user sees.
     func box(of e: Int32, part: String? = nil) throws -> Rect {
+        // A picture is come once loaded and sized by it - the host sizes it as it hears it loaded.
+        let come = "[...document.images].every((i) => i.complete && (!i.classList.contains('stateui-picture') "
+            + "|| !i.getAttribute('src') || i.style.containIntrinsicSize !== ''))"
+        for _ in 0..<150 where try !WebBrowser.truth(come, on: 0) {
+            WebBrowser.pause()
+        }
         let numbers = try numbers(
             "((t) => t && (t.scrollIntoView({ block: 'nearest', inline: 'nearest' }), stateui.box(t)))(\(target(part)))",
             on: e)
@@ -95,9 +112,16 @@ extension WebDriver {
         try click(view.node, count: count)
     }
 
-    /// The mouse clicks the element `e` - or its part `part` names - in its middle, `count` times in a run.
+    /// The mouse clicks the element `e` - or its part `part` names - in its middle, `count` times in a run, aimed as
+    /// the user aims: at it where it stands once nothing moving over it - a picture arriving above it - is there.
     func click(_ e: Int32, part: String? = nil, count: Int = 1) throws {
-        let box = try box(of: e, part: part)
+        var box = try box(of: e, part: part)
+        let aimed = "((t, b) => t && t.contains(document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2)))"
+            + "(\(target(part)), \(target(part))?.getBoundingClientRect())"
+        for _ in 0..<30 where try !WebBrowser.truth(aimed, on: e) {
+            WebBrowser.pause()
+            box = try self.box(of: e, part: part)
+        }
         let middle = Point(x: box.width / 2, y: box.height / 2)
         for each in 1...max(count, 1) {
             mouse("mousePressed", at: middle, in: box, count: each)
@@ -113,12 +137,12 @@ extension WebDriver {
     /// The mouse's `type` of event at `point` of what stands in `box`.
     func mouse(
         _ type: String, at point: Point, in box: Rect, count: Int = 1, held: Bool = false, wheel: Double = 0,
-        modifiers: Int = 0
+        modifiers: Int = 0, button: String = "left"
     ) {
         WebBrowser.ask([
             ("mouse", .words(type)), ("x", .number(box.x + point.x)), ("y", .number(box.y + point.y)),
             ("count", .number(Double(count))), ("held", .truth(held)), ("deltaY", .number(wheel)),
-            ("modifiers", .number(Double(modifiers))),
+            ("modifiers", .number(Double(modifiers))), ("button", .words(button)),
         ])
     }
 

@@ -23,6 +23,12 @@ final class WebDriver: HostDriver {
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] = "the page places a stack's children where StateUI's layout says; their frames prove it"
         }
+        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+            for member in ["contentMode", "geometryTransform"] {
+                none["read \(member) of \(shape)"] =
+                    "the page holds the path placed in its room, its \(member) worked in; its drawing proves it"
+            }
+        }
         return none
     }
 
@@ -43,6 +49,7 @@ final class WebDriver: HostDriver {
     }
 
     private static let byHostReasons = [
+        "read step of Stepper": "the step the host takes: the page's field holds none",
         "read selectedItems of ItemsView": "the identities the host chose: the page marks a cell chosen, not which item it shows",
         "read windowType of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
@@ -50,17 +57,22 @@ final class WebDriver: HostDriver {
 
     var renderer: WebRenderer?
 
+    /// What the host writes to its log, as the driver hears it.
+    let written = WebLogLines()
+
     var liveViews: Int? { WebDOMView.liveCount }
 
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
     ) -> MountedTree {
+        written.listen()
         let renderer = WebRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         return renderer.runtime.tree
     }
 
     func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
+        written.listen()
         let renderer = WebRenderer.running(clock: clock, keeping: true, application: application)
         self.renderer = renderer
         return renderer.runtime.tree
@@ -83,6 +95,9 @@ final class WebDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
+        if [.menuItem, .menu].contains(element.type), let value = try menuItemHolds(property, on: element) { return value }
+        if element.type == .toolbarItem, let value = try toolbarItemHolds(property, on: element) { return value }
+        if element.type == .textSpan, let value = try spanHolds(property, on: element) { return value }
         if let value = try structureHolds(property, on: element) { return value }
         let view = try self.view(of: element, reading: property)
         if let value = try reads(property, on: element, view: view) { return value }
@@ -101,9 +116,28 @@ final class WebDriver: HostDriver {
         return view
     }
 
+    /// What the host wrote to its log since the case's host started.
+    func logged() throws -> [String] {
+        written.lines
+    }
+
     /// The renderer of the case.
     func running() throws -> WebRenderer {
         guard let renderer else { throw DriverCannot("reach a host before one starts") }
         return renderer
+    }
+}
+
+/// The host's log, line by line, as the driver hears it.
+final class WebLogLines: @unchecked Sendable {
+    private(set) var lines: [String] = []
+
+    /// Listens to the host's log from now on.
+    @MainActor func listen() {
+        lines = []
+        WebRenderer.log = HostLog(host: "Web") { [self] line in
+            lines.append(line)
+            print(line, terminator: "")
+        }
     }
 }
