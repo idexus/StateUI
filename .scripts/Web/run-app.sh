@@ -71,7 +71,17 @@ mkdir -p "$site"
 cp "$products/$product.wasm" "$site/"
 cp "$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js" "$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.css" "$site/"
 stamp="$(date +%s)"
+# The application's own scripts - the custom elements its controls show - beside the page, each loaded before it.
+scripts=""
+if [[ -d "$app_dir/Platforms/Web/Page" ]]; then
+  for script in "$app_dir/Platforms/Web/Page/"*.js; do
+    [[ -f "$script" ]] || continue
+    cp "$script" "$site/"
+    scripts+="<script type=\"module\" src=\"./$(basename "$script")?v=$stamp\"></script>"
+  done
+fi
 sed -e "s/{{application}}/$application/g" -e "s/{{module}}/$product.wasm/g" -e "s/{{stamp}}/$stamp/g" \
+  -e "s#{{scripts}}#$scripts#" \
   "$checkout/lib/StateUI/StateUI.Web/JavaScript/index.html" > "$site/index.html"
 if [[ -d "$app_dir/Resources/Images" ]]; then
   mkdir -p "$site/Images"

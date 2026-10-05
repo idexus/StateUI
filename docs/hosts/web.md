@@ -76,6 +76,47 @@ links it with an 8 MB stack. Swift written for this host alone stands under
 A new application made in `apps/` - `.scripts/new-app.sh` - has a Web head,
 as HelloWorld does.
 
+## Controls registered in Swift
+
+An application extends the host from its Web head: registrations run before
+`StateUIWeb.run`. A control of the application's own is an object that makes
+and holds the page's element it shows, a `WebControl`; `StateUIControls.add`
+says which contract it realizes, as on every host:
+
+```swift quote
+public static func add<Realized: ElementContract, Made: WebControl>(
+    _ contract: Realized.Type,
+    create: @escaping (WebReports<Realized>) -> Made,
+    members: (WebRegistration<Realized, Made>) -> Void = { _ in })
+```
+
+The element a control shows is a `WebPageElement`: one of the browser's own,
+or a custom element of the application's own JavaScript. A script in the
+head's `Page` folder - `apps/<App>/Platforms/Web/Page/*.js` - is laid beside
+the page and loaded before the application starts, so the element it defines
+is the browser's own by the time a control makes one. The control tells the
+element what it is through its attributes, and hears what it does through its
+events:
+
+```swift quote
+@MainActor
+final class WebGLCube3DView: WebControl {
+    let element = WebPageElement(tag: "gallery-cube3d")
+
+    var color = CubeColor.teal {
+        didSet { element.setAttribute("color", String(color.rawValue)) }
+    }
+}
+
+StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { cube in
+    cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+}
+```
+
+The host places, sizes and shows the element as it does its own, and lets
+go of it with its element. The Gallery's cube - `<gallery-cube3d>`, WebGL 2
+on a canvas of its own - is `apps/Gallery/Platforms/Web/`.
+
 ## Running
 
 ```bash

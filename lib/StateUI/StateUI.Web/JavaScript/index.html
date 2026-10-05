@@ -1,7 +1,9 @@
 <!doctype html>
 <!-- SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-<!-- The page a Web head runs in: .scripts/Web/run-app.sh writes the application's names in place of the marks. -->
+<!-- The page a Web head runs in: .scripts/Web/run-app.sh writes the application's names in place of the marks, and
+     the application's own scripts - its head's Page folder - in place of the scripts mark, each loaded before the
+     application starts. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -9,6 +11,7 @@
 <meta name="color-scheme" content="light dark">
 <title>{{application}}</title>
 <link rel="stylesheet" href="./stateui-web.css?v={{stamp}}">
+{{scripts}}
 <script type="module">
   import { start } from "./stateui-web.js?v={{stamp}}";
   start("./{{module}}?v={{stamp}}");

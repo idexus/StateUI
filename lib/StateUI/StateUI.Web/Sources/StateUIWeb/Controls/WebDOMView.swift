@@ -59,6 +59,14 @@ class WebDOMView {
         Self.liveCount += 1
     }
 
+    /// A view of an element made already - an application's control's - which it lets go of as its own.
+    init(adopting node: Int32) {
+        self.node = node
+        Self.made += 1
+        serial = Self.made
+        Self.liveCount += 1
+    }
+
     /// A view of one of SVG's elements.
     init(vector tag: String) {
         node = WebRelay.createVector(tag)
