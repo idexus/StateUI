@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>56 ✅ · 3 ✓ · 3 –</td><td><code>StackPanel</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>45 ✅ · 11 ✓ · 4 –</td><td><code>GtkBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>44 ✅ · 10 ✓</td><td>flexbox</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>47 ✅ · 10 ✓</td><td>flexbox</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/VStackContract.swift`.
@@ -157,8 +157,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: pan on VStack: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on VStack: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>panYChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on VStack: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on VStack: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPinchUpdated</code> (<code>pinchUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Point)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">❌</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pinch on VStack: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pinch on VStack: the view's listening handed the recognizer's states, no touch sent<br>GTK 4: only through the host's own: pinch on VStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down<br>Web: true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPinchUpdated</code> (<code>pinchUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Point)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pinch on VStack: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pinch on VStack: the view's listening handed the recognizer's states, no touch sent<br>GTK 4: only through the host's own: pinch on VStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on VStack: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on VStack: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
@@ -202,8 +202,7 @@ What both stacks have: the space between their children.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>spacing</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">❌</td></tr>
-<tr><td colspan="9">Web: 40.0 expected, 30.0 came - the spacing the tree changed it to</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>spacing</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [PaddingElement](tiers/PaddingElement.md)
@@ -212,8 +211,7 @@ The space kept inside an element, around what it holds.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>padding</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">❌</td></tr>
-<tr><td colspan="9">Web: [20.0, 12.0] expected, [10.0, 6.0] came</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>padding</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [BorderElement](tiers/BorderElement.md)

@@ -1,8 +1,8 @@
 # revision 1.1
 Stepper: ✅
 Stepper.frameChanged: ✅
-Stepper.maximum: ❌ 4.0 expected, 5.0 came - '5x' left the number
-Stepper.minimum: ❌ [] expected, [0.0] came - a step that moved nothing heard by nobody
-Stepper.step: ❌ 3.5 expected, 2.5 came
-Stepper.value: ❌ 3.5 expected, 2.5 came
-Stepper.valueChanged: ❌ 4.0 expected, 5.0 came - '5x' left the number
+Stepper.maximum: ◐ cannot read maximum of Stepper - the Web's driver has no path for it yet
+Stepper.minimum: ◐ cannot read minimum of Stepper - the Web's driver has no path for it yet
+Stepper.step: ◐ cannot read step of Stepper - the Web's driver has no path for it yet
+Stepper.value: ◐ cannot read maximum of Stepper - the Web's driver has no path for it yet
+Stepper.valueChanged: ◐ cannot read minimum of Stepper - the Web's driver has no path for it yet

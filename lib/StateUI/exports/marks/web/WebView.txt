@@ -1,14 +1,14 @@
 # revision 1.1
 WebView: ✅
-WebView.canGoBackChanged: ❌ true expected, false came - the way back opened
-WebView.canGoForwardChanged: ❌ true expected, false came - the way back opened
-WebView.evaluateJavaScript: ❌ ["2"] expected, [] came
+WebView.canGoBackChanged: ✅
+WebView.canGoForwardChanged: ✅
+WebView.evaluateJavaScript: ◐ waits on WebView.userAgent
 WebView.frameChanged: ✅
-WebView.goBack: ❌ true expected, false came - the way back opened
-WebView.goForward: ❌ true expected, false came - the way back opened
+WebView.goBack: ✅
+WebView.goForward: ✅
 WebView.navigated: cannot read source of WebView - the Web's driver has no path for it yet
-WebView.navigating: ❌ reload expected, newPage came
+WebView.navigating: ◐ cannot read source of WebView - the Web's driver has no path for it yet
 WebView.processTerminated: not realized
-WebView.reload: ❌ reload expected, newPage came
+WebView.reload: ✅
 WebView.source: cannot read source of WebView - the Web's driver has no path for it yet
 WebView.userAgent: not realized

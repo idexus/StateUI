@@ -1,3 +1,3 @@
 # revision 1.1
-HStack.spacing: ❌ 40.0 expected, 30.0 came - the spacing the tree changed it to
-VStack.spacing: ❌ 40.0 expected, 30.0 came - the spacing the tree changed it to
+HStack.spacing: ✅
+VStack.spacing: ✅

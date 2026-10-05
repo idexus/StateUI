@@ -19,7 +19,7 @@ ActivityIndicator.panTouchCount: ✅
 ActivityIndicator.panUpdated: ✅
 ActivityIndicator.panXChannel: ✅
 ActivityIndicator.panYChannel: ✅
-ActivityIndicator.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ActivityIndicator.pinchUpdated: ✅
 ActivityIndicator.pointerEntered: ✅
 ActivityIndicator.pointerExited: ✅
 ActivityIndicator.pointerMoved: ✅
@@ -51,7 +51,7 @@ Button.panTouchCount: ✅
 Button.panUpdated: ✅
 Button.panXChannel: ✅
 Button.panYChannel: ✅
-Button.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Button.pinchUpdated: ✅
 Button.pointerEntered: ✅
 Button.pointerExited: ✅
 Button.pointerMoved: ✅
@@ -83,7 +83,7 @@ Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.panYChannel: ✅
-Canvas.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Canvas.pinchUpdated: ✅
 Canvas.pointerEntered: ✅
 Canvas.pointerExited: ✅
 Canvas.pointerMoved: ✅
@@ -115,7 +115,7 @@ CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
 CheckBox.panYChannel: ✅
-CheckBox.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+CheckBox.pinchUpdated: ✅
 CheckBox.pointerEntered: ✅
 CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
@@ -136,7 +136,7 @@ ColorBox.dragOver: not realized
 ColorBox.dragStarting: not realized
 ColorBox.dragText: not realized
 ColorBox.drop: not realized
-ColorBox.frameChanged: ❌ [0.0, 0.0] expected, [0.0, 6.0] came - at the safe area's corner, under the bar
+ColorBox.frameChanged: ◐ cannot scroll on ItemsView - the Web's driver has no path for it yet
 ColorBox.gridColumn: ✅
 ColorBox.gridColumnSpan: ✅
 ColorBox.gridRow: ✅
@@ -147,7 +147,7 @@ ColorBox.panTouchCount: ✅
 ColorBox.panUpdated: ✅
 ColorBox.panXChannel: ✅
 ColorBox.panYChannel: ✅
-ColorBox.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ColorBox.pinchUpdated: ✅
 ColorBox.pointerEntered: ✅
 ColorBox.pointerExited: ✅
 ColorBox.pointerMoved: ✅
@@ -179,7 +179,7 @@ DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
 DatePicker.panYChannel: ✅
-DatePicker.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+DatePicker.pinchUpdated: ✅
 DatePicker.pointerEntered: ✅
 DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
@@ -211,7 +211,7 @@ Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
 Ellipse.panYChannel: ✅
-Ellipse.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Ellipse.pinchUpdated: ✅
 Ellipse.pointerEntered: ✅
 Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
@@ -243,7 +243,7 @@ Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
 Grid.panXChannel: ✅
 Grid.panYChannel: ✅
-Grid.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Grid.pinchUpdated: ✅
 Grid.pointerEntered: ✅
 Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
@@ -275,7 +275,7 @@ HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.panYChannel: ✅
-HStack.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+HStack.pinchUpdated: ✅
 HStack.pointerEntered: ✅
 HStack.pointerExited: ✅
 HStack.pointerMoved: ✅
@@ -307,7 +307,7 @@ Image.panTouchCount: ✅
 Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.panYChannel: ✅
-Image.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Image.pinchUpdated: ✅
 Image.pointerEntered: ✅
 Image.pointerExited: ✅
 Image.pointerMoved: ✅
@@ -328,18 +328,18 @@ ItemsView.dragOver: not realized
 ItemsView.dragStarting: not realized
 ItemsView.dragText: not realized
 ItemsView.drop: not realized
-ItemsView.frameChanged: ❌ [0.0, 0.0, 100.0, 80.0] expected, [-70.0, -40.0, 240.0, 160.0] came
-ItemsView.gridColumn: ❌ [40.0, 30.0, 60.0, 50.0] expected, [-50.0, -25.0, 240.0, 160.0] came
-ItemsView.gridColumnSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [-70.0, -40.0, 240.0, 160.0] came
-ItemsView.gridRow: ❌ [40.0, 30.0, 60.0, 50.0] expected, [-50.0, -25.0, 240.0, 160.0] came
-ItemsView.gridRowSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [-70.0, -40.0, 240.0, 160.0] came
+ItemsView.frameChanged: ✅
+ItemsView.gridColumn: ✅
+ItemsView.gridColumnSpan: ✅
+ItemsView.gridRow: ✅
+ItemsView.gridRowSpan: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.panYChannel: ✅
-ItemsView.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ItemsView.pinchUpdated: ✅
 ItemsView.pointerEntered: ✅
 ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
@@ -371,7 +371,7 @@ Line.panTouchCount: ✅
 Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.panYChannel: ✅
-Line.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Line.pinchUpdated: ✅
 Line.pointerEntered: ✅
 Line.pointerExited: ✅
 Line.pointerMoved: ✅
@@ -435,7 +435,7 @@ Path.panTouchCount: ✅
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.panYChannel: ✅
-Path.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Path.pinchUpdated: ✅
 Path.pointerEntered: ✅
 Path.pointerExited: ✅
 Path.pointerMoved: ✅
@@ -467,7 +467,7 @@ Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
 Picker.panXChannel: ✅
 Picker.panYChannel: ✅
-Picker.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Picker.pinchUpdated: ✅
 Picker.pointerEntered: ✅
 Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
@@ -499,7 +499,7 @@ Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
 Polygon.panXChannel: ✅
 Polygon.panYChannel: ✅
-Polygon.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Polygon.pinchUpdated: ✅
 Polygon.pointerEntered: ✅
 Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
@@ -531,7 +531,7 @@ Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.panYChannel: ✅
-Polyline.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Polyline.pinchUpdated: ✅
 Polyline.pointerEntered: ✅
 Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
@@ -544,7 +544,7 @@ Polyline.tapCount: ✅
 Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: not realized
-ProgressBar.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 80.0, 40.0] came - in points
+ProgressBar.area: ✅
 ProgressBar.canDrag: not realized
 ProgressBar.dragEnded: not realized
 ProgressBar.dragLeave: not realized
@@ -552,23 +552,23 @@ ProgressBar.dragOver: not realized
 ProgressBar.dragStarting: not realized
 ProgressBar.dragText: not realized
 ProgressBar.drop: not realized
-ProgressBar.frameChanged: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 6.0] came
-ProgressBar.gridColumn: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 80.0, 6.0] came
-ProgressBar.gridColumnSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 6.0] came
-ProgressBar.gridRow: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 80.0, 6.0] came
-ProgressBar.gridRowSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 6.0] came
+ProgressBar.frameChanged: ✅
+ProgressBar.gridColumn: ✅
+ProgressBar.gridColumnSpan: ✅
+ProgressBar.gridRow: ✅
+ProgressBar.gridRowSpan: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
 ProgressBar.panXChannel: ✅
 ProgressBar.panYChannel: ✅
-ProgressBar.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
-ProgressBar.pointerEntered: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
-ProgressBar.pointerExited: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
-ProgressBar.pointerMoved: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
-ProgressBar.pointerPressed: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
-ProgressBar.pointerReleased: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
+ProgressBar.pinchUpdated: ✅
+ProgressBar.pointerEntered: ✅
+ProgressBar.pointerExited: ✅
+ProgressBar.pointerMoved: ✅
+ProgressBar.pointerPressed: ✅
+ProgressBar.pointerReleased: ✅
 ProgressBar.swipeDirection: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
@@ -595,7 +595,7 @@ RadioButton.panTouchCount: ✅
 RadioButton.panUpdated: ✅
 RadioButton.panXChannel: ✅
 RadioButton.panYChannel: ✅
-RadioButton.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+RadioButton.pinchUpdated: ✅
 RadioButton.pointerEntered: ✅
 RadioButton.pointerExited: ✅
 RadioButton.pointerMoved: ✅
@@ -604,8 +604,8 @@ RadioButton.pointerReleased: ✅
 RadioButton.swipeDirection: ✅
 RadioButton.swipeThreshold: ✅
 RadioButton.swiped: ✅
-RadioButton.tapCount: ❌ ["tapped"] expected, ["tapped", "tapped"] came - two are
-RadioButton.tapped: ❌ ["tapped"] expected, ["tapped", "tapped"] came - two are
+RadioButton.tapCount: ✅
+RadioButton.tapped: ✅
 RadioButton.verticalAlignment: ✅
 Rectangle.allowsDrop: not realized
 Rectangle.area: ✅
@@ -627,7 +627,7 @@ Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
 Rectangle.panXChannel: ✅
 Rectangle.panYChannel: ✅
-Rectangle.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Rectangle.pinchUpdated: ✅
 Rectangle.pointerEntered: ✅
 Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
@@ -659,7 +659,7 @@ ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
 ScrollView.panXChannel: ✅
 ScrollView.panYChannel: ✅
-ScrollView.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ScrollView.pinchUpdated: ✅
 ScrollView.pointerEntered: ✅
 ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
@@ -691,7 +691,7 @@ SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
 SearchField.panXChannel: ✅
 SearchField.panYChannel: ✅
-SearchField.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+SearchField.pinchUpdated: ✅
 SearchField.pointerEntered: ✅
 SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
@@ -704,7 +704,7 @@ SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
 Slider.allowsDrop: not realized
-Slider.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 120.0, 40.0] came - in points
+Slider.area: ✅
 Slider.canDrag: not realized
 Slider.dragEnded: not realized
 Slider.dragLeave: not realized
@@ -712,18 +712,18 @@ Slider.dragOver: not realized
 Slider.dragStarting: not realized
 Slider.dragText: not realized
 Slider.drop: not realized
-Slider.frameChanged: ❌ 200.0 expected, 180.0 came - at the end of a room 300 wide
-Slider.gridColumn: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 120.0, 50.0] came
-Slider.gridColumnSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 120.0, 80.0] came
-Slider.gridRow: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 120.0, 50.0] came
-Slider.gridRowSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 120.0, 80.0] came
-Slider.horizontalAlignment: ❌ 200.0 expected, 180.0 came - at the end of a room 300 wide
+Slider.frameChanged: ✅
+Slider.gridColumn: ✅
+Slider.gridColumnSpan: ✅
+Slider.gridRow: ✅
+Slider.gridRowSpan: ✅
+Slider.horizontalAlignment: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.panYChannel: ✅
-Slider.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Slider.pinchUpdated: ✅
 Slider.pointerEntered: ✅
 Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
@@ -734,7 +734,7 @@ Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
-Slider.verticalAlignment: ❌ 200.0 expected, 180.0 came - at the end of a room 300 wide
+Slider.verticalAlignment: ✅
 Stepper.allowsDrop: not realized
 Stepper.area: ✅
 Stepper.canDrag: not realized
@@ -755,7 +755,7 @@ Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅
 Stepper.panYChannel: ✅
-Stepper.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Stepper.pinchUpdated: ✅
 Stepper.pointerEntered: ✅
 Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
@@ -787,7 +787,7 @@ Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
 Switch.panXChannel: ✅
 Switch.panYChannel: ✅
-Switch.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Switch.pinchUpdated: ✅
 Switch.pointerEntered: ✅
 Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
@@ -819,7 +819,7 @@ Text.panTouchCount: ✅
 Text.panUpdated: ✅
 Text.panXChannel: ✅
 Text.panYChannel: ✅
-Text.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Text.pinchUpdated: ✅
 Text.pointerEntered: ✅
 Text.pointerExited: ✅
 Text.pointerMoved: ✅
@@ -832,7 +832,7 @@ Text.tapCount: ✅
 Text.tapped: ✅
 Text.verticalAlignment: ✅
 TextEditor.allowsDrop: not realized
-TextEditor.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 30.0, 88.0] came - in points
+TextEditor.area: ✅
 TextEditor.canDrag: not realized
 TextEditor.dragEnded: not realized
 TextEditor.dragLeave: not realized
@@ -840,18 +840,18 @@ TextEditor.dragOver: not realized
 TextEditor.dragStarting: not realized
 TextEditor.dragText: not realized
 TextEditor.drop: not realized
-TextEditor.frameChanged: ❌ 60.0 expected, 12.0 came - at the end of a room 100 high
-TextEditor.gridColumn: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 60.0, 88.0] came
-TextEditor.gridColumnSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 88.0] came
-TextEditor.gridRow: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 60.0, 88.0] came
-TextEditor.gridRowSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 88.0] came
-TextEditor.horizontalAlignment: ❌ 60.0 expected, 12.0 came - at the end of a room 100 high
-TextEditor.margin: ❌ [10.0, 6.0, 120.0, 40.0] expected, [10.0, 6.0, 120.0, 88.0] came - x, y, width, height in its parent
+TextEditor.frameChanged: ✅
+TextEditor.gridColumn: ✅
+TextEditor.gridColumnSpan: ✅
+TextEditor.gridRow: ✅
+TextEditor.gridRowSpan: ✅
+TextEditor.horizontalAlignment: ✅
+TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
 TextEditor.panXChannel: ✅
 TextEditor.panYChannel: ✅
-TextEditor.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+TextEditor.pinchUpdated: ✅
 TextEditor.pointerEntered: ✅
 TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
@@ -862,7 +862,7 @@ TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
-TextEditor.verticalAlignment: ❌ 60.0 expected, 12.0 came - at the end of a room 100 high
+TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: not realized
 TextField.area: ✅
 TextField.canDrag: not realized
@@ -883,7 +883,7 @@ TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
 TextField.panXChannel: ✅
 TextField.panYChannel: ✅
-TextField.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+TextField.pinchUpdated: ✅
 TextField.pointerEntered: ✅
 TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
@@ -915,7 +915,7 @@ TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
 TimePicker.panXChannel: ✅
 TimePicker.panYChannel: ✅
-TimePicker.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+TimePicker.pinchUpdated: ✅
 TimePicker.pointerEntered: ✅
 TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
@@ -947,7 +947,7 @@ VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.panYChannel: ✅
-VStack.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+VStack.pinchUpdated: ✅
 VStack.pointerEntered: ✅
 VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
@@ -975,21 +975,21 @@ WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
 WebView.horizontalAlignment: ✅
 WebView.margin: ✅
-WebView.panTouchCount: ❌ true expected, nothing came - heard as it begins
-WebView.panUpdated: ❌ true expected, nothing came - heard as it begins
-WebView.panXChannel: ❌ true expected, nothing came - heard as it begins
-WebView.panYChannel: ❌ 25.0 expected, 5.0 came - the state carried as far as the hand went down
-WebView.pinchUpdated: ❌ true expected, false came - its scale and its place, []
-WebView.pointerEntered: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.pointerExited: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.pointerMoved: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.pointerPressed: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.pointerReleased: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.swipeDirection: ❌ [StateUI.SwipeDirection(rawValue: 2)] expected, [] came
-WebView.swipeThreshold: ❌ [StateUI.SwipeDirection(rawValue: 2)] expected, [] came
-WebView.swiped: ❌ [StateUI.SwipeDirection(rawValue: 2)] expected, [] came
-WebView.tapCount: ❌ ["tapped"] expected, [] came - two are
-WebView.tapped: ❌ ["tapped"] expected, [] came - two are
+WebView.panTouchCount: ✅
+WebView.panUpdated: ✅
+WebView.panXChannel: ✅
+WebView.panYChannel: ✅
+WebView.pinchUpdated: ✅
+WebView.pointerEntered: ✅
+WebView.pointerExited: ✅
+WebView.pointerMoved: ✅
+WebView.pointerPressed: ✅
+WebView.pointerReleased: ✅
+WebView.swipeDirection: ✅
+WebView.swipeThreshold: ✅
+WebView.swiped: ✅
+WebView.tapCount: ✅
+WebView.tapped: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowsDrop: not realized
 ZStack.area: ✅
@@ -1011,7 +1011,7 @@ ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅
 ZStack.panXChannel: ✅
 ZStack.panYChannel: ✅
-ZStack.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ZStack.pinchUpdated: ✅
 ZStack.pointerEntered: ✅
 ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
