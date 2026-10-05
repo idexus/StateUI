@@ -99,6 +99,24 @@ choices and the choice are written only where the tree changed them
 stands as no option selected. The choice the user makes is heard on
 `change`.
 
+## A day and a time
+
+A DatePicker is the browser's date `<input>`, a TimePicker its time
+`<input>`: the browser writes the day and the time in the user's own way and
+offers its own calendar and clock, so no format reaches them. A day the tree
+writes stands within the range as on every host (`CalendarArithmetic.held`);
+the range is the field's `min` and `max`, so the calendar offers no day past
+it. A time is within the day (`CalendarArithmetic.clock`), written with its
+seconds - and stepping by them - only while it has some.
+
+What the user picks is heard on `change`. A field the user types into is
+written again only as the user leaves it: a year typed digit by digit passes
+through years far before the range, and each would otherwise be taken from
+under the user's keys. A day typed past the range is told at its end, and the
+field shows that end once left; a field left empty shows the day held. The
+calendar opening and closing reach no event of the page's, so `isOpen`,
+`opened` and `closed` stay unrealized.
+
 ## Indicators
 
 A ProgressBar is the browser's `<progress>`, its share of the work done from 0

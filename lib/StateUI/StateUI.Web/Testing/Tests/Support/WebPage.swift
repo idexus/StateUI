@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CWebTesting
+@testable import StateUIWeb
 
-/// What the page holds, as the suite reads it: an element's children, its style, its attributes and its words.
+/// What the page holds, as the suite reads it - an element's children, its style, its attributes, its words and a
+/// field's value - and what the user does to it.
 @MainActor
 enum WebPage {
     /// The relay's numbers of the element's children, in their order on the page.
@@ -25,6 +27,23 @@ enum WebPage {
     /// The element's words.
     static func text(of element: Int32) -> String {
         copyRead(stateui_web_testing_read_text(element))
+    }
+
+    /// A field's value.
+    static func value(of element: Int32) -> String {
+        copyRead(stateui_web_testing_read_value(element))
+    }
+
+    /// The user types `text` into the field, which then says so.
+    static func enter(_ text: String, into element: Int32) {
+        WebRelay.start()
+        withUTF8(text) { stateui_web_testing_enter(element, $0, $1) }
+    }
+
+    /// The user leaves the field.
+    static func leave(_ element: Int32) {
+        WebRelay.start()
+        stateui_web_testing_leave(element)
     }
 
     private static func read(_ name: String, _ reading: (UnsafePointer<CChar>?, Int32) -> Int32) -> String {

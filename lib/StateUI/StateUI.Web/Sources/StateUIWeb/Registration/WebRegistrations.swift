@@ -17,6 +17,7 @@ enum WebRegistrations {
         values(registry)
         indicators(registry)
         pickers(registry)
+        dates(registry)
         shapes(registry)
         fields(registry)
         layouts(registry)
