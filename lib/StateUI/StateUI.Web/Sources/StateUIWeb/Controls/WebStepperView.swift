@@ -20,7 +20,7 @@ final class WebStepperView: WebDOMView {
     /// The value as last written or moved, and the range and step it moves in.
     private(set) var value = 0.0
     private var range = (lower: 0.0, upper: 100.0)
-    private var step = 1.0
+    private(set) var step = 1.0
     private var decimals = 0
 
     init() {

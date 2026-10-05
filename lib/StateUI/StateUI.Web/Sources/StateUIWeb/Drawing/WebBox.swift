@@ -26,7 +26,8 @@ struct WebBox: Equatable {
     /// The box's CSS for a box `size` across.
     func styles(size: LayoutSize) -> [(String, String?)] {
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
-        let corners = ("border-radius", WebCSS.corners(BoxArithmetic.outline(shape)))
+        // A shape the tree states wins over the look's corners - square ones too; one unsaid leaves them.
+        let corners = ("border-radius", shape == nil ? nil : WebCSS.corners(BoxArithmetic.outline(shape)) ?? "0")
         guard WebBrush.isGradient(stroke), width > 0 else {
             let border = width > 0
                 ? "\(WebCSS.pixels(width)!) solid \(WebCSS.color(HostBrush(stroke).firstColor) ?? "currentColor")"

@@ -21,7 +21,8 @@ arithmetic (`ShapeArithmetic.placement`) from the bounds the browser measures
 for its path, as its content mode says; a transform the shape carries is six
 finite numbers or none (`ShapeArithmetic.transform`).
 
-An outline keeps its width however the path is placed or scaled
+Where the dashes start is written whether or not the outline is dashed, as
+the tree says it. An outline keeps its width however the path is placed or scaled
 (`vector-effect: non-scaling-stroke`), its dashes measured in its width as the
 host layer measures them (`ShapeArithmetic.dashLengths`). A gradient is an
 SVG gradient of the shape's own, in the page's units over the room and one
@@ -35,7 +36,9 @@ room is the one geometry every host draws a shape's brush over.
 ## A brush on a box
 
 A box's fill is its CSS `background`, its outline its `border` inside its
-edge, its shape its `border-radius`. A colour is the colour itself; a gradient
+edge, its shape its `border-radius` - a shape the tree states, square corners
+too, over the look's own; one unsaid leaves the look's. A colour is the colour
+itself; a gradient
 is a CSS gradient written for the box's size in pixels, so the box follows its
 own size with a size observer and writes it again as it changes.
 

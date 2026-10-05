@@ -49,7 +49,7 @@ final class WebShapeView: WebDOMView {
         path.attribute("stroke-miterlimit", WebCSS.number(miter))
         let dashed = lengths.contains { $0 > 0 }
         path.attribute("stroke-dasharray", dashed ? lengths.map(WebCSS.number).joined(separator: " ") : nil)
-        path.attribute("stroke-dashoffset", dashed ? WebCSS.number(dashOffset * lineWidth) : nil)
+        path.attribute("stroke-dashoffset", dashOffset == 0 ? nil : WebCSS.number(dashOffset * lineWidth))
         path.attribute("vector-effect", "non-scaling-stroke")
         redraw()
     }

@@ -90,6 +90,9 @@ only into room left over, so content wider than the view stands centred over
 both its edges. The view's defaults - down, with its bars - stand from its
 making, as an applier runs only for a member the tree states.
 
+Bars always shown are `overflow: scroll`, standing whether or not there is
+anything to scroll to; bars never shown are hidden by the page's style.
+
 The user's movement is the host layer's (`ScrollMovement`): each `scroll` the
 page raises moves it, a pointer down holds it, and the display's frames report
 where it went and that it came to rest. An offset the tree writes scrolls the
