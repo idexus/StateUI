@@ -420,6 +420,9 @@ body {
 @keyframes stateui-fade-in { from { opacity: 0; } }
 @keyframes stateui-turn { to { transform: rotate(1turn); } }
 @keyframes stateui-arrive { from { opacity: 0; transform: translateY(6px); } }
+/* A control answers every tap: a second one soon after the first is its own, never the page's zoom. */
+.stateui-window :is(button, input, select, textarea, label, [data-taps]) { touch-action: manipulation; }
+
 @media (prefers-reduced-motion: reduce) {
   .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving], .stateui-scrim {
     transition: none !important;
