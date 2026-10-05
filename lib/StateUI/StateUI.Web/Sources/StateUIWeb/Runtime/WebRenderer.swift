@@ -28,6 +28,12 @@ final class WebRenderer {
         makeNative: { [unowned self] element in WebElement(element, host: self) }, log: { WebRenderer.log.error($0) },
         views: { WebDOMView.liveCount })
 
+    /// The Web's part of the acts, and what performs them and answers them by the host layer's rules.
+    private(set) lazy var actToolkit = WebActToolkit(renderer: self)
+    private(set) lazy var acts = HostActPerformer(
+        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        answered: { [unowned self] in runtime.pump.turn() })
+
     /// The windows the tree holds, each with its controller, in the tree's order. The browser shows the first.
     private let roster = WindowRoster<WebWindowController>()
 
@@ -47,6 +53,7 @@ final class WebRenderer {
         let core = renderer.runtime.core
         core.setRealization(WebRegistrations.registry.realization, unrealized: WebRealization.unmade)
         WebEnvironment.report(to: core, applicationName: applicationName)
+        WebKeptValues.restore(into: core, application: applicationName)
         WebEnvironment.watch { [weak renderer] in
             renderer?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
         }
@@ -93,12 +100,8 @@ extension WebRenderer: TurnPresenter {
         showWindows()
     }
 
-    /// The Web host performs no act yet: one called fails at once, so its handler goes on.
     func perform(_ call: HostActCall) {
-        WebRenderer.log.error("the Web host performs no act yet: \(call.act.name)")
-        if let completion = call.completion {
-            _ = runtime.core.fail(completion, reason: "the Web host performs no act yet")
-        }
+        acts.perform(call)
     }
 }
 

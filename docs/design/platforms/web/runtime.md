@@ -87,6 +87,26 @@ again in the other.
 runs the display cycle at the frame's time, and asks for the next while still
 held. Its time is the page's monotonic clock in milliseconds.
 
+## Acts
+
+The acts every host performs are the host layer's (`HostActPerformer`); the
+page answers what it is asked through `WebActToolkit`. The time of day is the
+browser's `Date`, the local zone its `Intl` zone, and a zone's offset from UTC
+the one the browser writes for it at noon on the day asked - a zone it does
+not know has none, and the act fails. A word for a screen reader goes to one
+polite live region of the page's, emptied first so the same words are told
+again. The on-screen keyboard goes down with the focus of the field holding
+it. The focus goes to an element's view, or the first in it that takes it.
+
+A kept value stands in the browser's storage for the page's site, under the
+application's name, in the host layer's text (`KeptValuesText`): read before
+the first render, written whole as one changes. Where the browser keeps
+nothing - a private window, storage turned off - the value lives as long as
+the page.
+
+The page asks the user nothing yet: a question fails, there being no window
+to ask in.
+
 ## Motion
 
 A property travels on the page where its view presents it: the host layer's

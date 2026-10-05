@@ -213,6 +213,49 @@ enum WebRelay {
 
     static var prefersDark: Bool { stateui_web_prefers_dark() != 0 }
 
+    /// The local time of day.
+    static var localTime: (hour: Int, minute: Int, second: Int, millisecond: Int) {
+        let read = numbers(4) { stateui_web_local_time($0) }
+        return (Int(read[0]), Int(read[1]), Int(read[2]), Int(read[3]))
+    }
+
+    /// The local time zone's name.
+    static var localZone: String { copyRead(length: stateui_web_local_zone()) }
+
+    /// How far `zone` - the local one where nil - is from UTC at noon on `day` - today where nil - in minutes; nil
+    /// for a zone the browser does not know.
+    static func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? {
+        let minutes = utf8(zone ?? "") {
+            stateui_web_utc_offset($0, $1, Int32(day?.year ?? 0), Int32(day?.month ?? 0), Int32(day?.day ?? 0))
+        }
+        return minutes.isFinite ? Int(minutes) : nil
+    }
+
+    /// Tells a screen reader `words`.
+    static func announce(_ words: String) {
+        utf8(words) { stateui_web_announce($0, $1) }
+    }
+
+    /// Takes the focus off the field holding it; whether one held it.
+    static func blurField() -> Bool { stateui_web_blur_field() != 0 }
+
+    /// Puts the focus on `element` or the first in it that takes it; whether it holds it.
+    static func focus(_ element: Int32) -> Bool { stateui_web_focus(element) != 0 }
+
+    static func unfocus(_ element: Int32) {
+        stateui_web_unfocus(element)
+    }
+
+    /// What the browser keeps under `key` for the page's site; "" for nothing.
+    static func stored(_ key: String) -> String {
+        copyRead(length: utf8(key) { stateui_web_stored($0, $1) })
+    }
+
+    /// Keeps `words` under `key` for the page's site; whether the browser could.
+    static func store(_ words: String, under key: String) -> Bool {
+        utf8(key) { key, keyLength in utf8(words) { stateui_web_store(key, keyLength, $0, $1) != 0 } }
+    }
+
     /// The screen's smallest width where its user points by touch; 0 where by a mouse or a pen.
     static var touchScreen: Double { stateui_web_touch_screen() }
 

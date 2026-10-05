@@ -117,3 +117,30 @@ STATEUI_WEB(touch_screen) double stateui_web_touch_screen(void);
 
 /// Whether the user asked for less motion.
 STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);
+
+/// The local time of day into `into`: hour, minute, second, millisecond.
+STATEUI_WEB(local_time) void stateui_web_local_time(double *into);
+
+/// The local time zone's name, read in two steps: its length in bytes, then `copy_read`.
+STATEUI_WEB(local_zone) int32_t stateui_web_local_zone(void);
+
+/// How far the zone named - the local one for none - is from UTC at noon on the day - today for a year of 0 - in
+/// minutes; NaN for a zone the browser does not know.
+STATEUI_WEB(utc_offset) double stateui_web_utc_offset(const char *zone, int32_t length, int32_t year, int32_t month, int32_t day);
+
+/// Tells a screen reader the words, through the page's polite live region.
+STATEUI_WEB(announce) void stateui_web_announce(const char *words, int32_t length);
+
+/// Takes the focus off the field holding it, whose on-screen keyboard goes with it; whether one held it.
+STATEUI_WEB(blur_field) int32_t stateui_web_blur_field(void);
+
+/// Puts the focus on the element, or the first in it that takes it; whether the element or one in it holds it.
+STATEUI_WEB(focus) int32_t stateui_web_focus(int32_t element);
+
+/// Takes the focus off the element or the one in it holding it.
+STATEUI_WEB(unfocus) void stateui_web_unfocus(int32_t element);
+
+/// What the browser keeps under the key for this page's site, read in two steps: its length in bytes, then
+/// `copy_read`; `store` keeps the words in its place, and answers whether it could.
+STATEUI_WEB(stored) int32_t stateui_web_stored(const char *key, int32_t length);
+STATEUI_WEB(store) int32_t stateui_web_store(const char *key, int32_t keyLength, const char *words, int32_t length);
