@@ -13,6 +13,11 @@ extension WebElement {
         (view as? WebSplitView)?.isPresented
     }
 
+    /// The tab the user chose on a tabbed view, which the tree may not say yet.
+    var chosenTab: Int? {
+        (view as? WebTabView)?.choice.chosen
+    }
+
     /// Stands an arrangement's pages where they go: a stack's one over another, a split view's in its panes.
     func arrangePages() -> Bool {
         let arranged = element.arrangedChildren.compactMap(\.web.placedElement).map { ($0.view!, $0.element.layoutValues) }
@@ -22,20 +27,33 @@ extension WebElement {
         case let split as WebSplitView:
             split.sidebar.setItems(Array(arranged.prefix(1)))
             split.detail.setItems(Array(arranged.dropFirst().prefix(1)))
+        case let tabs as WebTabView:
+            tabs.setTabs(arranged.map(\.0))
         default:
             return false
         }
         return true
     }
 
-    /// Keeps a split view with the tree: it shows its sidebar as the tree says - at once the first time - and hears
-    /// the user show or hide it.
+    /// Keeps a tabbed view and a split view with the tree: the tabs named and the one the tree asks for shown, the
+    /// sidebar as the tree says - at once the first time - and what the user chooses heard.
     func followPages(changed: Set<Prop>, wasDescribed: Bool) {
+        if let tabs = view as? WebTabView {
+            tabs.show(element.children.map { $0.value(.title)?.string ?? "" },
+                      requested: element.value(.selectedTab)?.number.map { Int($0) })
+            tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
+        }
         guard let split = view as? WebSplitView else { return }
         split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
         if changed.contains(.showsSidebar) {
             split.present(element.value(.showsSidebar)?.bool == true, moves: wasDescribed)
         }
+    }
+
+    /// The user chose another tab: the host layer tells the pages and the state, and the chrome follows.
+    private func tabChosen(from previous: Int, to selected: Int) {
+        host?.runtime.tabChosen(element, from: previous, to: selected)
+        host?.refreshChrome()
     }
 
     /// The sidebar showed or hid: the host layer tells its page and the state, and the chrome follows.

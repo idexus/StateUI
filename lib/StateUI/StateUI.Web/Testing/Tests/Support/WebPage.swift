@@ -47,6 +47,12 @@ enum WebPage {
         stateui_web_testing_leave(element)
     }
 
+    /// The user taps the element.
+    static func tap(_ element: Int32) {
+        WebRelay.start()
+        stateui_web_testing_tap(element)
+    }
+
     /// The page lays the element out at `place` in its parent.
     static func layOut(_ element: Int32, at place: Rect) {
         stateui_web_testing_lay_out(element, place.x, place.y, place.width, place.height)

@@ -244,6 +244,34 @@ body {
 /* A stack shows its top page. */
 .stateui-stack { display: grid; min-height: 0; min-width: 0; }
 .stateui-stack > [data-covered] { display: none !important; }
+
+/* A tabbed view: the strip of its tabs' names over the one cell its pages share, the chosen one shown. */
+.stateui-tabs { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
+.stateui-tabs > .stateui-tab-strip {
+  display: flex;
+  gap: 4px;
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--stateui-surface);
+  border-bottom: 1px solid var(--stateui-line);
+}
+.stateui-room .stateui-tab-strip > button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-bottom: -1px;
+  background: transparent;
+  color: var(--stateui-muted);
+  font-weight: 550;
+  white-space: nowrap;
+  filter: none;
+}
+.stateui-room .stateui-tab-strip > button:hover { color: var(--stateui-text); }
+.stateui-room .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
+.stateui-tab-pages > [data-covered] { display: none !important; }
 .stateui-stack > [data-arriving] { animation: stateui-arrive 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
 /* A scroller. */

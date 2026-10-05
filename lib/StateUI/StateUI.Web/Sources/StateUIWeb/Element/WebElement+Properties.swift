@@ -22,6 +22,7 @@ extension WebElement {
         case .page: return WebLayoutView(tag: "section", arrangement: .single)
         case .navigationStack: return WebNavigationView()
         case .splitView: return WebSplitView()
+        case .tabView: return WebTabView()
         default: return WebUnsupportedView(type)
         }
     }

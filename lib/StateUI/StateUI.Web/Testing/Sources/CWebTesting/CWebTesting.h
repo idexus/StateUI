@@ -17,4 +17,5 @@ STATEUI_WEB_TESTING(read_value) int32_t stateui_web_testing_read_value(int32_t e
 STATEUI_WEB_TESTING(copy_read) void stateui_web_testing_copy_read(char *into);
 STATEUI_WEB_TESTING(enter) void stateui_web_testing_enter(int32_t element, const char *text, int32_t length);
 STATEUI_WEB_TESTING(leave) void stateui_web_testing_leave(int32_t element);
+STATEUI_WEB_TESTING(tap) void stateui_web_testing_tap(int32_t element);
 STATEUI_WEB_TESTING(lay_out) void stateui_web_testing_lay_out(int32_t element, double x, double y, double width, double height);

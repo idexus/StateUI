@@ -8,7 +8,7 @@
 /// name as unsupported.
 enum WebRealization {
     /// The elements the host makes itself, outside the registry: the pages and the arrangements they stand in.
-    static let madeByHost: Set<NodeType> = [.page, .navigationStack, .splitView]
+    static let madeByHost: Set<NodeType> = [.page, .navigationStack, .splitView, .tabView]
 
     @MainActor static var unmade: Set<String> {
         Set(LibraryContracts.elements.map { $0.nodeType.name })

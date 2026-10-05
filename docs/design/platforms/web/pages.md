@@ -50,6 +50,16 @@ so the browser moves them between the two. The first room's decision, and
 the tree's first word, stand at once: what the user first sees is the page
 itself (`data-moves`). Where the user asks for less motion nothing moves.
 
+## Tabs
+
+A tabbed view is a `<section>`: a strip of its tabs' names over one cell its
+pages share. Each name is a button with the role of a tab, the chosen one
+selected; the chosen page shows and the others stand beside it covered, kept
+as they stood, scrolled where the user left them. Which tab shows is the host
+layer's (`TabChoice`): the tree's word, until the user chooses another - and
+the user's choice is heard by the host layer (`tabChosen`), which tells the
+pages and the state, and the bar follows the page the user now sees.
+
 ## A stack
 
 A stack holds its pages one over another in one cell, the top one shown:
