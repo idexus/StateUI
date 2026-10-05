@@ -90,7 +90,7 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
         VStack {
             Text("The application's session holds what is the whole process's: its phase, its open "
                 + "scenes, its styles, its motion and the keys it keeps. The scene's and the window's "
-                + "sessions are under Windows.")
+                + "sessions are under Scene.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

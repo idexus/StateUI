@@ -256,18 +256,15 @@ final class Catalog {
                 ]),
 
             SampleGroup(
-                route: "windows",
-                title: "Windows",
-                summary: "The frame around the pages - what a window is called and how "
-                    + "big it is, its bar, more than one of them, and what it says "
-                    + "as the app comes and goes.",
+                route: "scene",
+                title: "Scene",
+                summary: "A scene and the frame around its pages - its windows and their bar, what it lays over "
+                    + "them, and what it says as the app comes and goes.",
                 icon: ImageSource(light: "nav_windows.png", dark: "nav_windows_dark.png"),
                 card: ImageSource("cat_windows.png"),
-                samples: [
-                    Sample(WindowSample()),
+                samples: Self.openingWindows([Sample(WindowSample())]) + [
                     Sample(WindowBarSample(bar: bar)),
-                    Sample(MultiWindowSample(style: style)),
-                    Sample(ScenesSample()),
+                ] + Self.openingWindows([Sample(MultiWindowSample(style: style)), Sample(ScenesSample())]) + [
                     Sample(WindowOverlaySample(nav: nav)),
                     Sample(LifecycleSample(log: log)),
                     Sample(WindowPhaseSample()),
@@ -279,7 +276,7 @@ final class Catalog {
                 summary: "What the host knows - the device, the screen, the locale, the "
                     + "network and the battery - and the application's session, provided "
                     + "above and resolved below by type; the theme is under Styles, the "
-                    + "scene's and the window's sessions under Windows.",
+                    + "scene's and the window's sessions under Scene.",
                 icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
                 card: ImageSource("cat_environment.png"),
                 samples: [
@@ -339,6 +336,16 @@ final class Catalog {
         []
         #else
         [Sample(FoundationProbeSample())]
+        #endif
+    }
+
+    /// `samples` on the hosts that open the application's windows: a page on the Web stands in the one browser
+    /// window it was opened in, which it neither sizes nor opens again.
+    private static func openingWindows(_ samples: [Sample]) -> [Sample] {
+        #if WEB
+        []
+        #else
+        samples
         #endif
     }
 
