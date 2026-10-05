@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// One action of the bar: its picture, its words beside it where it shows them, whether it can be chosen.
+/// One action of the bar: its picture, its words beside it where it shows them, whether it can be chosen - a menu's
+/// opening its entries under it.
 @MainActor
 final class WebBarButton: WebDOMView {
     private let picture = WebImageView()
@@ -19,8 +20,9 @@ final class WebBarButton: WebDOMView {
         WebRelay.insert(picture.node, into: node, at: 0)
         WebRelay.insert(words.node, into: node, at: 1)
         listen("click") { [weak self] in
-            guard let item = self?.item, let element = item.native as? WebElement else { return }
-            element.send(.clicked, [])
+            guard let self, let item, let element = item.native as? WebElement else { return }
+            guard item.type == .menu else { return element.send(.clicked, []) }
+            WebMenu(MenuEntry.entries(of: item)).show(under: self)
         }
     }
 
@@ -36,6 +38,7 @@ final class WebBarButton: WebDOMView {
         attribute("title", text)
         attribute("disabled", item.value(.isEnabled)?.bool == false ? "" : nil)
         attribute("data-destructive", item.value(.isDestructive)?.bool == true ? "" : nil)
+        attribute("aria-haspopup", item.type == .menu ? "menu" : nil)
     }
 
     override func detach() {

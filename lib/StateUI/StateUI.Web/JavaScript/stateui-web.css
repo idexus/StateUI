@@ -201,7 +201,7 @@ body {
   background: var(--stateui-glass);
   box-shadow: var(--stateui-glass-edge);
 }
-.stateui-bar-actions:empty { display: none; }
+.stateui-bar-actions:not(:has(> :not([hidden]))) { display: none; }
 .stateui-bar-actions button { background: transparent; box-shadow: none; }
 .stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
 .stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
@@ -223,9 +223,50 @@ body {
   --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
 }
 [dir="rtl"] .stateui-glyph[data-glyph="back"] { transform: scaleX(-1); }
+.stateui-glyph[data-glyph="more"] {
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='5' cy='12' r='1.9'/%3E%3Ccircle cx='12' cy='12' r='1.9'/%3E%3Ccircle cx='19' cy='12' r='1.9'/%3E%3C/svg%3E");
+}
 .stateui-glyph[data-glyph="close"] {
   --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
 }
+
+/* A menu: a popover over everything, an entry a row, a submenu its own popover beside it. */
+.stateui-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  min-width: 200px;
+  max-width: min(320px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--stateui-line);
+  border-radius: 12px;
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  box-shadow: var(--stateui-raised-shadow);
+}
+.stateui-menu:popover-open { display: grid; animation: stateui-fade-in 0.12s ease; }
+.stateui-menu > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.stateui-menu > button:hover:not(:disabled), .stateui-menu > button:focus-visible { background: var(--stateui-raised); outline: none; }
+.stateui-menu > button:disabled { opacity: 0.45; cursor: default; }
+.stateui-menu > button[data-destructive] { color: #d92d20; }
+.stateui-menu > button[aria-haspopup]::after { content: "›"; margin-inline-start: auto; opacity: 0.6; }
+.stateui-menu > button img { width: 18px; height: 18px; }
+.stateui-menu > [role="separator"] { height: 1px; margin: 5px 6px; background: var(--stateui-line); }
 
 /* A sheet: the browser's modal dialog, a card in the middle over a shade, from the bottom where the page is narrow;
    its bar the page's chrome, the page under it. */

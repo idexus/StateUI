@@ -70,7 +70,8 @@ STATEUI_WEB(copy_read) void stateui_web_copy_read(char *into);
 
 /// Calls listener `listener` whenever the element hears `event`: a DOM event's name; `enter` for the Return key;
 /// `activate` for Return or Space pressed on the element itself; `itemtap` for a click on it but on no control inside
-/// it; `dismiss` for the user's asking a modal dialog to close.
+/// it; `dismiss` for the user's asking a modal dialog to close; `closed` for a popover taken down; `menu` for the
+/// user's asking for the element's menu - a right click, a finger held still.
 STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, int32_t length, int32_t listener);
 
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
@@ -82,6 +83,12 @@ STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
 /// Calls `listener` as the element comes near the view of the scroller `root` - within half its size - and as it
 /// goes away: the event's number 0 is 1 near, 0 away.
 STATEUI_WEB(watch_nearness) void stateui_web_watch_nearness(int32_t element, int32_t root, int32_t listener);
+
+/// Shows the popover element over everything: under the element `anchor`, or beside it for `side` 1, else at (`x`,
+/// `y`) in the window - kept in the window whole; `hide_popover` takes it down.
+STATEUI_WEB(show_popover) void stateui_web_show_popover(
+    int32_t element, int32_t anchor, double x, double y, int32_t side);
+STATEUI_WEB(hide_popover) void stateui_web_hide_popover(int32_t element);
 
 /// Shows the `<dialog>` element over the page, which takes no input but it until it closes; `close_modal` closes it.
 STATEUI_WEB(show_modal) void stateui_web_show_modal(int32_t element);

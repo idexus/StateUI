@@ -5,8 +5,9 @@
 @_spi(Host) import StateUIHost
 
 /// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name
-/// and mark, the page's title, and the actions its path declares - the host layer's `WindowChrome`. Beside a sidebar
-/// shown, the bar stands in two parts: the name and the toggle over the sidebar, the rest over the detail.
+/// and mark, the page's title, the actions its path declares and a menu of those behind it and of its menus - the
+/// host layer's `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the
+/// sidebar, the rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar
 @MainActor
 final class WebWindowBar: WebDOMView {
@@ -37,6 +38,11 @@ final class WebWindowBar: WebDOMView {
     }
     private let closer = WebDOMView(tag: "button")
 
+    /// The button opening the actions that stand behind the bar - its overflow - and the menus the page's path
+    /// declares; shown where there are any.
+    private let more = WebDOMView(tag: "button")
+    private var behind: [MenuEntry] = []
+
     init() {
         super.init(tag: "header")
         attribute("class", "stateui-bar")
@@ -49,6 +55,12 @@ final class WebWindowBar: WebDOMView {
         glyph(toggle, "sidebar", label: "Sidebar")
         glyph(back, "back", label: "Back")
         glyph(closer, "close", label: "Close")
+        glyph(more, "more", label: "More")
+        more.attribute("aria-haspopup", "menu")
+        more.listen("click") { [weak self] in
+            guard let self else { return }
+            WebMenu(behind).show(under: more)
+        }
         closer.setShown(false)
         toggle.listen("click") { [weak self] in self?.onToggle() }
         back.listen("click") { [weak self] in self?.onBack() }
@@ -86,7 +98,7 @@ final class WebWindowBar: WebDOMView {
         style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
-        let ending = chrome.actions.trailing + [chrome.actions.overflow]
+        let ending = chrome.actions.trailing
         for (edge, groups) in [(leading, chrome.actions.leading), (trailing, ending)] {
             let items = groups.flatMap { $0 }
             for (index, item) in items.enumerated() {
@@ -98,8 +110,13 @@ final class WebWindowBar: WebDOMView {
         }
         for (key, button) in buttons where kept[key] == nil { button.detach() }
         buttons = kept
-        // A sheet's bar ends with the button closing it, after its own actions.
-        WebRelay.insert(closer.node, into: trailing.node, at: ending.joined().count)
+        // The bar ends with the actions behind it, then - a sheet's - the button closing it.
+        behind = chrome.actions.overflow.map(MenuEntry.entry(of:))
+        if !behind.isEmpty, !chrome.menus.menus.isEmpty { behind.append(.separator) }
+        behind += chrome.menus.menus
+        more.setShown(!behind.isEmpty)
+        WebRelay.insert(more.node, into: trailing.node, at: ending.joined().count)
+        WebRelay.insert(closer.node, into: trailing.node, at: ending.joined().count + 1)
     }
 
     private func glyph(_ button: WebDOMView, _ glyph: String, label: String) {
@@ -114,7 +131,9 @@ final class WebWindowBar: WebDOMView {
 
     override func detach() {
         for button in buttons.values { button.detach() }
-        let parts = [toggle, back, closer, mark, name, subtitle, heading, brand, title, leading, trailing, side, start, lead]
+        let parts = [
+            toggle, back, closer, more, mark, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
+        ]
         for part in parts {
             part.detach()
         }

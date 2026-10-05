@@ -42,6 +42,23 @@ overlay and the layout in it take no touch of their own
 through gives that back to its children only where a child does not let
 them through itself.
 
+## Menus
+
+A menu is the host layer's walk of its entries (`MenuEntry`) as a popover
+over everything (`popover="auto"`): an item a button, a separator a line, a
+submenu a button opening its own popover beside it, inside the one it stands
+in so that both stay open. A click beside it or Escape takes it down - the
+browser's own light dismissal - and so does choosing an item, which then
+hears it chosen. A popover is kept in the window whole, under what opened
+it, above where there is no room under, at the pointer for a context menu.
+
+A bar's action that is a menu opens its entries under it. The actions
+standing behind the bar - its overflow - and the menus the page's path
+declares stand in one menu at the bar's end, the overflow first. A view
+whose element declares a context menu opens it as the user asks: a right
+click, or a finger held still half a second; its entries are read as they
+stand then.
+
 ## Sheets
 
 A page a modal stack presents stands on a sheet: the browser's own modal

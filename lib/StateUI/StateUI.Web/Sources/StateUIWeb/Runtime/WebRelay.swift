@@ -175,6 +175,17 @@ enum WebRelay {
     /// Whether the element the nearness being heard is of came near.
     static var eventNear: Bool { stateui_web_event_number(0) != 0 }
 
+    /// Shows the popover `element` under `anchor`, or beside it, else at `point` in the window.
+    static func showPopover(
+        _ element: Int32, under anchor: Int32 = 0, at point: Point = Point(x: 0, y: 0), beside: Bool = false
+    ) {
+        stateui_web_show_popover(element, anchor, point.x, point.y, beside ? 1 : 0)
+    }
+
+    static func hidePopover(_ element: Int32) {
+        stateui_web_hide_popover(element)
+    }
+
     /// Shows the `<dialog>` `element` over the page, modal; `closeModal` closes it.
     static func showModal(_ element: Int32) {
         stateui_web_show_modal(element)

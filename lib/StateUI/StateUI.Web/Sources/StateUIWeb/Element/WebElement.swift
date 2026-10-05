@@ -22,6 +22,9 @@ final class WebElement: NativeElement {
     /// Whether the view's size changing is followed, for a frame the tree reads.
     var observesSize = false
 
+    /// Whether the view listens for the user's asking for its context menu.
+    var listensForMenu = false
+
     /// The pointers pressed on the view, for a drag or a pinch it hears, and how many times a wheel turned a pinch.
     var press = WebPress()
     var wheelTurns = 0
@@ -56,6 +59,7 @@ final class WebElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         listenForTheUser()
+        offerContextMenu()
         followFrame()
     }
 
