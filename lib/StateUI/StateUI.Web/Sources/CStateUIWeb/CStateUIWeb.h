@@ -106,3 +106,6 @@ STATEUI_WEB(now) double stateui_web_now(void);
 /// Whether the user's system is in its dark appearance; `listen_appearance` calls `listener` when it turns.
 STATEUI_WEB(prefers_dark) int32_t stateui_web_prefers_dark(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);
+
+/// Whether the user asked for less motion.
+STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);

@@ -21,7 +21,7 @@ final class WebRenderer {
 
     /// The parts every host holds alike, each element's Web half a `WebElement`.
     private(set) lazy var runtime = HostRuntime(
-        clock: frameClock, reducesMotion: { false },
+        clock: frameClock, reducesMotion: { WebRelay.reducesMotion },
         makeNative: { [unowned self] element in WebElement(element, host: self) }, log: { WebRenderer.log.error($0) },
         views: { WebDOMView.liveCount })
 

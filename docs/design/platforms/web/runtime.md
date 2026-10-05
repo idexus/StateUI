@@ -84,6 +84,15 @@ application again in the other.
 runs the display cycle at the frame's time, and asks for the next while still
 held. Its time is the page's monotonic clock in milliseconds.
 
+## Motion
+
+A property travels on the page where its view presents it: the host layer's
+surface (`TransitionSurface`) names what, element type by element type, and
+each frame's value is written as the element's style like any other. A
+window's place and size arrive at once - the browser keeps its window. Where
+the user asks for less motion (`prefers-reduced-motion`), everything arrives
+at once, as on every host.
+
 ## The window
 
 The browser's window is one window: the first window element the tree holds is

@@ -198,6 +198,9 @@ enum WebRelay {
 
     static var prefersDark: Bool { stateui_web_prefers_dark() != 0 }
 
+    /// Whether the user asked for less motion.
+    static var reducesMotion: Bool { stateui_web_reduces_motion() != 0 }
+
     static func listenToAppearance(_ listener: Int32) {
         stateui_web_listen_appearance(listener)
     }

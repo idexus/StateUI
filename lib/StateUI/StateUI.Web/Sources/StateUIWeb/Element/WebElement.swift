@@ -40,8 +40,9 @@ final class WebElement: NativeElement {
         return (view as? WebStepperView).map { .number($0.value) }
     }
 
-    /// The browser animates nothing of StateUI's yet: every change arrives at once.
-    func animates(_ property: Prop) -> Bool { false }
+    func animates(_ property: Prop) -> Bool {
+        WebTransitionSurface.presents(property, on: type)
+    }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         applyProperties(changed: changed)
