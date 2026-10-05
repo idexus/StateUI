@@ -60,6 +60,9 @@ STATEUI_WEB(set_title) void stateui_web_set_title(const char *text, int32_t leng
 /// Asks for one display frame.
 STATEUI_WEB(request_frame) void stateui_web_request_frame(void);
 
+/// Calls Swift once, after `milliseconds`, in place of the call asked for before.
+STATEUI_WEB(wake_after) void stateui_web_wake_after(double milliseconds);
+
 /// The page's time, in milliseconds on one monotonic clock.
 STATEUI_WEB(now) double stateui_web_now(void);
 

@@ -109,7 +109,10 @@
     @discardableResult
     public func runJobs() -> Int { HostBoundary.runJobs() }
 
-    #if !os(WASI)
+    #if os(WASI)
+    /// When the page is to call again, in milliseconds; nil with nothing to come.
+    public var nextWake: Double? { HostBoundary.nextWake }
+    #else
     /// Parks the doorbell's thread until work arrives.
     public func waitForWork() -> Int { HostBoundary.waitForWork() }
     #endif

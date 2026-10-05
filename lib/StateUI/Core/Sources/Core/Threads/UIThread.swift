@@ -23,6 +23,9 @@ import WASILibc
 #if !canImport(Darwin)
 @_spi(ExperimentalCustomExecutors) import _Concurrency
 #endif
+#if os(WASI)
+@_spi(ExperimentalScheduling) import _Concurrency
+#endif
 
 /// Which thread this is, as a number to compare - spelled per platform.
 private func currentThread() -> UInt64 {
@@ -60,7 +63,10 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// Jobs waiting for the host to run them.
     private var pending: [UnownedJob] = []
 
-    #if !os(WASI)
+    #if os(WASI)
+    /// Jobs waiting for their time - a sleep's - on the page's one thread.
+    private var later = Timetable<UnownedJob, ContinuousClock.Instant>()
+    #else
     /// What the host's parked thread waits on, signalled at most once per park.
     private let wake = DispatchSemaphore(value: 0)
     #endif
@@ -165,6 +171,9 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
 
         for _ in 0..<64 {
             let taken: [UnownedJob] = guarded.withLock {
+                #if os(WASI)
+                pending += later.takeDue(at: .now)
+                #endif
                 let taken = pending
                 pending.removeAll(keepingCapacity: true)
                 return taken
@@ -255,7 +264,36 @@ extension UIThreadExecutor: MainExecutor {
 /// the platform's own for every other task.
 private struct UIThreadExecutorFactory: ExecutorFactory {
     static var mainExecutor: any MainExecutor { UIThreadExecutor.shared }
+    #if os(WASI)
+    static var defaultExecutor: any TaskExecutor { UIThreadExecutor.shared }
+    #else
     static var defaultExecutor: any TaskExecutor { PlatformExecutorFactory.defaultExecutor }
+    #endif
+}
+#endif
+
+#if os(WASI)
+/// On WebAssembly every task's executor, and a sleep's: one thread runs them all, and a job kept for later waits in
+/// the timetable until a drain finds it due.
+/// Design: docs/design/core/concurrency.md#webassembly
+extension UIThreadExecutor: TaskExecutor, SchedulingExecutor {
+    func enqueue<C: Clock>(_ job: consuming ExecutorJob, after delay: C.Duration, tolerance: C.Duration?, clock: C) {
+        keep(UnownedJob(job), for: delay)
+    }
+
+    func enqueue<C: Clock>(_ job: consuming ExecutorJob, at instant: C.Instant, tolerance: C.Duration?, clock: C) {
+        keep(UnownedJob(job), for: clock.now.duration(to: instant))
+    }
+
+    private func keep<Wait>(_ job: UnownedJob, for wait: Wait) {
+        let due = ContinuousClock.now.advanced(by: (wait as? Duration) ?? .zero)
+        guarded.withLock { later.add(job, due: due) }
+    }
+
+    /// How long until a job kept for later comes due; nil with none waiting.
+    var nextDue: Duration? {
+        guarded.withLock { later.nextDue.map { ContinuousClock.now.duration(to: $0) } }
+    }
 }
 #endif
 

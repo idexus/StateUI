@@ -110,6 +110,11 @@ enum WebRelay {
         stateui_web_request_frame()
     }
 
+    /// Asks the page to call once more after `milliseconds`, in place of the call asked for before.
+    static func wake(after milliseconds: Double) {
+        stateui_web_wake_after(milliseconds)
+    }
+
     static var now: Double { stateui_web_now() }
 
     static var prefersDark: Bool { stateui_web_prefers_dark() != 0 }

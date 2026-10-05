@@ -45,8 +45,11 @@ The table is exported only when the head links with `--export-table`, which
 
 Every call from the page ends with a turn: a listener's handler, or a display
 frame, may leave jobs a resumed handler queued, a render a write asks for, or
-acts. Nothing else wakes the host - one thread runs everything, and the
-browser's event loop is its loop ([WebAssembly](../../core/concurrency.md#webassembly)).
+acts. Then the host asks the core when the page is to call again
+(`nextWake`) and hands the relay one timer for it, `wake_after`, which
+replaces the one asked for before: at once where work is left, or when a
+sleep comes due. One thread runs everything, and the browser's event loop is
+its loop ([WebAssembly](../../core/concurrency.md#webassembly)).
 
 Words read back - a field's value - are read in two steps: the relay encodes
 them and answers their length, and Swift hands it a buffer of that length to

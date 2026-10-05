@@ -47,9 +47,17 @@ final class WebRenderer {
         WebEnvironment.watch { [weak renderer] in
             renderer?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
         }
-        WebRelay.afterEntry = { [weak renderer] in renderer?.runtime.pump.turn() }
+        WebRelay.afterEntry = { [weak renderer] in renderer?.entryEnded() }
         renderer.runtime.connectWindow()
-        renderer.runtime.pump.turn()
+        renderer.entryEnded()
+    }
+
+    /// Every call from the page ends with a turn, and asks the page to call again where work is left or a job kept
+    /// for later comes due.
+    /// Design: docs/design/platforms/web/runtime.md#the-relay
+    func entryEnded() {
+        runtime.pump.turn()
+        if let wait = runtime.core.nextWake { WebRelay.wake(after: wait) }
     }
 
     /// Shows the first window element in the browser's window - a window the tree no longer holds closes - each told
