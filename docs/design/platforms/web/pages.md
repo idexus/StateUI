@@ -19,14 +19,17 @@ page's surface, translucent over what scrolls beneath. The same title names
 the browser's tab.
 
 Beside a sidebar shown, the bar stands in two parts as wide as the split
-view's columns: over the sidebar the application's name, mark and the line
-under it, centred, with the toggle at the sidebar's edge; over the detail
+view's columns: over the sidebar the application's name and the line under
+it, centred, with the toggle at the sidebar's edge; over the detail
 the rest, its title centred over the detail. With the sidebar hidden, or over
 the detail as a drawer, the name stands in the sidebar alone, and the title
 is centred over the whole bar. Without a split view the name leads the bar,
 and a page's title the same as the name is not said twice. The parts follow
 from the split view's `data-sidebar`, which the bar repeats, and the page's
 width, so no measuring moves them.
+
+The bar shows no application's mark: it names the page and the application
+in words, and the browser's tab shows the site's own icon.
 
 The page is one window: an application's second window has no place of its
 own in it.

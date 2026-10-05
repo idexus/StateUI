@@ -117,7 +117,6 @@ body {
 .stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
 .stateui-bar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.stateui-bar-brand img { width: 28px; height: 28px; border-radius: 8px; }
 .stateui-bar-name { font-weight: 650; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
 .stateui-bar-subtitle { font-size: 12.5px; opacity: 0.72; white-space: nowrap; }
 .stateui-bar-heading { display: flex; flex-direction: column; min-width: 0; }

@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name
-/// and mark, the page's title, the actions its path declares and a menu of those behind it and of its menus - the
+/// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name,
+/// the page's title, the actions its path declares and a menu of those behind it and of its menus - the
 /// host layer's `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the
 /// sidebar, the rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar
@@ -14,7 +14,6 @@ final class WebWindowBar: WebDOMView {
     private let toggle = WebDOMView(tag: "button")
     private let back = WebDOMView(tag: "button")
     private let brand = WebDOMView(tag: "div")
-    private let mark = WebImageView()
     private let heading = WebDOMView(tag: "div")
     private let name = WebDOMView(tag: "span")
     private let subtitle = WebDOMView(tag: "span")
@@ -69,8 +68,7 @@ final class WebWindowBar: WebDOMView {
         for (index, part) in [side, start].enumerated() { WebRelay.insert(part.node, into: lead.node, at: index) }
         for (index, part) in [brand, toggle].enumerated() { WebRelay.insert(part.node, into: side.node, at: index) }
         for (index, part) in [back, leading].enumerated() { WebRelay.insert(part.node, into: start.node, at: index) }
-        WebRelay.insert(mark.node, into: brand.node, at: 0)
-        WebRelay.insert(heading.node, into: brand.node, at: 1)
+        WebRelay.insert(heading.node, into: brand.node, at: 0)
         WebRelay.insert(name.node, into: heading.node, at: 0)
         WebRelay.insert(subtitle.node, into: heading.node, at: 1)
     }
@@ -88,8 +86,6 @@ final class WebWindowBar: WebDOMView {
         WebRelay.setText(name.node, area?.title ?? "")
         WebRelay.setText(subtitle.node, area?.subtitle ?? "")
         subtitle.setShown(area?.subtitle?.isEmpty == false)
-        mark.apply(source: area?.icon.map { ImageSource($0) }, aspect: .fit)
-        mark.setShown(area?.icon?.isEmpty == false)
         WebRelay.setText(title.node, shown)
         title.setShown(!shown.isEmpty)
         title.attribute("data-repeats", shown == area?.title ? "" : nil)
@@ -132,7 +128,7 @@ final class WebWindowBar: WebDOMView {
     override func detach() {
         for button in buttons.values { button.detach() }
         let parts = [
-            toggle, back, closer, more, mark, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
+            toggle, back, closer, more, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
         ]
         for part in parts {
             part.detach()
