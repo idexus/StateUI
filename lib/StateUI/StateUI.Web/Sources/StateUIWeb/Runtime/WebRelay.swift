@@ -191,9 +191,11 @@ enum WebRelay {
         stateui_web_push_history()
     }
 
-    /// Goes back over the page's own entry of the browser's history.
-    static func backHistory() {
-        stateui_web_back_history()
+    /// Goes back over the page's own entry of the browser's history, where it stands on it - never off the site from
+    /// an entry the page did not put there; whether it went.
+    @discardableResult
+    static func backHistory() -> Bool {
+        stateui_web_back_history() != 0
     }
 
     /// Calls `listener` whenever the browser's history moves.

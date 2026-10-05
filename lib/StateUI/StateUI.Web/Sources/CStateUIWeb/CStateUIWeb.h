@@ -109,10 +109,11 @@ STATEUI_WEB(frame_step) int32_t stateui_web_frame_step(int32_t element, int32_t 
 /// Runs the script in the frame's document: its value as JSON, read as `copy_read` reads; -1 where it could not.
 STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, const char *script, int32_t length);
 
-/// Puts one entry of the page's own on the browser's history; `back_history` goes back over it; `listen_history`
-/// calls `listener` whenever the browser's history moves - its way back, or forward.
+/// Puts one entry of the page's own on the browser's history; `back_history` goes back over it where it stands on
+/// it, 1 where it went; `listen_history` calls `listener` whenever the browser's history moves - its way back, or
+/// forward.
 STATEUI_WEB(push_history) void stateui_web_push_history(void);
-STATEUI_WEB(back_history) void stateui_web_back_history(void);
+STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
 
 /// Calls the act `name` of the application's own scripts - `StateUI.acts` - with the words, and `listener` once its

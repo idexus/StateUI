@@ -15,7 +15,13 @@ extension WebDriver {
     func perform(_ act: UserAct, on element: MountedElement) throws {
         if element.type == .toolbarItem, act == .activate { return try chooseAction(element) }
         if case .answer(let caption, let typing) = act { return try answer(caption, typing: typing, on: element) }
-        if act == .goBack { return try WebBrowser.run("history.back()") }
+        // The browser's way back, over the page's own entry: from one it did not put there, the user leaves the site.
+        if act == .goBack {
+            guard try WebBrowser.truth("history.state?.stateui === true && (history.back(), true)", on: 0) else {
+                throw DriverCannot(act, on: element)
+            }
+            return
+        }
         let view = try self.view(of: element, act)
         let e = view.node
         switch (act, view) {

@@ -44,8 +44,7 @@ final class WebWindowController {
             WebRelay.pushHistory()
         } else if !offers, holdsHistory {
             holdsHistory = false
-            leavesHistory = true
-            WebRelay.backHistory()
+            leavesHistory = WebRelay.backHistory()
         }
     }
 

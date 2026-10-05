@@ -43,7 +43,9 @@ browser's history, and the browser taking it back takes the window a step
 back; where a way back still stands after it, the entry is put back. Where
 the window offers none any more - the bar's way back, the program's own -
 the page goes back over its entry itself, and does not take that for the
-user's. One entry, never one a page: a page the application pushes is the
+user's - only where the browser stands on that entry, so the page never takes
+the user off the site from one it did not put there. One entry, never one a
+page: a page the application pushes is the
 tree's, and the browser could hand none of them back on its way forward.
 
 ## Overlays
