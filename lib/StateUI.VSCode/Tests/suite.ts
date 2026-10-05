@@ -15,8 +15,9 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { findApplications, hasHead } from "../Sources/applications";
 import { checkoutNamedBy } from "../Sources/checkouts";
-import { configurations, StateUIDebugConfigurationProvider, uiKitAttach } from "../Sources/debug";
+import { configurations, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
+import { isChromium, parseBrowsers } from "../Sources/browsers";
 import { parseDevices as parseUIKitDevices, parseSimulators } from "../Sources/uiKitDevices";
 import { otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
@@ -121,13 +122,13 @@ export async function run(): Promise<void> {
         }
 
         // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
-        //    WinUI on Windows, GTK on Linux, and no .NET MAUI. A launch on a
-        //    machine that runs no host resolves to nothing.
+        //    WinUI on Windows, GTK on Linux, the Web on macOS and Linux, and no
+        //    .NET MAUI. A launch on a machine that runs no host resolves to nothing.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, and never .NET MAUI",
-            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android"])
+        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, the Web on macOS and Linux, and never .NET MAUI",
+            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "web"])
             && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
-            && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk"])
+            && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk", "web"])
             && availableHosts("freebsd").length === 0
             && !hosts.some((each) => each.label.includes("MAUI")));
         {
@@ -139,6 +140,7 @@ export async function run(): Promise<void> {
                 ready: async () => false,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
@@ -204,6 +206,10 @@ export async function run(): Promise<void> {
                 sdkOf("Apple Swift version 6.4 (swift-6.4-RELEASE)\nTarget: arm64-apple-macosx26.0") === sdk
                 && sdkOf(`Apple Swift version ${older} (swift-${older}-RELEASE)`) === `swift-${older}-RELEASE_android`
                 && sdkOf(`Apple Swift version ${newer} (swift-${newer}-RELEASE)`) === undefined && sdkOf("") === undefined);
+            const wasm = "swift-6.4.0-RELEASE_wasm\nswift-6.4.0-RELEASE_wasm-embedded\n";
+            check("the Swift SDK for WebAssembly is the one whose id ends in _wasm, never its Embedded Swift sibling",
+                swiftSDKOf("6.4", wasm, "wasm") === "swift-6.4.0-RELEASE_wasm"
+                && swiftSDKOf("6.4", "swift-6.4.0-RELEASE_wasm-embedded\n", "wasm") === undefined);
         }
         check("devices.sh list reads as the devices attached, by serial and name, and the emulators not running",
             JSON.stringify(parseDevices("device\t190a991d\tCPH2363\r\ndevice\temulator-5554\tPixel_3a_API_34\ndevice\tR5CT\navd\tMedium_Phone_API_36\n\nnoise\n"))
@@ -240,6 +246,7 @@ export async function run(): Promise<void> {
                     ready: async (file) => fs.existsSync(file),
                     device: async () => serial,
                     uiKitDevice: async () => undefined,
+                    browser: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
@@ -366,6 +373,7 @@ export async function run(): Promise<void> {
                     ready: async (file) => fs.existsSync(file),
                     device: async () => undefined,
                     uiKitDevice: async () => udid,
+                    browser: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
@@ -421,6 +429,7 @@ export async function run(): Promise<void> {
                 ready: async () => false,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
@@ -457,6 +466,7 @@ export async function run(): Promise<void> {
                 ready: async () => false,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
@@ -481,9 +491,81 @@ export async function run(): Promise<void> {
                     "lib/Backends/WebView.WinUI"].includes(each.label)));
         }
 
+        // 6d. Web: HelloWorld's head, built, served and opened by run-app.sh in a
+        //     task in the browser chosen; a Debug launch in one of Chromium's
+        //     VS Code's JavaScript debugger on the page server.json names.
+        check("HelloWorld has a Web head, and as the Web the language server indexes in .build/web/index-build for wasm32-unknown-wasip1",
+            hasHead(helloWorld, "web")
+            && JSON.stringify(serverSettings("web", "swift-6.4.0-RELEASE_wasm")) === JSON.stringify(
+                { scratchPath: ".build/web/index-build", swiftSDK: "swift-6.4.0-RELEASE_wasm", triple: "wasm32-unknown-wasip1" }));
+        {
+            const listed = parseBrowsers("com.apple.Safari\tSafari\t/Applications/Safari.app/Contents/MacOS/Safari\tdefault\r\n"
+                + "com.google.Chrome\tGoogle Chrome\t/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\t\n\n"
+                + "firefox.desktop\tFirefox\t/usr/bin/firefox\t\n");
+            check("browsers.sh list reads as the browsers by id, name and program, the system's own marked, and Chromium's told apart",
+                listed.length === 3 && listed[0].isDefault && !listed[1].isDefault && listed[1].name === "Google Chrome"
+                && listed[2].executable === "/usr/bin/firefox"
+                && !isChromium(listed[0]) && isChromium(listed[1]) && !isChromium(listed[2])
+                && isChromium({ id: "com.microsoft.edgemac" }) && isChromium({ id: "brave-browser.desktop" }));
+
+            const facts = path.join(helloWorld.directory, ".build", "web", "server.json");
+            const launchOnWeb = async (browser: (typeof listed)[number], configuration: string) => {
+                const started: vscode.Task[] = [];
+                const provider = new StateUIDebugConfigurationProvider({
+                    host: () => "web", application: async () => helloWorld,
+                    run: async () => 0,
+                    start: async (task) => {
+                        started.push(task);
+                        fs.mkdirSync(path.dirname(facts), { recursive: true });
+                        fs.writeFileSync(facts, JSON.stringify({ url: "http://127.0.0.1:8460/" }));
+                    },
+                    ready: async (file) => fs.existsSync(file),
+                    device: async () => undefined,
+                    uiKitDevice: async () => undefined,
+                    browser: async () => browser,
+                });
+                const resolved = await provider.resolveDebugConfiguration(root,
+                    { name: "StateUI: Debug", type: "stateui", request: "launch", configuration });
+                fs.rmSync(facts, { force: true });
+                const shell = started[0]?.execution as vscode.ShellExecution | undefined;
+                return { resolved, started, line: shell ? [shell.command, ...(shell.args ?? [])].map(String).join(" ") : "" };
+            };
+            const script = path.join(root.uri.fsPath, ".scripts", "Web", "run-app.sh");
+
+            const safari = await launchOnWeb(listed[0], "debug");
+            say(`     web started: ${safari.line}`);
+            check("Web in Safari: run-app.sh <HelloWorld> debug --browser com.apple.Safari started as a task, and no session",
+                safari.resolved === undefined && safari.started.length === 1
+                && safari.line === `bash ${script} ${helloWorld.directory} debug --browser com.apple.Safari`
+                && safari.started[0].definition.device === "web");
+
+            const chrome = await launchOnWeb(listed[1], "debug");
+            check("Web in Chrome: the page served with no browser opened, then VS Code's JavaScript debugger starts Chrome on it",
+                chrome.line === `bash ${script} ${helloWorld.directory} debug --browser none`
+                && JSON.stringify(chrome.resolved) === JSON.stringify(webLaunch("StateUI: Debug", "http://127.0.0.1:8460/", listed[1],
+                    path.join(helloWorld.directory, ".build", "web", "site", "debug")))
+                && chrome.resolved?.type === "chrome" && chrome.resolved.runtimeExecutable === listed[1].executable);
+
+            const released = await launchOnWeb(listed[1], "release");
+            check("Web released in Chrome is opened by the script, with no session",
+                released.resolved === undefined && released.line.endsWith("release --browser com.google.Chrome"));
+        }
+        {
+            const webSuites = findSuites(root.uri.fsPath, "web");
+            say(`web suites: ${webSuites.map((each) => each.label).join(", ")}`);
+            const own = webSuites.find((each) => each.label === "lib/StateUI/StateUI.Web/Testing");
+            check("web runs the core and the Gallery as plain Swift, its own tests' package by test-web.sh, and no other host's",
+                webSuites.some((each) => each.label === "StateUI") && webSuites.some((each) => each.label === "apps/Gallery")
+                && own?.command === "bash" && own.args[0] === path.join(root.uri.fsPath, ".scripts", "Web", "test-web.sh")
+                && webSuites.filter((each) => each !== own).every((each) => each.command === "swift" && !each.onDevice)
+                && !webSuites.some((each) => ["lib/StateUI/StateUI.AppKit", "lib/StateUI/StateUI.GTK/Testing"].includes(each.label)));
+            check("the Web makes no conformance marks yet", rebuildSteps(root.uri.fsPath, "web", "all") === undefined);
+        }
+
         const palette = await vscode.commands.getCommands(true);
-        check("the palette has Select Android Device and Select UIKit Device, and no Select Debugger",
+        check("the palette has Select Android Device, Select UIKit Device and Select Browser, and no Select Debugger",
             palette.includes("stateui.selectAndroidDevice") && palette.includes("stateui.selectUIKitDevice")
+            && palette.includes("stateui.selectBrowser")
             && !palette.includes("stateui.selectDebugger") && !palette.includes("stateui.selectSimulator"));
 
         // 7. A new application is HelloWorld renamed in a checkout's apps/,

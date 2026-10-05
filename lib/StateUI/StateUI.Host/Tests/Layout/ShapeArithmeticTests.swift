@@ -46,4 +46,14 @@ final class ShapeArithmeticTests: XCTestCase {
             ShapeArithmetic.placement(of: square, in: wide, aspect: .fit, transform: [1, 0, 0, .nan, 0, 0]),
             [4, 0, 0, 4, 20, 0])
     }
+
+    /// A shape's own transform is the six numbers of its matrix; any other count, or a number that is no number, is
+    /// none.
+    func testAShapesTransformIsSixFiniteNumbers() {
+        let six: HostValue = .values([1, 0, 0, 1, 10, 20].map { HostValue.number($0) })
+        XCTAssertEqual(ShapeArithmetic.transform(six), [1, 0, 0, 1, 10, 20])
+        XCTAssertNil(ShapeArithmetic.transform(.values([1, 0, 0, 1, 10].map { HostValue.number($0) })))
+        XCTAssertNil(ShapeArithmetic.transform(.values([1, 0, 0, Double.nan, 10, 20].map { HostValue.number($0) })))
+        XCTAssertNil(ShapeArithmetic.transform(nil))
+    }
 }

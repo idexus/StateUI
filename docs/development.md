@@ -211,6 +211,16 @@ libadwaita. An application's GTK head is built and started by one script:
 
 [GTK host](hosts/gtk.md) lists what it needs and what it builds.
 
+The Web host builds on macOS and Linux with Swift 6.4 and its Swift SDK for
+WebAssembly. An application's Web head is built, served and opened in a
+browser by one script:
+
+```bash
+.scripts/Web/run-app.sh apps/HelloWorld
+```
+
+[Web host](hosts/web.md) lists what it needs and what it builds.
+
 ## Deploy
 
 Each host's `deploy` script builds an application's head for release and lays
@@ -221,6 +231,7 @@ it, with what it runs with, in a folder it makes anew:
 .scripts/UIKit/deploy.sh apps/Gallery artifacts/Gallery/UIKit <device-udid>
 .scripts/Android/deploy.sh apps/Gallery artifacts/Gallery/Android emulator-5554
 .scripts/GTK/deploy.sh apps/Gallery artifacts/Gallery/GTK
+.scripts/Web/deploy.sh apps/Gallery artifacts/Gallery/Web
 ```
 
 ```powershell
@@ -236,7 +247,10 @@ it, with what it runs with, in a folder it makes anew:
 - WinUI, everything the head runs with - StateUI, the Windows App SDK, the
   Swift and C++ runtimes of its architecture, its pictures - so the folder
   runs on a Windows machine with none of them installed;
-- GTK, the head, the StateUI libraries it links, and its pictures.
+- GTK, the head, the StateUI libraries it links, and its pictures;
+- Web, the page: `index.html`, the relay and its style sheet, the module, the
+  application's own scripts and its pictures - a folder any web server serves
+  as it is.
 
 In VS Code, **StateUI: Deploy** runs the chosen host's script for the chosen
 application and lays it in `artifacts/<application>/<platform>` beside the

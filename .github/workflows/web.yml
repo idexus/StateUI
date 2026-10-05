@@ -1,0 +1,81 @@
+# The Web host's suite: its own tests in Node over a page with just enough of a
+# DOM, then, in a headless Google Chrome, the host's tests that run a host. The
+# conformance families join it once the Web's verdicts hold no ❌: until then
+# its column is written on a Mac (`test-web.sh --browser`), and a family's
+# failures are the host's open work, not a broken build.
+#
+# ON A MAC, as the marks are written there: a case reads frames, and words stand
+# at the sizes the system's fonts give them.
+#
+# THE TOOLCHAIN IS swift.org's, not Xcode's: the Swift SDK for WebAssembly is
+# built with it, and swift-sdk.sh names the SDK of the release first on PATH.
+
+name: Web
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  # One release, named once; `swift sdk install` verifies the bundle against the
+  # checksum swift.org publishes in its release list, so a stale pair fails loudly.
+  SWIFT_TAG: swift-6.4.0-RELEASE
+  SWIFT_CHANNEL: swift-6.4.0-release
+  WASM_SDK_CHECKSUM: f07b7be3c586d92d7a07051fc6d303b87ebea67eadc40640ba59d5a8b79aa86d
+
+jobs:
+  web:
+    name: Web
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Install the swift.org toolchain
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/swift.pkg" \
+            "https://download.swift.org/$SWIFT_CHANNEL/xcode/$SWIFT_TAG/$SWIFT_TAG-osx.pkg"
+          installer -pkg "$RUNNER_TEMP/swift.pkg" -target CurrentUserHomeDirectory
+          echo "$HOME/Library/Developer/Toolchains/$SWIFT_TAG.xctoolchain/usr/bin" >> "$GITHUB_PATH"
+
+      # The build in the parentheses, not the version, tells swift.org's
+      # toolchain from Xcode's.
+      - name: Check which Swift is first on PATH
+        run: |
+          set -euo pipefail
+          swift --version
+          release="${SWIFT_TAG#swift-}"; release="${release%-RELEASE}"; release="${release%.0}"
+          swift --version 2>&1 | grep -q "(swift-$release-RELEASE" || {
+            echo "::error::PATH resolves to Xcode's Swift, not swift.org's $SWIFT_TAG."
+            exit 1
+          }
+
+      - name: Install the Swift SDK for WebAssembly
+        run: |
+          set -euo pipefail
+          swift sdk install \
+            "https://download.swift.org/$SWIFT_CHANNEL/wasm-sdk/$SWIFT_TAG/${SWIFT_TAG}_wasm.artifactbundle.tar.gz" \
+            --checksum "$WASM_SDK_CHECKSUM"
+          swift sdk list
+
+      - name: Report Node.js and the browser
+        run: |
+          node --version
+          "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --version
+
+      - name: Web host tests, in Node
+        run: .scripts/Web/test-web.sh
+
+      - name: The host's tests that run a host, in a browser
+        run: .scripts/Web/test-web.sh --browser --host

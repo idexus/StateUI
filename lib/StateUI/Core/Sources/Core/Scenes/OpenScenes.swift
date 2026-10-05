@@ -69,13 +69,13 @@ final class OpenScenes: @unchecked Sendable {
         _list.storage.value.firstIndex { $0.id == id }
     }
 
-    /// Whether the platform opens a window beside another: a desktop and an iPad do, a phone does not, and a host that
-    /// has not said does.
+    /// Whether the platform opens a window beside another: a desktop and an iPad do, a phone and a page in a browser
+    /// do not, and a host that has not said does.
     static var opensWindows: Bool {
         let device = StandardEnvironment.device.info
 
         switch device.formFactor {
-        case .desktop, .unknown: return true
+        case .desktop, .unknown: return device.platform != "Web"
         case .tablet: return device.platform == "iOS"
         default: return false
         }

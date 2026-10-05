@@ -63,7 +63,14 @@
     }
 
     /// A line between two sections.
-    static var separator: MenuEntry { MenuEntry(nil, kind: .separator, entries: []) }
+    public static var separator: MenuEntry { MenuEntry(nil, kind: .separator, entries: []) }
+
+    /// `element` as a menu's entry - a menu its submenu, anything else an item: a bar's action behind its overflow.
+    public static func entry(of element: MountedElement) -> MenuEntry {
+        element.type == .menu
+            ? MenuEntry(element, kind: .submenu, entries: entries(of: element))
+            : MenuEntry(element, kind: .item, entries: [])
+    }
 
     /// The menu `head` holding `entries`, composed from it and the menus joining it.
     init(menu head: MountedElement, entries: [MenuEntry]) {

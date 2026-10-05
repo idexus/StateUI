@@ -1,0 +1,4 @@
+# revision 1.1
+Ellipse: ✅
+Ellipse.fill: cannot read the colour of Ellipse - the Web's driver has no path for it yet
+Ellipse.frameChanged: ✅

@@ -33,6 +33,37 @@ Nothing waits for the platform's main queue in shared code - nothing drains it
 on Android or Windows - and nothing uses a run-loop timer, which hangs off a run
 loop nothing turns there. A timer is `Task.sleep` (cycle.md).
 
+## WebAssembly
+
+```text
+  WebAssembly                  one thread, and the browser's event loop around
+                               it: no thread parks, and nothing turns a main
+                               queue. UIThreadExecutor is every task's executor
+                               - MainActor's, the default one and a sleep's - and
+                               the Web host drains it in the turn every call
+                               from the page ends with.
+```
+
+A program in a page runs only inside a call the page makes - its start, a
+listener, a display frame, a wake - so whatever a call leaves is collected by
+the turn that ends it. The executor keeps no doorbell there, and
+`HostBoundary.waitForWork` does not exist, so no Web host can park the one
+thread the page has.
+
+Every task runs on the one executor: a task the application starts, an `async
+let`'s child and a detached task alike, as no other executor is drained in a
+page. A sleep is a job kept for later in the executor's timetable, ordered by
+the time it comes due (`Timetable`); a drain moves the jobs due by then to the
+queue before it runs them. `Task.sleep` reaches the default executor, so the
+executor answers as the default one for a sleep to be kept at all.
+
+Instead of a doorbell the page is told when to call again:
+`HostBoundary.nextWake` answers at once where jobs, acts or a render wait,
+else the time until the next job kept for later comes due, and nothing with
+nothing to come. A cycle is a display frame's, which the display cycle holds
+the clock for, so it is no reason to call - a host that called for it would
+call without end while an engine runs.
+
 ## Handlers run where their event arrives
 
 A handler starts with `Task.immediate`, which runs it on the UI thread up to its

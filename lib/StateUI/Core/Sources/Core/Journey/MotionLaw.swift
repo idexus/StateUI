@@ -10,6 +10,8 @@ import Android
 import Glibc
 #elseif canImport(CRT)
 import CRT
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 
 // The two motion laws as numbers, in closed form in the time since an animation

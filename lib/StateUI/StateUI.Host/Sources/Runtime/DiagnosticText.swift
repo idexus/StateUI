@@ -11,6 +11,8 @@ import Android
 import Glibc
 #elseif canImport(CRT)
 import CRT
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 
 /// What a runtime writes out for whoever reads its log rather than its screen: the running tally

@@ -178,6 +178,7 @@ struct HostListing {
     static func cpp(_ code: String) -> Self { Self(language: .cpp, code: code) }
     static func metal(_ code: String) -> Self { Self(language: .metal, code: code) }
     static func glsl(_ code: String) -> Self { Self(language: .glsl, code: code) }
+    static func javascript(_ code: String) -> Self { Self(language: .javascript, code: code) }
     static func hlsl(_ code: String) -> Self { Self(language: .hlsl, code: code) }
 }
 

@@ -84,13 +84,14 @@ requirement.
 Code under `lib/StateUI/Core/Sources` and `lib/StateUI/StateUI.Host/Sources` does not
 import Foundation or a platform UI framework. Each host is a sibling package of
 its own - `lib/StateUI/StateUI.AppKit`, `lib/StateUI/StateUI.UIKit`, `lib/StateUI/StateUI.Android`,
-`lib/StateUI/StateUI.WinUI`, `lib/StateUI/StateUI.GTK` - standing on the host layer, with its
-build in `.scripts/<Platform>`. Swift written for one host alone stands under
+`lib/StateUI/StateUI.WinUI`, `lib/StateUI/StateUI.GTK`, `lib/StateUI/StateUI.Web` - standing on the
+host layer, with its build in `.scripts/<Platform>`. Swift written for one host alone stands under
 that host's condition - `#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`,
-`#if GTK` - which its builds define.
+`#if GTK`, `#if WEB` - which its builds define.
 
 The core schedules nothing on Foundation's `Timer` or `RunLoop`, or on
-`DispatchQueue.main`: nothing drains them on Android or Windows. Work for the
+`DispatchQueue.main`: nothing drains them on Android, on Windows or in a
+browser. Work for the
 UI thread goes to `MainActor`, and a timer is `Task.sleep` or `Ticker`. Memory
 allocated in Swift is freed in Swift - never `strdup` and `free` - because
 several C runtimes can share a Windows process.
@@ -141,8 +142,8 @@ object directories and can silently execute stale output.
 
 Open every pull request against `main`. A release is a tag on `main`. A pull
 request runs the core's workflows - `Core macOS`, `Core Windows` and
-`Core Linux` - and each host's - `AppKit`, `UIKit`, `Android`, `WinUI` and
-`GTK`.
+`Core Linux` - and each host's - `AppKit`, `UIKit`, `Android`, `WinUI`, `GTK`
+and `Web`.
 
 ## Keep changes reviewable
 

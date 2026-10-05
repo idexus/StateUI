@@ -139,17 +139,18 @@ struct MenuPage: View {
         }
     }
 
-    /// What is underneath: the platform compiled in, and the formFactor the host
-    /// answered before the first render.
+    /// What is underneath: the platform compiled in, the formFactor the host
+    /// answered before the first render, and the StateUI release it is built on.
     private var footer: some View {
-        Text("native: \(stateUIPlatform()) · \(device.info.formFactor)")
+        Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)
             // Room under it for the home indicator, the content being edge to
-            // edge: a phone with no home button draws a bar across the bottom
-            // of the screen, and this line would otherwise sit under it.
-            .padding(left: 16, top: 16, right: 16, bottom: 30)
+            // edge: a phone or a tablet with no home button draws a bar across
+            // the bottom of the screen, and these lines would otherwise sit
+            // under it. A desktop has none: the margins are even there.
+            .padding(left: 16, top: 12, right: 16, bottom: device.info.formFactor == .desktop ? 12 : 30)
             // The footer's own row, written on the footer.
             .gridRow(2)
     }

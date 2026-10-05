@@ -5,16 +5,16 @@ and its Gallery is walked, host by host. Other versions may work; these are
 the ones proved. **StateUI: Check Toolchain** says what this machine lacks of
 what its hosts need ([Getting started](getting-started.md#requirements)).
 
-## A Mac: AppKit, UIKit, Android Views
+## A Mac: AppKit, UIKit, Android Views, Web
 
-Last verified 2026-10-03.
+Last verified 2026-10-05.
 
 | | |
 | --- | --- |
 | Machine | Apple M1 Max |
 | System | macOS 26.6.2 (25G83) |
 | Xcode | 27.0 (27A266a), with its Swift 6.4 (`swift-6.4-RELEASE`) |
-| Editor | VS Code 1.140.0; the StateUI extension 0.4.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
+| Editor | VS Code 1.140.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
 | Node.js | 26.10.0, for building and testing the extension |
 
 ### AppKit
@@ -49,9 +49,23 @@ Xcode's own Swift 6.4 is a different build from swift.org's and cannot read
 the Swift SDK's modules; the Android build picks the swift.org toolchain by
 itself.
 
+### Web
+
+Verified 2026-10-05: HelloWorld and the Gallery served and run; the host's own
+suite in Node, and the conformance suite in a headless browser
+(`test-web.sh --browser`), its verdicts the Web's column.
+
+| | |
+| --- | --- |
+| Swift | the swift.org toolchain `swift-6.4.0-RELEASE` |
+| Swift SDK | `swift-6.4.0-RELEASE_wasm` |
+| Server | Python 3.14.4 |
+| Browser | Safari 26.6.2; Google Chrome 152.0.7977.84, headless, for the conformance suite |
+| Node.js | 26.10.0, for the host's own suite and the conformance run's controller |
+
 ## A Windows machine: WinUI 3
 
-Last verified 2026-10-03.
+Last verified 2026-10-05.
 
 | | |
 | --- | --- |
@@ -60,7 +74,7 @@ Last verified 2026-10-03.
 | Swift | the swift.org toolchain `swift-6.4-RELEASE` (6.4.0, Asserts), ARM64, with its Embedded Python 3.10.1 for LLDB |
 | C++ | Visual Studio Community 2026 18.10.2, MSVC 14.51, the ARM64 C++ tools |
 | Windows SDK | 10.0.26100 |
-| Editor | VS Code 1.140.0; the StateUI extension 0.5.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.7.20261002 |
+| Editor | VS Code 1.140.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.7.20261004 |
 | Node.js | 24.21.0, for building and testing the extension |
 | Git | 2.54.0 |
 
@@ -81,17 +95,17 @@ lay the Windows App SDK beside each executable: nothing of it is installed.
 Studio installed: both deployed builds of a project group's application, ARM64
 and x64, started with no Swift on the search path.
 
-## A Linux machine: GTK 4
+## A Linux machine: GTK 4, Web
 
-Last verified 2026-10-03.
+Last verified 2026-10-05.
 
 | | |
 | --- | --- |
 | Machine | a Parallels virtual machine on Apple silicon: aarch64, 2 cores, 16 GB |
 | System | Ubuntu 24.04.5 LTS, Linux 7.0.0; GNOME Shell 46 on Wayland |
 | Swift | the swift.org toolchain `swift-6.4-RELEASE`, installed by swiftly |
-| Editor | VS Code 1.140.0; the StateUI extension 0.5.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
-| Node.js | 22.23.3, for building and testing the extension |
+| Editor | VS Code 1.140.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
+| Node.js | 22.23.3, for building and testing the extension, the Web host's own suite and the conformance run's controller |
 
 ### GTK 4
 
@@ -103,6 +117,17 @@ Last verified 2026-10-03.
 | Pictures | gdk-pixbuf 2.42.10, with librsvg 2.58.0's SVG loader |
 | GLib | 2.80.0 |
 | Graphics | Mesa 25.2.8 on the machine's virtio-gpu; the tests draw with GTK's cairo renderer, an application with its GL one |
+
+### Web
+
+HelloWorld and the Gallery served and run; the host's own suite in Node, and
+the conformance suite in a headless browser (`test-web.sh --browser`).
+
+| | |
+| --- | --- |
+| Swift SDK | `swift-6.4.0-RELEASE_wasm` |
+| Server | Python 3.12.3 |
+| Browser | Firefox 157.0; Chromium 154.0.8037.57 from the snap, headless, for the conformance suite |
 
 Ubuntu 24.04's own Node.js is 18, below the extension's 20; Node.js 22 from
 nodejs.org stands first on the user's `PATH`.

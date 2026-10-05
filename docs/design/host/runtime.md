@@ -228,6 +228,10 @@ toolkit knows: the numbers of the place. It says nothing while the view
 stands in no window or before a layout placed it - a view that joins a shown
 page meets a display frame before the layout pass that places it - so the
 first report a handler hears is where the view is laid out, never zeros.
+A toolkit that tells, once it has laid out and before it draws, that it did
+lets what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
+size worked out from a frame is drawn in the frame that measured it; a
+scroller still says what it did on the display's frame.
 
 ## A scroller's movement
 

@@ -346,6 +346,17 @@
     @discardableResult
     public static func runJobs() -> Int { stateUIRunJobs() }
 
+    #if os(WASI)
+    /// When the page is to call again, in milliseconds - at once where jobs, acts or a render wait, else when a job
+    /// kept for later comes due; nil with nothing to come. A display frame serves a cycle.
+    /// Design: docs/design/core/concurrency.md#webassembly
+    public static var nextWake: Double? {
+        let renderer = Renderer.shared
+        if UIThreadExecutor.shared.pendingCount > 0 || renderer.actCallsPending > 0 || renderer.needsRender { return 0 }
+        guard let due = UIThreadExecutor.shared.nextDue else { return nil }
+        return max(0, Double(due.components.seconds) * 1000 + Double(due.components.attoseconds) / 1e15)
+    }
+    #else
     /// Parks the calling doorbell thread until asynchronous work arrives, and
     /// answers how much is waiting - which can be 0, when another turn got
     /// there first.
@@ -362,6 +373,7 @@
             + (Renderer.shared.needsRender ? 1 : 0)
             + (Renderer.shared.cycleAwake() > 0 ? 1 : 0)
     }
+    #endif
 
     /// Takes the act calls queued since the previous host pump, in the order
     /// the application made them.

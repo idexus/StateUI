@@ -14,7 +14,7 @@ final class DesignNotesTests: XCTestCase {
             "lib/StateUI/Core/Sources/Core", "lib/StateUI/Core/Sources/Views",
             "lib/StateUI/StateUI.AppKit/Sources", "lib/StateUI/StateUI.UIKit/Sources",
             "lib/StateUI/StateUI.Android/Sources", "lib/StateUI/StateUI.WinUI/Sources", "lib/StateUI/StateUI.GTK/Sources",
-            "lib/StateUI/StateUI.Conformance/Sources",
+            "lib/StateUI/StateUI.Web/Sources", "lib/StateUI/StateUI.Conformance/Sources",
         ] + backendSources
     }
 

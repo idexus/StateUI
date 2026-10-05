@@ -1,0 +1,6 @@
+# revision 2.1
+Scene: ✅
+Scene.activated: not realized
+Scene.deactivated: not realized
+Scene.stopped: not realized
+Scene.windowClosed: not realized

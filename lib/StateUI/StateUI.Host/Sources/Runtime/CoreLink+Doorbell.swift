@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 
+#if !os(WASI)
 /// The doorbell every host rings the same way: a thread of its own parked until the core has work.
 /// Design: docs/design/host/runtime.md#one-turn
 extension CoreLink {
@@ -15,3 +16,4 @@ extension CoreLink {
         }
     }
 }
+#endif

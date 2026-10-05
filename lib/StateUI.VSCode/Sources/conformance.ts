@@ -21,7 +21,8 @@ export interface RebuildStep extends Step {
  * The steps that make `host`'s marks again in `checkout` and render the documents from them: the host's conformance
  * families run writing their verdicts, then the dictionary's renderer. `device` - an Android serial, a simulator's
  * UDID - is where the host's suite runs on one. Undefined where the host cannot: a device the suite needs and was not
- * given, or Android asked for the changed families, as its device reads no repository.
+ * given, Android asked for the changed families, as its device reads no repository, or the Web, which has no
+ * conformance driver yet.
  */
 export function rebuildSteps(checkout: string, host: Host, rebuild: Rebuild, device?: string): RebuildStep[] | undefined {
     const scripts = path.join(checkout, ".scripts");
@@ -52,6 +53,8 @@ export function rebuildSteps(checkout: string, host: Host, rebuild: Rebuild, dev
             env: { ...env, STATEUI_FILTER: "UIKitConformanceTests" },
         };
         break;
+    case "web":
+        return undefined;
     case "android":
         if (rebuild === "changed" || !device) {
             return undefined;

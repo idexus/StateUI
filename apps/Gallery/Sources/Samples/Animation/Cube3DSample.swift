@@ -1,8 +1,8 @@
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
 import StateUI
 
 /// A cube the host draws on the GPU - Metal on AppKit and UIKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI,
-/// OpenGL ES 3.0 on Android - with everything about it described from this side.
+/// OpenGL ES 3.0 on Android, WebGL 2 on the Web - with everything about it described from this side.
 struct Cube3DSample: SampleContent, ExampleContent {
     @State private var size = 0.6
     @State private var color = 0
@@ -24,6 +24,10 @@ struct Cube3DSample: SampleContent, ExampleContent {
     static let id = "winUIDirect3D"
     static let title = "A Direct3D view"
     static let summary = "A cube drawn by Direct3D 11.1 in the host, sized and coloured from StateUI."
+    #elseif WEB
+    static let id = "webWebGL"
+    static let title = "A WebGL view"
+    static let summary = "A cube drawn by WebGL 2 in the page, sized and coloured from StateUI."
     #else
     static let id = "androidOpenGLES"
     static let title = "An OpenGL ES view"
@@ -665,6 +669,98 @@ struct Cube3DSample: SampleContent, ExampleContent {
             }
             float4 pixel(Painted painted) : SV_TARGET { return painted.color; }
             """))
+    #elseif WEB
+    static let hostCode = HostCode(
+        in: "Web",
+        .swift("""
+            // Platforms/Web/Host/WebGLCube3DView.swift - a WebControl holding
+            // the gallery's own custom element, <gallery-cube3d>, and telling
+            // it what it is through its attributes.
+            @MainActor
+            final class WebGLCube3DView: WebControl {
+                let element = WebPageElement(tag: "gallery-cube3d")
+
+                var cubeSize = 0.6 {
+                    didSet { element.setAttribute("size", String(cubeSize)) }
+                }
+
+                // A number, because a closed vocabulary crosses as its member.
+                var color = CubeColor.teal {
+                    didSet { element.setAttribute("color", String(color.rawValue)) }
+                }
+
+                var isSpinning = true {
+                    didSet { element.setAttribute("spinning", isSpinning ? "" : nil) }
+                }
+            }
+
+            StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { cube in
+                cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+                cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+                cube.property(Cube3DContract.isSpinning) { control, spinning in
+                    control.isSpinning = spinning ?? true
+                }
+            }
+            """),
+        .javascript("""
+            // Platforms/Web/Page/cube3d.js - the element itself, which knows
+            // nothing of StateUI: WebGL 2 on a canvas of its own, turning on
+            // the browser's frames while it is in view.
+            class Cube3D extends HTMLElement {
+                static observedAttributes = ["size", "color", "spinning"];
+
+                connectedCallback() {
+                    this.seen = new IntersectionObserver(([entry]) => {
+                        this.inView = entry.isIntersecting;
+                        this.follow();
+                    });
+                    this.seen.observe(this);
+                }
+
+                attributeChangedCallback() {
+                    this.follow();
+                    this.draw();
+                }
+
+                follow() {
+                    const turns = this.hasAttribute("spinning") && this.inView;
+                    if (turns && !this.frame) {
+                        const turn = (time) => {
+                            this.angle += (time - this.lastFrame) / 1000;
+                            this.lastFrame = time;
+                            this.draw();
+                            this.frame = requestAnimationFrame(turn);
+                        };
+                        this.frame = requestAnimationFrame(turn);
+                    } else if (!turns && this.frame) {
+                        cancelAnimationFrame(this.frame);
+                        this.frame = 0;
+                    }
+                }
+
+                draw() {
+                    const gl = this.gl;
+                    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+                    gl.uniformMatrix4fv(this.transformAt, false,
+                        transform(this.width / this.height, this.angle, this.size));
+                    gl.uniform4f(this.colorAt, ...this.color, 1);
+                    gl.drawArrays(gl.TRIANGLES, 0, 36);
+                }
+            }
+
+            customElements.define("gallery-cube3d", Cube3D);
+            """),
+        .glsl("""
+            #version 300 es
+            layout(location = 0) in vec4 corner;
+            uniform mat4 transform;
+            uniform vec4 color;
+            out vec4 painted;
+            void main() {
+                gl_Position = transform * vec4(corner.xyz, 1.0);
+                painted = vec4(color.rgb * corner.w, color.a);
+            }
+            """))
     #else
     static let hostCode = HostCode(
         in: InteropHost.name,
@@ -914,6 +1010,12 @@ struct Cube3DSample: SampleContent, ExampleContent {
         + "registration has nothing extra to say."
     private static let stopsWith = "The cube follows WinUI's frames only while it stands on "
         + "screen, so nothing is left turning behind a page you have left."
+    #elseif WEB
+    private static let drawnBy = "The cube is a custom element of the gallery's own JavaScript, `<gallery-cube3d>`, "
+        + "drawing with WebGL 2 and held by a `WebControl` the gallery registers with `StateUIControls.add` - an "
+        + "element like any other, so the registration has nothing extra to say."
+    private static let stopsWith = "The cube asks for the browser's frames only while it is in view, so nothing is "
+        + "left turning behind a page you have left."
     #else
     private static let drawnBy = "The cube is a `TextureView` of the gallery's own Java, drawn into with OpenGL ES "
         + "3.0 from Swift and held by an `AndroidControl` the gallery registers with `StateUIControls.add` - a view "

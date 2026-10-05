@@ -6,7 +6,9 @@
 // to ask.
 // Design: docs/design/core/concurrency.md#mainactor-on-every-platform
 
+#if !os(WASI)
 import Dispatch
+#endif
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Android)
@@ -15,15 +17,22 @@ import Android
 import Glibc
 #elseif canImport(WinSDK)
 import WinSDK
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 #if !canImport(Darwin)
 @_spi(ExperimentalCustomExecutors) import _Concurrency
+#endif
+#if os(WASI)
+@_spi(ExperimentalScheduling) import _Concurrency
 #endif
 
 /// Which thread this is, as a number to compare - spelled per platform.
 private func currentThread() -> UInt64 {
     #if canImport(WinSDK)
     UInt64(GetCurrentThreadId())
+    #elseif os(WASI)
+    0
     #else
     UInt64(UInt(bitPattern: pthread_self().hashValue))
     #endif
@@ -54,8 +63,13 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// Jobs waiting for the host to run them.
     private var pending: [UnownedJob] = []
 
+    #if os(WASI)
+    /// Jobs waiting for their time - a sleep's - on the page's one thread.
+    private var later = Timetable<UnownedJob, ContinuousClock.Instant>()
+    #else
     /// What the host's parked thread waits on, signalled at most once per park.
     private let wake = DispatchSemaphore(value: 0)
+    #endif
 
     /// Whether a wake is signalled that the parked thread has not collected.
     private var wakeArmed = false
@@ -81,6 +95,11 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     func enqueue(_ job: consuming ExecutorJob) {
         let job = UnownedJob(job)
 
+        // One thread, and the browser's event loop around it: the host drains as every entry ends.
+        // Design: docs/design/core/concurrency.md#webassembly
+        #if os(WASI)
+        guarded.withLock { pending.append(job) }
+        #else
         let (signal, post): (Bool, Bool) = guarded.withLock {
             pending.append(job)
 
@@ -102,12 +121,14 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
                 UIThreadExecutor.shared.drainFromTheMainQueue()
             })
         }
+        #endif
     }
 
     /// Wakes the host's parked thread for work this queue cannot see - an act sent
     /// from the pool, a state write.
     /// Design: docs/design/core/acts.md#waking-the-host-for-an-act
     func poke() {
+        #if !os(WASI)
         let signal: Bool = guarded.withLock {
             guard !wakeArmed else { return false }
             wakeArmed = true
@@ -115,8 +136,10 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
         }
 
         if signal { wake.signal() }
+        #endif
     }
 
+    #if !os(WASI)
     /// Parks the calling thread until work lands and answers how many jobs wait -
     /// what `HostBoundary.waitForWork` runs.
     func waitForWork() -> Int {
@@ -127,6 +150,7 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
             return pending.count
         }
     }
+    #endif
 
     /// Runs every waiting job on the calling thread and answers how many ran - in a
     /// loop, since a job can queue another, and bounded.
@@ -147,6 +171,9 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
 
         for _ in 0..<64 {
             let taken: [UnownedJob] = guarded.withLock {
+                #if os(WASI)
+                pending += later.takeDue(at: .now)
+                #endif
                 let taken = pending
                 pending.removeAll(keepingCapacity: true)
                 return taken
@@ -165,11 +192,13 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
         return ran
     }
 
+    #if !os(WASI)
     /// The drain the platform's main queue runs, where something turns it.
     private func drainFromTheMainQueue() {
         guarded.withLock { mainQueueAsked = false }
         drain()
     }
+    #endif
 
     /// This executor, in the form the runtime stores.
     func asUnownedSerialExecutor() -> UnownedSerialExecutor {
@@ -200,12 +229,17 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// Runs the UI thread's loop here until `stop()` - what an `async main` asks of
     /// `MainActor`'s executor; a host drains through `HostBoundary.runJobs` instead.
     func runTheLoop() {
+        #if os(WASI)
+        // No thread waits for work on WebAssembly: the browser's event loop is the loop.
+        drain()
+        #else
         while !guarded.withLock({ stopped }) {
             _ = waitForWork()
             drain()
         }
 
         guarded.withLock { stopped = false }
+        #endif
     }
 
     /// Makes `runTheLoop()` return after the drain it is in.
@@ -230,7 +264,36 @@ extension UIThreadExecutor: MainExecutor {
 /// the platform's own for every other task.
 private struct UIThreadExecutorFactory: ExecutorFactory {
     static var mainExecutor: any MainExecutor { UIThreadExecutor.shared }
+    #if os(WASI)
+    static var defaultExecutor: any TaskExecutor { UIThreadExecutor.shared }
+    #else
     static var defaultExecutor: any TaskExecutor { PlatformExecutorFactory.defaultExecutor }
+    #endif
+}
+#endif
+
+#if os(WASI)
+/// On WebAssembly every task's executor, and a sleep's: one thread runs them all, and a job kept for later waits in
+/// the timetable until a drain finds it due.
+/// Design: docs/design/core/concurrency.md#webassembly
+extension UIThreadExecutor: TaskExecutor, SchedulingExecutor {
+    func enqueue<C: Clock>(_ job: consuming ExecutorJob, after delay: C.Duration, tolerance: C.Duration?, clock: C) {
+        keep(UnownedJob(job), for: delay)
+    }
+
+    func enqueue<C: Clock>(_ job: consuming ExecutorJob, at instant: C.Instant, tolerance: C.Duration?, clock: C) {
+        keep(UnownedJob(job), for: clock.now.duration(to: instant))
+    }
+
+    private func keep<Wait>(_ job: UnownedJob, for wait: Wait) {
+        let due = ContinuousClock.now.advanced(by: (wait as? Duration) ?? .zero)
+        guarded.withLock { later.add(job, due: due) }
+    }
+
+    /// How long until a job kept for later comes due; nil with none waiting.
+    var nextDue: Duration? {
+        guarded.withLock { later.nextDue.map { ContinuousClock.now.duration(to: $0) } }
+    }
 }
 #endif
 

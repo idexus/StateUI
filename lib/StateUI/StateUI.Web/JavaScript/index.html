@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- The page a Web head runs in: .scripts/Web/run-app.sh writes the application's names in place of the marks, and
+     the application's own scripts - its head's Page folder - in place of the scripts mark, each loaded before the
+     application starts. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+  // Safari on iOS zooms the page into a field it gives the keyboard to, losing where the user was: no native field
+  // does. A scale of at most 1 keeps it still there, and Safari still lets the user's fingers zoom.
+  if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+    document.querySelector('meta[name="viewport"]').content += ", maximum-scale=1";
+  }
+</script>
+<meta name="color-scheme" content="light dark">
+<title>{{application}}</title>
+<link rel="stylesheet" href="./stateui-web.css?v={{stamp}}">
+<script>
+  // What the application's own scripts answer it and tell it, there before them: StateUI.acts.<name> answers an
+  // act, StateUI.tell(name, words) tells the application, whenever the module stands to hear it.
+  globalThis.StateUI = { acts: {}, told: new Map(), tell(name, words) { this.told.set(name, String(words ?? "")); this.heard?.(name); } };
+</script>
+{{scripts}}
+<script type="module">
+  import { start } from "./stateui-web.js?v={{stamp}}";
+  start("./{{module}}?v={{stamp}}");
+</script>
+</head>
+<body>
+<!-- What the page shows while the application loads: its name, a ring turning and how much of it has come. -->
+<div class="stateui-loading" id="stateui-loading" role="progressbar" aria-label="Loading {{application}}">
+  <div class="stateui-loading-name">{{application}}</div>
+  <div class="stateui-activity" data-running></div>
+  <progress class="stateui-loading-bar" max="1" value="0"></progress>
+</div>
+</body>
+</html>

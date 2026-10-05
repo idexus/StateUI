@@ -52,4 +52,22 @@
 
     /// How many states are saved and not yet put back.
     public var savedDepth: Int { saved.count }
+
+    /// Replays `instructions` in order with a pen from its start: each setting taken into it, each state saved told
+    /// to `save` and each put back to `restore` - one with none saved does nothing - and every other instruction
+    /// drawn by `draw` with the pen as it stands.
+    public static func replay(
+        _ instructions: [CanvasInstruction], save: () -> Void, restore: () -> Void,
+        draw: (CanvasInstruction, CanvasPen) -> Void
+    ) {
+        var pen = CanvasPen()
+        for instruction in instructions {
+            let depth = pen.savedDepth
+            guard pen.take(instruction) else {
+                draw(instruction, pen)
+                continue
+            }
+            if pen.savedDepth > depth { save() } else if pen.savedDepth < depth { restore() }
+        }
+    }
 }

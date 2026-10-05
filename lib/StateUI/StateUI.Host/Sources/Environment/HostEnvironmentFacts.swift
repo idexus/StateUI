@@ -18,6 +18,13 @@ extension HostLocaleInfo {
     }
 }
 
+@_spi(Host) extension FormFactor {
+    /// A touch screen by its smallest width in points: a tablet from 600, a phone below.
+    public static func touchScreen(smallestWidth: Double) -> FormFactor {
+        smallestWidth >= 600 ? .tablet : .phone
+    }
+}
+
 extension HostDeviceInfo {
     /// The device as five words - its model, its maker, its name, its system's version, and "1" for a virtual
     /// machine - on `platform`, in `formFactor`; nil for any other count of words.

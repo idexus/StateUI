@@ -83,6 +83,7 @@ process.
 - [Android Views](hosts/android.md) renders it with Android views.
 - [WinUI](hosts/winui.md) renders it with WinUI 3 on Windows.
 - [GTK](hosts/gtk.md) renders it with GTK 4 and libadwaita on Linux.
+- [Web](hosts/web.md) renders it in a browser's page, as a WebAssembly module.
 
 ## Support and development
 

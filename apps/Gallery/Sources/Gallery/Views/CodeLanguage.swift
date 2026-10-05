@@ -25,6 +25,9 @@ enum CodeLanguage {
     /// Shaders for Direct3D.
     case hlsl
 
+    /// A page's own element, written in JavaScript.
+    case javascript
+
     /// The language as a heading names it.
     var name: String {
         switch self {
@@ -34,6 +37,7 @@ enum CodeLanguage {
         case .metal: "Metal"
         case .glsl: "GLSL"
         case .hlsl: "HLSL"
+        case .javascript: "JavaScript"
         }
     }
 
@@ -46,6 +50,7 @@ enum CodeLanguage {
         case .metal: Self.cppWords.union(Self.metalWords)
         case .glsl: Self.glslWords
         case .hlsl: Self.hlslWords
+        case .javascript: Self.javascriptWords
         }
     }
 
@@ -91,6 +96,14 @@ enum CodeLanguage {
         "bool", "break", "const", "else", "false", "float", "for", "if", "in",
         "int", "layout", "out", "precision", "highp", "mediump", "lowp",
         "return", "struct", "true", "uniform", "void", "while",
+    ]
+
+    private static let javascriptWords: Set<String> = [
+        "async", "await", "break", "case", "catch", "class", "const", "continue",
+        "default", "delete", "do", "else", "export", "extends", "false", "for",
+        "function", "get", "if", "import", "in", "instanceof", "let", "new",
+        "null", "of", "return", "set", "static", "super", "switch", "this",
+        "throw", "true", "try", "typeof", "undefined", "var", "void", "while",
     ]
 
     private static let hlslWords: Set<String> = [

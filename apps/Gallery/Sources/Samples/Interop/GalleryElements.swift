@@ -17,10 +17,10 @@ enum GalleryElements {
             TrafficLightContract.self, RatingBarContract.self,
         ]
 
-        #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+        #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
         // Drawn with the GPU in each platform's own way - Metal on AppKit and
         // UIKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI, OpenGL ES 3.0 on
-        // Android. An element only some hosts can honestly realize is
+        // Android, WebGL 2 on the Web. An element only some hosts can honestly realize is
         // declared only for them, so the others are never held to a promise
         // they cannot keep.
         all.append(Cube3DContract.self)

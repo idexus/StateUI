@@ -1,0 +1,3 @@
+# revision 1.1
+Text.textDecorations: ✅
+TextSpan.textDecorations: cannot read textDecorations of TextSpan - the Web's driver has no path for it yet

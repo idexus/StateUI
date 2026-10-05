@@ -1,0 +1,9 @@
+# revision 1.1
+Button.padding: ✅
+Grid.padding: ❌ [20.0, 12.0] expected, [10.0, 6.0] came
+HStack.padding: ❌ [20.0, 12.0] expected, [10.0, 6.0] came
+RadioButton.padding: ✅
+ScrollView.padding: ❌ [20.0, 12.0] expected, [10.0, 6.0] came
+Text.padding: ✅
+VStack.padding: ❌ [20.0, 12.0] expected, [10.0, 6.0] came
+ZStack.padding: ❌ [20.0, 12.0] expected, [10.0, 6.0] came

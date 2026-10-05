@@ -52,7 +52,7 @@ final class NativeProjectTests: XCTestCase {
         func text(_ relative: String) throws -> String {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
-        let hosts = ["AppKit", "UIKit", "Android", "WinUI", "GTK"]
+        let hosts = ["AppKit", "UIKit", "Android", "WinUI", "GTK", "Web"]
         let list = "let host = [" + hosts.map { "\"\($0)\"" }.joined(separator: ", ") + "]"
 
         let manifest = try text("lib/StateUI.Head/Package.swift")

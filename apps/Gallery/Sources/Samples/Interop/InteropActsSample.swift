@@ -1,4 +1,4 @@
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
 import StateUI
 
 /// Functions the application registers with its host, called like the acts the
@@ -312,6 +312,51 @@ struct InteropActsSample: SampleContent, ExampleContent {
                     report("flashing a rating bar");
                 }
             }
+            """))
+    #elseif WEB
+    static let hostCode = HostCode(
+        in: InteropHost.name,
+        .swift("""
+            // Platforms/Web/Host/GalleryActs.swift, said before the
+            // application runs. The browser's clipboard and battery are the
+            // page's own JavaScript's to reach, so each performer calls the
+            // gallery's script and awaits its promise.
+            enum GalleryActs {
+                @MainActor
+                static func register() {
+                    StateUIActs.add(GalleryContract.setClipboard) { text in
+                        _ = try await StateUIScripts.call("setClipboard", text)
+                    }
+
+                    StateUIActs.add(GalleryContract.readClipboard) {
+                        try await StateUIScripts.call("readClipboard")
+                    }
+
+                    StateUIActs.add(GalleryContract.batteryLevel) {
+                        battery(try await StateUIScripts.call("batteryLevel"))
+                    }
+                }
+            }
+
+            // An act aimed at a control is its control's, registered at the
+            // end of Platforms/Web/Host/RatingBarElement.swift.
+            StateUIActs.add(RatingBarContract.flash, on: RatingBarElement.self) { bar in
+                bar.element.call("flash")   // the custom element's own method
+            }
+            """),
+        .javascript("""
+            // Platforms/Web/Page/gallery-acts.js - the page's own script,
+            // loaded before the application starts. A page served over plain
+            // http has no clipboard: the act then fails with the reason.
+            StateUI.acts.setClipboard = (words) => navigator.clipboard.writeText(words);
+            StateUI.acts.readClipboard = () => navigator.clipboard.readText();
+
+            // Two words, the level and whether it charges; 0 where the
+            // browser says nothing of a battery.
+            StateUI.acts.batteryLevel = async () => {
+                const power = await navigator.getBattery?.();
+                return power ? `${power.level} ${power.charging}` : "0 false";
+            };
             """))
     #else
     static let hostCode = HostCode(

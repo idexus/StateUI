@@ -1,0 +1,11 @@
+# revision 1.1
+Map: 🧩
+Map.frameChanged: 🧩
+Map.isScrollEnabled: 🧩
+Map.isZoomEnabled: 🧩
+Map.mapClicked: 🧩
+Map.mapType: 🧩
+Map.moveToRegion: 🧩
+Map.region: 🧩
+Map.showsTraffic: 🧩
+Map.showsUserLocation: 🧩

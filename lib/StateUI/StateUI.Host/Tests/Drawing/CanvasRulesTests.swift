@@ -64,4 +64,16 @@ final class CanvasRulesTests: XCTestCase {
         XCTAssertEqual(Array(wedge.prefix(2)), [.move(Point(x: 50, y: 50)), .line(Point(x: 100, y: 50))])
         XCTAssertEqual(wedge.last, .close)
     }
+
+    /// A replay takes each setting into its pen, saves and puts back in turn - a put back with none saved doing
+    /// nothing - and draws everything else with the pen as it stands.
+    func testAReplayDrawsWithThePenAsItStands() {
+        var told: [String] = []
+        CanvasPen.replay(
+            [.lineWidth(3), .saveState, .lineWidth(5), .strokeLine(from: Point(x: 0, y: 0), to: Point(x: 1, y: 1)),
+             .restoreState, .restoreState, .strokeEllipse(Rect(x: 0, y: 0, width: 4, height: 4))],
+            save: { told.append("save") }, restore: { told.append("restore") },
+            draw: { instruction, pen in told.append("draw \(pen.lineWidth)") })
+        XCTAssertEqual(told, ["save", "draw 5.0", "restore", "draw 3.0"])
+    }
 }

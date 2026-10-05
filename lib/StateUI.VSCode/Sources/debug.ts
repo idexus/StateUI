@@ -31,13 +31,21 @@
 // which stops a running copy first, its executable written again - and
 // launched by lldb-dap, which reads the DWARF the head carries.
 //
+// A Web head is built, laid out and served by .scripts/Web/run-app.sh in a task
+// whose terminal follows the server, and opened in the browser chosen. A Debug
+// launch in one of Chromium's is VS Code's own JavaScript debugger starting it
+// on the page, once the script writes where the page is to
+// .build/web/server.json: the console in the Debug Console, a breakpoint in the
+// relay. Any other browser the script opens itself, with no session.
+//
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead.
 
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, appKitProgram, gtkProgram, winUIProgram } from "./applications";
+import { Application, appKitProgram, gtkProgram, webSite, winUIProgram } from "./applications";
+import { Browser, isChromium, webScript } from "./browsers";
 import { lldbDapFinding } from "./toolchain";
 import { androidScript } from "./devices";
 import { environment, Host } from "./hosts";
@@ -81,10 +89,16 @@ export interface Choices {
      * while it is listed, else asked for - or nothing, where none is picked.
      */
     uiKitDevice(): Promise<string | undefined>;
+
+    /**
+     * The browser a Web launch opens the page in - the one chosen while it is installed, else asked for, as
+     * `checkout`'s browsers.sh lists them - or nothing, where none is picked.
+     */
+    browser(checkout: string): Promise<Browser | undefined>;
 }
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
-export const noHost = "no StateUI host runs on this machine yet - AppKit, UIKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux.";
+export const noHost = "no StateUI host runs on this machine yet - AppKit, UIKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux, Web on macOS and Linux.";
 
 /** A script of the StateUI checkout's .scripts/WinUI, the checkout at `checkout`. */
 export function winUIScript(checkout: string, name: string): string {
@@ -135,6 +149,11 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         const application = await this.choices.application(root, host, named);
         if (!application) {
             return undefined;
+        }
+
+        // A page needs no lldb-dap: its debugger is the browser's.
+        if (host === "web") {
+            return this.web(root, application, configuration, name);
         }
 
         // A debugger that cannot start stops the launch before the build, saying why: else the build ends and nothing runs.
@@ -347,6 +366,59 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             stopOnEntry: false,
         };
     }
+
+    /**
+     * A Web head, built, laid out and served by run-app.sh in a task that follows the server; a Debug build in one
+     * of Chromium's browsers started on the page by VS Code's JavaScript debugger, any other opened by the script.
+     */
+    private async web(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        configuration: Configuration,
+        name: string,
+    ): Promise<vscode.DebugConfiguration | undefined> {
+        const checkout = application.checkout;
+        const script = checkout && webScript(checkout, "run-app.sh");
+        if (!checkout || !script || !fs.existsSync(script)) {
+            void vscode.window.showErrorMessage(
+                `StateUI: a Web head runs through a StateUI checkout's .scripts/Web/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
+            return undefined;
+        }
+
+        const browser = await this.choices.browser(checkout);
+        if (!browser) {
+            return undefined;
+        }
+
+        const debugged = configuration === "debug" && isChromium(browser);
+        const facts = path.join(application.directory, ".build", "web", "server.json");
+        fs.rmSync(facts, { force: true });
+        const task = new vscode.Task(
+            { type: "stateui", application: application.name, configuration, device: "web" }, root,
+            `Run ${application.name} (Web, ${configuration})`, "StateUI",
+            new vscode.ShellExecution("bash",
+                [script, application.directory, configuration, "--browser", debugged ? "none" : browser.id],
+                { cwd: root.uri.fsPath }), []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        await this.choices.start(task);
+        if (!debugged) {
+            return undefined;
+        }
+
+        if (!(await this.choices.ready(facts, task))) {
+            void vscode.window.showErrorMessage(`StateUI: ${application.name}'s page was not served - the terminal says why.`);
+            return undefined;
+        }
+        return webLaunch(name, JSON.parse(fs.readFileSync(facts, "utf8")).url, browser, webSite(application, configuration));
+    }
+}
+
+/**
+ * VS Code's JavaScript debugger starting `browser`, one of Chromium's, on the page at `url`, in a profile of its own:
+ * the page's console in the Debug Console, and the relay's sources read from `site`.
+ */
+export function webLaunch(name: string, url: string, browser: Browser, site: string): vscode.DebugConfiguration {
+    return { type: "chrome", request: "launch", name, url, runtimeExecutable: browser.executable, webRoot: site };
 }
 
 /** Where run-app.sh --debugger left the application, and its debugger's server. */

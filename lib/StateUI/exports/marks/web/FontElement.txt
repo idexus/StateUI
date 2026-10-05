@@ -1,0 +1,41 @@
+# revision 1.1
+Button.fontAttributes: ✅
+Button.fontFamily: ✅
+Button.fontSize: ✅
+Button.isFontAutoScalingEnabled: not realized
+DatePicker.fontAttributes: ✅
+DatePicker.fontFamily: ✅
+DatePicker.fontSize: ✅
+DatePicker.isFontAutoScalingEnabled: not realized
+Picker.fontAttributes: ✅
+Picker.fontFamily: ✅
+Picker.fontSize: ✅
+Picker.isFontAutoScalingEnabled: not realized
+RadioButton.fontAttributes: ✅
+RadioButton.fontFamily: ✅
+RadioButton.fontSize: ✅
+RadioButton.isFontAutoScalingEnabled: not realized
+SearchField.fontAttributes: ✅
+SearchField.fontFamily: ✅
+SearchField.fontSize: ✅
+SearchField.isFontAutoScalingEnabled: not realized
+Text.fontAttributes: ✅
+Text.fontFamily: ✅
+Text.fontSize: ✅
+Text.isFontAutoScalingEnabled: not realized
+TextEditor.fontAttributes: ✅
+TextEditor.fontFamily: ✅
+TextEditor.fontSize: ✅
+TextEditor.isFontAutoScalingEnabled: not realized
+TextField.fontAttributes: ✅
+TextField.fontFamily: ✅
+TextField.fontSize: ✅
+TextField.isFontAutoScalingEnabled: not realized
+TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - the Web's driver has no path for it yet
+TextSpan.fontFamily: cannot read fontFamily of TextSpan - the Web's driver has no path for it yet
+TextSpan.fontSize: cannot read fontSize of TextSpan - the Web's driver has no path for it yet
+TextSpan.isFontAutoScalingEnabled: not realized
+TimePicker.fontAttributes: ✅
+TimePicker.fontFamily: ✅
+TimePicker.fontSize: ✅
+TimePicker.isFontAutoScalingEnabled: not realized

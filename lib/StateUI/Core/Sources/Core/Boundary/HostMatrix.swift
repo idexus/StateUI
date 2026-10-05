@@ -10,6 +10,8 @@ import Android
 import Glibc
 #elseif canImport(CRT)
 import CRT
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 
 /// A 4×4 drawing matrix acting on row vectors: a point (x, y, z, 1) is drawn

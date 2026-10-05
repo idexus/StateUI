@@ -1,4 +1,4 @@
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
 import StateUI
 
 /// A control the application registers with its host, described here like any
@@ -346,6 +346,63 @@ struct InteropControlSample: SampleContent, ExampleContent {
                     report("lighting a lamp");
                 }
             }
+            """))
+    #elseif WEB
+    static let hostCode = HostCode(
+        in: InteropHost.name,
+        .swift("""
+            // Platforms/Web/Host/TrafficLightElement.swift - a WebControl holding
+            // the gallery's own custom element, which knows nothing of
+            // StateUI: told what it is through its attributes, heard through
+            // the events it raises.
+            @MainActor
+            final class TrafficLightElement: WebControl {
+                let element = WebPageElement(tag: "gallery-traffic-light")
+                var onLampTapped: ((Int) -> Void)?
+
+                var signal = TrafficSignal.stop {
+                    didSet { element.setAttribute("signal", String(signal.rawValue)) }
+                }
+
+                init() {
+                    element.listen("lamptap") { [weak self] (index: Double) in
+                        self?.onLampTapped?(Int(index))
+                    }
+                }
+            }
+
+            StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightElement in
+                let light = TrafficLightElement()
+                light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+                return light
+            }) { light in
+                // Handed back typed - a TrafficSignal, not its number.
+                light.property(TrafficLightContract.signal) { control, signal in
+                    control.signal = signal ?? .stop
+                }
+                light.raises(TrafficLightContract.lampTapped)
+            }
+            """),
+        .javascript("""
+            // Platforms/Web/Page/traffic-light.js - the element itself.
+            class TrafficLight extends HTMLElement {
+                static observedAttributes = ["signal"];
+
+                constructor() {
+                    super();
+                    // … a housing and three lamp buttons in its shadow root,
+                    // each raising its index as it is tapped:
+                    // this.dispatchEvent(new CustomEvent("lamptap", { detail: index }))
+                }
+
+                attributeChangedCallback() {
+                    const lit = Number(this.getAttribute("signal") ?? 0);
+                    this.shadowRoot.querySelectorAll("button").forEach((lamp, index) =>
+                        lamp.setAttribute("aria-pressed", String(index === lit)));
+                }
+            }
+
+            customElements.define("gallery-traffic-light", TrafficLight);
             """))
     #else
     static let hostCode = HostCode(

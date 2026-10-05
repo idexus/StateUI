@@ -1,0 +1,10 @@
+# revision 1.1
+ScrollView: ✅
+ScrollView.frameChanged: ✅
+ScrollView.horizontalScrollIndicator: cannot read horizontalScrollIndicator of ScrollView - the Web's driver has no path for it yet
+ScrollView.orientation: ❌ [300.0] expected, [] came
+ScrollView.scrollOffset: ❌ [200.0] expected, [] came - heard once, where it went
+ScrollView.scrollStopped: ❌ [200.0] expected, [] came - heard once, where it went
+ScrollView.scrollXChanged: ❌ [300.0] expected, [] came
+ScrollView.scrollYChanged: ❌ [200.0] expected, [] came - heard once, where it went
+ScrollView.verticalScrollIndicator: cannot read verticalScrollIndicator of ScrollView - the Web's driver has no path for it yet

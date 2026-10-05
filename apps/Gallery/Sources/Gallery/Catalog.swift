@@ -256,18 +256,15 @@ final class Catalog {
                 ]),
 
             SampleGroup(
-                route: "windows",
-                title: "Windows",
-                summary: "The frame around the pages - what a window is called and how "
-                    + "big it is, its bar, more than one of them, and what it says "
-                    + "as the app comes and goes.",
+                route: "scene",
+                title: "Scene",
+                summary: "A scene and the frame around its pages - its windows and their bar, what it lays over "
+                    + "them, and what it says as the app comes and goes.",
                 icon: ImageSource(light: "nav_windows.png", dark: "nav_windows_dark.png"),
                 card: ImageSource("cat_windows.png"),
-                samples: [
-                    Sample(WindowSample()),
+                samples: Self.openingWindows([Sample(WindowSample())]) + [
                     Sample(WindowBarSample(bar: bar)),
-                    Sample(MultiWindowSample(style: style)),
-                    Sample(ScenesSample()),
+                ] + Self.openingWindows([Sample(MultiWindowSample(style: style)), Sample(ScenesSample())]) + [
                     Sample(WindowOverlaySample(nav: nav)),
                     Sample(LifecycleSample(log: log)),
                     Sample(WindowPhaseSample()),
@@ -279,7 +276,7 @@ final class Catalog {
                 summary: "What the host knows - the device, the screen, the locale, the "
                     + "network and the battery - and the application's session, provided "
                     + "above and resolved below by type; the theme is under Styles, the "
-                    + "scene's and the window's sessions under Windows.",
+                    + "scene's and the window's sessions under Scene.",
                 icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
                 card: ImageSource("cat_environment.png"),
                 samples: [
@@ -307,12 +304,11 @@ final class Catalog {
                     Sample(TickerSample()),
                     Sample(PollSample()),
                     Sample(TaskSleepSample()),
-                    Sample(FoundationProbeSample()),
-                ]),
+                ] + Self.foundationProbe),
         ]
 
 
-        #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+        #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
         // Calling the host, hearing from it, and a control the application registers with it - each described like
         // the library's own: one contract, one `View`, and the host's half beside the head, in Platforms/<host>.
         // The cube draws on the GPU, so it is declared only for the hosts that draw it, each in its own way.
@@ -333,9 +329,29 @@ final class Catalog {
         self.groups = groups
     }
 
+    /// What Foundation answers of the clock and the calendar, where the application links Foundation: the Web links
+    /// none, so its module stays small.
+    private static var foundationProbe: [Sample] {
+        #if WEB
+        []
+        #else
+        [Sample(FoundationProbeSample())]
+        #endif
+    }
+
+    /// `samples` on the hosts that open the application's windows: a page on the Web stands in the one browser
+    /// window it was opened in, which it neither sizes nor opens again.
+    private static func openingWindows(_ samples: [Sample]) -> [Sample] {
+        #if WEB
+        []
+        #else
+        samples
+        #endif
+    }
+
     /// The animation the host draws on the GPU, on the hosts that draw it.
     private static var drawnByTheHost: [Sample] {
-        #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+        #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
         [Sample(Cube3DSample())]
         #else
         []

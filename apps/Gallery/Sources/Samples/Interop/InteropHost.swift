@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
 /// The host this build of the gallery runs on, as its interop group names it: the one place the group's samples
 /// differ by host, beside each sample's host half - and the language of the relay beneath it, where it has one.
 enum InteropHost {
@@ -46,6 +46,17 @@ enum InteropHost {
     static let made = "control"
     static let awaiting = " A performer may await."
     static let relay: CodeLanguage? = CodeLanguage.cpp
+    #elseif WEB
+    static let name = "Web"
+    static let key = "web"
+    static let control = "A Web control"
+    static let controlSummary = "A custom element the app registers with its host, described like any other control."
+    static let lamps = "The lamps are a custom element of the gallery's own JavaScript, registered with "
+        + "`StateUIControls.add`, under the members `TrafficLightContract` declares with the type of each value, "
+        + "held by a `WebControl` of its own."
+    static let made = "control"
+    static let awaiting = " A performer may await: a browser reads its clipboard asynchronously."
+    static let relay: CodeLanguage? = CodeLanguage.javascript
     #else
     static let name = "Android"
     static let key = "android"

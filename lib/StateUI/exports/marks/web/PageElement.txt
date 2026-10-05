@@ -1,0 +1,9 @@
+# revision 2.1
+NavigationStack.icon: not realized
+NavigationStack.title: cannot read title of NavigationStack - the Web's driver has no path for it yet
+Page.icon: not realized
+Page.title: ◐ cannot read title of Page - the Web's driver has no path for it yet
+SplitView.icon: not realized
+SplitView.title: cannot read title of SplitView - the Web's driver has no path for it yet
+TabView.icon: not realized
+TabView.title: cannot read title of TabView - the Web's driver has no path for it yet

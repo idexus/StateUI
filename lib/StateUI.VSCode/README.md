@@ -65,10 +65,11 @@ git clone --depth 1 --branch <release> https://github.com/idexus/StateUI.git Sta
 
 ## The host
 
-The status bar shows the host - **AppKit**, **UIKit**, **Android**, **WinUI** or
-**GTK**. Click it, or run **StateUI: Select Host**. AppKit, UIKit and Android are
+The status bar shows the host - **AppKit**, **UIKit**, **Android**, **WinUI**,
+**GTK** or **Web**. Click it, or run **StateUI: Select Host**. AppKit, UIKit and Android are
 offered on macOS, UIKit and Android where an application has their head
-(`Platforms/UIKit`, `Platforms/Android`); WinUI on Windows; GTK on Linux. On a machine that runs no host the status bar
+(`Platforms/UIKit`, `Platforms/Android`); WinUI on Windows; GTK on Linux; the
+Web on macOS and Linux, where an application has its head (`Platforms/Web`). On a machine that runs no host the status bar
 says **no host**, a launch says why it runs nothing, and the editor and
 **StateUI: Run Tests** work as plain Swift.
 
@@ -82,7 +83,10 @@ says **no host**, a launch says why it runs nothing, and the editor and
   Android the server compiles for Android - the Swift SDK for Android of the
   toolchain's release, `aarch64-unknown-linux-android28` - so code under
   `#if ANDROID` and `Platforms/Android/Swift` resolve. With no such SDK
-  installed it compiles for this Mac, and a warning says so. As UIKit it
+  installed it compiles for this Mac, and a warning says so. As the Web it
+  compiles for WebAssembly - the Swift SDK for WebAssembly of the toolchain's
+  release, `wasm32-unknown-wasip1` - so code under `#if WEB` and
+  `Platforms/Web` resolve. As UIKit it
   compiles for the iOS simulator - `arm64-apple-ios26.0-simulator` against
   Xcode's simulator SDK - so code under `#if UIKIT` and `Platforms/UIKit`
   resolve.
@@ -106,6 +110,12 @@ says **no host**, a launch says why it runs nothing, and the editor and
   beside it, and `lldb-dap` starts it: a breakpoint holds from the first line.
   On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
   first, and `lldb-dap` starts it: a breakpoint holds from the first line.
+  On the Web `.scripts/Web/run-app.sh` builds the head, lays its page out and
+  serves it, in a task whose terminal follows the server; a second launch
+  stops the first one's server. StateUI: Debug in Chrome, Edge or another of
+  Chromium's browsers then starts the browser chosen below on the page under
+  VS Code's own JavaScript debugger: the page's console is in the Debug
+  Console. Any other browser, and StateUI: Release, the script opens itself.
 
 ## The Android device
 
@@ -126,6 +136,15 @@ the one chosen is gone. A device runs with Developer Mode on, and its build is
 signed with a development profile of this Mac's that provisions it - Xcode
 makes one for a team once the device is added. The host's own tests run on a
 simulator.
+
+## The browser
+
+While the host is the Web, the third status bar item shows the browser a
+launch opens the page in - click it, or run **StateUI: Select Browser**. It
+offers the browsers installed on this machine - what the system opens both a
+web address and a web page with - the system's own first. It is remembered
+for the workspace, so a launch asks only when none is chosen or the one
+chosen is no longer installed.
 
 ## The application
 
@@ -155,6 +174,9 @@ them AS THE HOST, one after another, each in a terminal of its own:
 - **GTK**: the library and each application as plain Swift, and the GTK host's
   own tests, `lib/StateUI/StateUI.GTK/Testing`, by `swift test`, its windows on the
   desktop's display.
+- **Web**: the library and each application as plain Swift, and the Web host's
+  own tests, `lib/StateUI/StateUI.Web/Testing`, by `.scripts/Web/test-web.sh`,
+  which compiles them for WebAssembly and runs them in Node.
 - **No host**: the library and each application as plain Swift.
 
 A failure does not stop the suites after it; the summary names the ones that
@@ -178,6 +200,8 @@ The host's own `deploy` script of the application's checkout does it:
   application, else the head and the StateUI libraries it links.
 - **UIKit**: the application bundle, for the simulator or device chosen.
 - **Android**: the APK, for the ABI of the device chosen.
+- **Web**: the page - `index.html`, the relay, the module and the pictures -
+  a folder any web server serves as it is.
 
 ## The conformance marks
 
@@ -196,7 +220,7 @@ workspace holds no marks.
 
 The Swift language server indexes each application in a directory of the host's
 own, `.build/appkit/index-build`, `.build/uikit/index-build`, `.build/android/index-build`,
-`.build/winui/index-build` or `.build/gtk/index-build` - with no
+`.build/winui/index-build`, `.build/gtk/index-build` or `.build/web/index-build` - with no
 host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
@@ -208,7 +232,8 @@ the hosts it runs, as [Requirements](#requirements) and the handbook's host page
 say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
 JDK and Swift SDK on macOS; Visual Studio's C++ tools, the Windows SDK and the
 WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
-loader and a desktop session on Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
+loader and a desktop session on Linux; the Swift SDK for WebAssembly and Python 3 for the Web on macOS and
+Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
 and Windows an `lldb-dap` that starts with the Python its LLDB loads; Git for a project group's
 releases; and Node.js for this extension's own build. The **StateUI Toolchain** output lists each
 with what was found - a version older than the one required marked as too old - and
@@ -255,6 +280,12 @@ launch file at all:
   the Python the Swift installer lays beside the toolchain (Check Toolchain
   asks it, `lldb-dap --check-python`). The scripts fetch C++/WinRT and the
   Windows App SDK themselves.
+- For the Web: macOS or Linux and a StateUI checkout, whose `.scripts/Web`
+  builds, serves and opens the head; Swift 6.4 and the Swift SDK for
+  WebAssembly of the same release (`swift sdk install`,
+  [Getting started with WebAssembly](https://www.swift.org/documentation/articles/wasm-getting-started.html));
+  Python 3, which serves the page; and a browser - Chrome, Edge or another of
+  Chromium's for StateUI: Debug to follow the page in VS Code's debugger.
 - For a project group's releases: Git, which lists and clones them.
 - For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
   Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their

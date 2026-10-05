@@ -1,3 +1,4 @@
+#if !WEB
 import StateUI
 import Foundation
 
@@ -241,3 +242,4 @@ private func offsetText(_ seconds: Int) -> String {
     let m = (abs(seconds) % 3600) / 60
     return "GMT\(sign)\(pad(h)):\(pad(m))"
 }
+#endif

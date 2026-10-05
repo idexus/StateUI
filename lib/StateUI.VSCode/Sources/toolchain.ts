@@ -437,10 +437,27 @@ function windowsChecks(): Check[] {
     ];
 }
 
+/** What the Web host needs on macOS and Linux: the Swift SDK for WebAssembly of Swift's release, and Python to serve the page. */
+function webChecks(): Check[] {
+    return [
+        {
+            component: "the Swift SDK for WebAssembly of Swift's release", neededBy: "Web",
+            advice: "Install it with `swift sdk install`: https://www.swift.org/documentation/articles/wasm-getting-started.html",
+            look: async () => swiftSDKOf(swiftRelease((await run("swift", ["--version"])) ?? ""), (await run("swift", ["sdk", "list"])) ?? "", "wasm"),
+        },
+        {
+            component: "Python 3", neededBy: "Web, which serves its page with it",
+            advice: "Install Python 3: macOS's comes with Xcode's command line tools; on Linux, the distribution's python3.",
+            look: async () => versionIn((await run("python3", ["--version"])) ?? ""),
+        },
+    ];
+}
+
 /** Every component this machine needs, in the order the check reads them. */
 function checks(platform: NodeJS.Platform): Check[] {
     const own = platform === "darwin" ? macChecks() : platform === "win32" ? windowsChecks() : platform === "linux" ? linuxChecks() : [];
-    return [swift, ...own, lldbDap, git, node];
+    const web = platform === "darwin" || platform === "linux" ? webChecks() : [];
+    return [swift, ...own, ...web, lldbDap, git, node];
 }
 
 /** What this machine has of everything it needs, component by component. */

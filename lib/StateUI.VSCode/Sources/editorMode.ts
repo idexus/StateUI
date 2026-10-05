@@ -244,13 +244,14 @@ export function swiftRelease(text: string): string | undefined {
 }
 
 /**
- * The Swift SDK of `release` whose id names `family`, among the ids
+ * The Swift SDK of `release` whose id ends in `_<family>`, among the ids
  * `swift sdk list` printed as `list` - the last one, as build-swift.sh takes it.
+ * `wasm` is `swift-6.4.0-RELEASE_wasm`, never its Embedded Swift sibling `_wasm-embedded`.
  */
 export function swiftSDKOf(release: string | undefined, list: string, family: string): string | undefined {
     return release === undefined
         ? undefined
-        : list.split(/\s+/).filter((id) => id.toLowerCase().includes(family) && swiftRelease(id) === release).pop();
+        : list.split(/\s+/).filter((id) => id.toLowerCase().endsWith(`_${family}`) && swiftRelease(id) === release).pop();
 }
 
 /**

@@ -23,6 +23,6 @@ public enum WindowError: Error, Equatable, Sendable {
     /// another type.
     case wrongValue(WindowType)
 
-    /// The platform opens no second window - a phone.
+    /// The platform opens no second window - a phone, a page in a browser.
     case unsupported
 }

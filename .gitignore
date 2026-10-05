@@ -25,6 +25,10 @@ artifacts/
 # are large and stay on the machine that made them.
 /docs/assets/*.mov
 
+# A map provider's key is the application's own, never the repository's: the
+# Gallery's Web head reads it from this script, made on the machine that serves it.
+/apps/Gallery/Platforms/Web/Page/google-maps-key.js
+
 # SDK evaluation leftovers MSBuild may leave beside a project.
 *.SdkResolver.*.proj.Backup.tmp
 

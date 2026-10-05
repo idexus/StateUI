@@ -58,4 +58,21 @@ final class FrameFollowersTests: XCTestCase {
         runtime.frames.commit(now: 32)
         XCTAssertEqual(log.values, ["early stands"])
     }
+
+    /// What was laid out says where it stands at once, where the toolkit tells it before it draws - and says it
+    /// again on no frame after; a scroller still moves on the display's frame alone.
+    func testWhatWasLaidOutSaysWhereItStandsAtOnce() {
+        let runtime = HostRuntime.still()
+        let log = Received()
+        let (reader, scroller) = (Said("reader", log), Said("scroller", log))
+        runtime.frames.follow(reader, order: 1, reads: true)
+        runtime.frames.serve(scroller, order: 2)
+
+        XCTAssertTrue(runtime.frames.reportLaidOut(), "something was laid out, and said so")
+        XCTAssertEqual(log.values, ["reader stands"])
+        XCTAssertFalse(runtime.frames.reportLaidOut(), "nothing laid out since")
+
+        runtime.frames.commit(now: 16)
+        XCTAssertEqual(log.values, ["reader stands", "scroller moved"])
+    }
 }

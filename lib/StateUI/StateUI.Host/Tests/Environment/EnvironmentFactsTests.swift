@@ -20,6 +20,14 @@ final class EnvironmentFactsTests: XCTestCase {
         XCTAssertNil(HostLocaleInfo(words: ["en", "US"]))
     }
 
+    /// A touch screen is a tablet from a smallest width of 600 points, a phone below it.
+    func testATouchScreenIsATabletFromSixHundredPoints() {
+        XCTAssertEqual(FormFactor.touchScreen(smallestWidth: 390), .phone)
+        XCTAssertEqual(FormFactor.touchScreen(smallestWidth: 599.5), .phone)
+        XCTAssertEqual(FormFactor.touchScreen(smallestWidth: 600), .tablet)
+        XCTAssertEqual(FormFactor.touchScreen(smallestWidth: 1024), .tablet)
+    }
+
     /// A device is five words on its platform: its model, its maker, its name, its system's version, and whether
     /// it is a virtual machine.
     func testADeviceIsFiveWords() throws {

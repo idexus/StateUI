@@ -1,0 +1,7 @@
+# revision 1.1
+Canvas: ✅
+Canvas.dragged: ✅
+Canvas.drawing: cannot read the colour of Canvas - the Web's driver has no path for it yet
+Canvas.frameChanged: ✅
+Canvas.pressed: ✅
+Canvas.released: ✅

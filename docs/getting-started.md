@@ -21,8 +21,9 @@ yet, so an application outside the checkout sits in a
 [UIKit host](hosts/uikit.md#requirements) lists what the UIKit host needs for
 the iOS simulator, [Android Views host](hosts/android.md#requirements) what the
 Android Views host needs as well, [WinUI host](hosts/winui.md#requirements) what the
-WinUI host needs on Windows, and [GTK host](hosts/gtk.md#requirements) what
-the GTK host needs on Linux.
+WinUI host needs on Windows, [GTK host](hosts/gtk.md#requirements) what
+the GTK host needs on Linux, and [Web host](hosts/web.md#requirements) what the
+Web host needs on macOS and Linux.
 
 With the extension installed ([Installing the extension](#installing-the-extension)),
 **StateUI: Check Toolchain** in the Command Palette looks on this machine for
@@ -304,11 +305,11 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
-The UIKit, WinUI and GTK heads call the same `stateui_app_register` before
-their host's `run`, and the Android head when Android loads its library; each
-host's page describes its head: [UIKit](hosts/uikit.md),
+The UIKit, WinUI, GTK and Web heads call the same `stateui_app_register`
+before their host's `run`, and the Android head when Android loads its
+library; each host's page describes its head: [UIKit](hosts/uikit.md),
 [Android Views](hosts/android.md), [WinUI](hosts/winui.md),
-[GTK](hosts/gtk.md).
+[GTK](hosts/gtk.md), [Web](hosts/web.md).
 
 Between `stateui_app_register()` and `run`, a head registers what this host
 answers for the application beyond the library:

@@ -7,6 +7,13 @@
 /// geometry stands in the room its layout gives it.
 /// Design: docs/design/host/layout.md#a-shapes-own-geometry
 @_spi(Host) public enum ShapeArithmetic {
+    /// A shape's own transform as the six numbers of its matrix - `a, b, c, d, tx, ty`; nil for none, or numbers that
+    /// are not six and finite.
+    public static func transform(_ value: HostValue?) -> [Double]? {
+        let numbers = value?.values?.compactMap(\.number)
+        return numbers.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil }
+    }
+
     /// The affine transform - `a, b, c, d, tx, ty`, a point `(x, y)` going to `(a x + c y + tx, b x + d y + ty)` -
     /// that places a geometry whose bounds are `bounds` in a room `size`: scaled as `aspect` says - to fit keeping
     /// its proportions, to cover, each axis on its own, or not at all - centred, then moved by the shape's own

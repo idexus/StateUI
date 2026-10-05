@@ -1,0 +1,625 @@
+/* SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors */
+/* SPDX-License-Identifier: Apache-2.0 */
+
+/* The Web host's look: a current web page's, light or dark as the user's system is. What an application says of
+   an element's look is that element's own style, which wins over every rule here.
+   Design: docs/design/platforms/web/look.md */
+
+:root {
+  color-scheme: light dark;
+  --stateui-accent: #4f46e5;
+  --stateui-surface: #ffffff;
+  --stateui-raised: #f6f7f9;
+  --stateui-text: #17181c;
+  --stateui-muted: #5d6270;
+  --stateui-line: rgb(15 23 42 / 0.09);
+  --stateui-line-strong: rgb(15 23 42 / 0.18);
+  --stateui-shade: rgb(15 23 42 / 0.36);
+  --stateui-radius: 10px;
+  --stateui-bar-height: 56px;
+  --stateui-sidebar-width: 288px;
+  --stateui-bar-side: 64px;
+  --stateui-slide: 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --stateui-raised-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 12px 32px rgb(15 23 42 / 0.14);
+  --stateui-focus: 0 0 0 3px color-mix(in srgb, var(--stateui-accent) 38%, transparent);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --stateui-accent: #8b85ff;
+    --stateui-surface: #111216;
+    --stateui-raised: #191b21;
+    --stateui-text: #eceef2;
+    --stateui-muted: #9aa0ad;
+    --stateui-line: rgb(255 255 255 / 0.08);
+    --stateui-line-strong: rgb(255 255 255 / 0.16);
+    --stateui-shade: rgb(0 0 0 / 0.55);
+  }
+}
+
+/* The words stand at the sizes the page gives them: a phone's browser enlarges none it finds in a wide block. */
+html, body { margin: 0; height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+/* While the application loads: its name, a ring turning and a bar of how much has come, in the page's middle. */
+.stateui-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  background: var(--stateui-surface);
+  transition: opacity 0.3s ease;
+}
+.stateui-loading[data-done] { opacity: 0; pointer-events: none; }
+.stateui-loading-name { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.stateui-loading .stateui-activity { width: 28px; height: 28px; border-width: 3px; }
+.stateui-loading-bar {
+  appearance: none;
+  -webkit-appearance: none;
+  width: min(240px, 60vw);
+  height: 4px;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--stateui-line-strong);
+  color: var(--stateui-accent);
+}
+.stateui-loading-bar::-webkit-progress-bar { background: var(--stateui-line-strong); }
+.stateui-loading-bar::-webkit-progress-value { background: var(--stateui-accent); transition: width 0.15s linear; }
+.stateui-loading-bar::-moz-progress-bar { background: var(--stateui-accent); }
+.stateui-loading-bar:indeterminate {
+  background: linear-gradient(90deg, var(--stateui-line-strong) 0%, var(--stateui-accent) 50%, var(--stateui-line-strong) 100%);
+  background-size: 200% 100%;
+  animation: stateui-sweep 1.1s linear infinite;
+}
+.stateui-loading-bar:indeterminate::-webkit-progress-bar { background: transparent; }
+.stateui-loading-bar:indeterminate::-moz-progress-bar { background: transparent; }
+@keyframes stateui-sweep { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+/* The window: its bar over the room its pages stand in. */
+.stateui-window {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.stateui-room { grid-row: 2; grid-column: 1; display: grid; min-height: 0; min-width: 0; position: relative; }
+.stateui-overlays { grid-row: 2; grid-column: 1; z-index: 20; min-height: 0; min-width: 0; }
+
+/* The bar: what leads it, the page's title centred, the trailing actions. */
+.stateui-bar {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: var(--stateui-bar-height);
+  padding: 0 12px;
+  background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
+  color: var(--stateui-bar-foreground, var(--stateui-text));
+  border-bottom: 1px solid var(--stateui-line);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+.stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
+.stateui-bar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.stateui-bar-name { font-weight: 650; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
+.stateui-bar-subtitle { font-size: 12.5px; opacity: 0.72; white-space: nowrap; }
+.stateui-bar-heading { display: flex; flex-direction: column; min-width: 0; }
+.stateui-bar-title {
+  grid-column: 2;
+  font-weight: 600;
+  font-size: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stateui-bar > .stateui-bar-actions { grid-column: 3; justify-self: end; }
+
+/* With a split view, five columns whose widths move with its sidebar: the part over the sidebar - the toggle alone
+   while the sidebar is hidden - what leads the detail, the title, the trailing actions, and as much again as the
+   first part, so the title stands centred over the detail beside a sidebar shown and over the whole bar else. */
+.stateui-bar[data-sidebar] {
+  grid-template-columns: var(--stateui-bar-side) minmax(0, 1fr) auto minmax(0, 1fr) var(--stateui-bar-side);
+  column-gap: 0;
+  padding: 0;
+  transition: grid-template-columns var(--stateui-slide);
+}
+.stateui-bar[data-sidebar] .stateui-bar-lead { display: contents; }
+.stateui-bar[data-sidebar] .stateui-bar-side {
+  position: relative;
+  align-self: stretch;
+  justify-content: flex-end;
+  padding-inline: 12px 10px;
+}
+.stateui-bar[data-sidebar] .stateui-bar-brand {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+}
+.stateui-bar[data-sidebar] .stateui-bar-start { transition: padding var(--stateui-slide); }
+.stateui-bar[data-sidebar] .stateui-bar-title { grid-column: 3; padding-inline: 10px; }
+.stateui-bar[data-sidebar] > .stateui-bar-actions { grid-column: 4 / 6; margin-inline-end: 12px; }
+@media (min-width: 901px) {
+  .stateui-bar[data-sidebar="shown"] {
+    grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr) auto minmax(0, 1fr) 0px;
+  }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-brand { opacity: 1; visibility: visible; transition: opacity 0.3s ease 0.1s; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-start { padding-inline-start: 10px; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-title[data-repeats] { visibility: hidden; }
+}
+
+/* Its buttons: round and glassy, each on its own, an action group's sharing one capsule. */
+.stateui-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  min-width: 42px;
+  justify-content: center;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--stateui-glass);
+  box-shadow: var(--stateui-glass-edge);
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 550;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.stateui-bar {
+  --stateui-glass: color-mix(in srgb, currentColor 13%, transparent);
+  --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
+}
+.stateui-bar-actions {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  border-radius: 999px;
+  background: var(--stateui-glass);
+  box-shadow: var(--stateui-glass-edge);
+}
+.stateui-bar-actions:not(:has(> :not([hidden]))) { display: none; }
+.stateui-bar-actions button { background: transparent; box-shadow: none; }
+.stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
+.stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
+.stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+.stateui-bar button:disabled { opacity: 0.4; cursor: default; }
+.stateui-bar button img { width: 22px; height: 22px; }
+.stateui-glyph {
+  display: block;
+  width: 22px;
+  height: 22px;
+  background: currentColor;
+  -webkit-mask: var(--stateui-glyph) center / contain no-repeat;
+  mask: var(--stateui-glyph) center / contain no-repeat;
+}
+.stateui-glyph[data-glyph="sidebar"] {
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='M9 4v16'/%3E%3C/svg%3E");
+}
+.stateui-glyph[data-glyph="back"] {
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+}
+[dir="rtl"] .stateui-glyph[data-glyph="back"] { transform: scaleX(-1); }
+.stateui-glyph[data-glyph="more"] {
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='5' cy='12' r='1.9'/%3E%3Ccircle cx='12' cy='12' r='1.9'/%3E%3Ccircle cx='19' cy='12' r='1.9'/%3E%3C/svg%3E");
+}
+.stateui-glyph[data-glyph="close"] {
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
+}
+
+/* A menu: a popover over everything, an entry a row, a submenu its own popover beside it. */
+.stateui-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  min-width: 200px;
+  max-width: min(320px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--stateui-line);
+  border-radius: 12px;
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  box-shadow: var(--stateui-raised-shadow);
+}
+.stateui-menu:popover-open { display: grid; animation: stateui-fade-in 0.12s ease; }
+.stateui-menu > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.stateui-menu > button:hover:not(:disabled), .stateui-menu > button:focus-visible { background: var(--stateui-raised); outline: none; }
+.stateui-menu > button:disabled { opacity: 0.45; cursor: default; }
+.stateui-menu > button[data-destructive] { color: #d92d20; }
+.stateui-menu > button[aria-haspopup]::after { content: "›"; margin-inline-start: auto; opacity: 0.6; }
+.stateui-menu > button img { width: 18px; height: 18px; }
+.stateui-menu > [role="separator"] { height: 1px; margin: 5px 6px; background: var(--stateui-line); }
+
+/* A sheet: the browser's modal dialog, a card in the middle over a shade, from the bottom where the page is narrow;
+   its bar the page's chrome, the page under it. */
+.stateui-sheet {
+  width: min(560px, calc(100vw - 32px));
+  height: min(640px, calc(100dvh - 64px));
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  box-shadow: var(--stateui-raised-shadow);
+}
+.stateui-sheet[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); animation: stateui-rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stateui-sheet::backdrop { background: var(--stateui-shade); animation: stateui-fade-in 0.2s ease; }
+.stateui-sheet > .stateui-bar { border-radius: 0; }
+.stateui-sheet-room { display: grid; min-height: 0; min-width: 0; position: relative; }
+@media (max-width: 600px) {
+  .stateui-sheet { width: 100vw; max-width: 100vw; height: calc(100dvh - 48px); margin: auto 0 0; border-radius: 16px 16px 0 0; }
+}
+@keyframes stateui-rise { from { transform: translateY(24px); opacity: 0; } }
+
+/* A question for the user: the browser's modal dialog, its words over its buttons. */
+.stateui-question {
+  width: min(400px, calc(100vw - 32px));
+  padding: 24px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  box-shadow: var(--stateui-raised-shadow);
+}
+.stateui-question[open] { display: grid; gap: 12px; animation: stateui-rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stateui-question::backdrop { background: var(--stateui-shade); }
+.stateui-question h2 { margin: 0; font-size: 18px; font-weight: 650; }
+.stateui-question p { margin: 0; color: var(--stateui-muted); line-height: 1.45; }
+.stateui-question input {
+  font: inherit; width: 100%; min-height: 40px; padding: 8px 12px; border-radius: var(--stateui-radius);
+  border: 1px solid var(--stateui-line-strong); background: var(--stateui-surface); color: var(--stateui-text);
+}
+.stateui-question-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.stateui-question[data-kind="choice"] .stateui-question-buttons { flex-direction: column; align-items: stretch; }
+.stateui-question button {
+  font: inherit; font-weight: 600; min-height: 40px; padding: 0 18px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--stateui-line-strong); background: var(--stateui-raised); color: var(--stateui-text);
+}
+.stateui-question button[data-role="accept"] { background: var(--stateui-accent); border-color: transparent; color: white; }
+.stateui-question button[data-role="destructive"] { color: #d92d20; }
+.stateui-question button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+
+/* A split view: its sidebar beside the detail, sliding out as its column closes, or over it as a drawer where the
+   page is narrow. A change the user or the tree makes moves; the first room's does not. */
+.stateui-split {
+  display: grid;
+  grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.stateui-split[data-sidebar="hidden"] { grid-template-columns: 0px minmax(0, 1fr); }
+.stateui-split[data-moves] { transition: grid-template-columns var(--stateui-slide); }
+.stateui-sidebar {
+  display: grid;
+  width: var(--stateui-sidebar-width);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--stateui-raised);
+  border-inline-end: 1px solid var(--stateui-line);
+}
+.stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(-100%); visibility: hidden; }
+[dir="rtl"] .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(100%); }
+.stateui-split[data-moves] > .stateui-sidebar { transition: transform var(--stateui-slide), visibility 0s; }
+.stateui-split[data-moves][data-sidebar="hidden"] > .stateui-sidebar {
+  transition: transform var(--stateui-slide), visibility 0s linear 0.32s;
+}
+.stateui-detail { display: grid; min-height: 0; min-width: 0; }
+.stateui-scrim { display: none; }
+
+@media (max-width: 900px) {
+  .stateui-split, .stateui-split[data-sidebar="hidden"] { grid-template-columns: minmax(0, 1fr); }
+  .stateui-detail { grid-column: 1; grid-row: 1; }
+  .stateui-sidebar, .stateui-split[data-sidebar="hidden"] > .stateui-sidebar {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: 30;
+    width: min(86vw, var(--stateui-sidebar-width));
+    visibility: visible;
+    border-inline-end: 1px solid var(--stateui-line);
+    box-shadow: var(--stateui-raised-shadow);
+    transform: translateX(-104%);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  [dir="rtl"] .stateui-sidebar, [dir="rtl"] .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(104%); }
+  .stateui-split[data-sidebar="shown"] > .stateui-sidebar { transform: none; }
+  .stateui-split[data-sidebar="shown"] > .stateui-scrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 25;
+    background: var(--stateui-shade);
+    animation: stateui-fade-in 0.2s ease;
+  }
+}
+
+/* A stack shows its top page. */
+.stateui-stack { display: grid; min-height: 0; min-width: 0; }
+.stateui-stack > [data-covered] { display: none !important; }
+
+/* A collection: a scroller asking for no room of its own, over a cell an entry - down, across or in columns - one
+   whose entry never came keeping a row's room. */
+.stateui-items { display: block; min-width: 0; min-height: 0; contain: size; overflow: auto; }
+.stateui-items[data-layout="row"] { overflow-y: hidden; overscroll-behavior-x: contain; }
+.stateui-items:not([data-layout="row"]) { overflow-x: hidden; overscroll-behavior-y: contain; }
+.stateui-items-content { display: flex; flex-direction: column; min-width: 0; }
+.stateui-items[data-layout="row"] > .stateui-items-content { flex-direction: row; align-items: stretch; height: 100%; width: max-content; }
+.stateui-items[data-layout="grid"] > .stateui-items-content { display: grid; align-content: start; }
+.stateui-items[data-layout="grid"] .stateui-item[data-part] { grid-column: 1 / -1; }
+.stateui-item { flex: none; }
+.stateui-item:empty { min-height: 44px; }
+.stateui-items[data-layout="row"] .stateui-item:empty { min-height: 0; min-width: 44px; }
+.stateui-item[aria-selected] { cursor: pointer; border-radius: 8px; }
+.stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) 16%, transparent); }
+
+/* A web view: the browser's own frame, filling the room its layout gives it. */
+.stateui-frame { display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; border: 0; background: white; }
+
+/* A canvas: its drawing on a surface filling the room its layout gives it, the surface taking no room of its own. */
+.stateui-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }
+.stateui-canvas > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* A tabbed view: the strip of its tabs' names over the one cell its pages share, the chosen one shown. */
+.stateui-tabs { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
+.stateui-tabs > .stateui-tab-strip {
+  display: flex;
+  gap: 4px;
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--stateui-surface);
+  border-bottom: 1px solid var(--stateui-line);
+}
+.stateui-room .stateui-tab-strip > button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-bottom: -1px;
+  background: transparent;
+  color: var(--stateui-muted);
+  font-weight: 550;
+  white-space: nowrap;
+  filter: none;
+}
+.stateui-room .stateui-tab-strip > button:hover { color: var(--stateui-text); }
+.stateui-room .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
+/* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */
+.stateui-tab-pages > [data-covered] { visibility: hidden !important; overflow: clip; }
+.stateui-stack > [data-arriving] { animation: stateui-arrive 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+/* A scroller. */
+.stateui-scroller {
+  min-height: 0;
+  min-width: 0;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, currentColor 28%, transparent) transparent;
+}
+.stateui-scroller[data-bars="never"] { scrollbar-width: none; }
+.stateui-scroller[data-bars="never"]::-webkit-scrollbar { display: none; }
+
+/* Controls, where the application gives them no look of their own. */
+.stateui-room button {
+  font: inherit;
+  font-weight: 550;
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid var(--stateui-line-strong);
+  border-radius: var(--stateui-radius);
+  background: var(--stateui-raised);
+  color: var(--stateui-text);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+.stateui-room button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
+.stateui-room button:active { filter: brightness(0.92); }
+.stateui-room button:disabled { opacity: 0.45; cursor: default; filter: none; }
+.stateui-room input:not([type="checkbox"], [type="radio"], [type="range"]), .stateui-room textarea, .stateui-room select {
+  font: inherit;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--stateui-line-strong);
+  border-radius: var(--stateui-radius);
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+/* A field is as wide as its words or its placeholder - as a native one measures - not twenty characters. */
+.stateui-room input.stateui-field { field-sizing: content; }
+.stateui-room input::placeholder, .stateui-room textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
+.stateui-room textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
+.stateui-room input[type="search"] {
+  padding-inline-start: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 11px center;
+  background-size: 16px;
+}
+[dir="rtl"] .stateui-room input[type="search"] { background-position: right 11px center; }
+.stateui-room :is(button, input, textarea, select):focus-visible {
+  outline: none;
+  border-color: var(--stateui-accent);
+  box-shadow: var(--stateui-focus);
+}
+.stateui-room :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
+/* A bar of work done, a ring while work goes on, a radio button with its caption, a choice from a list. */
+.stateui-room progress {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-width: 80px;
+  height: 6px;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--stateui-line-strong);
+  color: var(--stateui-on, var(--stateui-accent));
+}
+.stateui-room progress::-webkit-progress-bar { background: var(--stateui-line-strong); border-radius: 999px; }
+.stateui-room progress::-webkit-progress-value { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; transition: width 0.2s ease; }
+.stateui-room progress::-moz-progress-bar { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; }
+.stateui-activity {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid color-mix(in srgb, var(--stateui-on, var(--stateui-accent)) 22%, transparent);
+  border-top-color: var(--stateui-on, var(--stateui-accent));
+  visibility: hidden;
+}
+.stateui-activity[data-running] { visibility: visible; animation: stateui-turn 0.8s linear infinite; }
+/* A toggle and a ring stand at their own size in the middle of the frame the layout gives their view. */
+.stateui-toggle, .stateui-indicator { display: inline-grid; place-items: center; }
+.stateui-toggle { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stateui-toggle[aria-disabled] { cursor: default; }
+.stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
+.stateui-room select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-inline-end: 34px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+[dir="rtl"] .stateui-room select { background-position: left 10px center; }
+
+/* A switch drawn as one, a slider across its room, a stepper's field between its buttons. */
+.stateui-room input.stateui-switch {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--stateui-line-strong);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.stateui-room input.stateui-switch::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.stateui-room input.stateui-switch:checked { background: var(--stateui-on, var(--stateui-accent)); }
+.stateui-room input.stateui-switch:checked::before { transform: translateX(18px); }
+[dir="rtl"] .stateui-room input.stateui-switch:checked::before { transform: translateX(-18px); }
+.stateui-room input.stateui-switch:disabled { opacity: 0.45; cursor: default; }
+.stateui-room input[type="checkbox"]:not(.stateui-switch), .stateui-room input[type="radio"] { width: 18px; height: 18px; margin: 0; }
+.stateui-room input[type="range"] { min-width: 120px; margin: 0; }
+.stateui-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--stateui-line-strong);
+  border-radius: var(--stateui-radius);
+  overflow: hidden;
+  background: var(--stateui-surface);
+}
+.stateui-room .stateui-stepper button {
+  min-width: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+.stateui-room .stateui-stepper input {
+  width: 76px;
+  border: 0;
+  border-inline: 1px solid var(--stateui-line);
+  border-radius: 0;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
+.stateui-stepper input::-webkit-inner-spin-button, .stateui-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.stateui-room .stateui-stepper:focus-within { border-color: var(--stateui-accent); box-shadow: var(--stateui-focus); }
+.stateui-room .stateui-stepper :focus-visible { box-shadow: none; }
+
+.stateui-room [data-taps] { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.stateui-room [data-taps]:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+[data-lets-through] { pointer-events: none; }
+[data-lets-through] > :not([data-lets-through]) { pointer-events: auto; }
+
+.stateui-shape { display: block; overflow: visible; width: 100%; height: 100%; }
+
+.stateui-unsupported {
+  align-self: start;
+  justify-self: start;
+  padding: 3px 8px;
+  border: 1px dashed currentColor;
+  border-radius: 6px;
+  color: #e5484d;
+  font-size: 12.5px;
+}
+.stateui-failure { margin: 16px; color: #e5484d; white-space: pre-wrap; }
+
+@keyframes stateui-fade-in { from { opacity: 0; } }
+@keyframes stateui-turn { to { transform: rotate(1turn); } }
+@keyframes stateui-arrive { from { opacity: 0; transform: translateY(6px); } }
+/* What the page tells a screen reader, which nobody sees. */
+.stateui-announcer { position: fixed; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* A control answers every tap: a second one soon after the first is its own, never the page's zoom. */
+.stateui-window :is(button, input, select, textarea, label, [data-taps]) { touch-action: manipulation; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving], .stateui-scrim,
+  .stateui-loading-bar {
+    transition: none !important;
+    animation: none !important;
+  }
+  .stateui-activity[data-running] { animation-duration: 2.4s; }
+}

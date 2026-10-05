@@ -1,0 +1,5 @@
+# revision 2.1
+SplitView: ✅
+SplitView.showsSidebar: ✅
+SplitView.showsSidebarChanged: ✅
+Text.frameChanged: ✅

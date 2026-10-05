@@ -1,0 +1,11 @@
+# revision 2.1
+Page: ✅
+Page.appearing: ✅
+Page.backButtonTitle: cannot read backButtonTitle of Page - the Web's driver has no path for it yet
+Page.background: ✅
+Page.disappearing: ✅
+Page.navigatedFrom: ✅
+Page.navigatedTo: ✅
+Page.navigatingFrom: ✅
+Page.showsBackButton: cannot read showsBackButton of Page - the Web's driver has no path for it yet
+Page.showsNavigationBar: cannot read showsNavigationBar of Page - the Web's driver has no path for it yet

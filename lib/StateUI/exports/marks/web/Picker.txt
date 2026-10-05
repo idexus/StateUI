@@ -1,0 +1,11 @@
+# revision 1.1
+Picker: ✅
+Picker.closed: not realized
+Picker.frameChanged: ✅
+Picker.isOpen: not realized
+Picker.opened: not realized
+Picker.options: ✅
+Picker.placeholder: not realized
+Picker.selectedIndex: ✅
+Picker.selectedIndexChanged: ✅
+Text.text: ✅
