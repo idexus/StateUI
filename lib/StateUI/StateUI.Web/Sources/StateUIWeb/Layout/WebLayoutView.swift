@@ -172,7 +172,7 @@ class WebLayoutView: WebDOMView {
     /// across its slot - in a grid's cell, along both axes.
     /// Design: docs/design/platforms/web/layout.md#a-childs-place
     func place(_ view: WebDOMView, _ values: LayoutValues) {
-        view.placedDrawing = nil
+        view.drawInRun(nil, size: nil)
         for (side, length) in WebCSS.sides(values.margin) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
@@ -242,7 +242,7 @@ class WebLayoutView: WebDOMView {
         view.style("width", WebCSS.pixels(place.width))
         view.style("height", WebCSS.pixels(place.height))
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
-        view.placedDrawing = placement.drawing
+        view.drawInRun(placement.drawing, size: LayoutSize(width: place.width, height: place.height))
     }
 
     /// The grid's tracks: those it defines, then one share for each further one its children reach.

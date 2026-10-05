@@ -132,9 +132,19 @@ class WebDOMView {
     /// How the view is drawn over its place, its own say.
     private(set) var ownDrawing = HostDrawingTransform.identity
 
-    /// How the layout placing the view by a run draws it; nil while it stands in its own place.
-    var placedDrawing: HostDrawingTransform? {
-        didSet { if placedDrawing != oldValue { writeTransform() } }
+    /// How the layout placing the view by a run draws it, and the size the run gives it; nil while it stands in its
+    /// own place.
+    private(set) var placedDrawing: HostDrawingTransform?
+    private(set) var placedSize: LayoutSize?
+
+    /// Draws the view as the run placing it says, at the size the run gives it - written again whenever either
+    /// changes, as the matrix turns and scales the view about a pivot of that size; nil for neither.
+    /// Design: docs/design/platforms/web/layout.md#a-placing-run
+    func drawInRun(_ drawing: HostDrawingTransform?, size: LayoutSize?) {
+        guard drawing != placedDrawing || size != placedSize else { return }
+        placedDrawing = drawing
+        placedSize = size
+        writeTransform()
     }
 
     /// How the view is drawn over its place: moved, turned, scaled about its pivot, as the host layer's matrix says -
@@ -153,7 +163,7 @@ class WebDOMView {
             style("transform", moved)
             return style("transform-origin", nil)
         }
-        let size = drawn ?? WebRelay.size(of: node)
+        let size = drawn ?? placedSize ?? WebRelay.size(of: node)
         let m = transform.matrix(width: size.width, height: size.height)
         let values = [m.m11, m.m12, m.m13, m.m14, m.m21, m.m22, m.m23, m.m24,
                       m.m31, m.m32, m.m33, m.m34, m.m41, m.m42, m.m43, m.m44]

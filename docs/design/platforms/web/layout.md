@@ -68,7 +68,10 @@ resized - sets out from where it no longer is.
 A ZStack whose children a placing run stands - an engine's - stands each
 where the run says: absolutely, in its rectangle, drawn with the run's
 transform under the child's own (`HostDrawingTransform.under`) and the run's
-opacity. A ZStack draws its children back to front in the run's order
+opacity. The matrix turns and scales the child about the middle of the place
+the run gives it, so it is written again whenever that place's size changes,
+not only its turn: a run worked out before its room was measured - a card half
+a point wide - leaves nothing of itself behind once the next one sizes it. A ZStack draws its children back to front in the run's order
 (`ZStackArithmetic.drawingOrder`) - each child, placed or not, takes its
 z-index from it - so a child the run places never rises over a later one it
 places none of.
