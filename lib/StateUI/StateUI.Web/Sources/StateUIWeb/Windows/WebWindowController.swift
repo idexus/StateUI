@@ -22,11 +22,47 @@ final class WebWindowController {
 
     private unowned let runtime: HostRuntime
 
+    /// Whether the page's own entry stands on the browser's history - while the window offers a way back - and
+    /// whether the browser's history moving next is the page's own going back over it.
+    private var holdsHistory = false
+    private var leavesHistory = false
+
     init(_ element: MountedElement, runtime: HostRuntime) {
         self.element = element
         self.runtime = runtime
         window.bar.onBack = { [weak self] in self?.goBack(in: runtime) }
         window.bar.onToggle = { [weak self] in self?.toggleSidebar() }
+        WebRelay.listenToHistory(WebRelay.listener { [weak self] in self?.historyMoved() })
+    }
+
+    /// Keeps the page's own entry on the browser's history while the window offers a way back, and none while not.
+    /// Design: docs/design/platforms/web/pages.md#the-browsers-way-back
+    private func followHistory() {
+        let offers = presentation.wayBack != nil
+        if offers, !holdsHistory {
+            holdsHistory = true
+            WebRelay.pushHistory()
+        } else if !offers, holdsHistory {
+            holdsHistory = false
+            leavesHistory = true
+            WebRelay.backHistory()
+        }
+    }
+
+    /// The browser's history moved: its way back took the page's entry, and the window goes back a step - or the
+    /// page's own going back over it, or the browser's way forward onto it, which the window follows as it can.
+    private func historyMoved() {
+        if leavesHistory {
+            leavesHistory = false
+            return
+        }
+        if holdsHistory {
+            holdsHistory = false
+            goBack(in: runtime)
+        } else {
+            holdsHistory = true
+            followHistory()
+        }
     }
 
     /// Shows what the element asks for now; a split view shown is given its first room.
@@ -83,6 +119,7 @@ final class WebWindowController {
             if !named.isEmpty { title = named }
         }
         WebRelay.setTitle(title)
+        followHistory()
     }
 
     /// Goes the way back the window offers: a stack's top page, or the top sheet.

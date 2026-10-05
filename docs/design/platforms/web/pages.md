@@ -31,6 +31,18 @@ width, so no measuring moves them.
 The page is one window: an application's second window has no place of its
 own in it.
 
+## The browser's way back
+
+The browser's own way back - its button, a swipe on a phone - goes back a
+step in the window, as the bar's does: while the window offers a way back
+(`WindowPresentation.wayBack`) one entry of the page's own stands on the
+browser's history, and the browser taking it back takes the window a step
+back; where a way back still stands after it, the entry is put back. Where
+the window offers none any more - the bar's way back, the program's own -
+the page goes back over its entry itself, and does not take that for the
+user's. One entry, never one a page: a page the application pushes is the
+tree's, and the browser could hand none of them back on its way forward.
+
 ## Overlays
 
 What a window lays over its pages - the overlays its pages declare and the

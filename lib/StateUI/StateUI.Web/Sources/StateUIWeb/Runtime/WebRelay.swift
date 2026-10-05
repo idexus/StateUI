@@ -175,6 +175,21 @@ enum WebRelay {
     /// Whether the element the nearness being heard is of came near.
     static var eventNear: Bool { stateui_web_event_number(0) != 0 }
 
+    /// Puts one entry of the page's own on the browser's history.
+    static func pushHistory() {
+        stateui_web_push_history()
+    }
+
+    /// Goes back over the page's own entry of the browser's history.
+    static func backHistory() {
+        stateui_web_back_history()
+    }
+
+    /// Calls `listener` whenever the browser's history moves.
+    static func listenToHistory(_ listener: Int32) {
+        stateui_web_listen_history(listener)
+    }
+
     /// The `<iframe>` `element` shows `source`.
     static func showInFrame(_ element: Int32, _ source: WebViewSource) {
         switch source {
