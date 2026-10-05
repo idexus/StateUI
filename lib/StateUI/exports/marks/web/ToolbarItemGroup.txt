@@ -1,5 +1,5 @@
 # revision 2.1
 ToolbarItem.clicked: ✅
-ToolbarItemGroup: ◐ cannot read the bar of Page - the Web's driver has no path for it yet
-ToolbarItemGroup.order: cannot read the bar of Page - the Web's driver has no path for it yet
-ToolbarItemGroup.side: cannot read the bar of Page - the Web's driver has no path for it yet
+ToolbarItemGroup: ✅
+ToolbarItemGroup.order: ✅
+ToolbarItemGroup.side: ✅

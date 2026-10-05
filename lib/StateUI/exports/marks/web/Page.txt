@@ -7,5 +7,5 @@ Page.disappearing: ✅
 Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
-Page.showsBackButton: cannot read showsBackButton of Page - the Web's driver has no path for it yet
-Page.showsNavigationBar: cannot read showsNavigationBar of Page - the Web's driver has no path for it yet
+Page.showsBackButton: ✅
+Page.showsNavigationBar: ✅

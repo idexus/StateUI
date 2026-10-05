@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 3 –</td><td><code>SeekBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>59 ✅ · 2 ✓</td><td><code>Slider</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>47 ✅ · 12 ✓ · 3 –</td><td><code>GtkScale</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>47 ✅ · 10 ✓</td><td><code>&lt;input type=range&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>48 ✅ · 10 ✓</td><td><code>&lt;input type=range&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SliderContract.swift`.
@@ -197,6 +197,6 @@ A control's one accent colour.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>tint</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">·</td></tr>
-<tr><td colspan="9">GTK 4: only through the host's own: read tint of Slider: the tint the host gave the track's node: GTK's style sheet tells no one<br>Web: cannot read tint of Slider - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>tint</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: only through the host's own: read tint of Slider: the tint the host gave the track's node: GTK's style sheet tells no one</td></tr></tbody>
 </table>

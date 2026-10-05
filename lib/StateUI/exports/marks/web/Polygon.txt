@@ -1,5 +1,5 @@
 # revision 1.1
 Polygon: ✅
-Polygon.fillRule: cannot read the colour of Polygon - the Web's driver has no path for it yet
+Polygon.fillRule: ✅
 Polygon.frameChanged: ✅
-Polygon.points: cannot read the colour of Polygon - the Web's driver has no path for it yet
+Polygon.points: ✅

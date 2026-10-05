@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 3 –</td><td><code>ImageView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>50 ✅ · 3 ✓ · 3 –</td><td><code>Image</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>42 ✅ · 11 ✓ · 4 –</td><td><code>GtkPicture</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>43 ✅ · 10 ✓</td><td><code>&lt;img&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>44 ✅ · 10 ✓</td><td><code>&lt;img&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ImageContract.swift`.
@@ -49,8 +49,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ImageContract.
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>isAnimating</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
 <tr><td colspan="9">UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>source</code></td><td>property</td><td><code>ImageSource</code></td><td>native</td><td align="center">◐</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">AppKit: cannot read source of Image - AppKit's driver has no path for it yet<br>Android Views: cannot read source of Image - Android's driver has no path for it yet<br>Web: cannot read the colour of Image - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>source</code></td><td>property</td><td><code>ImageSource</code></td><td>native</td><td align="center">◐</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read source of Image - AppKit's driver has no path for it yet<br>Android Views: cannot read source of Image - Android's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -192,6 +192,6 @@ How a picture fills the room it was given.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">Web: cannot read the colour of Image - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">❌</td></tr>
+<tr><td colspan="9">Web: true expected, false came - drawn at (1.0, 1.0)</td></tr></tbody>
 </table>

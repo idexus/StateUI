@@ -136,7 +136,7 @@ ColorBox.dragOver: not realized
 ColorBox.dragStarting: not realized
 ColorBox.dragText: not realized
 ColorBox.drop: not realized
-ColorBox.frameChanged: ◐ cannot scroll on ItemsView - the Web's driver has no path for it yet
+ColorBox.frameChanged: ✅
 ColorBox.gridColumn: ✅
 ColorBox.gridColumnSpan: ✅
 ColorBox.gridRow: ✅

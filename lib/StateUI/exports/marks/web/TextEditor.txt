@@ -1,7 +1,7 @@
 # revision 2.1
 TextEditor: ✅
 TextEditor.frameChanged: ✅
-TextEditor.growsWithText: ◐ cannot read growsWithText of TextEditor - the Web's driver has no path for it yet
+TextEditor.growsWithText: ✅
 TextEditor.maximumLength: ✅
 TextEditor.text: ✅
 TextEditor.textChanged: ✅

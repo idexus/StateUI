@@ -6,9 +6,9 @@ WebView.evaluateJavaScript: ◐ waits on WebView.userAgent
 WebView.frameChanged: ✅
 WebView.goBack: ✅
 WebView.goForward: ✅
-WebView.navigated: cannot read source of WebView - the Web's driver has no path for it yet
-WebView.navigating: ◐ cannot read source of WebView - the Web's driver has no path for it yet
+WebView.navigated: ✅
+WebView.navigating: ✅
 WebView.processTerminated: not realized
 WebView.reload: ✅
-WebView.source: cannot read source of WebView - the Web's driver has no path for it yet
+WebView.source: ✅
 WebView.userAgent: not realized

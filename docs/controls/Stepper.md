@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 3 –</td><td>custom <code>NumberPicker</code>-based view</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>59 ✅ · 2 ✓</td><td><code>NumberBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 11 ✓ · 1 –</td><td><code>GtkSpinButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>43 ✅ · 10 ✓</td><td><code>&lt;input type=number&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>48 ✅ · 10 ✓</td><td><code>&lt;input type=number&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/StepperContract.swift`.
@@ -49,16 +49,16 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/StepperContrac
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>maximum</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">AppKit: cannot enterWords on Stepper - AppKit's driver has no path for it yet<br>UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet<br>Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet<br>Web: cannot read maximum of Stepper - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>minimum</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">Android Views: cannot read minimum of Stepper - Android's driver has no path for it yet<br>Web: cannot read minimum of Stepper - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>step</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">Android Views: cannot read step of Stepper - Android's driver has no path for it yet<br>Web: cannot read step of Stepper - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>value</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">AppKit: cannot enterWords on Stepper - AppKit's driver has no path for it yet<br>UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet<br>Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet<br>Web: cannot read maximum of Stepper - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onValueChanged</code> (<code>valueChanged</code>)</td><td>event</td><td><code>Double</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">AppKit: cannot enterWords on Stepper - AppKit's driver has no path for it yet<br>UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet<br>Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet<br>Web: cannot read minimum of Stepper - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximum</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot enterWords on Stepper - AppKit's driver has no path for it yet<br>UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet<br>Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>minimum</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read minimum of Stepper - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>step</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read step of Stepper - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>value</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot enterWords on Stepper - AppKit's driver has no path for it yet<br>UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet<br>Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onValueChanged</code> (<code>valueChanged</code>)</td><td>event</td><td><code>Double</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot enterWords on Stepper - AppKit's driver has no path for it yet<br>UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet<br>Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

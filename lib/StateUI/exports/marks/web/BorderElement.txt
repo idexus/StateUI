@@ -1,22 +1,22 @@
 # revision 1.1
-Button.lineWidth: cannot read lineWidth of Button - the Web's driver has no path for it yet
-Button.shape: cannot read shape of Button - the Web's driver has no path for it yet
-Button.stroke: cannot read stroke of Button - the Web's driver has no path for it yet
-Grid.lineWidth: cannot read lineWidth of Grid - the Web's driver has no path for it yet
-Grid.shape: cannot read shape of Grid - the Web's driver has no path for it yet
-Grid.stroke: cannot read stroke of Grid - the Web's driver has no path for it yet
-HStack.lineWidth: cannot read lineWidth of HStack - the Web's driver has no path for it yet
-HStack.shape: cannot read shape of HStack - the Web's driver has no path for it yet
-HStack.stroke: cannot read stroke of HStack - the Web's driver has no path for it yet
+Button.lineWidth: ✅
+Button.shape: ✅
+Button.stroke: ✅
+Grid.lineWidth: ✅
+Grid.shape: ✅
+Grid.stroke: ✅
+HStack.lineWidth: ✅
+HStack.shape: ✅
+HStack.stroke: ✅
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
-ScrollView.lineWidth: cannot read lineWidth of ScrollView - the Web's driver has no path for it yet
-ScrollView.shape: cannot read shape of ScrollView - the Web's driver has no path for it yet
-ScrollView.stroke: cannot read stroke of ScrollView - the Web's driver has no path for it yet
-VStack.lineWidth: cannot read lineWidth of VStack - the Web's driver has no path for it yet
-VStack.shape: cannot read shape of VStack - the Web's driver has no path for it yet
-VStack.stroke: cannot read stroke of VStack - the Web's driver has no path for it yet
-ZStack.lineWidth: cannot read lineWidth of ZStack - the Web's driver has no path for it yet
-ZStack.shape: cannot read shape of ZStack - the Web's driver has no path for it yet
-ZStack.stroke: cannot read stroke of ZStack - the Web's driver has no path for it yet
+ScrollView.lineWidth: ✅
+ScrollView.shape: ✅
+ScrollView.stroke: ✅
+VStack.lineWidth: ✅
+VStack.shape: ✅
+VStack.stroke: ✅
+ZStack.lineWidth: ✅
+ZStack.shape: ✅
+ZStack.stroke: ✅

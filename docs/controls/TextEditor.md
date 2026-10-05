@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 1 ☑️ · 1 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>72 ✅ · 2 ✓</td><td>multi-line <code>TextBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 12 ✓ · 1 –</td><td><code>GtkTextView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>58 ✅ · 10 ✓</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 10 ✓</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextEditorContract.swift`.
@@ -48,8 +48,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextEditorContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>growsWithText</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">Web: cannot read growsWithText of TextEditor - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>growsWithText</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -191,14 +190,14 @@ What every field a user types into has: the text's limits and caret, the keyboar
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>cursorPosition</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>inputPurpose</code></td><td>property</td><td><code>InputPurpose</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks<br>Web: cannot read inputPurpose of TextEditor - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>inputPurpose</code></td><td>property</td><td><code>InputPurpose</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isReadOnly</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isSpellCheckEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which <code>isTextPredictionEnabled</code> turns off.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">Android Views: cannot read maximumLength of TextEditor - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it<br>Web: cannot read maximumLength of TextEditor - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read maximumLength of TextEditor - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>placeholderColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">GTK 4: only through the host's own: read placeholderColor of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor</td></tr></tbody>

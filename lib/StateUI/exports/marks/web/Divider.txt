@@ -1,2 +1,2 @@
 # revision 1.1
-Divider: cannot read the menu of Text - the Web's driver has no path for it yet
+Divider: ✅

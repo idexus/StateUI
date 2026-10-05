@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>62 ✅ · 1 ☑️ · 3 –</td><td><code>TextView</code>; <code>SpannableString</code> spans</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>65 ✅ · 2 ✓ · 3 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 13 ✓ · 4 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 10 ✓</td><td>text element; <code>&lt;span&gt;</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>58 ✅ · 10 ✓</td><td>text element; <code>&lt;span&gt;</code> runs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextContract.swift`.
@@ -224,8 +224,8 @@ Where text sits inside the space its own element was given.
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>horizontalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>verticalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">AppKit: cannot read verticalTextAlignment of Text - AppKit's driver has no path for it yet<br>UIKit: cannot read verticalTextAlignment of Text - UIKit's driver has no path for it yet<br>Web: cannot read verticalTextAlignment of Text - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>verticalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read verticalTextAlignment of Text - AppKit's driver has no path for it yet<br>UIKit: cannot read verticalTextAlignment of Text - UIKit's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
@@ -234,8 +234,7 @@ How far apart the lines of text are.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>lineHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Web: cannot read lineHeight of Text - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>lineHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [DecorableTextElement](tiers/DecorableTextElement.md)

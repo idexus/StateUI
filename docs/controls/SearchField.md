@@ -41,7 +41,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>70 ✅ · 1 ☑️ · 1 –</td><td><code>SearchView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 1 ☑️ · 2 ✓</td><td><code>AutoSuggestBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>60 ✅ · 12 ✓ · 1 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>57 ✅ · 10 ✓</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 10 ✓</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContract.swift`.
@@ -50,8 +50,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContrac
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>submitLabel</code></td><td>property</td><td><code>SubmitLabel</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">·</td></tr>
-<tr><td colspan="9">AppKit: A Mac has no keyboard on the screen whose return key says anything.<br>WinUI 3, GTK 4: not realized<br>Web: cannot read submitLabel of SearchField - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>submitLabel</code></td><td>property</td><td><code>SubmitLabel</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: A Mac has no keyboard on the screen whose return key says anything.<br>WinUI 3, GTK 4: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onSubmitted</code> (<code>submitted</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
@@ -196,15 +196,15 @@ What every field a user types into has: the text's limits and caret, the keyboar
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>cursorPosition</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>inputPurpose</code></td><td>property</td><td><code>InputPurpose</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks<br>WinUI 3: not realized<br>Web: cannot read inputPurpose of SearchField - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>inputPurpose</code></td><td>property</td><td><code>InputPurpose</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks<br>WinUI 3: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isReadOnly</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isSpellCheckEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet<br>Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which <code>isTextPredictionEnabled</code> turns off.<br>WinUI 3: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">Android Views: cannot read maximumLength of SearchField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it<br>Web: cannot read maximumLength of SearchField - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read maximumLength of SearchField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>placeholderColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet<br>UIKit: cannot read placeholderColor of SearchField - UIKit's driver has no path for it yet<br>GTK 4: only through the host's own: read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor</td></tr></tbody>

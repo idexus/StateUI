@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 4 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>12 ✅</td><td><code>Application</code> / structure</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>11 ✅ · 1 ✓</td><td><code>GtkApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>10 ✅</td><td><code>document</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>12 ✅</td><td><code>document</code> / structure</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.
@@ -63,12 +63,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationCo
 <tr><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>currentTime</code></td><td>act</td><td><code>() -&gt; [Double]</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>currentTimeZone</code></td><td>act</td><td><code>() -&gt; String</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>handlerFailed</code></td><td>act</td><td><code>(String) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Web: cannot read the log - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>handlerFailed</code></td><td>act</td><td><code>(String) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>hideOnScreenKeyboard</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: cannot focus on TextField - Android's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>persistSceneValue</code></td><td>act</td><td><code>(Name, Name, PropValue) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Web: cannot read what a scene keeps - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>persistSceneValue</code></td><td>act</td><td><code>(Name, Name, PropValue) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>persistValue</code></td><td>act</td><td><code>(Name, PropValue) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>prompt</code></td><td>act</td><td><code>(String, String, String, String, String?, Int?, InputPurpose, String) -&gt; String?</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr></tbody>

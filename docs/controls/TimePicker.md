@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 1 ✓ · 3 –</td><td><code>TimePickerDialog</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>60 ✅ · 2 ✓</td><td><code>TimePicker</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>51 ✅ · 12 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>46 ✅ · 10 ✓</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>48 ✅ · 10 ✓</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
@@ -55,10 +55,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerCont
 <tr><td colspan="9">AppKit, UIKit, WinUI 3, Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center"></td></tr>
 <tr><td colspan="9">AppKit, UIKit, WinUI 3, Web: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>time</code></td><td>property</td><td><code>ClockTime</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Web: cannot read time of TimePicker - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onTimeChanged</code> (<code>timeChanged</code>)</td><td>event</td><td><code>ClockTime</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">·</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action<br>GTK 4: only through the host's own: pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each<br>Web: cannot read time of TimePicker - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>time</code></td><td>property</td><td><code>ClockTime</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onTimeChanged</code> (<code>timeChanged</code>)</td><td>event</td><td><code>ClockTime</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action<br>GTK 4: only through the host's own: pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

@@ -1,7 +1,7 @@
 # revision 1.1
 SearchField: ✅
 SearchField.frameChanged: ✅
-SearchField.submitLabel: cannot read submitLabel of SearchField - the Web's driver has no path for it yet
+SearchField.submitLabel: ✅
 SearchField.submitted: ✅
 SearchField.text: ✅
 SearchField.textChanged: ✅

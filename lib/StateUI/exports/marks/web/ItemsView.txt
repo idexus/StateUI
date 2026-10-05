@@ -1,13 +1,13 @@
 # revision 1.1
 ItemsView: ✅
-ItemsView.endReached: cannot scroll on ItemsView - the Web's driver has no path for it yet
-ItemsView.endReachedWithin: cannot scroll on ItemsView - the Web's driver has no path for it yet
+ItemsView.endReached: ✅
+ItemsView.endReachedWithin: ✅
 ItemsView.frameChanged: ✅
 ItemsView.itemActivated: ✅
 ItemsView.items: ✅
 ItemsView.itemsLayout: ✅
 ItemsView.realizedChanged: ✅
 ItemsView.scrollTo: ✅
-ItemsView.selectedItems: cannot choose on ItemsView - the Web's driver has no path for it yet
-ItemsView.selectedItemsChanged: cannot choose on ItemsView - the Web's driver has no path for it yet
-ItemsView.selectionMode: cannot choose on ItemsView - the Web's driver has no path for it yet
+ItemsView.selectedItems: ✓ read selectedItems of ItemsView: the identities the host chose: the page marks a cell chosen, not which item it shows
+ItemsView.selectedItemsChanged: ✅
+ItemsView.selectionMode: ✅

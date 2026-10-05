@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>60 ✅ · 1 ☑️ · 3 –</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>73 ✅ · 2 ✓</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>55 ✅ · 18 ✓ · 1 –</td><td><code>GtkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 10 ✓</td><td><code>&lt;button&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>55 ✅ · 10 ✓</td><td><code>&lt;button&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -244,12 +244,12 @@ What an element draws of its own box: the shape its background, its outline and 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">·</td></tr>
-<tr><td colspan="9">AppKit: cannot read shape of a box shorter than its radius - AppKit's layer holds the radius it draws, at most half the box's shorter side<br>Android Views: cannot read shape of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read shape of Button: the class of the host's style sheet the widget wears: GTK reads back no shape<br>Web: cannot read shape of Button - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">·</td></tr>
-<tr><td colspan="9">Android Views: cannot read stroke of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read stroke of Button: the class of the host's style sheet the widget wears: GTK reads back no stroke<br>Web: cannot read stroke of Button - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">·</td></tr>
-<tr><td colspan="9">Android Views: cannot read lineWidth of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read lineWidth of Button: the class of the host's style sheet the widget wears: GTK reads back no lineWidth<br>Web: cannot read lineWidth of Button - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read shape of a box shorter than its radius - AppKit's layer holds the radius it draws, at most half the box's shorter side<br>Android Views: cannot read shape of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read shape of Button: the class of the host's style sheet the widget wears: GTK reads back no shape</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read stroke of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read stroke of Button: the class of the host's style sheet the widget wears: GTK reads back no stroke</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read lineWidth of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read lineWidth of Button: the class of the host's style sheet the widget wears: GTK reads back no lineWidth</td></tr></tbody>
 </table>
 
 ## From [ImageElement](tiers/ImageElement.md)

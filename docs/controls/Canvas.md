@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 3 –</td><td><code>View</code> <code>onDraw(Canvas)</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 3 ✓ · 3 –</td><td>Direct2D in a <code>SurfaceImageSource</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>44 ✅ · 11 ✓ · 4 –</td><td><code>GtkDrawingArea</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>46 ✅ · 10 ✓</td><td><code>&lt;canvas&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>47 ✅ · 10 ✓</td><td><code>&lt;canvas&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/CanvasContract.swift`.
@@ -53,8 +53,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/CanvasContract.s
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragged</code> (<code>dragged</code>)</td><td>event</td><td><code>Point</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>drawing</code></td><td>property</td><td><code>[DrawCommand]</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Web: cannot read the colour of Canvas - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>drawing</code></td><td>property</td><td><code>[DrawCommand]</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPressed</code> (<code>pressed</code>)</td><td>event</td><td><code>Point</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td><code>Point</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>

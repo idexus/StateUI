@@ -6,9 +6,9 @@ Application.chooseAction: ✅
 Application.confirm: ✅
 Application.currentTime: ✅
 Application.currentTimeZone: ✅
-Application.handlerFailed: cannot read the log - the Web's driver has no path for it yet
+Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
-Application.persistSceneValue: cannot read what a scene keeps - the Web's driver has no path for it yet
+Application.persistSceneValue: ✅
 Application.persistValue: ✅
 Application.prompt: ✅
 Application.utcOffset: ✅

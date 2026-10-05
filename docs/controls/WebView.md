@@ -47,7 +47,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 3 –</td><td><code>WebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>45 ✅ · 3 ✓ · 18 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 11 ✓ · 1 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>48 ✅ · 10 ✓</td><td><code>&lt;iframe&gt;</code> (?)</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>51 ✅ · 10 ✓</td><td><code>&lt;iframe&gt;</code> (?)</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContract.swift`.
@@ -62,15 +62,12 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContrac
 <tr><td colspan="9">Web: waits on WebView.userAgent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>goBack</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>goForward</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onNavigated</code> (<code>navigated</code>)</td><td>event</td><td><code>(WebNavigationResult, WebNavigationType, String)</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Web: cannot read source of WebView - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onNavigating</code> (<code>navigating</code>)</td><td>event</td><td><code>(WebNavigationType, String)</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
-<tr><td colspan="9">Web: cannot read source of WebView - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onNavigated</code> (<code>navigated</code>)</td><td>event</td><td><code>(WebNavigationResult, WebNavigationType, String)</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onNavigating</code> (<code>navigating</code>)</td><td>event</td><td><code>(WebNavigationType, String)</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onProcessTerminated</code> (<code>processTerminated</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: endContent on WebView: the navigation delegate told, no web process ended<br>Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>reload</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>source</code></td><td>property</td><td><code>WebViewSource</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Web: cannot read source of WebView - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>source</code></td><td>property</td><td><code>WebViewSource</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>userAgent</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td></tr>
 <tr><td colspan="9">Web: not realized</td></tr></tbody>
 </table>
