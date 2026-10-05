@@ -167,6 +167,19 @@ enum WebRelay {
         LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12))
     }
 
+    /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away (`eventNear`).
+    static func watchNearness(_ element: Int32, of root: Int32, _ listener: Int32) {
+        stateui_web_watch_nearness(element, root, listener)
+    }
+
+    /// Whether the element the nearness being heard is of came near.
+    static var eventNear: Bool { stateui_web_event_number(0) != 0 }
+
+    /// Scrolls `element` into view, standing as `anchor` (`ScrollAnchor`'s number) says.
+    static func scrollIntoView(_ element: Int32, anchor: Int32) {
+        stateui_web_scroll_into_view(element, anchor)
+    }
+
     /// The pointer of the event being heard goes on telling `element` until it lets go.
     static func capturePointer(_ element: Int32) {
         stateui_web_capture_pointer(element)

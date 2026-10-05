@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// The Web's part of the acts every host performs (`HostActPerformer`): the clock and the zones as the browser has
-/// them, a word to the screen reader through the page's live region, the focus, and a value kept in the browser's
-/// storage for the page's site.
+/// them, a word to the screen reader through the page's live region, the focus, a value kept in the browser's
+/// storage for the page's site, and a list scrolled to an item.
 /// Design: docs/design/platforms/web/runtime.md#acts
 @MainActor
 final class WebActToolkit: ActToolkit {
@@ -60,8 +60,24 @@ final class WebActToolkit: ActToolkit {
         return true
     }
 
+    /// An ItemsView's scroll to an item.
     func performOwn(_ call: HostActCall) -> Bool {
-        false
+        guard call.act == .scrollTo else { return false }
+        let core = renderer.runtime.core
+        do {
+            let element = try renderer.runtime.tree.aimed(call)
+            guard let items = (element.native as? WebElement)?.view as? WebItemsView else {
+                core.fail(call, "scrollTo is an act of an ItemsView", log: log)
+                return true
+            }
+            items.scroll(
+                to: call.arguments.value(1)?.string ?? "",
+                anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+            core.reply(call, [])
+        } catch {
+            core.fail(call, error.reason, log: log)
+        }
+        return true
     }
 
     func performRegistered(_ call: HostActCall) -> Bool {

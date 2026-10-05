@@ -283,6 +283,21 @@ body {
 .stateui-stack { display: grid; min-height: 0; min-width: 0; }
 .stateui-stack > [data-covered] { display: none !important; }
 
+/* A collection: a scroller asking for no room of its own, over a cell an entry - down, across or in columns - one
+   whose entry never came keeping a row's room. */
+.stateui-items { display: block; min-width: 0; min-height: 0; contain: size; overflow: auto; overscroll-behavior: contain; }
+.stateui-items[data-layout="row"] { overflow-y: hidden; }
+.stateui-items:not([data-layout="row"]) { overflow-x: hidden; }
+.stateui-items-content { display: flex; flex-direction: column; min-width: 0; }
+.stateui-items[data-layout="row"] > .stateui-items-content { flex-direction: row; align-items: stretch; height: 100%; width: max-content; }
+.stateui-items[data-layout="grid"] > .stateui-items-content { display: grid; align-content: start; }
+.stateui-items[data-layout="grid"] .stateui-item[data-part] { grid-column: 1 / -1; }
+.stateui-item { flex: none; }
+.stateui-item:empty { min-height: 44px; }
+.stateui-items[data-layout="row"] .stateui-item:empty { min-height: 0; min-width: 44px; }
+.stateui-item[aria-selected] { cursor: pointer; border-radius: 8px; }
+.stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) 16%, transparent); }
+
 /* A canvas: its drawing on a surface filling the room its layout gives it, the surface taking no room of its own. */
 .stateui-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }
 .stateui-canvas > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }

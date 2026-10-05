@@ -78,6 +78,14 @@ STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, 
 /// scale; 11 and 12 the listening element's size.
 STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
 
+/// Calls `listener` as the element comes near the view of the scroller `root` - within half its size - and as it
+/// goes away: the event's number 0 is 1 near, 0 away.
+STATEUI_WEB(watch_nearness) void stateui_web_watch_nearness(int32_t element, int32_t root, int32_t listener);
+
+/// Scrolls the element into its scrollers' view, standing as `anchor` says: 0 at the start, 1 the middle, 2 the end,
+/// 3 the nearest edge.
+STATEUI_WEB(scroll_into_view) void stateui_web_scroll_into_view(int32_t element, int32_t anchor);
+
 /// The pointer of the event being heard goes on telling the element, wherever it moves, until it lets go.
 STATEUI_WEB(capture_pointer) void stateui_web_capture_pointer(int32_t element);
 

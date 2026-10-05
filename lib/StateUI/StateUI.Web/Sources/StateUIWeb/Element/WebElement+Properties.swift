@@ -7,6 +7,7 @@
 /// The DOM element: made, and given the element's properties.
 extension WebElement {
     func makeView() -> WebDOMView? {
+        if type == .itemsView, let host { return WebItemsView(cells: ItemsCells(element, in: host.runtime)) }
         if let registered = WebRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },

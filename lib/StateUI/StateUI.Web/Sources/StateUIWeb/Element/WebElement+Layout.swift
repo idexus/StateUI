@@ -9,6 +9,7 @@ extension WebElement {
     /// Hands a layout its children's views in order, each with what its place reads.
     func arrangeChildren() {
         if let text = view as? WebTextView { return text.setRuns(element.textRuns) }
+        if let items = view as? WebItemsView { return items.childrenChanged() }
         if arrangePages() { return }
         guard let layout = view as? WebLayoutView else { return }
         let items = element.arrangedChildren.compactMap(\.web.placedElement)

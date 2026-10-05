@@ -69,7 +69,7 @@ it.
   [motion](platforms/gtk/motion.md), [pages](platforms/gtk/pages.md).
   `platforms/web/`: [the runtime](platforms/web/runtime.md), [the look](platforms/web/look.md),
   [pages](platforms/web/pages.md), [layout](platforms/web/layout.md), [controls](platforms/web/controls.md),
-  [drawing](platforms/web/drawing.md), [input](platforms/web/input.md).
+  [drawing](platforms/web/drawing.md), [input](platforms/web/input.md), [items](platforms/web/items.md).
 
 ## Writing a note
 

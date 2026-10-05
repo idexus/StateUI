@@ -20,6 +20,7 @@ enum WebRegistrations {
         dates(registry)
         shapes(registry)
         canvas(registry)
+        items(registry)
         fields(registry)
         layouts(registry)
         pictures(registry)
