@@ -14,7 +14,7 @@ extension WebDriver {
     func reads(_ property: Prop, on element: MountedElement, view: WebDOMView) throws -> HostValue?? {
         let e = view.node
         if MountedElement.transformProperties.contains(property) { return .some(Self.transform(property, of: view)) }
-        if let assisted = try accessibilityHolds(property, e) { return assisted }
+        if let assisted = try accessibilityHolds(property, view) { return assisted }
         switch (property, view) {
         case (.isVisible, _):
             return try WebBrowser.truth("e.isConnected && e.checkVisibility({ visibilityProperty: true })", on: e).propValue
@@ -72,10 +72,13 @@ extension WebDriver {
 
     // MARK: - Assistive technology
 
-    private func accessibilityHolds(_ property: Prop, _ e: Int32) throws -> HostValue?? {
+    /// What assistive technology meets of `view`: its name and what it does on the element it names it by - the
+    /// browser's control a toggle stands around - the rest on its own.
+    private func accessibilityHolds(_ property: Prop, _ view: WebDOMView) throws -> HostValue?? {
+        let (e, named) = (view.node, view.named.node)
         switch property {
-        case .accessibilityLabel: return .some(try WebBrowser.evaluate("e.getAttribute('aria-label')", on: e)?.propValue)
-        case .accessibilityHint: return .some(try WebBrowser.evaluate("e.getAttribute('aria-description')", on: e)?.propValue)
+        case .accessibilityLabel: return .some(try WebBrowser.evaluate("e.getAttribute('aria-label')", on: named)?.propValue)
+        case .accessibilityHint: return .some(try WebBrowser.evaluate("e.getAttribute('aria-description')", on: named)?.propValue)
         case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier", on: e)?.propValue)
         case .accessibilityHeading:
             let level = try WebBrowser.number("e.getAttribute('role') === 'heading' ? Number(e.ariaLevel) : 0", on: e) ?? 0
@@ -156,7 +159,9 @@ extension WebDriver {
         case .isSpellCheckEnabled: return try WebBrowser.truth("e.spellcheck", on: e).propValue
         case .isTextPredictionEnabled: return try WebBrowser.truth("e.autocomplete !== 'off'", on: e).propValue
         case .placeholderColor:
-            return .some(try color("getComputedStyle(e, '::placeholder').color", on: e)?.propValue)
+            // The browser resolves no style of `::placeholder`: the colour is the variable the page paints it with.
+            let painted = "((s) => s.getPropertyValue('--stateui-placeholder').trim() || s.getPropertyValue('--stateui-muted').trim())"
+            return .some(try color("\(painted)(getComputedStyle(e))", on: e)?.propValue)
         default: return nil
         }
     }

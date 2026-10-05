@@ -60,8 +60,10 @@ extension WebDriver {
         mouse("mouseReleased", at: Point(x: box.width / 2, y: box.height / 2), in: box)
     }
 
+    /// What assistive technology was told, a few frames given for the page's live region to say it.
     func announced() throws -> [String] {
-        try words("stateui.announced", on: 0)
+        for _ in 0..<10 where try words("stateui.announced", on: 0).isEmpty { WebBrowser.pause() }
+        return try words("stateui.announced", on: 0)
     }
 
     func kept(_ key: String, inScene: Bool) throws -> HostValue? {

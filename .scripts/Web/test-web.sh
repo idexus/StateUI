@@ -53,7 +53,9 @@ browser () {
 
 if [[ "${1:-}" == "--browser" ]]; then
   shift
-  selected="$in_browser"
+  # Every family by name: each runs in a program of its own (run-in-browser.mjs says why).
+  families="$(node "$package/JavaScript/run.mjs" "$relay" "$program" --list-tests | grep -E "^$conformance/" | paste -sd, -)"
+  selected="$families,$hosts_in_browser"
   if [[ "${1:-}" == "--host" ]]; then
     selected="$hosts_in_browser"
   elif [[ $# -gt 0 ]]; then

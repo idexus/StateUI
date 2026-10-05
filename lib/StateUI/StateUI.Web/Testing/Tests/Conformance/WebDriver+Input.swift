@@ -26,6 +26,9 @@ extension WebDriver {
         let e = view.node
         switch (act, view) {
         case (.toggle, is WebSplitView): try click(try bar(over: element), part: "button[aria-label=Sidebar]")
+        case (.activate, _) where try isBehindAQuestion(e):
+            // The user reaches nothing under a question; the program's own may wait their turn behind it.
+            try WebBrowser.run("e.click()", on: e)
         case (.toggle, _), (.activate, _): try click(view)
         case (.tap(let count), _): try click(view, count: count)
         case (.slide(let value), is WebSliderView):
@@ -52,7 +55,9 @@ extension WebDriver {
             try pick(String(time.hour).leftPadded(2) + ":" + String(time.minute).leftPadded(2) + ":"
                 + String(time.second).leftPadded(2), on: e)
         case (.scroll(let offset), is WebScrollView):
+            // The browser says a scroll on its next frame.
             try WebBrowser.run("e.scrollTo(\(offset.x), \(offset.y))", on: e)
+            WebBrowser.pause()
         case (.pressDown(let point), _): try mouse("mousePressed", at: point, on: e)
         case (.drag(let point), _): try mouse("mouseMoved", at: point, on: e, held: true)
         case (.lift(let point), _): try mouse("mouseReleased", at: point, on: e)
@@ -62,6 +67,11 @@ extension WebDriver {
         case (.pinch(let scale, let share), _): try pinch(e, by: scale, at: share)
         default: throw DriverCannot(act, on: element)
         }
+    }
+
+    /// Whether the element `e` stands under a question the page shows over it.
+    private func isBehindAQuestion(_ e: Int32) throws -> Bool {
+        try WebBrowser.truth("((q) => !!q && !q.contains(e))(document.querySelector('dialog.stateui-question[open]'))", on: e)
     }
 
     // MARK: - The mouse
@@ -131,12 +141,21 @@ extension WebDriver {
         mouse("mouseReleased", at: Point(x: middle.x + offset.x, y: middle.y + offset.y), in: box)
     }
 
-    /// Two fingers spread or closed over the element `e` by `scale`, about a point given as a share of its size: a
-    /// trackpad's pinch, which the browser gives as the wheel turned with Control held.
+    /// Two fingers spread or closed over the element `e` by `scale`, about a point given as a share of its size, and
+    /// lifted: touches the browser takes as its own, on whole pixels, 20 px apart and both on the view, one finger
+    /// moved in one step so the pinch's one step is `scale`, their middle then at the point.
     private func pinch(_ e: Int32, by scale: Double, at share: Point) throws {
         let box = try box(of: e)
-        mouse("mouseWheel", at: Point(x: box.width * share.x, y: box.height * share.y), in: box,
-              wheel: -100 * log(scale), modifiers: 2)
+        let middle = Point(x: box.x + box.width * share.x, y: box.y + box.height * share.y)
+        let still = Point(x: middle.x - 10 * scale, y: middle.y)
+        touch("touchStart", [still, Point(x: still.x + 20, y: middle.y)])
+        touch("touchMove", [still, Point(x: still.x + 20 * scale, y: middle.y)])
+        touch("touchEnd", [])
+    }
+
+    /// The browser's touch of `type`, its fingers at `points` in its window.
+    private func touch(_ type: String, _ points: [Point]) {
+        WebBrowser.ask([("touch", .words(type)), ("points", .points(points))])
     }
 
     // MARK: - The keyboard
