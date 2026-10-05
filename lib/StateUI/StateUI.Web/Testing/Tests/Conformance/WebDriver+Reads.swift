@@ -16,7 +16,8 @@ extension WebDriver {
         if MountedElement.transformProperties.contains(property) { return .some(Self.transform(property, of: view)) }
         if let assisted = try accessibilityHolds(property, e) { return assisted }
         switch (property, view) {
-        case (.isVisible, _): return try WebBrowser.truth("e.isConnected && e.checkVisibility()", on: e).propValue
+        case (.isVisible, _):
+            return try WebBrowser.truth("e.isConnected && e.checkVisibility({ visibilityProperty: true })", on: e).propValue
         case (.opacity, _): return try WebBrowser.number("Number(getComputedStyle(e).opacity)", on: e)?.propValue
         case (.isEnabled, _):
             return try (!WebBrowser.truth("""

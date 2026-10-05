@@ -425,7 +425,8 @@ body {
 }
 .stateui-room .stateui-tab-strip > button:hover { color: var(--stateui-text); }
 .stateui-room .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
-.stateui-tab-pages > [data-covered] { display: none !important; }
+/* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */
+.stateui-tab-pages > [data-covered] { visibility: hidden !important; overflow: clip; }
 .stateui-stack > [data-arriving] { animation: stateui-arrive 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
 /* A scroller. */

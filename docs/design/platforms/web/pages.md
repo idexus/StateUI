@@ -121,7 +121,11 @@ itself (`data-moves`). Where the user asks for less motion nothing moves.
 A tabbed view is a `<section>`: a strip of its tabs' names over one cell its
 pages share. Each name is a button with the role of a tab, the chosen one
 selected; the chosen page shows and the others stand beside it covered, kept
-as they stood, scrolled where the user left them. Which tab shows is the host
+as they stood, scrolled where the user left them. A covered page is laid out
+unseen - it takes no touch, no keyboard and no assistive technology - so a
+page sized by its own frame knows it before it shows, rather than standing a
+frame at no width when it does. A view says where it stands only where the
+browser lays it out, so nothing covered says it stands nowhere. Which tab shows is the host
 layer's (`TabChoice`): the tree's word, until the user chooses another - and
 the user's choice is heard by the host layer (`tabChosen`), which tells the
 pages and the state, and the bar follows the page the user now sees.

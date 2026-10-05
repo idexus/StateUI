@@ -18,8 +18,10 @@ extension WebElement: FrameReporter {
         }
     }
 
+    /// Says nothing while the browser lays the view out nowhere - on a covered page, a tab not chosen - so the frame
+    /// it said last stands.
     func reportFrame() {
-        guard let view, let host else { return }
+        guard let view, let host, WebRelay.isLaidOut(view.node) else { return }
         let box = WebRelay.box(of: view.node)
         let parent = layoutParent?.view.map { WebRelay.box(of: $0.node) } ?? box
         let content = host.contentBox

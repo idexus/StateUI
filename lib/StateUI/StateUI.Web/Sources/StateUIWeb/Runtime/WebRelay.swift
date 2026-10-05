@@ -301,6 +301,11 @@ enum WebRelay {
         stateui_web_observe_size(element, listener)
     }
 
+    /// Whether the browser lays `element` out: it stands in the page, and in no element shown as nothing.
+    static func isLaidOut(_ element: Int32) -> Bool {
+        stateui_web_is_laid_out(element) != 0
+    }
+
     /// The element's box on the page, from the page's top left.
     static func box(of element: Int32) -> Rect {
         let read = numbers(4) { stateui_web_read_box(element, $0) }
