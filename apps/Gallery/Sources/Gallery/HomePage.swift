@@ -111,6 +111,7 @@ struct HomePage: View {
         // the last shape gave it.
         let ceiling = affords
         let wearing = chrome
+        let stepping = device.info.formFactor == .desktop
 
         // A GRID OF THREE ROWS: the heading takes what it needs, the run of
         // cards takes what is LEFT, and the two lines about what this is sit at
@@ -196,6 +197,7 @@ struct HomePage: View {
                 // on a keyboard - has no way to turn it at all.
                 if device.info.formFactor == .desktop {
                     Steps(position: $chosen, count: groups.count)
+                        .isVisible(wearing.steps)
                 }
 
                 // WHAT THE CARD IN THE MIDDLE IS, in the words its own face
@@ -220,6 +222,7 @@ struct HomePage: View {
                 Caption(catalog: catalog, position: $chosen, formFactor: device.info.formFactor)
                     .height(Self.caption)
                     .verticalAlignment(.start)
+                    .isVisible(wearing.captions)
             }
             .spacing(Self.gap)
             .verticalAlignment(.center)
@@ -231,6 +234,19 @@ struct HomePage: View {
             // runs short - an auto row keeps its height whatever is left, and
             // words that no longer fit would be drawn OVER what is above them.
             VStack {
+                // ON THE WEB a page anyone may open says whose it is.
+                #if WEB
+                Text()
+                    .spans {
+                        TextSpan("Copyright 2026 Paweł Krzywdziński and Contributors · ")
+                            .fontSize(11).textColor(Palette.subtle)
+                        TextSpan("StateUI").fontAttributes(.bold).fontSize(11).textColor(Palette.subtle)
+                        TextSpan(" is a trademark of Paweł Krzywdziński.").fontSize(11).textColor(Palette.subtle)
+                    }
+                    .fontSize(11)
+                    .lineBreak(.wordWrap)
+                    .horizontalTextAlignment(.center)
+                #else
                 Text("Every example here is described in Swift and rendered as real "
                     + "native controls.")
                     .fontSize(15)
@@ -244,6 +260,7 @@ struct HomePage: View {
                     .fontSize(11)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
+                #endif
             }
             .spacing(4)
             .isVisible(wearing.foots)
@@ -274,7 +291,7 @@ struct HomePage: View {
                 // a set point, this number would crawl to its answer over
                 // half a second with everything under the run riding every
                 // step of it.
-                $box.journey.snap(to: Self.fitted(in: room, at: ceiling).run)
+                $box.journey.snap(to: Self.fitted(in: room, at: ceiling, stepping: stepping).run)
             }
 
             guard phase == .measuring else { return .wait }
@@ -322,7 +339,7 @@ struct HomePage: View {
         // also what tells the arranger to place its rows at once, rather than
         // travel them through the very measurement that decides them.
         .onFrameChanged { frame in
-            let answer = Self.fitted(in: frame, at: ceiling).chrome
+            let answer = Self.fitted(in: frame, at: ceiling, stepping: stepping).chrome
             guard answer != chrome else { return }
 
             chrome = answer
@@ -343,9 +360,18 @@ struct HomePage: View {
     }
 
     /// How much of the page stands beside the run of cards.
+    ///
+    /// ON THE WEB THE FOOT ALWAYS STANDS - it says whose the page is - and what
+    /// stands under the cards is what the room gives up first instead: the
+    /// buttons stepping them, then the words.
     private enum Chrome {
-        /// The heading, the cards, and the two lines at the foot.
+        /// The heading, the cards, what stands under them and the two lines at
+        /// the foot.
         case full
+
+        /// The heading, the cards and the words under them, the buttons gone -
+        /// on the Web.
+        case worded
 
         /// The heading and the cards - the room has nothing to spare below.
         case heading
@@ -357,7 +383,31 @@ struct HomePage: View {
         var heads: Bool { self != .cards }
 
         /// Whether the two lines at the foot stand.
-        var foots: Bool { self == .full }
+        var foots: Bool {
+            #if WEB
+            true
+            #else
+            self == .full
+            #endif
+        }
+
+        /// Whether the buttons stepping the cards stand.
+        var steps: Bool {
+            #if WEB
+            self == .full
+            #else
+            true
+            #endif
+        }
+
+        /// Whether the words saying what the middle card is stand.
+        var captions: Bool {
+            #if WEB
+            self == .full || self == .worded
+            #else
+            true
+            #endif
+        }
     }
 
     /// The most chrome this DEVICE carries, before any room is measured.
@@ -384,8 +434,12 @@ struct HomePage: View {
     /// - Parameters:
     ///   - room: the page's own frame, as the platform laid it out.
     ///   - most: the most chrome this device carries.
+    ///   - stepping: whether the buttons stepping the run stand under it.
     /// - Returns: the chrome that fits, and how tall the run stands.
-    private static func fitted(in room: Rect, at most: Chrome) -> (chrome: Chrome, run: Double) {
+    private static func fitted(in room: Rect, at most: Chrome, stepping: Bool) -> (chrome: Chrome, run: Double) {
+        #if WEB
+        return webFitted(in: room, at: most, stepping: stepping)
+        #else
         // What the rows have to share, once the page's own margin is out.
         let usable = room.height - 2 * margin
 
@@ -412,6 +466,21 @@ struct HomePage: View {
         return (foots ? .full : (heads ? .heading : .cards),
                 // The run takes what is left, up to its own ceiling.
                 max(min(heads ? spare : usable - words, gallery), least))
+        #endif
+    }
+
+    /// What the room holds on the Web, and how tall the run of cards stands in
+    /// it: the foot first, the heading while it leaves a run worth drawing, and
+    /// under the cards the words, then the buttons stepping them where they
+    /// stand - each only where the run still reaches its ceiling beside it.
+    private static func webFitted(in room: Rect, at most: Chrome, stepping: Bool) -> (chrome: Chrome, run: Double) {
+        let usable = room.height - 2 * margin - gap - footer
+        let spare = usable - heading - gap
+        let heads = most.heads && spare >= least
+        let worded = most == .full && heads && spare - words >= gallery
+        let stepped = worded && spare - words - (stepping ? gap + buttons : 0) >= gallery
+        let run = !heads ? usable : stepped ? spare - words - (stepping ? gap + buttons : 0) : worded ? spare - words : spare
+        return (stepped ? .full : worded ? .worded : heads ? .heading : .cards, max(min(run, gallery), least))
     }
 
     /// How long the measurement has to hold still before the page takes it
@@ -442,9 +511,19 @@ struct HomePage: View {
     /// A run of cards at its largest - the gallery's own ceiling.
     private static var gallery: Double { 400 }
 
+    /// The buttons stepping the run, as tall as the style's touch floor.
+    private static var buttons: Double { 44 }
+
     /// The two lines at the foot, their gap included - both what they take out
-    /// of the page and what they give it back by going.
-    private static var footer: Double { 54 }
+    /// of the page and what they give it back by going: on the Web the line
+    /// saying whose it is, wrapped onto two where the page is narrow.
+    private static var footer: Double {
+        #if WEB
+        40
+        #else
+        54
+        #endif
+    }
 
     /// How tall the words under the run are - room for a summary of up to
     /// three lines and the count, at the sizes above.
