@@ -131,3 +131,28 @@ at once, as on every host.
 The browser's window is one window: the first window element the tree holds is
 shown in the page's whole room, a grid of one cell that the page's arrangement
 fills, and the page the user sees names the browser's tab.
+
+## The conformance run
+
+The conformance suite runs in a browser, headless: its cases need the
+browser's own layout, focus, dialogs and input, which the host's own suite in
+Node has none of. The suite's program is the same WebAssembly module, started
+with the relay's `suspends`: its `main` runs through `WebAssembly.promising`,
+and the driver's imports that wait - a frame of the page's, a question to the
+controller beside the browser - are `WebAssembly.Suspending`, so a case written
+as one synchronous run sets itself aside while the browser goes on, its events
+reaching Swift as they do on any page. The controller drives the browser over
+its DevTools pipe: the user's input is the browser's own - the mouse, the keys,
+typed words - and it reads and writes the repository's files, the verdicts
+among them, which the page cannot reach.
+
+XCTest's own loop runs on Swift's cooperative executor and awaits MainActor
+between its tests. Once a host runs, MainActor's executor is the UI thread's,
+which only an entry of the page drains, so a task of the suite's own drains
+it from the cooperative executor and lets the page go on a frame where nothing
+waited; without it the cooperative executor finds nothing left to run after
+the first test and ends the program.
+
+A case's host is the page's one runtime, made anew in place of the one before
+it, its frames at the case's test clock where it gives one: a clock wound by
+hand takes no frame of the browser's.

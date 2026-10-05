@@ -29,14 +29,14 @@ lib/StateUI/StateUI.Web/
   JavaScript/
     stateui-web.js           the relay, and the system interface a Swift program asks of its machine
     index.html               the page a head runs in
-  Testing/                   a package of its own: the host's suite, compiled for WebAssembly, and the
-                             page in Node it runs over
+  Testing/                   a package of its own: the host's suite, compiled for WebAssembly, the page in
+                             Node it runs over, and the conformance run in a browser
 .scripts/Web/
   run-app.sh                 builds an application's Web head, lays its page out, serves it and opens it
   serve.py                   serves the page on this machine
   browsers.sh                lists the browsers installed, and opens a page in one
   deploy.sh                  builds it for release and lays the page in a folder of its own
-  test-web.sh                runs the host's suite
+  test-web.sh                runs the host's suite, or the conformance suite in a browser
 apps/<App>/Platforms/Web/
   main.swift                 the application's Web head
 ```
@@ -214,6 +214,16 @@ WebAssembly and run in Node - Node 20 or newer - over a page with just enough
 of a DOM: elements holding their children in order, their attributes, style
 and listeners. The host's own relay stands beneath it, and the suite reads
 what the page holds through functions of its own. It proves what the host
-does to the page's elements, not how a browser draws them. The host has no
-conformance driver yet: it makes no marks in the
-[platform contract](../platform-contract.md).
+does to the page's elements, not how a browser draws them.
+
+```bash
+.scripts/Web/test-web.sh --conformance
+.scripts/Web/test-web.sh --conformance Button TextField
+```
+
+The conformance suite runs in Google Chrome or Chromium, headless - or the
+browser `STATEUI_BROWSER` names - with the user's input as the browser takes
+it: every family, or those named. A run with `STATEUI_UPDATE_EXPORTS=1` writes
+each family's verdicts under `lib/StateUI/exports/marks/web`, and
+`STATEUI_STALE_ONLY=1` runs only the families whose verdicts stand at another
+revision.

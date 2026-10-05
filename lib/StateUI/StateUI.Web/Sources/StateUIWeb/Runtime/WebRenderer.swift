@@ -12,9 +12,12 @@ final class WebRenderer {
     static var shared: WebRenderer?
 
     /// What the host says for whoever reads its log: the browser's console.
-    static let log = HostLog(host: "Web")
+    static var log = HostLog(host: "Web")
 
-    let frameClock = WebFrameClock()
+    let frameClock: WebFrameClock
+
+    /// Whether the user asked for less motion: every animation arrives at once.
+    private let reducesMotion: () -> Bool
 
     /// Where the children of the page's travelling layouts stand, read around each call's changes.
     let placements = WebPlacements()
@@ -24,7 +27,7 @@ final class WebRenderer {
 
     /// The parts every host holds alike, each element's Web half a `WebElement`.
     private(set) lazy var runtime = HostRuntime(
-        clock: frameClock, reducesMotion: { WebRelay.reducesMotion },
+        clock: frameClock, reducesMotion: reducesMotion,
         makeNative: { [unowned self] element in WebElement(element, host: self) }, log: { WebRenderer.log.error($0) },
         views: { WebDOMView.liveCount })
 
@@ -35,10 +38,17 @@ final class WebRenderer {
         answered: { [unowned self] in runtime.pump.turn() })
 
     /// The windows the tree holds, each with its controller, in the tree's order. The browser shows the first.
-    private let roster = WindowRoster<WebWindowController>()
+    let roster = WindowRoster<WebWindowController>()
 
-    init(applicationName: String) {
+    /// A runtime of the application `applicationName`, on the page's clock or on `clock`, with the motion
+    /// `reducesMotion` allows.
+    init(
+        applicationName: String, clock: (() -> Double)? = nil,
+        reducesMotion: @escaping () -> Bool = { MainActor.assumeIsolated { WebRelay.reducesMotion } }
+    ) {
         self.applicationName = applicationName
+        frameClock = clock.map { WebFrameClock(now: $0, ticksWithBrowser: false) } ?? WebFrameClock()
+        self.reducesMotion = reducesMotion
         runtime.displayCycle.presenter = self
         runtime.pump.presenter = self
     }
@@ -47,19 +57,23 @@ final class WebRenderer {
     /// turn after every call the page makes from then on.
     /// Design: docs/design/platforms/web/runtime.md#starting
     static func start(applicationName: String) {
+        WebRenderer(applicationName: applicationName).run()
+    }
+
+    /// Runs this host in the page, in place of any before it.
+    func run() {
         WebRelay.start()
-        let renderer = WebRenderer(applicationName: applicationName)
-        shared = renderer
-        let core = renderer.runtime.core
+        Self.shared = self
+        let core = runtime.core
         core.setRealization(WebRegistrations.registry.realization, unrealized: WebRealization.unmade)
         WebEnvironment.report(to: core, applicationName: applicationName)
         WebKeptValues.restore(into: core, application: applicationName)
-        WebEnvironment.watch { [weak renderer] in
-            renderer?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
+        WebEnvironment.watch { [weak self] in
+            self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
         }
-        WebRelay.afterEntry = { [weak renderer] in renderer?.entryEnded() }
-        renderer.runtime.connectWindow()
-        renderer.entryEnded()
+        WebRelay.afterEntry = { [weak self] in self?.entryEnded() }
+        runtime.connectWindow()
+        entryEnded()
     }
 
     /// Every call from the page ends with a turn, and asks the page to call again where work is left or a job kept

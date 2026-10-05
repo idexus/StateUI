@@ -4,17 +4,109 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What this host realizes beyond its registry: the library's elements it makes none of yet, which it shows by
-/// name as unsupported.
+/// What this host realizes beyond its registry - the library's elements it makes none of, which it shows by name as
+/// unsupported - and, member by member, what its records say: the Web column of the control dictionary.
+/// Design: docs/design/contracts/dictionary.md#marks
 enum WebRealization {
     /// The elements the host makes itself, outside the registry: the pages, the arrangements they stand in, and
     /// what a window lays over them.
     static let madeByHost: Set<NodeType> = [.page, .navigationStack, .splitView, .tabView, .overlay]
+
+    /// The entries this host leaves to the application, which registers its own control for each: the browser has
+    /// no map of its own, and a map needs a provider and its key.
+    static let byApplication: Set<String> = ["Map", "Marker"]
+
+    /// The entries this host presents with no view of their own: a span is a run of its text's words.
+    static let viewless: Set<String> = ["TextSpan"]
+
+    /// What the host's own records say, member by member, before what its registry says: what it realizes through
+    /// the host layer's pages and chrome, outside the registry, and what a page never asks of the browser's window.
+    static let records: [HostRecord] = [
+        // MARK: Tiers - a member every wearer realizes alike
+        .complete("BarElement", "barBackgroundColor"),
+        .complete("BarElement", "barForegroundColor"),
+        .notPlanned("BarElement", "barIcon",
+                    reason: "A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon."),
+        .complete("BarElement", "barSubtitle"),
+        .complete("BarElement", "barTitle"),
+        .complete("MenuBar", "order"),
+        .complete("Menu", "isEnabled"),
+        .complete("Menu", "text"),
+        .complete("MenuItemElement", "clicked"),
+        .complete("MenuItemElement", "icon"),
+        .complete("MenuItemElement", "isDestructive"),
+        .complete("MenuItemElement", "isEnabled"),
+        .complete("MenuItemElement", "text"),
+        .complete("PageElement", "title"),
+        .complete("VisualElement", "style"),
+
+        // MARK: Entries - a control's or a part's own
+        .complete("ModalStack", "popped"),
+        .complete("NavigationStack", "popped"),
+        .complete("Page", "appearing"),
+        .complete("Page", "backButtonTitle"),
+        .complete("Page", "background"),
+        .complete("Page", "disappearing"),
+        .complete("Page", "navigatedFrom"),
+        .complete("Page", "navigatedTo"),
+        .complete("Page", "navigatingFrom"),
+        .complete("Page", "showsBackButton"),
+        .complete("Page", "showsNavigationBar"),
+        .complete("SplitView", "showsSidebar"),
+        .complete("SplitView", "showsSidebarChanged"),
+        .complete("TabView", "selectedTab"),
+        .complete("TabView", "selectedTabChanged"),
+        .complete("TextSpan", "background"),
+        .complete("TextSpan", "fontAttributes"),
+        .complete("TextSpan", "fontFamily"),
+        .complete("TextSpan", "fontSize"),
+        .complete("TextSpan", "text"),
+        .complete("TextSpan", "textCase"),
+        .complete("TextSpan", "textColor"),
+        .complete("TextSpan", "textDecorations"),
+        .complete("TextSpan", "tracking"),
+        .complete("ToolbarItem", "placement"),
+        .complete("ToolbarItem", "showsText"),
+        .complete("ToolbarItemGroup", "order"),
+        .complete("ToolbarItemGroup", "side"),
+        .notPlanned("Window", "floatsOnTop", reason: "A page keeps no browser window above the others: the system stacks them."),
+        .notPlanned("Window", "height", reason: "A page sizes no browser window: the user does, and the page fills it."),
+        .notPlanned("Window", "hidesWhenInactive",
+                    reason: "The browser shows a page whenever its tab shows, whichever application the user is in."),
+        .notPlanned("Window", "isMaximizable", reason: "A page asks nothing of how the browser's window is resized."),
+        .notPlanned("Window", "isMinimizable", reason: "A page asks nothing of how the browser's window is put away."),
+        .notPlanned("Window", "isTranslucent",
+                    reason: "A page draws its window opaque: no material of the system shows through it."),
+        .notPlanned("Window", "maximumHeight", reason: "A page bounds no browser window: the user sizes it."),
+        .notPlanned("Window", "maximumWidth", reason: "A page bounds no browser window: the user sizes it."),
+        .notPlanned("Window", "minimumHeight", reason: "A page bounds no browser window: the user sizes it."),
+        .notPlanned("Window", "minimumWidth", reason: "A page bounds no browser window: the user sizes it."),
+        .complete("Window", "title"),
+        .notPlanned("Window", "width", reason: "A page sizes no browser window: the user does, and the page fills it."),
+        .notPlanned("Window", "x", reason: "A page places no browser window: the system does."),
+        .notPlanned("Window", "y", reason: "A page places no browser window: the system does."),
+    ]
+
+    /// The acts this host performs: every host's (`HostActs.performed`), a list scrolled to an item, and a web view's
+    /// steps and scripts.
+    static let acts: [any ContractMember] = HostActs.performed + [
+        ItemsViewContract.scrollTo, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
+        WebViewContract.evaluateJavaScript,
+    ]
 
     @MainActor static var unmade: Set<String> {
         Set(LibraryContracts.elements.map { $0.nodeType.name })
             .subtracting(WebRegistrations.registry.realization.elements)
             .subtracting(NodeType.viewlessTypes.map(\.name))
             .subtracting(madeByHost.map(\.name))
+    }
+
+    /// What the Web realizes, member by member: these records before what its registry says.
+    @MainActor static var register: HostRegister {
+        let registry = WebRegistrations.registry
+        return HostRegister(
+            records: records, unrealized: unmade.subtracting(byApplication), viewless: viewless,
+            byApplication: byApplication
+        ).and(HostDeclaration(realization: registry.realization, shared: registry.sharedNames, acts: acts.map(\.name)))
     }
 }

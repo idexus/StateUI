@@ -7,8 +7,8 @@
 /// Design: docs/design/platforms/web/runtime.md#one-frame
 @MainActor
 final class WebFrameClock: FrameClock {
-    /// The page's time, in milliseconds on its monotonic clock.
-    let now: () -> Double = { WebRelay.now }
+    /// The runtime's time, in milliseconds on the page's monotonic clock.
+    let now: () -> Double
 
     var onFrame: ((Double) -> Void)?
 
@@ -19,7 +19,14 @@ final class WebFrameClock: FrameClock {
     /// Whether a frame is asked for and has not come.
     private var asked = false
 
-    init() {
+    /// Whether the browser's frames drive the clock; a test's hand-wound clock takes none.
+    private let ticksWithBrowser: Bool
+
+    /// A clock telling `now`'s time: the page's own, or a test's hand-wound one.
+    init(now: @escaping () -> Double = { WebRelay.now }, ticksWithBrowser: Bool = true) {
+        self.now = now
+        self.ticksWithBrowser = ticksWithBrowser
+        guard ticksWithBrowser else { return }
         WebRelay.onFrame = { [weak self] time in self?.frame(at: time) }
     }
 
@@ -31,7 +38,7 @@ final class WebFrameClock: FrameClock {
     }
 
     private func ask() {
-        guard !asked else { return }
+        guard ticksWithBrowser, !asked else { return }
         asked = true
         WebRelay.requestFrame()
     }

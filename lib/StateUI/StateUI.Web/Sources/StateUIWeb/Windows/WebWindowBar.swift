@@ -25,7 +25,7 @@ final class WebWindowBar: WebDOMView {
     private let trailing = WebDOMView(tag: "div")
 
     /// The button of each action shown, by the item it stands for.
-    private var buttons: [ObjectIdentifier: WebBarButton] = [:]
+    private(set) var buttons: [ObjectIdentifier: WebBarButton] = [:]
 
     /// What the toggle and the way back do.
     var onToggle: () -> Void = {}

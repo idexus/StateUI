@@ -130,7 +130,7 @@ class WebDOMView {
     }
 
     /// How the view is drawn over its place, its own say.
-    private var ownDrawing = HostDrawingTransform.identity
+    private(set) var ownDrawing = HostDrawingTransform.identity
 
     /// How the layout placing the view by a run draws it; nil while it stands in its own place.
     var placedDrawing: HostDrawingTransform? {

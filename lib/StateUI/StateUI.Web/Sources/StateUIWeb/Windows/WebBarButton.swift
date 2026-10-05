@@ -12,7 +12,7 @@ final class WebBarButton: WebDOMView {
     private let words = WebDOMView(tag: "span")
 
     /// The item the button stands for, which hears it chosen.
-    private weak var item: MountedElement?
+    private(set) weak var item: MountedElement?
 
     init() {
         super.init(tag: "button")
