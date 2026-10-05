@@ -15,10 +15,11 @@
 #
 # USAGE:
 #   test-web.sh [<Class>[/<test>]]
-#   test-web.sh --browser [<Family>...]
+#   test-web.sh --browser [--host | <Family>...]
 #
 #   a test class, or one test of it, runs that alone; a family named - Button,
-#   TextField - its conformance alone
+#   TextField - its conformance alone; --host the host's own tests that run a
+#   host, and no conformance family
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -33,8 +34,9 @@ products="$(STATEUI_HOST=web swift build --package-path "$package" --scratch-pat
 program="$products/StateUIWebTests-test-runner.wasm"
 relay="$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"
 conformance="StateUIWebTests.WebConformanceTests"
-# The classes whose tests need a browser's own page.
-in_browser="$conformance,StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests"
+# The classes whose tests need a browser's own page: the host's own, and the conformance suite.
+hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests"
+in_browser="$conformance,$hosts_in_browser"
 
 browser () {
   if [[ -n "${STATEUI_BROWSER:-}" ]]; then echo "$STATEUI_BROWSER"; return; fi
@@ -52,7 +54,9 @@ browser () {
 if [[ "${1:-}" == "--browser" ]]; then
   shift
   selected="$in_browser"
-  if [[ $# -gt 0 ]]; then
+  if [[ "${1:-}" == "--host" ]]; then
+    selected="$hosts_in_browser"
+  elif [[ $# -gt 0 ]]; then
     selected="$(printf "$conformance/test%s," "$@")"
     selected="${selected%,}"
   fi

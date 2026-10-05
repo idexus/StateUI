@@ -9,11 +9,13 @@ through a small JavaScript relay beneath it. The relay makes, places and
 changes elements as Swift says and calls Swift back when one hears an event;
 it decides nothing of StateUI's.
 
-It presents the controls HelloWorld shows: a page, vertical and horizontal
-stacks, text, buttons, text fields and pictures, each the browser's own
-element - `<section>`, a flexbox, `<span>`, `<button>`, `<input>`, `<img>` -
-in the look the browser gives it and the light or dark appearance of the
-user's system, until the application gives it a look of its own. The browser
+It presents the library's controls and pages, each the browser's own element
+where the browser has one - `<button>`, `<input>`, `<select>`, `<progress>`,
+`<img>`, `<canvas>`, `<iframe>`, a modal `<dialog>` - and StateUI's own
+arrangement of them where it has none: a map is the application's, which it
+registers with the host. Each stands in the look the browser gives it and the
+light or dark appearance of the user's system, until the application gives it
+a look of its own. The browser
 lays them out: each child's margin, alignments and sizes are written as its
 CSS, so it stands where StateUI places it on every host. It shows any other
 control's name in red where the control belongs, so a gap is visible rather
@@ -258,7 +260,7 @@ does to the page's elements, not how a browser draws them.
 What needs a browser's own page runs in Google Chrome or Chromium, headless -
 or the browser `STATEUI_BROWSER` names: the conformance suite, with the user's
 input as the browser takes it - every family, or those named - and the host's
-tests that run a host. A run with `STATEUI_UPDATE_EXPORTS=1` writes
+tests that run a host, which `--browser --host` runs alone. A run with `STATEUI_UPDATE_EXPORTS=1` writes
 each family's verdicts under `lib/StateUI/exports/marks/web`, and
 `STATEUI_STALE_ONLY=1` runs only the families whose verdicts stand at another
 revision.

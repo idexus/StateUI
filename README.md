@@ -6,6 +6,7 @@
 [![Android](https://github.com/idexus/StateUI/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/android.yml?query=branch%3Amain)
 [![WinUI](https://github.com/idexus/StateUI/actions/workflows/winui.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/winui.yml?query=branch%3Amain)
 [![GTK](https://github.com/idexus/StateUI/actions/workflows/gtk.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/gtk.yml?query=branch%3Amain)
+[![Web](https://github.com/idexus/StateUI/actions/workflows/web.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/web.yml?query=branch%3Amain)
 # StateUI
 
  **Native interfaces, written in Swift.**
@@ -13,16 +14,17 @@
 identity, state, diffing, and motion; a thin host applies sparse patches to
 controls from its platform toolkit.
 
-Every host is Swift, in the application's own process, and all five native
-hosts are active on the same host contract: AppKit, UIKit, Android Views,
-WinUI 3 and GTK 4 with libadwaita. What each realizes, element by element
-and member by member, is the [platform contract](docs/platform-contract.md),
-rendered from each host's own test run. Web DOM/CSS comes after the native
-contract is settled.
+Every host is Swift, in the application's own process, and all six hosts are
+active on the same host contract: AppKit, UIKit, Android Views, WinUI 3, GTK 4
+with libadwaita, and the Web - StateUI compiled to WebAssembly, drawing the
+browser's own elements under a small JavaScript relay. What each realizes,
+element by element and member by member, is the
+[platform contract](docs/platform-contract.md), rendered from each host's own
+test run.
 
 | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| ☑️ | ☑️ | ☑️ | ☑️ | ☑️ | — |
+| ☑️ | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 
 ## In Action
 
@@ -49,6 +51,15 @@ dragging the slider rebuilds nothing:
 <video src="https://github.com/user-attachments/assets/05ef0718-b3b5-4f67-8c66-7a9c9b1d2ba2" controls muted loop width="960" height="540" poster="docs/assets/appkit-poster.png">
   <a href="https://github.com/idexus/StateUI/blob/main/docs/assets/appkit.mp4"><img src="docs/assets/appkit-poster.png" alt="The Gallery's Metal sample on the AppKit host" width="960" height="540"></a>
 </video>
+
+On the Web the same module, compiled to WebAssembly, runs in the page and
+draws it with the browser's own elements - here in Safari, the Gallery's WebGL
+sample: the cube is a custom element of the application's own JavaScript,
+`<gallery-cube3d>`, drawing with WebGL 2, which the application registers with
+the host, and its size, colour and spin are described from StateUI as on every
+other host.
+
+<img src="docs/assets/web.jpg" alt="The Gallery's WebGL sample on the Web host, in Safari" width="100%">
 
 ## In Code
 
@@ -148,9 +159,9 @@ Then open the repository in VS Code:
 1. Run **StateUI: Check Toolchain** from the Command Palette. It lists what
    this machine has of the above, and what to install for the rest.
 2. Choose the host in the status bar - **AppKit**, **UIKit** or **Android**
-   on macOS, **WinUI** on Windows, **GTK** on Linux - and the application,
-   **Gallery**. For UIKit and Android the third item picks the simulator or
-   the device.
+   on macOS, **WinUI** on Windows, **GTK** on Linux, **Web** on macOS and
+   Linux - and the application, **Gallery**. For UIKit and Android the third
+   item picks the simulator or the device, for the Web the browser.
 3. Press **F5**. **StateUI: Debug** builds the Gallery for that host and starts
    it under the debugger; **StateUI: Release** runs the optimized build.
 4. Run **StateUI: Run Tests** from the Command Palette for every suite of that
@@ -170,6 +181,14 @@ From a terminal, the same builds and suites are:
 .scripts/Android/test-android.sh emulator-5554                 # the Android host's suite, on a device
 ```
 
+On macOS or Linux, the Web:
+
+```bash
+.scripts/Web/run-app.sh apps/Gallery                           # the Web Gallery, served and opened in a browser
+.scripts/Web/test-web.sh                                       # the Web host's suite, in Node
+.scripts/Web/test-web.sh --browser                             # its conformance run, in a headless browser
+```
+
 On Linux and on Windows:
 
 ```bash
@@ -184,7 +203,9 @@ On Linux and on Windows:
 
 [Project structure and development](docs/development.md#test) gives every
 suite's arguments and the conformance run that writes each host's marks, and
-[Deploy](docs/development.md#deploy) the release builds.
+[Deploy](docs/development.md#deploy) the release builds: **StateUI: Deploy**
+lays one in `artifacts/<application>/<platform>` - on the Web the page, a
+folder any web server serves as it is.
 
 ## Continuous integration
 
@@ -196,7 +217,9 @@ each machine - StateUI, the host layer and the conformance runner, and the
 Gallery's and HelloWorld's too. Each host has a workflow of its own
 that runs its suite with every verdict held: **AppKit**, **UIKit** on an
 iPhone and an iPad simulator, **Android** built on macOS and run on an
-emulator, **WinUI** on Windows and **GTK** on Linux.
+emulator, **WinUI** on Windows and **GTK** on Linux. **Web** runs the host's
+own suite on macOS, in Node and in a headless browser; its conformance
+families join it once the Web's verdicts hold no failure.
 
 ## License
 
