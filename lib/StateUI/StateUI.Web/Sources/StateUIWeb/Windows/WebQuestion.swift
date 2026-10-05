@@ -43,7 +43,8 @@ final class WebQuestion {
             if let destruction = question.destruction {
                 button(destruction, role: "destructive") { $0.answer(true, destruction) }
             }
-            if let cancel = question.cancel { button(cancel, role: "cancel") { $0.answer(false, nil) } }
+            // A choice's cancel is a choice of its caption; dismissed - Escape - nothing was chosen.
+            if let cancel = question.cancel { button(cancel, role: "cancel") { $0.answer(true, cancel) } }
         default:
             if let cancel = question.cancel { button(cancel, role: "cancel") { $0.answer(false, nil) } }
             button(question.accept, role: "accept") { $0.answer(true, $0.typed) }

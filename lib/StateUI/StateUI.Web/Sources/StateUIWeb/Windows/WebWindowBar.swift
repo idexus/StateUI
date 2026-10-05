@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name,
-/// the page's title, the actions its path declares and a menu of those behind it and of its menus - the
+/// the page's title - or the view the page declares in its place - the actions its path declares and a menu of those behind it and of its menus - the
 /// host layer's `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the
 /// sidebar, the rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar
@@ -23,6 +23,9 @@ final class WebWindowBar: WebDOMView {
     private let start = WebDOMView(tag: "div")
     private let leading = WebDOMView(tag: "div")
     private let trailing = WebDOMView(tag: "div")
+
+    /// The view standing in place of the title; nil while the title stands there.
+    private weak var titleView: WebDOMView?
 
     /// The button of each action shown, by the item it stands for.
     private(set) var buttons: [ObjectIdentifier: WebBarButton] = [:]
@@ -86,9 +89,7 @@ final class WebWindowBar: WebDOMView {
         WebRelay.setText(name.node, area?.title ?? "")
         WebRelay.setText(subtitle.node, area?.subtitle ?? "")
         subtitle.setShown(area?.subtitle?.isEmpty == false)
-        WebRelay.setText(title.node, shown)
-        title.setShown(!shown.isEmpty)
-        title.attribute("data-repeats", shown == area?.title ? "" : nil)
+        showTitle(shown, or: (chrome.center?.native as? WebElement)?.view, repeating: area?.title)
 
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
         style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
@@ -113,6 +114,21 @@ final class WebWindowBar: WebDOMView {
         more.setShown(!behind.isEmpty)
         WebRelay.insert(more.node, into: trailing.node, at: ending.joined().count)
         WebRelay.insert(closer.node, into: trailing.node, at: ending.joined().count + 1)
+    }
+
+    /// The title's words, or `view` in their place where the page declares one.
+    private func showTitle(_ words: String, or view: WebDOMView?, repeating name: String?) {
+        if let titleView, titleView !== view, !titleView.isReleased { WebRelay.detach(titleView.node) }
+        titleView = view
+        if let view {
+            WebRelay.setText(title.node, "")
+            WebRelay.insert(view.node, into: title.node, at: 0)
+        } else {
+            WebRelay.setText(title.node, words)
+        }
+        title.setShown(view != nil || !words.isEmpty)
+        title.attribute("data-repeats", view == nil && words == name ? "" : nil)
+        title.attribute("data-holds-view", view == nil ? nil : "")
     }
 
     private func glyph(_ button: WebDOMView, _ glyph: String, label: String) {

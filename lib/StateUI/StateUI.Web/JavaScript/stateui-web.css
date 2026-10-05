@@ -117,6 +117,8 @@ body {
 }
 .stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
+/* A view a page declares in place of its title stands where the title would, at its own size. */
+.stateui-bar-title[data-holds-view] { display: grid; justify-items: center; overflow: visible; font-weight: inherit; font-size: inherit; }
 .stateui-bar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar-name { font-weight: 650; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
 .stateui-bar-subtitle { font-size: 12.5px; opacity: 0.72; white-space: nowrap; }
@@ -393,8 +395,9 @@ body {
 .stateui-item[aria-selected] { cursor: pointer; border-radius: 8px; }
 .stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) 16%, transparent); }
 
-/* A web view: the browser's own frame, filling the room its layout gives it. */
-.stateui-frame { display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; border: 0; background: white; }
+/* A web view: the browser's own frame over the room its layout gives it, the box taking no room of its own. */
+.stateui-frame { position: relative; min-width: 0; min-height: 0; }
+.stateui-frame > iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; background: white; }
 
 /* A canvas: its drawing on a surface filling the room its layout gives it, the surface taking no room of its own. */
 .stateui-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }
@@ -470,6 +473,8 @@ body {
 .stateui-room input.stateui-field { field-sizing: content; }
 .stateui-room input::placeholder, .stateui-room textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
 .stateui-room textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
+/* An editor growing with its words is as tall as they are, from one line. */
+.stateui-room textarea[data-grows] { min-height: 0; }
 .stateui-room input[type="search"] {
   padding-inline-start: 34px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4'/%3E%3C/svg%3E");

@@ -10,7 +10,9 @@ beneath it. What the bar shows is the host layer's `WindowChrome`
 The bar is a `<header>` with the role of a toolbar, over the window's room. It
 leads with the split view's toggle where the window shows a split view, the
 way back where the visible stack offers it, and the leading actions the
-visible page's path declares; the page's title stands in its middle, and the
+visible page's path declares; the page's title stands in its middle - or the
+view the page, or else its stack, declares in its place (`chromeTitleView`),
+at its own size, the same view for as long as it is declared - and the
 trailing actions and the overflow at its end. Each action is a button with
 its picture, its words beside it where it shows them, its name for assistive
 technology and its tooltip. The bar's colours are the arrangement's, written
@@ -97,8 +99,9 @@ An alert, a confirmation, a choice of actions and a prompt are the
 browser's modal `<dialog>` too: the title, the message, a prompt's field -
 its keys and help the host layer's traits (`InputTraits`) - and a button
 for each answer, a choice's actions one under another and its dangerous one
-marked. Escape answers as cancelling does, where the question can be
-cancelled, and dismisses an alert. The dialog is held by the acts' part of
+marked. A choice's cancel button answers its caption, as a choice of its
+own; Escape answers nothing chosen, as cancelling does where the question
+can be cancelled, and dismisses an alert. The dialog is held by the acts' part of
 the page until it is answered: its buttons hold it no more than weakly, and
 a question nobody held would never answer.
 

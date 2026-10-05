@@ -139,11 +139,6 @@ enum WebRelay {
         stateui_web_select(element, Int32(start), Int32(length))
     }
 
-    /// Steps a number field `by` steps within its range.
-    static func step(_ element: Int32, by steps: Int32) {
-        stateui_web_step(element, steps)
-    }
-
     static func value(of element: Int32) -> String {
         copyRead(length: stateui_web_read_value(element))
     }
@@ -177,6 +172,9 @@ enum WebRelay {
     static var eventSize: LayoutSize {
         LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12))
     }
+
+    /// Whether the click being heard fell on a label beside its control, which the browser clicks next.
+    static var eventPassesToControl: Bool { stateui_web_event_number(13) != 0 }
 
     /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away (`eventNear`).
     static func watchNearness(_ element: Int32, of root: Int32, _ listener: Int32) {
@@ -230,15 +228,19 @@ enum WebRelay {
     /// The words the event being heard carries in its `detail` - a custom element's own.
     static var eventWords: String { copyRead(length: stateui_web_event_words()) }
 
-    /// The `<iframe>` `element` shows `source`.
-    static func showInFrame(_ element: Int32, _ source: WebViewSource) {
+    /// The `<iframe>` `element` shows `source`: the address made for a document written in place; nil for an
+    /// address shown.
+    @discardableResult
+    static func showInFrame(_ element: Int32, _ source: WebViewSource) -> String? {
         switch source {
         case .url(let address):
-            utf8(address) { stateui_web_frame_show(element, 0, $0, $1, nil, 0) }
+            utf8(address) { _ = stateui_web_frame_show(element, 0, $0, $1, nil, 0) }
+            return nil
         case .html(let document, let base):
-            utf8(document) { words, length in
+            let length = utf8(document) { words, length in
                 utf8(base ?? "") { stateui_web_frame_show(element, 1, words, length, $0, $1) }
             }
+            return copyRead(length: length)
         }
     }
 

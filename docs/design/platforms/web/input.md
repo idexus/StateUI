@@ -7,13 +7,21 @@ turns the page's events into what the host layer hears (`hear`).
 
 ## Taps
 
-A tap is the element's `click`, the run of clicks its count. An element the
+A tap is the element's `click`, the run of clicks its count. A click on a
+`<label>` beside its control - a radio button's caption - is no tap of its
+own: the browser clicks the control next, and that click is the one tap. An
+element the
 user taps that is no control of the browser's own is a button for assistive
 technology and the keyboard: it takes the focus, and Return or Space pressed
 on it is a tap - a tap assistive technology makes, which the host layer
 answers at once whatever the count asked for. The pointer's events are the
 DOM's `pointerenter`, `pointerleave`, `pointermove`, `pointerdown` and
 `pointerup`, where the pointer is told from the element's top left corner.
+
+A button pressed leaves the keyboard with the field being typed in, as a
+native button takes no keyboard of a field: the page's press on a button is
+not let move the focus while a field holds it, so the program taking the
+on-screen keyboard down finds the field still holding it.
 
 A listener is hung once for each kind the element asks for, and what it hears
 reaches the element only while the element still asks.

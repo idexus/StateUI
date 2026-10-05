@@ -39,6 +39,8 @@ enum WebRealization {
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "title"),
         .complete("VisualElement", "style"),
+        .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
+            + "initializer that sets nothing, which a list of some items has not."),
 
         // MARK: Entries - a control's or a part's own
         .complete("ModalStack", "popped"),

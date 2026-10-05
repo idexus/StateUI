@@ -94,10 +94,15 @@ itself, and the peers the host layer turns off are turned off on the page.
 ## Values in a range
 
 A Slider is the browser's range, which says each move of its thumb as it goes
-(`input`). A Stepper is a number field between a button taking a step down
-and one taking a step up; the field's own steps (`stepUp`, `stepDown`) keep
-the number inside its range, and a number typed past an end stands at it.
-Words that say no number leave the number where it was. The range, the step
+(`input`). A Stepper is a field of words with the role of a spin button
+between a button taking a step down and one taking a step up, the keyboard's
+arrows a step too. A step is a whole step from where the number stands, kept
+inside its range, and a number typed past an end stands at it. Words that are
+not wholly a number - `5x` - leave the number where it was, and a step or
+words that move nothing are heard by nobody. The trap: the browser's number
+field drops what it takes for no number as it is typed, so `5x` stood as 5,
+and its own steps snap to a grid counted from the minimum, so 1 stepped by
+2.5 stood at 2.5. The range, the step
 and the number of decimals are the host layer's (`ValueArithmetic`), and a
 value the tree writes reaches the control only where the tree changed it or
 its ends (`ElementValues.written`), so a hand on the thumb is never argued
@@ -142,12 +147,18 @@ frame, so a frame wider than it is leaves it a circle where it belongs.
 
 ## A web view
 
-A WebView is the browser's own `<iframe>`: an address it loads, a document
-written in place its `srcdoc` - of the page's own site, a `<base>` before it
-where the document says where its links resolve - told by the same `data:`
-address every host tells such a document by (`WebDocument`). The page hears
+A WebView is the browser's own `<iframe>` over a box with no size of its
+own, as every host's web view: an address it loads, a document
+written in place shown at a `blob:` address of the page's own made for it -
+of the page's own site, a `<base>` before it where the document says where
+its links resolve - told by the same `data:` address every host tells such a
+document by (`WebDocument`). The trap: the browser takes a `srcdoc` written
+again in place of the one before, so a frame of documents written in place
+had no way back; a frame's own navigation is a step in its history. The page hears
 the frame's document load, and tells it navigated, for the reason the
-program asked where it asked one (`WebNavigationCause`).
+program asked where it asked one (`WebNavigationCause`); a step the frame
+takes - back, forward, the page again - tells its navigation began as it is
+taken, as showing an address does.
 
 The browser keeps a document of another site to itself: the page cannot
 read where its user went inside it, nor its history, nor run a script in
@@ -160,6 +171,13 @@ reaches whole: its address, its history where the browser says it
 layer's reading of its JSON (`ScriptAnswer`). A frame has no agent of its
 own and no process the page could see end: `userAgent` and
 `processTerminated` stay unrealized.
+
+The user's pointer, clicks and wheel over a frame go to the frame's own
+document, not to the page. Over a document of the page's own site the view
+hears them there too - listened for again after every load, each told where
+it is in the view - so a tap, a press dragged and a pinch over it are the
+view's as on every host; coming and going the view hears itself. A document
+of another site keeps them to itself.
 
 ## Pictures
 

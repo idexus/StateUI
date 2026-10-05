@@ -14,7 +14,8 @@ extension WebElement {
         if hearing.contains(.taps), !listening.contains(.taps) {
             listening.insert(.taps)
             view.listen("click") { [weak self] in
-                guard let self, !press.wasDragged else { return }
+                // A label's click comes again as its control's: one tap.
+                guard let self, !press.wasDragged, !WebRelay.eventPassesToControl else { return }
                 heard(.taps, .tap(run: WebRelay.eventClicks))
             }
             view.listen("activate") { [weak self] in self?.heard(.taps, .tap(run: 0)) }

@@ -59,9 +59,6 @@ STATEUI_WEB(read_number) double stateui_web_read_number(int32_t element, const c
 /// Selects `length` UTF-16 units of a field's words from `start`, its caret there where `length` is 0.
 STATEUI_WEB(select) void stateui_web_select(int32_t element, int32_t start, int32_t length);
 
-/// Steps a number field `by` steps, up or down, within its range - its own `stepUp`.
-STATEUI_WEB(step) void stateui_web_step(int32_t element, int32_t by);
-
 /// Reads what a field holds into the relay and answers its length; `copy_read` copies it out.
 STATEUI_WEB(read_value) int32_t stateui_web_read_value(int32_t element);
 
@@ -93,8 +90,9 @@ STATEUI_WEB(show_popover) void stateui_web_show_popover(
 STATEUI_WEB(hide_popover) void stateui_web_hide_popover(int32_t element);
 
 /// The `<iframe>` shows the address `words` for `kind` 0, or for 1 the document `words`, its links resolved against
-/// `base` where one is given.
-STATEUI_WEB(frame_show) void stateui_web_frame_show(
+/// `base` where one is given - at an address of the page's own made for it, read as `read_value` is: its length,
+/// then `copy_read`; 0 for an address shown.
+STATEUI_WEB(frame_show) int32_t stateui_web_frame_show(
     int32_t element, int32_t kind, const char *words, int32_t length, const char *base, int32_t baseLength);
 
 /// What the page can know of the frame's document: 1 it is of the page's own site, 2 it can go back, 4 forward.
