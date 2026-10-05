@@ -28,6 +28,7 @@ body:
         - label: Android Views / Android
         - label: WinUI / Windows
         - label: GTK / Linux
+        - label: Web / a browser
 
   - type: textarea
     id: repro
