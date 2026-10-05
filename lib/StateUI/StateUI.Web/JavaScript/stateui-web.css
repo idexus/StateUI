@@ -50,6 +50,44 @@ body {
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
+/* While the application loads: its name, a ring turning and a bar of how much has come, in the page's middle. */
+.stateui-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  background: var(--stateui-surface);
+  transition: opacity 0.3s ease;
+}
+.stateui-loading[data-done] { opacity: 0; pointer-events: none; }
+.stateui-loading-name { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.stateui-loading .stateui-activity { width: 28px; height: 28px; border-width: 3px; }
+.stateui-loading-bar {
+  appearance: none;
+  -webkit-appearance: none;
+  width: min(240px, 60vw);
+  height: 4px;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--stateui-line-strong);
+  color: var(--stateui-accent);
+}
+.stateui-loading-bar::-webkit-progress-bar { background: var(--stateui-line-strong); }
+.stateui-loading-bar::-webkit-progress-value { background: var(--stateui-accent); transition: width 0.15s linear; }
+.stateui-loading-bar::-moz-progress-bar { background: var(--stateui-accent); }
+.stateui-loading-bar:indeterminate {
+  background: linear-gradient(90deg, var(--stateui-line-strong) 0%, var(--stateui-accent) 50%, var(--stateui-line-strong) 100%);
+  background-size: 200% 100%;
+  animation: stateui-sweep 1.1s linear infinite;
+}
+.stateui-loading-bar:indeterminate::-webkit-progress-bar { background: transparent; }
+.stateui-loading-bar:indeterminate::-moz-progress-bar { background: transparent; }
+@keyframes stateui-sweep { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
 /* The window: its bar over the room its pages stand in. */
 .stateui-window {
   position: fixed;
@@ -455,7 +493,8 @@ body {
 .stateui-window :is(button, input, select, textarea, label, [data-taps]) { touch-action: manipulation; }
 
 @media (prefers-reduced-motion: reduce) {
-  .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving], .stateui-scrim {
+  .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving], .stateui-scrim,
+  .stateui-loading-bar {
     transition: none !important;
     animation: none !important;
   }

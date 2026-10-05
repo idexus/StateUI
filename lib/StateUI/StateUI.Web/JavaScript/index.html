@@ -14,5 +14,12 @@
   start("./{{module}}?v={{stamp}}");
 </script>
 </head>
-<body></body>
+<body>
+<!-- What the page shows while the application loads: its name, a ring turning and how much of it has come. -->
+<div class="stateui-loading" id="stateui-loading" role="progressbar" aria-label="Loading {{application}}">
+  <div class="stateui-loading-name">{{application}}</div>
+  <div class="stateui-activity" data-running></div>
+  <progress class="stateui-loading-bar" max="1"></progress>
+</div>
+</body>
 </html>

@@ -26,6 +26,12 @@ what it realizes and what the page stands on, connects the one window and runs
 the first turn - and `main` returns. The module lives on with the page; from
 then on the browser calls it, as the user acts and as the display draws.
 
+While the module loads, the page shows the application's name in its
+middle, a ring turning and a bar of how much of the module has come, read
+as its bytes arrive against the length the server says. A server sending it
+compressed says the compressed length, so the bar then shows no share; nor
+while the browser compiles the module. The first turn done, it fades away.
+
 ## The relay
 
 JavaScript/stateui-web.js loads the module and hands it two sets of functions:
