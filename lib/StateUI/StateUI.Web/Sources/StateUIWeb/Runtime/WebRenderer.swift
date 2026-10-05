@@ -104,7 +104,7 @@ final class WebRenderer {
     private func showWindows() {
         roster.update(
             root: runtime.tree.root, make: { [runtime] in WebWindowController($0, runtime: runtime) },
-            close: { $0.window.close() })
+            close: { $0.close() })
         if let (element, controller) = roster.windows.first {
             controller.present(element, in: runtime)
             controller.refreshChrome()

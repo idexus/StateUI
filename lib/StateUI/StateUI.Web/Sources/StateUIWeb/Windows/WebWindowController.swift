@@ -96,6 +96,14 @@ final class WebWindowController {
         }
     }
 
+    /// Closes the window, the sheets over it first, the top one first: a sheet is a modal dialog of the page's, which
+    /// would hold every page after it still.
+    func close() {
+        for entry in sheets.reversed() { entry.sheet.close() }
+        sheets = []
+        window.close()
+    }
+
     /// The user took the top sheet away: the modal stack is told how many remain.
     private func dismissTopSheet() {
         guard let element, !presentation.sheets.isEmpty else { return }

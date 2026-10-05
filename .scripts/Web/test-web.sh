@@ -34,7 +34,7 @@ program="$products/StateUIWebTests-test-runner.wasm"
 relay="$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"
 conformance="StateUIWebTests.WebConformanceTests"
 # The classes whose tests need a browser's own page.
-in_browser="$conformance,StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebHistoryTests"
+in_browser="$conformance,StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests"
 
 browser () {
   if [[ -n "${STATEUI_BROWSER:-}" ]]; then echo "$STATEUI_BROWSER"; return; fi

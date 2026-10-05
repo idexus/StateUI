@@ -62,7 +62,7 @@ extension WebRenderer {
         runtime.tree.root?.leave()
         runtime.pump.presenter = nil
         runtime.displayCycle.presenter = nil
-        for controller in roster.controllers { controller.window.close() }
+        for controller in roster.controllers { controller.close() }
     }
 
     /// One step as the browser takes it: a frame of the page's - its tasks, its rendering, what its observers say -
