@@ -10,6 +10,8 @@ import Android
 import Glibc
 #elseif canImport(CRT)
 import CRT
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 
 /// One command of a path drawn without arcs: what a toolkit with no SVG arc draws.

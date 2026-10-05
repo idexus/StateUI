@@ -109,8 +109,10 @@
     @discardableResult
     public func runJobs() -> Int { HostBoundary.runJobs() }
 
+    #if !os(WASI)
     /// Parks the doorbell's thread until work arrives.
     public func waitForWork() -> Int { HostBoundary.waitForWork() }
+    #endif
 
     /// Takes the act calls queued since the previous pump.
     public func takeActCalls() -> [HostActCall] { HostBoundary.takeActCalls() }

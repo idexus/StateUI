@@ -20,6 +20,10 @@ import PackageDescription
 //
 // Sources are never listed: SwiftPM globs the target's path, and every build
 // of the library goes through SwiftPM. A new .swift file is picked up by itself.
+// Dynamic, so a process holds one StateUI runtime however many libraries link it. WebAssembly links no library
+// dynamically: a Web build (STATEUI_HOST=web) is one module holding the application, StateUI and its host.
+let linkage: Product.Library.LibraryType? = Context.environment["STATEUI_HOST"] == "web" ? nil : .dynamic
+
 let package = Package(
     name: "StateUI",
     // iOS 26, Mac Catalyst 26 and macOS 26: the releases StateUI is built and
@@ -32,7 +36,7 @@ let package = Package(
     products: [
         .library(
             name: "StateUI",
-            type: .dynamic,
+            type: linkage,
             targets: ["StateUI"]
         ),
     ],

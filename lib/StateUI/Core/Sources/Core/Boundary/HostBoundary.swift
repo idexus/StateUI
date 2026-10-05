@@ -346,6 +346,7 @@
     @discardableResult
     public static func runJobs() -> Int { stateUIRunJobs() }
 
+    #if !os(WASI)
     /// Parks the calling doorbell thread until asynchronous work arrives, and
     /// answers how much is waiting - which can be 0, when another turn got
     /// there first.
@@ -362,6 +363,7 @@
             + (Renderer.shared.needsRender ? 1 : 0)
             + (Renderer.shared.cycleAwake() > 0 ? 1 : 0)
     }
+    #endif
 
     /// Takes the act calls queued since the previous host pump, in the order
     /// the application made them.

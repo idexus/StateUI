@@ -11,6 +11,8 @@ import Android
 import Glibc
 #elseif canImport(CRT)
 import CRT
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 
 /// What a host says for whoever reads its log rather than its screen, each line naming the host.

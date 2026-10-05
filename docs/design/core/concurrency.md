@@ -33,6 +33,22 @@ Nothing waits for the platform's main queue in shared code - nothing drains it
 on Android or Windows - and nothing uses a run-loop timer, which hangs off a run
 loop nothing turns there. A timer is `Task.sleep` (cycle.md).
 
+## WebAssembly
+
+```text
+  WebAssembly                  one thread, and the browser's event loop around
+                               it: no thread parks, and nothing turns a main
+                               queue. UIThreadExecutor queues each job, and the
+                               Web host drains the queue in the turn every call
+                               from the page ends with.
+```
+
+A program in a page runs only inside a call the page makes - its start, a
+listener, a display frame - so whatever a call leaves is collected by the turn
+that ends it, and nothing needs waking: the executor keeps no doorbell there,
+and `HostBoundary.waitForWork` does not exist, so no Web host can park the one
+thread the page has.
+
 ## Handlers run where their event arrives
 
 A handler starts with `Task.immediate`, which runs it on the UI thread up to its
