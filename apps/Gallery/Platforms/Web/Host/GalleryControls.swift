@@ -13,5 +13,6 @@ enum GalleryControls {
         TrafficLightElement.register()
         RatingBarElement.register()
         WebGLCube3DView.register()
+        GoogleMapElement.register()
     }
 }

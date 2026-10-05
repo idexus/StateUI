@@ -144,7 +144,15 @@ StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map
 ```
 
 A `Map` is the application's on the Web - the browser has no map of its own -
-registered the same way, with the provider and the key it needs.
+registered the same way, with the provider and the key it needs. The
+Gallery's is Google's: `<gallery-map>` over the Maps JavaScript API, its
+markers the map's children. Its key is the application's own, never the
+repository's - `Page/google-maps-key.js`, which git keeps out, sets
+`StateUI.googleMapsKey`:
+
+```javascript
+StateUI.googleMapsKey = "your key";
+```
 
 ### Acts and events
 
