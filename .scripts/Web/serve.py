@@ -29,6 +29,9 @@ class Page(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
 
     def log_message(self, format, *args):
+        # A picture asked for as a PNG and found as its SVG answers 404 first, which says nothing wrong.
+        if "/Images/" in getattr(self, "path", "") and "404" in format % args:
+            return
         if not args or not str(args[1]).startswith(("2", "3")):
             super().log_message(format, *args)
 

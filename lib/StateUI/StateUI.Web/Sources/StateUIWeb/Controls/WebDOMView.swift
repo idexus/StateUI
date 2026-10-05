@@ -29,8 +29,20 @@ class WebDOMView {
     /// The layout this view stands in, which writes its place.
     weak var placingLayout: WebLayoutView?
 
+    /// The box the view paints of its own, and whether its size is followed for a gradient in it.
+    private var box = WebBox()
+    private var followsSize = false
+
     init(tag: String) {
         node = WebRelay.create(tag)
+        Self.made += 1
+        serial = Self.made
+        Self.liveCount += 1
+    }
+
+    /// A view of one of SVG's elements.
+    init(vector tag: String) {
+        node = WebRelay.createVector(tag)
         Self.made += 1
         serial = Self.made
         Self.liveCount += 1
@@ -146,6 +158,25 @@ class WebDOMView {
     /// The direction the view lays out and writes in.
     func setDirection(_ direction: LayoutDirection) {
         attribute("dir", direction == .rightToLeft ? "rtl" : "ltr")
+    }
+
+    /// Paints the view's own box - its fill, its outline, its shape - again as its size changes where a gradient is in it.
+    /// Design: docs/design/platforms/web/drawing.md#a-brush-on-a-box
+    func setBox(_ box: WebBox) {
+        self.box = box
+        if box.followsSize, !followsSize {
+            followsSize = true
+            WebRelay.observeSize(node, WebRelay.listener { [weak self] in self?.writeBox() })
+        }
+        writeBox()
+    }
+
+    /// The view's box as it stands.
+    var paintedBox: WebBox { box }
+
+    private func writeBox() {
+        let size = box.followsSize ? WebRelay.size(of: node) : LayoutSize(width: 0, height: 0)
+        for (name, value) in box.styles(size: size) { style(name, value) }
     }
 
     /// The room kept inside the view's edge.

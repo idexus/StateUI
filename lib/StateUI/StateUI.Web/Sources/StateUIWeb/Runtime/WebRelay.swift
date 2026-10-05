@@ -61,6 +61,17 @@ enum WebRelay {
         utf8(tag) { stateui_web_create($0, $1) }
     }
 
+    /// Makes an element of SVG's - `svg`, `path` - and answers its number.
+    static func createVector(_ tag: String) -> Int32 {
+        utf8(tag) { stateui_web_create_vector($0, $1) }
+    }
+
+    /// An SVG shape's bounds in its own space, before any transform.
+    static func shapeBounds(of element: Int32) -> Rect {
+        let read = numbers(4) { stateui_web_read_shape_bounds(element, $0) }
+        return Rect(x: read[0], y: read[1], width: read[2], height: read[3])
+    }
+
     static func release(_ element: Int32) {
         stateui_web_release(element)
     }

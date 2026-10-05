@@ -82,10 +82,7 @@ class WebLayoutView: WebDOMView {
 
     /// The layout's own box: what fills it, its outline inside its edge, its shape, and whether it cuts what it holds.
     func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool) {
-        style("background", WebCSS.fill(fill))
-        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
-        style("border", width > 0 ? "\(WebCSS.pixels(width)!) solid \(WebCSS.fill(stroke) ?? "currentColor")" : nil)
-        style("border-radius", WebCSS.corners(BoxArithmetic.outline(shape)))
+        setBox(WebBox(fill: fill, stroke: stroke, lineWidth: lineWidth, shape: shape))
         style("overflow", clips ? "hidden" : nil)
     }
 
@@ -96,7 +93,9 @@ class WebLayoutView: WebDOMView {
 
     /// What fills the layout's box.
     func setBackground(_ value: HostValue?) {
-        style("background", WebCSS.fill(value))
+        var box = paintedBox
+        box.fill = value
+        setBox(box)
     }
 
     /// Where a ZStack's placing run puts its children; nil to stand each in its own area.

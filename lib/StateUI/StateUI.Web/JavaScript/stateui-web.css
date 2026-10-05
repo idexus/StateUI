@@ -336,6 +336,8 @@ body {
 [data-lets-through] { pointer-events: none; }
 [data-lets-through] > * { pointer-events: auto; }
 
+.stateui-shape { display: block; overflow: visible; width: 100%; height: 100%; }
+
 .stateui-unsupported {
   align-self: start;
   justify-self: start;

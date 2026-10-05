@@ -18,8 +18,12 @@ STATEUI_WEB(start) void stateui_web_start(stateui_web_heard heard, stateui_web_f
 /// The page's body, where the window stands.
 STATEUI_WEB(body) int32_t stateui_web_body(void);
 
-/// Makes an element of `tag` and answers its number.
+/// Makes an element of `tag` and answers its number; `create_vector` one of SVG's.
 STATEUI_WEB(create) int32_t stateui_web_create(const char *tag, int32_t length);
+STATEUI_WEB(create_vector) int32_t stateui_web_create_vector(const char *tag, int32_t length);
+
+/// Writes an SVG shape's bounds in its own space - x, y, width and height - into `into`.
+STATEUI_WEB(read_shape_bounds) void stateui_web_read_shape_bounds(int32_t element, double *into);
 
 /// Takes the element out of its parent and forgets its number.
 STATEUI_WEB(release) void stateui_web_release(int32_t element);

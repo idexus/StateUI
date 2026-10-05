@@ -29,10 +29,8 @@ final class WebButtonView: WebDOMView, WebWordsView {
     /// The box the application draws in place of the browser's: its fill, its outline and its shape; with none of
     /// them, the browser's own button.
     func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
-        let drawn = fill != nil || stroke != nil || shape != nil
-        style("background", drawn ? WebCSS.fill(fill) ?? "transparent" : nil)
-        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
-        style("border", drawn ? (width > 0 ? "\(WebCSS.pixels(width)!) solid \(WebCSS.fill(stroke) ?? "currentColor")" : "none") : nil)
-        style("border-radius", drawn ? WebCSS.corners(BoxArithmetic.outline(shape)) : nil)
+        let box = WebBox(fill: fill, stroke: stroke, lineWidth: lineWidth, shape: shape, borderless: "none")
+        setBox(box)
+        if box.isDrawn, fill == nil { style("background", "transparent") }
     }
 }
