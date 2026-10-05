@@ -66,7 +66,11 @@ layer's traits (`InputTraits`): `inputmode`, `autocapitalize`, `spellcheck`,
 `autocorrect` and `autocomplete`, and what the Return key says
 `enterkeyhint`. The caret and the selection are placed in the page's own
 units, UTF-16, counted from the characters the tree names. An editor growing
-with its words stands as tall as they are, rather than scrolling them.
+with its words stands as tall as they are, rather than scrolling them. A
+field is as wide as its words or its placeholder - `field-sizing: content`,
+and its `size` where the browser sizes no field by its content - as a native
+field measures, not the browser's twenty characters, which in a row of a
+phone's width would push what follows it out of the row.
 
 ## Toggles
 

@@ -305,7 +305,7 @@ body {
 .stateui-question h2 { margin: 0; font-size: 18px; font-weight: 650; }
 .stateui-question p { margin: 0; color: var(--stateui-muted); line-height: 1.45; }
 .stateui-question input {
-  font: inherit; min-height: 40px; padding: 8px 12px; border-radius: var(--stateui-radius);
+  font: inherit; width: 100%; min-height: 40px; padding: 8px 12px; border-radius: var(--stateui-radius);
   border: 1px solid var(--stateui-line-strong); background: var(--stateui-surface); color: var(--stateui-text);
 }
 .stateui-question-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 4px; }
@@ -466,6 +466,8 @@ body {
   color: var(--stateui-text);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
+/* A field is as wide as its words or its placeholder - as a native one measures - not twenty characters. */
+.stateui-room input.stateui-field { field-sizing: content; }
 .stateui-room input::placeholder, .stateui-room textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
 .stateui-room textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
 .stateui-room input[type="search"] {

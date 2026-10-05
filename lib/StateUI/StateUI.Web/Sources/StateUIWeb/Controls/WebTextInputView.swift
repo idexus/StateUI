@@ -28,7 +28,10 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     init(_ kind: Kind) {
         self.kind = kind
         super.init(tag: kind == .editor ? "textarea" : "input")
-        if kind != .editor { attribute("type", kind == .search ? "search" : "text") }
+        if kind != .editor {
+            attribute("type", kind == .search ? "search" : "text")
+            attribute("class", "stateui-field")
+        }
         listen("input") { [weak self] in
             guard let self else { return }
             fit()
@@ -52,8 +55,13 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     }
 
     func setPlaceholder(_ placeholder: String?) {
+        self.placeholder = placeholder ?? ""
         attribute("placeholder", placeholder)
+        fit()
     }
+
+    /// The words shown while there are none, which a field's natural width counts too.
+    private var placeholder = ""
 
     /// The colour of the words shown while there are none; nil for the page's.
     func setPlaceholderColor(_ color: HostValue?) {
@@ -127,6 +135,11 @@ final class WebTextInputView: WebDOMView, WebWordsView {
 
     /// An editor growing with its words stands as tall as they are.
     private func fit() {
+        // A field is as wide as its words or its placeholder, not the browser's twenty characters: where the browser
+        // sizes no field by its content, the characters it counts say it.
+        if kind != .editor {
+            return attribute("size", String(max(1, WebRelay.value(of: node).count, placeholder.count)))
+        }
         guard grows else { return }
         style("height", nil)
         style("height", WebCSS.pixels(WebRelay.number(of: node, "scrollHeight")))
