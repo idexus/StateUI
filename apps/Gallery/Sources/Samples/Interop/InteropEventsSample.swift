@@ -1,4 +1,4 @@
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
 import StateUI
 
 /// Events the host raises on its own, heard with no control behind them.
@@ -276,6 +276,40 @@ struct InteropEventsSample: SampleContent, ExampleContent {
                     report("reading the battery");
                 }
             }
+            """))
+    #elseif WEB
+    static let hostCode = HostCode(
+        in: InteropHost.name,
+        .swift("""
+            // Platforms/Web/Host/GalleryEventSources.swift. The page's script
+            // tells what the browser says of the battery; the host raises it.
+            enum GalleryEventSources {
+                @MainActor
+                static func start() {
+                    // What the host raises, declared where its source is
+                    // wired: a handler listening for anything else is told.
+                    StateUIEvents.raises(GalleryContract.batteryChanged)
+
+                    StateUIScripts.hear("battery") { words in
+                        let (level, charging) = GalleryActs.battery(words)
+                        guard level > 0 else { return }
+                        StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+                    }
+                }
+            }
+
+            // And in main.swift, before StateUIWeb.run(name:):
+            GalleryEventSources.start()
+            """),
+        .javascript("""
+            // Platforms/Web/Page/gallery-acts.js. A browser that offers its
+            // battery - Chrome, Edge - tells each change; the others say none.
+            navigator.getBattery?.().then((power) => {
+                const tell = () => StateUI.tell("battery", `${power.level} ${power.charging}`);
+                power.addEventListener("levelchange", tell);
+                power.addEventListener("chargingchange", tell);
+                tell();
+            });
             """))
     #else
     static let hostCode = HostCode(

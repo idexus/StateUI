@@ -10,6 +10,8 @@ enum GalleryControls {
     /// Registers every control this host realizes. Said once, before the application runs.
     @MainActor
     static func register() {
+        TrafficLightElement.register()
+        RatingBarElement.register()
         WebGLCube3DView.register()
     }
 }

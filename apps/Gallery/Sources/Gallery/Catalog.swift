@@ -311,7 +311,7 @@ final class Catalog {
         ]
 
 
-        #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+        #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
         // Calling the host, hearing from it, and a control the application registers with it - each described like
         // the library's own: one contract, one `View`, and the host's half beside the head, in Platforms/<host>.
         // The cube draws on the GPU, so it is declared only for the hosts that draw it, each in its own way.
