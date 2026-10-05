@@ -506,6 +506,10 @@ body {
   visibility: hidden;
 }
 .stateui-activity[data-running] { visibility: visible; animation: stateui-turn 0.8s linear infinite; }
+/* A toggle and a ring stand at their own size in the middle of the frame the layout gives their view. */
+.stateui-toggle, .stateui-indicator { display: inline-grid; place-items: center; }
+.stateui-toggle { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stateui-toggle[aria-disabled] { cursor: default; }
 .stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
 .stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
 .stateui-room select {

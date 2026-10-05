@@ -167,13 +167,16 @@ class WebDOMView {
     /// Design: docs/design/platforms/web/controls.md#what-assistive-technology-meets
     func setAccessibility(_ words: AccessibilityWords) {
         attribute("data-identifier", words.identifier)
-        attribute("aria-label", words.label?.isEmpty == false ? words.label : nil)
-        attribute("aria-description", words.hint?.isEmpty == false ? words.hint : nil)
+        named.attribute("aria-label", words.label?.isEmpty == false ? words.label : nil)
+        named.attribute("aria-description", words.hint?.isEmpty == false ? words.hint : nil)
         let heading = words.headingLevel > 0
         attribute("role", heading ? "heading" : words.presence == .hidden ? "none" : role)
         attribute("aria-level", heading ? String(words.headingLevel) : nil)
         attribute("aria-hidden", words.presence == .hiddenWithChildren ? "true" : nil)
     }
+
+    /// The element assistive technology names the view by: its own, or the browser's control it stands around.
+    var named: WebDOMView { self }
 
     /// Whether the view is a control of the browser's own, which takes taps, the keyboard and a role of itself.
     var isControl: Bool { false }

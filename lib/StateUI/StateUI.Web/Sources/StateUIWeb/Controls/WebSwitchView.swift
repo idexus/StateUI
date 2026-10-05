@@ -4,24 +4,29 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A Switch: the browser's checkbox with the role of a switch, drawn as one; a CheckBox: the checkbox as it is.
-/// Each says when the user turns it.
+/// A Switch: the browser's checkbox with the role of a switch, drawn as one; a CheckBox: the checkbox as it is. Each
+/// stands at its own size in the middle of a `<label>` that takes the view's frame, so a click anywhere in the frame
+/// turns it, and says when the user turns it.
 /// Design: docs/design/platforms/web/controls.md#toggles
 @MainActor
 final class WebSwitchView: WebDOMView {
+    private let box = WebDOMView(tag: "input")
+
     /// The user turned it, to on or off.
     var onToggled: (Bool) -> Void = { _ in }
 
     init(switch isSwitch: Bool) {
-        super.init(tag: "input")
-        attribute("type", "checkbox")
+        super.init(tag: "label")
+        attribute("class", "stateui-toggle")
+        box.attribute("type", "checkbox")
         if isSwitch {
-            attribute("role", "switch")
-            attribute("class", "stateui-switch")
+            box.attribute("role", "switch")
+            box.attribute("class", "stateui-switch")
         }
-        listen("change") { [weak self] in
+        WebRelay.insert(box.node, into: node, at: 0)
+        box.listen("change") { [weak self] in
             guard let self else { return }
-            onToggled(WebRelay.flag(of: node, "checked"))
+            onToggled(WebRelay.flag(of: box.node, "checked"))
         }
     }
 
@@ -29,17 +34,25 @@ final class WebSwitchView: WebDOMView {
 
     override var isControl: Bool { true }
 
+    override var named: WebDOMView { box }
+
     func setOn(_ on: Bool) {
-        WebRelay.setFlag(node, "checked", on)
+        WebRelay.setFlag(box.node, "checked", on)
     }
 
     override func setEnabled(_ enabled: Bool) {
-        attribute("disabled", enabled ? nil : "")
+        box.attribute("disabled", enabled ? nil : "")
+        attribute("aria-disabled", enabled ? nil : "true")
     }
 
     /// The colour it shows when on; nil for the page's accent.
     func setTint(_ tint: HostValue?) {
         style("accent-color", WebCSS.color(tint))
         style("--stateui-on", WebCSS.color(tint))
+    }
+
+    override func detach() {
+        box.detach()
+        super.detach()
     }
 }

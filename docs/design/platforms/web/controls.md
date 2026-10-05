@@ -74,7 +74,12 @@ A Switch is the browser's checkbox with the role of a switch, drawn as one -
 a track and a knob, the accent colour while it is on, the application's tint
 in its place where it gives one - and a CheckBox the checkbox as it is. Each
 says when the user turns it (`change`), and the tree turns it through its
-`checked`. A RadioButton is a `<label>` holding the browser's radio button and
+`checked`. Each stands at its own size in the middle of a `<label>` that takes
+the view's frame: the browser draws a checkbox over its whole box, so a frame
+larger than the box - a touch target's 44 points - would draw a larger box,
+where every other host draws its own at its size inside the frame. A click
+anywhere in the frame turns it, and assistive technology meets the checkbox
+by the view's name and hint. A RadioButton is a `<label>` holding the browser's radio button and
 its caption, so a click anywhere on it chooses it. Its group is the host
 layer's: the button holds no `name`, so the browser turns no peer off of
 itself, and the peers the host layer turns off are turned off on the page.
@@ -124,7 +129,8 @@ to 1, drawn as a thin rounded bar in the accent colour or the application's
 tint. An ActivityIndicator is a ring turning while work goes on - the browser
 has no spinner of its own - with the role of a busy progress bar; stopped, it
 shows nothing and keeps its room, and it turns slower where the user asks for
-less motion.
+less motion. The ring stands at its own size in the middle of the view's
+frame, so a frame wider than it is leaves it a circle where it belongs.
 
 ## A web view
 
