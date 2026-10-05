@@ -42,3 +42,9 @@ entries around it are built. A scroll gliding there would bring every cell
 it passed near the view, each would take its entry's own size, and the item
 would stand elsewhere when the scroll arrived: row 500 of rows a little
 smaller than a row's room stood 47 rows away.
+
+## Scrolled
+
+A list the user scrolls moves every item in the window, which no observer
+of the page tells: each scroll of the list counts as laid out, so an item
+whose frame the tree reads says where it now stands.

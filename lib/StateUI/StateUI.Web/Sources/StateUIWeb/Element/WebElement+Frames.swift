@@ -23,9 +23,13 @@ extension WebElement: FrameReporter {
     func reportFrame() {
         guard let view, let host, WebRelay.isLaidOut(view.node) else { return }
         let box = WebRelay.box(of: view.node)
-        let parent = layoutParent?.view.map { WebRelay.box(of: $0.node) } ?? box
+        let parentView = layoutParent?.view
+        let parent = parentView.map { WebRelay.box(of: $0.node) } ?? box
+        // A parent that scrolls holds its children in its content: their place there stays as it scrolls.
+        let scrolled = parentView.map { WebRelay.scroll(of: $0.node) } ?? Point(x: 0, y: 0)
         let content = host.contentBox
-        let place = Rect(x: box.x - parent.x, y: box.y - parent.y, width: box.width, height: box.height)
+        let place = Rect(
+            x: box.x - parent.x + scrolled.x, y: box.y - parent.y + scrolled.y, width: box.width, height: box.height)
         let numbers = MountedElement.frameNumbers(
             place: place, corner: Point(x: box.x, y: box.y), content: Point(x: content.x, y: content.y))
         element.reportFrame(numbers, in: host.runtime)

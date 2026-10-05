@@ -7,7 +7,12 @@
 /// The DOM element: made, and given the element's properties.
 extension WebElement {
     func makeView() -> WebDOMView? {
-        if type == .itemsView, let host { return WebItemsView(cells: ItemsCells(element, in: host.runtime)) }
+        if type == .itemsView, let host {
+            let items = WebItemsView(cells: ItemsCells(element, in: host.runtime))
+            // Scrolled, every item moves in the window, which no observer of the page tells.
+            items.listen("scroll") { [weak host] in host?.runtime.frames.laidOut() }
+            return items
+        }
         if element.isDrawnByParent(in: WebRegistrations.registry) { return nil }
         if let registered = WebRegistrations.registry.makeView(
             for: type,
