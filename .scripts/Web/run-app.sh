@@ -89,7 +89,7 @@ while IFS='=' read -r name value; do
   query+="${query:+&}$name=$value"
 done < <(env | grep '^STATEUI_' | grep -v '^STATEUI_HOST=' || true)
 
-python3 -u "$here/serve.py" "$site" "$port" "$facts" "${query:+?$query}" &
+python3 -u "$here/serve.py" "$site" "$port" "$facts" ${query:+"?$query"} &
 server=$!
 trap 'kill $server 2>/dev/null || true' EXIT INT TERM
 for _ in $(seq 1 100); do
