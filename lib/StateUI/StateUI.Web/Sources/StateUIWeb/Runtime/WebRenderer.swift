@@ -37,6 +37,9 @@ final class WebRenderer {
         toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
         answered: { [unowned self] in runtime.pump.turn() })
 
+    /// Whether the call ending reports what it laid out: a call the browser makes inside it reports nothing.
+    private var ending = false
+
     /// The windows the tree holds, each with its controller, in the tree's order. The browser shows the first.
     let roster = WindowRoster<WebWindowController>()
 
@@ -82,6 +85,17 @@ final class WebRenderer {
     func entryEnded() {
         runtime.pump.turn()
         placements.settle()
+        // What the call laid out says where it stands before the browser draws, so a size read from a frame is
+        // drawn with the page it measures - once, as the outermost call ends: an event the browser raises inside
+        // the turn ends a call of its own there.
+        if !ending {
+            ending = true
+            defer { ending = false }
+            if runtime.frames.reportLaidOut() {
+                runtime.pump.turn()
+                placements.settle()
+            }
+        }
         if let wait = runtime.core.nextWake { WebRelay.wake(after: wait) }
     }
 

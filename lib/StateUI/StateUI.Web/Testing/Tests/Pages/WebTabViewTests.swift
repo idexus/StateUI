@@ -30,4 +30,18 @@ final class WebTabViewTests: XCTestCase {
         XCTAssertNil(WebPage.attribute(of: second.node, "data-covered"))
         XCTAssertEqual(WebPage.attribute(of: names[1], "aria-selected"), "true")
     }
+
+    /// Every page stands in the one cell the pages share: a covered page is laid out unseen, so a page in a cell of
+    /// its own would push the chosen one down and halve its room.
+    func testEveryPageStandsInTheOneCell() {
+        let tabs = WebTabView()
+        let pages = [WebDOMView(tag: "section"), WebDOMView(tag: "section"), WebDOMView(tag: "section")]
+        defer { for view in [tabs] + pages { view.detach() } }
+
+        tabs.setTabs(pages)
+
+        for page in pages {
+            XCTAssertEqual(WebPage.style(of: page.node, "grid-area"), "1 / 1 / 2 / 2", "each page over the whole cell")
+        }
+    }
 }

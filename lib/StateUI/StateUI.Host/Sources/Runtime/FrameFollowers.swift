@@ -80,15 +80,32 @@
                 if !scroller.wantsFrames { scrollers[order] = nil }
             }
 
-            guard moved else { return }
-            moved = false
-            for order in reporters.keys.sorted() {
-                guard let reporter = reporters[order]?.reporter else {
-                    reporters[order] = nil
-                    continue
-                }
-                reporter.reportFrame()
+            reportEveryFrame()
+        }
+    }
+
+    /// Every element whose frame is read says where it stands at once, where something was laid out since it last
+    /// said - for a toolkit telling, once it has laid out and before it draws, that it did: what the reports change
+    /// is then drawn in the same frame. A scroller says what it did on the display's frame alone.
+    /// Design: docs/design/host/runtime.md#where-a-view-stands
+    /// - Returns: whether anything was laid out to say.
+    @discardableResult
+    public func reportLaidOut() -> Bool {
+        guard moved else { return false }
+        runtime.performUserTransaction { reportEveryFrame() }
+        return true
+    }
+
+    /// Every element whose frame is read says where it stands, in the order it was made, where something moved.
+    private func reportEveryFrame() {
+        guard moved else { return }
+        moved = false
+        for order in reporters.keys.sorted() {
+            guard let reporter = reporters[order]?.reporter else {
+                reporters[order] = nil
+                continue
             }
+            reporter.reportFrame()
         }
     }
 }

@@ -102,11 +102,15 @@ same rule.
 
 ## Where a view stands
 
-A view the tree reads where it stands says so on the display's frame after
-the page laid out or scrolled: its box in its layout parent's, its corner in
-the page, and that corner from the window's room - the page below the bar
-(`MountedElement.frameNumbers`). The host follows such a view's size with a
-`ResizeObserver`, and every render and every scroll may move it.
+A view the tree reads where it stands says so as soon as the page laid it
+out - at the end of the call from the page that changed it, the layout read
+then, and again when its `ResizeObserver` tells it moved, which the browser
+does before it draws - and after a scroll on the display's frame: its box in
+its layout parent's, its corner in the page, and that corner from the
+window's room - the page below the bar (`MountedElement.frameNumbers`). What
+the report changes is rendered in the same call, so a page sized by its own
+frame - the Gallery's tabs - never stands a frame at no width. A view the
+browser lays out nowhere - a covered page - says nothing.
 
 ## Values in CSS
 

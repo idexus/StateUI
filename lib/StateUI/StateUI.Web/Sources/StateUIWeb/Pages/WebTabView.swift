@@ -16,7 +16,7 @@ final class WebTabView: WebDOMView {
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
     private let strip = WebDOMView(tag: "div")
-    let pages = WebLayoutView(arrangement: .single)
+    let pages = WebLayoutView(arrangement: .layers)
     private var tabs: [WebDOMView] = []
     private var names: [WebDOMView] = []
 
