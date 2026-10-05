@@ -85,10 +85,11 @@ case "GTK"?:
         .systemLibrary(name: "CGalleryOpenGL", path: "Platforms/GTK/OpenGL", pkgConfig: "epoxy"),
     ])
 case let host?:
-    // The UIKit head's own Info.plist keys join the bundle's, and are no source.
+    // The UIKit head's own Info.plist keys join the bundle's, and the Web head's page scripts stand beside its
+    // page: neither is a source.
     targets.append(.executableTarget(
         name: "Gallery\(host)", dependencies: head + webBackend, path: "Platforms/\(host)",
-        exclude: host == "UIKit" ? ["Info.plist"] : [], swiftSettings: settings))
+        exclude: host == "UIKit" ? ["Info.plist"] : host == "Web" ? ["Page"] : [], swiftSettings: settings))
 case nil:
     break
 }

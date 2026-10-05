@@ -344,7 +344,7 @@ final class Catalog {
 
     /// The animation the host draws on the GPU, on the hosts that draw it.
     private static var drawnByTheHost: [Sample] {
-        #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+        #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
         [Sample(Cube3DSample())]
         #else
         []
