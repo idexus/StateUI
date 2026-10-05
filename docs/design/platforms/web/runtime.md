@@ -29,8 +29,10 @@ then on the browser calls it, as the user acts and as the display draws.
 While the module loads, the page shows the application's name in its
 middle, a ring turning and a bar of how much of the module has come, read
 as its bytes arrive against the length the server says. A server sending it
-compressed says the compressed length, so the bar then shows no share; nor
-while the browser compiles the module. The first turn done, it fades away.
+compressed says the compressed length, so the bar then shows no share until
+the module is in. Full, it stays full while the browser compiles the module -
+a bar that went back would read as loading undone. The first turn done, the
+page fades it away.
 
 ## The relay
 
