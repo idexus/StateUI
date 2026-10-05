@@ -73,8 +73,16 @@ STATEUI_WEB(copy_read) void stateui_web_copy_read(char *into);
 STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, int32_t length, int32_t listener);
 
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
-/// listening element's top left corner.
+/// listening element's top left corner; 3 the pointer's number, 4 and 5 where it is on the page, 6 its kind - 0 a
+/// mouse, 1 a pen, 2 a touch - 7 its button; 8 a wheel's turn down, 9 whether a key made it a pinch, 10 a gesture's
+/// scale; 11 and 12 the listening element's size.
 STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
+
+/// The pointer of the event being heard goes on telling the element, wherever it moves, until it lets go.
+STATEUI_WEB(capture_pointer) void stateui_web_capture_pointer(int32_t element);
+
+/// The event being heard no longer does what the page would do with it: scroll, zoom, select.
+STATEUI_WEB(take_event) void stateui_web_take_event(void);
 
 /// Calls listener `listener` whenever the element's size changes.
 STATEUI_WEB(observe_size) void stateui_web_observe_size(int32_t element, int32_t listener);

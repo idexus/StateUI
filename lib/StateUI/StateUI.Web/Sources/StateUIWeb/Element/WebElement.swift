@@ -22,6 +22,10 @@ final class WebElement: NativeElement {
     /// Whether the view's size changing is followed, for a frame the tree reads.
     var observesSize = false
 
+    /// The pointers pressed on the view, for a drag or a pinch it hears, and how many times a wheel turned a pinch.
+    var press = WebPress()
+    var wheelTurns = 0
+
     init(_ element: MountedElement, host: WebRenderer) {
         self.element = element
         self.host = host

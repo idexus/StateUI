@@ -147,6 +147,34 @@ enum WebRelay {
     /// Where the pointer of the event being heard is, from the listening element's top left corner.
     static var eventPoint: Point { Point(x: stateui_web_event_number(1), y: stateui_web_event_number(2)) }
 
+    /// The pointer of the event being heard: its number, where it is on the page, its kind - 0 a mouse, 1 a pen, 2 a
+    /// touch - and its button.
+    static var eventPointer: (id: Int, at: Point, kind: Int, button: Int) {
+        (Int(stateui_web_event_number(3)), Point(x: stateui_web_event_number(4), y: stateui_web_event_number(5)),
+         Int(stateui_web_event_number(6)), Int(stateui_web_event_number(7)))
+    }
+
+    /// The wheel's turn down of the event being heard, and whether a key made it a pinch.
+    static var eventWheel: (down: Double, pinches: Bool) {
+        (stateui_web_event_number(8), stateui_web_event_number(9) != 0)
+    }
+
+    /// The scale of the gesture being heard, from 1 as it began.
+    static var eventScale: Double { stateui_web_event_number(10) }
+
+    /// The size of the element hearing the event.
+    static var eventSize: LayoutSize { LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12)) }
+
+    /// The pointer of the event being heard goes on telling `element` until it lets go.
+    static func capturePointer(_ element: Int32) {
+        stateui_web_capture_pointer(element)
+    }
+
+    /// The event being heard no longer does what the page would do with it.
+    static func takeEvent() {
+        stateui_web_take_event()
+    }
+
     static func observeSize(_ element: Int32, _ listener: Int32) {
         stateui_web_observe_size(element, listener)
     }
