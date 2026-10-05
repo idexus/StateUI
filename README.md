@@ -26,6 +26,9 @@ test run.
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 
+**Try it in a browser:** the Gallery runs on the Web host at
+[stateui.dev](https://stateui.dev).
+
 ## In Action
 
 <p>
@@ -57,7 +60,7 @@ draws it with the browser's own elements - here in Safari, the Gallery's WebGL
 sample: the cube is a custom element of the application's own JavaScript,
 `<gallery-cube3d>`, drawing with WebGL 2, which the application registers with
 the host, and its size, colour and spin are described from StateUI as on every
-other host.
+other host. The same Gallery runs at [stateui.dev](https://stateui.dev).
 
 <img src="docs/assets/web.jpg" alt="The Gallery's WebGL sample on the Web host, in Safari" width="100%">
 
