@@ -96,6 +96,27 @@ enum WebRelay {
         utf8(text) { stateui_web_set_value(element, $0, $1) }
     }
 
+    static func setFlag(_ element: Int32, _ name: String, _ on: Bool) {
+        utf8(name) { stateui_web_set_flag(element, $0, $1, on ? 1 : 0) }
+    }
+
+    static func flag(of element: Int32, _ name: String) -> Bool {
+        utf8(name) { stateui_web_read_flag(element, $0, $1) != 0 }
+    }
+
+    static func setNumber(_ element: Int32, _ name: String, _ value: Double) {
+        utf8(name) { stateui_web_set_number(element, $0, $1, value) }
+    }
+
+    static func number(of element: Int32, _ name: String) -> Double {
+        utf8(name) { stateui_web_read_number(element, $0, $1) }
+    }
+
+    /// Steps a number field `by` steps within its range.
+    static func step(_ element: Int32, by steps: Int32) {
+        stateui_web_step(element, steps)
+    }
+
     static func value(of element: Int32) -> String {
         copyRead(length: stateui_web_read_value(element))
     }

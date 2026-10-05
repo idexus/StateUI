@@ -222,6 +222,67 @@ body {
   box-shadow: var(--stateui-focus);
 }
 .stateui-room :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
+/* A switch drawn as one, a slider across its room, a stepper's field between its buttons. */
+.stateui-room input.stateui-switch {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--stateui-line-strong);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.stateui-room input.stateui-switch::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.stateui-room input.stateui-switch:checked { background: var(--stateui-on, var(--stateui-accent)); }
+.stateui-room input.stateui-switch:checked::before { transform: translateX(18px); }
+[dir="rtl"] .stateui-room input.stateui-switch:checked::before { transform: translateX(-18px); }
+.stateui-room input.stateui-switch:disabled { opacity: 0.45; cursor: default; }
+.stateui-room input[type="checkbox"]:not(.stateui-switch), .stateui-room input[type="radio"] { width: 18px; height: 18px; margin: 0; }
+.stateui-room input[type="range"] { min-width: 120px; margin: 0; }
+.stateui-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--stateui-line-strong);
+  border-radius: var(--stateui-radius);
+  overflow: hidden;
+  background: var(--stateui-surface);
+}
+.stateui-room .stateui-stepper button {
+  min-width: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+.stateui-room .stateui-stepper input {
+  width: 76px;
+  border: 0;
+  border-inline: 1px solid var(--stateui-line);
+  border-radius: 0;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
+.stateui-stepper input::-webkit-inner-spin-button, .stateui-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.stateui-room .stateui-stepper:focus-within { border-color: var(--stateui-accent); box-shadow: var(--stateui-focus); }
+.stateui-room .stateui-stepper :focus-visible { box-shadow: none; }
+
 .stateui-room [data-taps] { cursor: pointer; user-select: none; -webkit-user-select: none; }
 .stateui-room [data-taps]:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 [data-lets-through] { pointer-events: none; }

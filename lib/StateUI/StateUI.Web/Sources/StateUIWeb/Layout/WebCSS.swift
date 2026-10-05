@@ -15,6 +15,20 @@ enum WebCSS {
         return whole == value && abs(whole) < 1e15 ? String(Int64(whole)) : String(value)
     }
 
+    /// A number written with `decimals` places after the point, as a stepper shows it.
+    static func number(_ value: Double, decimals: Int) -> String {
+        guard value.isFinite else { return "0" }
+        let places = max(0, min(decimals, 6))
+        var scale = 1.0
+        for _ in 0..<places { scale *= 10 }
+        let scaled = Int64((abs(value) * scale).rounded())
+        let whole = scaled / Int64(scale)
+        let sign = value < 0 && scaled != 0 ? "-" : ""
+        guard places > 0 else { return sign + String(whole) }
+        let fraction = String(scaled % Int64(scale))
+        return sign + String(whole) + "." + String(repeating: "0", count: places - fraction.count) + fraction
+    }
+
     /// A length in pixels; nil for none.
     static func pixels(_ value: Double?) -> String? {
         value.map { number(max(0, $0)) + "px" }

@@ -46,6 +46,26 @@ A TextField is an `<input>`, reporting each change of its words and the Return
 key. The tree writes its words only where they differ from what the field
 holds: writing the same words again would move the user's caret to their end.
 
+## Toggles
+
+A Switch is the browser's checkbox with the role of a switch, drawn as one -
+a track and a knob, the accent colour while it is on, the application's tint
+in its place where it gives one - and a CheckBox the checkbox as it is. Each
+says when the user turns it (`change`), and the tree turns it through its
+`checked`.
+
+## Values in a range
+
+A Slider is the browser's range, which says each move of its thumb as it goes
+(`input`). A Stepper is a number field between a button taking a step down
+and one taking a step up; the field's own steps (`stepUp`, `stepDown`) keep
+the number inside its range, and a number typed past an end stands at it.
+Words that say no number leave the number where it was. The range, the step
+and the number of decimals are the host layer's (`ValueArithmetic`), and a
+value the tree writes reaches the control only where the tree changed it or
+its ends (`ElementValues.written`), so a hand on the thumb is never argued
+with. The value standing on the page is where an animation of it starts.
+
 ## Pictures
 
 An Image is an `<img>` showing one of the application's pictures, which

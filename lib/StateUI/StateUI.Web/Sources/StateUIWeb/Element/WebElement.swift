@@ -33,7 +33,12 @@ final class WebElement: NativeElement {
 
     var presentsView: Bool { view != nil }
 
-    func standingValue(_ property: Prop) -> HostValue? { nil }
+    /// A slider's or a stepper's value as it stands on the page, where an animation of it starts.
+    func standingValue(_ property: Prop) -> HostValue? {
+        guard property == .value else { return nil }
+        if let slider = view as? WebSliderView { return .number(slider.value) }
+        return (view as? WebStepperView).map { .number($0.value) }
+    }
 
     /// The browser animates nothing of StateUI's yet: every change arrives at once.
     func animates(_ property: Prop) -> Bool { false }

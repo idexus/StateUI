@@ -45,6 +45,16 @@ STATEUI_WEB(set_style) void stateui_web_set_style(
 /// What a field holds - its `value`, which its attribute is not.
 STATEUI_WEB(set_value) void stateui_web_set_value(int32_t element, const char *text, int32_t length);
 
+/// A property of the element that is true or false - a checkbox's `checked` - and one that is a number - a range's
+/// `valueAsNumber`; read back the same way.
+STATEUI_WEB(set_flag) void stateui_web_set_flag(int32_t element, const char *name, int32_t length, int32_t on);
+STATEUI_WEB(read_flag) int32_t stateui_web_read_flag(int32_t element, const char *name, int32_t length);
+STATEUI_WEB(set_number) void stateui_web_set_number(int32_t element, const char *name, int32_t length, double value);
+STATEUI_WEB(read_number) double stateui_web_read_number(int32_t element, const char *name, int32_t length);
+
+/// Steps a number field `by` steps, up or down, within its range - its own `stepUp`.
+STATEUI_WEB(step) void stateui_web_step(int32_t element, int32_t by);
+
 /// Reads what a field holds into the relay and answers its length; `copy_read` copies it out.
 STATEUI_WEB(read_value) int32_t stateui_web_read_value(int32_t element);
 
