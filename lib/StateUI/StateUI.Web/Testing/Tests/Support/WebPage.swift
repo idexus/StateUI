@@ -53,6 +53,12 @@ enum WebPage {
         stateui_web_testing_tap(element)
     }
 
+    /// The user presses Escape on the modal dialog.
+    static func dismiss(_ element: Int32) {
+        WebRelay.start()
+        stateui_web_testing_dismiss(element)
+    }
+
     /// The page lays the element out at `place` in its parent.
     static func layOut(_ element: Int32, at place: Rect) {
         stateui_web_testing_lay_out(element, place.x, place.y, place.width, place.height)

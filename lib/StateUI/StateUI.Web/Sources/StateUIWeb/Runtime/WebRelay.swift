@@ -175,6 +175,15 @@ enum WebRelay {
     /// Whether the element the nearness being heard is of came near.
     static var eventNear: Bool { stateui_web_event_number(0) != 0 }
 
+    /// Shows the `<dialog>` `element` over the page, modal; `closeModal` closes it.
+    static func showModal(_ element: Int32) {
+        stateui_web_show_modal(element)
+    }
+
+    static func closeModal(_ element: Int32) {
+        stateui_web_close_modal(element)
+    }
+
     /// Scrolls `element` into view, standing as `anchor` (`ScrollAnchor`'s number) says.
     static func scrollIntoView(_ element: Int32, anchor: Int32) {
         stateui_web_scroll_into_view(element, anchor)

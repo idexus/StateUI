@@ -68,8 +68,9 @@ STATEUI_WEB(read_value) int32_t stateui_web_read_value(int32_t element);
 /// Copies what the relay read last into `into`, which holds its length.
 STATEUI_WEB(copy_read) void stateui_web_copy_read(char *into);
 
-/// Calls listener `listener` whenever the element hears `event` - a DOM event's name, `enter` for the Return key, or
-/// `activate` for Return or Space pressed on the element itself.
+/// Calls listener `listener` whenever the element hears `event`: a DOM event's name; `enter` for the Return key;
+/// `activate` for Return or Space pressed on the element itself; `itemtap` for a click on it but on no control inside
+/// it; `dismiss` for the user's asking a modal dialog to close.
 STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, int32_t length, int32_t listener);
 
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
@@ -81,6 +82,10 @@ STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
 /// Calls `listener` as the element comes near the view of the scroller `root` - within half its size - and as it
 /// goes away: the event's number 0 is 1 near, 0 away.
 STATEUI_WEB(watch_nearness) void stateui_web_watch_nearness(int32_t element, int32_t root, int32_t listener);
+
+/// Shows the `<dialog>` element over the page, which takes no input but it until it closes; `close_modal` closes it.
+STATEUI_WEB(show_modal) void stateui_web_show_modal(int32_t element);
+STATEUI_WEB(close_modal) void stateui_web_close_modal(int32_t element);
 
 /// Scrolls the element into its scrollers' view, standing as `anchor` says: 0 at the start, 1 the middle, 2 the end,
 /// 3 the nearest edge.

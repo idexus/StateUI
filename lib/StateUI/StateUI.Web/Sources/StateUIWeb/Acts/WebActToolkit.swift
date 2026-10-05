@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// The Web's part of the acts every host performs (`HostActPerformer`): the clock and the zones as the browser has
-/// them, a word to the screen reader through the page's live region, the focus, a value kept in the browser's
-/// storage for the page's site, and a list scrolled to an item.
+/// them, a question in the browser's modal dialog, a word to the screen reader through the page's live region, the
+/// focus, a value kept in the browser's storage for the page's site, and a list scrolled to an item.
 /// Design: docs/design/platforms/web/runtime.md#acts
 @MainActor
 final class WebActToolkit: ActToolkit {
@@ -30,9 +30,18 @@ final class WebActToolkit: ActToolkit {
         WebRelay.utcOffset(of: zone, on: day)
     }
 
-    /// The page asks nothing of the user yet.
+    /// The question shown, held until the user answers it: the host layer shows one at a time.
+    private var asking: WebQuestion?
+
+    /// Design: docs/design/platforms/web/pages.md#questions-for-the-user
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        false
+        let shown = WebQuestion(question) { [weak self] accepted, words in
+            self?.asking = nil
+            answered(accepted, words)
+        }
+        asking = shown
+        shown.show()
+        return true
     }
 
     func announce(_ words: String) {

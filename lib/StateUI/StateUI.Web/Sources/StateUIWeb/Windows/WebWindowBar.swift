@@ -31,6 +31,12 @@ final class WebWindowBar: WebDOMView {
     var onToggle: () -> Void = {}
     var onBack: () -> Void = {}
 
+    /// What the button closing a sheet does; nil for a window's bar, which has none.
+    var onClose: (() -> Void)? {
+        didSet { closer.setShown(onClose != nil) }
+    }
+    private let closer = WebDOMView(tag: "button")
+
     init() {
         super.init(tag: "header")
         attribute("class", "stateui-bar")
@@ -42,8 +48,11 @@ final class WebWindowBar: WebDOMView {
         }
         glyph(toggle, "sidebar", label: "Sidebar")
         glyph(back, "back", label: "Back")
+        glyph(closer, "close", label: "Close")
+        closer.setShown(false)
         toggle.listen("click") { [weak self] in self?.onToggle() }
         back.listen("click") { [weak self] in self?.onBack() }
+        closer.listen("click") { [weak self] in self?.onClose?() }
         for (index, part) in [lead, title, trailing].enumerated() { WebRelay.insert(part.node, into: node, at: index) }
         for (index, part) in [side, start].enumerated() { WebRelay.insert(part.node, into: lead.node, at: index) }
         for (index, part) in [brand, toggle].enumerated() { WebRelay.insert(part.node, into: side.node, at: index) }
@@ -77,7 +86,8 @@ final class WebWindowBar: WebDOMView {
         style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
-        for (edge, groups) in [(leading, chrome.actions.leading), (trailing, chrome.actions.trailing + [chrome.actions.overflow])] {
+        let ending = chrome.actions.trailing + [chrome.actions.overflow]
+        for (edge, groups) in [(leading, chrome.actions.leading), (trailing, ending)] {
             let items = groups.flatMap { $0 }
             for (index, item) in items.enumerated() {
                 let button = buttons[ObjectIdentifier(item)] ?? WebBarButton()
@@ -88,6 +98,8 @@ final class WebWindowBar: WebDOMView {
         }
         for (key, button) in buttons where kept[key] == nil { button.detach() }
         buttons = kept
+        // A sheet's bar ends with the button closing it, after its own actions.
+        WebRelay.insert(closer.node, into: trailing.node, at: ending.joined().count)
     }
 
     private func glyph(_ button: WebDOMView, _ glyph: String, label: String) {
@@ -102,7 +114,8 @@ final class WebWindowBar: WebDOMView {
 
     override func detach() {
         for button in buttons.values { button.detach() }
-        for part in [toggle, back, mark, name, subtitle, heading, brand, title, leading, trailing, side, start, lead] {
+        let parts = [toggle, back, closer, mark, name, subtitle, heading, brand, title, leading, trailing, side, start, lead]
+        for part in parts {
             part.detach()
         }
         super.detach()

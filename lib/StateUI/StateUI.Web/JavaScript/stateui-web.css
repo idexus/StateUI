@@ -223,6 +223,59 @@ body {
   --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
 }
 [dir="rtl"] .stateui-glyph[data-glyph="back"] { transform: scaleX(-1); }
+.stateui-glyph[data-glyph="close"] {
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
+}
+
+/* A sheet: the browser's modal dialog, a card in the middle over a shade, from the bottom where the page is narrow;
+   its bar the page's chrome, the page under it. */
+.stateui-sheet {
+  width: min(560px, calc(100vw - 32px));
+  height: min(640px, calc(100dvh - 64px));
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  box-shadow: var(--stateui-raised-shadow);
+}
+.stateui-sheet[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); animation: stateui-rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stateui-sheet::backdrop { background: var(--stateui-shade); animation: stateui-fade-in 0.2s ease; }
+.stateui-sheet > .stateui-bar { border-radius: 0; }
+.stateui-sheet-room { display: grid; min-height: 0; min-width: 0; position: relative; }
+@media (max-width: 600px) {
+  .stateui-sheet { width: 100vw; max-width: 100vw; height: calc(100dvh - 48px); margin: auto 0 0; border-radius: 16px 16px 0 0; }
+}
+@keyframes stateui-rise { from { transform: translateY(24px); opacity: 0; } }
+
+/* A question for the user: the browser's modal dialog, its words over its buttons. */
+.stateui-question {
+  width: min(400px, calc(100vw - 32px));
+  padding: 24px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  box-shadow: var(--stateui-raised-shadow);
+}
+.stateui-question[open] { display: grid; gap: 12px; animation: stateui-rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stateui-question::backdrop { background: var(--stateui-shade); }
+.stateui-question h2 { margin: 0; font-size: 18px; font-weight: 650; }
+.stateui-question p { margin: 0; color: var(--stateui-muted); line-height: 1.45; }
+.stateui-question input {
+  font: inherit; min-height: 40px; padding: 8px 12px; border-radius: var(--stateui-radius);
+  border: 1px solid var(--stateui-line-strong); background: var(--stateui-surface); color: var(--stateui-text);
+}
+.stateui-question-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.stateui-question[data-kind="choice"] .stateui-question-buttons { flex-direction: column; align-items: stretch; }
+.stateui-question button {
+  font: inherit; font-weight: 600; min-height: 40px; padding: 0 18px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--stateui-line-strong); background: var(--stateui-raised); color: var(--stateui-text);
+}
+.stateui-question button[data-role="accept"] { background: var(--stateui-accent); border-color: transparent; color: white; }
+.stateui-question button[data-role="destructive"] { color: #d92d20; }
+.stateui-question button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 
 /* A split view: its sidebar beside the detail, sliding out as its column closes, or over it as a drawer where the
    page is narrow. A change the user or the tree makes moves; the first room's does not. */

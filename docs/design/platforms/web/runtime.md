@@ -112,8 +112,10 @@ the first render, written whole as one changes. Where the browser keeps
 nothing - a private window, storage turned off - the value lives as long as
 the page.
 
-The page asks the user nothing yet: a question fails, there being no window
-to ask in.
+A question for the user is the browser's modal dialog
+([pages](pages.md#questions-for-the-user)), held by the acts' part of the
+page until the user answers it: the host layer shows one at a time. An ItemsView's scroll to an item is
+its own ([items](items.md#scrolling-to-an-item)).
 
 ## Motion
 

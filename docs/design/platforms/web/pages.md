@@ -42,6 +42,29 @@ overlay and the layout in it take no touch of their own
 through gives that back to its children only where a child does not let
 them through itself.
 
+## Sheets
+
+A page a modal stack presents stands on a sheet: the browser's own modal
+`<dialog>`, which takes the focus and every input until it closes and shades
+the page under it - a card in the middle, from the bottom where the page is
+narrow. Its bar is the page's chrome (`WindowChrome` of the sheet's page),
+its way back the window's (`WindowPresentation.wayBack`), and it ends with a
+button closing the sheet. Escape asks the same as that button: the browser
+does not close the dialog itself, the modal stack is told how many sheets
+remain, and a sheet closes as the tree lets its page go. The last sheet's
+title names the browser's tab.
+
+## Questions for the user
+
+An alert, a confirmation, a choice of actions and a prompt are the
+browser's modal `<dialog>` too: the title, the message, a prompt's field -
+its keys and help the host layer's traits (`InputTraits`) - and a button
+for each answer, a choice's actions one under another and its dangerous one
+marked. Escape answers as cancelling does, where the question can be
+cancelled, and dismisses an alert. The dialog is held by the acts' part of
+the page until it is answered: its buttons hold it no more than weakly, and
+a question nobody held would never answer.
+
 ## A split view
 
 A split view stands its sidebar in an `<aside>` beside the detail. Where the
