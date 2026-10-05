@@ -195,7 +195,9 @@ body {
   --stateui-glass: color-mix(in srgb, currentColor 13%, transparent);
   --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
 }
-.stateui-bar-actions {
+/* The actions at an edge of the bar: each group of them together on a glass of its own, apart from the next. */
+.stateui-bar-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.stateui-bar-group, .stateui-bar-actions > button {
   display: flex;
   align-items: center;
   min-width: 0;
@@ -204,7 +206,7 @@ body {
   box-shadow: var(--stateui-glass-edge);
 }
 .stateui-bar-actions:not(:has(> :not([hidden]))) { display: none; }
-.stateui-bar-actions button { background: transparent; box-shadow: none; }
+.stateui-bar-group button { background: transparent; box-shadow: none; }
 .stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
 .stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
 .stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }

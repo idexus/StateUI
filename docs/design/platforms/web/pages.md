@@ -7,13 +7,16 @@ beneath it. What the bar shows is the host layer's `WindowChrome`
 
 ## The window's bar
 
-The bar is a `<header>` with the role of a toolbar, over the window's room. It
+The bar is a `<header>` with the role of a toolbar, over the window's room -
+none where the page the user sees stands with no bar (`showsNavigationBar`),
+the room then the window's whole height. It
 leads with the split view's toggle where the window shows a split view, the
 way back where the visible stack offers it, and the leading actions the
 visible page's path declares; the page's title stands in its middle - or the
 view the page, or else its stack, declares in its place (`chromeTitleView`),
 at its own size, the same view for as long as it is declared - and the
-trailing actions and the overflow at its end. Each action is a button with
+trailing actions and the overflow at its end, each group of actions together
+on a glass of its own, apart from the next. Each action is a button with
 its picture, its words beside it where it shows them, its name for assistive
 technology and its tooltip. The bar's colours are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the

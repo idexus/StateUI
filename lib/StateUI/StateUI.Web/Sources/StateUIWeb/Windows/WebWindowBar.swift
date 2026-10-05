@@ -30,6 +30,9 @@ final class WebWindowBar: WebDOMView {
     /// The button of each action shown, by the item it stands for.
     private(set) var buttons: [ObjectIdentifier: WebBarButton] = [:]
 
+    /// The groups of actions shown, each a run of buttons standing together.
+    private var groups: [WebDOMView] = []
+
     /// What the toggle and the way back do.
     var onToggle: () -> Void = {}
     var onBack: () -> Void = {}
@@ -95,25 +98,34 @@ final class WebWindowBar: WebDOMView {
         style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
+        var made: [WebDOMView] = []
         let ending = chrome.actions.trailing
-        for (edge, groups) in [(leading, chrome.actions.leading), (trailing, ending)] {
-            let items = groups.flatMap { $0 }
-            for (index, item) in items.enumerated() {
-                let button = buttons[ObjectIdentifier(item)] ?? WebBarButton()
-                button.show(item)
-                WebRelay.insert(button.node, into: edge.node, at: index)
-                kept[ObjectIdentifier(item)] = button
+        for (edge, runs) in [(leading, chrome.actions.leading), (trailing, ending)] {
+            for (place, items) in runs.enumerated() {
+                let group = place < groups.count ? groups.removeFirst() : WebDOMView(tag: "div")
+                group.attribute("class", "stateui-bar-group")
+                group.attribute("role", "group")
+                WebRelay.insert(group.node, into: edge.node, at: place)
+                for (index, item) in items.enumerated() {
+                    let button = buttons[ObjectIdentifier(item)] ?? WebBarButton()
+                    button.show(item)
+                    WebRelay.insert(button.node, into: group.node, at: index)
+                    kept[ObjectIdentifier(item)] = button
+                }
+                made.append(group)
             }
         }
         for (key, button) in buttons where kept[key] == nil { button.detach() }
+        for gone in groups { gone.detach() }
         buttons = kept
+        groups = made
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
         behind = chrome.actions.overflow.map(MenuEntry.entry(of:))
         if !behind.isEmpty, !chrome.menus.menus.isEmpty { behind.append(.separator) }
         behind += chrome.menus.menus
         more.setShown(!behind.isEmpty)
-        WebRelay.insert(more.node, into: trailing.node, at: ending.joined().count)
-        WebRelay.insert(closer.node, into: trailing.node, at: ending.joined().count + 1)
+        WebRelay.insert(more.node, into: trailing.node, at: ending.count)
+        WebRelay.insert(closer.node, into: trailing.node, at: ending.count + 1)
     }
 
     /// The title's words, or `view` in their place where the page declares one.
@@ -143,6 +155,7 @@ final class WebWindowBar: WebDOMView {
 
     override func detach() {
         for button in buttons.values { button.detach() }
+        for group in groups { group.detach() }
         let parts = [
             toggle, back, closer, more, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
         ]
