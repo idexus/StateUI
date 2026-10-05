@@ -114,7 +114,9 @@ final class WebActToolkit: ActToolkit {
     }
 
     func performRegistered(_ call: HostActCall) -> Bool {
-        false
+        WebInterop.acts.perform(
+            call, in: renderer.runtime.tree, core: renderer.runtime.core, view: { ($0.native as? WebElement)?.view },
+            log: log)
     }
 
     func log(_ message: String) {

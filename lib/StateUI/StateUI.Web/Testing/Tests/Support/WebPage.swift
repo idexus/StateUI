@@ -59,6 +59,12 @@ enum WebPage {
         stateui_web_testing_dismiss(element)
     }
 
+    /// The application's own script tells `name` the words `words`.
+    static func tell(_ name: String, _ words: String) {
+        WebRelay.start()
+        withUTF8(name) { name, length in withUTF8(words) { stateui_web_testing_tell(name, length, $0, $1) } }
+    }
+
     /// The page lays the element out at `place` in its parent.
     static func layOut(_ element: Int32, at place: Rect) {
         stateui_web_testing_lay_out(element, place.x, place.y, place.width, place.height)

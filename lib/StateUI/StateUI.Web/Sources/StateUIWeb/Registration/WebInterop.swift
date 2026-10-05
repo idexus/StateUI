@@ -4,6 +4,15 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
+/// What an APPLICATION registers with this host, beside the elements the host realizes itself: the acts it performs,
+/// by the host layer's rule. Said once, before `StateUIWeb.run(name:)`.
+/// Design: docs/design/platforms/web/interop.md
+@MainActor
+enum WebInterop {
+    /// The application's acts, performed where no act of the library's answers the call.
+    static let acts = InteropActs<WebDOMView>()
+}
+
 /// A control of the application's own on this host: an object that makes and holds the page's element it shows.
 ///
 /// The host places, sizes and shows the element as it does its own, and holds the control for as long as its
@@ -41,6 +50,112 @@ public final class WebPageElement {
         let listener = WebRelay.listener(action)
         listeners.append(listener)
         WebRelay.listen(node, event, listener)
+    }
+
+    /// Runs `action` whenever the element raises `event`, handed the number its `detail` carries - a custom
+    /// element's `CustomEvent`, `new CustomEvent("lamptap", { detail: 2 })`.
+    public func listen(_ event: String, _ action: @escaping @MainActor (Double) -> Void) {
+        listen(event) { action(WebRelay.eventDetail) }
+    }
+
+    /// Calls the element's own method `name`, with nothing - a custom element's, `flash()`.
+    public func call(_ name: String) {
+        WebRelay.callMethod(node, name)
+    }
+}
+
+/// The application's own scripts - its head's `Page/*.js` - as Swift reaches them: an act they answer, and what
+/// they tell. A script answers an act by name on `StateUI.acts`, and tells with `StateUI.tell(name, words)`:
+///
+///     StateUI.acts.readClipboard = () => navigator.clipboard.readText();
+///     StateUI.tell("battery", `${battery.level} ${battery.charging}`);
+///
+/// Words cross both ways: an application says in them what it hands over and reads back.
+@MainActor
+public enum StateUIScripts {
+    /// Calls the act `name` of the application's scripts, handing it `words`; answers the words its promise gives,
+    /// "" for none, and throws why where it breaks - or where no script answers that name.
+    public static func call(_ name: String, _ words: String = "") async throws -> String {
+        try await withCheckedThrowingContinuation { (settled: CheckedContinuation<String, any Error>) in
+            WebRelay.callScript(name, words, WebRelay.once {
+                let words = WebRelay.scriptWords
+                if WebRelay.scriptKept {
+                    settled.resume(returning: words)
+                } else {
+                    settled.resume(throwing: StateUIError(message: words))
+                }
+            })
+        }
+    }
+
+    /// Runs `action` each time the application's scripts tell `name`, handed the words told - the last told before
+    /// first, where they told it already.
+    public static func hear(_ name: String, _ action: @escaping @MainActor (String) -> Void) {
+        WebRelay.listenToScript(name, WebRelay.listener { action(WebRelay.scriptWords) })
+    }
+}
+
+/// The acts an application performs on this host - what its own calls, `stateUICall` and an `Aim`, reach.
+///
+/// Said once, from the application's Web head, before `StateUIWeb.run(name:)`.
+@MainActor
+public enum StateUIActs {
+    /// Performs an act of the application's - one no control stands behind - when the application calls it with
+    /// `stateUICall`. A performer may await - a browser reads its clipboard asynchronously - and the call is
+    /// answered once it returns; what it throws fails the call. A second registration replaces the first.
+    ///
+    ///     StateUIActs.add(GalleryContract.readClipboard) {
+    ///         try await StateUIScripts.call("readClipboard")
+    ///     }
+    public static func add<
+        Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
+    >(
+        _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
+        _ perform: @escaping @MainActor (repeat each Argument) async throws -> (repeat each Answer)
+    ) {
+        WebInterop.acts.add(act, perform)
+    }
+
+    /// Performs an act AIMED at one of the application's own elements, when the application calls it through an
+    /// `Aim`: the performer is handed the element's control. An aim at nothing, or at an element no longer on
+    /// screen, fails the call with that reason.
+    ///
+    ///     StateUIActs.add(RatingBarContract.flash, on: RatingBarElement.self) { bar in
+    ///         bar.element.call("flash")
+    ///     }
+    public static func add<
+        Owner: Contract, Made: WebControl, each Argument: HostRepresentable, each Answer: HostRepresentable
+    >(
+        _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
+        on control: Made.Type,
+        _ perform: @escaping @MainActor (Made, repeat each Argument) async throws -> (repeat each Answer)
+    ) {
+        WebInterop.acts.add(act, control: { ($0 as? WebHostedView<Made>)?.control }, perform)
+    }
+}
+
+/// The events an application raises through this host - the ones no control raises, heard by every
+/// `HostEvents.on`.
+public enum StateUIEvents {
+    /// Declares an event of the application's this host raises, where its source is wired: a handler listening for
+    /// an event nothing declared is told, once, that it will not hear it.
+    ///
+    ///     StateUIEvents.raises(GalleryContract.batteryChanged)
+    @MainActor
+    public static func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        WebRegistrations.registry.raises(event)
+    }
+
+    /// Raises an event of the application's - one no control raises - with the values its contract declares;
+    /// every `HostEvents.on` subscription to the member hears it. Answers how many heard it.
+    ///
+    ///     StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+    @discardableResult
+    public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
+        _ value: repeat each Value
+    ) -> Int {
+        CoreLink().raise(event, repeat each value)
     }
 }
 

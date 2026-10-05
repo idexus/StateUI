@@ -19,4 +19,5 @@ STATEUI_WEB_TESTING(enter) void stateui_web_testing_enter(int32_t element, const
 STATEUI_WEB_TESTING(leave) void stateui_web_testing_leave(int32_t element);
 STATEUI_WEB_TESTING(tap) void stateui_web_testing_tap(int32_t element);
 STATEUI_WEB_TESTING(dismiss) void stateui_web_testing_dismiss(int32_t element);
+STATEUI_WEB_TESTING(tell) void stateui_web_testing_tell(const char *name, int32_t length, const char *words, int32_t wordsLength);
 STATEUI_WEB_TESTING(lay_out) void stateui_web_testing_lay_out(int32_t element, double x, double y, double width, double height);

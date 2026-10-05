@@ -113,6 +113,19 @@ STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) void stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
 
+/// Calls the act `name` of the application's own scripts - `StateUI.acts` - with the words, and `listener` once its
+/// promise settles: the event's number 0 is 1 kept, 0 broken, and `script_words` reads what it gave, or why.
+STATEUI_WEB(call_script) void stateui_web_call_script(
+    const char *name, int32_t length, const char *words, int32_t wordsLength, int32_t listener);
+STATEUI_WEB(script_words) int32_t stateui_web_script_words(void);
+
+/// Calls `listener` each time the application's scripts tell `name` - `StateUI.tell` - the last told first, the
+/// words read by `script_words`.
+STATEUI_WEB(listen_script) void stateui_web_listen_script(const char *name, int32_t length, int32_t listener);
+
+/// Calls the element's own method `name`, with nothing.
+STATEUI_WEB(call_method) void stateui_web_call_method(int32_t element, const char *name, int32_t length);
+
 /// Shows the `<dialog>` element over the page, which takes no input but it until it closes; `close_modal` closes it.
 STATEUI_WEB(show_modal) void stateui_web_show_modal(int32_t element);
 STATEUI_WEB(close_modal) void stateui_web_close_modal(int32_t element);

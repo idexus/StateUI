@@ -55,6 +55,17 @@ enum WebRelay {
         listeners[number] = nil
     }
 
+    /// A listener for `action`, let go of as the page calls it.
+    static func once(_ action: @escaping () -> Void) -> Int32 {
+        let number = nextListener
+        nextListener += 1
+        listeners[number] = { [number] in
+            listeners[number] = nil
+            action()
+        }
+        return number
+    }
+
     static var body: Int32 { stateui_web_body() }
 
     static func create(_ tag: String) -> Int32 {
@@ -189,6 +200,30 @@ enum WebRelay {
     static func listenToHistory(_ listener: Int32) {
         stateui_web_listen_history(listener)
     }
+
+    /// Calls the act `name` of the application's scripts with `words`; `listener` hears its promise settle.
+    static func callScript(_ name: String, _ words: String, _ listener: Int32) {
+        utf8(name) { name, length in utf8(words) { stateui_web_call_script(name, length, $0, $1, listener) } }
+    }
+
+    /// What the scripts' act gave, or why it broke, or what they told.
+    static var scriptWords: String { copyRead(length: stateui_web_script_words()) }
+
+    /// Whether the scripts' act being heard kept its promise.
+    static var scriptKept: Bool { stateui_web_event_number(0) != 0 }
+
+    /// Calls `listener` each time the application's scripts tell `name`.
+    static func listenToScript(_ name: String, _ listener: Int32) {
+        utf8(name) { stateui_web_listen_script($0, $1, listener) }
+    }
+
+    /// Calls `element`'s own method `name`.
+    static func callMethod(_ element: Int32, _ name: String) {
+        utf8(name) { stateui_web_call_method(element, $0, $1) }
+    }
+
+    /// The number the event being heard carries in its `detail` - a custom element's, or a click's count.
+    static var eventDetail: Double { stateui_web_event_number(0) }
 
     /// The `<iframe>` `element` shows `source`.
     static func showInFrame(_ element: Int32, _ source: WebViewSource) {

@@ -38,4 +38,13 @@ final class WebInteropTests: XCTestCase {
             [Prop(ProbeContract.tone.name)], to: view, of: ProbeContract.nodeType, reading: { _ in .number(0.4) })
         XCTAssertEqual(made.tone, 0.4)
     }
+
+    /// What the application's scripts tell reaches every hearer of its name, with the words told.
+    func testWhatTheScriptsTellIsHeard() {
+        var heard: [String] = []
+        StateUIScripts.hear("battery") { heard.append($0) }
+        WebPage.tell("battery", "0.8 true")
+        WebPage.tell("connection", "none")
+        XCTAssertEqual(heard, ["0.8 true"])
+    }
 }

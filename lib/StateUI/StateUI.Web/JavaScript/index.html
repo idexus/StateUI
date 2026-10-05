@@ -11,6 +11,11 @@
 <meta name="color-scheme" content="light dark">
 <title>{{application}}</title>
 <link rel="stylesheet" href="./stateui-web.css?v={{stamp}}">
+<script>
+  // What the application's own scripts answer it and tell it, there before them: StateUI.acts.<name> answers an
+  // act, StateUI.tell(name, words) tells the application, whenever the module stands to hear it.
+  globalThis.StateUI = { acts: {}, told: new Map(), tell(name, words) { this.told.set(name, String(words ?? "")); this.heard?.(name); } };
+</script>
 {{scripts}}
 <script type="module">
   import { start } from "./stateui-web.js?v={{stamp}}";

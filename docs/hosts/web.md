@@ -117,6 +117,45 @@ The host places, sizes and shows the element as it does its own, and lets
 go of it with its element. The Gallery's cube - `<gallery-cube3d>`, WebGL 2
 on a canvas of its own - is `apps/Gallery/Platforms/Web/`.
 
+### Acts and events
+
+An act of the application's own is performed with `StateUIActs.add`, and an
+act aimed at one of its controls with `StateUIActs.add(_:on:_:)`, which hands
+the performer that control. An event of the application's own is declared
+with `StateUIEvents.raises` and raised with `StateUIEvents.raise`; every
+`HostEvents.on` subscription hears it.
+
+What only a page's JavaScript reaches - its clipboard, its battery - the
+application's own scripts reach for it. A script answers an act by name on
+`StateUI.acts`, and tells with `StateUI.tell(name, words)`; Swift calls the
+one with `StateUIScripts.call` - awaiting its promise, throwing why it broke -
+and hears the other with `StateUIScripts.hear`:
+
+```swift quote
+StateUIActs.add(GalleryContract.readClipboard) {
+    try await StateUIScripts.call("readClipboard")
+}
+
+StateUIScripts.hear("battery") { words in
+    let (level, charging) = GalleryActs.battery(words)
+    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+}
+```
+
+```text
+// Page/gallery-acts.js
+StateUI.acts.readClipboard = () => navigator.clipboard.readText();
+navigator.getBattery?.().then((power) => {
+    const tell = () => StateUI.tell("battery", `${power.level} ${power.charging}`);
+    power.addEventListener("levelchange", tell);
+    tell();
+});
+```
+
+Words cross both ways: what an act takes and answers is written in them. A
+page served over plain http has no clipboard - its act fails with the
+reason - and a browser that says nothing of its battery answers none.
+
 ## Running
 
 ```bash
