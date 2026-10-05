@@ -28,11 +28,14 @@ extension WebElement {
         return true
     }
 
-    /// Keeps a split view with the tree: it shows its sidebar as the tree says, and hears the user show or hide it.
-    func followPages(changed: Set<Prop>) {
+    /// Keeps a split view with the tree: it shows its sidebar as the tree says - at once the first time - and hears
+    /// the user show or hide it.
+    func followPages(changed: Set<Prop>, wasDescribed: Bool) {
         guard let split = view as? WebSplitView else { return }
         split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
-        if changed.contains(.showsSidebar) { split.present(element.value(.showsSidebar)?.bool == true) }
+        if changed.contains(.showsSidebar) {
+            split.present(element.value(.showsSidebar)?.bool == true, moves: wasDescribed)
+        }
     }
 
     /// The sidebar showed or hid: the host layer tells its page and the state, and the chrome follows.

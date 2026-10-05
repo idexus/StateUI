@@ -42,6 +42,14 @@ tree's, else the user's, and the user's choice is heard by the host layer
 view is given decides once (`SidebarAdaptation`): at least the breakpoint
 wide, the sidebar shows, as the user's.
 
+Beside the detail the sidebar moves in and out: its column opens or closes
+while the sidebar slides with the column's edge, both on one timing, and the
+bar's parts travel with them - the toggle to the bar's edge, the title to its
+middle, the name fading - its column widths stated in pixels in both states,
+so the browser moves them between the two. The first room's decision, and
+the tree's first word, stand at once: what the user first sees is the page
+itself (`data-moves`). Where the user asks for less motion nothing moves.
+
 ## A stack
 
 A stack holds its pages one over another in one cell, the top one shown:

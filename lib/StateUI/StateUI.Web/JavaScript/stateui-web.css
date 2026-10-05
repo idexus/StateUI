@@ -18,6 +18,8 @@
   --stateui-radius: 10px;
   --stateui-bar-height: 56px;
   --stateui-sidebar-width: 288px;
+  --stateui-bar-side: 64px;
+  --stateui-slide: 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
   --stateui-raised-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 12px 32px rgb(15 23 42 / 0.14);
   --stateui-focus: 0 0 0 3px color-mix(in srgb, var(--stateui-accent) 38%, transparent);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -57,8 +59,7 @@ body {
 }
 .stateui-room { display: grid; min-height: 0; min-width: 0; position: relative; }
 
-/* The bar: what leads it, the page's title centred, the trailing actions. Beside a sidebar shown it stands in two
-   parts, the application's name and the toggle over the sidebar, the title centred over the detail. */
+/* The bar: what leads it, the page's title centred, the trailing actions. */
 .stateui-bar {
   position: relative;
   z-index: 10;
@@ -75,7 +76,6 @@ body {
   -webkit-backdrop-filter: saturate(180%) blur(18px);
 }
 .stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.stateui-bar[data-sidebar] .stateui-bar-brand { display: none; }
 .stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
 .stateui-bar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar-brand img { width: 28px; height: 28px; border-radius: 8px; }
@@ -91,22 +91,42 @@ body {
   text-overflow: ellipsis;
 }
 .stateui-bar > .stateui-bar-actions { grid-column: 3; justify-self: end; }
+
+/* With a split view, five columns whose widths move with its sidebar: the part over the sidebar - the toggle alone
+   while the sidebar is hidden - what leads the detail, the title, the trailing actions, and as much again as the
+   first part, so the title stands centred over the detail beside a sidebar shown and over the whole bar else. */
+.stateui-bar[data-sidebar] {
+  grid-template-columns: var(--stateui-bar-side) minmax(0, 1fr) auto minmax(0, 1fr) var(--stateui-bar-side);
+  column-gap: 0;
+  padding: 0;
+  transition: grid-template-columns var(--stateui-slide);
+}
+.stateui-bar[data-sidebar] .stateui-bar-lead { display: contents; }
+.stateui-bar[data-sidebar] .stateui-bar-side {
+  position: relative;
+  align-self: stretch;
+  justify-content: flex-end;
+  padding-inline: 12px 10px;
+}
+.stateui-bar[data-sidebar] .stateui-bar-brand {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+}
+.stateui-bar[data-sidebar] .stateui-bar-start { transition: padding var(--stateui-slide); }
+.stateui-bar[data-sidebar] .stateui-bar-title { grid-column: 3; padding-inline: 10px; }
+.stateui-bar[data-sidebar] > .stateui-bar-actions { grid-column: 4 / 6; margin-inline-end: 12px; }
 @media (min-width: 901px) {
   .stateui-bar[data-sidebar="shown"] {
-    grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr) auto minmax(0, 1fr);
-    padding-inline-start: 0;
+    grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr) auto minmax(0, 1fr) 0px;
   }
-  .stateui-bar[data-sidebar="shown"] .stateui-bar-lead { display: contents; }
-  .stateui-bar[data-sidebar="shown"] .stateui-bar-side {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    padding-inline: 12px;
-  }
-  .stateui-bar[data-sidebar="shown"] .stateui-bar-brand { display: flex; grid-column: 2; }
-  .stateui-bar[data-sidebar="shown"] .stateui-bar-side > button { grid-column: 3; justify-self: end; }
-  .stateui-bar[data-sidebar="shown"] .stateui-bar-title { grid-column: 3; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-brand { opacity: 1; visibility: visible; transition: opacity 0.3s ease 0.1s; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-start { padding-inline-start: 10px; }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-title[data-repeats] { visibility: hidden; }
-  .stateui-bar[data-sidebar="shown"] > .stateui-bar-actions { grid-column: 4; }
 }
 
 /* Its buttons: round and glassy, each on its own, an action group's sharing one capsule. */
@@ -165,23 +185,32 @@ body {
 }
 [dir="rtl"] .stateui-glyph[data-glyph="back"] { transform: scaleX(-1); }
 
-/* A split view: its sidebar beside the detail, or over it as a drawer where the page is narrow. */
+/* A split view: its sidebar beside the detail, sliding out as its column closes, or over it as a drawer where the
+   page is narrow. A change the user or the tree makes moves; the first room's does not. */
 .stateui-split {
   display: grid;
   grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr);
   min-height: 0;
   min-width: 0;
+  overflow: hidden;
 }
-.stateui-split[data-sidebar="hidden"] { grid-template-columns: 0 minmax(0, 1fr); }
+.stateui-split[data-sidebar="hidden"] { grid-template-columns: 0px minmax(0, 1fr); }
+.stateui-split[data-moves] { transition: grid-template-columns var(--stateui-slide); }
 .stateui-sidebar {
   display: grid;
+  width: var(--stateui-sidebar-width);
   min-height: 0;
   min-width: 0;
   overflow: hidden;
   background: var(--stateui-raised);
   border-inline-end: 1px solid var(--stateui-line);
 }
-.stateui-split[data-sidebar="hidden"] > .stateui-sidebar { border: 0; visibility: hidden; }
+.stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(-100%); visibility: hidden; }
+[dir="rtl"] .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(100%); }
+.stateui-split[data-moves] > .stateui-sidebar { transition: transform var(--stateui-slide), visibility 0s; }
+.stateui-split[data-moves][data-sidebar="hidden"] > .stateui-sidebar {
+  transition: transform var(--stateui-slide), visibility 0s linear 0.32s;
+}
 .stateui-detail { display: grid; min-height: 0; min-width: 0; }
 .stateui-scrim { display: none; }
 
@@ -200,7 +229,7 @@ body {
     transform: translateX(-104%);
     transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
-  [dir="rtl"] .stateui-sidebar { transform: translateX(104%); }
+  [dir="rtl"] .stateui-sidebar, [dir="rtl"] .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(104%); }
   .stateui-split[data-sidebar="shown"] > .stateui-sidebar { transform: none; }
   .stateui-split[data-sidebar="shown"] > .stateui-scrim {
     display: block;
@@ -392,6 +421,9 @@ body {
 @keyframes stateui-turn { to { transform: rotate(1turn); } }
 @keyframes stateui-arrive { from { opacity: 0; transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) {
-  .stateui-sidebar, .stateui-stack > [data-arriving], .stateui-scrim { transition: none !important; animation: none !important; }
+  .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving], .stateui-scrim {
+    transition: none !important;
+    animation: none !important;
+  }
   .stateui-activity[data-running] { animation-duration: 2.4s; }
 }

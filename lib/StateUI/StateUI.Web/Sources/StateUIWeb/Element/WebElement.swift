@@ -46,7 +46,7 @@ final class WebElement: NativeElement {
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         applyProperties(changed: changed)
-        followPages(changed: changed)
+        followPages(changed: changed, wasDescribed: wasDescribed)
         arrangeChildren()
         listenForTheUser()
         followFrame()
