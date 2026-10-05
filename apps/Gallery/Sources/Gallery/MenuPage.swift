@@ -139,10 +139,10 @@ struct MenuPage: View {
         }
     }
 
-    /// What is underneath: the platform compiled in, and the formFactor the host
-    /// answered before the first render.
+    /// What is underneath: the platform compiled in, the formFactor the host
+    /// answered before the first render, and the StateUI release it is built on.
     private var footer: some View {
-        Text("native: \(stateUIPlatform()) · \(device.info.formFactor)")
+        Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)

@@ -177,6 +177,7 @@ struct RuntimeSummary: View {
     var body: some View {
         VStack {
             Text("\(app.info.name) \(app.info.versionString)")
+            Text("StateUI \(stateUIVersion()) for \(stateUIPlatform())")
             Text("\(device.info.platform) · \(device.info.formFactor)")
             Text("\(Int(device.display.width / max(device.display.density, 1))) points wide")
             Text("\(locale.language)-\(locale.region) · \(locale.timeZone)")
@@ -184,6 +185,10 @@ struct RuntimeSummary: View {
     }
 }
 ```
+
+What this library is comes compiled in, never from a host: `stateUIVersion()`
+names the StateUI release, `stateUIPlatform()` the platform and architecture it
+was compiled for.
 
 Use `device.info.formFactor` for a semantic form-factor decision, never for
 layout: a window can be smaller than its display, and resized. Lay out by the
