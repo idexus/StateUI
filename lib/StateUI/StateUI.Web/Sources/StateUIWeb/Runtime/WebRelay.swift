@@ -163,7 +163,9 @@ enum WebRelay {
     static var eventScale: Double { stateui_web_event_number(10) }
 
     /// The size of the element hearing the event.
-    static var eventSize: LayoutSize { LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12)) }
+    static var eventSize: LayoutSize {
+        LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12))
+    }
 
     /// The pointer of the event being heard goes on telling `element` until it lets go.
     static func capturePointer(_ element: Int32) {
@@ -240,6 +242,15 @@ enum WebRelay {
     static var now: Double { stateui_web_now() }
 
     static var prefersDark: Bool { stateui_web_prefers_dark() != 0 }
+
+    /// Draws a canvas's `numbers` and `words` (WebCanvasStroke) on the `<canvas>` element.
+    static func drawCanvas(_ element: Int32, _ numbers: [Double], words: [String]) {
+        utf8(words.joined(separator: "\u{0}")) { text, length in
+            numbers.withUnsafeBufferPointer {
+                stateui_web_draw_canvas(element, $0.baseAddress, Int32(numbers.count), text, length)
+            }
+        }
+    }
 
     /// The local time of day.
     static var localTime: (hour: Int, minute: Int, second: Int, millisecond: Int) {

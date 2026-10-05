@@ -19,6 +19,7 @@ enum WebRegistrations {
         pickers(registry)
         dates(registry)
         shapes(registry)
+        canvas(registry)
         fields(registry)
         layouts(registry)
         pictures(registry)

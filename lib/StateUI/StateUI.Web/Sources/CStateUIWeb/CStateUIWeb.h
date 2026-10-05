@@ -126,6 +126,11 @@ STATEUI_WEB(touch_screen) double stateui_web_touch_screen(void);
 /// Whether the user asked for less motion.
 STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);
 
+/// Draws a canvas's drawing on the `<canvas>` element, sized to its room at the screen's own density: `count`
+/// numbers of operations (WebCanvasStroke.swift), and the words they write, each ended by a zero byte.
+STATEUI_WEB(draw_canvas) void stateui_web_draw_canvas(
+    int32_t element, const double *numbers, int32_t count, const char *words, int32_t length);
+
 /// The local time of day into `into`: hour, minute, second, millisecond.
 STATEUI_WEB(local_time) void stateui_web_local_time(double *into);
 
@@ -134,7 +139,8 @@ STATEUI_WEB(local_zone) int32_t stateui_web_local_zone(void);
 
 /// How far the zone named - the local one for none - is from UTC at noon on the day - today for a year of 0 - in
 /// minutes; NaN for a zone the browser does not know.
-STATEUI_WEB(utc_offset) double stateui_web_utc_offset(const char *zone, int32_t length, int32_t year, int32_t month, int32_t day);
+STATEUI_WEB(utc_offset) double stateui_web_utc_offset(
+    const char *zone, int32_t length, int32_t year, int32_t month, int32_t day);
 
 /// Tells a screen reader the words, through the page's polite live region.
 STATEUI_WEB(announce) void stateui_web_announce(const char *words, int32_t length);

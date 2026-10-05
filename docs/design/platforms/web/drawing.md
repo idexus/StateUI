@@ -47,3 +47,19 @@ two layers: the fill cut to the inside (`padding-box`), the outline's gradient
 to the whole box (`border-box`), which the border shows. A box with a look of
 its own and no outline loses the browser's border, so a button drawn by the
 application carries no frame of the browser's.
+
+## A canvas
+
+A Canvas is a `<div>` taking the room its layout gives it, with a `<canvas>`
+laid over it whole: the surface's bitmap - the room at the screen's own
+density - takes no room of its own, which a canvas standing in the layout
+itself would, growing each time its bitmap followed its size. The drawing
+is the host layer's instructions and pen (`CanvasInstruction`, `CanvasPen`),
+its arcs the host layer's curves (`CanvasArithmetic.arc`), its rounded
+rectangles' corners fitted as a box's are; Swift turns them into one list of
+numbers and words (`WebCanvasStroke`) the relay replays on the 2D context in
+one call, cut to the room, and again whenever the room changes size. Words
+wrap at their room's width in the system's font, placed across and down it
+as their alignments say. A press, its drag and its release are told where
+they are on the canvas, the pointer captured until it lets go.
+

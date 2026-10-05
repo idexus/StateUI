@@ -49,7 +49,8 @@ extension WebElement {
             let pointer = WebRelay.eventPointer
             guard let self, let view, pointer.kind != 0 || pointer.button == 0 else { return }
             WebRelay.capturePointer(view.node)
-            hearPress(press.down(pointer.id, at: pointer.at, kind: pointer.kind, origin: origin, size: WebRelay.eventSize))
+            hearPress(press.down(
+                pointer.id, at: pointer.at, kind: pointer.kind, origin: origin, size: WebRelay.eventSize))
         }
         view.listen("pointermove") { [weak self] in
             guard let self else { return }
@@ -66,7 +67,8 @@ extension WebElement {
             let wheel = WebRelay.eventWheel
             guard let self, wheel.pinches, element.hearing.contains(.pinches) else { return }
             WebRelay.takeEvent()
-            hearPress(press.trackpad(scale: press.wheeled(down: wheel.down), at: WebRelay.eventPoint, size: WebRelay.eventSize))
+            hearPress(press.trackpad(
+                scale: press.wheeled(down: wheel.down), at: WebRelay.eventPoint, size: WebRelay.eventSize))
             wheelStill()
         }
         for event in ["gesturestart", "gesturechange"] {

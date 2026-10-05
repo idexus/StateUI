@@ -283,6 +283,10 @@ body {
 .stateui-stack { display: grid; min-height: 0; min-width: 0; }
 .stateui-stack > [data-covered] { display: none !important; }
 
+/* A canvas: its drawing on a surface filling the room its layout gives it, the surface taking no room of its own. */
+.stateui-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }
+.stateui-canvas > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
 /* A tabbed view: the strip of its tabs' names over the one cell its pages share, the chosen one shown. */
 .stateui-tabs { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
 .stateui-tabs > .stateui-tab-strip {
