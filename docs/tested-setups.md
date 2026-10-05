@@ -65,7 +65,7 @@ suite in Node, and the conformance suite in a headless browser
 
 ## A Windows machine: WinUI 3
 
-Last verified 2026-10-03.
+Last verified 2026-10-05.
 
 | | |
 | --- | --- |
@@ -74,7 +74,7 @@ Last verified 2026-10-03.
 | Swift | the swift.org toolchain `swift-6.4-RELEASE` (6.4.0, Asserts), ARM64, with its Embedded Python 3.10.1 for LLDB |
 | C++ | Visual Studio Community 2026 18.10.2, MSVC 14.51, the ARM64 C++ tools |
 | Windows SDK | 10.0.26100 |
-| Editor | VS Code 1.140.0; the StateUI extension 0.5.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.7.20261002 |
+| Editor | VS Code 1.140.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.7.20261004 |
 | Node.js | 24.21.0, for building and testing the extension |
 | Git | 2.54.0 |
 
