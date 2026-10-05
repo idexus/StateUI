@@ -45,8 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">cannot read what reaches Text - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td></td><td>top layer of a root <code>Grid</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GtkOverlay</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>positioned element above the page</td></tr>
-<tr><td colspan="3">no host yet</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td></td><td>positioned element above the page</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/OverlayContract.swift`.

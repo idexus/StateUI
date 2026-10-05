@@ -1,0 +1,13 @@
+# revision 1.1
+Grid.avoidsSafeArea: not realized
+Grid.clipsContent: ◐ cannot read the colour of ZStack - the Web's driver has no path for it yet
+Grid.letsInputThrough: ✅
+HStack.avoidsSafeArea: not realized
+HStack.clipsContent: ◐ cannot read the colour of ZStack - the Web's driver has no path for it yet
+HStack.letsInputThrough: ✅
+VStack.avoidsSafeArea: not realized
+VStack.clipsContent: ◐ cannot read the colour of ZStack - the Web's driver has no path for it yet
+VStack.letsInputThrough: ✅
+ZStack.avoidsSafeArea: not realized
+ZStack.clipsContent: ◐ cannot read the colour of ZStack - the Web's driver has no path for it yet
+ZStack.letsInputThrough: ✅

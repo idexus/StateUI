@@ -680,6 +680,7 @@ struct ControlDictionary {
     /// The folder each host's runs write their verdicts in under `lib/StateUI/exports/marks`, by the host's column.
     static let folders = [
         "AppKit": "appkit", "UIKit": "uikit", "Android Views": "android", "WinUI 3": "winui", "GTK 4": "gtk",
+        "Web": "web",
     ]
 
     /// Every host's column: what its runs' verdicts said, each subject once, the worst its cases gave; stale where a

@@ -1,0 +1,21 @@
+# revision 2.1
+ModalStack.barBackgroundColor: cannot read barBackgroundColor of ModalStack - the Web's driver has no path for it yet
+ModalStack.barForegroundColor: cannot read barForegroundColor of ModalStack - the Web's driver has no path for it yet
+ModalStack.barIcon: – A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon.
+ModalStack.barSubtitle: cannot read barSubtitle of ModalStack - the Web's driver has no path for it yet
+ModalStack.barTitle: cannot read barTitle of ModalStack - the Web's driver has no path for it yet
+NavigationStack.barBackgroundColor: cannot read barBackgroundColor of NavigationStack - the Web's driver has no path for it yet
+NavigationStack.barForegroundColor: cannot read barForegroundColor of NavigationStack - the Web's driver has no path for it yet
+NavigationStack.barIcon: – A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon.
+NavigationStack.barSubtitle: cannot read barSubtitle of NavigationStack - the Web's driver has no path for it yet
+NavigationStack.barTitle: cannot read barTitle of NavigationStack - the Web's driver has no path for it yet
+SplitView.barBackgroundColor: cannot read barBackgroundColor of SplitView - the Web's driver has no path for it yet
+SplitView.barForegroundColor: cannot read barForegroundColor of SplitView - the Web's driver has no path for it yet
+SplitView.barIcon: – A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon.
+SplitView.barSubtitle: cannot read barSubtitle of SplitView - the Web's driver has no path for it yet
+SplitView.barTitle: cannot read barTitle of SplitView - the Web's driver has no path for it yet
+TabView.barBackgroundColor: cannot read barBackgroundColor of TabView - the Web's driver has no path for it yet
+TabView.barForegroundColor: cannot read barForegroundColor of TabView - the Web's driver has no path for it yet
+TabView.barIcon: – A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon.
+TabView.barSubtitle: cannot read barSubtitle of TabView - the Web's driver has no path for it yet
+TabView.barTitle: cannot read barTitle of TabView - the Web's driver has no path for it yet

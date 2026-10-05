@@ -48,8 +48,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>4 ✅ · 1 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>8 ✅</td><td><code>CommandBar</code> <code>AppBarButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>7 ✅ · 1 –</td><td><code>GtkButton</code> in <code>GtkHeaderBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr>
-<tr><td colspan="3">no host yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">·</td><td></td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr>
+<tr><td colspan="3">cannot activate on ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarItemContract.swift`.
@@ -58,10 +58,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarItemContra
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>placement</code></td><td>property</td><td><code>ToolbarItemPlacement</code></td><td>adaptive</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read placement of ToolbarItem - AppKit's driver has no path for it yet<br>UIKit: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet<br>Android Views: cannot read placement of ToolbarItem - Android's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>showsText</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.<br>UIKit: A UIKit bar button shows its picture or its words, never both.<br>Android Views: cannot read showsText of ToolbarItem - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>placement</code></td><td>property</td><td><code>ToolbarItemPlacement</code></td><td>adaptive</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
+<tr><td colspan="9">AppKit: cannot read placement of ToolbarItem - AppKit's driver has no path for it yet<br>UIKit: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet<br>Android Views: cannot read placement of ToolbarItem - Android's driver has no path for it yet<br>Web: cannot read placement of ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsText</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
+<tr><td colspan="9">AppKit: A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.<br>UIKit: A UIKit bar button shows its picture or its words, never both.<br>Android Views: cannot read showsText of ToolbarItem - Android's driver has no path for it yet<br>Web: cannot read showsText of ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -70,8 +70,8 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized<br>Android Views: An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.<br>GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">·</td></tr>
+<tr><td colspan="9">AppKit: not realized<br>Android Views: An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.<br>GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.<br>Web: cannot read accessibilityIdentifier of ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
@@ -80,12 +80,14 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: cannot read icon of ToolbarItem - AppKit's driver has no path for it yet<br>Android Views: cannot read a picture's name - Android's item keeps its picture, not its name</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isDestructive</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched<br>Web: cannot activate on ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
+<tr><td colspan="9">AppKit: cannot read icon of ToolbarItem - AppKit's driver has no path for it yet<br>Android Views: cannot read a picture's name - Android's item keeps its picture, not its name<br>Web: cannot read icon of ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isDestructive</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
+<tr><td colspan="9">AppKit: not realized<br>Web: cannot read isDestructive of ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td></tr>
+<tr><td colspan="9">Web: cannot read isEnabled of ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
+<tr><td colspan="9">Web: cannot read text of ToolbarItem - the Web's driver has no path for it yet</td></tr></tbody>
 </table>

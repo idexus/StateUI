@@ -1,0 +1,4 @@
+# revision 1.1
+Menu: cannot read the menu of Text - the Web's driver has no path for it yet
+Menu.isEnabled: cannot read the menu of Text - the Web's driver has no path for it yet
+Menu.text: cannot read the menu of Text - the Web's driver has no path for it yet

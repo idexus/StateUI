@@ -51,14 +51,17 @@ itself.
 
 ### Web
 
-Verified 2026-10-05: HelloWorld served and run.
+Verified 2026-10-05: HelloWorld and the Gallery served and run; the host's own
+suite in Node, and the conformance suite in a headless browser
+(`test-web.sh --browser`), its verdicts the Web's column.
 
 | | |
 | --- | --- |
 | Swift | the swift.org toolchain `swift-6.4.0-RELEASE` |
 | Swift SDK | `swift-6.4.0-RELEASE_wasm` |
 | Server | Python 3.14.4 |
-| Browser | Safari 26.6.2 |
+| Browser | Safari 26.6.2; Google Chrome 152.0.7977.84, headless, for the conformance suite |
+| Node.js | 26.10.0, for the host's own suite and the conformance run's controller |
 
 ## A Windows machine: WinUI 3
 

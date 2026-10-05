@@ -1,0 +1,21 @@
+# revision 1.1
+Button.textColor: ✅
+Button.tracking: not realized
+DatePicker.textColor: ✅
+DatePicker.tracking: not realized
+Picker.textColor: ✅
+Picker.tracking: not realized
+RadioButton.textColor: ✅
+RadioButton.tracking: not realized
+SearchField.textColor: ✅
+SearchField.tracking: not realized
+Text.textColor: ✅
+Text.tracking: ✅
+TextEditor.textColor: ✅
+TextEditor.tracking: not realized
+TextField.textColor: ✅
+TextField.tracking: not realized
+TextSpan.textColor: cannot read textColor of TextSpan - the Web's driver has no path for it yet
+TextSpan.tracking: cannot read tracking of TextSpan - the Web's driver has no path for it yet
+TimePicker.textColor: ✅
+TimePicker.tracking: not realized

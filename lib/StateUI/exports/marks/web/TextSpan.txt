@@ -1,0 +1,4 @@
+# revision 1.1
+TextSpan: ✅
+TextSpan.background: cannot read background of TextSpan - the Web's driver has no path for it yet
+TextSpan.text: ✅

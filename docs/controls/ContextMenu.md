@@ -43,8 +43,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td></td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td></td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
-<tr><td colspan="3">no host yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">·</td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
+<tr><td colspan="3">cannot read the menu of Text - the Web's driver has no path for it yet</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ContextMenuContract.swift`.
