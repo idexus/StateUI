@@ -19,6 +19,8 @@ public func stateUIPlatform() -> String {
         let name = "macOS"
     #elseif os(Linux)
         let name = "Linux"
+    #elseif os(WASI)
+        let name = "Web"
     #else
         let name = "unknown"
     #endif
@@ -27,6 +29,8 @@ public func stateUIPlatform() -> String {
         let arch = "arm64"
     #elseif arch(x86_64)
         let arch = "x86_64"
+    #elseif arch(wasm32)
+        let arch = "wasm32"
     #else
         let arch = "unknown"
     #endif
