@@ -1,0 +1,245 @@
+/* SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors */
+/* SPDX-License-Identifier: Apache-2.0 */
+
+/* The Web host's look: a current web page's, light or dark as the user's system is. What an application says of
+   an element's look is that element's own style, which wins over every rule here.
+   Design: docs/design/platforms/web/look.md */
+
+:root {
+  color-scheme: light dark;
+  --stateui-accent: #4f46e5;
+  --stateui-surface: #ffffff;
+  --stateui-raised: #f6f7f9;
+  --stateui-text: #17181c;
+  --stateui-muted: #5d6270;
+  --stateui-line: rgb(15 23 42 / 0.09);
+  --stateui-line-strong: rgb(15 23 42 / 0.18);
+  --stateui-shade: rgb(15 23 42 / 0.36);
+  --stateui-radius: 10px;
+  --stateui-bar-height: 56px;
+  --stateui-sidebar-width: 288px;
+  --stateui-raised-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 12px 32px rgb(15 23 42 / 0.14);
+  --stateui-focus: 0 0 0 3px color-mix(in srgb, var(--stateui-accent) 38%, transparent);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --stateui-accent: #8b85ff;
+    --stateui-surface: #111216;
+    --stateui-raised: #191b21;
+    --stateui-text: #eceef2;
+    --stateui-muted: #9aa0ad;
+    --stateui-line: rgb(255 255 255 / 0.08);
+    --stateui-line-strong: rgb(255 255 255 / 0.16);
+    --stateui-shade: rgb(0 0 0 / 0.55);
+  }
+}
+
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+/* The window: its bar over the room its pages stand in. */
+.stateui-window {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.stateui-room { display: grid; min-height: 0; min-width: 0; position: relative; }
+
+.stateui-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--stateui-bar-height);
+  padding: 0 14px;
+  background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
+  color: var(--stateui-bar-foreground, var(--stateui-text));
+  border-bottom: 1px solid var(--stateui-line);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+.stateui-bar-brand { display: flex; align-items: center; gap: 10px; margin-inline-end: 8px; min-width: 0; }
+.stateui-bar-brand img { width: 28px; height: 28px; border-radius: 8px; }
+.stateui-bar-name { font-weight: 650; font-size: 16px; letter-spacing: -0.01em; white-space: nowrap; }
+.stateui-bar-subtitle { font-size: 12.5px; opacity: 0.72; white-space: nowrap; }
+.stateui-bar-heading { display: flex; flex-direction: column; min-width: 0; }
+.stateui-bar-title {
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-inline-start: 6px;
+}
+.stateui-bar-spacer { flex: 1; }
+.stateui-bar-actions { display: flex; align-items: center; gap: 2px; }
+
+.stateui-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  min-width: 38px;
+  justify-content: center;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--stateui-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.stateui-bar button:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+.stateui-bar button:active { background: color-mix(in srgb, currentColor 18%, transparent); }
+.stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+.stateui-bar button:disabled { opacity: 0.4; cursor: default; }
+.stateui-bar button img { width: 20px; height: 20px; }
+.stateui-glyph {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  -webkit-mask: var(--stateui-glyph) center / contain no-repeat;
+  mask: var(--stateui-glyph) center / contain no-repeat;
+}
+.stateui-glyph[data-glyph="sidebar"] {
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='M9 4v16'/%3E%3C/svg%3E");
+}
+.stateui-glyph[data-glyph="back"] {
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+}
+[dir="rtl"] .stateui-glyph[data-glyph="back"] { transform: scaleX(-1); }
+
+/* A split view: its sidebar beside the detail, or over it as a drawer where the page is narrow. */
+.stateui-split {
+  display: grid;
+  grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+}
+.stateui-split[data-sidebar="hidden"] { grid-template-columns: 0 minmax(0, 1fr); }
+.stateui-sidebar {
+  display: grid;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--stateui-raised);
+  border-inline-end: 1px solid var(--stateui-line);
+}
+.stateui-split[data-sidebar="hidden"] > .stateui-sidebar { border: 0; visibility: hidden; }
+.stateui-detail { display: grid; min-height: 0; min-width: 0; }
+.stateui-scrim { display: none; }
+
+@media (max-width: 900px) {
+  .stateui-split, .stateui-split[data-sidebar="hidden"] { grid-template-columns: minmax(0, 1fr); }
+  .stateui-detail { grid-column: 1; grid-row: 1; }
+  .stateui-sidebar, .stateui-split[data-sidebar="hidden"] > .stateui-sidebar {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: 30;
+    width: min(86vw, var(--stateui-sidebar-width));
+    visibility: visible;
+    border-inline-end: 1px solid var(--stateui-line);
+    box-shadow: var(--stateui-raised-shadow);
+    transform: translateX(-104%);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  [dir="rtl"] .stateui-sidebar { transform: translateX(104%); }
+  .stateui-split[data-sidebar="shown"] > .stateui-sidebar { transform: none; }
+  .stateui-split[data-sidebar="shown"] > .stateui-scrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 25;
+    background: var(--stateui-shade);
+    animation: stateui-fade-in 0.2s ease;
+  }
+}
+
+/* A stack shows its top page. */
+.stateui-stack { display: grid; min-height: 0; min-width: 0; }
+.stateui-stack > [data-covered] { display: none !important; }
+.stateui-stack > [data-arriving] { animation: stateui-arrive 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+/* A scroller. */
+.stateui-scroller {
+  min-height: 0;
+  min-width: 0;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, currentColor 28%, transparent) transparent;
+  overscroll-behavior: contain;
+}
+.stateui-scroller[data-bars="never"] { scrollbar-width: none; }
+.stateui-scroller[data-bars="never"]::-webkit-scrollbar { display: none; }
+
+/* Controls, where the application gives them no look of their own. */
+.stateui-room button {
+  font: inherit;
+  font-weight: 550;
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid var(--stateui-line-strong);
+  border-radius: var(--stateui-radius);
+  background: var(--stateui-raised);
+  color: var(--stateui-text);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+.stateui-room button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
+.stateui-room button:active { filter: brightness(0.92); }
+.stateui-room button:disabled { opacity: 0.45; cursor: default; filter: none; }
+.stateui-room input:not([type="checkbox"], [type="radio"], [type="range"]), .stateui-room textarea, .stateui-room select {
+  font: inherit;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--stateui-line-strong);
+  border-radius: var(--stateui-radius);
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.stateui-room input::placeholder, .stateui-room textarea::placeholder { color: var(--stateui-muted); }
+.stateui-room :is(button, input, textarea, select):focus-visible {
+  outline: none;
+  border-color: var(--stateui-accent);
+  box-shadow: var(--stateui-focus);
+}
+.stateui-room :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
+.stateui-room [data-taps] { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.stateui-room [data-taps]:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+[data-lets-through] { pointer-events: none; }
+[data-lets-through] > * { pointer-events: auto; }
+
+.stateui-unsupported {
+  align-self: start;
+  justify-self: start;
+  padding: 3px 8px;
+  border: 1px dashed currentColor;
+  border-radius: 6px;
+  color: #e5484d;
+  font-size: 12.5px;
+}
+.stateui-failure { margin: 16px; color: #e5484d; white-space: pre-wrap; }
+
+@keyframes stateui-fade-in { from { opacity: 0; } }
+@keyframes stateui-arrive { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) {
+  .stateui-sidebar, .stateui-stack > [data-arriving], .stateui-scrim { transition: none !important; animation: none !important; }
+}

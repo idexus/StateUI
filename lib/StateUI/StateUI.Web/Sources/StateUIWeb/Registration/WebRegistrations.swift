@@ -21,10 +21,25 @@ enum WebRegistrations {
         return registry
     }()
 
-    /// What `WebElement` puts on every view wearing each member's contract.
+    /// What `WebElement` puts on every view wearing each member's contract, and what the host layer's rules realize on
+    /// every element the page shows: its place, its drawing over it, its words for assistive technology, where it
+    /// stands, its taps and the pointer over it.
     static func shared(_ registry: Registry<WebDOMView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
+        registry.everyElementRealizes(VisualElementContract.ignoresInput)
+        registry.everyElementTakesItsPlace()
+        registry.everyElementIsDrawnOverItsPlace()
+        registry.everyElementMeetsAssistiveTechnology(identifying: true)
+        registry.everyElementRealizes(VisualElementContract.frame)
+        registry.everyElementRaises(ViewContract.frameChanged)
+        registry.everyElementRaises(ViewContract.tapped)
+        registry.everyElementRealizes(ViewContract.tapCount)
+        registry.everyElementRaises(ViewContract.pointerEntered)
+        registry.everyElementRaises(ViewContract.pointerExited)
+        registry.everyElementRaises(ViewContract.pointerMoved)
+        registry.everyElementRaises(ViewContract.pointerPressed)
+        registry.everyElementRaises(ViewContract.pointerReleased)
     }
 }

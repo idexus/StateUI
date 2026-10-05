@@ -16,6 +16,12 @@ final class WebElement: NativeElement {
 
     weak var host: WebRenderer?
 
+    /// The kinds of the user's input the view listens for already.
+    var listening: Hearing = []
+
+    /// Whether the view's size changing is followed, for a frame the tree reads.
+    var observesSize = false
+
     init(_ element: MountedElement, host: WebRenderer) {
         self.element = element
         self.host = host
@@ -34,7 +40,10 @@ final class WebElement: NativeElement {
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         applyProperties(changed: changed)
+        followPages(changed: changed)
         arrangeChildren()
+        listenForTheUser()
+        followFrame()
     }
 
     func presentFrame(_ changed: Set<Prop>) {
@@ -46,6 +55,7 @@ final class WebElement: NativeElement {
     }
 
     func leave() {
+        if let view { host?.runtime.frames.follow(self, order: view.serial, reads: false) }
         view?.detach()
     }
 

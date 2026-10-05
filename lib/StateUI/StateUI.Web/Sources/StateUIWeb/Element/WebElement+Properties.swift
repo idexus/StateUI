@@ -12,6 +12,7 @@ extension WebElement {
             sending: { [weak self] event, values in self?.send(event, values) },
             reporting: { [weak self] property, event, value in self?.report(property, event, value) }
         ) {
+            if let scroll = registered as? WebScrollView { follow(scroll) }
             return registered
         }
 
@@ -19,6 +20,8 @@ extension WebElement {
 
         switch type {
         case .page: return WebLayoutView(tag: "section", arrangement: .single)
+        case .navigationStack: return WebNavigationView()
+        case .splitView: return WebSplitView()
         default: return WebUnsupportedView(type)
         }
     }
@@ -33,14 +36,32 @@ extension WebElement {
             reading: { [element] in element.value($0) },
             carriedIn: { [element] in element.driven[$0]?.mode == .in })
 
-        for property in changed.subtracting(taken) {
+        let own = changed.subtracting(taken)
+        for property in own {
             switch property {
             case .opacity: view.setOpacity(element.value(.opacity)?.number ?? 1)
             case .isEnabled: view.setEnabled(element.value(.isEnabled)?.bool ?? true)
             case .isVisible: view.setShown(element.standsShown)
             case .background: (view as? WebLayoutView)?.setBackground(element.value(.background))
+            case .ignoresInput: view.style("pointer-events", element.value(.ignoresInput)?.bool == true ? "none" : nil)
             default: break
             }
+        }
+        if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
+        if !own.isDisjoint(with: MountedElement.accessibilityProperties) { view.setAccessibility(element.accessibilityWords) }
+        if let layers = view as? WebLayoutView, layers.arrangement == .layers { layers.setPlacement(element.placement) }
+    }
+
+    /// Hears the scroller's movement on the display's frames: where it went, and that it came to rest.
+    private func follow(_ scroll: WebScrollView) {
+        scroll.onOffsetChanged = { [weak self] old, new in
+            guard let self, let host else { return }
+            element.reportScrolled(from: old, to: new, in: host.runtime)
+            host.runtime.frames.laidOut()
+        }
+        scroll.onScrollStopped = { [weak self] in self?.send(.scrollStopped, []) }
+        scroll.movement.onFramesWanted = { [weak self, weak scroll] in
+            if let scroll { self?.host?.runtime.frames.serve(scroll, order: scroll.serial) }
         }
     }
 }

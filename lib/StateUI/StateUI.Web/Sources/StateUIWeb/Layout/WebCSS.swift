@@ -20,6 +20,27 @@ enum WebCSS {
         value.map { number(max(0, $0)) + "px" }
     }
 
+    /// A length in pixels that may be below nothing - a place left of or above its room.
+    static func signedPixels(_ value: Double) -> String {
+        number(value) + "px"
+    }
+
+    /// A grid's `count` tracks: those defined, then a share each.
+    static func tracks(_ defined: [GridLength], count: Int) -> String? {
+        guard count > 0 else { return nil }
+        return (0..<count).map { $0 < defined.count ? track(defined[$0]) : "minmax(0, 1fr)" }.joined(separator: " ")
+    }
+
+    /// One track: as large as its largest child, a length, or a share of the room the others leave - a share of
+    /// nothing still a sliver.
+    private static func track(_ length: GridLength) -> String {
+        switch length {
+        case .auto: "auto"
+        case .fixed(let length): pixels(length)!
+        case .proportional(let share): "minmax(0, \(number(max(share, 0.0001)))fr)"
+        }
+    }
+
     /// An inset's four sides: leading, top, trailing and bottom, as CSS's logical sides.
     static func sides(_ insets: Insets?) -> [(side: String, length: String?)] {
         [("inline-start", insets?.left), ("block-start", insets?.top), ("inline-end", insets?.right),

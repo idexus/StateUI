@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWeb
 
 /// The JavaScript relay beneath the host, in Swift's words: an element is the number the relay keeps it under,
@@ -100,6 +102,46 @@ enum WebRelay {
 
     static func listen(_ element: Int32, _ event: String, _ listener: Int32) {
         utf8(event) { stateui_web_listen(element, $0, $1, listener) }
+    }
+
+    /// How many clicks the event being heard counts.
+    static var eventClicks: Int { Int(stateui_web_event_number(0)) }
+
+    /// Where the pointer of the event being heard is, from the listening element's top left corner.
+    static var eventPoint: Point { Point(x: stateui_web_event_number(1), y: stateui_web_event_number(2)) }
+
+    static func observeSize(_ element: Int32, _ listener: Int32) {
+        stateui_web_observe_size(element, listener)
+    }
+
+    /// The element's box on the page, from the page's top left.
+    static func box(of element: Int32) -> Rect {
+        let read = numbers(4) { stateui_web_read_box(element, $0) }
+        return Rect(x: read[0], y: read[1], width: read[2], height: read[3])
+    }
+
+    /// The element's size in its layout, before any transform.
+    static func size(of element: Int32) -> LayoutSize {
+        let read = numbers(2) { stateui_web_read_size(element, $0) }
+        return LayoutSize(width: read[0], height: read[1])
+    }
+
+    /// How far the element is scrolled.
+    static func scroll(of element: Int32) -> Point {
+        let read = numbers(2) { stateui_web_read_scroll(element, $0) }
+        return Point(x: read[0], y: read[1])
+    }
+
+    static func scroll(_ element: Int32, to point: Point) {
+        stateui_web_scroll_to(element, point.x, point.y)
+    }
+
+    /// `count` numbers the relay writes.
+    private static func numbers(_ count: Int, _ read: (UnsafeMutablePointer<Double>) -> Void) -> [Double] {
+        [Double](unsafeUninitializedCapacity: count) { buffer, written in
+            read(buffer.baseAddress!)
+            written = count
+        }
     }
 
     static func setTitle(_ title: String) {

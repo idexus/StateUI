@@ -63,11 +63,24 @@ final class WebRenderer {
     /// Shows the first window element in the browser's window - a window the tree no longer holds closes - each told
     /// once, in its turn, that it was made.
     private func showWindows() {
-        roster.update(root: runtime.tree.root, make: { WebWindowController($0) }, close: { $0.window.close() })
+        roster.update(
+            root: runtime.tree.root, make: { [runtime] in WebWindowController($0, runtime: runtime) },
+            close: { $0.window.close() })
         if let (element, controller) = roster.windows.first {
             controller.present(element, in: runtime)
             controller.refreshChrome()
         }
+        runtime.frames.laidOut()
+    }
+
+    /// Writes the window's chrome again from what it shows now.
+    func refreshChrome() {
+        roster.controllers.first?.refreshChrome()
+    }
+
+    /// Where the window's room - its content, clear of its bar - stands on the page.
+    var contentBox: Rect {
+        roster.controllers.first.map { WebRelay.box(of: $0.window.room.node) } ?? Rect(x: 0, y: 0, width: 0, height: 0)
     }
 }
 

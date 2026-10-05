@@ -11,6 +11,21 @@ the view's making until its element leaves the tree: it then takes the
 element off the page and lets go of every listener hung on it. A CSS property
 is sent only when its value changes.
 
+## Drawn over its place
+
+A view moved, turned or scaled about its pivot is drawn with the host layer's
+matrix (`HostDrawingTransform.matrix`), as `matrix3d` from the view's top
+left corner, for the view's size in its layout: the order of the moves and the
+platform's sense of a turn are the host layer's, once.
+
+## What assistive technology meets
+
+An element's words for assistive technology are ARIA's: its label
+`aria-label`, what it does `aria-description`, its level as a heading the
+`heading` role with `aria-level`, hidden with what it holds `aria-hidden`, and
+hidden alone the `none` role. Its identifier, which a driver finds it by, is
+`data-identifier`.
+
 ## Words
 
 A Text is a `<span>` whose words wrap at the width it is given and keep their

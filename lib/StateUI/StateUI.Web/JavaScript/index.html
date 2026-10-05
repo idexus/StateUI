@@ -5,18 +5,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>{{application}}</title>
-<style>
-  html, body { margin: 0; height: 100%; }
-  body { font-family: system-ui, sans-serif; }
-  *, *::before, *::after { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  .stateui-window { position: fixed; inset: 0; overflow: auto; }
-  .stateui-unsupported { color: #e01b24; }
-  .stateui-failure { margin: 16px; color: #e01b24; white-space: pre-wrap; }
-</style>
+<link rel="stylesheet" href="./stateui-web.css?v={{stamp}}">
 <script type="module">
   import { start } from "./stateui-web.js?v={{stamp}}";
   start("./{{module}}?v={{stamp}}");

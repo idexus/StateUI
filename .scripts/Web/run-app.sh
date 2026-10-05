@@ -15,9 +15,10 @@
 #   --port        the port to serve on; 8460 when not given
 #
 # The page stands in <app-dir>/.build/web/site/<configuration>: index.html,
-# the relay stateui-web.js, the module <App>Web.wasm and the application's
+# the relay stateui-web.js and its look stateui-web.css, the module <App>Web.wasm and the application's
 # pictures in Images. It is served on the same port from run to run, so its
-# address - and what the browser keeps for it - stays the same; a server this
+# address - and what the browser keeps for it - stays the same, on every
+# interface of this machine, so a tablet on its network opens it too; a server this
 # script started for the application before is stopped first. Once the server
 # listens, <app-dir>/.build/web/server.json says where. Every STATEUI_ variable
 # of the calling shell - STATEUI_TALLY=1 - reaches the application as a
@@ -68,7 +69,7 @@ products="$(STATEUI_HOST=web swift build --package-path "$app_dir" --scratch-pat
 rm -rf "$site"
 mkdir -p "$site"
 cp "$products/$product.wasm" "$site/"
-cp "$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js" "$site/"
+cp "$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js" "$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.css" "$site/"
 stamp="$(date +%s)"
 sed -e "s/{{application}}/$application/g" -e "s/{{module}}/$product.wasm/g" -e "s/{{stamp}}/$stamp/g" \
   "$checkout/lib/StateUI/StateUI.Web/JavaScript/index.html" > "$site/index.html"

@@ -17,6 +17,9 @@ final class WebButtonView: WebDOMView, WebWordsView {
         listen("click") { [weak self] in self?.onClicked() }
     }
 
+    /// A button is a button of itself.
+    override var role: String? { nil }
+
     override func setEnabled(_ enabled: Bool) {
         attribute("disabled", enabled ? nil : "")
     }

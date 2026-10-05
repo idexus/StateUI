@@ -34,6 +34,40 @@ child stood at an index before a move is the trap: the moves before it in the
 same pass shift the elements, and three children turned about - `[a, b, c]`
 to `[c, b, a]` - stand `[c, a, b]`.
 
+## A placing run
+
+A ZStack whose children a placing run stands - an engine's - stands each
+where the run says: absolutely, in its rectangle, drawn with the run's
+transform under the child's own (`HostDrawingTransform.under`) and the run's
+opacity. A ZStack draws its children back to front in the run's order
+(`ZStackArithmetic.drawingOrder`) - each child, placed or not, takes its
+z-index from it - so a child the run places never rises over a later one it
+places none of.
+
+## Scrolling
+
+A ScrollView is the browser's own scrolling over one document, as tall as its
+content and at least as tall as the view along the ways it scrolls, as wide
+as the view across them: a track of `minmax(max-content, 1fr)`. A track of
+`minmax(100%, max-content)` is the trap - a grid track grows to its maximum
+only into room left over, so content wider than the view stands centred over
+both its edges. The view's defaults - down, with its bars - stand from its
+making, as an applier runs only for a member the tree states.
+
+The user's movement is the host layer's (`ScrollMovement`): each `scroll` the
+page raises moves it, a pointer down holds it, and the display's frames report
+where it went and that it came to rest. An offset the tree writes scrolls the
+element at once, and the `scroll` the element raises for it is no movement of
+the user's: it is taken where it stands, not reported back.
+
+## Where a view stands
+
+A view the tree reads where it stands says so on the display's frame after
+the page laid out or scrolled: its box in its layout parent's, its corner in
+the page, and that corner from the window's room - the page below the bar
+(`MountedElement.frameNumbers`). The host follows such a view's size with a
+`ResizeObserver`, and every render and every scroll may move it.
+
 ## Values in CSS
 
 Lengths are pixels, which CSS measures in the logical units StateUI's points

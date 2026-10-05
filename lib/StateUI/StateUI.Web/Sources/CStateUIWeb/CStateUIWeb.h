@@ -51,8 +51,28 @@ STATEUI_WEB(read_value) int32_t stateui_web_read_value(int32_t element);
 /// Copies what the relay read last into `into`, which holds its length.
 STATEUI_WEB(copy_read) void stateui_web_copy_read(char *into);
 
-/// Calls listener `listener` whenever the element hears `event` - a DOM event's name, or `enter` for the Return key.
+/// Calls listener `listener` whenever the element hears `event` - a DOM event's name, `enter` for the Return key, or
+/// `activate` for Return or Space pressed on the element itself.
 STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, int32_t length, int32_t listener);
+
+/// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
+/// listening element's top left corner.
+STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
+
+/// Calls listener `listener` whenever the element's size changes.
+STATEUI_WEB(observe_size) void stateui_web_observe_size(int32_t element, int32_t listener);
+
+/// Writes the element's box on the page - x, y, width and height from the page's top left - into `into`.
+STATEUI_WEB(read_box) void stateui_web_read_box(int32_t element, double *into);
+
+/// Writes the element's size in its layout, before any transform, into `into`: width, height.
+STATEUI_WEB(read_size) void stateui_web_read_size(int32_t element, double *into);
+
+/// Writes how far the element is scrolled into `into`: across, down.
+STATEUI_WEB(read_scroll) void stateui_web_read_scroll(int32_t element, double *into);
+
+/// Scrolls the element to `x` across and `y` down at once.
+STATEUI_WEB(scroll_to) void stateui_web_scroll_to(int32_t element, double x, double y);
 
 /// The document's title, which the browser shows on the tab.
 STATEUI_WEB(set_title) void stateui_web_set_title(const char *text, int32_t length);

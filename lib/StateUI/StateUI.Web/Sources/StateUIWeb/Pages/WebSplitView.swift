@@ -1,0 +1,71 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+
+/// A SplitView: its sidebar in an `<aside>` beside the detail, or over it as a drawer where the page is narrow; the
+/// shade over the detail takes the drawer away.
+/// Design: docs/design/platforms/web/pages.md#a-split-view
+@MainActor
+final class WebSplitView: WebDOMView {
+    let sidebar = WebLayoutView(tag: "aside", arrangement: .single)
+    let detail = WebLayoutView(arrangement: .single)
+    private let scrim = WebDOMView(tag: "div")
+
+    /// Whether the sidebar shows on screen.
+    private(set) var isPresented = false
+
+    /// The user showed or hid the sidebar.
+    var onPresentationChanged: (Bool) -> Void = { _ in }
+
+    /// The first room it was given decides once whether the sidebar shows.
+    private var adaptation = SidebarAdaptation()
+
+    /// The width from which the sidebar stands beside the detail rather than over it - the stylesheet's.
+    static let breakpoint = 900.0
+
+    init() {
+        super.init(tag: "div")
+        attribute("class", "stateui-split")
+        sidebar.attribute("class", "stateui-sidebar")
+        detail.attribute("class", "stateui-detail")
+        scrim.attribute("class", "stateui-scrim")
+        WebRelay.insert(sidebar.node, into: node, at: 0)
+        WebRelay.insert(scrim.node, into: node, at: 1)
+        WebRelay.insert(detail.node, into: node, at: 2)
+        scrim.listen("click") { [weak self] in self?.userPresents(false) }
+        present(false)
+    }
+
+    /// Shows the sidebar or hides it, as the tree or the user says.
+    func present(_ presented: Bool) {
+        isPresented = presented
+        attribute("data-sidebar", presented ? "shown" : "hidden")
+    }
+
+    /// The user showed or hid the sidebar - the bar's toggle, the shade.
+    func userPresents(_ presented: Bool) {
+        guard presented != isPresented else { return }
+        present(presented)
+        onPresentationChanged(presented)
+    }
+
+    /// The first room the split view is given: where it is wide, the sidebar shows, as the user's.
+    func adapt() {
+        let width = WebRelay.box(of: node).width
+        if adaptation.room(width, breakpoint: Self.breakpoint, shown: isPresented) { userPresents(true) }
+    }
+
+    /// Whether the sidebar stands over the detail, the page being narrow.
+    var overlays: Bool {
+        WebRelay.box(of: node).width < Self.breakpoint
+    }
+
+    override func detach() {
+        sidebar.detach()
+        detail.detach()
+        scrim.detach()
+        super.detach()
+    }
+}

@@ -4,8 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A StateUI layout over the browser's own: a stack is a flexbox, a page or a window's room a grid of one cell. The
-/// browser measures and places; each child's margin, alignments and sizes are written as its CSS.
+/// A StateUI layout over the browser's own: a stack is a flexbox, a grid a CSS grid, a ZStack one cell its children
+/// share, a page or a window's room a grid of one cell. The browser measures and places; each child's margin,
+/// alignments and sizes are written as its CSS.
 /// Design: docs/design/platforms/web/layout.md#a-layout-is-the-browsers
 @MainActor
 class WebLayoutView: WebDOMView {
@@ -16,12 +17,29 @@ class WebLayoutView: WebDOMView {
 
         /// One child in the whole room, a grid of one cell.
         case single
+
+        /// In the cells of rows and columns, a CSS grid.
+        case grid
+
+        /// One over another, each in its area or where a placing run puts it.
+        case layers
     }
 
     let arrangement: Arrangement
 
-    /// The children's views, in order.
+    /// The children's views and what each one's place reads, in order.
     private(set) var children: [WebDOMView] = []
+    private var values: [LayoutValues] = []
+
+    /// A grid's tracks as the element defines them.
+    private var rows: [GridLength] = []
+    private var columns: [GridLength] = []
+
+    /// The room inside the layout's edge, which a ZStack's areas stand in.
+    private var padding = Insets(0)
+
+    /// A ZStack's placing run; nil while each child stands in its own area.
+    private var placement: HostPlacementRun?
 
     init(tag: String = "div", arrangement: Arrangement) {
         self.arrangement = arrangement
@@ -30,9 +48,12 @@ class WebLayoutView: WebDOMView {
         case .stack(let axis):
             style("display", "flex")
             style("flex-direction", axis == .vertical ? "column" : "row")
-        case .single:
+        case .single, .layers:
             style("display", "grid")
             style("grid-template", "minmax(0, 1fr) / minmax(0, 1fr)")
+            if arrangement == .layers { style("position", "relative") }
+        case .grid:
+            style("display", "grid")
         }
     }
 
@@ -41,9 +62,48 @@ class WebLayoutView: WebDOMView {
         style("gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
     }
 
+    /// The room left between a grid's rows and between its columns.
+    func setGridSpacing(rows: Double, columns: Double) {
+        style("row-gap", rows == 0 ? nil : WebCSS.pixels(rows))
+        style("column-gap", columns == 0 ? nil : WebCSS.pixels(columns))
+    }
+
+    /// A grid's tracks, written with its children's cells.
+    func setTracks(rows: [GridLength], columns: [GridLength]) {
+        self.rows = rows
+        self.columns = columns
+        writeTracks()
+    }
+
+    override func setPadding(_ padding: Insets?) {
+        self.padding = padding ?? Insets(0)
+        super.setPadding(padding)
+    }
+
+    /// The layout's own box: what fills it, its outline inside its edge, its shape, and whether it cuts what it holds.
+    func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool) {
+        style("background", WebCSS.fill(fill))
+        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
+        style("border", width > 0 ? "\(WebCSS.pixels(width)!) solid \(WebCSS.fill(stroke) ?? "currentColor")" : nil)
+        style("border-radius", WebCSS.corners(BoxArithmetic.outline(shape)))
+        style("overflow", clips ? "hidden" : nil)
+    }
+
+    /// Whether a click beside the layout's children goes on to what is under it; one on a child stays the child's.
+    func setLetsInputThrough(_ lets: Bool) {
+        attribute("data-lets-through", lets ? "" : nil)
+    }
+
     /// What fills the layout's box.
     func setBackground(_ value: HostValue?) {
         style("background", WebCSS.fill(value))
+    }
+
+    /// Where a ZStack's placing run puts its children; nil to stand each in its own area.
+    func setPlacement(_ run: HostPlacementRun?) {
+        guard run != placement else { return }
+        placement = run
+        placeAll()
     }
 
     /// Puts `items` in the element in their order, where it holds them otherwise, and writes each one's place; a
@@ -54,14 +114,30 @@ class WebLayoutView: WebDOMView {
         if views.count != children.count || !zip(views, children).allSatisfy({ $0 === $1 }) {
             for (index, view) in views.enumerated() { WebRelay.insert(view.node, into: node, at: index) }
         }
-        for gone in children where gone.placingLayout === self && !items.contains(where: { $0.view === gone }) {
+        // A child let go of first - a page popped - is gone from the page already, and its number may be another's.
+        for gone in children where !gone.isReleased && gone.placingLayout === self
+            && !items.contains(where: { $0.view === gone }) {
             WebRelay.detach(gone.node)
             gone.placingLayout = nil
         }
         children = views
-        for item in items {
-            item.view.placingLayout = self
-            place(item.view, item.values)
+        values = items.map(\.values)
+        for view in views { view.placingLayout = self }
+        if arrangement == .grid { writeTracks() }
+        placeAll()
+    }
+
+    private func placeAll() {
+        let run = arrangement == .layers ? placement?.placements ?? [] : []
+        let order = ZStackArithmetic.drawingOrder(of: children.count, placedBy: run)
+        for (index, view) in children.enumerated() {
+            if index < run.count {
+                placeByRun(view, run[index])
+            } else {
+                place(view, values[index])
+            }
+            // A ZStack draws every child in its order, the placed and the unplaced alike, back to front.
+            if arrangement == .layers { view.style("z-index", String(order.firstIndex(of: index) ?? index)) }
         }
     }
 
@@ -69,6 +145,7 @@ class WebLayoutView: WebDOMView {
     /// across its slot - in a grid's cell, along both axes.
     /// Design: docs/design/platforms/web/layout.md#a-childs-place
     func place(_ view: WebDOMView, _ values: LayoutValues) {
+        view.placedDrawing = nil
         for (side, length) in WebCSS.sides(values.margin) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
@@ -84,10 +161,68 @@ class WebLayoutView: WebDOMView {
             view.style("flex", "none")
             view.style("justify-self", nil)
             view.style("align-self", axis == .vertical ? across : down)
-        case .single:
+        case .single, .grid, .layers:
             view.style("flex", nil)
             view.style("justify-self", across)
             view.style("align-self", down)
         }
+        switch arrangement {
+        case .grid:
+            view.style("grid-row", "\(values.row + 1) / span \(max(1, values.rowSpan))")
+            view.style("grid-column", "\(values.column + 1) / span \(max(1, values.columnSpan))")
+        case .layers:
+            placeInArea(view, values.area)
+        default:
+            break
+        }
+    }
+
+    /// A ZStack's child in its area - in points from the room's top left, or in fractions of the room - else in the
+    /// whole room, the one cell every child shares.
+    private func placeInArea(_ view: WebDOMView, _ area: Area?) {
+        view.style("opacity", nil)
+        guard let area else {
+            view.style("grid-area", "1 / 1 / 2 / 2")
+            return view.style("position", "relative")
+        }
+        let (left, top) = (WebCSS.pixels(padding.left)!, WebCSS.pixels(padding.top)!)
+        let room = "(100% - \(WebCSS.pixels(padding.left + padding.right)!))"
+        let tall = "(100% - \(WebCSS.pixels(padding.top + padding.bottom)!))"
+        view.style("position", "absolute")
+        view.style("grid-area", nil)
+        switch area {
+        case .absolute(let x, let y, let width, let height):
+            view.style("left", "calc(\(left) + \(WebCSS.pixels(x)!))")
+            view.style("top", "calc(\(top) + \(WebCSS.pixels(y)!))")
+            view.style("width", WebCSS.pixels(width))
+            view.style("height", WebCSS.pixels(height))
+        case .proportional(let x, let y, let width, let height):
+            view.style("left", "calc(\(left) + \(room) * \(WebCSS.number(x)))")
+            view.style("top", "calc(\(top) + \(tall) * \(WebCSS.number(y)))")
+            view.style("width", "calc(\(room) * \(WebCSS.number(width)))")
+            view.style("height", "calc(\(tall) * \(WebCSS.number(height)))")
+        }
+    }
+
+    /// A child where the run puts it, drawn as it says, over the children placed before it in the run's order.
+    /// Design: docs/design/platforms/web/layout.md#a-placing-run
+    private func placeByRun(_ view: WebDOMView, _ placement: HostPlacement) {
+        let place = placement.place
+        view.style("position", "absolute")
+        view.style("grid-area", nil)
+        view.style("left", WebCSS.signedPixels(place.x))
+        view.style("top", WebCSS.signedPixels(place.y))
+        view.style("width", WebCSS.pixels(place.width))
+        view.style("height", WebCSS.pixels(place.height))
+        view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
+        view.placedDrawing = placement.drawing
+    }
+
+    /// The grid's tracks: those it defines, then one share for each further one its children reach.
+    private func writeTracks() {
+        let rowCount = max(rows.count, values.map { $0.row + max(1, $0.rowSpan) }.max() ?? 0)
+        let columnCount = max(columns.count, values.map { $0.column + max(1, $0.columnSpan) }.max() ?? 0)
+        style("grid-template-rows", WebCSS.tracks(rows, count: rowCount))
+        style("grid-template-columns", WebCSS.tracks(columns, count: columnCount))
     }
 }

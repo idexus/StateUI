@@ -24,3 +24,19 @@ final class WebLayoutViewTests: XCTestCase {
         XCTAssertEqual(WebPage.children(of: layout.node), [b.node, a.node], "a child no longer held leaves")
     }
 }
+
+/// A child let go of before its layout arranges again - a page popped off a stack - is left alone.
+@MainActor
+final class WebLayoutViewLeavingTests: XCTestCase {
+    func testAChildLetGoOfFirstLeavesItsLayoutAlone() {
+        let layout = WebLayoutView(arrangement: .single)
+        let (kept, gone) = (WebTextView(), WebTextView())
+        defer { for view in [layout, kept] { view.detach() } }
+
+        layout.setItems([kept, gone].map { ($0, LayoutValues()) })
+        gone.detach()
+        layout.setItems([(kept, LayoutValues())])
+
+        XCTAssertEqual(WebPage.children(of: layout.node), [kept.node])
+    }
+}

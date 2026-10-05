@@ -12,16 +12,22 @@ final class WebImageView: WebDOMView {
     /// The files the picture's name may stand for, those not tried yet, in order.
     private var candidates: [String] = []
 
+    /// The picture's name as last given.
+    private var file: String?
+
     init() {
         super.init(tag: "img")
         attribute("alt", "")
         listen("error") { [weak self] in self?.tryNext() }
     }
 
+    /// Shows the picture `source` names, fitted as `aspect` says; the same name again changes nothing.
     func apply(source: ImageSource?, aspect: ContentMode) {
+        style("object-fit", Self.fit(aspect))
+        guard source?.file != file else { return }
+        file = source?.file
         candidates = source.map { PictureArithmetic.files(for: $0.file) } ?? []
         tryNext()
-        style("object-fit", Self.fit(aspect))
     }
 
     /// Shows the next file the name may stand for: a PNG not found gives way to its SVG.
