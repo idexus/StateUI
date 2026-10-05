@@ -5,7 +5,7 @@ and its Gallery is walked, host by host. Other versions may work; these are
 the ones proved. **StateUI: Check Toolchain** says what this machine lacks of
 what its hosts need ([Getting started](getting-started.md#requirements)).
 
-## A Mac: AppKit, UIKit, Android Views
+## A Mac: AppKit, UIKit, Android Views, Web
 
 Last verified 2026-10-03.
 
@@ -48,6 +48,17 @@ Settings included; the iPad Air stands in for it.
 Xcode's own Swift 6.4 is a different build from swift.org's and cannot read
 the Swift SDK's modules; the Android build picks the swift.org toolchain by
 itself.
+
+### Web
+
+Verified 2026-10-05: HelloWorld served and run.
+
+| | |
+| --- | --- |
+| Swift | the swift.org toolchain `swift-6.4.0-RELEASE` |
+| Swift SDK | `swift-6.4.0-RELEASE_wasm` |
+| Server | Python 3.14.4 |
+| Browser | Safari 26.6.2 |
 
 ## A Windows machine: WinUI 3
 

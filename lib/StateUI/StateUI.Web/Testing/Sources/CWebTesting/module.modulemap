@@ -1,0 +1,4 @@
+module CWebTesting [system] {
+    header "CWebTesting.h"
+    export *
+}

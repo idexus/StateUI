@@ -6,12 +6,12 @@ import PackageDescription
 // package holds, so the editor completes the application through this
 // manifest as well.
 
-// The host a build is for: STATEUI_HOST - appkit, uikit, android, winui or gtk -
+// The host a build is for: STATEUI_HOST - appkit, uikit, android, winui, gtk or web -
 // which its script or the editor sets, or none for plain Swift - and then
 // `swift test` compiles no line of any host's half. The application's Swift for that host alone stands under its
 // condition - `#if APPKIT` - and ../../lib/StateUI.Head brings the host itself
 // to the head.
-let host = ["AppKit", "UIKit", "Android", "WinUI", "GTK"]
+let host = ["AppKit", "UIKit", "Android", "WinUI", "GTK", "Web"]
     .first { $0.lowercased() == Context.environment["STATEUI_HOST"] }
 
 // NonisolatedNonsendingByDefault is the one setting an application must not
@@ -20,8 +20,8 @@ let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByD
     + (host.map { [.define($0.uppercased())] } ?? [])
 
 var products: [Product] = [
-    // Dynamic, so a head and its host share one StateUI runtime.
-    .library(name: "GalleryUI", type: .dynamic, targets: ["GalleryUI"]),
+    // Dynamic, so a head and its host share one StateUI runtime; on the Web one module holds them all.
+    .library(name: "GalleryUI", type: host == "Web" ? nil : .dynamic, targets: ["GalleryUI"]),
 ]
 
 var targets: [Target] = [

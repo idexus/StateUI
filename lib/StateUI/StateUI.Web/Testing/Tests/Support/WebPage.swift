@@ -1,0 +1,47 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import CWebTesting
+
+/// What the page holds, as the suite reads it: an element's children, its style, its attributes and its words.
+@MainActor
+enum WebPage {
+    /// The relay's numbers of the element's children, in their order on the page.
+    static func children(of element: Int32) -> [Int32] {
+        (0..<stateui_web_testing_child_count(element)).map { stateui_web_testing_child(element, $0) }
+    }
+
+    /// A CSS property of the element's own style; "" where it has none.
+    static func style(of element: Int32, _ name: String) -> String {
+        read(name) { stateui_web_testing_read_style(element, $0, $1) }
+    }
+
+    /// An attribute of the element; nil where it has none.
+    static func attribute(of element: Int32, _ name: String) -> String? {
+        let length = withUTF8(name) { stateui_web_testing_read_attribute(element, $0, $1) }
+        return length < 0 ? nil : copyRead(length)
+    }
+
+    /// The element's words.
+    static func text(of element: Int32) -> String {
+        copyRead(stateui_web_testing_read_text(element))
+    }
+
+    private static func read(_ name: String, _ reading: (UnsafePointer<CChar>?, Int32) -> Int32) -> String {
+        copyRead(withUTF8(name, reading))
+    }
+
+    private static func copyRead(_ length: Int32) -> String {
+        guard length > 0 else { return "" }
+        let bytes = [UInt8](unsafeUninitializedCapacity: Int(length)) { buffer, count in
+            buffer.withMemoryRebound(to: CChar.self) { stateui_web_testing_copy_read($0.baseAddress) }
+            count = Int(length)
+        }
+        return String(decoding: bytes, as: UTF8.self)
+    }
+
+    private static func withUTF8<Result>(_ text: String, _ body: (UnsafePointer<CChar>?, Int32) -> Result) -> Result {
+        var text = text
+        return text.withUTF8 { bytes in bytes.withMemoryRebound(to: CChar.self) { body($0.baseAddress, Int32($0.count)) } }
+    }
+}

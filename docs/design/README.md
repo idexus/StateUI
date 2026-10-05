@@ -67,6 +67,8 @@ it.
   [input](platforms/gtk/input.md), [interop](platforms/gtk/interop.md),
   [items](platforms/gtk/items.md), [layout](platforms/gtk/layout.md),
   [motion](platforms/gtk/motion.md), [pages](platforms/gtk/pages.md).
+  `platforms/web/`: [the runtime](platforms/web/runtime.md), [layout](platforms/web/layout.md),
+  [controls](platforms/web/controls.md).
 
 ## Writing a note
 

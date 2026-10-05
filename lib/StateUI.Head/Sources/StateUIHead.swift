@@ -13,4 +13,6 @@
 @_exported import StateUIWinUI
 #elseif GTK
 @_exported import StateUIGTK
+#elseif WEB
+@_exported import StateUIWeb
 #endif

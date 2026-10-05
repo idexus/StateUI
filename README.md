@@ -99,7 +99,7 @@ that is usable now.
   links, folder by folder, and the typed boundary a host reads.
 - [Host layer](docs/internals/host-layer.md) — the Swift every host runs on, module by
   module, and what each host provides.
-- [AppKit host](docs/hosts/appkit.md), [UIKit host](docs/hosts/uikit.md), [Android Views host](docs/hosts/android.md), [WinUI host](docs/hosts/winui.md) and [GTK host](docs/hosts/gtk.md)
+- [AppKit host](docs/hosts/appkit.md), [UIKit host](docs/hosts/uikit.md), [Android Views host](docs/hosts/android.md), [WinUI host](docs/hosts/winui.md), [GTK host](docs/hosts/gtk.md) and [Web host](docs/hosts/web.md)
   — each host's heads, builds, debugging, and registrations.
 - [Project structure and development](docs/development.md) — packages, Gallery,
   build, F5, and test commands.
@@ -128,9 +128,10 @@ code --install-extension ../../artifacts/stateui-*.vsix
 The AppKit host needs only Xcode 27, on macOS 26 or newer, and the UIKit host
 adds Xcode's iOS 26 or newer simulator runtime. StateUI builds with one Swift
 release everywhere, Swift 6.4: Xcode 27's on macOS and the swift.org 6.4.0
-toolchain on the other platforms. WinUI builds on Windows and GTK on Linux;
-their pages say what each needs: [WinUI host](docs/hosts/winui.md#requirements),
-[GTK host](docs/hosts/gtk.md#requirements).
+toolchain on the other platforms. WinUI builds on Windows, GTK on Linux, and
+the Web on macOS and Linux; their pages say what each needs:
+[WinUI host](docs/hosts/winui.md#requirements), [GTK host](docs/hosts/gtk.md#requirements),
+[Web host](docs/hosts/web.md#requirements).
 
 Android asks for more, and builds on macOS only:
 

@@ -211,6 +211,16 @@ libadwaita. An application's GTK head is built and started by one script:
 
 [GTK host](hosts/gtk.md) lists what it needs and what it builds.
 
+The Web host builds on macOS and Linux with Swift 6.4 and its Swift SDK for
+WebAssembly. An application's Web head is built, served and opened in a
+browser by one script:
+
+```bash
+.scripts/Web/run-app.sh apps/HelloWorld
+```
+
+[Web host](hosts/web.md) lists what it needs and what it builds.
+
 ## Deploy
 
 Each host's `deploy` script builds an application's head for release and lays
