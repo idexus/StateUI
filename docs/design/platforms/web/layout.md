@@ -89,6 +89,14 @@ where it went and that it came to rest. An offset the tree writes scrolls the
 element at once, and the `scroll` the element raises for it is no movement of
 the user's: it is taken where it stands, not reported back.
 
+A scroller keeps the user's scrolling to itself only along the ways it
+scrolls (`overscroll-behavior-x`, `-y`): reaching its end there, the page
+around it does not scroll on. Across them the scrolling goes on to the
+scroller around it - a listing scrolling across lets a wheel or a finger
+moving down scroll the page it stands in. Kept both ways, a listing across a
+page stopped the page under every swipe over it. A list of items keeps the
+same rule.
+
 ## Where a view stands
 
 A view the tree reads where it stands says so on the display's frame after

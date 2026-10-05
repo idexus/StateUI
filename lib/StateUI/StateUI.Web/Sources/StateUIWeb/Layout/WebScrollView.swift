@@ -42,6 +42,9 @@ final class WebScrollView: WebLayoutView, FramedScroller {
         let down = orientation != .horizontal
         style("overflow-x", across ? "auto" : "hidden")
         style("overflow-y", down ? "auto" : "hidden")
+        // Its own ways it keeps to itself; across them the user's scrolling goes on to the scroller around it.
+        style("overscroll-behavior-x", across ? "contain" : "auto")
+        style("overscroll-behavior-y", down ? "contain" : "auto")
         // At least its content and at least the view: a track grows to its maximum only into room left over.
         style("grid-template-columns", across ? "minmax(max-content, 1fr)" : "minmax(0, 1fr)")
         style("grid-template-rows", down ? "minmax(max-content, 1fr)" : "minmax(0, 1fr)")

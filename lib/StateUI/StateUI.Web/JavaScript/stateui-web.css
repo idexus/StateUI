@@ -380,9 +380,9 @@ body {
 
 /* A collection: a scroller asking for no room of its own, over a cell an entry - down, across or in columns - one
    whose entry never came keeping a row's room. */
-.stateui-items { display: block; min-width: 0; min-height: 0; contain: size; overflow: auto; overscroll-behavior: contain; }
-.stateui-items[data-layout="row"] { overflow-y: hidden; }
-.stateui-items:not([data-layout="row"]) { overflow-x: hidden; }
+.stateui-items { display: block; min-width: 0; min-height: 0; contain: size; overflow: auto; }
+.stateui-items[data-layout="row"] { overflow-y: hidden; overscroll-behavior-x: contain; }
+.stateui-items:not([data-layout="row"]) { overflow-x: hidden; overscroll-behavior-y: contain; }
 .stateui-items-content { display: flex; flex-direction: column; min-width: 0; }
 .stateui-items[data-layout="row"] > .stateui-items-content { flex-direction: row; align-items: stretch; height: 100%; width: max-content; }
 .stateui-items[data-layout="grid"] > .stateui-items-content { display: grid; align-content: start; }
@@ -435,7 +435,6 @@ body {
   min-width: 0;
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, currentColor 28%, transparent) transparent;
-  overscroll-behavior: contain;
 }
 .stateui-scroller[data-bars="never"] { scrollbar-width: none; }
 .stateui-scroller[data-bars="never"]::-webkit-scrollbar { display: none; }
