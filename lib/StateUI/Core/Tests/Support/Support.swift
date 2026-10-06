@@ -1019,9 +1019,9 @@ func typed(_ number: Int32, _ text: String) {
 /// The channel a host would be handed a state on, both ways, or nil where no
 /// host rides it.
 private func hostBinding(of number: Int32) -> HostStateBinding? {
-    guard let kind = Renderer.shared.storage(of: number)?.door else { return nil }
+    guard let storage = Renderer.shared.storage(of: number), let kind = storage.door else { return nil }
 
-    return HostStateBinding(state: number, mode: .inOut, kind: kind)
+    return HostStateBinding(state: number, mode: .inOut, kind: kind, laneKind: storage.laneKind)
 }
 
 /// The same, for a value of one lane.

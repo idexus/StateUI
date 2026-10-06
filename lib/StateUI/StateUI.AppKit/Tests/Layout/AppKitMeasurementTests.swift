@@ -56,7 +56,7 @@ final class AppKitMeasurementTests: XCTestCase {
         card.properties[.width] = .number(120)
         card.properties[.height] = .number(60)
         card.driven = .replace([
-            .translationX: HostStateBinding(state: 91, mode: .inOut, kind: .property),
+            .translationX: HostStateBinding(state: 91, mode: .inOut, kind: .property, laneKind: .number),
         ])
         var caption = HostPatch(id: .manual("caption"), type: .text)
         caption.properties[.text] = .string("A card that slides sideways")
@@ -200,7 +200,7 @@ final class AppKitMeasurementTests: XCTestCase {
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.driven = .replace([
-            .area: HostStateBinding(state: 95, mode: .out, kind: .placement),
+            .area: HostStateBinding(state: 95, mode: .out, kind: .placement, laneKind: .number),
         ])
         layout.children = .arranged([card])
         renderer.applyForTesting(layout)
@@ -247,7 +247,7 @@ final class AppKitMeasurementTests: XCTestCase {
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.properties[.height] = .number(120)
         layout.driven = .replace([
-            .area: HostStateBinding(state: 96, mode: .out, kind: .placement),
+            .area: HostStateBinding(state: 96, mode: .out, kind: .placement, laneKind: .number),
         ])
         layout.children = .arranged([card])
         var caption = HostPatch(id: .manual("caption"), type: .text)

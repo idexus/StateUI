@@ -103,7 +103,7 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
     }
 }
 
-extension CalendarDate: StateValue {
+extension CalendarDate: LaneValue {
     /// Year, month and day as three lanes, in that order.
     public var carried: StateCarried { .lanes([Double(year), Double(month), Double(day)]) }
 

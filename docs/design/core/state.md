@@ -136,6 +136,21 @@ been told the number of yet - made by a hand-over the differ has not
 registered, in the same body that now hands the state to a slider. It is
 reshaped rather than refused, because the host has no picture of it yet.
 
+## What a host reads lanes as
+
+A value that lies as numbers is a `LaneValue`, and its type says what a host
+reads its lanes as: numbers, a Boolean, a choice or a colour (`LaneKind`). A
+registration takes the kind from the value it is handed and the patch carries
+it beside the state's door, so a value said from a state reaches the control
+as the same value said directly - `.isOn($x)` a Boolean,
+`.horizontalAlignment($side)` a case, an application's own `Bool` member a
+Boolean too. A host reading lanes by the property's name would know only the
+names it lists, and any other member would arrive as a number.
+
+Text is no `LaneValue`: it has no lanes, and it goes through the text door
+alone. `plain` and the lane form of `setValue(_:on:mode:kind:)` refuse it by
+type; its own form takes the mode alone.
+
 ## What the host writes back
 
 A host write is a write: it ends where this side's do, and the storage decides

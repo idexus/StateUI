@@ -276,7 +276,7 @@ final class AppKitMotionTests: XCTestCase {
             child.properties[.height] = .number(40)
             child.driven = .replace([
                 .height: HostStateBinding(
-                    state: state, mode: .inOut, kind: .property),
+                    state: state, mode: .inOut, kind: .property, laneKind: .number),
             ])
             return child
         }

@@ -148,7 +148,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     }
 }
 
-extension ClockTime: StateValue {
+extension ClockTime: LaneValue {
     /// Hour, minute and second as three lanes; the millisecond is not carried
     /// and comes back as 0.
     public var carried: StateCarried { .lanes([Double(hour), Double(minute), Double(second)]) }

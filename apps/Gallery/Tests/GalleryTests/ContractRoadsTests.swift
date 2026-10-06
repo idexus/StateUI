@@ -70,6 +70,16 @@ final class ContractRoadsTests: XCTestCase {
                 _ = Beacon().setValue(BeaconContract.level, on: $level, mode: .inOut, kind: .property)
                 """),
         Road(
+            name: "text from a state through a door for numbers",
+            closed: """
+                @State var title = "Harbour"
+                _ = Beacon().setValue(BeaconContract.title, on: $title, mode: .out, kind: .plain)
+                """,
+            open: """
+                @State var title = "Harbour"
+                _ = Beacon().setValue(BeaconContract.title, on: $title, mode: .out)
+                """),
+        Road(
             name: "an event heard by its token",
             closed: #"_ = Beacon().onEvent(Event("tapped")) { payload in _ = payload }"#,
             open: "_ = Beacon().onEvent(BeaconContract.tapped) { index in _ = index }"),

@@ -14,7 +14,7 @@
 /// than restarting it.
 ///
 /// Design: docs/design/types/placement.md#a-motion-per-write
-public struct PlacedRun: StateValue {
+public struct PlacedRun: LaneValue {
     /// Where each view goes, in the order they stand in the layout.
     public var placements: [Placement]
 

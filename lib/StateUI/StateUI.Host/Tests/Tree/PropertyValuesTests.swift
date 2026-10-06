@@ -14,12 +14,12 @@ final class PropertyValuesTests: XCTestCase {
     /// as they are.
     func testABoundStatesLanesAreTheValueItsPropertyCarries() throws {
         let runtime = HostRuntime.still()
-        let plain: [Prop: Int32] = [
-            .background: 811, .isEnabled: 812, .isVisible: 813, .horizontalAlignment: 814, .opacity: 815,
-            .margin: 816,
+        let plain: [Prop: (Int32, HostLaneKind)] = [
+            .background: (811, .color), .isEnabled: (812, .boolean), .isVisible: (813, .boolean),
+            .horizontalAlignment: (814, .choice), .opacity: (815, .number), .margin: (816, .number),
         ]
-        var bindings = plain.mapValues { HostStateBinding(state: $0, mode: .out, kind: .plain) }
-        bindings[.tint] = HostStateBinding(state: 817, mode: .out, kind: .property)
+        var bindings = plain.mapValues { HostStateBinding(state: $0.0, mode: .out, kind: .plain, laneKind: $0.1) }
+        bindings[.tint] = HostStateBinding(state: 817, mode: .out, kind: .property, laneKind: .color)
         var label = HostPatch(id: .manual("label"), type: .text)
         label.driven = .replace(bindings)
         runtime.tree.apply(label, complete: true)

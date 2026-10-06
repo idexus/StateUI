@@ -29,7 +29,7 @@ final class HostRenderTests: XCTestCase {
             lanes: [.x, .height])
         patch.transitions[.opacity] = HostTransition(motion: .eased(120, .linear))
         patch.driven = .replace([
-            .opacity: HostStateBinding(state: 17, mode: .inOut, kind: .property),
+            .opacity: HostStateBinding(state: 17, mode: .inOut, kind: .property, laneKind: .number),
         ])
         patch.events = .replace([.clicked: 23])
         patch.children = .arranged([child])

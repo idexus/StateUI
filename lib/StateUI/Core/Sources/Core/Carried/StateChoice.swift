@@ -12,7 +12,7 @@
 ///
 /// One lane holding the member's number, resolved by the host as a described
 /// property is. A choice has no half way, so it is set as it stands.
-public protocol StateChoice: StateValue, RawRepresentable where RawValue == Int32 {}
+public protocol StateChoice: LaneValue, RawRepresentable where RawValue == Int32 {}
 
 extension StateChoice {
     /// The member's number, as its one lane.
@@ -30,6 +30,9 @@ extension StateChoice {
 
     /// One.
     public static var lanes: Int { 1 }
+
+    /// A case, which its one lane numbers.
+    public static var laneKind: LaneKind { .choice }
 
     /// A choice is in no group of values a motion can be about: it has no
     /// half-way to be caught at.

@@ -8,7 +8,7 @@
 /// one, and a driven property animates one. Text, whole numbers and truth values
 /// have no half way and are not `Walked`, so asking for their journey does not
 /// compile.
-public protocol Walked: StateValue {}
+public protocol Walked: LaneValue {}
 
 extension Double: Walked {}
 extension Point: Walked {}

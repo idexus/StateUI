@@ -45,7 +45,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
 
         var entry = HostPatch(id: .manual("entry"), type: .textField)
         entry.properties[.text] = .string("from the tree")
-        entry.driven = .replace([.text: HostStateBinding(state: 5, mode: .in, kind: .text)])
+        entry.driven = .replace([.text: HostStateBinding(state: 5, mode: .in, kind: .text, laneKind: nil)])
         renderer.applyForTesting(tree(entry))
 
         let view = try XCTUnwrap(

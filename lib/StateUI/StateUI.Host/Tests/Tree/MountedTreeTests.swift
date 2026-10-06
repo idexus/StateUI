@@ -63,14 +63,14 @@ final class MountedTreeTests: XCTestCase {
         let (tree, log) = Self.tree()
         var row = HostPatch(id: .manual("row"), type: .hStack)
         var bound = HostPatch(id: .manual("bound"), type: .slider)
-        bound.driven = .replace([.value: HostStateBinding(state: 700, mode: .inOut, kind: .property)])
+        bound.driven = .replace([.value: HostStateBinding(state: 700, mode: .inOut, kind: .property, laneKind: .number)])
         row.children = .arranged([bound])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([row])
         tree.apply(stack, complete: true)
         let standing = HostJourney(value: [0], destination: [0], velocity: [0], motion: .none, completion: nil, stopped: 0)
         _ = tree.stateChannels.presentedValue(
-            for: HostStateBinding(state: 700, mode: .inOut, kind: .property),
+            for: HostStateBinding(state: 700, mode: .inOut, kind: .property, laneKind: .number),
             from: HostBoundary.value(of: standing),
             now: 0,
             reducesMotion: false)
@@ -386,32 +386,6 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertFalse(tree.present(states: [:], properties: [pageMount: [.opacity]]).windowChrome, "its opacity")
     }
 
-    /// A value said from a state crosses as lanes and is read as the type its member declares: every Boolean member
-    /// of every contract as a Boolean, every colour as a colour, every closed vocabulary as its case.
-    @MainActor
-    func testAStatesLanesReadAsTheTypeTheirMemberDeclares() {
-        let booleans: Set = [ObjectIdentifier(Bool.self), ObjectIdentifier(Bool?.self)]
-        let colours: Set = [ObjectIdentifier(Color.self), ObjectIdentifier(Color?.self)]
-
-        for contract in LibraryContracts.elements.flatMap({ $0.worn }) {
-            for member in contract.members {
-                guard let type = declaredType(of: member) else { continue }
-                let named = "\(contract.name).\(member.name)"
-                if booleans.contains(type) {
-                    XCTAssertEqual(MountedElement.value(of: Prop(member.name), lanes: [0]), .bool(false), named)
-                }
-                if colours.contains(type) {
-                    XCTAssertEqual(
-                        MountedElement.value(of: Prop(member.name), lanes: [1, 0, 0, 1]),
-                        .color(red: 255, green: 0, blue: 0, alpha: 255), named)
-                }
-                if declaresAVocabulary(member) {
-                    XCTAssertEqual(MountedElement.value(of: Prop(member.name), lanes: [1]), .enumeration(1), named)
-                }
-            }
-        }
-    }
-
     /// A grid's and a ZStack's children stand in the order they are drawn: by `zIndex`, ties in the order
     /// written. A sparse change restacks them; a stack's children never overlap and keep the order written.
     @MainActor
@@ -460,7 +434,7 @@ final class MountedTreeTests: XCTestCase {
     func testABoundZIndexRestacksItsLayoutInAFrame() {
         let (tree, log) = Self.tree()
         var raised = HostPatch(id: .manual("raised"), type: .text)
-        raised.driven = .replace([.zIndex: HostStateBinding(state: 700, mode: .out, kind: .plain)])
+        raised.driven = .replace([.zIndex: HostStateBinding(state: 700, mode: .out, kind: .plain, laneKind: .number)])
         var grid = HostPatch(id: .manual("grid"), type: .grid)
         grid.children = .arranged([raised, Self.layer("still", 1)])
         tree.apply(grid, complete: true)
@@ -777,16 +751,4 @@ private struct TwoScenes: Application {
         WindowGroup { Text("first") }
         Window(WindowType("tree.second")) { Text("second") }
     }
-}
-
-/// Whether a property member's value is a closed vocabulary, crossing as its case's number.
-private func declaresAVocabulary(_ member: any ContractMember) -> Bool {
-    guard let property = member as? any PropertyMember else { return false }
-    return property.valueType is any RawRepresentable.Type
-}
-
-/// The type a property member's value is declared as; nil for any other member.
-private func declaredType(of member: any ContractMember) -> ObjectIdentifier? {
-    guard let property = member as? any PropertyMember else { return nil }
-    return ObjectIdentifier(property.valueType)
 }

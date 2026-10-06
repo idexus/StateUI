@@ -493,7 +493,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.opacity],
-            HostStateBinding(state: fade.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: fade.number, mode: .inOut, kind: .property, laneKind: .number))
     }
 
     /// A scroller handed its offset registers it as a JOURNEY both ways - one
@@ -511,7 +511,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.scrollOffset],
-            HostStateBinding(state: offset.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: offset.number, mode: .inOut, kind: .property, laneKind: .number))
         XCTAssertNil(patch.events?["scrollXChanged"])
         XCTAssertNil(patch.events?["scrollYChanged"])
     }
@@ -557,7 +557,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(
             found?.driven?[.scrollOffset],
-            HostStateBinding(state: across.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: across.number, mode: .inOut, kind: .property, laneKind: .number))
         XCTAssertNotNil(found?.events?[.scrollStopped], "the scroller hears itself come to rest")
         XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
     }

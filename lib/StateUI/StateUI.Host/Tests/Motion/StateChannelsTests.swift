@@ -13,7 +13,7 @@ final class StateChannelsTests: XCTestCase {
     func testOneStateNumberOwnsOneChannelAcrossControls() throws {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
-        let binding = HostStateBinding(state: 7, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 7, mode: .inOut, kind: .property, laneKind: .number)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -41,7 +41,7 @@ final class StateChannelsTests: XCTestCase {
     func testRetargetingCarriesTheCurrentVelocityIntoTheNewMotion() throws {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
-        let binding = HostStateBinding(state: 9, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 9, mode: .inOut, kind: .property, laneKind: .number)
         let first = HostJourney(
             value: [0],
             destination: [1],
@@ -84,7 +84,7 @@ final class StateChannelsTests: XCTestCase {
     func testACompletedMotionReportsItsExactDestinationOnce() throws {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
-        let binding = HostStateBinding(state: 11, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 11, mode: .inOut, kind: .property, laneKind: .number)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -118,7 +118,7 @@ final class StateChannelsTests: XCTestCase {
     func testEnablingReducedMotionLandsAnActiveJourneyAndItsWaiter() throws {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
-        let binding = HostStateBinding(state: 12, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 12, mode: .inOut, kind: .property, laneKind: .number)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -150,7 +150,7 @@ final class StateChannelsTests: XCTestCase {
     func testAUserTakesAnActiveJourneyAtItsOwnPosition() throws {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
-        let binding = HostStateBinding(state: 13, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 13, mode: .inOut, kind: .property, laneKind: .number)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -182,7 +182,7 @@ final class StateChannelsTests: XCTestCase {
     func testAnOutputOnlyBindingCannotTakeItsJourney() {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
-        let binding = HostStateBinding(state: 15, mode: .out, kind: .property)
+        let binding = HostStateBinding(state: 15, mode: .out, kind: .property, laneKind: .number)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -206,7 +206,7 @@ final class StateChannelsTests: XCTestCase {
     func testAStateSnapCancelsItsWaiterOnceWithoutRebookingIt() throws {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
-        let binding = HostStateBinding(state: 17, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 17, mode: .inOut, kind: .property, laneKind: .number)
         let moving = HostJourney(
             value: [0],
             destination: [1],
@@ -255,7 +255,7 @@ final class StateChannelsTests: XCTestCase {
     func testAnAwaitedRetargetOwnsItsNewCompletion() {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
-        let binding = HostStateBinding(state: 19, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 19, mode: .inOut, kind: .property, laneKind: .number)
         let first = HostJourney(
             value: [0],
             destination: [1],
@@ -333,8 +333,8 @@ final class StateChannelsTests: XCTestCase {
         let runtime = HostRuntime.still()
         var label = HostPatch(id: .manual("label"), type: .text)
         label.driven = .replace([
-            .opacity: HostStateBinding(state: Self.worn, mode: .out, kind: .property),
-            .rotation: HostStateBinding(state: Self.worn + 1, mode: .out, kind: .property),
+            .opacity: HostStateBinding(state: Self.worn, mode: .out, kind: .property, laneKind: .number),
+            .rotation: HostStateBinding(state: Self.worn + 1, mode: .out, kind: .property, laneKind: .number),
         ])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
@@ -360,7 +360,7 @@ final class StateChannelsTests: XCTestCase {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged(names.map { name in
             var label = HostPatch(id: .manual(name), type: .text)
-            label.driven = .replace([.opacity: HostStateBinding(state: worn, mode: .out, kind: .property)])
+            label.driven = .replace([.opacity: HostStateBinding(state: worn, mode: .out, kind: .property, laneKind: .number)])
             return label
         })
         return stack
@@ -373,7 +373,7 @@ final class StateChannelsTests: XCTestCase {
             value: [value], destination: [destination], velocity: [0], motion: .eased(200, .linear), completion: nil,
             stopped: 0)
         _ = runtime.stateChannels.presentedValue(
-            for: HostStateBinding(state: state, mode: .out, kind: .property),
+            for: HostStateBinding(state: state, mode: .out, kind: .property, laneKind: .number),
             from: HostBoundary.value(of: journey),
             now: 0,
             reducesMotion: false)

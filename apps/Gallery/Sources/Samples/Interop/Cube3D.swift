@@ -99,5 +99,11 @@ public struct Cube3D: ElementView {
     public func isSpinning(_ value: Bool) -> Self {
         setValue(Cube3DContract.isSpinning, value)
     }
+
+    /// The same, set by the host from a state as it stands: a switch bound to
+    /// the state stops and starts the cube, and nothing here is built again.
+    public func isSpinning(_ state: Binding<Bool>) -> Modified {
+        setValue(Cube3DContract.isSpinning, on: state, mode: .out, kind: .plain)
+    }
 }
 #endif

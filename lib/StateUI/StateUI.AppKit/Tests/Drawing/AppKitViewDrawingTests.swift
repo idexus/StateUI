@@ -52,7 +52,7 @@ final class AppKitViewDrawingTests: XCTestCase {
         own.properties[.opacity] = .number(0.5)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.driven = .replace([
-            .area: HostStateBinding(state: 95, mode: .out, kind: .placement),
+            .area: HostStateBinding(state: 95, mode: .out, kind: .placement, laneKind: .number),
         ])
         layout.children = .arranged([own])
         renderer.applyForTesting(tree(layout))

@@ -27,7 +27,7 @@ final class DisplayCycleTests: XCTestCase {
         let travelling = HostJourney(
             value: [0], destination: [100], velocity: [0], motion: .eased(400), completion: nil, stopped: 0)
         _ = channels.presentedValue(
-            for: HostStateBinding(state: 9, mode: .out, kind: .property),
+            for: HostStateBinding(state: 9, mode: .out, kind: .property, laneKind: .number),
             from: HostBoundary.value(of: travelling),
             now: 0,
             reducesMotion: false)

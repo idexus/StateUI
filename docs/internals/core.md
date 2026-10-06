@@ -265,9 +265,10 @@ type's extensions in its folder as `Type+Responsibility.swift`
 
 ### Carried values
 
-- **`StateValue`**, **`Walked`** and **`StateChoice`** say how a value rides a
-  state and lies on its image, which values a journey is made of lane by
-  lane, and how a closed vocabulary rides as its member's number.
+- **`StateValue`**, **`LaneValue`**, **`Walked`** and **`StateChoice`** say
+  how a value rides a state and lies on its image, what a host reads its lanes
+  as, which values a journey is made of lane by lane, and how a closed
+  vocabulary rides as its member's number.
   *Application* conforms its own values.
   ([Carried state](../design/core/state.md#carried-state),
   [a state has one shape](../design/core/state.md#a-state-has-one-shape))
@@ -275,10 +276,10 @@ type's extensions in its folder as `Type+Responsibility.swift`
   rewrite, in three copies: the image, the published copy and a pending
   write. Its type is public and its members internal.
   ([Three copies of a value](../design/core/cycle.md#three-copies-of-a-value))
-- **`StateCarried`**, **`StateMode`** and **`StateKind`** are a value as the
-  image holds it, the way it crosses at an attachment, and the door it goes
-  through; a host reads them as `HostStateValue`, `HostStateMode` and
-  `HostStateKind`. `StateRegistration` and `StateImage` are internal.
+- **`StateCarried`**, **`StateMode`**, **`StateKind`** and **`LaneKind`** are a
+  value as the image holds it, the way it crosses at an attachment, the door
+  it goes through and what its lanes are read as; a host reads them as
+  `HostStateValue`, `HostStateMode`, `HostStateKind` and `HostLaneKind`. `StateRegistration` and `StateImage` are internal.
   ([A state the host carries](../design/types/README.md#a-state-the-host-carries))
 
 ### Journeys

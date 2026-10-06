@@ -54,6 +54,9 @@ struct StateRegistration {
     /// Which door the value goes through.
     let kind: StateKind
 
+    /// What the host reads the lanes as - the value's own type says; nil for text, which has none.
+    let laneKind: LaneKind?
+
     /// Which of the view's values this is, which `.inherited` is resolved against.
     let values: MotionValues
 
@@ -72,4 +75,7 @@ struct StateEntry: Equatable {
 
     /// Which of the host's doors the value goes through.
     let kind: StateKind
+
+    /// What the host reads the lanes as; nil for text.
+    let laneKind: LaneKind?
 }

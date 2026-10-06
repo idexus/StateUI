@@ -81,6 +81,11 @@ struct Cube3DSample: SampleContent, ExampleContent {
             public func isSpinning(_ value: Bool) -> Self {
                 setValue(Cube3DContract.isSpinning, value)
             }
+
+            // A flag has no half way: the host sets it as it stands.
+            public func isSpinning(_ state: Binding<Bool>) -> Modified {
+                setValue(Cube3DContract.isSpinning, on: state, mode: .out, kind: .plain)
+            }
         }
 
         @State private var size = 0.6
@@ -90,16 +95,16 @@ struct Cube3DSample: SampleContent, ExampleContent {
         static let colors = ["Teal", "Amber", "Violet"]
 
         VStack {
-            // NOTHING here reads `size`. The cube is handed the state, and the
-            // caption is a CONVERSION of that same journey - both worked out
-            // by the host on its own frames. So dragging the thumb the width
-            // of the page builds this closure not once.
+            // NOTHING here reads `size` or `spinning`. The cube is handed the
+            // states, and the caption is a CONVERSION of the size's journey -
+            // all worked out by the host on its own frames. So dragging the
+            // thumb or flipping the switch builds this closure not once.
             DebugInfoLabel()
 
             Cube3D()
                 .size($size)
                 .color(CubeColor(rawValue: Int32(color)) ?? .teal)
-                .isSpinning(spinning)
+                .isSpinning($spinning)
 
             Text()
                 .text($size.journey.convert { "Edge: \\(Int($0.value * 100))% of the view" })
@@ -944,7 +949,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
             Cube3D()
                 .size($size)
                 .color(CubeColor(rawValue: Int32(color)) ?? .teal)
-                .isSpinning(spinning)
+                .isSpinning($spinning)
                 .accessibilityIdentifier("cube3D.cube")
                 .accessibilityLabel("Cube")
                 .horizontalAlignment(.center)
@@ -1033,9 +1038,10 @@ struct Cube3DSample: SampleContent, ExampleContent {
             Text("The edge is HANDED OVER: `.size($size)` gives the host the state "
                 + "itself, and the caption is a conversion of that same journey. Nothing "
                 + "here reads `size`, so a drag builds this example not once - the cube "
-                + "grows and the number counts up on the host's own frames. The colour "
-                + "and the spin are plain values, described again on the one build a "
-                + "pick or a flip costs.")
+                + "grows and the number counts up on the host's own frames. The spin is "
+                + "handed over too, a flag the host sets as it stands, so a flip builds "
+                + "nothing either; the colour is a plain value, described again on the "
+                + "one build a pick costs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
