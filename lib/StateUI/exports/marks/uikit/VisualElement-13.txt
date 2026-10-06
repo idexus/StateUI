@@ -17,7 +17,7 @@ Line.isVisible: ✅
 Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
 Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
-Picker.background: not realized
+Picker.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 Polygon.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Polyline.zIndex: ✅
 ProgressBar.frame: ✅
@@ -28,7 +28,7 @@ Rectangle.isVisible: ✅
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.background: not realized
+Slider.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 Stepper.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Switch.zIndex: ✅
 Text.frameChanged: ✅

@@ -7,7 +7,7 @@ Canvas.isVisible: ✅
 Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform, checked against the layer it composed itself
 CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform, checked against the layer it composed itself
 ColorBox.pivotY: ✓ read pivotY of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.background: not realized
+DatePicker.background: – UIKit's date picker keeps no background colour: one written reads back as none.
 Ellipse.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Grid.zIndex: ✅
 HStack.frame: ✅
@@ -17,7 +17,7 @@ Image.width: ✅
 ItemsView.isVisible: ✅
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself
 Line.pivotY: ✓ read pivotY of Line: the host's own transform, checked against the layer it composed itself
-Map.background: not realized
+Map.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 Path.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Picker.zIndex: ✅
 Polygon.frame: ✅

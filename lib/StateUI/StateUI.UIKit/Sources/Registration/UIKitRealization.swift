@@ -35,11 +35,21 @@ enum UIKitRealization {
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
+        .partial("VisualElement", "background", missing: "UIKit paints a colour on this view; a brush is drawn only by a layout."),
         .complete("VisualElement", "ignoresInput"),
         .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .complete("Button", "background"),
+        .notPlanned("DatePicker", "background", reason: "UIKit's date picker keeps no background colour: one written reads back as none."),
+        .complete("Grid", "background"),
+        .complete("HStack", "background"),
+        .complete("ScrollView", "background"),
+        .complete("Text", "background"),
+        .notPlanned("TimePicker", "background", reason: "UIKit's time picker keeps no background colour: one written reads back as none."),
+        .complete("VStack", "background"),
+        .complete("ZStack", "background"),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),

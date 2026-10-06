@@ -1,7 +1,7 @@
 # revision 2.1
 ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.pivotY: ✓ read pivotY of Button: the host's own transform, checked against the layer it composed itself
-Canvas.background: not realized
+Canvas.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 CheckBox.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 ColorBox.zIndex: ✅
 DatePicker.frame: ✅
@@ -12,7 +12,7 @@ Grid.isVisible: ✅
 Grid.scaleY: ✓ read scaleY of Grid: the host's own transform, checked against the layer it composed itself
 HStack.rotationY: ✓ read rotationY of HStack: the host's own transform, checked against the layer it composed itself
 Image.pivotY: ✓ read pivotY of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.background: not realized
+ItemsView.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 Line.zIndex: ✅
 Map.frame: ✅
 Path.frameChanged: ✅
@@ -22,7 +22,7 @@ Picker.isVisible: ✅
 Picker.scaleY: ✓ read scaleY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.pivotY: ✓ read pivotY of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.background: not realized
+ProgressBar.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 RadioButton.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Rectangle.zIndex: ✅
 ScrollView.frame: ✅
@@ -34,7 +34,7 @@ Slider.scaleY: ✓ read scaleY of Slider: the host's own transform, checked agai
 Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
 Text.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
-TextEditor.background: not realized
+TextEditor.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 TextField.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 TimePicker.zIndex: ✅
 VStack.frame: ✅

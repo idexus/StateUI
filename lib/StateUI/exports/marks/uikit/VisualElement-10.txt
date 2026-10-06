@@ -8,7 +8,7 @@ CheckBox.isVisible: ✅
 CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform, checked against the layer it composed itself
 ColorBox.rotationY: ✓ read rotationY of ColorBox: the host's own transform, checked against the layer it composed itself
 DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform, checked against the layer it composed itself
-Ellipse.background: not realized
+Ellipse.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 Grid.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 HStack.zIndex: ✅
 Image.frame: ✅
@@ -17,7 +17,7 @@ ItemsView.height: ✅
 ItemsView.width: ✅
 Line.rotationY: ✓ read rotationY of Line: the host's own transform, checked against the layer it composed itself
 Map.pivotY: ✓ read pivotY of Map: the host's own transform, checked against the layer it composed itself
-Path.background: not realized
+Path.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 Picker.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Polygon.zIndex: ✅
 Polyline.frame: ✅
@@ -28,7 +28,7 @@ RadioButton.isVisible: ✅
 RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.pivotY: ✓ read pivotY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.background: not realized
+SearchField.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 Slider.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Stepper.zIndex: ✅
 Switch.frame: ✅
@@ -41,5 +41,5 @@ TextField.isVisible: ✅
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.pivotY: ✓ read pivotY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.background: not realized
+WebView.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 ZStack.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level

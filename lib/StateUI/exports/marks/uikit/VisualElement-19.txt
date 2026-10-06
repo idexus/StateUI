@@ -11,7 +11,7 @@ Ellipse.isVisible: ✅
 Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform, checked against the layer it composed itself
 Grid.rotationY: ✓ read rotationY of Grid: the host's own transform, checked against the layer it composed itself
 HStack.pivotY: ✓ read pivotY of HStack: the host's own transform, checked against the layer it composed itself
-Image.background: not realized
+Image.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 ItemsView.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 Line.frame: ✅
 Map.frameChanged: ✅
@@ -21,7 +21,7 @@ Path.isVisible: ✅
 Path.scaleY: ✓ read scaleY of Path: the host's own transform, checked against the layer it composed itself
 Picker.rotationY: ✓ read rotationY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.background: not realized
+Polyline.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 ProgressBar.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 RadioButton.zIndex: ✅
 Rectangle.frame: ✅
@@ -32,7 +32,7 @@ SearchField.isVisible: ✅
 SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.rotationY: ✓ read rotationY of Slider: the host's own transform, checked against the layer it composed itself
 Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.background: not realized
+Switch.background: ☑️ UIKit paints a colour on this view; a brush is drawn only by a layout.
 Text.zIndex: ✅
 TextEditor.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
 TextField.zIndex: ✅
