@@ -31,6 +31,10 @@ extension WebElement {
             }
         }
         view.isTapped = hearing.contains(.taps) && !view.isControl
+        view.offerDrag(element.dragAndDrop) { [weak self] heard in
+            guard let self, let host else { return }
+            element.hear(heard, in: host.runtime)
+        }
     }
 
     /// The DOM's pointer events, and what each says to the element.

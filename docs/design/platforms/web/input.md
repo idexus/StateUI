@@ -58,8 +58,17 @@ points a step of e - or, in Safari, as its gesture, whose scale it carries;
 the page's own zoom is taken from it, and a wheel standing still a fifth of
 a second ends it.
 
-Dragging and dropping between views (`canDrag`, `onDrop`) waits on a rule
-the hosts share: no host realizes it yet.
+## A drag between views
+
+A view's drag between views is HTML's own drag and drop, set on the element
+by the relay (`offer_drag`). A view that can be dragged is `draggable`; its
+`dragstart` carries the view's words as plain text, and its `dragend` says
+the drag ended wherever it ended. A view that takes drops takes a drag of
+plain text: its `dragenter` and `dragleave`, which come again for each child
+the drag crosses, are counted, so it hears the drag come once and go once;
+its `dragover` lets the drop land, and its `drop` hands over the words. A
+drag event stops at the innermost view that answers it. The host layer's
+rule makes over once and no leave after a drop.
 
 ## What takes no input
 

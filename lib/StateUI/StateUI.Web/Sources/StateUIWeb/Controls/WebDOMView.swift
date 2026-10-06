@@ -22,6 +22,8 @@ class WebDOMView {
 
     /// The listeners hung on the element, let go of with it.
     private var listeners: [Int32] = []
+    private var offered = DragAndDrop.none
+    private var dragListener: Int32?
 
     /// The CSS properties this view's element holds, by name, so a value is sent only when it changes.
     private var styles: [String: String] = [:]
@@ -86,6 +88,21 @@ class WebDOMView {
         listeners = []
         WebRelay.release(node)
         Self.liveCount -= 1
+    }
+
+    /// What the element's drag carries and whether it takes drops, as last told; `action` hears each drag.
+    /// Design: docs/design/platforms/web/input.md#a-drag-between-views
+    func offerDrag(_ offered: DragAndDrop, _ action: @escaping @MainActor (HeardInput) -> Void) {
+        guard offered != self.offered else { return }
+        self.offered = offered
+        if let told = dragListener {
+            WebRelay.forget(told)
+            listeners.removeAll { $0 == told }
+        }
+        let listener = WebRelay.listener { if let heard = WebRelay.dragHeard { action(heard) } }
+        dragListener = listener
+        listeners.append(listener)
+        WebRelay.offerDrag(node, offered, listener)
     }
 
     /// Runs `action` whenever the element hears `event`.

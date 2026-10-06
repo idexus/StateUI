@@ -19,6 +19,7 @@ extension WebDriver {
         if act == .close, element.type == .window { return try running().runtime.ending() }
         if case .answer(let caption, let typing) = act { return try answer(caption, typing: typing, on: element) }
         if case .answerFiles(let names) = act { return try answerFiles(names, on: element) }
+        if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
         // The browser's way back, over the page's own entry: from one it did not put there, the user leaves the site.
         if act == .goBack {
             guard try WebBrowser.truth("history.state?.stateui === true && (history.back(), true)", on: 0) else {
@@ -80,6 +81,36 @@ extension WebDriver {
         case (.pinch(let scale, let share), _): try pinch(e, by: scale, at: share)
         default: throw DriverCannot(act, on: element)
         }
+    }
+
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - by the DOM's drag
+    /// events, one `DataTransfer` carried through them, in a turn of the page's own: the drag starts, comes over the
+    /// view crossed and goes, comes over the target and is let go there, and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func mark(_ id: String?, as role: String) throws {
+            let found = id.map { renderer?.runtime.tree.root?.first(id: .manual($0)) } ?? element
+            guard let node = (found?.native as? WebElement)?.view?.node else { throw DriverCannot(act, on: element) }
+            try WebBrowser.run("e.dataset.stateuiDrag = '\(role)'", on: node)
+        }
+        try mark(nil, as: "source")
+        try mark(target, as: "target")
+        if let across { try mark(across, as: "crossed") }
+        try WebBrowser.run("""
+            const at = (role) => document.querySelector(`[data-stateui-drag="${role}"]`);
+            const carried = new DataTransfer();
+            const tell = (role, name) => at(role)?.dispatchEvent(
+                new DragEvent(name, { bubbles: true, cancelable: true, dataTransfer: carried }));
+            const steps = [["source", "dragstart"]];
+            if (at("crossed")) steps.push(["crossed", "dragenter"], ["crossed", "dragover"], ["crossed", "dragleave"]);
+            steps.push(["target", "dragenter"], ["target", "dragover"], ["target", "drop"], ["source", "dragend"]);
+            steps.forEach(([role, name], index) => setTimeout(() => {
+                tell(role, name);
+                if (index === steps.length - 1) {
+                    for (const marked of document.querySelectorAll("[data-stateui-drag]")) delete marked.dataset.stateuiDrag;
+                }
+            }, 0))
+            """, on: 0)
     }
 
     /// Whether the element `e` stands under a question the page shows over it.

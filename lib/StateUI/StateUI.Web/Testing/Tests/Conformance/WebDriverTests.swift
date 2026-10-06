@@ -5,13 +5,14 @@
 import XCTest
 
 /// What the Web driver does past the browser it says so: an act done on any element - a window's phase told, a
-/// file dialog answered - is the host's own, wherever it is done.
+/// file dialog answered, a drag dispatched - is the host's own, wherever it is done.
 @MainActor
 final class WebDriverTests: XCTestCase {
     func testAnActTheDriverDoesItselfIsTheHostsOwnOnAnyElement() {
         let driver = WebDriver()
         for ability in [
             "switchAway on Window", "minimize on Window", "close on Window", "answerFiles on Window",
+            "dragAndDrop on ColorBox", "dragAndDrop on Text",
         ] {
             XCTAssertNotNil(driver.byHost(ability), ability)
         }

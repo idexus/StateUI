@@ -177,9 +177,11 @@ reaching Swift as they do on any page. The controller drives the browser over
 its DevTools pipe: the user's input is the browser's own - the mouse, the keys,
 typed words - and it reads and writes the repository's files, the verdicts
 among them, which the page cannot reach. A file dialog is the relay's, held
-on the test's page and answered from the test's own files, and what the page
-would launch is the relay's record - a member proven through them is the
-host's own, ✓.
+on the test's page and answered from the test's own files, what the page
+would launch is the relay's record, a drag between views is the DOM's drag
+events the driver dispatches, and a window's phases are the notices the
+driver gives - a member proven through them is the host's own, ✓, whatever
+element the act is done on.
 
 XCTest's own loop runs on Swift's cooperative executor and awaits MainActor
 between its tests. Once a host runs, MainActor's executor is the UI thread's,
