@@ -1,7 +1,7 @@
 # revision 2.1
 TimePicker: ✅
 TimePicker.closed: ✅
-TimePicker.format: cannot read format of TimePicker - GTK's clock holds no format: it writes hours and minutes in the user's own clock
+TimePicker.format: does not apply - read format of TimePicker - GTK's clock holds no format: it writes hours and minutes in the user's own clock
 TimePicker.frameChanged: ✅
 TimePicker.isOpen: ✅
 TimePicker.opened: ✅
