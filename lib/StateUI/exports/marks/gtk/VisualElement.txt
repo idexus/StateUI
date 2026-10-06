@@ -8,7 +8,7 @@ ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it 
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
-ActivityIndicator.ignoresInput: not realized
+ActivityIndicator.ignoresInput: ✅
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
@@ -42,7 +42,7 @@ Button.focus: ✅
 Button.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
-Button.ignoresInput: not realized
+Button.ignoresInput: ✅
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
 Button.isFocusedChanged: ✅
@@ -76,7 +76,7 @@ Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothin
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
-Canvas.ignoresInput: not realized
+Canvas.ignoresInput: ✅
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
 Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
@@ -110,7 +110,7 @@ CheckBox.focus: ✅
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
-CheckBox.ignoresInput: not realized
+CheckBox.ignoresInput: ✅
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
 CheckBox.isFocusedChanged: ✅
@@ -144,7 +144,7 @@ ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and no
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
-ColorBox.ignoresInput: not realized
+ColorBox.ignoresInput: ✅
 ColorBox.isAccessibilityHidden: ✅
 ColorBox.isEnabled: ✅
 ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
@@ -178,7 +178,7 @@ DatePicker.focus: ✅
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
-DatePicker.ignoresInput: not realized
+DatePicker.ignoresInput: ✅
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
 DatePicker.isFocusedChanged: ✅
@@ -212,7 +212,7 @@ Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and noth
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
-Ellipse.ignoresInput: not realized
+Ellipse.ignoresInput: ✅
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
 Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
@@ -314,7 +314,7 @@ Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing 
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
-Image.ignoresInput: not realized
+Image.ignoresInput: ✅
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
 Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
@@ -348,7 +348,7 @@ ItemsView.focus: ✅
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
 ItemsView.height: ✅
-ItemsView.ignoresInput: not realized
+ItemsView.ignoresInput: ✅
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
 ItemsView.isFocusedChanged: ✅
@@ -382,7 +382,7 @@ Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
-Line.ignoresInput: not realized
+Line.ignoresInput: ✅
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
@@ -450,7 +450,7 @@ Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
-Path.ignoresInput: not realized
+Path.ignoresInput: ✅
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
 Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
@@ -484,7 +484,7 @@ Picker.focus: ✅
 Picker.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
-Picker.ignoresInput: not realized
+Picker.ignoresInput: ✅
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
 Picker.isFocusedChanged: ✅
@@ -518,7 +518,7 @@ Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and noth
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
-Polygon.ignoresInput: not realized
+Polygon.ignoresInput: ✅
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
 Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
@@ -552,7 +552,7 @@ Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and no
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
-Polyline.ignoresInput: not realized
+Polyline.ignoresInput: ✅
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
@@ -586,7 +586,7 @@ ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, 
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
-ProgressBar.ignoresInput: not realized
+ProgressBar.ignoresInput: ✅
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
 ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
@@ -620,7 +620,7 @@ RadioButton.focus: ✅
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
-RadioButton.ignoresInput: not realized
+RadioButton.ignoresInput: ✅
 RadioButton.isAccessibilityHidden: ✅
 RadioButton.isEnabled: ✅
 RadioButton.isFocusedChanged: ✅
@@ -654,7 +654,7 @@ Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and 
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
-Rectangle.ignoresInput: not realized
+Rectangle.ignoresInput: ✅
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
 Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
@@ -688,7 +688,7 @@ ScrollView.focus: ✅
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
-ScrollView.ignoresInput: not realized
+ScrollView.ignoresInput: ✅
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
 ScrollView.isFocusedChanged: ✅
@@ -722,7 +722,7 @@ SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
 SearchField.height: ✅
-SearchField.ignoresInput: not realized
+SearchField.ignoresInput: ✅
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
 SearchField.isFocusedChanged: ✅
@@ -756,7 +756,7 @@ Slider.focus: ✅
 Slider.frame: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
-Slider.ignoresInput: not realized
+Slider.ignoresInput: ✅
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
 Slider.isFocusedChanged: ✅
@@ -790,7 +790,7 @@ Stepper.focus: ✅
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅
-Stepper.ignoresInput: not realized
+Stepper.ignoresInput: ✅
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
 Stepper.isFocusedChanged: ✅
@@ -824,7 +824,7 @@ Switch.focus: ✅
 Switch.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
-Switch.ignoresInput: not realized
+Switch.ignoresInput: ✅
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
 Switch.isFocusedChanged: ✅
@@ -858,7 +858,7 @@ Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is
 Text.frame: ✅
 Text.frameChanged: ✅
 Text.height: ✅
-Text.ignoresInput: not realized
+Text.ignoresInput: ✅
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
 Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
@@ -892,7 +892,7 @@ TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅
-TextEditor.ignoresInput: not realized
+TextEditor.ignoresInput: ✅
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
 TextEditor.isFocusedChanged: ✅
@@ -926,7 +926,7 @@ TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅
-TextField.ignoresInput: not realized
+TextField.ignoresInput: ✅
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
 TextField.isFocusedChanged: ✅
@@ -960,7 +960,7 @@ TimePicker.focus: ✅
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
 TimePicker.height: ✅
-TimePicker.ignoresInput: not realized
+TimePicker.ignoresInput: ✅
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
 TimePicker.isFocusedChanged: ✅
@@ -1028,7 +1028,7 @@ WebView.focus: ✅
 WebView.frame: ✅
 WebView.frameChanged: ✅
 WebView.height: ✅
-WebView.ignoresInput: not realized
+WebView.ignoresInput: ✅
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
 WebView.isFocusedChanged: ✅

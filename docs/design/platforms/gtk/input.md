@@ -41,6 +41,13 @@ still a tap.
 The tap claims its press, and GTK denies it to every view around the one
 tapped: a tappable row inside another answers alone.
 
+## A view the press passes through
+
+A view that ignores input is one GTK picks for no click or touch:
+`gtk_widget_set_can_target` off, on whatever widget the element shows -
+GTK's own picking then goes on to what stands behind it, and a layout off so
+takes all in it out. One arm of the element puts it on every view.
+
 ## Pressed by assistive technology
 
 A panel carries one action, `panel.click`, enabled only while it listens for
