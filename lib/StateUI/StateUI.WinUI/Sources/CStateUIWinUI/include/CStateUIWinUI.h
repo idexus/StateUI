@@ -161,6 +161,13 @@ typedef struct {
     /// What was launched under `ticket`: whether an application took it.
     void (*launchAnswered)(int64_t ticket, bool taken);
 
+    /// What a view heard of a drag: `kind` 0 its own drag started, 1 ended, 2 a drag over it, 3 gone, 4 dropped with
+    /// `words` in UTF-8.
+    void (*dragHeard)(int64_t view, int32_t kind, char const *words);
+
+    /// Files dropped on a view from the system: their `count` paths and names, in UTF-8.
+    void (*filesDragged)(int64_t view, int32_t count, char const *const *paths, char const *const *names);
+
     /// A press on a canvas, followed from down to up: `phase` 0 pressed, 1 dragged, 2 released, at (x, y) DIPs of it.
     void (*canvasPressed)(int64_t view, int32_t phase, double x, double y);
 
@@ -822,6 +829,12 @@ bool stateui_winui_reaches(StateUIObjectRef element, double x, double y);
 
 /// Tells `focused` whenever the keyboard comes into the element or leaves it, while `hearing`; false stops.
 void stateui_winui_hear_focus(StateUIObjectRef element, int64_t view, bool hearing);
+
+/// The element of the view `view` carries `words` in a drag of it - null where it cannot be dragged - and takes words
+/// dropped on it where `takesWords`, files where `takesFiles`; what it hears goes through `dragHeard` and
+/// `filesDragged`.
+void stateui_winui_offer_drag(
+    StateUIObjectRef element, int64_t view, char const *words, bool takesWords, bool takesFiles);
 
 
 /// How many views listen for the user's input - what a test counts to see every one stop.

@@ -82,3 +82,17 @@ into it - to it, or to what stands in it, as a number box's own field - and
 when it leaves. WinUI's `GotFocus` and `LostFocus` bubble from inside the
 element, so as each arrives the relay asks where the keyboard is now, the
 act of moving the focus asking the same, and tells only a change.
+
+## A drag between views
+
+A view's drags are WinUI's own drag and drop, through the relay
+(`Drags.cpp`): what the view offers stands in a table by its number, and its
+handlers, hung once, ask it as they run. A view that can be dragged has
+`CanDrag`; its `DragStarting` puts the view's words on the drag's data as
+text, to be copied, and its `DropCompleted` says the drag ended wherever it
+ended. A view taking drops has `AllowDrop`; a drag whose data holds text
+where it takes words, or storage items where it takes files, is accepted
+over it - `DragEnter` and `DragOver` say it is over, `DragLeave` that it went
+- and its `Drop` reads the text, or each item's path and name, holding the
+drop's deferral until they are read. The host layer's rule makes over once
+and no leave after a drop.

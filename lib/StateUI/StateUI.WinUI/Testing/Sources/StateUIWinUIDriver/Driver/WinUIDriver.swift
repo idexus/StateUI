@@ -163,6 +163,11 @@ final class WinUIDriver: HostDriver {
             try state(of: element, minimized: false, activated: true)
         case (.answer(let caption, let words), _): try answer(caption, typing: words)
         case (.answerFiles(let names), _): try answerFiles(names)
+        case (.dragAndDrop(let target, let across), _): try dragAndDrop(element, onto: target, across: across)
+        case (.dropFiles(let names), let view?):
+            guard view.offered.takesFiles else { throw DriverCannot(act, on: element) }
+            for name in names { FileManager.default.createFile(atPath: Self.files + "\\" + name, contents: Data(name.utf8)) }
+            view.heardDrag(.filesDropped(names.map { ChosenFile(address: Self.files + "\\" + $0, name: $0) }))
         default: throw DriverCannot(act, on: element)
         }
     }
@@ -353,5 +358,29 @@ final class WinUIDriver: HostDriver {
         for file in [WinUIPersistence.valuesFile, WinUIPersistence.scenesFile] {
             try? FileManager.default.removeItem(atPath: store + "\\" + file)
         }
+    }
+
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as the relay tells a
+    /// drag: it starts, comes over the view crossed and goes, comes over the target and is let go there, and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func taking(_ id: String) throws -> WinUIView {
+            let found = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? WinUIElement)?.view
+            guard let found, found.offered.takesWords else { throw DriverCannot(act, on: element) }
+            return found
+        }
+        guard let source = (element.native as? WinUIElement)?.view, let words = source.offered.words else {
+            throw DriverCannot(act, on: element)
+        }
+        source.heardDrag(.dragStarted)
+        if let across {
+            let crossed = try taking(across)
+            crossed.heardDrag(.dragOver)
+            crossed.heardDrag(.dragLeft)
+        }
+        let landing = try taking(target)
+        landing.heardDrag(.dragOver)
+        landing.heardDrag(.dropped(words))
+        source.heardDrag(.dragEnded)
     }
 }

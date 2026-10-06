@@ -115,6 +115,17 @@ enum WinUICallbacks {
             launchAnswered: { ticket, taken in
                 MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.launched(ticket: ticket, taken: taken) }
             },
+            dragHeard: { view, kind, words in
+                let said = words.map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated { WinUIView.find(view)?.heardDrag(kind: kind, words: said) }
+            },
+            filesDragged: { view, count, paths, names in
+                let files = (0..<Int(count)).compactMap { index -> ChosenFile? in
+                    guard let path = paths?[index], let name = names?[index] else { return nil }
+                    return ChosenFile(address: String(cString: path), name: String(cString: name))
+                }
+                MainActor.assumeIsolated { WinUIView.find(view)?.heardDrag(.filesDropped(files)) }
+            },
             canvasPressed: { view, phase, x, y in
                 MainActor.assumeIsolated {
                     (WinUIView.find(view) as? WinUICanvasView)?.pressed(phase: phase, at: Point(x: x, y: y))

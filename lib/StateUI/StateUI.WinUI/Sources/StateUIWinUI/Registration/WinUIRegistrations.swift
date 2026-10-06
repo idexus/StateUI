@@ -39,6 +39,8 @@ enum WinUIRegistrations {
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()
+        registry.everyElementDragsAndDrops()
+        registry.everyElementTakesDroppedFiles()
         registry.everyElementRaises(VisualElementContract.isFocusedChanged)
     }
 }

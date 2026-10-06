@@ -331,6 +331,10 @@ class WinUIView {
     private(set) var hearing: Hearing = []
     private var onHeard: ((HeardInput) -> Void)?
 
+    /// What the view offers and takes of a drag, as last told to the relay; what hears it.
+    private(set) var offered = DragAndDrop.none
+    private var onDragHeard: ((HeardInput) -> Void)?
+
     /// The press the view heard, on its way to a drag by the host layer's rule.
     private var press = DragRecognition(distance: WinUIView.dragDistance)
 
@@ -355,6 +359,33 @@ class WinUIView {
     /// What the relay says the view heard.
     func heard(_ heard: HeardInput) {
         onHeard?(heard)
+    }
+
+    /// Offers and takes what `offered` says of a drag, `heard` hearing it; the relay is told only a change.
+    /// Design: docs/design/platforms/winui/input.md#a-drag-between-views
+    func offer(_ offered: DragAndDrop, _ heard: @escaping (HeardInput) -> Void) {
+        onDragHeard = offered == .none ? nil : heard
+        guard offered != self.offered else { return }
+        self.offered = offered
+        stateui_winui_offer_drag(handle, number, offered.words, offered.takesWords, offered.takesFiles)
+    }
+
+    /// What the relay says the view heard of a drag, by the kind `Drags.cpp` numbers.
+    func heardDrag(kind: Int32, words: String) {
+        let input: HeardInput? = switch kind {
+        case 0: .dragStarted
+        case 1: .dragEnded
+        case 2: .dragOver
+        case 3: .dragLeft
+        case 4: .dropped(words)
+        default: nil
+        }
+        if let input { heardDrag(input) }
+    }
+
+    /// What the view heard of a drag, handed to what hears it.
+    func heardDrag(_ heard: HeardInput) {
+        onDragHeard?(heard)
     }
 
     /// A press the relay tells - down, moved, let go or taken away, at `point` of the window's content: a drag by the
