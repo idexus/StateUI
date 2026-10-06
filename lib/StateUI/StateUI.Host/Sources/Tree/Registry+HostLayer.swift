@@ -73,4 +73,18 @@ extension Registry {
         everyElementRaises(ViewContract.pointerPressed)
         everyElementRaises(ViewContract.pointerReleased)
     }
+
+    /// Every element's view is dragged between views and takes what is dropped on it, by the host layer's rules
+    /// (`DragAndDrop`, `DropTarget`).
+    /// Design: docs/design/host/runtime.md#a-drag-between-views
+    public func everyElementDragsAndDrops() {
+        everyElementRealizes(ViewContract.canDrag)
+        everyElementRealizes(ViewContract.dragText)
+        everyElementRealizes(ViewContract.allowsDrop)
+        everyElementRaises(ViewContract.dragStarting)
+        everyElementRaises(ViewContract.dragEnded)
+        everyElementRaises(ViewContract.dragOver)
+        everyElementRaises(ViewContract.dragLeave)
+        everyElementRaises(ViewContract.drop)
+    }
 }

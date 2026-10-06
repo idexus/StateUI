@@ -57,6 +57,9 @@
     /// Where the states a press dragged carries stood as it began.
     var dragStart = Point(x: 0, y: 0)
 
+    /// A drag between views over the element's view, as the element tells it.
+    var dropTarget = DropTarget()
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 

@@ -22,7 +22,7 @@ extension MountedElement {
 
     /// The user's input the view heard, as the element's events: a tap each time a run reaches the count asked
     /// for - at once for a press assistive technology made; the pointer where it is; a press dragged moving the
-    /// states it carries, a swipe as it ends far enough; a pinch's step.
+    /// states it carries, a swipe as it ends far enough; a pinch's step; a drag between views by `DropTarget`.
     public func hear(_ input: HeardInput, in runtime: HostRuntime) {
         switch input {
         case .tap(let run):
@@ -35,6 +35,17 @@ extension MountedElement {
             dragged(phase, x: x, y: y, in: runtime)
         case .pinch(let phase, let scale, let at):
             send(.pinchUpdated, [.enumeration(phase.rawValue), .number(scale), .numbers([at.x, at.y])], in: runtime)
+        case .dragStarted:
+            send(.dragStarting, [], in: runtime)
+        case .dragEnded:
+            send(.dragEnded, [], in: runtime)
+        case .dragOver:
+            if dropTarget.over() { send(.dragOver, [], in: runtime) }
+        case .dragLeft:
+            if dropTarget.left() { send(.dragLeave, [], in: runtime) }
+        case .dropped(let words):
+            dropTarget.dropped()
+            send(.drop, [.string(words)], in: runtime)
         }
     }
 

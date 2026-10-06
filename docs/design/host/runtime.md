@@ -292,6 +292,19 @@ that movement reaches the view's threshold and the view listens for that way.
 A way it does not listen for is no swipe, even where the press also moved far
 along the other axis: the dominant way decides, never a second one.
 
+## A drag between views
+
+A view offers a drag where `canDrag` holds, carrying its `dragText` - empty
+where it gives none - and takes one where `allowsDrop` holds
+(`DragAndDrop`): what travels is fixed before the drag starts, as a native
+drag needs its payload at once. A toolkit tells a drag over a view in its
+own way - again and again while it moves, a leave after a drop on some, a
+leave for each child on others - so the element hears it through one rule
+(`DropTarget`): over once as a drag comes, left as it goes without being
+let go and never after a drop, dropped with its words as it is let go. The
+view dragged hears its drag start, and end once wherever it ended. A host
+that realizes it declares `everyElementDragsAndDrops`.
+
 ## The environment
 
 What a host reads of the machine it stands on is told to the core the same
