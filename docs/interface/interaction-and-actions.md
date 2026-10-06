@@ -216,7 +216,8 @@ with the first chosen. No kind means any file.
 
 `Dialogs.saveFile` takes the contents first and writes them where the user
 says, answering the file saved or `nil`. Its name gains the first kind's
-extension where it ends in none of theirs.
+extension where it ends in none of theirs. A browser with no save dialog
+downloads the file instead, and the call answers it at once.
 
 A `ChosenFile` shows only its `name`. Where it stands belongs to the platform -
 a path, a document's address, a browser's file - so the application reads it
