@@ -117,6 +117,9 @@
     public func perform(_ act: UserAct, on element: MountedElement) throws {
         if element.parent?.type == .itemsView {
             note("\(act) on an item of ItemsView", element: NodeType.itemsView.name)
+        } else if case .dragAndDrop = act {
+            // A drag reaches the views it crosses and lands on, as well as the one dragged.
+            note("\(act) on \(element.type.name)")
         } else {
             note("\(act) on \(element.type.name)", element: element.type.name)
         }
