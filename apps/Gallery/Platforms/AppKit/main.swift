@@ -7,12 +7,14 @@ import StateUIAppKit
 
 stateui_app_register()
 
+// listing: InteropActsSample.AppKit.swift, InteropEventsSample.AppKit.swift
 // What this host answers for the application, said before it runs: the
 // controls it realizes, the acts it performs, and the pushes it reports. Each
 // lives in Host/ beside this file.
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
+// listing: end
 
 let bundledResources = Bundle.main.resourceURL?.appendingPathComponent(
     "Images", isDirectory: true)

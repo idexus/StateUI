@@ -11,58 +11,21 @@ struct TouchThroughSample: SampleContent, ExampleContent {
     /// about it, so the page holds the example still.
     static let scrolls = false
 
+    // listing: TouchThroughSample
     @State private var below = 0
     @State private var child = 0
     @State private var childrenToo = false
 
-    static let code = """
-        @State private var below = 0
-        @State private var child = 0
-        @State private var childrenToo = false
-
+    var body: some View {
+        // On top. Its own empty area lets taps through to the box below
+        // while the label inside still answers - or, with the switch on,
+        // the whole of it ignores input, the label included.
         VStack {
             // Both counts are read here, so a tap on either builds this closure.
             DebugInfoLabel()
 
             Grid {
                 // Underneath, and still reachable.
-                ColorBox(Palette.accent)
-                    .height(120)
-                    .onTapped { below += 1 }
-
-                // On top. Its own empty area lets taps through to the box below
-                // while the label inside still answers - or, with the switch on,
-                // the whole of it ignores input, the label included.
-                VStack {
-                    Text("tap the child")
-                        .textColor(Palette.onBrand)
-                        .background(Palette.brand)
-                        .padding(horizontal: 14, vertical: 8)
-                        .horizontalAlignment(.center)
-                        .verticalAlignment(.center)
-                        .onTapped { child += 1 }
-                }
-                .padding(16)
-                .letsInputThrough(!childrenToo)
-                .ignoresInput(childrenToo)
-            }
-
-            Text("below \\(below)   child \\(child)")
-
-            HStack {
-                SwitchRow("Children too", $childrenToo)
-
-                Button("Reset")
-                    .onClicked { below = 0; child = 0 }
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
-            DebugInfoLabel()
-
-            Grid {
                 ColorBox(Palette.accent)
                     .height(120)
                     .onTapped { below += 1 }
@@ -99,6 +62,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

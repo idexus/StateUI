@@ -6,7 +6,7 @@
 /// Each vocabulary is what the listings use, plus the neighbours somebody
 /// would notice missing; a word left out is drawn plain, which is a dull
 /// listing rather than a wrong one.
-enum CodeLanguage {
+enum CodeLanguage: CaseIterable {
     /// Every example's own code, and a host's half written in Swift.
     case swift
 

@@ -2,157 +2,15 @@ import StateUI
 
 /// Six outlines, filled and stroked - with dashes, joins and a fill rule.
 struct ShapesSample: SampleContent, ExampleContent {
+    // listing: ShapesSample
     @State private var rule = FillRule.evenOdd
+    // listing: end
 
     static let id = "shapes"
     static let title = "Shapes"
     static let summary = "Six native outlines sharing one deterministic shape vocabulary."
 
-    static let code = """
-        @State private var rule = FillRule.evenOdd
-
-        /// A pentagram: five points, each joined to the one two along, so the
-        /// outline crosses itself - which is the whole point of a fill rule.
-        private static let star = [
-            Point(28, 0), Point(44.5, 50.6), Point(1.4, 19.3),
-            Point(54.6, 19.3), Point(11.5, 50.6),
-        ]
-
-        VStack {
-            // The fill rule is read here, so switching it builds this closure.
-            DebugInfoLabel()
-
-            HStack {
-                Rectangle()
-                    .fill(Palette.accent)
-                    .width(56)
-                    .height(56)
-
-                Rectangle()
-                    .fill(Palette.accent)
-                    .cornerRadius(14)
-                    .width(56)
-                    .height(56)
-
-                Rectangle()
-                    .fill(Palette.accent)
-                    .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
-                    .width(56)
-                    .height(56)
-
-                Ellipse()
-                    .fill(Palette.accent)
-                    .width(56)
-                    .height(56)
-            }
-
-            HStack {
-                Line()
-                    .x1(0).y1(0)
-                    .x2(56).y2(56)
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .lineCap(.round)
-                    .width(56)
-                    .height(56)
-
-                Line()
-                    .x1(0).y1(28)
-                    .x2(56).y2(28)
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .dash([3, 2])
-                    .width(56)
-                    .height(56)
-
-                // The one shape that is whatever you can write down: SVG path
-                // syntax, normalized by StateUI for every native host.
-                Path("M 28,0 L 56,56 L 0,56 Z")
-                    .fill(Palette.accent)
-                    .width(56)
-                    .height(56)
-
-                // A transform on the GEOMETRY - the same ViewTransform
-                // every view takes, drawn whole: a lean draws here, and the
-                // stroke follows the shape it makes. On any shape, not only
-                // a Path.
-                Path("M 28,0 L 56,56 L 0,56 Z")
-                    .fill(Palette.accent)
-                    .geometryTransform(.skew(20, 0))
-                    .width(56)
-                    .height(56)
-
-                Rectangle()
-                    .fill(Palette.accent)
-                    .cornerRadius(14)
-                    .geometryTransform(.skew(20, 0))
-                    .width(56)
-                    .height(56)
-
-                Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .lineJoin(.round)
-                    .width(56)
-                    .height(56)
-            }
-
-            // The same dashes twice, half a pattern apart: the offset, like
-            // the pattern itself, is counted in stroke widths.
-            VStack {
-                Line()
-                    .x1(0).y1(4)
-                    .x2(200).y2(4)
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .dash([3, 2])
-                    .dashPhase(0)
-                    .width(200)
-                    .height(8)
-
-                Line()
-                    .x1(0).y1(4)
-                    .x2(200).y2(4)
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .dash([3, 2])
-                    .dashPhase(2.5)
-                    .width(200)
-                    .height(8)
-            }
-
-            // The same sharp corner twice. A miter join carries the two outer
-            // edges on until they cross, and the limit is how long that join
-            // may be, in stroke widths; past it the point is cut flat.
-            HStack {
-                Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
-                    .stroke(Palette.accent)
-                    .lineWidth(8)
-                    .lineJoin(.miter)
-                    .miterLimit(10)
-                    .width(56)
-                    .height(72)
-
-                Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
-                    .stroke(Palette.accent)
-                    .lineWidth(8)
-                    .lineJoin(.miter)
-                    .miterLimit(1)
-                    .width(56)
-                    .height(72)
-            }
-
-            Polygon(Self.star)
-                .fill(Palette.accent)
-                .fillRule(rule)
-                .width(56)
-                .height(56)
-
-            Button("fillRule: .\\(rule)")
-                .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
-        }
-        """
-
+    // listing: ShapesSample
     /// A pentagram: five points, each joined to the one two along, so the
     /// outline crosses itself - which is the whole point of a fill rule.
     private static let star = [
@@ -161,11 +19,17 @@ struct ShapesSample: SampleContent, ExampleContent {
     ]
 
     var body: some View {
+        // The same dashes twice, half a pattern apart: the offset, like
+        // the pattern itself, is counted in stroke widths.
         VStack {
+            // The fill rule is read here, so switching it builds this closure.
             DebugInfoLabel()
 
             SectionTitle("Filled")
 
+            // The same sharp corner twice. A miter join carries the two outer
+            // edges on until they cross, and the limit is how long that join
+            // may be, in stroke widths; past it the point is cut flat.
             HStack {
                 Rectangle()
                     .fill(Palette.accent)
@@ -213,6 +77,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .width(56)
                     .height(56)
 
+                // The one shape that is whatever you can write down: SVG path
+                // syntax, normalized by StateUI for every native host.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
                     .width(56)
@@ -310,6 +176,7 @@ struct ShapesSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

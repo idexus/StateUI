@@ -5,6 +5,7 @@ import CStateUIGTK
 import GalleryUI
 import StateUIGTK
 
+// listing: InteropActsSample.GTK.swift
 /// The gallery's own acts, as this host answers them.
 ///
 /// `GalleryContract` declares each name with what it takes and answers - see
@@ -15,17 +16,21 @@ enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.
     @MainActor
     static func register() {
+        // A performer is handed the arguments its act declares and answers the values it declares.
         StateUIActs.add(GalleryContract.setClipboard) { text in
             gdk_clipboard_set_text(clipboard(), text)
         }
         // GTK reads a clipboard only asynchronously: the performer awaits it.
+        // clipboardText() asks gdk_clipboard_read_text_async and resumes with its answer.
         StateUIActs.add(GalleryContract.readClipboard) {
             await clipboardText()
         }
+        // The battery, as UPower tells it on the system bus.
         StateUIActs.add(GalleryContract.batteryLevel) {
             GalleryPower.battery()
         }
     }
+    // listing: end
 
     private static func clipboard() -> OpaquePointer? {
         gdk_display_get_clipboard(gdk_display_get_default())

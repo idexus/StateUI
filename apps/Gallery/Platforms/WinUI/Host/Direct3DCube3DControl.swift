@@ -5,11 +5,13 @@ import CGalleryWinUI
 import GalleryUI
 import StateUIWinUI
 
+// listing: Cube3DSample.WinUI.swift
 /// A cube drawn by Direct3D 11.1 in a SwapChainPanel the gallery's relay makes - Platforms/WinUI/Relay/Cube3D.cpp,
 /// an element that knows nothing of StateUI. It turns on WinUI's frames only while it spins and stands on screen.
 /// The Swift half is Sources/Samples/Interop/Cube3D.swift.
 @MainActor
 final class Direct3DCube3DControl: WinUIControl {
+    // The relay's SwapChainPanel: a WinUIControl is the object holding the element it shows.
     let element: OpaquePointer
 
     /// How long the cube's edge is, as a share of the panel.
@@ -35,12 +37,14 @@ final class Direct3DCube3DControl: WinUIControl {
         gallery_cube_close(element)
         gallery_winui_release(element)
     }
+    // listing: end
 
     /// The Direct3D feature level its device stands at, 0xb100 for 11_1; 0 before it drew.
     var featureLevel: Int32 {
         gallery_cube_feature_level(element)
     }
 
+    // listing: Cube3DSample.WinUI.swift
     private func tell() {
         gallery_cube_set(element, cubeSize, color.rawValue, isSpinning)
     }
@@ -59,3 +63,4 @@ extension Direct3DCube3DControl {
         }
     }
 }
+// listing: end

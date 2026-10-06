@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: ToolbarLayerPage
 /// A page the toolbar's layers push: its own actions on the bar while it is shown, and a way one page deeper.
 ///
 /// Its actions stand nearer the title than the gallery's, which keep their place at the edge; going back takes them
@@ -45,3 +46,4 @@ struct ToolbarLayerPage: View {
         .galleryPage("Layer \(depth)")
     }
 }
+// listing: end

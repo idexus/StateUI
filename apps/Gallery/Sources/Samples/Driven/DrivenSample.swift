@@ -3,6 +3,7 @@ import StateUI
 /// A value both sides hold, moved by the host and read by arithmetic that
 /// describes nothing.
 struct DrivenSample: SampleContent, ExampleContent {
+    // listing: DrivenSample
     /// Which law the buttons send the marker under - ORDINARY state, read
     /// below so the caption can name it, which is what puts this page's build
     /// count next to a value that moves for nothing.
@@ -13,71 +14,15 @@ struct DrivenSample: SampleContent, ExampleContent {
 
     /// The rail's colour, which the HOST carries with no engine at all.
     @State private var tint = Palette.outline
+    // listing: end
 
     static let id = "driven"
     static let title = "A value the host moves"
     static let summary = "A value the host moves, and arithmetic that follows it every frame."
 
+    // listing: DrivenSample
     /// How far the marker may travel - the rail's width less its own.
     private static let run = 240.0
-
-    static let code = """
-        @State private var offset = 0.0
-        @State private var tint = Palette.outline
-
-        @State private var slowly = false
-
-        VStack {
-            // The marker and the percentage cost no build at all; the
-            // caption below reads `slowly`, so the switch is the only thing
-            // that moves this reading - and it names it.
-            DebugInfoLabel()
-
-            let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
-
-            Grid {
-                ColorBox()
-                    .color($tint)
-                    .height(6)
-                    .verticalAlignment(.center)
-
-                ColorBox()
-                    .color(Palette.brand)
-                    .width(20)
-                    .height(20)
-                    .horizontalAlignment(.start)
-                    .translationX($offset)
-            }
-            .width(260)
-            .height(28)
-
-            // A CONVERSION of the same driven value: the host works the words
-            // out on its own frames, from where the marker HAS GOT TO, and
-            // nothing here reads anything.
-            Text($offset.journey.convert { "\\(Int(($0.value / 240 * 100).rounded()))%" })
-
-            // Off state: written twice a page, and described both times.
-            Text(law)
-
-            HStack {
-                Button("Empty").onClicked { go(to: 0) }
-                Button("Half").onClicked { go(to: 0.5) }
-                Button("Full").onClicked { go(to: 1) }
-            }
-
-            SwitchRow("Take the long way", $slowly)
-        }
-        /// One place to be sent to, under whichever law the switch asks for.
-        private func go(to place: Double) {
-            let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
-
-            $offset.journey.motion = law
-            offset = 240 * place
-
-            $tint.journey.motion = law
-            tint = place > 0 ? Palette.accent : Palette.outline
-        }
-        """
 
     var body: some View {
         VStack {
@@ -116,12 +61,16 @@ struct DrivenSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(12))
             .horizontalAlignment(.center)
 
+            // A CONVERSION of the same driven value: the host works the words
+            // out on its own frames, from where the marker HAS GOT TO, and
+            // nothing here reads anything.
             Text()
                 .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                 .fontSize(28)
                 .fontAttributes(.bold)
                 .horizontalAlignment(.center)
 
+            // Off state: written twice a page, and described both times.
             Text("Sent under \(law)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -139,6 +88,7 @@ struct DrivenSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -184,6 +134,7 @@ struct DrivenSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: DrivenSample
     /// One place to be sent to, under whichever law the switch asks for.
     private func go(to place: Double) {
         let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
@@ -202,4 +153,5 @@ struct DrivenSample: SampleContent, ExampleContent {
             .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
+    // listing: end
 }

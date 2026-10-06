@@ -6,59 +6,17 @@ import StateUI
 /// so the honest demonstration is for a section of the gallery to be one. What
 /// is here is the button that goes there, and the code that arranges it.
 struct TabsSample: SampleContent, ExampleContent {
+    // listing: TabsSample
     let nav: Navigation
+    // listing: end
 
     static let id = "tabs"
     static let title = "Tabs"
     static let summary = "A section arranged as tabs instead of a stack - the selection is a binding of your own type."
 
-    static let code = """
-        // Gallery/MainPage.swift - a section arranged as tabs. The tabs are a
-        // collection of the gallery's own type, `DemoTab` (.stack, .second,
-        // and .extra(Int) for a tab the user added), kept as STATE of its
-        // `Navigation` - so the list can change under a live selection - and
-        // the selection is a binding of it, not an index somebody has to keep
-        // in step. The choice is a modifier, the way every other choice is.
-        extension MainPage {
-            func tabs() -> some View {
-                TabView(nav.tabs) { which in
-                    switch which {
-                    case .stack:
-                        // A tab may hold a whole stack of its own. Its caption
-                        // and its picture are the TAB PAGE's - the stack's
-                        // here, not those of the page inside it.
-                        NavigationStack(nav.$tabsPath) {
-                            TabsPage(nav: nav, path: nav.$tabsPath)
-                        } destination: { route in
-                            // The same closure the main stack uses, told which
-                            // array the page it builds will be a member of.
-                            page(for: route, path: nav.$tabsPath)
-                        }
-                        .title("Stack")
-                        .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
+    static var code: String { Listings.joined("MainPage.tabs", "TabsSample") }
 
-                    case .second:
-                        SecondTabPage(nav: nav)
-
-                    case .extra(let number):
-                        TabsExtraPage(nav: nav, number: number)
-                    }
-                }
-                .selection(nav.$tab)
-            }
-        }
-
-        // On a tab, changing the list is changing an array - `Navigation`'s
-        // addTab, insertTab and reverseTabs. The selection is untouched by any
-        // of it: it names a TAB, not a position.
-
-        // And from here, one move:
-        let nav: Navigation
-
-        Button("Open the tabs")
-            .onClicked { nav.open(.tabs) }
-        """
-
+    // listing: TabsSample
     var body: some View {
         VStack {
             Button("Open the tabs")
@@ -71,6 +29,7 @@ struct TabsSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

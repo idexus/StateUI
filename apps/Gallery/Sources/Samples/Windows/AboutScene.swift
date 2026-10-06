@@ -1,10 +1,13 @@
 import StateUI
 
+// listing: AboutScene
 extension WindowType {
     /// About the gallery: one window for the whole application.
     static let about = WindowType("gallery.about")
 }
+// listing: end
 
+// listing: AboutScene
 /// About the gallery: one window for the whole application, in a scene of its
 /// own. It belongs to no gallery window, so it stands while they open and
 /// close, and `application.openWindow(.about)` finds it from any of them. See
@@ -14,3 +17,4 @@ struct AboutScene: Scene {
         Window(.about) { AboutPage() }
     }
 }
+// listing: end

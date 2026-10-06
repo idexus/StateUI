@@ -5,6 +5,7 @@ import GalleryUI
 import StateUIUIKit
 import UIKit
 
+// listing: InteropActsSample.UIKit.swift
 /// The gallery's own acts, as this host answers them.
 ///
 /// `GalleryContract` declares each name with what it takes and answers - see
@@ -29,6 +30,7 @@ enum GalleryActs {
             battery()
         }
     }
+    // listing: end
 
     /// The battery's level, 0 through 1, and whether it is charging - both
     /// zero and false where UIKit knows no battery, as on the simulator, which
@@ -41,4 +43,6 @@ enum GalleryActs {
 
         return (Double(device.batteryLevel), device.batteryState == .charging || device.batteryState == .full)
     }
+// listing: InteropActsSample.UIKit.swift
 }
+// listing: end

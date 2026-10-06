@@ -3,80 +3,16 @@ import StateUI
 /// A composed view is built again when what it was built with changed, or
 /// when a state it read changed - and not otherwise.
 struct SameInputsSample: SampleContent, ExampleContent {
+    // listing: SameInputsSample
     @State private var counter = 0
     @State private var items = ["Alpha", "Beta", "Gamma"]
+    // listing: end
 
     static let id = "inputs"
     static let title = "Same inputs"
     static let summary = "A view built with the same inputs is not built again, however often its parent is."
 
-    static let code = """
-        @State private var counter = 0
-        @State private var items = ["Alpha", "Beta", "Gamma"]
-
-        VStack {
-            // This closure reads the count, so a press builds it again -
-            // and constructs every view below afresh. Which of them is BUILT
-            // is each view's own question.
-            DebugInfoLabel()
-
-            Button("Count \\(counter)")
-                .onClicked { counter += 1 }
-
-            // CARRIED: built with a constant, reading nothing. Its count
-            // stays at one for good.
-            Block(caption: "a constant", value: "fixed")
-
-            // BUILT AGAIN: the count is what it was built with.
-            Block(caption: "the count", value: "\\(counter)")
-
-            // BUILT AGAIN TOO, for the other reason: it is lent the same
-            // state every time - that input never changes - but it READS it.
-            Reads(count: $counter)
-
-            // AND ROWS: each depends on its item and nothing else, so the
-            // button builds none of them.
-            ForEach(items) { item in
-                Row(item: item)
-                    .id(item)
-            }
-        }
-
-        private struct Block: View {
-            let caption: String
-            let value: String
-
-            var body: some View {
-                VStack {
-                    Text("built with \\(caption): \\(value)")
-                    DebugInfoLabel()
-                }
-            }
-        }
-
-        private struct Reads: View {
-            @Binding var count: Int
-
-            var body: some View {
-                VStack {
-                    Text("reads the count: \\(count)")
-                    DebugInfoLabel()
-                }
-            }
-        }
-
-        private struct Row: View {
-            let item: String
-
-            var body: some View {
-                VStack {
-                    Text(item)
-                    DebugInfoLabel()
-                }
-            }
-        }
-        """
-
+    // listing: SameInputsSample
     var body: some View {
         VStack {
             // This closure reads the count, so a press builds it again - and
@@ -105,6 +41,8 @@ struct SameInputsSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             VStack {
+                // AND ROWS: each depends on its item and nothing else, so the
+                // button builds none of them.
                 ForEach(items) { item in
                     Row(item: item)
                         .id(item)
@@ -114,6 +52,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -151,6 +90,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
     }
 }
 
+// listing: SameInputsSample
 /// One block: the caption, and the value it was built with. Whether it is
 /// built again is decided by that value alone, which is what its own reading
 /// says.
@@ -176,7 +116,9 @@ private struct Block: View {
         .padding(14)
     }
 }
+// listing: end
 
+// listing: SameInputsSample
 /// A block lent the count, and reading it.
 private struct Reads: View {
     @Binding var count: Int
@@ -199,7 +141,9 @@ private struct Reads: View {
         .padding(14)
     }
 }
+// listing: end
 
+// listing: SameInputsSample
 /// One row, built with its item and nothing else.
 private struct Row: View {
     let item: String
@@ -215,3 +159,4 @@ private struct Row: View {
         .padding(horizontal: 12, vertical: 8)
     }
 }
+// listing: end

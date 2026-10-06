@@ -3,6 +3,7 @@ import StateUI
 /// A page's own menus: File joined by its identity with the platform's where it has one, an entry that comes and
 /// goes with the state, and a menu of its own.
 struct MenuBarSample: SampleContent, ExampleContent {
+    // listing: MenuBarSample
     @State private var saved = 0
     @State private var exported = 0
 
@@ -11,63 +12,17 @@ struct MenuBarSample: SampleContent, ExampleContent {
 
     /// Whether this page adds a menu of its own.
     @State private var ownMenu = false
+    // listing: end
 
     static let id = "menuBar"
     static let title = "Menu bar"
     static let summary = "A page's own menus, joined with the platform's by identity."
 
-    static let code = """
-        @State private var saved = 0
-        @State private var exported = 0
-        @State private var pageSaves = false
-        @State private var ownMenu = false
-
-        var body: some View {
-            VStack {
-                // The counts are read here, so every entry that acts builds
-                // this closure.
-                DebugInfoLabel()
-
-                Text("Saved \\(saved) time(s), exported \\(exported)")
-
-                HStack {
-                    Switch($pageSaves)
-                    Text("This page saves")
-                }
-                HStack {
-                    Switch($ownMenu)
-                    Text("A menu of its own")
-                }
-            }
-            // File, joined by its identity with the platform's own where it has
-            // one: this page's entries are a section of their own.
-            .menuBar {
-                Menu("File") {
-                    if pageSaves {
-                        MenuItem("Save")
-                            .id("save")
-                            .onClicked { saved += 1 }
-                    }
-
-                    MenuItem("Export…")
-                        .id("export")
-                        .onClicked { exported += 1 }
-                }
-                .id(StandardMenu.file)
-
-                if ownMenu {
-                    Menu("Sample") {
-                        MenuItem("Save twice")
-                            .onClicked { saved += 2 }
-                    }
-                    .id("sample")
-                }
-            }
-        }
-        """
-
+    // listing: MenuBarSample
     var body: some View {
         VStack {
+            // The counts are read here, so every entry that acts builds
+            // this closure.
             DebugInfoLabel()
 
             Text("Saved \(saved) time(s), exported \(exported)")
@@ -120,6 +75,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

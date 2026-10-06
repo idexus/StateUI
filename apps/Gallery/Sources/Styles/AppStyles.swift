@@ -35,6 +35,7 @@ enum AppStyles {
                 .background(.transparent)
                 .fontSize(15)                
 
+            // listing: AppStyles.sample keep
             // A page's own name for itself. Tight tracking, because a large
             // size at the default spacing reads loose.
             Style<Text>("Headline")
@@ -59,6 +60,7 @@ enum AppStyles {
             Style<Text>("QuoteLoud")
                 .basedOn("Quote")
                 .textColor(Palette.accent)
+            // listing: end
 
             // MARK: Buttons
 
@@ -72,6 +74,7 @@ enum AppStyles {
                 .rating(4)
                 .background(Palette.selected)
 
+            // listing: AppStyles.sample keep
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
@@ -86,6 +89,7 @@ enum AppStyles {
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
                 }
+            // listing: end
 
             // A button that lives in a LIST ROW, where the touch floor is
             // not merely unnecessary but harmful. A recycled cell measures a

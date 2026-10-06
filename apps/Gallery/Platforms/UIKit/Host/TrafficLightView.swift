@@ -5,6 +5,7 @@ import GalleryUI
 import StateUIUIKit
 import UIKit
 
+// listing: InteropControlSample.UIKit.swift
 /// Three lamps in a housing, one lit at a time - an ordinary `UIView` that
 /// knows nothing of StateUI.
 ///
@@ -12,6 +13,8 @@ import UIKit
 /// and that registration is the whole bridge. The Swift half is
 /// Sources/Samples/Interop/TrafficLight.swift.
 final class TrafficLightView: UIView {
+// listing: end
+    // listing: InteropControlSample.UIKit.swift
     /// A lamp was tapped; the argument is its index, top to bottom.
     ///
     /// The control does not switch itself: it reports, and whoever owns the
@@ -24,6 +27,7 @@ final class TrafficLightView: UIView {
     var signal: Int32 = -1 {
         didSet { if signal != oldValue { repaint() } }
     }
+    // listing: end
 
     private static let lampColors = [
         UIColor(red: 0.898, green: 0.282, blue: 0.302, alpha: 1),
@@ -37,6 +41,7 @@ final class TrafficLightView: UIView {
 
     private var lamps: [UIView] = []
 
+    // listing: InteropControlSample.UIKit.swift
     /// The housing and its three lamps, wired once.
     init() {
         super.init(frame: .zero)
@@ -52,21 +57,25 @@ final class TrafficLightView: UIView {
             lamps.append(lamp)
         }
 
+        // One recognizer on the housing, the lamp read from where the tap lands.
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped(_:))))
         repaint()
     }
+    // listing: end
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("TrafficLightView is created in code")
     }
 
+    // listing: InteropControlSample.UIKit.swift
     /// As tall as its three lamps and their padding, and as wide as one.
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         CGSize(
             width: Self.padding * 2 + Self.lampSide,
             height: Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2)
     }
+    // listing: end
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -91,6 +100,7 @@ final class TrafficLightView: UIView {
         }
     }
 
+    // listing: InteropControlSample.UIKit.swift
     /// The lit lamp at full colour, the others dimmed to embers.
     private func repaint() {
         for (index, lamp) in lamps.enumerated() {
@@ -98,10 +108,14 @@ final class TrafficLightView: UIView {
             lamp.backgroundColor = Int32(index) == signal ? colour : colour.withAlphaComponent(0.18)
         }
     }
+    // listing: end
+// listing: InteropControlSample.UIKit.swift
 }
+// listing: end
 
 // MARK: - Registration
 
+// listing: InteropControlSample.UIKit.swift
 extension TrafficLightView {
     /// Adds the light for `TrafficLightContract`: `create` makes the view once
     /// per element and wires the tap it reports, and `property` puts the
@@ -122,3 +136,4 @@ extension TrafficLightView {
         }
     }
 }
+// listing: end

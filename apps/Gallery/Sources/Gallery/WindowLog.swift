@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: WindowLog
 /// What a gallery window has said about its life, numbered, newest last -
 /// kept by the window (`GalleryWindow`), written by `MainPage` as the window
 /// is made and by `WindowPhaseLog` as its phase moves, and read by the
@@ -19,7 +20,9 @@ final class WindowLog {
         events = Array((events + ["\(count) · \(name)"]).suffix(6))
     }
 }
+// listing: end
 
+// listing: WindowLog
 /// The window's phase, one line of the log per moment - a view of its own that
 /// draws nothing, so a phase change builds this and nothing else.
 ///
@@ -43,3 +46,4 @@ struct WindowPhaseLog: View {
             .onChanged(window.phase) { log.note("\(window.phase)") }
     }
 }
+// listing: end

@@ -2,8 +2,10 @@ import StateUI
 
 /// Two fingers scaling a view, and every report the pinch sends as it arrives.
 struct PinchSample: SampleContent, ExampleContent {
+    // listing: PinchSample
     @State private var pinch = 1.0
     @State private var reports = 0
+    // listing: end
 
     static let id = "pinch"
     static let title = "Pinch"
@@ -14,50 +16,11 @@ struct PinchSample: SampleContent, ExampleContent {
     // still - see SampleContent.scrolls.
     static let scrolls = false
 
-    static let code = """
-        @State private var pinch = 1.0
-        @State private var reports = 0
-
+    // listing: PinchSample
+    var body: some View {
         VStack {
             // The scale and the report count are read here, so every report a
             // pinch makes builds this closure.
-            DebugInfoLabel()
-
-            // The recognizer is on the ZStack; the ColorBox inside it is what
-            // moves. Putting both on one view is what stops a pinch after its
-            // first report.
-            ZStack {
-                ColorBox(Palette.accent)
-                    .width(80)
-                    .height(80)
-                    .horizontalAlignment(.center)
-                    .verticalAlignment(.center)
-                    .scale(pinch)
-            }
-            .style("Card")
-            .height(220)
-            .onPinchUpdated { update in
-                reports += 1
-
-                // Scale is what changed since the LAST report, so a view being
-                // pinched MULTIPLIES rather than assigns - and nothing here
-                // waits for .began, which a platform need not send.
-                if update.phase == .changed {
-                    pinch = max(0.5, min(3, pinch * update.scale))
-                }
-            }
-            Text("Scale \\(Int(pinch * 100))% - \\(reports) report(s)")
-
-            Button("Back to life size")
-                .onClicked {
-                    pinch = 1
-                    reports = 0
-                }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             // The recognizer is on the ZStack; the ColorBox inside it is what
@@ -109,6 +72,7 @@ struct PinchSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

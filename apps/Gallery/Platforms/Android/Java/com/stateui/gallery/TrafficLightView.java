@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
 
+// listing: InteropControlSample.Android.java
 /** Three lamps in a dark housing, one lit; a tap on a lamp is told, and lights nothing by itself. */
 final class TrafficLightView extends View {
     private static final int[] LAMPS = {0xFFE5484D, 0xFFF5B546, 0xFF46B45F};
@@ -35,6 +36,7 @@ final class TrafficLightView extends View {
         invalidate();
     }
 
+    /** How big it is, which the host asks by measuring it as Android measures any view. */
     @Override
     protected void onMeasure(int width, int height) {
         setMeasuredDimension(
@@ -53,6 +55,7 @@ final class TrafficLightView extends View {
         }
     }
 
+    /** Tells a tapped lamp to the Swift half by the number it made this view with; whoever owns the state decides. */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getActionMasked() == MotionEvent.ACTION_UP) {
@@ -70,3 +73,4 @@ final class TrafficLightView extends View {
         return (PADDING + LAMP / 2 + lamp * (LAMP + SPACING)) * density;
     }
 }
+// listing: end

@@ -2,10 +2,12 @@ import StateUI
 
 /// A pointer's hover, movement and button over one view.
 struct PointerSample: SampleContent, ExampleContent {
+    // listing: PointerSample
     @State private var pointer = Point(x: 0, y: 0)
     @State private var hovering = false
     @State private var pressing = false
     @State private var last = "nothing yet"
+    // listing: end
 
     static let id = "pointer"
     static let title = "Pointer"
@@ -16,59 +18,12 @@ struct PointerSample: SampleContent, ExampleContent {
     // still - see SampleContent.scrolls.
     static let scrolls = false
 
-    static let code = """
-        @State private var pointer = Point(x: 0, y: 0)
-        @State private var hovering = false
-        @State private var pressing = false
-        @State private var last = "nothing yet"
-
+    // listing: PointerSample
+    var body: some View {
         ZStack {
             VStack {
                 // Where the pointer is is read here, so every move builds this
                 // closure - which is what a get on a per-report value costs.
-                DebugInfoLabel()
-
-                Text(hovering
-                    ? "at \\(Int(pointer.x)), \\(Int(pointer.y))"
-                    : "move a pointer over this box")
-
-                // Which of the five arrived last. Pressed and released say
-                // where they happened; entered and exited carry no position at
-                // all, and moved's is the line above.
-                Text("last: \\(last)")
-            }
-            .padding(40)
-        }
-        .style("Card")
-        // The box reacts, so its look is part of what it says: the outline is
-        // the hover, the fill is the button held down.
-        .stroke(hovering ? Palette.accent : Palette.outline)
-        .lineWidth(hovering ? 2 : 1)
-        .shape(.roundedRectangle(10))
-        .background(pressing ? Palette.selected : Palette.raised)
-        .onPointerEntered { hovering = true; last = "entered" }
-        .onPointerMoved { point in
-            pointer = point
-            last = "moved"
-        }
-        .onPointerPressed { point in
-            pressing = true
-            last = "pressed at \\(Int(point.x)), \\(Int(point.y))"
-        }
-        .onPointerReleased { point in
-            pressing = false
-            last = "released at \\(Int(point.x)), \\(Int(point.y))"
-        }
-        // A button held down and taken out of the box can send exited with no
-        // release after it, so the fill comes down here too.
-        .onPointerExited { hovering = false; pressing = false; last = "exited" }
-
-        // The position is in the VIEW's own coordinates, not the window's.
-        """
-
-    var body: some View {
-        ZStack {
-            VStack {
                 DebugInfoLabel()
 
                 Text(hovering
@@ -96,6 +51,7 @@ struct PointerSample: SampleContent, ExampleContent {
         .shape(.roundedRectangle(10))
         .background(pressing ? Palette.selected : Palette.raised)
         .onPointerEntered { hovering = true; last = "entered" }
+        // The position is in the VIEW's own coordinates, not the window's.
         .onPointerMoved { point in
             pointer = point
             last = "moved"
@@ -112,6 +68,7 @@ struct PointerSample: SampleContent, ExampleContent {
         // release after it, so the fill comes down here too.
         .onPointerExited { hovering = false; pressing = false; last = "exited" }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

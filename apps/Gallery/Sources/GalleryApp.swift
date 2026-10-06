@@ -29,6 +29,7 @@
 
 import StateUI
 
+// listing: GalleryApp
 /// The gallery application.
 ///
 /// An application is what every scene SHARES - its styles, and the settings
@@ -71,6 +72,7 @@ struct GalleryApp: Application {
         AboutScene()
     }
 }
+// listing: end
 
 /// The one thing this module exports.
 ///

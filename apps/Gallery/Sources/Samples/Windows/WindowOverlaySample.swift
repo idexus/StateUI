@@ -3,78 +3,23 @@ import StateUI
 /// Notices laid over the window: one the window declares, standing over every page, and one this page declares,
 /// going with it.
 struct WindowOverlaySample: SampleContent, ExampleContent {
+    // listing: WindowOverlaySample
     /// Where the gallery is: the window's notice is its state.
     let nav: Navigation
 
     /// Whether this page's own notice stands over the window.
     @State private var onThisPage = false
+    // listing: end
 
     static let id = "windowOverlay"
     static let title = "Window overlay"
     static let summary = "Lay a notice over the window, then open another page."
 
-    static let code = """
-        // A notice: a line with its own way out, at the top unless it says
-        // otherwise.
-        struct WindowNotice: View {
-            let words: String
-            @Binding var shown: Bool
-
-            var body: some View {
-                HStack {
-                    Text(words)
-                    Button("Dismiss").onClicked { shown = false }
-                }
-                .horizontalAlignment(.center)
-                .verticalAlignment(.start)
-            }
-        }
-
-        // Gallery/MainPage.swift - the window's page declares its own, over
-        // every page.
-        struct MainPage: View {
-            let catalog: Catalog
-            let nav: Navigation
-            let log: WindowLog
-
-            var body: some View {
-                SplitView(nav.$menuOpen) {
-                    MenuPage(catalog: catalog, nav: nav, log: log, listsHiddenRow: nav.listsHiddenRow)
-                } detail: {
-                    HomePage(catalog: catalog, nav: nav)
-                }
-                .overlays {
-                    if nav.windowNotice {
-                        WindowNotice(words: "Over every page", shown: nav.$windowNotice)
-                    }
-                }
-            }
-        }
-
-        // A page declares one that goes with it.
-        let nav: Navigation
-        @State private var onThisPage = false
-
-        VStack {
-            HStack {
-                Switch(nav.$windowNotice)
-                Text("Over every page")
-            }
-            HStack {
-                Switch($onThisPage)
-                Text("Over this page")
-            }
-        }
-        .overlays {
-            if onThisPage {
-                WindowNotice(words: "Over this page", shown: $onThisPage)
-                    .verticalAlignment(.end)
-            }
-        }
-        """
+    static var code: String { Listings.joined("MainPage.overlays", "WindowOverlaySample") }
 
     var notes: (any View)? { nil }
 
+    // listing: WindowOverlaySample
     var body: some View {
         VStack {
             switchRow(nav.$windowNotice, "Over every page", id: "window.overlay")
@@ -99,8 +44,10 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
         }
         .spacing(8)
     }
+    // listing: end
 }
 
+// listing: WindowOverlaySample
 /// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
 struct WindowNotice: View {
     let words: String
@@ -126,3 +73,4 @@ struct WindowNotice: View {
         .verticalAlignment(.start)
     }
 }
+// listing: end

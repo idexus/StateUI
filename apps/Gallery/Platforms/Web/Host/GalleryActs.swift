@@ -4,6 +4,7 @@
 import GalleryUI
 import StateUIWeb
 
+// listing: InteropActsSample.Web.swift
 /// The gallery's own acts, as this host answers them: through the page's own scripts, Page/gallery-acts.js, which
 /// reach the browser's clipboard and battery.
 ///
@@ -33,3 +34,4 @@ enum GalleryActs {
         return (said.first.flatMap { Double($0) } ?? 0, said.count > 1 && said[1] == "true")
     }
 }
+// listing: end

@@ -2,34 +2,19 @@ import StateUI
 
 /// A spinner started and stopped by one flag.
 struct ActivityIndicatorSample: SampleContent, ExampleContent {
+    // listing: ActivityIndicatorSample
     @State private var loading = true
+    // listing: end
 
     static let id = "activityIndicator"
     static let title = "ActivityIndicator"
     static let summary = "The spinner for work with no measurable length."
 
-    static let code = """
-        @State private var loading = true
-
+    // listing: ActivityIndicatorSample
+    var body: some View {
         VStack {
             // The flag is read here, so starting and stopping builds this
             // closure - the spinner itself costs nothing to keep running.
-            DebugInfoLabel()
-
-            ActivityIndicator(loading)
-                .height(48)
-
-            HStack {
-                Text("Working")
-                    .verticalAlignment(.center)
-
-                Switch($loading)
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             ActivityIndicator(loading)
@@ -52,6 +37,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

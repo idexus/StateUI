@@ -30,10 +30,12 @@ final class RatingBarElement: WebControl {
         }
     }
 
+    // listing: InteropActsSample.Web.swift
     /// Dims the bar and brings it back: the element's own animation of its opacity.
     func flash() {
         element.call("flash")
     }
+    // listing: end
 }
 
 // MARK: - Registration
@@ -56,9 +58,11 @@ extension RatingBarElement {
             bar.raises(RatingBarContract.ratingChanged)
         }
 
+        // listing: InteropActsSample.Web.swift
         // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarElement.self) { bar in
             bar.flash()
         }
+        // listing: end
     }
 }

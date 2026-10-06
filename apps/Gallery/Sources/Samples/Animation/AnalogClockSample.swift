@@ -2,6 +2,7 @@ import StateUI
 
 /// A driven rotation, sprung to real time by a plain Swift loop.
 struct AnalogClockSample: SampleContent, ExampleContent {
+    // listing: AnalogClockSample
     @State private var ticking = false
 
     /// Whether the first reading of this visit has SET the clock. Travelling
@@ -35,167 +36,17 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         (0, 94, 4, 14), (-47, 81.4, 5, 5), (-81.4, 47, 5, 5),
         (-94, 0, 14, 4), (-81.4, -47, 5, 5), (-47, -81.4, 5, 5),
     ]
+    // listing: end
 
     static let id = "analogClock"
     static let title = "Analog clock"
     static let summary = "Real time on springing hands, from a plain Swift loop."
 
-    static let code = """
-        @State private var ticking = false
-        @State private var sAngle = 0.0
-        @State private var mAngle = 0.0
-        @State private var hAngle = 0.0
-        @State private var started = false
-        @State private var visit = 0
-
-        static let marks: [(x: Double, y: Double, wide: Double, tall: Double)] = [
-            (0, -94, 4, 14), (47, -81.4, 5, 5), (81.4, -47, 5, 5),
-            (94, 0, 14, 4), (81.4, 47, 5, 5), (47, 81.4, 5, 5),
-            (0, 94, 4, 14), (-47, 81.4, 5, 5), (-81.4, 47, 5, 5),
-            (-94, 0, 14, 4), (-81.4, -47, 5, 5), (-47, -81.4, 5, 5),
-        ]
-
+    // listing: AnalogClockSample
+    var body: some View {
         Grid {
             // The hands are driven, and nothing here reads them: this stays
             // at one build while the clock runs.
-            DebugInfoLabel()
-
-            ZStack().style("Card")
-                .background(Palette.raised)
-                .stroke(Palette.outline)
-                .shape(.roundedRectangle(110))
-                .width(220)
-                .height(220)
-                .horizontalAlignment(.center)
-                .verticalAlignment(.center)
-
-            // The marks are laid out, not rotated: a quarter gets a bar,
-            // the other hours a dot, each pushed off centre by margins -
-            // margin(2x, 2y, 0, 0) shifts a centred view by (x, y).
-            ForEach(Array(Self.marks.enumerated()), id: \\.offset) { pair in
-                let (x, y, wide, tall) = pair.element
-                return ColorBox(Palette.outline)
-                    .width(wide)
-                    .height(tall)
-                    .margin(left: 2 * x, top: 2 * y, right: 0, bottom: 0)
-                    .horizontalAlignment(.center)
-                    .verticalAlignment(.center)
-            }
-
-            hand($hAngle, length: 56, width: 6, color: Palette.text)
-            hand($mAngle, length: 84, width: 4, color: Palette.text)
-            hand($sAngle, length: 96, width: 2, color: Palette.accent)
-
-            ZStack().style("Card")
-                .background(Palette.accent)
-                .shape(.roundedRectangle(6))
-                .width(12)
-                .height(12)
-                .horizontalAlignment(.center)
-                .verticalAlignment(.center)
-        }
-        .onCreated {
-            // Each visit starts a loop of its own and retires the last. The
-            // hands come back at the angles the state kept, and the first
-            // reading below ASSIGNS the time rather than flying through
-            // everything that passed while the page was away.
-            visit += 1
-            let mine = visit
-            ticking = true
-            started = false
-
-            while ticking && visit == mine {
-                let lap = ContinuousClock.now
-                let time = try await ClockTime.now()
-
-                // Where each hand should POINT, within one turn.
-                let second = Double(time.second) * 6
-                let minute = Double(time.minute) * 6 + Double(time.second) * 0.1
-                let hours = Double(time.hour % 12) * 30
-                let minutesPast = Double(time.minute) * 0.5
-                let secondsPast = Double(time.second) / 120
-                let hour = hours + minutesPast + secondsPast
-
-                if started {
-                    // Advance by the forward distance only, so a wrap never
-                    // spins back and a return catches up in one spring. The
-                    // STATE is where the last movement was going, which is
-                    // where the hand belongs now, so the arithmetic starts
-                    // from it - never from the journey's value, which is
-                    // wherever the host happened to have got to when this
-                    // reading came in.
-                    // `async let` starts all three at once; short and springy,
-                    // because the snap IS the tick.
-                    let atSecond = sAngle
-                    let atMinute = mAngle
-                    let atHour = hAngle
-
-                    let toSecond = atSecond + (second - atSecond).forwardTurn
-                    let toMinute = atMinute + (minute - atMinute).forwardTurn
-                    let toHour = atHour + (hour - atHour).forwardTurn
-
-                    async let s: Bool = $sAngle.journey.move(to:
-                        toSecond, .eased(260, .backOut))
-                    async let m: Bool = $mAngle.journey.move(to:
-                        toMinute, .eased(300, .cubicOut))
-                    async let h: Bool = $hAngle.journey.move(to:
-                        toHour, .eased(300, .cubicOut))
-                    _ = try await (s, m, h)
-                } else {
-                    // The first reading SETS the hands: writing `value` is a
-                    // snap, so there is no movement here and nothing to await.
-                    started = true
-                    ($sAngle.journey.value, $mAngle.journey.value, $hAngle.journey.value) = (second, minute, hour)
-                    (sAngle, mAngle, hAngle) = (second, minute, hour)
-                }
-
-                // Sleep to the NEXT whole second, not for a fixed while: the
-                // reading said how far into this one it was, the lap clock
-                // says what the movements used, and the difference is what
-                // keeps every tick landing just past the boundary.
-                let used = lap.duration(to: .now)
-                let wait = .milliseconds(1000 - time.millisecond) - used
-
-                if wait > .milliseconds(20) {
-                    try await Task.sleep(for: wait)
-                }
-            }
-        }
-        .onDestroying {
-            ticking = false
-        }
-
-        /// One hand: bottom at the face's centre, rotating about that bottom.
-        /// The bottom margin equals the length, so centring the margin box puts
-        /// the hand's foot exactly on the middle - plain layout, no transforms.
-        /// `.rotation(angle)` DRIVES the rotation from the state handed in,
-        /// which is what makes a movement on that state turn this hand.
-        private func hand(
-            _ angle: Binding<Double>,
-            length: Double, width: Double, color: Color
-        ) -> some View {
-            ColorBox(color)
-                .rotation(angle)
-                .width(width)
-                .height(length)
-                .margin(left: 0, top: 0, right: 0, bottom: length)
-                .pivotY(1)
-                .horizontalAlignment(.center)
-                .verticalAlignment(.center)
-        }
-
-        /// The forward distance to an angle within one turn, 0 up to but not
-        /// 360 - the minute hand at 354 asked to show 0 steps +6, never -354.
-        extension Double {
-            var forwardTurn: Double {
-                let step = truncatingRemainder(dividingBy: 360)
-                return step >= 0 ? step : step + 360
-            }
-        }
-        """
-
-    var body: some View {
-        Grid {
             DebugInfoLabel()
 
             ZStack().style("Card")
@@ -208,6 +59,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .verticalAlignment(.center)
 
+            // The marks are laid out, not rotated: a quarter gets a bar,
+            // the other hours a dot, each pushed off centre by margins -
+            // margin(2x, 2y, 0, 0) shifts a centred view by (x, y).
             ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                 let (x, y, wide, tall) = pair.element
                 return ColorBox(Palette.outline)
@@ -286,6 +140,10 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     (sAngle, mAngle, hAngle) = (second, minute, hour)
                 }
 
+                // Sleep to the NEXT whole second, not for a fixed while: the
+                // reading said how far into this one it was, the lap clock
+                // says what the movements used, and the difference is what
+                // keeps every tick landing just past the boundary.
                 let used = lap.duration(to: .now)
                 let wait = .milliseconds(1000 - time.millisecond) - used
 
@@ -298,6 +156,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             ticking = false
         }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -339,6 +198,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: AnalogClockSample
     /// One hand: bottom at the face's centre, rotating about that bottom.
     /// The bottom margin equals the length, so centring the margin box puts
     /// the hand's foot exactly on the middle - plain layout, no transforms.
@@ -358,8 +218,10 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .verticalAlignment(.center)
     }
+    // listing: end
 }
 
+// listing: AnalogClockSample
 /// The forward distance to an angle within one turn, 0 up to but not 360.
 ///
 /// What lets a hand's angle only ever grow: the minute hand at 354 asked to
@@ -371,3 +233,4 @@ extension Double {
         return step >= 0 ? step : step + 360
     }
 }
+// listing: end

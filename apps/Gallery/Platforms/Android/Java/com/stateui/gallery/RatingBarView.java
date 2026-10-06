@@ -35,10 +35,12 @@ final class RatingBarView extends View {
         invalidate();
     }
 
+    // listing: InteropActsSample.Android.java
     /** Fades the bar out and back, as its act asks. */
     void flash() {
         animate().alpha(0.25f).setDuration(120).withEndAction(() -> animate().alpha(1).setDuration(120));
     }
+    // listing: end
 
     @Override
     protected void onMeasure(int width, int height) {

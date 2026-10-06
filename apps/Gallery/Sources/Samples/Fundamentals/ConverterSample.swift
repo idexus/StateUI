@@ -4,6 +4,7 @@ import StateUI
 /// a caption worked out from it, two states worked into one - all by engines
 /// the differ writes, on the host's frames, with nothing built for any of it.
 struct ConverterSample: SampleContent, ExampleContent {
+    // listing: ConverterSample
     /// The one value the first three rows are about, in 0 to 1.
     @State private var volume = 0.2
 
@@ -18,103 +19,20 @@ struct ConverterSample: SampleContent, ExampleContent {
     /// What the last row calls the rectangle - a third source, and a text
     /// among the numbers.
     @State private var named = "panel"
+    // listing: end
 
     static let id = "converters"
     static let title = "Converters"
     static let summary = "`convert` and `convertBack`: one state in two units, a caption from it, and no render."
 
-    static let code = """
-        @State private var volume = 0.2       // 0 to 1
-        @State private var celsius = 20.0
-        @State private var width = 120.0
-        @State private var height = 80.0
-        @State private var named = "panel"
-
-        VStack {
-            // Every row is a closure of its own, and every one of them takes
-            // its own reading - which is how you see that NONE of them is ever
-            // built again: nothing here reads a value, it is all bindings.
-            VStack {
-                // The source, as it is.
-                Slider($volume)
-                DebugInfoLabel()                  // stays at one
-            }
-
-            VStack {
-                // THE SAME STATE IN PERCENT: a second state the host carries,
-                // worked out by an engine following `volume` - and a drag comes
-                // back through `convertBack`, in the source's own terms.
-                Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
-                    .maximum(100)
-                DebugInfoLabel()                  // stays at one
-            }
-
-            VStack {
-                // A caption from the conversion: words the host writes.
-                Text($volume.convert { "\\(Int($0 * 100))%" })
-                DebugInfoLabel()                  // stays at one
-            }
-
-            VStack {
-                // TWO STEPPERS ON ONE STATE, IN TWO SCALES - and the steps are
-                // what keep the two captions honest: 5 °C IS 9 °F, exactly, and
-                // the ends line up too (-20 °C = -4 °F, 60 °C = 140 °F), so
-                // every value either stepper can reach is a whole number in
-                // both. A step of one on each would leave the state on 20.56
-                // and the two captions would round it their own way.
-                HStack {
-                    Stepper($celsius)
-                        .step(5)
-                        .minimum(-20)
-                        .maximum(60)
-                    Text($celsius.convert { "\\(Int($0)) °C" })
-                }
-                HStack {
-                    Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
-                        .step(9)
-                        .minimum(-4)
-                        .maximum(140)
-                    Text($celsius.convert { "\\(Int($0 * 9 / 5 + 32)) °F" })
-                }
-                DebugInfoLabel()                  // stays at one
-            }
-
-            VStack {
-                // TWO STATES INTO ONE: an engine following both.
-                Slider($width)
-                    .minimum(20)
-                    .maximum(200)
-                Slider($height)
-                    .minimum(20)
-                    .maximum(200)
-                Text($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h)) = \\(Int(w * h))" })
-                DebugInfoLabel()                  // stays at one
-            }
-
-            VStack {
-                // A FIELD IS HANDED THE STATE TOO: `TextField($named)` reads nothing
-                // at build, and what is typed lands on `named` as the host's
-                // own write - so this row stays at one as well.
-                TextField($named)
-                DebugInfoLabel()                  // stays at one
-            }
-
-            VStack {
-                // AS MANY AS YOU LIKE: `.multi` names the states and `convert`
-                // is the arithmetic over them, in the order they were named -
-                // two to ten of them, of any types the host carries. Nothing
-                // is read here, so typing above rewrites this caption without
-                // building it.
-                Text().text(.multi($named, $width, $height)
-                    .convert { "\\($0): \\(Int($1)) × \\(Int($2))" })
-                DebugInfoLabel()                  // stays at one
-            }
-        }
-        """
-
+    // listing: ConverterSample
     var body: some View {
+        // Every row is a closure of its own, and every one of them takes
+        // its own reading - which is how you see that NONE of them is ever
+        // built again: nothing here reads a value, it is all bindings.
         VStack {
             row("1 · the source, 0 to 1") {
+                // The source, as it is.
                 Slider($volume)
                     .accessibilityIdentifier("converters.volume")
                     .accessibilityLabel("Volume, 0 to 1")
@@ -125,6 +43,9 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("2 · the same state in percent") {
+                // THE SAME STATE IN PERCENT: a second state the host carries,
+                // worked out by an engine following `volume` - and a drag comes
+                // back through `convertBack`, in the source's own terms.
                 Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
                     .accessibilityIdentifier("converters.volume.percent")
                     .accessibilityLabel("Volume, in percent")
@@ -135,6 +56,7 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("3 · a caption from the conversion") {
+                // A caption from the conversion: words the host writes.
                 Text()
                     .text($volume.convert { "\(Int($0 * 100))%" })
                     .fontSize(17)
@@ -142,6 +64,12 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("4 · one temperature, two scales") {
+                // TWO STEPPERS ON ONE STATE, IN TWO SCALES - and the steps are
+                // what keep the two captions honest: 5 °C IS 9 °F, exactly, and
+                // the ends line up too (-20 °C = -4 °F, 60 °C = 140 °F), so
+                // every value either stepper can reach is a whole number in
+                // both. A step of one on each would leave the state on 20.56
+                // and the two captions would round it their own way.
                 HStack {
                     // 5 °C IS 9 °F EXACTLY, and the ends line up too
                     // (-20 °C = -4 °F, 60 °C = 140 °F), so every value either
@@ -174,6 +102,7 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("5 · two states into one") {
+                // TWO STATES INTO ONE: an engine following both.
                 Slider($width)
                     .accessibilityIdentifier("converters.width")
                     .accessibilityLabel("Width")
@@ -191,6 +120,9 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("6 · a field is handed the state") {
+                // A FIELD IS HANDED THE STATE TOO: `TextField($named)` reads nothing
+                // at build, and what is typed lands on `named` as the host's
+                // own write - so this row stays at one as well.
                 TextField($named)
                     .accessibilityIdentifier("converters.named")
                     .accessibilityLabel("A name for it")
@@ -199,6 +131,11 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("7 · as many as you like") {
+                // AS MANY AS YOU LIKE: `.multi` names the states and `convert`
+                // is the arithmetic over them, in the order they were named -
+                // two to ten of them, of any types the host carries. Nothing
+                // is read here, so typing above rewrites this caption without
+                // building it.
                 Text()
                     .text(.multi($named, $width, $height)
                         .convert { "\($0): \(Int($1)) × \(Int($2))" })
@@ -208,6 +145,7 @@ struct ConverterSample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -252,6 +190,7 @@ struct ConverterSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: ConverterSample
     /// One row: a caption, then the content in a stack of its own, so the
     /// reading taken inside the content is that stack's alone.
     private func row<Content: Views>(_ caption: String, @ViewBuilder _ content: @escaping () -> Content) -> some View {
@@ -271,4 +210,5 @@ struct ConverterSample: SampleContent, ExampleContent {
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
     }
+    // listing: end
 }

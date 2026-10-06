@@ -48,6 +48,7 @@ final class RatingBarView: AndroidControl {
     }
 }
 
+// listing: InteropActsSample.Android.swift
 extension RatingBarView {
     /// Adds the bar for `RatingBarContract`, and the act aimed at it. Said once, as the library loads.
     @MainActor
@@ -66,7 +67,9 @@ extension RatingBarView {
         // An act aimed at a control is its control's: the identity the aim sent is turned back into the control
         // this host made, and the performer is handed that control.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+            // The Java view fades itself, with its own animate().
             bar.flash()
         }
     }
 }
+// listing: end

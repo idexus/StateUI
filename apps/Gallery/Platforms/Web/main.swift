@@ -11,5 +11,7 @@ import StateUIWeb
 stateui_app_register()
 GalleryControls.register()
 GalleryActs.register()
+// listing: InteropEventsSample.Web.swift
 GalleryEventSources.start()
 StateUIWeb.run(name: "Gallery")
+// listing: end

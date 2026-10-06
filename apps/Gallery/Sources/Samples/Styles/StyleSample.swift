@@ -2,97 +2,17 @@ import StateUI
 
 /// Where the gallery's appearance actually comes from.
 struct StyleSample: SampleContent, ExampleContent {
+    // listing: StyleSample
     @State private var enabled = true
+    // listing: end
 
     static let id = "styles"
     static let title = "Styles"
     static let summary = "One description of what a control looks like, applied to every one of them."
 
-    static let code = """
-        // The colours, each written once for both themes:
-        enum Palette {
-            static let accent = Color(light: AppColors.swiftOrangeDeep,
-                                      dark: AppColors.swiftOrangeLight)
-            static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
-            static let subtle = Color(light: AppColors.inkMuted,
-                                      dark: AppColors.inkMutedDark)
-            static let disabled = Color(light: AppColors.muted, dark: AppColors.mutedDark)
-            static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
-        }
+    static var code: String { Listings.joined("GalleryApp", "Palette.sample", "AppStyles.sample", "StyleSample") }
 
-        // GalleryApp.swift - into the application's session as it is made;
-        // these styles are a part of Styles/AppStyles.swift.
-        struct GalleryApp: Application {
-            @Environment(\\.application) private var application
-
-            init() {
-                application.styles = StyleSheet {
-                    Style<Button>()
-                        .textColor(Palette.onAccent)
-                        .background(Palette.accent)
-                        .shape(.roundedRectangle(10))
-                        .padding(horizontal: 16, vertical: 11)
-                        .visualState(.disabled) { $0
-                            .textColor(Palette.disabled)
-                            .background(Palette.outline)
-                        }
-
-                    Style<Text>("Headline")
-                        .fontSize(32)
-                        .horizontalTextAlignment(.center)
-
-                    // One shape, stated once. The second style is the first plus
-                    // a colour - and inherits everything it does not mention.
-                    Style<Text>("Quote")
-                        .textColor(Palette.subtle)
-                        .fontSize(17)
-                        .fontAttributes(.italic)
-                        .tracking(0.3)
-                        .horizontalTextAlignment(.center)
-
-                    Style<Text>("QuoteLoud")
-                        .basedOn("Quote")
-                        .textColor(Palette.accent)
-                }
-            }
-
-            var body: some Scene {
-                GalleryScene()
-            }
-        }
-
-        // And in the view, where nothing says how a button looks:
-        @State private var enabled = true
-
-        VStack {
-            // Nothing here is about styling: the switch is read in this
-            // closure, so flipping it builds the closure again.
-            DebugInfoLabel()
-
-            HStack {
-                Button("Save")
-                Button("Cancel")
-            }
-
-            Button(enabled ? "Enabled" : "Disabled")
-                .isEnabled(enabled)
-                .onClicked {}
-
-            Switch($enabled)
-
-            // The one style with a key, asked for by name.
-            Text("Headline")
-                .style("Headline")
-
-            // The same words twice: what matches is inherited.
-            Text("The same nine words, and one of these declares a colour.")
-                .style("Quote")
-
-            Text("The same nine words, and one of these declares a colour.")
-                .style("QuoteLoud")
-        }
-        """
-
+    // listing: StyleSample
     var body: some View {
         VStack {
             DebugInfoLabel()
@@ -149,6 +69,7 @@ struct StyleSample: SampleContent, ExampleContent {
         }
         .spacing(14)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

@@ -2,55 +2,15 @@ import StateUI
 
 /// A layout's own box: its background and its outline on the shape it names, and what it holds cut to that shape.
 struct OutlineSample: SampleContent, ExampleContent {
+    // listing: OutlineSample
     @State private var clips = true
+    // listing: end
 
     static let id = "outline"
     static let title = "Shape and outline"
     static let summary = "A stack, a grid or a ZStack paints its own background and outline, in the shape you give it."
 
-    static let code = """
-        @State private var clips = true
-
-        VStack {
-            VStack {
-                Text("A column")
-                Text("rounded, with a hairline")
-            }
-            .padding(16)
-            .stroke(Palette.outline)
-            .lineWidth(1)
-            .shape(.roundedRectangle(12))
-
-            HStack {
-                Text("A row,")
-                Text("square and thicker")
-            }
-            .spacing(6)
-            .padding(16)
-            .stroke(Palette.accent)
-            .lineWidth(3)
-            .shape(.rectangle)
-
-            ZStack {
-                Text("An ellipse")
-            }
-            .padding(24)
-            .stroke(Palette.accent)
-            .shape(.ellipse)
-
-            // The box fills the ZStack; its corners are cut only while the
-            // ZStack clips what it holds.
-            ZStack {
-                ColorBox(Palette.accent)
-            }
-            .shape(.roundedRectangle(24))
-            .clipsContent(clips)
-            .height(60)
-
-            SwitchRow("Cut what it holds", $clips)
-        }
-        """
-
+    // listing: OutlineSample
     var body: some View {
         VStack {
             VStack {
@@ -78,6 +38,8 @@ struct OutlineSample: SampleContent, ExampleContent {
             .lineWidth(3)
             .shape(.rectangle)
 
+            // The box fills the ZStack; its corners are cut only while the
+            // ZStack clips what it holds.
             ZStack {
                 Text("An ellipse")
                     .fontSize(15)
@@ -99,6 +61,7 @@ struct OutlineSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("The shape is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`: the layout's background is "

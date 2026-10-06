@@ -2,38 +2,19 @@ import StateUI
 
 /// A button wired to a click, beside an outlined one and a disabled one.
 struct ButtonSample: SampleContent, ExampleContent {
+    // listing: ButtonSample
     @State private var counter = 0
+    // listing: end
 
     static let id = "button"
     static let title = "Button"
     static let summary = "A tappable button wired to a click, with an outlined "
         + "and a disabled one beside it."
 
-    static let code = """
-        @State private var counter = 0
-
-        VStack {
-            // The count is read here, so a click builds this closure again.
-            DebugInfoLabel()
-
-            Button("Increment")
-                .onClicked { counter += 1 }
-
-            Text("Clicked \\(counter) time(s)")
-
-            Button("Outlined")
-                .background(.transparent)
-                .stroke(Palette.accent)
-                .lineWidth(1)
-                .onClicked { counter += 1 }
-
-            Button("Disabled")
-                .isEnabled(false)
-        }
-        """
-
+    // listing: ButtonSample
     var body: some View {
         VStack {
+            // The count is read here, so a click builds this closure again.
             DebugInfoLabel()
 
             Button("Increment")
@@ -65,6 +46,7 @@ struct ButtonSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Also `.onPressed` and `.onReleased`, for the moment the button goes "

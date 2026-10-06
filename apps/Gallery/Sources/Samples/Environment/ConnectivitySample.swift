@@ -2,42 +2,17 @@ import StateUI
 
 /// Whether the internet is reachable, and by what.
 struct ConnectivitySample: SampleContent, ExampleContent {
+    // listing: ConnectivitySample
     /// The network, as the host last reported it.
     @Environment(\.device) var device
+    // listing: end
 
     static let id = "connectivity"
     static let title = "Connectivity"
     static let summary = "Whether the internet is reachable and by what - "
         + "updated the moment it changes."
 
-    static let code = """
-        struct SaveButton: View {
-            @Environment(\\.device) var device
-
-            var body: some View {
-                // A host may report one entry per ADAPTER, so repeats are
-                // collapsed for display - sorted, as a Set's order changes.
-                let profiles = Set(device.connectivity.connectionProfiles.map { "\\($0)" })
-                    .sorted()
-                    .joined(separator: ", ")
-
-                return VStack {
-                    // The connection is read here, so a change to it builds
-                    // this closure.
-                    DebugInfoLabel()
-
-                    Text(device.connectivity.networkAccess == .internet ? "online" : "offline")
-
-                    Text("access · \\(device.connectivity.networkAccess)")
-                    Text("via · \\(profiles.isEmpty ? "nothing reported" : profiles)")
-
-                    Button("Save to the cloud")
-                        .isEnabled(device.connectivity.networkAccess == .internet)
-                }
-            }
-        }
-        """
-
+    // listing: ConnectivitySample
     var body: some View {
         // The list is the host's answer as given, and a host may report one
         // entry per adapter, so repeats are collapsed for display and the
@@ -48,6 +23,8 @@ struct ConnectivitySample: SampleContent, ExampleContent {
             .joined(separator: ", ")
 
         return VStack {
+            // The connection is read here, so a change to it builds this
+            // closure.
             DebugInfoLabel()
 
             Text(device.connectivity.networkAccess == .internet ? "online" : "offline")
@@ -70,6 +47,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

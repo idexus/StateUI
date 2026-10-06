@@ -4,38 +4,21 @@ import StateUI
 /// answer, which is the point: Swift's own `Locale.current` is a fallback
 /// `en_001` on Android, and a Windows app's Foundation has no zones at all.
 struct LocaleInfoSample: SampleContent, ExampleContent {
+    // listing: LocaleInfoSample
     /// The locale, as the host reports it.
     @Environment(\.locale) var locale
+    // listing: end
 
     static let id = "locale"
     static let title = "Locale"
     static let summary = "Language, region, time zone and calendar habits - "
         + "the host's answer, on every platform."
 
-    static let code = """
-        struct LocaleBadge: View {
-            @Environment(\\.locale) var locale
-
-            var body: some View {
-                VStack {
-                    // The locale is read here, so a change to it builds this
-                    // closure.
-                    DebugInfoLabel()
-
-                    Text(locale.name)
-                    Text("language · \\(locale.language)")
-                    Text("region · \\(locale.region.isEmpty ? "none" : locale.region)")
-                    Text("zone · \\(locale.timeZone)")
-                    Text("clock · \\(locale.uses24HourClock ? "24h" : "12h")")
-                    Text("week starts · \\(locale.firstDayOfWeek)")
-                    Text(locale.isMetric ? "metric" : "not metric")
-                }
-            }
-        }
-        """
-
+    // listing: LocaleInfoSample
     var body: some View {
         VStack {
+            // The locale is read here, so a change to it builds this
+            // closure.
             DebugInfoLabel()
 
             Text(locale.name.isEmpty ? "the host has not said" : locale.name)
@@ -58,6 +41,7 @@ struct LocaleInfoSample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("This is the host's answer on every platform, the zone an "

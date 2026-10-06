@@ -7,6 +7,7 @@ struct MotionSample: SampleContent, ExampleContent {
     static let title = "Motion"
     static let summary = "Assign the state and the control travels there - at a length, on a spring, or not at all."
 
+    // listing: MotionSample
     static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
 
     static func law(_ index: Int) -> Motion {
@@ -22,69 +23,13 @@ struct MotionSample: SampleContent, ExampleContent {
     @State private var wide = false
     @State private var warm = false
 
-    static let code = """
-        @State private var law = 2
-        @State private var wide = false
-        @State private var warm = false
-
-        static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
-
-        static func law(_ index: Int) -> Motion {
-            switch index {
-            case 1: .spring(response: 320)
-            case 2: .eased(900, .sineInOut)
-            case 3: .none
-            default: .standard
-            }
-        }
-
+    var body: some View {
         // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
         // tree says where the panel is going and the host carries it there.
         VStack {
             // The panels are described from `wide`, `warm` and `law`, read
             // here, so a press builds this closure once and the host walks
             // the rest.
-            DebugInfoLabel()
-
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
-                .width(wide ? 300 : 120)
-                .height(wide ? 110 : 56)
-                .cornerRadius(wide ? 28 : 8)
-                .horizontalAlignment(.start)
-                .motion(Self.law(law))
-
-            // The same panel, told to stay still. `.motion` is per view.
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
-                .width(wide ? 300 : 120)
-                .height(wide ? 110 : 56)
-                .cornerRadius(wide ? 28 : 8)
-                .horizontalAlignment(.start)
-                .motion(.none)
-
-            // And the same panel again, with a rule: everything travels
-            // EXCEPT how big it is, which arrives. The last rule that names a
-            // value is the one that answers for it.
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
-                .width(wide ? 300 : 120)
-                .height(wide ? 110 : 56)
-                .cornerRadius(wide ? 28 : 8)
-                .horizontalAlignment(.start)
-                .motion(Self.law(law))
-                .motion(.none, .size)
-
-            HStack {
-                Button("Size").onClicked { wide.toggle() }
-                Button("Colour").onClicked { warm.toggle() }
-                Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             Text("A change that travels")
@@ -120,6 +65,7 @@ struct MotionSample: SampleContent, ExampleContent {
 
     /// One panel, either travelling at the chosen law or arriving at once.
     private func panel(travels: Bool) -> some View {
+        // The same panel, told to stay still. `.motion` is per view.
         ColorBox()
             .color(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
@@ -140,6 +86,7 @@ struct MotionSample: SampleContent, ExampleContent {
             .motion(Self.law(law))
             .motion(.none, .size)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

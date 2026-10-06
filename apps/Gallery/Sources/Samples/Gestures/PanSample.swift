@@ -2,6 +2,7 @@ import StateUI
 
 /// A view dragged about under a finger, and the one write that must not travel.
 struct PanSample: SampleContent, ExampleContent {
+    // listing: PanSample
     /// Where the box was left. Ordinary state, read by the handlers alone: it
     /// changes once per gesture, and no view is built for it.
     @State private var panX = 0.0
@@ -14,6 +15,7 @@ struct PanSample: SampleContent, ExampleContent {
     /// its own frames, so a drag costs the arithmetic and no renders at all.
     @State private var liveX = 0.0
     @State private var liveY = 0.0
+    // listing: end
 
     static let id = "pan"
     static let title = "Pan"
@@ -24,90 +26,12 @@ struct PanSample: SampleContent, ExampleContent {
     // still - see SampleContent.scrolls.
     static let scrolls = false
 
-    static let code = """
-        @State private var panX = 0.0
-        @State private var panY = 0.0
-
-        // Driven: the host reads the translation off these, so a drag renders
-        // nothing at all.
-        @State private var liveX = 0.0
-        @State private var liveY = 0.0
-
-        /// Whether the reading written on every report is a SNAP.
-        @State private var snaps = true
-
+    // listing: PanSample
+    var body: some View {
         VStack {
             // The box is moved by DRIVEN states, so a drag builds nothing: the
             // reading below is a CONVERSION of the same two, and the switch is
             // handed its state - this stands at one build.
-            DebugInfoLabel()
-
-            // A fixed box for it to move inside, so the layout does not follow
-            // the view about.
-            ZStack {
-                ColorBox(Palette.accent)
-                    .width(64)
-                    .height(64)
-                    // DRIVEN, both of them.
-                    .translationX($liveX)
-                    .translationY($liveY)
-                    .onPanUpdated { update in
-                        switch update.phase {
-                        case .changed:
-                            follow(panX + update.totalX, panY + update.totalY)
-                        case .ended:
-                            panX = $liveX.journey.value
-                            panY = $liveY.journey.value
-                        case .cancelled:
-                            follow(panX, panY)
-                        case .began:
-                            break
-                        }
-                    }
-            }
-            .style("Card")
-            .height(200)
-
-            // Two states into one conversion: the host works the words out
-            // from where the box HAS GOT TO, on its own frames.
-            Text($liveX.journey.convert(with: $liveY.journey) { x, y in
-                "Moved \\(Int(x.value)), \\(Int(y.value))"
-            })
-
-            SwitchRow("The drag snaps", $snaps)
-
-            // A SETPOINT, so the box travels home from wherever it was left.
-            Button("Put it back").onClicked {
-                panX = 0
-                panY = 0
-                liveX = 0
-                liveY = 0
-            }
-        }
-
-
-        /// The box under the finger.
-        ///
-        /// A READING WRITTEN ON EVERY REPORT IS A SNAP, and on a walked state
-        /// the snap is `$liveX.journey.snap(to:)` - where the box IS. The
-        /// state itself is where it is GOING, so writing that on every report
-        /// starts a fresh little journey the next report interrupts, and the
-        /// box trails the hand.
-        private func follow(_ x: Double, _ y: Double) {
-            if snaps {
-                // HERE, GOING NOWHERE, STANDING STILL - all three, so that
-                // `Put it back` has a destination to change.
-                $liveX.journey.snap(to: x)
-                $liveY.journey.snap(to: y)
-            } else {
-                liveX = x
-                liveY = y
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             // A fixed box for it to move inside, so the layout does not follow
@@ -143,6 +67,8 @@ struct PanSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(10))
             .height(200)
 
+            // Two states into one conversion: the host works the words out
+            // from where the box HAS GOT TO, on its own frames.
             Text()
                 .text($liveX.journey.convert(with: $liveY.journey) { x, y in
                     "Moved \(Int(x.value)), \(Int(y.value))"
@@ -180,6 +106,8 @@ struct PanSample: SampleContent, ExampleContent {
     /// is the lag the switch is here to show.
     private func follow(_ x: Double, _ y: Double) {
         if snaps {
+            // HERE, GOING NOWHERE, STANDING STILL - all three, so that
+            // `Put it back` has a destination to change.
             $liveX.journey.snap(to: x)
             $liveY.journey.snap(to: y)
         } else {
@@ -187,6 +115,7 @@ struct PanSample: SampleContent, ExampleContent {
             liveY = y
         }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

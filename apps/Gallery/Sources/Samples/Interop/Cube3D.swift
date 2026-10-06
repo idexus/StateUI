@@ -16,6 +16,7 @@
 
 import StateUI
 
+// listing: Cube3D
 /// What colour the cube is painted.
 ///
 /// A closed vocabulary, so it crosses as its member's number, and the host's
@@ -30,7 +31,9 @@ public enum CubeColor: Int32, CaseIterable, HostRepresentable {
     /// Violet.
     case violet = 2
 }
+// listing: end
 
+// listing: Cube3D
 /// The gallery's own cube, declared: its node type, the tier it wears,
 /// and its members, each with its value's type.
 public enum Cube3DContract: ElementContract {
@@ -51,7 +54,9 @@ public enum Cube3DContract: ElementContract {
 
     public static let members: [any ContractMember] = [size, color, isSpinning]
 }
+// listing: end
 
+// listing: Cube3D
 /// A cube drawn on the GPU by a control the application registered with its
 /// host, described here like a built-in one.
 ///
@@ -106,4 +111,5 @@ public struct Cube3D: ElementView {
         setValue(Cube3DContract.isSpinning, on: state, mode: .out, kind: .plain)
     }
 }
+// listing: end
 #endif

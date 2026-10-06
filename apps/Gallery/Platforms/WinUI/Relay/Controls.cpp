@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// listing: InteropControlSample.WinUI.cpp
 // The gallery's traffic light and rating bar as WinUI elements that know nothing of StateUI: a housing of three
 // lamps drawn with XAML's shapes, and WinUI's own RatingControl.
+// Each function is C++/WinRT behind the C name the Swift half calls, declared in include/CGalleryWinUI.h.
+// listing: end
 
 #include "Relay.h"
 
@@ -44,6 +47,9 @@ extern "C" void gallery_winui_release(GalleryObjectRef object) {
     }
 }
 
+// listing: InteropControlSample.WinUI.cpp
+// The housing and its lamps. A tap is told through the callbacks the Swift half handed over, by the number it made
+// the control with.
 extern "C" GalleryObjectRef gallery_traffic_light_make(int64_t control) {
     try {
         controls::Border housing;
@@ -85,6 +91,7 @@ extern "C" void gallery_traffic_light_set_signal(GalleryObjectRef light, int32_t
         report("lighting a lamp");
     }
 }
+// listing: end
 
 extern "C" GalleryObjectRef gallery_rating_bar_make(int64_t control) {
     try {
@@ -117,6 +124,8 @@ extern "C" void gallery_rating_bar_set_rating(GalleryObjectRef bar, double value
     }
 }
 
+// listing: InteropActsSample.WinUI.flash.cpp
+// The act aimed at the bar: a Storyboard fading WinUI's RatingControl down and back, twice.
 extern "C" void gallery_rating_bar_flash(GalleryObjectRef bar) {
     try {
         auto rating = as<controls::RatingControl>(bar);
@@ -137,3 +146,4 @@ extern "C" void gallery_rating_bar_flash(GalleryObjectRef bar) {
         report("flashing a rating bar");
     }
 }
+// listing: end

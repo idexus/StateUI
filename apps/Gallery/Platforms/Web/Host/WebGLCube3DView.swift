@@ -4,6 +4,7 @@
 import GalleryUI
 import StateUIWeb
 
+// listing: Cube3DSample.Web.swift
 /// A cube drawn by WebGL 2 in the page: the gallery's own element, `<gallery-cube3d>` of Page/cube3d.js, which knows
 /// nothing of StateUI - told what it is through its attributes. The Swift half is Sources/Samples/Interop/Cube3D.swift.
 @MainActor
@@ -31,9 +32,11 @@ final class WebGLCube3DView: WebControl {
         element.setAttribute("spinning", "")
     }
 }
+// listing: end
 
 // MARK: - Registration
 
+// listing: Cube3DSample.Web.swift
 extension WebGLCube3DView {
     /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
     static func register() {
@@ -44,3 +47,4 @@ extension WebGLCube3DView {
         }
     }
 }
+// listing: end

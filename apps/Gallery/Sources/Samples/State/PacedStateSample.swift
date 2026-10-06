@@ -6,6 +6,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
     static let title = "A state on a cadence"
     static let summary = "One walked value shown three ways - converted, read, and sampled ten times a second."
 
+    // listing: PacedStateSample
     /// What the host walks. A write puts the DESTINATION on it at once, and
     /// the host walks the control there on its own frames.
     @State private var fade = 1.0
@@ -14,51 +15,9 @@ struct PacedStateSample: SampleContent, ExampleContent {
     /// sample was taken. An ordinary state, so an ordinary get reads it.
     @State private var shown = 1.0
 
-    static let code = """
-        @State private var fade = 1.0
-        @State private var shown = 1.0
-
-        VStack {
-            // A CONVERTER - the host works the words out on its own frames.
-            // NO RENDER AT ALL, however long the walk.
-            VStack {
-                DebugInfoLabel()
-
-                Text($fade.convert { "going to \\(Int($0 * 100))%" })
-            }
-
-            // THE JOURNEY - this closure reads where the value IS, which the
-            // host writes every frame it moves. ONE RENDER A FRAME.
-            VStack {
-                DebugInfoLabel()
-
-                Text("at \\(Int($fade.journey.value * 100))%")
-            }
-
-            // A READING - taken ten times a second into an ordinary state,
-            // which this closure reads. ONE RENDER A WINDOW.
-            VStack {
-                DebugInfoLabel()
-
-                Text("at \\(Int(shown * 100))%")
-            }
-            .samples($fade, into: $shown, .every(100))
-
-            ColorBox()
-                .height(60)
-                .opacity($fade)
-
-            HStack {
-                Button("Fade")
-                    .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
-
-                Button("Back")
-                    .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
-            }
-        }
-        """
-
     var body: some View {
+        // A CONVERTER - the host works the words out on its own frames.
+        // NO RENDER AT ALL, however long the walk.
         VStack {
             // A CONVERTER. The host works the words out on its own frames and
             // wears them, so nothing here is described again - this count
@@ -133,6 +92,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

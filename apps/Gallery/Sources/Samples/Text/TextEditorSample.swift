@@ -2,52 +2,19 @@ import StateUI
 
 /// Text of several lines, in an editor of a stated height and one that grows.
 struct TextEditorSample: SampleContent, ExampleContent {
+    // listing: TextEditorSample
     @State private var draft = ""
+    // listing: end
 
     static let id = "textEditor"
     static let title = "TextEditor"
     static let summary = "A TextField with room: several lines, and a size that can follow the text."
 
-    static let code = """
-        @State private var draft = ""
-
+    // listing: TextEditorSample
+    var body: some View {
         VStack {
             // The count of characters below reads `draft`, so every keystroke
             // builds this closure; the two editors are handed the state.
-            DebugInfoLabel()
-
-            // The same text in both editors: the left keeps its stated
-            // height, the right grows with every line you add.
-            Grid {
-                VStack {
-                    Text("a stated height")
-
-                    TextEditor($draft)
-                        .placeholder("Anything worth remembering")
-                        .height(110)
-                }
-
-                VStack {
-                    Text(".growsWithText(true)")
-
-                    TextEditor($draft)
-                        .placeholder("The same text, sized by it")
-                        .growsWithText(true)
-                }
-                .gridColumn(1)
-            }
-            .columns(.fill, .fill)
-
-            Text(draft.isEmpty ? "nothing written yet" : "\\(draft.count) character(s)")
-
-            Button("Clear")
-                .isEnabled(!draft.isEmpty)
-                .onClicked { draft = "" }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             // The same text in both editors, so typing in either moves the
@@ -98,6 +65,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? { nil }
 }

@@ -2,6 +2,7 @@ import StateUI
 
 /// The library's own way to tell the time: acts, not Foundation.
 struct HostTimeSample: SampleContent, ExampleContent {
+    // listing: HostTimeSample
     @State private var zone = ""
     @State private var clocks: [(String, String)] = []
     @State private var season = ""
@@ -12,82 +13,18 @@ struct HostTimeSample: SampleContent, ExampleContent {
     static let cities = [
         "UTC", "America/New_York", "Europe/Warsaw", "Asia/Kolkata", "Asia/Tokyo",
     ]
+    // listing: end
 
     static let id = "hostTime"
     static let title = "Host time"
     static let summary = "The clock, the zone and the offset - asked of the host, "
         + "the same answer on every platform."
 
-    static let code = """
-        @State private var zone = ""
-        @State private var clocks: [(String, String)] = []
-        @State private var season = ""
-
-        static let cities = [
-            "UTC", "America/New_York", "Europe/Warsaw", "Asia/Kolkata", "Asia/Tokyo",
-        ]
-
+    // listing: HostTimeSample
+    var body: some View {
         VStack {
             // What the host answered is read here, so each ask builds this
             // closure once.
-            DebugInfoLabel()
-
-            Text("Here: \\(zone)")
-            Text(season)
-
-            ForEach(clocks, id: \\.0) { clock in
-                HStack {
-                    Text(clock.0)
-                    Text(clock.1)
-                }
-            }
-
-            Button("Read again")
-                .onClicked { try await read() }
-        }
-        .onCreated { try await read() }
-
-        func read() async throws {
-            zone = try await TimeZoneInfo.local()
-
-            let now = try await ClockTime.now()
-            let here = try await TimeZoneInfo.utcOffset()
-            let winter = try await TimeZoneInfo.utcOffset(
-                on: CalendarDate(year: 2026, month: 1, day: 15))
-
-            season = "Offset now \\(offsetText(here)), on 15 January \\(offsetText(winter))"
-
-            var found: [(String, String)] = []
-            for city in Self.cities {
-                let there = try await TimeZoneInfo.utcOffset(of: city)
-                found.append((city, "\\(shifted(now, by: there - here).text)  \\(offsetText(there))"))
-            }
-
-            clocks = found
-        }
-
-        /// The same time of day, seen from another zone: seconds since midnight
-        /// plus the difference between the two offsets, wrapped into the day.
-        func shifted(_ time: ClockTime, by difference: Duration) -> ClockTime {
-            let midnight = time.hour * 3600 + time.minute * 60 + time.second
-            let moved = midnight + Int(difference.components.seconds)
-            let day = (moved % 86400 + 86400) % 86400
-
-            return ClockTime(hour: day / 3600, minute: (day % 3600) / 60, second: day % 60)
-        }
-
-        func offsetText(_ offset: Duration) -> String {
-            let minutes = Int(offset.components.seconds) / 60
-            let sign = minutes < 0 ? "-" : "+"
-            let hh = abs(minutes) / 60
-            let mm = abs(minutes) % 60
-
-            return "UTC\\(sign)\\(hh < 10 ? "0" : "")\\(hh):\\(mm < 10 ? "0" : "")\\(mm)"
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             Text("Here: \(zone.isEmpty ? "…" : zone)")
@@ -122,6 +59,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
         .spacing(10)
         .onCreated { try await read() }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -142,6 +80,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
+    // listing: HostTimeSample
     /// One reading: the zone, the host's clock, and each city seen from it.
     private func read() async throws {
         zone = try await TimeZoneInfo.local()
@@ -161,8 +100,10 @@ struct HostTimeSample: SampleContent, ExampleContent {
 
         clocks = found
     }
+    // listing: end
 }
 
+// listing: HostTimeSample
 /// The same time of day, seen from another zone: seconds since midnight plus
 /// the difference between the two offsets, wrapped into the day.
 private func shifted(_ time: ClockTime, by difference: Duration) -> ClockTime {
@@ -172,7 +113,9 @@ private func shifted(_ time: ClockTime, by difference: Duration) -> ClockTime {
 
     return ClockTime(hour: day / 3600, minute: (day % 3600) / 60, second: day % 60)
 }
+// listing: end
 
+// listing: HostTimeSample
 /// `UTC+05:30`, written by hand - a formatter is Foundation, and this sample is
 /// about not needing one.
 private func offsetText(_ offset: Duration) -> String {
@@ -183,3 +126,4 @@ private func offsetText(_ offset: Duration) -> String {
 
     return "UTC\(sign)\(hh < 10 ? "0" : "")\(hh):\(mm < 10 ? "0" : "")\(mm)"
 }
+// listing: end

@@ -2,77 +2,19 @@ import StateUI
 
 /// Content built from the space it was given, and frames reported on request.
 struct GeometryReaderSample: SampleContent, ExampleContent {
+    // listing: GeometryReaderSample
     @State private var slot = Rect(0, 0, 0, 0)
     @State private var window = Rect(0, 0, 0, 0)
     @State private var safe = Rect(0, 0, 0, 0)
 
     @State private var width = 220.0
+    // listing: end
 
     static let id = "geometryReader"
     static let title = "Measuring a frame"
     static let summary = "GeometryReader builds from its measured frame; `.onFrameChanged` reports any view's."
 
-    static let code = """
-        @State private var width = 220.0
-        @State private var slot = Rect(0, 0, 0, 0)
-        @State private var window = Rect(0, 0, 0, 0)
-        @State private var safe = Rect(0, 0, 0, 0)
-
-        VStack {
-            // `slot`, `window` and `safe` are read in these braces - the three
-            // lines below print all of them - so every frame report builds
-            // this closure, which is the whole cost of watching a frame.
-            DebugInfoLabel()
-
-            // THE PARENT, DRAWN in a gentle tint, because `slot` below is
-            // measured against THIS box and the numbers say nothing until
-            // there is something on the screen for them to be relative to.
-            // It fills the page's width, so widening the panel walks its x
-            // in towards the middle.
-            VStack {
-                Text("the parent")
-
-                // The reader's content is built FROM the measurement, which
-                // is the reader's own @State. The three handlers write the
-                // page's states instead, and the lines below print them - so
-                // a settled frame builds the reader AND the page's braces.
-                GeometryReader { frame in
-                    Text("\\(Int(frame.width)) × \\(Int(frame.height))")
-                }
-                // Driven: the host carries the width, and no render
-                // describes it.
-                .width($width)
-                .height(120)
-                .horizontalAlignment(.center)
-                // Reporting is a modifier on ANY view - one handler per
-                // space. Nothing is measured unless something asks: a view
-                // without a handler is not even subscribed.
-                .onFrameChanged { slot = $0 }
-                .onFrameChanged(in: .global) { window = $0 }
-                .onFrameChanged(in: .safeArea) { safe = $0 }
-            }
-            .padding(16)
-            .background(Palette.selected)
-
-            Slider($width)
-                .minimum(140)
-                .maximum(340)
-
-            // Where the panel sits, in three spaces: inside the tinted box
-            // above, inside the window, and inside the safe area.
-            Text("in its parent · \\(Int(slot.x)), \\(Int(slot.y))")
-            Text("in the window · \\(Int(window.x)), \\(Int(window.y))")
-            Text("in the safe area · \\(Int(safe.x)), \\(Int(safe.y))")
-
-            Button("Animate the width").onClicked {
-                // Nothing is described: the host carries the width and the
-                // slider's thumb off the same state, and the frame reports
-                // say where the panel actually got to.
-                try await $width.journey.move(to: $width.journey.value < 240 ? 340 : 140)
-            }
-        }
-        """
-
+    // listing: GeometryReaderSample
     var body: some View {
         VStack {
             // `slot`, `window` and `safe` are read in these braces - the three
@@ -152,6 +94,7 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

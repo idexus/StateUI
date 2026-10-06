@@ -2,10 +2,12 @@ import StateUI
 
 /// Text dragged from one view and dropped on another.
 struct DragAndDropSample: SampleContent, ExampleContent {
+    // listing: DragAndDropSample
     @State private var items = ["Alpha", "Beta", "Gamma"]
     @State private var basket: [String] = []
     @State private var over = false
     @State private var finished = "nothing dragged yet"
+    // listing: end
 
     static let id = "dragAndDrop"
     static let title = "Drag and drop"
@@ -16,73 +18,11 @@ struct DragAndDropSample: SampleContent, ExampleContent {
     // still - see SampleContent.scrolls.
     static let scrolls = false
 
-    static let code = """
-        @State private var items = ["Alpha", "Beta", "Gamma"]
-        @State private var basket: [String] = []
-        @State private var over = false
-        @State private var finished = "nothing dragged yet"
-
+    // listing: DragAndDropSample
+    var body: some View {
         VStack {
             // The two runs and what the last drag did are read here, so a drop
             // builds this closure.
-            DebugInfoLabel()
-
-            HStack {
-                ForEach(items) { item in
-                    ZStack {
-                        Text(item)
-                            .padding(horizontal: 12, vertical: 8)
-                    }
-                    .style("Card")
-                    .stroke(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    // What travels is decided before the drag starts: a
-                    // native drag session needs its payload at once.
-                    .draggable(text: item)
-                    // The view that was DRAGGED hears when its own drag ends,
-                    // wherever it ended.
-                    .onDragEnded { finished = "\\(item): drop finished" }
-                    .id(item)
-                }
-            }
-
-            Text(finished)
-
-            ZStack {
-                VStack {
-                    Text(over
-                        ? "let go to drop it"
-                        : (basket.isEmpty ? "nothing yet" : "\\(basket.count) dropped"))
-
-                    ForEach(Array(basket.enumerated()), id: \\.offset) { pair in
-                        Text(pair.element)
-                    }
-                }
-                .padding(24)
-            }
-            .style("Card")
-            // Lit while something is over it and dark again once it leaves,
-            // which is what the two events are for.
-            .stroke(over ? Palette.accent : Palette.outline)
-            .lineWidth(over ? 2 : 1)
-            .shape(.roundedRectangle(10))
-            .background(over ? Palette.selected : Palette.raised)
-            .onDragOver { over = true }
-            .onDragLeave { over = false }
-            // A drop is not a leave, so the light comes down here too.
-            .onDrop { text in
-                basket.append(text)
-                over = false
-            }
-
-            Button("Empty it")
-                .isEnabled(!basket.isEmpty)
-                .onClicked { basket = [] }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             SectionTitle("Drag from here")
@@ -98,6 +38,8 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                     .stroke(Palette.accent)
                     .lineWidth(1)
                     .shape(.roundedRectangle(8))
+                    // What travels is decided before the drag starts: a
+                    // native drag session needs its payload at once.
                     .draggable(text: item)
                     // The view that was DRAGGED hears when its own drag ends,
                     // wherever it ended.
@@ -156,6 +98,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

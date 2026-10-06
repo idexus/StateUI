@@ -2,41 +2,9 @@ import StateUI
 
 /// Rows chosen by the handful, and the list scrolled to a row from code.
 private struct PickList: ExampleContent {
+    // listing: PickList
     @State private var chosen: Set<Int> = []
     @Aim(ItemsViewContract.self) private var list
-
-    static let code = """
-        @State private var chosen: Set<Int> = []
-        @Aim(ItemsViewContract.self) private var list
-
-        Grid {
-            HStack {
-                Button("Top")
-                    .onClicked { try await list.scrollTo(0, anchor: .start) }
-                Button("Row 500")
-                    .onClicked { try await list.scrollTo(500, anchor: .start) }
-                Button("Clear")
-                    .isEnabled(!chosen.isEmpty)
-                    .onClicked { chosen = [] }
-            }
-            .gridRow(0)
-
-            // A Set binding: as many chosen as the user likes.
-            ItemsView(0..<1_000) { number in
-                Text("Row \\(number)").padding(horizontal: 14, vertical: 10)
-            }
-            .selection($chosen)
-            .aim(list)
-            .gridRow(1)
-
-            DebugInfoLabel()
-                .gridRow(2)
-
-            Text("\\(chosen.count) chosen")
-                .gridRow(2)
-        }
-        .rows(.auto, .fill, .auto)
-        """
 
     var body: some View {
         Grid {
@@ -61,6 +29,7 @@ private struct PickList: ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(0)
 
+            // A Set binding: as many chosen as the user likes.
             ItemsView(0..<1_000) { number in
                 Text("Row \(number)")
                     .fontSize(14)
@@ -81,6 +50,7 @@ private struct PickList: ExampleContent {
         .rows(.auto, .fill, .auto)
         .rowSpacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Tap rows to choose several; Row 500 scrolls there.")

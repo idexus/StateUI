@@ -2,6 +2,7 @@ import StateUI
 
 /// A ticker that does not repeat, restarted by the work it started.
 struct PollSample: SampleContent, ExampleContent {
+    // listing: PollSample
     /// One tick, then stopped - and the tick starts the next round when its
     /// work is done. So the gap is measured from where the work ENDED, and two
     /// rounds can never overlap however long one takes.
@@ -10,70 +11,18 @@ struct PollSample: SampleContent, ExampleContent {
     @State private var status = "Not started"
     @State private var rounds = 0
     @State private var checking = false
+    // listing: end
 
     static let id = "poll"
     static let title = "Poll"
     static let summary = "A tick that does the work and starts the next round when it "
         + "is done - so two rounds never overlap."
 
-    static let code = """
-        @State private var poll = Ticker(every: .seconds(2), isRepeating: false)
-        @State private var status = "Not started"
-        @State private var rounds = 0
-        @State private var checking = false
-
+    // listing: PollSample
+    var body: some View {
         VStack {
             // What the poll last answered is read here, so every answer
             // builds this closure once.
-            DebugInfoLabel()
-
-            Text(status)
-            Text("\\(rounds) round(s)")
-
-            ActivityIndicator(checking)
-
-            Button(poll.isRunning || checking ? "Stop" : "Start")
-                .onClicked {
-                    if poll.isRunning || checking {
-                        poll.stop()
-                        checking = false
-                        status = "Stopped"
-                        return
-                    }
-
-                    status = "Waiting"
-                    poll.start()
-                }
-        }
-        .onCreated {
-            // Set here rather than in the initializer: the closure reads this
-            // view's @State, which does not exist yet while the property that
-            // holds the ticker is being initialized.
-            poll.onTick = {
-                checking = true
-                status = "Checking"
-
-                // Work of unknown length, on a task of its own - what a real
-                // check would be. The ticker is already stopped by now, which
-                // is what makes starting it again below the next round rather
-                // than a second one alongside this.
-                let answer = await Task.detached {
-                    try? await Task.sleep(for: .milliseconds(1200))
-                    return "All good"
-                }.value
-
-                rounds += 1
-                checking = false
-                status = "\\(answer) - next check in 2s"
-
-                poll.start()
-            }
-        }
-        .onDestroying { poll.stop() }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             Text(status)
@@ -133,6 +82,7 @@ struct PollSample: SampleContent, ExampleContent {
         }
         .onDestroying { poll.stop() }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

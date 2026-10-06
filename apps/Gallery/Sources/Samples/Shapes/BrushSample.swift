@@ -2,71 +2,15 @@ import StateUI
 
 /// Gradients along a line and out from a point, on a fill, a stroke and a background.
 struct BrushSample: SampleContent, ExampleContent {
+    // listing: BrushSample
     @State private var end = 0
+    // listing: end
 
     static let id = "brush"
     static let title = "Brushes"
     static let summary = "Gradients: on a shape's fill, a layout's outline, and behind any view at all."
 
-    static let code = """
-        @State private var end = 0
-
-        /// The two stops every gradient here runs between.
-        private static let stops = [
-            GradientStop(Palette.accent, 0),
-            GradientStop(.steelBlue, 1),
-        ]
-
-        /// Across, down, and corner to corner - the three the button cycles.
-        private static let ends: [(point: Point, name: String)] = [
-            (Point(1, 0), "Point(1, 0)"),
-            (Point(0, 1), "Point(0, 1)"),
-            (Point(1, 1), "Point(1, 1)"),
-        ]
-
-        VStack {
-            // The gradient's end is read here, so moving it builds this closure.
-            DebugInfoLabel()
-
-            Rectangle()
-                .cornerRadius(12)
-                .fill(.linearGradient(
-                    Self.stops,
-                    startPoint: Point(0, 0),
-                    endPoint: Self.ends[end].point))
-                .contentMode(.stretch)        // fills the room, proportions and all
-                .height(80)
-
-            Button("endPoint: \\(Self.ends[end].name)")
-                .onClicked { end = (end + 1) % Self.ends.count }
-
-            Ellipse()
-                .fill(.radialGradient(
-                    [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
-                    center: Point(0.35, 0.3),
-                    radius: 0.75))
-                .width(96)
-                .height(96)
-
-            ZStack {
-                Text("A stroke is a brush too")
-                    .padding(horizontal: 16, vertical: 10)
-            }
-            .style("Card")
-            .lineWidth(4)
-            .shape(.roundedRectangle(10))
-            .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
-
-            // Not a shape at all: `.background` takes a brush, so any view can
-            // carry one.
-            VStack {
-                Text("A whole stack, behind a gradient")
-                    .textColor(Palette.onAccent)
-            }
-            .background(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 1)))
-        }
-        """
-
+    // listing: BrushSample
     /// The two stops every gradient here runs between.
     private static let stops = [
         GradientStop(Palette.accent, 0),
@@ -81,7 +25,10 @@ struct BrushSample: SampleContent, ExampleContent {
     ]
 
     var body: some View {
+        // Not a shape at all: `.background` takes a brush, so any view can
+        // carry one.
         VStack {
+            // The gradient's end is read here, so moving it builds this closure.
             DebugInfoLabel()
 
             SectionTitle("Along a line")
@@ -92,7 +39,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     Self.stops,
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
-                .contentMode(.stretch)
+                .contentMode(.stretch)   // fills the room, proportions and all
                 .height(80)
 
             Button("endPoint: \(Self.ends[end].name)")
@@ -135,6 +82,7 @@ struct BrushSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

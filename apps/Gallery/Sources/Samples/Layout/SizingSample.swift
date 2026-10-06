@@ -6,62 +6,12 @@ struct SizingSample: SampleContent, ExampleContent {
     static let title = "Sizing and clipping"
     static let summary = "How big a view asks to be, the bounds on it, and what happens at the edge."
 
-    static let code = """
-        VStack {
-            // A request, not an instruction: the layout has the last word.
-            ColorBox(Palette.accent)
-                .width(120)
-                .height(24)
-
-            // Filling the width, but never past 200.
-            ColorBox(Palette.accent)
-                .height(24)
-                .maximumWidth(200)
-
-            // Filling the width, but never squeezed below 160.
-            ColorBox(Palette.accent)
-                .height(24)
-                .minimumWidth(160)
-
-            // The same ceiling on the other axis, against the same request
-            // without it: 80 asked for on the left, 32 allowed on the right.
-            HStack {
-                ColorBox(Palette.outline)
-                    .width(60)
-                    .height(80)
-                    .verticalAlignment(.start)
-
-                ColorBox(Palette.accent)
-                    .width(60)
-                    .height(80)
-                    .maximumHeight(32)
-                    .verticalAlignment(.start)
-            }
-            .spacing(10)
-
-            // A child drawn past the layout's edge, cut off at it.
-            VStack {
-                ColorBox(Palette.accent)
-                    .height(24)
-                    .translationX(60)
-            }
-            .clipsContent(true)
-            .width(120)
-
-            // The same child in the same layout, and nothing cut off.
-            VStack {
-                ColorBox(Palette.accent)
-                    .height(24)
-                    .translationX(60)
-            }
-            .clipsContent(false)
-            .width(120)
-        }
-        """
-
+    // listing: SizingSample
     var body: some View {
+        // A child drawn past the layout's edge, cut off at it.
         VStack {
             row("width(120)",
+                // A request, not an instruction: the layout has the last word.
                 ColorBox(Palette.accent).width(120).height(24))
 
             row("maximumWidth(200)",
@@ -73,6 +23,8 @@ struct SizingSample: SampleContent, ExampleContent {
             // The pair is the point: both ask for 80 high, and only the one
             // without a ceiling on it is allowed to have it.
             row("height(80), then the same with maximumHeight(32)",
+                // The same ceiling on the other axis, against the same request
+                // without it: 80 asked for on the left, 32 allowed on the right.
                 HStack {
                     ColorBox(Palette.outline)
                         .width(60)
@@ -107,6 +59,7 @@ struct SizingSample: SampleContent, ExampleContent {
         }
         .spacing(14)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -132,6 +85,7 @@ struct SizingSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
+    // listing: SizingSample
     /// One example with the modifier that made it, so the column reads as a
     /// list of named cases.
     private func row<Shown: View>(_ caption: String, _ view: Shown) -> some View {
@@ -144,4 +98,5 @@ struct SizingSample: SampleContent, ExampleContent {
         }
         .spacing(6)
     }
+    // listing: end
 }

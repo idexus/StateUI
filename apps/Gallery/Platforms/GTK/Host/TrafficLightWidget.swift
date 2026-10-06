@@ -5,10 +5,13 @@ import CStateUIGTK
 import GalleryUI
 import StateUIGTK
 
+// listing: InteropControlSample.GTK.swift
 /// Three lamps in a housing, one lit at a time - a `GtkDrawingArea` that knows nothing of StateUI.
 ///
 /// `register()`, at the end of this file, adds it for `TrafficLightContract`, and that registration is the whole
 /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
+///
+/// A `GTKControl` is an object holding the widget it shows.
 @MainActor
 final class TrafficLightWidget: GTKControl {
     let widget: UnsafeMutablePointer<GtkWidget>
@@ -60,6 +63,7 @@ final class TrafficLightWidget: GTKControl {
             GConnectFlags(rawValue: 0))
         gtk_widget_add_controller(widget, click)
     }
+    // listing: end
 
     isolated deinit {
         gtk_drawing_area_set_draw_func(UnsafeMutablePointer<GtkDrawingArea>(OpaquePointer(widget)), nil, nil, nil)
@@ -107,6 +111,7 @@ final class TrafficLightWidget: GTKControl {
 
 // MARK: - Registration
 
+// listing: InteropControlSample.GTK.swift
 extension TrafficLightWidget {
     /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
     /// reports, and `property` puts the described signal on it. Said once, before the application runs.
@@ -117,6 +122,7 @@ extension TrafficLightWidget {
             light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
             return light
         }) { light in
+            // Handed back typed - a TrafficSignal, not its number.
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
@@ -124,3 +130,4 @@ extension TrafficLightWidget {
         }
     }
 }
+// listing: end

@@ -95,6 +95,7 @@ enum DemoTab: Hashable {
     }
 }
 
+// listing: Navigation.sheets
 /// A page the gallery presents OVER everything - see `ModalSample`.
 ///
 /// The modal stack is the WINDOW's, so this is the one place in the gallery
@@ -103,6 +104,7 @@ enum Sheet: Hashable {
     /// A page shown through the host's adaptive native modal presentation.
     case page
 }
+// listing: end
 
 /// Where one gallery is, and the moves that change it.
 ///
@@ -137,10 +139,12 @@ final class Navigation {
     /// `SplitViewSample`, which is where the switch that writes it lives.
     @State var listsHiddenRow = false
 
+    // listing: Navigation.sheets
     /// What is presented over all of it, innermost first. Usually empty, and
     /// almost always one deep when it is not - it is a stack because the
     /// platforms make it one: a sheet may present a sheet.
     @State var sheets: [Sheet] = []
+    // listing: end
 
     /// Whether the window's notice stands over every page - the Window
     /// overlay sample's switch, the window's own declaration.
@@ -223,6 +227,7 @@ final class Navigation {
         section == .home && path.first == .group(route)
     }
 
+    // listing: Navigation.sheets
     /// Presents a page over everything - the bars included, which is the whole
     /// difference from `push`.
     func present(_ sheet: Sheet) {
@@ -237,6 +242,7 @@ final class Navigation {
             sheets.removeLast()
         }
     }
+    // listing: end
 
     // MARK: - The tab list, which the user changes
 

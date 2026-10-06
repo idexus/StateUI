@@ -25,7 +25,9 @@ enum Palette {
     ///
     /// Complementary to the violet, so an accented thing separates from the
     /// page without also being bigger or bolder than what is around it.
+    // listing: Palette.sample
     static let accent = Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrangeLight)
+    // listing: end
 
     /// Violet - a sample's second colour beside the accent. Not an
     /// alternative accent - one interface, one accent.
@@ -36,7 +38,9 @@ enum Palette {
     /// affordance the user misreads costs more than the contrast buys. The
     /// trap is that white on the accent's dark half measures 2.3:1 - a deeper
     /// dark-theme accent is what raises that without darkening the text.
+    // listing: Palette.sample
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
+    // listing: end
 
     /// Text that reads on `brand`, and on the bar. White in both, which is what
     /// lets one toolbar icon be right on both - see the bars `MainPage` paints.
@@ -64,10 +68,14 @@ enum Palette {
     static let text = Color(light: AppColors.ink, dark: AppColors.inkDark)
 
     /// Anything secondary: summaries, captions, the line under a title.
+    // listing: Palette.sample
     static let subtle = Color(light: AppColors.inkMuted, dark: AppColors.inkMutedDark)
+    // listing: end
 
     /// Text and controls that are not available.
+    // listing: Palette.sample
     static let disabled = Color(light: AppColors.muted, dark: AppColors.mutedDark)
+    // listing: end
 
     // MARK: Surfaces
 
@@ -91,7 +99,9 @@ enum Palette {
     static let field = Color(light: AppColors.raised, dark: AppColors.fieldDark)
 
     /// Outlines, dividers, the edge of a card.
+    // listing: Palette.sample
     static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
+    // listing: end
 
     /// Behind the thing you are on - the sidebar's current row. A violet wash,
     /// deliberately well clear of both the page and a card: "which page is

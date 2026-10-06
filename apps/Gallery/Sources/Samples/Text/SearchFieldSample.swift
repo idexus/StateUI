@@ -2,58 +2,24 @@ import StateUI
 
 /// A search box on the page, narrowing a list as the user types.
 struct SearchFieldSample: SampleContent, ExampleContent {
+    // listing: SearchFieldSample
     @State private var query = ""
     @State private var searched = ""
+    // listing: end
 
     static let id = "searchField"
     static let title = "SearchField"
     static let summary = "A TextField that says what it is for, on the page rather than in the navigation bar."
 
-    static let code = """
-        @State private var query = ""
-        @State private var searched = ""
-
+    // listing: SearchFieldSample
+    var body: some View {
         VStack {
             // The list below is filtered from `query`, so every keystroke builds
             // this closure; the bar itself is handed the state.
             DebugInfoLabel()
 
-            SearchField($query)
-                .placeholder("Search the list")
-                .onSubmitted { searched = query }
-
-            VStack {
-                ForEach(matches) { item in
-                    Text(item)
-                        .id(item)
-                }
-            }
-
-            Text(searched.isEmpty
-                ? "Type to narrow the list, then press the keyboard's search key."
-                : "Searched for: \\(searched)")
-
             // The same query again, in the accent - where the platform lets
             // an application tint a search field.
-            SearchField($query)
-                .placeholder("Search the list")
-                .tint(Palette.accent)
-        }
-
-        /// What the query matches, or everything when there is no query.
-        private var matches: [String] {
-            let items = ["Alpha", "Alma", "Beta", "Gamma", "Delta"]
-
-            return query.isEmpty
-                ? items
-                : items.filter { $0.lowercased().hasPrefix(query.lowercased()) }
-        }
-        """
-
-    var body: some View {
-        VStack {
-            DebugInfoLabel()
-
             SearchField($query)
                 .accessibilityIdentifier("searchBar.query")
                 .accessibilityLabel("Search the list")
@@ -86,6 +52,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -117,6 +84,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: SearchFieldSample
     /// What the query matches, or everything when there is no query - a search
     /// box that hides the list until something is typed says nothing about the
     /// list.
@@ -127,4 +95,5 @@ struct SearchFieldSample: SampleContent, ExampleContent {
             ? items
             : items.filter { $0.lowercased().hasPrefix(query.lowercased()) }
     }
+    // listing: end
 }

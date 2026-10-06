@@ -8,6 +8,7 @@ import StateUI
 /// `DispatchQueue.main`, and reach for `update` when two tasks change the same
 /// state at the same moment.
 struct ConcurrentStateSample: SampleContent, ExampleContent {
+    // listing: ConcurrentStateSample
     /// The shared count every task increments. `_total` - the box behind it -
     /// is what the tasks capture; it is Sendable, so it crosses to the
     /// cooperative pool safely.
@@ -17,68 +18,17 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
     @State private var expected = 0
 
     @State private var running = false
+    // listing: end
 
     static let id = "concurrentState"
     static let title = "State from tasks"
     static let summary = "Writing @State from many tasks at once - and the one thing you may not do to get there."
 
-    static let code = """
-        @State private var total = 0
-        @State private var expected = 0
-        @State private var running = false
-
+    // listing: ConcurrentStateSample
+    var body: some View {
         VStack {
             // The 20,000 writes land here as renders: this closure reads
             // `total`, and the reading says how many it was actually built for.
-            DebugInfoLabel()
-
-            Text("\\(total)")
-
-            // The proof: after a run, the count equals what was asked for.
-            Text(running
-                ? "Counting on 200 tasks at once…"
-                : (expected == 0
-                    ? "Press to count 200 × 100 on 200 concurrent tasks"
-                    : "\\(total) of \\(expected) landed - none lost"))
-
-            Button(running ? "Counting…" : "Count from 200 tasks at once")
-                .isEnabled(!running)
-                .onClicked {
-                    running = true
-                    total = 0
-                    expected = 200 * 100
-
-                    // The BOX, not the view: it is Sendable, so every task
-                    // can hold it. `count += 1` from two tasks is a read and
-                    // then a write, and two of those race - `update` holds the
-                    // state's lock across the read, the change and the write,
-                    // so all 200 x 100 land.
-                    let counter = _total
-
-                    await withTaskGroup(of: Void.self) { group in
-                        for _ in 0 ..< 200 {
-                            group.addTask {
-                                for _ in 0 ..< 100 { counter.update { $0 + 1 } }
-                            }
-                        }
-                    }
-
-                    running = false
-                }
-        }
-
-        // WRONG - never do this to "reach the UI thread":
-        //
-        //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
-        //
-        // RIGHT - just write it. A handler already runs on MainActor, the UI
-        // thread, and a plain @State write is safe from any thread anyway:
-        //
-        //     total = value
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             Text("\(total)")
@@ -87,6 +37,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .textColor(total == 0 ? Palette.subtle : Palette.accent)
                 .horizontalTextAlignment(.center)
 
+            // The proof: after a run, the count equals what was asked for.
             Text(running
                 ? "Counting on 200 tasks at once…"
                 : (expected == 0
@@ -130,6 +81,16 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
         }
         .spacing(16)
     }
+
+    // WRONG - never do this to "reach the UI thread":
+    //
+    //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
+    //
+    // RIGHT - just write it. A handler already runs on MainActor, the UI
+    // thread, and a plain @State write is safe from any thread anyway:
+    //
+    //     total = value
+    // listing: end
 
     var notes: (any View)? {
         VStack {

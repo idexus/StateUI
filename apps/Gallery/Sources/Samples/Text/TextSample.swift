@@ -5,60 +5,7 @@ struct TextSample: SampleContent, ExampleContent {
     static let title = "Text"
     static let summary = "Read-only native text with StateUI typography and alignment."
 
-    static let code = """
-        VStack {
-            Text("Plain")
-
-            Text("Bold")
-                .fontAttributes(.bold)
-
-            Text("Italic, and coloured")
-                .fontAttributes(.italic)
-                .textColor(Palette.accent)
-
-            Text("Underlined and struck through")
-                .textDecorations([.underline, .strikethrough])
-
-            Text("Centred, with room around it")
-                .horizontalTextAlignment(.center)
-                .padding(8)
-
-            Text("A long line that has nowhere left to go, so it is cut short with an ellipsis")
-                .lineBreak(.tailTruncation)
-                .maximumLines(1)
-
-            Text("Letters spaced out")
-                .tracking(3)
-
-            // The height of a line as a MULTIPLE of the font's own: the same
-            // two lines packed tight, then opened out.
-            HStack {
-                Text("Two lines,\\nlineHeight 0.8")
-                    .lineHeight(0.8)
-
-                Text("Two lines,\\nlineHeight 2")
-                    .lineHeight(2)
-            }
-
-            // One string in mixed case, drawn twice. The case is the DRAWING;
-            // the text stays as it was written.
-            Text("One string, drawn in Two Ways")
-                .textCase(.uppercase)
-
-            Text("One string, drawn in Two Ways")
-                .textCase(.lowercase)
-
-            // Text follows the system's text-size setting unless a label says
-            // it does not.
-            Text("Grows with the system text size")
-                .fontSize(16)
-
-            Text("Stays at 16 whatever the system says")
-                .fontSize(16)
-                .isFontAutoScalingEnabled(false)
-        }
-        """
-
+    // listing: TextSample
     var body: some View {
         VStack {
             Text("Plain")
@@ -104,6 +51,8 @@ struct TextSample: SampleContent, ExampleContent {
             }
             .spacing(16)
 
+            // One string in mixed case, drawn twice. The case is the DRAWING;
+            // the text stays as it was written.
             Text("One string, drawn in Two Ways")
                 .fontSize(16)
                 .textCase(.uppercase)
@@ -112,6 +61,8 @@ struct TextSample: SampleContent, ExampleContent {
                 .fontSize(16)
                 .textCase(.lowercase)
 
+            // Text follows the system's text-size setting unless a label says
+            // it does not.
             Text("Grows with the system text size")
                 .fontSize(16)
 
@@ -121,6 +72,7 @@ struct TextSample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

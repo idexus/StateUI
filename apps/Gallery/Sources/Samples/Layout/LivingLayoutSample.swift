@@ -6,68 +6,17 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
     static let title = "A layout that moves"
     static let summary = "Insert, remove or reorder, and everything else slides to its new place."
 
+    // listing: LivingLayoutSample
     @State private var rows = ["Alpha", "Bravo", "Charlie"]
     @State private var next = 4
     @State private var wide = false
 
     static let names = ["Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
 
-    static let code = """
-        @State private var rows = ["Alpha", "Bravo", "Charlie"]
-        @State private var next = 4
-        @State private var wide = false
-
-        let names = ["Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
-
+    var body: some View {
         // NOTHING HERE SAYS "ANIMATE". Where a child sits is worked out by the
         // layout; what carries it from the old place to the new one is the
         // host's engine, so an insert slides everything under it down.
-        VStack {
-            // `wide` is read in THESE braces - `.columns` below asks
-            // it - so widening the grid builds this closure. What the rows do
-            // is counted by the reading inside their own stack.
-            DebugInfoLabel()
-
-            VStack {
-                // INSIDE these braces, because that is where `rows` is read:
-                // Add, Remove and Shuffle build this closure, and the views
-                // left standing keep their controls.
-                DebugInfoLabel()
-
-                ForEach(rows, id: \\.self) { name in
-                    ZStack { Text(name) }.style("Card")
-                }
-            }
-
-            HStack {
-                Button("Add").onClicked {
-                    rows.insert(names[next % names.count], at: 0)
-                    next += 1
-                }
-                Button("Remove").onClicked {
-                    if !rows.isEmpty { rows.removeLast() }
-                }
-                Button("Shuffle").onClicked { rows.shuffle() }
-            }
-
-            // A grid whose column widths change: every child crosses to its
-            // new column, because a placement is a placement whoever worked it
-            // out.
-            Grid {
-                Text("one").gridColumn(0)
-                Text("two").gridColumn(1)
-                Text("three").gridColumn(2)
-            }
-            .columns(
-                wide ? .proportional(3) : .proportional(1),
-                .proportional(1),
-                wide ? .proportional(1) : .proportional(3))
-
-            Button("Widen the other end").onClicked { wide.toggle() }
-        }
-        """
-
-    var body: some View {
         VStack {
             // `wide` is read in THESE braces - `.columns` below asks
             // it - so widening the grid builds this closure. What the rows do
@@ -119,6 +68,9 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .tracking(1)
                 .textColor(Palette.subtle)
 
+            // A grid whose column widths change: every child crosses to its
+            // new column, because a placement is a placement whoever worked it
+            // out.
             Grid {
                 cell("one", Palette.brand, at: 0)
                 cell("two", Palette.accent, at: 1)
@@ -152,6 +104,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
         .lineWidth(0)
         .gridColumn(column)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

@@ -2,48 +2,21 @@ import StateUI
 
 /// A day picked from a calendar: a binding, and the event that answers a pick.
 struct DatePickerSample: SampleContent, ExampleContent {
+    // listing: DatePickerSample
     @State private var due = CalendarDate(year: 2026, month: 8, day: 2)
     @State private var chosen = ""
     @State private var picks = 0
+    // listing: end
 
     static let id = "datePicker"
     static let title = "DatePicker"
     static let summary = "A day chosen from a calendar - three integers, not a Foundation Date."
 
-    static let code = """
-        @State private var due = CalendarDate(year: 2026, month: 8, day: 2)
-        @State private var chosen = ""
-        @State private var picks = 0
-
+    // listing: DatePickerSample
+    var body: some View {
         VStack {
             // `due` is printed below, so picking a day builds this closure; the
             // picker itself is handed the state.
-            DebugInfoLabel()
-
-            DatePicker($due)
-                .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
-                .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
-                .format("D")
-                .onDateChanged { date in
-                    chosen = date.text
-                    picks += 1
-                }
-
-            Text("Due \\(due.text)")
-
-            Text(picks == 0
-                ? "onDateChanged has not fired"
-                : "onDateChanged: \\(chosen), \\(picks) so far")
-
-            // A day written from the TREE is not a pick: the field moves and
-            // the count stays where it is.
-            Button("Push it to New Year")
-                .onClicked { due = CalendarDate(year: 2027, month: 1, day: 1) }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             DatePicker($due)
@@ -67,6 +40,8 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
+            // A day written from the TREE is not a pick: the field moves and
+            // the count stays where it is.
             Button("Push it to New Year")
                 .fontSize(13)
                 .padding(horizontal: 16, vertical: 6)
@@ -75,6 +50,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

@@ -14,58 +14,13 @@ struct GridSample: SampleContent {
 /// Four cells - one down two rows, one across both columns - and a column
 /// whose width a switch changes.
 private struct GridPlacement: ExampleContent {
+    // listing: GridPlacement
     @State private var wideSecondColumn = true
-
-    static let code = """
-        @State private var wideSecondColumn = true
-
-        VStack {
-            // `wideSecondColumn` is read here, so flipping its switch builds
-            // this closure - and the cells cross to their new places.
-            DebugInfoLabel()
-
-            Grid {
-                // One cell down the whole left side, beside two that stay in
-                // a row each.
-                GridCell(text: "Column 0, Rows 0 and 1", color: "#E53935")
-                    .gridRowSpan(2)
-
-                GridCell(text: "Column 1, Row 0", color: "#1E88E5")
-                    .gridColumn(1)
-
-                GridCell(text: "Column 1, Row 1", color: "#8E24AA")
-                    .gridRow(1)
-                    .gridColumn(1)
-
-                GridCell(text: "Row 2, spanning both columns", color: "#F4511E")
-                    .gridRow(2)
-                    .gridColumnSpan(2)
-            }
-            .rows(.fixed(64), .fixed(64), .auto)
-            .columns(.fill, .proportional(wideSecondColumn ? 2 : 1))
-            .rowSpacing(10)
-            .columnSpacing(10)
-
-            // Changing a definition patches the grid in place: the cells keep
-            // their controls and only the column widths move.
-            SwitchRow("Second column twice as wide", $wideSecondColumn)
-        }
-
-        private struct GridCell: View {
-            let text: String
-            let color: String
-
-            var body: some View {
-                Text(text)
-                    .textColor(.white)
-                    .background(Color(color))
-                    .padding(8)
-            }
-        }
-        """
 
     var body: some View {
         VStack {
+            // `wideSecondColumn` is read here, so flipping its switch builds
+            // this closure - and the cells cross to their new places.
             DebugInfoLabel()
 
             Grid {
@@ -97,6 +52,7 @@ private struct GridPlacement: ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -122,6 +78,7 @@ private struct GridPlacement: ExampleContent {
     }
 }
 
+// listing: GridPlacement
 /// One coloured cell, composed rather than built inline - and placed with
 /// `.gridRow`, `.gridColumn` and the spans like any other view.
 private struct GridCell: View {
@@ -138,3 +95,4 @@ private struct GridCell: View {
             .verticalTextAlignment(.center)
     }
 }
+// listing: end

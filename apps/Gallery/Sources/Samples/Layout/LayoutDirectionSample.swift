@@ -6,35 +6,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
     static let title = "Layout direction"
     static let summary = "Laying a view out for a language written right to left."
 
-    static let code = """
-        VStack {
-            // Left to right, whatever the view above says.
-            HStack {
-                ColorBox(Palette.accent).width(60).height(20)
-                Text("First")
-                Text("Second")
-            }
-            .layoutDirection(.leftToRight)
-
-            // Mirrored: the row fills from the right, and the text with it.
-            HStack {
-                ColorBox(Palette.accent).width(60).height(20)
-                Text("First")
-                Text("Second")
-            }
-            .layoutDirection(.rightToLeft)
-
-            // The default: whatever the view above says, which is why an
-            // application usually says it once, high up.
-            HStack {
-                ColorBox(Palette.accent).width(60).height(20)
-                Text("First")
-                Text("Second")
-            }
-            .layoutDirection(.inherited)
-        }
-        """
-
+    // listing: LayoutDirectionSample
     var body: some View {
         VStack {
             row("leftToRight", .leftToRight)
@@ -43,6 +15,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
         }
         .spacing(16)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -62,6 +35,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
+    // listing: LayoutDirectionSample
     /// One row laid out each way, with the value that produced it.
     private func row(_ caption: String, _ direction: LayoutDirection) -> some View {
         VStack {
@@ -69,6 +43,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
                 .fontSize(11)
                 .textColor(Palette.subtle)
 
+            // Left to right, whatever the view above says.
             HStack {
                 ColorBox(Palette.accent)
                     .width(60)
@@ -82,4 +57,5 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
         }
         .spacing(6)
     }
+    // listing: end
 }

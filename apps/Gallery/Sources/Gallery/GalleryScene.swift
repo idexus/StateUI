@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: GalleryScene
 /// The galleries - a SCENE: as many gallery windows as the user opens, and
 /// the windows they open beside them, all sharing what the scene holds.
 ///
@@ -37,3 +38,4 @@ struct GalleryScene: Scene {
         WindowGroup(.swatch, for: Int.self) { number in SwatchPage(number: number) }
     }
 }
+// listing: end

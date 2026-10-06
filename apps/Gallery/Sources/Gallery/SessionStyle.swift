@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: Gallery.SessionStyle
 /// The kinds of window the galleries' scene opens beside its gallery windows -
 /// each a window of that scene. See `GalleryScene`.
 extension WindowType {
@@ -12,7 +13,9 @@ extension WindowType {
     /// A window per swatch number - one kind, a window for each value.
     static let swatch = WindowType("gallery.swatch")
 }
+// listing: end
 
+// listing: Gallery.SessionStyle
 /// What the galleries' scene KEEPS with itself - handed back with it when the
 /// system restores the application's windows, so the galleries come back in the
 /// font and the colour they were left in.
@@ -23,7 +26,9 @@ extension SceneKey {
     /// The gallery's accent.
     static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
 }
+// listing: end
 
+// listing: Gallery.SessionStyle
 /// An accent a gallery can wear - the colour its bars are painted in.
 enum AccentChoice: String, CaseIterable, PersistentValue {
     case violet
@@ -63,7 +68,9 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         }
     }
 }
+// listing: end
 
+// listing: Gallery.SessionStyle
 /// What the galleries look like, and how their tool windows stand - stepping
 /// aside for another scene, floating on top - the context every window of the
 /// galleries' scene shares.
@@ -86,3 +93,4 @@ final class SessionStyle {
     /// other windows rather than going under them.
     @State var floatsTools = false
 }
+// listing: end

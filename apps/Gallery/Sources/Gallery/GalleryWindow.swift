@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: GalleryWindow
 /// One gallery window - launch opens the first, and *File ▸ New Window* one
 /// more. What a window is doing is its own: where it is (`Navigation` - the
 /// section, what is pushed and presented, whether the menu is open), what its
@@ -49,3 +50,4 @@ struct GalleryWindow: View {
             bar: bar)
     }
 }
+// listing: end

@@ -5,6 +5,7 @@ import Android
 import GalleryUI
 import StateUIAndroid
 
+// listing: InteropControlSample.Android.swift
 /// Three lamps in a dark housing, one lit: the gallery's own Java view, com.stateui.gallery.TrafficLightView, which
 /// knows nothing of StateUI. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
 @MainActor
@@ -38,6 +39,7 @@ final class TrafficLightView: AndroidControl {
     }
 
     /// The view says lamp `index` was tapped.
+    /// It reaches here through a native method of the gallery's, GalleryNatives.lampTapped, by this control's number.
     func tapped(_ index: Int) {
         onLampTapped?(index)
     }
@@ -60,3 +62,4 @@ extension TrafficLightView {
         }
     }
 }
+// listing: end

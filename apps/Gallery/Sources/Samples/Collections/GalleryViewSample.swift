@@ -6,6 +6,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     static let title = "GalleryView"
     static let summary = "A run of cards the user swipes through - a wheel, a fan or a row, chosen with .arrangement."
 
+    // listing: GalleryViewSample
     /// The cards: what each picture is called and which file it is.
     static let cards: [Card] = [
         Card(name: "Mural", art: "art_mural.png"),
@@ -36,6 +37,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     @State private var shaded = true
     @State private var opened = "tap one"
     @State private var moves = 0
+    // listing: end
 
     // The cards are turned by a scroller of their own, so the example is not
     // put in a second one: the page's scroller would claim the swipe before it
@@ -46,124 +48,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     // placed in whatever it is given.
     static let fills = true
 
-    static let code = """
-        @State private var shape = 0
-        @State private var shown = 0
-        @State private var swipes = true
-        @State private var shaded = true
-        @State private var opened = "tap one"
-        @State private var moves = 0
-
-        struct Card { let name: String; let art: String }
-
-        static let cards: [Card] = [
-            Card(name: "Mural", art: "art_mural.png"),
-            Card(name: "Nebula", art: "art_nebula.png"),
-            Card(name: "Ridge", art: "art_ridge.png"),
-            Card(name: "Bloom", art: "art_bloom.png"),
-            Card(name: "Tide", art: "art_tide.png"),
-            Card(name: "Prism", art: "art_prism.png"),
-            Card(name: "Grove", art: "art_grove.png"),
-        ]
-
-        // The three shapes, and what to call them on the button that cycles
-        // them.
-        static let shapes: [(GalleryArrangement, String)] = [
-            (.default, "Wheel"),
-            (.fan, "Fan"),
-            (.row, "Row"),
-        ]
-
-        // A GRID rather than a stack: the cards take whatever room is left
-        // over, which a stack cannot give a child - and a gallery wants it all.
-        Grid {
-            // THE WHOLE CONTROL: the run made below - one card per item, each
-            // named by its name - and one word for the shape they stand in.
-            gallery
-                .arrangement(Self.shapes[shape].0)
-                .position($shown)
-                .isSwipeEnabled(swipes)
-                .onItemTapped { card in opened = "tapped \\(card.name)" }
-                // Another card in the middle, swiped or assigned.
-                .onPositionChanged { _ in moves += 1 }
-                .gridRow(0)
-
-            VStack {
-                // The binding is written as the user swipes, so anything
-                // under the run follows the hand - and assigning it moves the
-                // cards. The dots are joined to the gallery by that one state
-                // and nothing else.
-                // INSIDE these braces, because that is where `shown` and
-                // `opened` are read - the dots and the caption are written
-                // from them - so a swipe that changes which card is in front
-                // builds this closure, once per card and not once per frame of
-                // the movement.
-                DebugInfoLabel()
-
-                PositionIndicator()
-                    .count(Self.cards.count)
-                    .position(shown)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
-
-                Text("\\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
-                    + "card \\(shown + 1) of \\(Self.cards.count) · \\(opened) · moved \\(moves)")
-            }
-            .gridRow(1)
-
-            HStack {
-                Button(Self.shapes[shape].1)
-                    .onClicked { shape = (shape + 1) % Self.shapes.count }
-
-                Button("Back")
-                    .isEnabled(shown > 0)
-                    .onClicked { shown -= 1 }
-
-                Button("Next")
-                    .isEnabled(shown < Self.cards.count - 1)
-                    .onClicked { shown += 1 }
-
-                SwitchRow("Swipeable", $swipes)
-                SwitchRow("Shaded", $shaded)
-            }
-            .gridRow(2)
-        }
-        .rows(.fill, .auto, .auto)
-
-        // The run, shaded or faded as the switch says.
-        private var gallery: GalleryView<[Card], String> {
-            let run = GalleryView(Self.cards, id: \\.name) { card in
-                // A picture and its name. Where the card stands and which way
-                // it faces is the SHAPE's, and this knows nothing about it.
-                face(card)
-            }
-
-            guard shaded else { return run }
-
-            // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card shows
-            // whatever is behind it, which on a wheel is the next card - so
-            // depth is a shade drawn OVER the card. It wears the card's own
-            // corners, which is why the view is the application's to give.
-            // `.fade(_:)` says how much fade is left beside it.
-            return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
-        }
-
-        private func face(_ card: Card) -> some View {
-            ZStack {
-                Grid {
-                    Image(ImageSource(card.art))
-                        .contentMode(.fill)
-
-                    Text(card.name)
-                        .verticalAlignment(.end)
-                }
-                .clipsContent(true)
-            }
-            .style("Card")
-            .shape(.roundedRectangle(16))
-        }
-        """
-
+    // listing: GalleryViewSample
     var body: some View {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a gallery wants it all.
@@ -172,11 +57,14 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 ColorBox(Palette.raised)
                     .cornerRadius(14)
 
+                // THE WHOLE CONTROL: the run made below - one card per item, each
+                // named by its name - and one word for the shape they stand in.
                 gallery
                     .arrangement(Self.shapes[shape].0)
                     .position($shown)
                     .isSwipeEnabled(swipes)
                     .onItemTapped { card in opened = "tapped \(card.name)" }
+                    // Another card in the middle, swiped or assigned.
                     .onPositionChanged { _ in moves += 1 }
             }
             .gridRow(0)
@@ -258,11 +146,18 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     /// has.
     private var gallery: GalleryView<[Card], String> {
         let run = GalleryView(Self.cards, id: \.name) { card in
+            // A picture and its name. Where the card stands and which way
+            // it faces is the SHAPE's, and this knows nothing about it.
             face(card)
         }
 
         guard shaded else { return run }
 
+        // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card shows
+        // whatever is behind it, which on a wheel is the next card - so
+        // depth is a shade drawn OVER the card. It wears the card's own
+        // corners, which is why the view is the application's to give.
+        // `.fade(_:)` says how much fade is left beside it.
         return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
     }
 
@@ -290,6 +185,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         .lineWidth(0)
         .shape(.roundedRectangle(16))
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

@@ -9,6 +9,7 @@ import android.view.Choreographer;
 import android.view.Surface;
 import android.view.TextureView;
 
+// listing: Cube3DSample.Android.java
 /**
  * The surface a cube is drawn into by the Swift half, with OpenGL ES: a TextureView, drawn as a view is, so the
  * opacity, transform and clip StateUI puts on every view hold for it. It hands its surface over as it comes and goes,
@@ -97,3 +98,4 @@ final class Cube3DView extends TextureView implements TextureView.SurfaceTexture
         }
     }
 }
+// listing: end

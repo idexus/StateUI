@@ -31,12 +31,36 @@ enum ListingFile {
             }
         }
 
-        // A function that reads none of the listing's properties is a helper of the file, as it is in the sample.
-        let properties = members.flatMap { $0.matches(of: try! Regex(#"(?:var|let)\s+(\w+)"#)) }
+        // A function that reads none of the listing's properties - its own parameters and locals aside - and calls
+        // no function that does is a helper of the file, as it is in the sample; any other is the view's.
+        let functions = members.filter { firstCode(of: $0).map(kind) == .function }
+        let properties = members.filter { !functions.contains($0) }
+            .flatMap { $0.matches(of: try! Regex(#"(?:var|let)\s+(\w+)"#)) }
             .compactMap { $0.output[1].substring.map(String.init) }
-        let helpers = members.filter { member in
-            firstCode(of: member).map(kind) == .function && !properties.contains { member.contains(try! Regex("\\b\($0)\\b")) }
+        func name(of function: String) -> String {
+            function.firstMatch(of: try! Regex(#"func\s+(\w+)"#))?.output[1].substring.map(String.init) ?? ""
         }
+        func reads(_ text: String) -> Bool {
+            let function = text.split(separator: "\n")
+                .map { $0.split(separator: "//", maxSplits: 1, omittingEmptySubsequences: false).first ?? "" }
+                .joined(separator: "\n")
+            let own = function.matches(of: try! Regex(#"(?:(?:let|var)\s+|(?:\w+\s+)?(\w+)\s*:\s*[A-Z@(\[]|(\w+)\s+in\b)(\w+)?"#))
+                .flatMap { [$0.output[1].substring, $0.output[2].substring, $0.output[3].substring] }
+                .compactMap { $0.map(String.init) }
+            return function.contains("Self.") || properties.contains { property in
+                !own.contains(property) && function.contains(try! Regex("\\b\(property)\\b"))
+            }
+        }
+        func calls(_ function: String) -> Regex<AnyRegexOutput> {
+            try! Regex("(?m)(^|[^\\w.])\(name(of: function))\\(")
+        }
+        var ofTheView = functions.filter(reads)
+        while let caller = functions.first(where: { function in
+            !ofTheView.contains(function) && ofTheView.contains { function.contains(calls($0)) }
+        }) {
+            ofTheView.append(caller)
+        }
+        let helpers = functions.filter { !ofTheView.contains($0) }
         types += helpers
         members.removeAll { helpers.contains($0) }
 

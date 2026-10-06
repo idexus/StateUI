@@ -2,79 +2,22 @@ import StateUI
 
 /// A native navigation stack kept in step with one application array.
 struct NavigationSample: SampleContent, ExampleContent {
+    // listing: NavigationSample
     /// Where the gallery is. Borrowed, not held: this sample can move the
     /// application and READ where it is, and it cannot keep a stale copy of
     /// either.
     let nav: Navigation
 
     @State private var arrivals = 0
+    // listing: end
 
     static let id = "navigation"
     static let title = "Navigation stack"
     static let summary = "The stack is an array of your own type, and every move is an assignment."
 
-    static let code = """
-        // Gallery/MainPage.swift - the stack, over the gallery's own
-        // `Navigation`, a class of states: the section is the ROOT the stack
-        // stands on, and its path an array of the gallery's own `Route`.
-        // `page(for:path:)` turns a route into a page, looking a sample up in
-        // the catalog - an id it does not know is a page that says so.
-        extension MainPage {
-            @ViewBuilder
-            func detail() -> some View {
-                if case .tabs = nav.section {
-                    tabs()
-                } else {
-                    NavigationStack(nav.$path) {
-                        root()
-                    } destination: { route in
-                        page(for: route, path: nav.$path)
-                    }
-                }
-            }
-        }
+    static var code: String { Listings.joined("MainPage.detail", "NavigationSample") }
 
-        // And on this page, every move an assignment - `push` appends a
-        // route, `home()` opens the section with an empty path:
-        let nav: Navigation
-        @State private var arrivals = 0
-
-        VStack {
-            // The stack and the arrivals are read in this closure, so it is
-            // what a push and a pop build again.
-            DebugInfoLabel()
-
-            Button("Push a page")
-                .onClicked { nav.push(.level(1)) }
-
-            // Where am I? A question Swift answers, with no host in it.
-            Text(here)
-
-            Button("Go home, and count the visit")
-                .onClicked {
-                    nav.home()
-                    arrivals += 1
-                }
-
-            Text("Arrived home \\(arrivals) time(s)")
-
-            Button("Empty the stack")
-                .onClicked { nav.path = [] }
-        }
-
-        var here: String {
-            let place = switch nav.section {
-            case .home: "home"
-            case .hidden: "the unlisted page"
-            case .tabs: "the tabs"
-            }
-
-            return nav.path.isEmpty
-                ? "\\(place), nothing pushed"
-                : "\\(place) + \\(nav.path.count): \\(nav.path.map { "\\($0)" }.joined(separator: " › "))"
-        }
-        """
-
+    // listing: NavigationSample
     var body: some View {
         VStack {
             DebugInfoLabel()
@@ -114,6 +57,7 @@ struct NavigationSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -140,6 +84,7 @@ struct NavigationSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
+    // listing: NavigationSample
     /// Where the user is, in words - the section and how deep above it.
     ///
     /// Read from the same state the arrangement is built from, which is the
@@ -155,4 +100,5 @@ struct NavigationSample: SampleContent, ExampleContent {
             ? "\(place), nothing pushed"
             : "\(place) + \(nav.path.count): \(nav.path.map { "\($0)" }.joined(separator: " › "))"
     }
+    // listing: end
 }

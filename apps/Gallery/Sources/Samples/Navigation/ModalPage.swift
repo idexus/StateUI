@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: ModalPage
 /// A page presented OVER everything - the bars, the menu and the stack alike.
 ///
 /// It carries its own way out because the modal presentation covers the page
@@ -48,3 +49,4 @@ struct ModalPage: View {
         .galleryPage("Presented")
     }
 }
+// listing: end

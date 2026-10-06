@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Build;
 
+// listing: InteropActsSample.Android.java, InteropEventsSample.Android.java
 /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
 final class GalleryDevice {
     private GalleryDevice() {}
@@ -52,6 +53,7 @@ final class GalleryDevice {
         return receiver;
     }
 
+    /** A battery status read as `battery` gives it: the level, 0 to 1, and 1 where it charges, else 0. */
     private static double[] reading(Intent status) {
         if (status == null) return new double[] {0, 0};
         int level = status.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
@@ -61,3 +63,4 @@ final class GalleryDevice {
         return new double[] {level >= 0 && scale > 0 ? (double) level / scale : 0, charging ? 1 : 0};
     }
 }
+// listing: end

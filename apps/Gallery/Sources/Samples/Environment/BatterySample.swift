@@ -2,39 +2,22 @@ import StateUI
 
 /// The host's battery - the device's, read by name: `device.battery`.
 struct BatterySample: SampleContent, ExampleContent {
+    // listing: BatterySample
     /// The device, by its name: nothing is passed anywhere, and the host keeps
     /// its battery current.
     @Environment(\.device) var device
+    // listing: end
 
     static let id = "battery"
     static let title = "Battery"
     static let summary = "The host's battery, provided to every view - level, "
         + "state, source and the saver."
 
-    static let code = """
-        struct BatteryBadge: View {
-            @Environment(\\.device) var device
-
-            var body: some View {
-                VStack {
-                    // The battery is read here, so a change the host reports
-                    // builds this closure - and nothing else on the page.
-                    DebugInfoLabel()
-
-                    Text(device.battery.chargeLevel <= 0
-                        ? "the host has not said"
-                        : "\\(Int(device.battery.chargeLevel * 100))%")
-
-                    Text("state · \\(device.battery.state)")
-                    Text("source · \\(device.battery.powerSource)")
-                    Text("saver · \\(device.battery.energySaverStatus)")
-                }
-            }
-        }
-        """
-
+    // listing: BatterySample
     var body: some View {
         VStack {
+            // The battery is read here, so a change the host reports
+            // builds this closure - and nothing else on the page.
             DebugInfoLabel()
 
             Text(device.battery.chargeLevel <= 0
@@ -53,6 +36,7 @@ struct BatterySample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

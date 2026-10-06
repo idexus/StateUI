@@ -23,6 +23,7 @@ struct WebViewSample: SampleContent {
 /// The browser: a URL source, the platform's history reported into bindings,
 /// and the four acts aimed at the view with `@Aim`.
 private struct WebBrowserPart: ExampleContent {
+    // listing: WebBrowserPart
     @State private var hasBack = false
     @State private var hasForward = false
     @State private var status = "nothing has loaded yet"
@@ -30,79 +31,11 @@ private struct WebBrowserPart: ExampleContent {
 
     @Aim(WebView.self) private var browser
 
-    static let code = """
-        struct WebBrowserPart: View {
-            @State private var hasBack = false
-            @State private var hasForward = false
-            @State private var status = "nothing has loaded yet"
-            @State private var answer = ""
-
-            @Aim(WebView.self) private var browser
-
-            var body: some View {
-                Grid {
-                    VStack {
-                        // The history flags are read by this bar, so every
-                        // page that loads builds this closure.
-                        DebugInfoLabel()
-
-                        HStack {
-                            Button("Back")
-                                .isEnabled(hasBack)
-                                .onClicked { try await browser.goBack() }
-
-                            Button("Forward")
-                                .isEnabled(hasForward)
-                                .onClicked { try await browser.goForward() }
-
-                            Button("Reload")
-                                .onClicked { try await browser.reload() }
-                        }
-                    }
-                    .gridRow(0)
-
-                    // The browser takes the `.fill` row - as tall as the window
-                    // leaves - and everything around it keeps its own height.
-                    WebView("https://example.com")
-                        .aim(browser)
-                        // What the view calls itself to the server. Left
-                        // unwritten it is the platform's own browser string.
-                        .userAgent("StateUI Gallery")
-                        .canGoBack($hasBack)
-                        .canGoForward($hasForward)
-                        .onNavigating { report in
-                            status = "fetching \\(report.url)"
-                        }
-                        .onNavigated { report in
-                            status = "\\(report.result): \\(report.url)"
-                        }
-                        // The platform killed the web content process and left
-                        // the view blank. Nothing else reports it.
-                        .onProcessTerminated {
-                            status = "the web process died - press Reload"
-                        }
-                        .gridRow(1)
-
-                    Text(status)
-                        .gridRow(2)
-
-                    Button("Title?")
-                        .onClicked {
-                            answer = try await browser.evaluateJavaScript("document.title")
-                        }
-                        .gridRow(3)
-
-                    Text(answer)
-                        .gridRow(4)
-                }
-                .rows(.auto, .fill, .auto, .auto, .auto)
-            }
-        }
-        """
-
     var body: some View {
         Grid {
             VStack {
+                // The history flags are read by this bar, so every
+                // page that loads builds this closure.
                 DebugInfoLabel()
 
                 HStack {
@@ -170,6 +103,7 @@ private struct WebBrowserPart: ExampleContent {
         .rows(.auto, .fill, .auto, .auto, .auto)
         .rowSpacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -194,19 +128,13 @@ private struct WebBrowserPart: ExampleContent {
 /// HTML written in the tree rather than fetched. Nothing here touches the
 /// network.
 private struct WrittenInPlacePart: ExampleContent {
-    static let code = """
-        struct WrittenInPlacePart: View {
-            var body: some View {
-                WebView()
-                    .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
-            }
-        }
-        """
 
+    // listing: WrittenInPlacePart
     var body: some View {
         WebView()
             .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("`source(html:)` shows HTML written in place, without the network. Web "

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// listing: InteropControlSample.Web.javascript
 // <gallery-traffic-light>: three lamps in a housing, one lit at a time - an element that knows nothing of StateUI.
 // Its `signal` attribute says which lamp is lit, 0 red, 1 amber, 2 green; a tap on a lamp raises `lamptap`, its
 // `detail` the lamp's index top to bottom. It does not switch itself: whoever owns the state decides. The Swift
@@ -11,6 +12,7 @@ class TrafficLight extends HTMLElement {
 
   constructor() {
     super();
+    // A housing and three lamp buttons in its shadow root, each raising `lamptap` with its index as it is tapped.
     const shadow = this.attachShadow({ mode: "open" });
     shadow.innerHTML = `<style>
       :host { display: inline-grid; gap: 10px; padding: 12px; border-radius: 16px; background: #1a1725; }
@@ -40,3 +42,4 @@ class TrafficLight extends HTMLElement {
 }
 
 customElements.define("gallery-traffic-light", TrafficLight);
+// listing: end

@@ -2,6 +2,7 @@
 
 import StateUI
 
+// listing: MenuPage
 /// The gallery's sidebar - and it is an ordinary page.
 ///
 /// That is the whole point of it. A view with a gradient at the top,
@@ -155,3 +156,4 @@ struct MenuPage: View {
             .gridRow(2)
     }
 }
+// listing: end

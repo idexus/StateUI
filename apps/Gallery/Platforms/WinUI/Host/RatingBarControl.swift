@@ -49,10 +49,13 @@ final class RatingBarControl: WinUIControl {
 
 // MARK: - Registration
 
+// listing: InteropActsSample.WinUI.swift
 extension RatingBarControl {
     /// Adds the bar for `RatingBarContract`, and performs its aimed `flash`. Said once, before the application runs.
     @MainActor
     static func register() {
+        // The bar, made once per element, reporting the rating its user chooses.
+// listing: end
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarControl in
             let bar = RatingBarControl()
             bar.onRatingChanged = { rating in
@@ -64,9 +67,12 @@ extension RatingBarControl {
             bar.raises(RatingBarContract.ratingChanged)
         }
 
+        // listing: InteropActsSample.WinUI.swift
         // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
+            // A Storyboard in the relay fades the bar's opacity down and back, twice.
             bar.flash()
         }
     }
 }
+// listing: end

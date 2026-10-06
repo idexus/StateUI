@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: ScratchpadPage
 /// A scratchpad window's page: the scratchpads' one text, kept with their scene, and a way to close the window - or
 /// every scratchpad window at once.
 struct ScratchpadPage: View {
@@ -56,3 +57,4 @@ struct ScratchpadPage: View {
         }
     }
 }
+// listing: end

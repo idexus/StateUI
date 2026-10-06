@@ -101,11 +101,14 @@ final class RatingBarView: UIView {
 
 // MARK: - Registration
 
+// listing: InteropActsSample.UIKit.swift
 extension RatingBarView {
     /// Adds the bar for `RatingBarContract`, and performs the act aimed at
     /// one. Said once, before the application runs.
     @MainActor
     static func register() {
+        // The bar, added for its contract: its rating put on it, a tapped star reported.
+        // listing: end
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
             let bar = RatingBarView()
 
@@ -124,6 +127,7 @@ extension RatingBarView {
             bar.raises(RatingBarContract.ratingChanged)
         }
 
+        // listing: InteropActsSample.UIKit.swift
         // Aimed at one bar: the identity the aim sent is turned back into the
         // view this host made, and the performer is handed that view.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
@@ -131,3 +135,4 @@ extension RatingBarView {
         }
     }
 }
+// listing: end

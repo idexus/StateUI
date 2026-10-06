@@ -80,10 +80,10 @@ private struct TwoSided: SampleContent, ExampleContent {
     static let summary = "An example with a half written on the host."
     static let code = "Text(\"row\")"
 
-    static let hostCode = HostCode(
-        in: "the host",
-        .swift("let row = HostRow()"),
-        .java("Row row = new Row(context);"))
+    static let hostCode = HostCode(in: "the host", listings: [
+        HostListing(language: .swift, code: "let row = HostRow()"),
+        HostListing(language: .java, code: "Row row = new Row(context);"),
+    ])
 
     var body: some View {
         Text("row")
@@ -393,33 +393,6 @@ private final class Renders {
     }
 }
 
-private extension String {
-    /// How many times a one-character marker appears.
-    func count(of marker: String) -> Int {
-        filter { String($0) == marker }.count
-    }
-}
-
-/// Whether a character is something a range could count FROM - its left side.
-///
-/// A name, a number, or the end of a call or a subscript. A bracket that OPENS
-/// is not, which is what makes `(...)` an elision where `(1...5)` is a range.
-private func countsFrom(_ character: Character?) -> Bool {
-    guard let character else { return false }
-
-    return character.isLetter || character.isNumber || "_)]".contains(character)
-}
-
-/// Whether a character is something a range could count TO - its right side.
-///
-/// A name, a number, a sign, or the start of a call or a subscript. A bracket
-/// that CLOSES is not.
-private func countsTo(_ character: Character?) -> Bool {
-    guard let character else { return false }
-
-    return character.isLetter || character.isNumber || "_$-([".contains(character)
-}
-
 /// A sample's code with its `//` comments taken off, so a word written ABOUT
 /// the example is not read as a word the example runs.
 ///
@@ -474,75 +447,6 @@ private func bareProjections(in code: String) -> Set<String> {
     }
 
     return found
-}
-
-/// The elision a line of sample code hides behind, where it hides behind one.
-///
-/// An elision is a `…`, or three dots standing on their own - `VStack { ... }`,
-/// a lone `...` under a signature, `. . .` spread out. None of it compiles, and
-/// a snippet carrying one is a sketch rather than the code it claims to be.
-///
-/// Two things spell three dots and are not elisions. Swift's RANGE operators
-/// have an operand against them on one side or the other - `1...5`, `2...`,
-/// `...5`, and `items.count + 1 ... items.count + 30` spread out - so the
-/// neighbours are what tell them apart, and `..<` is never an elision at all.
-/// And a STRING an example prints is text the sample SHOWS rather than code it
-/// stands in for, so `"Dragging..."` reads past.
-///
-/// - Parameter line: One line of a sample's `code`.
-/// - Returns: The elision as it is spelled, or nil where the line is all code.
-private func elision(in line: String) -> String? {
-    // The literals out and the spaces with them, so that `a ... b` and `a...b`
-    // are the same three characters between the same two neighbours. A literal
-    // leaves an identifier behind rather than a hole, which is what keeps
-    // `("a"..."z")` reading as the range it is.
-    var code = ""
-    var quoted = false
-    var escaped = false
-
-    for character in line {
-        switch character {
-        case _ where escaped:
-            escaped = false
-
-        case "\\" where quoted:
-            escaped = true
-
-        case "\"":
-            quoted.toggle()
-
-            if !quoted {
-                code.append("_")
-            }
-
-        case _ where quoted, " ", "\t":
-            break
-
-        default:
-            code.append(character)
-        }
-    }
-
-    if code.contains("…") {
-        return "…"
-    }
-
-    let characters = Array(code)
-
-    for start in characters.indices
-    where start + 2 < characters.count
-        && characters[start] == "."
-        && characters[start + 1] == "."
-        && characters[start + 2] == "." {
-        let before = start > 0 ? characters[start - 1] : nil
-        let after = start + 3 < characters.count ? characters[start + 3] : nil
-
-        if !countsFrom(before) && !countsTo(after) {
-            return "..."
-        }
-    }
-
-    return nil
 }
 
 final class CatalogTests: XCTestCase {
@@ -815,43 +719,6 @@ final class CatalogTests: XCTestCase {
         }
     }
 
-    /// The code beside an example is REAL code, not a sketch of one.
-    ///
-    /// What a user sees under "In Swift" is the example's own view code with
-    /// the decoration taken out - the layout and the meaning of the example,
-    /// nothing invented. A sketch is what that rots into: `ZStack { … }`,
-    /// `VStack { ... }`, a structure that stops halfway, a type the sample does
-    /// not use. None of it would compile if it were pasted back, and nothing
-    /// else here would notice.
-    ///
-    /// So: no placeholders, and balanced brackets. Neither proves the snippet is
-    /// the sample's own code - only a reader can see that - but both fail on the
-    /// two ways it stops being code at all. A placeholder is read line by line,
-    /// because BOTH spellings of one are three characters a range operator also
-    /// spells - see `elision(in:)` - and because a line number is what makes a
-    /// failure findable in a block forty lines long.
-    func testEverySamplesCodeIsCodeRatherThanASketch() {
-        for group in catalog().groups {
-            for sample in group.samples {
-                let lines = sample.code.split(separator: "\n", omittingEmptySubsequences: false)
-
-                for (index, line) in lines.enumerated() {
-                    if let placeholder = elision(in: String(line)) {
-                        XCTFail("\(sample.id) line \(index + 1) elides with `\(placeholder)` "
-                                + "rather than showing what it runs: \(line)")
-                    }
-                }
-
-                for (opening, closing) in [("{", "}"), ("(", ")"), ("[", "]")] {
-                    XCTAssertEqual(
-                        sample.code.count(of: opening), sample.code.count(of: closing),
-                        "\(sample.id) has unbalanced \(opening)\(closing) - the snippet "
-                        + "stops before the code it shows does")
-                }
-            }
-        }
-    }
-
     /// A snippet that PLACES a child in a grid has to show the grid.
     ///
     /// `.gridRow(1)` on a top-level view is the shape a sample falls into when
@@ -952,10 +819,10 @@ final class CatalogTests: XCTestCase {
 
             read += 1
 
-            // The listing is written INSIDE the file, so what the file says
-            // less what the listing says is what the example actually takes.
+            // The listing is cut from the file's own code, so every reading the
+            // file takes stands in it.
             let shown = occurrences(of: "DebugInfoLabel()", in: sample.code)
-            let taken = occurrences(of: "DebugInfoLabel()", in: text) - shown
+            let taken = occurrences(of: "DebugInfoLabel()", in: text)
 
             XCTAssertEqual(
                 taken, shown,

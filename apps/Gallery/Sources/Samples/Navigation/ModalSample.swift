@@ -2,55 +2,19 @@ import StateUI
 
 /// A native modal stack owned by application state.
 struct ModalSample: SampleContent, ExampleContent {
+    // listing: ModalSample
     let nav: Navigation
+    // listing: end
 
     static let id = "modal"
     static let title = "Presenting over everything"
     static let summary = "One array drives the platform's native modal stack."
 
-    static let code = """
-        enum Sheet: Hashable {
-            case settings
-        }
-
-        struct MainPage: View {
-            @State private var sheets: [Sheet] = []
-
-            // The sheets stand over the window's page, the last on top.
-            var body: some View {
-                ModalStack($sheets) {
-                    HomePage(sheets: $sheets)
-                } destination: { _ in
-                    SettingsPage(sheets: $sheets)
-                }
-            }
-        }
-
-        struct HomePage: View {
-            @Binding var sheets: [Sheet]
-
-            var body: some View {
-                VStack {
-                    DebugInfoLabel()
-
-                    Button("Present")
-                        .onClicked { sheets.append(.settings) }
-                }
-            }
-        }
-
-        struct SettingsPage: View {
-            @Binding var sheets: [Sheet]
-
-            var body: some View {
-                Button("Close")
-                    .onClicked { sheets.removeLast() }
-            }
-        }
-        """
+    static var code: String { Listings.joined("Navigation.sheets", "MainPage.modal", "ModalPage", "ModalSample") }
 
     var notes: (any View)? { nil }
 
+    // listing: ModalSample
     var body: some View {
         VStack {
             DebugInfoLabel()
@@ -71,4 +35,5 @@ struct ModalSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 }

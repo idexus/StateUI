@@ -2,56 +2,23 @@ import StateUI
 
 /// The same countdown as Task.sleep, out of the library's own timer.
 struct TickerSample: SampleContent, ExampleContent {
+    // listing: TickerSample
     /// `@State` keeps the instance across renders; a tick asks for the render
     /// itself, naming the ticker - so the views that read it are rebuilt and
     /// the rest of the tree is left alone. Nothing here subscribes to anything.
     @State private var ticker = Ticker(every: .seconds(1), limit: 30)
+    // listing: end
 
     static let id = "ticker"
     static let title = "Ticker"
     static let summary = "The same countdown from the library's timer - a loop the "
         + "library owns, safe from any thread."
 
-    static let code = """
-        @State private var ticker = Ticker(every: .seconds(1), limit: 30)
-
+    // listing: TickerSample
+    var body: some View {
         VStack {
             // The tick is read here, so every second builds this closure -
             // which is what a clock costs when its digits are described.
-            DebugInfoLabel()
-
-            Text("\\((ticker.limit ?? 0) - ticker.ticks)")
-
-            ProgressBar(remaining)
-
-            HStack {
-                Button(ticker.isRunning ? "Stop" : "Start")
-                    .onClicked { ticker.isRunning ? ticker.stop() : ticker.start() }
-
-                Button("Reset")
-                    .onClicked { ticker.reset() }
-            }
-
-            HStack {
-                ForEach([10, 30, 60]) { length in
-                    Button("\\(length)s")
-                        .onClicked {
-                            ticker.reset()
-                            ticker.limit = length
-                        }
-                }
-            }
-        }
-        .onDestroying { ticker.stop() }
-
-        var remaining: Double {
-            let total = ticker.limit ?? 0
-            return total == 0 ? 0 : Double(total - ticker.ticks) / Double(total)
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             Text("\((ticker.limit ?? 0) - ticker.ticks)")
@@ -94,6 +61,7 @@ struct TickerSample: SampleContent, ExampleContent {
         .spacing(12)
         .onDestroying { ticker.stop() }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -121,10 +89,12 @@ struct TickerSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: TickerSample
     /// How much of the countdown is left, as a fraction for the bar.
     private var remaining: Double {
         let total = ticker.limit ?? 0
 
         return total == 0 ? 0 : Double(total - ticker.ticks) / Double(total)
     }
+    // listing: end
 }

@@ -4,6 +4,7 @@
 import GalleryUI
 import StateUIAndroid
 
+// listing: InteropActsSample.Android.load.swift
 // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
 // says what it answers for the application - the controls it realizes, the acts it performs, the events it raises,
 // each in Host/ beside this file - and the host registers the native methods its activity calls.
@@ -17,3 +18,4 @@ public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMu
     }
     return StateUIAndroid.load(machine)
 }
+// listing: end

@@ -2,56 +2,20 @@ import StateUI
 
 /// A time of day in a picker - bound, and one-way with the write back by hand.
 struct TimePickerSample: SampleContent, ExampleContent {
+    // listing: TimePickerSample
     @State private var alarm = ClockTime(hour: 7, minute: 30)
     @State private var picks = 0
+    // listing: end
 
     static let id = "timePicker"
     static let title = "TimePicker"
     static let summary = "A time of day - three integers, the way a date is three integers."
 
-    static let code = """
-        @State private var alarm = ClockTime(hour: 7, minute: 30)
-        @State private var picks = 0
-
+    // listing: TimePickerSample
+    var body: some View {
         VStack {
             // `alarm` is printed below, so picking a time builds this closure;
             // the picker itself is handed the state.
-            DebugInfoLabel()
-
-            TimePicker($alarm)
-                .format("t")
-
-            Text("Alarm at \\(alarm.text)")
-
-            HStack {
-                Button("Morning")
-                    .onClicked { alarm = ClockTime(hour: 7, minute: 30) }
-
-                Button("Lunch")
-                    .onClicked { alarm = ClockTime(hour: 12, minute: 0) }
-
-                Button("Evening")
-                    .onClicked { alarm = ClockTime(hour: 21, minute: 5) }
-            }
-
-            // The same time, one-way: `.time` is what puts it in the field,
-            // and the write back is by hand.
-            TimePicker()
-                .time(alarm)
-                .format("t")
-                .onTimeChanged { time in
-                    alarm = time
-                    picks += 1
-                }
-
-            Text(picks == 0
-                ? "onTimeChanged has not fired"
-                : "onTimeChanged: \\(alarm.text), \\(picks) so far")
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             TimePicker($alarm)
@@ -84,6 +48,8 @@ struct TimePickerSample: SampleContent, ExampleContent {
 
             SectionTitle("One-way, written back by hand")
 
+            // The same time, one-way: `.time` is what puts it in the field,
+            // and the write back is by hand.
             TimePicker()
                 .accessibilityIdentifier("timePicker.alarm.oneWay")
                 .accessibilityLabel("Alarm, written back by hand")
@@ -102,6 +68,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

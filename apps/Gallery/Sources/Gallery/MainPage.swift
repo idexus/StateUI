@@ -55,11 +55,17 @@ struct MainPage: View {
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
     var body: some View {
+        // listing: MainPage.modal
         // What is over all of it: the pages presented over the split view, the
         // stack and the bars alike - empty almost always: presenting is
         // `sheets.append`, and a sheet the user drags down shortens the array
         // itself.
         ModalStack(nav.$sheets) {
+        // listing: end
+            // listing: MainPage.modal
+            // The split view, its bars and its pages - all the window shows.
+            // listing: end
+            // listing: MainPage.split
             SplitView(nav.$menuOpen) {
                 MenuPage(
                     catalog: catalog,
@@ -69,6 +75,8 @@ struct MainPage: View {
             } detail: {
                 detail()
             }
+            // listing: end
+            // listing: MainPage.bar
             // The gallery's own actions, declared once around every page: a page's
             // own stand nearer the title, and these keep their place at the edge.
             // Icons give both a stable native footprint; their captions remain
@@ -94,16 +102,20 @@ struct MainPage: View {
             .barTitle("StateUI")
             .barSubtitle(bar.subtitle)
             .barIcon("stateui_mark.png")
+            // listing: end
             // The bars of both panes, in the gallery's accent; their foreground
             // stays white against it in both themes.
             .barBackgroundColor(barColour)
             .barForegroundColor(Palette.onBrand)
+            // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
                 if nav.windowNotice {
                     WindowNotice(words: "Over every page", shown: nav.$windowNotice)
                 }
             }
+            // listing: end
+            // listing: MainPage.created
             // A size and a minimum: the size is the window's as it opens, the
             // minimum how small the user may drag it before the layout stops
             // making sense. A phone ignores both, an app there being the whole
@@ -133,11 +145,15 @@ struct MainPage: View {
 
                 log.note("created")
             }
+            // listing: end
+        // listing: MainPage.modal
         } destination: { _ in
             ModalPage(nav: nav)
         }
+        // listing: end
     }
 
+    // listing: MainPage.detail
     /// The other half of the split view: the section, arranged the way that section
     /// wants to be.
     ///
@@ -159,6 +175,7 @@ struct MainPage: View {
             }
         }
     }
+    // listing: end
 
     /// The page under everything, for the section the menu chose.
     ///
@@ -219,6 +236,7 @@ struct MainPage: View {
         }
     }
 
+    // listing: MainPage.tabs
     /// The one section that is not a stack: a `TabView` over the author's own
     /// enum, with a stack inside the first tab.
     func tabs() -> some View {
@@ -246,6 +264,7 @@ struct MainPage: View {
         }
         .selection(nav.$tab)
     }
+    // listing: end
 
     // MARK: - The window's own chrome
 
