@@ -1,49 +1,49 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.style: ✅
-ActivityIndicator.zIndex: not realized
-Button.pivotY: ✅
+ActivityIndicator.translationY: ✅
+Button.pivotX: ✅
 Canvas.style: ✅
-Canvas.zIndex: not realized
-CheckBox.pivotY: ✅
+Canvas.translationY: ✅
+CheckBox.pivotX: ✅
 ColorBox.style: ✅
-ColorBox.zIndex: not realized
-DatePicker.pivotY: ✅
+ColorBox.translationY: ✅
+DatePicker.pivotX: ✅
 Ellipse.style: ✅
-Ellipse.zIndex: not realized
-Grid.pivotY: ✅
+Ellipse.translationY: ✅
+Grid.pivotX: ✅
 HStack.style: ✅
-HStack.zIndex: not realized
-Image.pivotY: ✅
+HStack.translationY: ✅
+Image.pivotX: ✅
 ItemsView.style: not realized
-ItemsView.zIndex: not realized
+ItemsView.translationY: ✅
 Line.style: ✅
-Line.zIndex: not realized
-Map.pivotY: 🧩
+Line.translationY: ✅
+Map.pivotX: 🧩
 Path.style: ✅
-Path.zIndex: not realized
-Picker.pivotY: ✅
+Path.translationY: ✅
+Picker.pivotX: ✅
 Polygon.style: ✅
-Polygon.zIndex: not realized
-Polyline.pivotY: ✅
+Polygon.translationY: ✅
+Polyline.pivotX: ✅
 ProgressBar.style: ✅
-ProgressBar.zIndex: not realized
-RadioButton.pivotY: ✅
+ProgressBar.translationY: ✅
+RadioButton.pivotX: ✅
 Rectangle.style: ✅
-Rectangle.zIndex: not realized
-ScrollView.pivotY: ✅
+Rectangle.translationY: ✅
+ScrollView.pivotX: ✅
 SearchField.style: ✅
-SearchField.zIndex: not realized
-Slider.pivotY: ✅
+SearchField.translationY: ✅
+Slider.pivotX: ✅
 Stepper.style: ✅
-Stepper.zIndex: not realized
-Switch.pivotY: ✅
-Text.pivotY: ✅
+Stepper.translationY: ✅
+Switch.pivotX: ✅
+Text.pivotX: ✅
 TextEditor.style: ✅
-TextEditor.zIndex: not realized
-TextField.pivotY: ✅
+TextEditor.translationY: ✅
+TextField.pivotX: ✅
 TimePicker.style: ✅
-TimePicker.zIndex: not realized
-VStack.pivotY: ✅
+TimePicker.translationY: ✅
+VStack.pivotX: ✅
 WebView.style: ✅
-WebView.zIndex: not realized
-ZStack.pivotY: ✅
+WebView.translationY: ✅
+ZStack.pivotX: ✅

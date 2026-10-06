@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -32,7 +32,7 @@ ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the 
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
-ActivityIndicator.zIndex: not realized
+ActivityIndicator.zIndex: ✅
 Button.accessibilityHeading: ✅
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
@@ -66,7 +66,7 @@ Button.translationX: ✓ read translationX of Button: the host's own transform: 
 Button.translationY: ✓ read translationY of Button: the host's own transform: GTK reads back no part of one
 Button.unfocus: ✅
 Button.width: ✅
-Button.zIndex: not realized
+Button.zIndex: ✅
 Canvas.accessibilityHeading: ✅
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
@@ -100,7 +100,7 @@ Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: 
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
-Canvas.zIndex: not realized
+Canvas.zIndex: ✅
 CheckBox.accessibilityHeading: ✅
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
@@ -134,7 +134,7 @@ CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transfo
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.unfocus: ✅
 CheckBox.width: ✅
-CheckBox.zIndex: not realized
+CheckBox.zIndex: ✅
 ColorBox.accessibilityHeading: ✅
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
@@ -168,7 +168,7 @@ ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transfo
 ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
-ColorBox.zIndex: not realized
+ColorBox.zIndex: ✅
 DatePicker.accessibilityHeading: ✅
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
@@ -202,7 +202,7 @@ DatePicker.translationX: ✓ read translationX of DatePicker: the host's own tra
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.unfocus: ✅
 DatePicker.width: ✅
-DatePicker.zIndex: not realized
+DatePicker.zIndex: ✅
 Ellipse.accessibilityHeading: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
@@ -236,7 +236,7 @@ Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
-Ellipse.zIndex: not realized
+Ellipse.zIndex: ✅
 Grid.accessibilityHeading: ✅
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
@@ -270,7 +270,7 @@ Grid.translationX: ✓ read translationX of Grid: the host's own transform: GTK 
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: GTK reads back no part of one
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
-Grid.zIndex: not realized
+Grid.zIndex: ✅
 HStack.accessibilityHeading: ✅
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
@@ -304,7 +304,7 @@ HStack.translationX: ✓ read translationX of HStack: the host's own transform: 
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: GTK reads back no part of one
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
-HStack.zIndex: not realized
+HStack.zIndex: ✅
 Image.accessibilityHeading: ✅
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
@@ -338,7 +338,7 @@ Image.translationX: ✓ read translationX of Image: the host's own transform: GT
 Image.translationY: ✓ read translationY of Image: the host's own transform: GTK reads back no part of one
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
-Image.zIndex: not realized
+Image.zIndex: ✅
 ItemsView.accessibilityHeading: ✅
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
@@ -372,7 +372,7 @@ ItemsView.translationX: ✓ read translationX of ItemsView: the host's own trans
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.unfocus: ✅
 ItemsView.width: ✅
-ItemsView.zIndex: not realized
+ItemsView.zIndex: ✅
 Line.accessibilityHeading: ✅
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
@@ -406,7 +406,7 @@ Line.translationX: ✓ read translationX of Line: the host's own transform: GTK 
 Line.translationY: ✓ read translationY of Line: the host's own transform: GTK reads back no part of one
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.width: ✅
-Line.zIndex: not realized
+Line.zIndex: ✅
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
@@ -474,7 +474,7 @@ Path.translationX: ✓ read translationX of Path: the host's own transform: GTK 
 Path.translationY: ✓ read translationY of Path: the host's own transform: GTK reads back no part of one
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
-Path.zIndex: not realized
+Path.zIndex: ✅
 Picker.accessibilityHeading: ✅
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
@@ -508,7 +508,7 @@ Picker.translationX: ✓ read translationX of Picker: the host's own transform: 
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: GTK reads back no part of one
 Picker.unfocus: ✅
 Picker.width: ✅
-Picker.zIndex: not realized
+Picker.zIndex: ✅
 Polygon.accessibilityHeading: ✅
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
@@ -542,7 +542,7 @@ Polygon.translationX: ✓ read translationX of Polygon: the host's own transform
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
-Polygon.zIndex: not realized
+Polygon.zIndex: ✅
 Polyline.accessibilityHeading: ✅
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
@@ -576,7 +576,7 @@ Polyline.translationX: ✓ read translationX of Polyline: the host's own transfo
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
-Polyline.zIndex: not realized
+Polyline.zIndex: ✅
 ProgressBar.accessibilityHeading: ✅
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
@@ -610,7 +610,7 @@ ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own t
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
-ProgressBar.zIndex: not realized
+ProgressBar.zIndex: ✅
 RadioButton.accessibilityHeading: ✅
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
@@ -644,7 +644,7 @@ RadioButton.translationX: ✓ read translationX of RadioButton: the host's own t
 RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.unfocus: ✅
 RadioButton.width: ✅
-RadioButton.zIndex: not realized
+RadioButton.zIndex: ✅
 Rectangle.accessibilityHeading: ✅
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
@@ -678,7 +678,7 @@ Rectangle.translationX: ✓ read translationX of Rectangle: the host's own trans
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
-Rectangle.zIndex: not realized
+Rectangle.zIndex: ✅
 ScrollView.accessibilityHeading: ✅
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
@@ -712,7 +712,7 @@ ScrollView.translationX: ✓ read translationX of ScrollView: the host's own tra
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.unfocus: ✅
 ScrollView.width: ✅
-ScrollView.zIndex: not realized
+ScrollView.zIndex: ✅
 SearchField.accessibilityHeading: ✅
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
@@ -746,7 +746,7 @@ SearchField.translationX: ✓ read translationX of SearchField: the host's own t
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.unfocus: ✅
 SearchField.width: ✅
-SearchField.zIndex: not realized
+SearchField.zIndex: ✅
 Slider.accessibilityHeading: ✅
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
@@ -780,7 +780,7 @@ Slider.translationX: ✓ read translationX of Slider: the host's own transform: 
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: GTK reads back no part of one
 Slider.unfocus: ✅
 Slider.width: ✅
-Slider.zIndex: not realized
+Slider.zIndex: ✅
 Stepper.accessibilityHeading: ✅
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
@@ -814,7 +814,7 @@ Stepper.translationX: ✓ read translationX of Stepper: the host's own transform
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.unfocus: ✅
 Stepper.width: ✅
-Stepper.zIndex: not realized
+Stepper.zIndex: ✅
 Switch.accessibilityHeading: ✅
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
@@ -848,7 +848,7 @@ Switch.translationX: ✓ read translationX of Switch: the host's own transform: 
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: GTK reads back no part of one
 Switch.unfocus: ✅
 Switch.width: ✅
-Switch.zIndex: not realized
+Switch.zIndex: ✅
 Text.accessibilityHeading: ✅
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
@@ -882,7 +882,7 @@ Text.translationX: ✓ read translationX of Text: the host's own transform: GTK 
 Text.translationY: ✓ read translationY of Text: the host's own transform: GTK reads back no part of one
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.width: ✅
-Text.zIndex: not realized
+Text.zIndex: ✅
 TextEditor.accessibilityHeading: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
@@ -916,7 +916,7 @@ TextEditor.translationX: ✓ read translationX of TextEditor: the host's own tra
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.unfocus: ✅
 TextEditor.width: ✅
-TextEditor.zIndex: not realized
+TextEditor.zIndex: ✅
 TextField.accessibilityHeading: ✅
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
@@ -950,7 +950,7 @@ TextField.translationX: ✓ read translationX of TextField: the host's own trans
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: GTK reads back no part of one
 TextField.unfocus: ✅
 TextField.width: ✅
-TextField.zIndex: not realized
+TextField.zIndex: ✅
 TimePicker.accessibilityHeading: ✅
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
@@ -984,7 +984,7 @@ TimePicker.translationX: ✓ read translationX of TimePicker: the host's own tra
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.unfocus: ✅
 TimePicker.width: ✅
-TimePicker.zIndex: not realized
+TimePicker.zIndex: ✅
 VStack.accessibilityHeading: ✅
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
@@ -1018,7 +1018,7 @@ VStack.translationX: ✓ read translationX of VStack: the host's own transform: 
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: GTK reads back no part of one
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
-VStack.zIndex: not realized
+VStack.zIndex: ✅
 WebView.accessibilityHeading: ✅
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
@@ -1052,7 +1052,7 @@ WebView.translationX: ✓ read translationX of WebView: the host's own transform
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: GTK reads back no part of one
 WebView.unfocus: ✅
 WebView.width: ✅
-WebView.zIndex: not realized
+WebView.zIndex: ✅
 ZStack.accessibilityHeading: ✅
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
@@ -1086,4 +1086,4 @@ ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: 
 ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.width: ✅
-ZStack.zIndex: not realized
+ZStack.zIndex: ✅

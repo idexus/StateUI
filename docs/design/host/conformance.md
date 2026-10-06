@@ -99,7 +99,8 @@ platform holds nothing of - a value no control of it keeps, its effect proven
 by another case - the driver lists apart (`platformHasNone`, or a read's
 `because:`): a case needing it does not apply there. Besides a
 member's value a driver reads a view's menu, whether it holds the keyboard,
-what a press at a point reaches, the question the window shows, what the
+what a press at a point reaches, the order a layout's children are drawn in
+as its native view holds them, the question the window shows, what the
 screen reader was told, the colour StateUI draws at a point - never a native
 control's look - the host's log and what it keeps; each read a host does not
 have yet is its driver's "cannot". A case's first start of an application is

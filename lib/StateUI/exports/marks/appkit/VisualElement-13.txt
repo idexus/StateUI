@@ -1,36 +1,36 @@
-# revision 1.1
-ActivityIndicator.isAccessibilityHidden: ✅
-Button.accessibilityLabel: ✅
+# revision 2.1
+ActivityIndicator.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
+Button.zIndex: ✅
 Canvas.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.width: ✅
 ColorBox.isVisible: ✅
-ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.scale: ✓ read scale of DatePicker: the host's own transform, checked against the layer it composed itself
-Ellipse.rotation: ✓ read rotation of Ellipse: the host's own transform, checked against the layer it composed itself
-Grid.layoutDirection: ✅
-HStack.isAccessibilityHidden: ✅
-Image.accessibilityLabel: ✅
+ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
+Ellipse.pivotY: ✓ read pivotY of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.background: ✅
+HStack.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
+Image.zIndex: ✅
 ItemsView.frame: ✅
 Line.isVisible: ✅
-Line.translationX: ✓ read translationX of Line: the host's own transform, checked against the layer it composed itself
-Map.scale: ✓ read scale of Map: the host's own transform, checked against the layer it composed itself
-Path.rotation: ✓ read rotation of Path: the host's own transform, checked against the layer it composed itself
-Picker.layoutDirection: ✅
-Polygon.isAccessibilityHidden: ✅
-Polyline.accessibilityLabel: ✅
+Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
+Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
+Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
+Picker.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+Polygon.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
+Polyline.zIndex: ✅
 ProgressBar.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.width: ✅
 Rectangle.isVisible: ✅
-Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.scale: ✓ read scale of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.rotation: ✓ read rotation of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.layoutDirection: ✅
-Stepper.isAccessibilityHidden: ✅
-Switch.accessibilityLabel: ✅
+Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+Stepper.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
+Switch.zIndex: ✅
 Text.frameChanged: ✅
 Text.height: ✅
 Text.width: ✅
@@ -39,7 +39,7 @@ TextField.frameChanged: ✅
 TextField.height: ✅
 TextField.width: ✅
 TimePicker.isVisible: ✅
-TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
-WebView.rotation: ✓ read rotation of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.layoutDirection: ✅
+TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.rotationY: ✓ read rotationY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.background: ✅

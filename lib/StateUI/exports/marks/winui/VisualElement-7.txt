@@ -1,49 +1,49 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.frame: ✅
-ActivityIndicator.translationX: ✅
-Button.layoutDirection: ✅
+ActivityIndicator.scaleY: ✅
+Button.background: ✅
 Canvas.frame: ✅
-Canvas.translationX: ✅
-CheckBox.layoutDirection: ✅
+Canvas.scaleY: ✅
+CheckBox.background: ✅
 ColorBox.frame: ✅
-ColorBox.translationX: ✅
-DatePicker.layoutDirection: ✅
+ColorBox.scaleY: ✅
+DatePicker.background: not realized
 Ellipse.frame: ✅
-Ellipse.translationX: ✅
-Grid.layoutDirection: ✓ read layoutDirection of Grid: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Ellipse.scaleY: ✅
+Grid.background: ✅
 HStack.frame: ✅
-HStack.translationX: ✅
-Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+HStack.scaleY: ✅
+Image.background: not realized
 ItemsView.frame: ✅
-ItemsView.translationX: ✅
+ItemsView.scaleY: ✅
 Line.frame: ✅
-Line.translationX: ✅
-Map.layoutDirection: 🧩
+Line.scaleY: ✅
+Map.background: 🧩
 Path.frame: ✅
-Path.translationX: ✅
-Picker.layoutDirection: ✅
+Path.scaleY: ✅
+Picker.background: not realized
 Polygon.frame: ✅
-Polygon.translationX: ✅
-Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Polygon.scaleY: ✅
+Polyline.background: not realized
 ProgressBar.frame: ✅
-ProgressBar.translationX: ✅
-RadioButton.layoutDirection: ✅
+ProgressBar.scaleY: ✅
+RadioButton.background: ✅
 Rectangle.frame: ✅
-Rectangle.translationX: ✅
-ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Rectangle.scaleY: ✅
+ScrollView.background: ✅
 SearchField.frame: ✅
-SearchField.translationX: ✅
-Slider.layoutDirection: ✅
+SearchField.scaleY: ✅
+Slider.background: not realized
 Stepper.frame: ✅
-Stepper.translationX: ✅
-Switch.layoutDirection: ✅
-Text.layoutDirection: ✅
+Stepper.scaleY: ✅
+Switch.background: ✅
+Text.background: ✅
 TextEditor.frame: ✅
-TextEditor.translationX: ✅
-TextField.layoutDirection: ✅
+TextEditor.scaleY: ✅
+TextField.background: not realized
 TimePicker.frame: ✅
-TimePicker.translationX: ✅
-VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+TimePicker.scaleY: ✅
+VStack.background: ✅
 WebView.frame: ✅
-WebView.translationX: ✅
-ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+WebView.scaleY: ✅
+ZStack.background: ✅

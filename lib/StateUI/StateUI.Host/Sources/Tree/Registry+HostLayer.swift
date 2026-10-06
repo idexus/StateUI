@@ -8,7 +8,7 @@
 /// Design: docs/design/host/tree.md#what-every-element-realizes
 extension Registry {
     /// A view's place in its layout, by the layout arithmetic: its stated sizes and bounds, its margin, its
-    /// alignment, its grid cell and its area.
+    /// alignment, its grid cell, its area, and its depth among siblings it overlaps (`MountedElement.children`).
     public func everyElementTakesItsPlace() {
         everyElementRealizes(VisualElementContract.width)
         everyElementRealizes(VisualElementContract.height)
@@ -24,6 +24,7 @@ extension Registry {
         everyElementRealizes(ViewContract.gridRowSpan)
         everyElementRealizes(ViewContract.gridColumnSpan)
         everyElementRealizes(ViewContract.area)
+        everyElementRealizes(VisualElementContract.zIndex)
     }
 
     /// A view drawn moved, turned and scaled over its place (`MountedElement.drawingTransform`).

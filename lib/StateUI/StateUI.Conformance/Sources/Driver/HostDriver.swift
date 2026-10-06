@@ -80,6 +80,9 @@
     /// everything its window shows over it.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool
 
+    /// The children of `layout` in the order its toolkit draws them, back to front, as its native view holds them.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement]
+
     /// The question the window of `element` shows now; nil where it shows none.
     func question(over element: MountedElement) throws -> Question?
 
@@ -149,6 +152,10 @@ extension HostDriver {
 
     public func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
         throw DriverCannot("read what reaches \(element.type.name)")
+    }
+
+    public func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        throw DriverCannot("read the drawing order of \(layout.type.name)")
     }
 
     public func question(over element: MountedElement) throws -> Question? {

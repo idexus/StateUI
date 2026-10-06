@@ -344,6 +344,7 @@ WebView
   translationY
   verticalAlignment
   width
+  zIndex
   dragEnded()
   dragLeave()
   dragOver()

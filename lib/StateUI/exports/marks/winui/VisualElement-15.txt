@@ -1,49 +1,49 @@
-# revision 1.1
-ActivityIndicator.background: not realized
+# revision 2.1
+ActivityIndicator.automationExcludedWithChildren: ✅
 Button.ignoresInput: ✅
-Button.scaleY: ✅
-Canvas.background: not realized
+Button.scaleX: ✅
+Canvas.automationExcludedWithChildren: ✅
 CheckBox.ignoresInput: ✅
-CheckBox.scaleY: ✅
-ColorBox.background: not realized
+CheckBox.scaleX: ✅
+ColorBox.automationExcludedWithChildren: ✅
 DatePicker.ignoresInput: ✅
-DatePicker.scaleY: ✅
-Ellipse.background: not realized
+DatePicker.scaleX: ✅
+Ellipse.automationExcludedWithChildren: ✅
 Grid.ignoresInput: ✅
-Grid.scaleY: ✅
-HStack.background: ✅
+Grid.scaleX: ✅
+HStack.automationExcludedWithChildren: ✅
 Image.ignoresInput: not realized
-Image.scaleY: ✅
-ItemsView.background: not realized
-Line.background: not realized
+Image.scaleX: ✅
+ItemsView.automationExcludedWithChildren: ✅
+Line.automationExcludedWithChildren: ✅
 Map.ignoresInput: 🧩
-Map.scaleY: 🧩
-Path.background: not realized
+Map.scaleX: 🧩
+Path.automationExcludedWithChildren: ✅
 Picker.ignoresInput: ✅
-Picker.scaleY: ✅
-Polygon.background: not realized
+Picker.scaleX: ✅
+Polygon.automationExcludedWithChildren: ✅
 Polyline.ignoresInput: not realized
-Polyline.scaleY: ✅
-ProgressBar.background: not realized
+Polyline.scaleX: ✅
+ProgressBar.automationExcludedWithChildren: ✅
 RadioButton.ignoresInput: ✅
-RadioButton.scaleY: ✅
-Rectangle.background: not realized
+RadioButton.scaleX: ✅
+Rectangle.automationExcludedWithChildren: ✅
 ScrollView.ignoresInput: ✅
-ScrollView.scaleY: ✅
-SearchField.background: not realized
+ScrollView.scaleX: ✅
+SearchField.automationExcludedWithChildren: ✅
 Slider.ignoresInput: ✅
-Slider.scaleY: ✅
-Stepper.background: not realized
+Slider.scaleX: ✅
+Stepper.automationExcludedWithChildren: ✅
 Switch.ignoresInput: ✅
-Switch.scaleY: ✅
+Switch.scaleX: ✅
 Text.ignoresInput: ✅
-Text.scaleY: ✅
-TextEditor.background: not realized
+Text.scaleX: ✅
+TextEditor.automationExcludedWithChildren: ✅
 TextField.ignoresInput: ✅
-TextField.scaleY: ✅
-TimePicker.background: not realized
+TextField.scaleX: ✅
+TimePicker.automationExcludedWithChildren: ✅
 VStack.ignoresInput: ✅
-VStack.scaleY: ✅
-WebView.background: not realized
+VStack.scaleX: ✅
+WebView.automationExcludedWithChildren: ✅
 ZStack.ignoresInput: ✅
-ZStack.scaleY: ✅
+ZStack.scaleX: ✅

@@ -24,6 +24,24 @@ extension WebDriver {
             """, on: view.node)
     }
 
+    /// The layout's children by where the page paints each one's node among the layout node's children: by its
+    /// z-index, then its place in the document - the last painted last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let parent = (layout.native as? WebElement)?.view else { throw cannot }
+        try WebBrowser.run("window.stateuiLayout = e", on: parent.node)
+        return try layout.children.map { child in
+            guard let node = (child.native as? WebElement)?.view?.node else { throw cannot }
+            let key = try numbers("""
+                ((n) => { const p = window.stateuiLayout; while (n && n.parentElement !== p) n = n.parentElement; \
+                return n ? [parseInt(getComputedStyle(n).zIndex) || 0, [...p.children].indexOf(n)] : []; })(e)
+                """, on: node)
+            guard key.count == 2 else { throw cannot }
+            return (child, key[0], key[1])
+        }
+        .sorted { ($0.1, $0.2) < ($1.1, $1.2) }.map(\.0)
+    }
+
     func place(of element: MountedElement) throws -> Rect {
         let view = try self.view(of: element, reading: .frame)
         let numbers = try numbers("stateui.box(e)", on: view.node)

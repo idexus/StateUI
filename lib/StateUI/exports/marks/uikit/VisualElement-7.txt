@@ -1,45 +1,45 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.width: ✅
 Canvas.isVisible: ✅
-Canvas.translationX: ✓ read translationX of Canvas: the host's own transform, checked against the layer it composed itself
-CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself
-ColorBox.rotation: ✓ read rotation of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.layoutDirection: ✅
-Ellipse.isAccessibilityHidden: ✅
-Grid.accessibilityLabel: ✅
+Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform, checked against the layer it composed itself
+CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform, checked against the layer it composed itself
+ColorBox.pivotY: ✓ read pivotY of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.background: not realized
+Ellipse.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
+Grid.zIndex: ✅
 HStack.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
 Image.width: ✅
 ItemsView.isVisible: ✅
-ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform, checked against the layer it composed itself
-Line.rotation: ✓ read rotation of Line: the host's own transform, checked against the layer it composed itself
-Map.layoutDirection: ✅
-Path.isAccessibilityHidden: ✅
-Picker.accessibilityLabel: ✅
+ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself
+Line.pivotY: ✓ read pivotY of Line: the host's own transform, checked against the layer it composed itself
+Map.background: not realized
+Path.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
+Picker.zIndex: ✅
 Polygon.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.width: ✅
 ProgressBar.isVisible: ✅
-ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.scale: ✓ read scale of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.layoutDirection: ✅
-SearchField.isAccessibilityHidden: ✅
-Slider.accessibilityLabel: ✅
+ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.background: ✅
+SearchField.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
+Slider.zIndex: ✅
 Stepper.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.width: ✅
-Text.scale: ✓ read scale of Text: the host's own transform, checked against the layer it composed itself
+Text.rotationY: ✓ read rotationY of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.isVisible: ✅
-TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.layoutDirection: ✅
-WebView.isAccessibilityHidden: ✅
-ZStack.accessibilityLabel: ✅
+TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.pivotY: ✓ read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.background: ✅
+WebView.accessibilityHeading: cannot read a heading's level - UIKit marks a heading, not its level
+ZStack.zIndex: ✅

@@ -251,6 +251,13 @@ extension WinUIView {
     func reaches(_ x: Double, _ y: Double) -> Bool {
         stateui_winui_reaches(handle, x, y)
     }
+
+    /// Where `child`'s view is drawn among this view's children: its depth, then its place - the higher drawn
+    /// later; nil where it stands in none of them.
+    func drawnPlace(of child: WinUIView) -> (depth: Int32, place: Int32)? {
+        var (depth, place): (Int32, Int32) = (0, 0)
+        return stateui_winui_drawn_place(handle, child.handle, &depth, &place) ? (depth, place) : nil
+    }
 }
 
 extension WinUIButtonView {

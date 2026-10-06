@@ -154,6 +154,12 @@
         try driver.reaches(element, at: point)
     }
 
+    /// The ids of the children of `layout`, in the order its toolkit draws them, back to front.
+    public func drawingOrder(of layout: MountedElement) throws -> [ElementID] {
+        note("read the drawing order of \(layout.type.name)")
+        return try driver.drawingOrder(of: layout).map(\.id)
+    }
+
     /// The question the window shows now; nil where it shows none.
     public func question() throws -> Question? {
         guard let root = tree?.root else { return nil }

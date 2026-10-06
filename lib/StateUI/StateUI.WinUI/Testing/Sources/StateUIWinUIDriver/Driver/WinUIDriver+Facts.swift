@@ -34,6 +34,20 @@ extension WinUIDriver {
         return view.reaches(point.x, point.y)
     }
 
+    /// The layout's children by where each one's view is drawn in its panel: by `Canvas.ZIndex`, then its place
+    /// among the panel's children - the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let panel = (layout.native as? WinUIElement)?.view else { throw cannot }
+        return try layout.children.map { child in
+            guard let view = (child.native as? WinUIElement)?.view, let drawn = panel.drawnPlace(of: view) else {
+                throw cannot
+            }
+            return (child, drawn.depth, drawn.place)
+        }
+        .sorted { ($0.1, $0.2) < ($1.1, $1.2) }.map(\.0)
+    }
+
     func question(over element: MountedElement) throws -> Question? {
         guard let content = try window().content else { return nil }
         return asked(over: content.handle).map { asked in

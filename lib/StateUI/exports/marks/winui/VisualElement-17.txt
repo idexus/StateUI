@@ -1,81 +1,81 @@
-# revision 1.1
-ActivityIndicator.pivotX: ✅
+# revision 2.1
+ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Button.focus: ✅
 Button.isFocusedChanged: ✅
-Button.translationY: ✅
+Button.translationX: ✅
 Button.unfocus: ✅
-Canvas.pivotX: ✅
+Canvas.layoutDirection: ✓ read layoutDirection of Canvas: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 CheckBox.focus: ✅
 CheckBox.isFocusedChanged: ✅
-CheckBox.translationY: ✅
+CheckBox.translationX: ✅
 CheckBox.unfocus: ✅
-ColorBox.pivotX: ✅
+ColorBox.layoutDirection: ✓ read layoutDirection of ColorBox: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 DatePicker.focus: ✅
 DatePicker.isFocusedChanged: ✅
-DatePicker.translationY: ✅
+DatePicker.translationX: ✅
 DatePicker.unfocus: ✅
-Ellipse.pivotX: ✅
+Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.translationY: ✅
+Grid.translationX: ✅
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.pivotX: ✅
+HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-Image.translationY: ✅
+Image.translationX: ✅
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-ItemsView.pivotX: ✅
-Line.pivotX: ✅
+ItemsView.layoutDirection: ✅
+Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Map.focus: 🧩
 Map.isFocusedChanged: 🧩
-Map.translationY: 🧩
+Map.translationX: 🧩
 Map.unfocus: 🧩
-Path.pivotX: ✅
+Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Picker.focus: ✅
 Picker.isFocusedChanged: ✅
-Picker.translationY: ✅
+Picker.translationX: ✅
 Picker.unfocus: ✅
-Polygon.pivotX: ✅
+Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.translationY: ✅
+Polyline.translationX: ✅
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.pivotX: ✅
+ProgressBar.layoutDirection: ✅
 RadioButton.focus: ✅
 RadioButton.isFocusedChanged: ✅
-RadioButton.translationY: ✅
+RadioButton.translationX: ✅
 RadioButton.unfocus: ✅
-Rectangle.pivotX: ✅
+Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.translationY: ✅
+ScrollView.translationX: ✅
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-SearchField.pivotX: ✅
+SearchField.layoutDirection: ✅
 Slider.focus: ✅
 Slider.isFocusedChanged: ✅
-Slider.translationY: ✅
+Slider.translationX: ✅
 Slider.unfocus: ✅
-Stepper.pivotX: ✅
+Stepper.layoutDirection: ✅
 Switch.focus: ✅
 Switch.isFocusedChanged: ✅
-Switch.translationY: ✅
+Switch.translationX: ✅
 Switch.unfocus: ✅
 Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.translationY: ✅
+Text.translationX: ✅
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-TextEditor.pivotX: ✅
+TextEditor.layoutDirection: ✅
 TextField.focus: ✅
 TextField.isFocusedChanged: ✅
-TextField.translationY: ✅
+TextField.translationX: ✅
 TextField.unfocus: ✅
-TimePicker.pivotX: ✅
+TimePicker.layoutDirection: ✅
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.translationY: ✅
+VStack.translationX: ✅
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.pivotX: ✅
+WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.translationY: ✅
+ZStack.translationX: ✅
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

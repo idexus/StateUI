@@ -1,81 +1,81 @@
-# revision 1.1
-ActivityIndicator.isAccessibilityHidden: ✅
+# revision 2.1
+ActivityIndicator.accessibilityHeading: ✅
 Button.frameChanged: ✅
 Button.height: ✅
-Button.scale: ✅
+Button.rotationY: ✓ read rotationY of Button: the host's own tip, checked against the projection it laid on the element
 Button.width: ✅
-Canvas.isAccessibilityHidden: ✅
+Canvas.accessibilityHeading: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
-CheckBox.scale: ✅
+CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own tip, checked against the projection it laid on the element
 CheckBox.width: ✅
-ColorBox.isAccessibilityHidden: ✅
+ColorBox.accessibilityHeading: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
-DatePicker.scale: ✅
+DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own tip, checked against the projection it laid on the element
 DatePicker.width: ✅
-Ellipse.isAccessibilityHidden: ✅
+Ellipse.accessibilityHeading: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
-Grid.scale: ✅
+Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
 Grid.width: ✅
-HStack.isAccessibilityHidden: ✅
+HStack.accessibilityHeading: ✅
 Image.frameChanged: ✅
 Image.height: ✅
-Image.scale: ✅
+Image.rotationY: ✓ read rotationY of Image: the host's own tip, checked against the projection it laid on the element
 Image.width: ✅
-ItemsView.isAccessibilityHidden: ✅
-Line.isAccessibilityHidden: ✅
+ItemsView.accessibilityHeading: ✅
+Line.accessibilityHeading: ✅
 Map.frameChanged: 🧩
 Map.height: 🧩
-Map.scale: 🧩
+Map.rotationY: 🧩
 Map.width: 🧩
-Path.isAccessibilityHidden: ✅
+Path.accessibilityHeading: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
-Picker.scale: ✅
+Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
 Picker.width: ✅
-Polygon.isAccessibilityHidden: ✅
+Polygon.accessibilityHeading: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
-Polyline.scale: ✅
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
 Polyline.width: ✅
-ProgressBar.isAccessibilityHidden: ✅
+ProgressBar.accessibilityHeading: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
-RadioButton.scale: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
 RadioButton.width: ✅
-Rectangle.isAccessibilityHidden: ✅
+Rectangle.accessibilityHeading: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
-ScrollView.scale: ✅
+ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own tip, checked against the projection it laid on the element
 ScrollView.width: ✅
-SearchField.isAccessibilityHidden: ✅
+SearchField.accessibilityHeading: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
-Slider.scale: ✅
+Slider.rotationY: ✓ read rotationY of Slider: the host's own tip, checked against the projection it laid on the element
 Slider.width: ✅
-Stepper.isAccessibilityHidden: ✅
+Stepper.accessibilityHeading: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
-Switch.scale: ✅
+Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
 Switch.width: ✅
 Text.frameChanged: ✅
 Text.height: ✅
-Text.scale: ✅
+Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
 Text.width: ✅
-TextEditor.isAccessibilityHidden: ✅
+TextEditor.accessibilityHeading: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅
-TextField.scale: ✅
+TextField.rotationY: ✓ read rotationY of TextField: the host's own tip, checked against the projection it laid on the element
 TextField.width: ✅
-TimePicker.isAccessibilityHidden: ✅
+TimePicker.accessibilityHeading: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
-VStack.scale: ✅
+VStack.rotationY: ✓ read rotationY of VStack: the host's own tip, checked against the projection it laid on the element
 VStack.width: ✅
-WebView.isAccessibilityHidden: ✅
+WebView.accessibilityHeading: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
-ZStack.scale: ✅
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
 ZStack.width: ✅

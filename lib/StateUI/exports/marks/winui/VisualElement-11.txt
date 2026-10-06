@@ -1,49 +1,49 @@
-# revision 1.1
-ActivityIndicator.accessibilityHint: ✅
+# revision 2.1
+ActivityIndicator.accessibilityLabel: ✅
 Button.opacity: ✅
-Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
-Canvas.accessibilityHint: ✅
+Button.rotation: ✅
+Canvas.accessibilityLabel: ✅
 CheckBox.opacity: ✅
-CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked against the projection it laid on the element
-ColorBox.accessibilityHint: ✅
+CheckBox.rotation: ✅
+ColorBox.accessibilityLabel: ✅
 DatePicker.opacity: ✅
-DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own tip, checked against the projection it laid on the element
-Ellipse.accessibilityHint: ✅
+DatePicker.rotation: ✅
+Ellipse.accessibilityLabel: ✅
 Grid.opacity: ✅
-Grid.rotationX: ✓ read rotationX of Grid: the host's own tip, checked against the projection it laid on the element
-HStack.accessibilityHint: ✅
+Grid.rotation: ✅
+HStack.accessibilityLabel: ✅
 Image.opacity: ✅
-Image.rotationX: ✓ read rotationX of Image: the host's own tip, checked against the projection it laid on the element
-ItemsView.accessibilityHint: ✅
-Line.accessibilityHint: ✅
+Image.rotation: ✅
+ItemsView.accessibilityLabel: ✅
+Line.accessibilityLabel: ✅
 Map.opacity: 🧩
-Map.rotationX: 🧩
-Path.accessibilityHint: ✅
+Map.rotation: 🧩
+Path.accessibilityLabel: ✅
 Picker.opacity: ✅
-Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
-Polygon.accessibilityHint: ✅
+Picker.rotation: ✅
+Polygon.accessibilityLabel: ✅
 Polyline.opacity: ✅
-Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
-ProgressBar.accessibilityHint: ✅
+Polyline.rotation: ✅
+ProgressBar.accessibilityLabel: ✅
 RadioButton.opacity: ✅
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own tip, checked against the projection it laid on the element
-Rectangle.accessibilityHint: ✅
+RadioButton.rotation: ✅
+Rectangle.accessibilityLabel: ✅
 ScrollView.opacity: ✅
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
-SearchField.accessibilityHint: ✅
+ScrollView.rotation: ✅
+SearchField.accessibilityLabel: ✅
 Slider.opacity: ✅
-Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
-Stepper.accessibilityHint: ✅
+Slider.rotation: ✅
+Stepper.accessibilityLabel: ✅
 Switch.opacity: ✅
-Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
+Switch.rotation: ✅
 Text.opacity: ✅
-Text.rotationX: ✓ read rotationX of Text: the host's own tip, checked against the projection it laid on the element
-TextEditor.accessibilityHint: ✅
+Text.rotation: ✅
+TextEditor.accessibilityLabel: ✅
 TextField.opacity: ✅
-TextField.rotationX: ✓ read rotationX of TextField: the host's own tip, checked against the projection it laid on the element
-TimePicker.accessibilityHint: ✅
+TextField.rotation: ✅
+TimePicker.accessibilityLabel: ✅
 VStack.opacity: ✅
-VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
-WebView.accessibilityHint: ✅
+VStack.rotation: ✅
+WebView.accessibilityLabel: ✅
 ZStack.opacity: ✅
-ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element
+ZStack.rotation: ✅

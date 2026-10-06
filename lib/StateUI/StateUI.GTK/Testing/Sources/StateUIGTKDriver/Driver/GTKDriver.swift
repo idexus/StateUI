@@ -305,6 +305,26 @@ final class GTKDriver: HostDriver {
         return picked == view.widget || gtk_widget_is_ancestor(picked, view.widget) != 0
     }
 
+    /// The layout's children by where each one's widget stands among its widget's children - GTK snapshots them in
+    /// that order - the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let parent = (layout.native as? GTKElement)?.view?.widget else { throw cannot }
+        var drawn: [UnsafeMutablePointer<GtkWidget>] = []
+        var child = gtk_widget_get_first_child(parent)
+        while let each = child {
+            drawn.append(each)
+            child = gtk_widget_get_next_sibling(each)
+        }
+        return try layout.children.map { child in
+            guard let widget = (child.native as? GTKElement)?.view?.widget,
+                  let place = drawn.firstIndex(where: { $0 == widget || gtk_widget_is_ancestor(widget, $0) != 0 })
+            else { throw cannot }
+            return (child, place)
+        }
+        .sorted { $0.1 < $1.1 }.map(\.0)
+    }
+
     /// Chooses the item at `place` as the user's click does, through the list's own `list.select-item`: alone where
     /// one may be chosen, beside those chosen - as a Ctrl click - where many may.
     private func choose(_ place: Int, in items: GTKItemsView, on element: MountedElement) throws {

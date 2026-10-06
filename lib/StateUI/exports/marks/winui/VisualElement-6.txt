@@ -1,49 +1,49 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.scaleY: ✅
-Button.background: ✅
+ActivityIndicator.scaleX: ✅
+Button.automationExcludedWithChildren: ✅
 Canvas.ignoresInput: ✅
-Canvas.scaleY: ✅
-CheckBox.background: ✅
+Canvas.scaleX: ✅
+CheckBox.automationExcludedWithChildren: ✅
 ColorBox.ignoresInput: not realized
-ColorBox.scaleY: ✅
-DatePicker.background: not realized
+ColorBox.scaleX: ✅
+DatePicker.automationExcludedWithChildren: ✅
 Ellipse.ignoresInput: not realized
-Ellipse.scaleY: ✅
-Grid.background: ✅
+Ellipse.scaleX: ✅
+Grid.automationExcludedWithChildren: ✅
 HStack.ignoresInput: ✅
-HStack.scaleY: ✅
-Image.background: not realized
+HStack.scaleX: ✅
+Image.automationExcludedWithChildren: ✅
 ItemsView.ignoresInput: ✅
-ItemsView.scaleY: ✅
+ItemsView.scaleX: ✅
 Line.ignoresInput: not realized
-Line.scaleY: ✅
-Map.background: 🧩
+Line.scaleX: ✅
+Map.automationExcludedWithChildren: 🧩
 Path.ignoresInput: not realized
-Path.scaleY: ✅
-Picker.background: not realized
+Path.scaleX: ✅
+Picker.automationExcludedWithChildren: ✅
 Polygon.ignoresInput: not realized
-Polygon.scaleY: ✅
-Polyline.background: not realized
+Polygon.scaleX: ✅
+Polyline.automationExcludedWithChildren: ✅
 ProgressBar.ignoresInput: ✅
-ProgressBar.scaleY: ✅
-RadioButton.background: ✅
+ProgressBar.scaleX: ✅
+RadioButton.automationExcludedWithChildren: ✅
 Rectangle.ignoresInput: not realized
-Rectangle.scaleY: ✅
-ScrollView.background: ✅
+Rectangle.scaleX: ✅
+ScrollView.automationExcludedWithChildren: ✅
 SearchField.ignoresInput: ✅
-SearchField.scaleY: ✅
-Slider.background: not realized
+SearchField.scaleX: ✅
+Slider.automationExcludedWithChildren: ✅
 Stepper.ignoresInput: ✅
-Stepper.scaleY: ✅
-Switch.background: ✅
-Text.background: ✅
+Stepper.scaleX: ✅
+Switch.automationExcludedWithChildren: ✅
+Text.automationExcludedWithChildren: ✅
 TextEditor.ignoresInput: ✅
-TextEditor.scaleY: ✅
-TextField.background: not realized
+TextEditor.scaleX: ✅
+TextField.automationExcludedWithChildren: ✅
 TimePicker.ignoresInput: ✅
-TimePicker.scaleY: ✅
-VStack.background: ✅
+TimePicker.scaleX: ✅
+VStack.automationExcludedWithChildren: ✅
 WebView.ignoresInput: ✅
-WebView.scaleY: ✅
-ZStack.background: ✅
+WebView.scaleX: ✅
+ZStack.automationExcludedWithChildren: ✅

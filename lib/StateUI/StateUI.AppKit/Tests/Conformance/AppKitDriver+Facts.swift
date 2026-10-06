@@ -190,6 +190,19 @@ extension AppKitDriver {
         return hit === view || hit.isDescendant(of: view)
     }
 
+    /// The layout's children by where each one's view stands among its view's subviews, the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let parent = (layout.native as? AppKitElement)?.view else { throw cannot }
+        return try layout.children.map { child in
+            guard var view = (child.native as? AppKitElement)?.view else { throw cannot }
+            while let above = view.superview, above !== parent { view = above }
+            guard let place = parent.subviews.firstIndex(where: { $0 === view }) else { throw cannot }
+            return (child, place)
+        }
+        .sorted { $0.1 < $1.1 }.map(\.0)
+    }
+
     /// Menu items as the suite writes them: each by its caption, "!" before one that cannot be chosen, "-" a
     /// separator, a submenu's entries in brackets after its caption, ";" between.
     static func said(_ items: [NSMenuItem]) -> String {

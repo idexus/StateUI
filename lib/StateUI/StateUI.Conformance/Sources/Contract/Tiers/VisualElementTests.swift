@@ -16,7 +16,7 @@
         Specimens.wearing(VisualElementContract.self).flatMap { element in
             [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element),
-                reachable(element), framed(element), focused(element), styled(element),
+                reachable(element), framed(element), focused(element), styled(element), layered(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
@@ -35,7 +35,6 @@
                 Aspects.holds(VisualElementContract.scaleY, on: element, 1, then: 0.5),
                 Aspects.holds(VisualElementContract.translationX, on: element, 0, then: 10),
                 Aspects.holds(VisualElementContract.translationY, on: element, 0, then: -10),
-                Aspects.holds(VisualElementContract.zIndex, on: element, 0, then: 3),
             ]
         }
     }
@@ -57,6 +56,32 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.held(VisualElementContract.isVisible, on: view) == false }
             s.expect(try s.held(VisualElementContract.isVisible, on: view), false)
+        }
+    }
+
+    /// A view stands in front of a sibling it overlaps or behind it as its `zIndex` says, whatever the order they
+    /// were written in - as its toolkit draws them.
+    static func layered(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).standsInTheDepthTheTreeSays", proves: [
+            Covered(VisualElementContract.zIndex, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let depth = State(wrappedValue: 1)
+            s.start(reducesMotion: true) {
+                VStack {
+                    ZStack {
+                        Specimens.view(element, [Write(VisualElementContract.zIndex, depth.wrappedValue)])
+                        ColorBox(.blue).id("cover")
+                    }
+                    .width(120).height(80).id("layers")
+                    Button("Lower").onClicked { depth.wrappedValue = -1 }.id("change")
+                }
+            }
+            let (layers, specimen, cover) = (try s.element("layers"), try s.specimen(element), try s.element("cover"))
+            s.expect(try s.drawingOrder(of: layers), [cover.id, specimen.id], "in front of the box written after it")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.drawingOrder(of: layers) == [specimen.id, cover.id] }
+            s.expect(try s.drawingOrder(of: layers), [specimen.id, cover.id], "behind it, lowered")
         }
     }
 

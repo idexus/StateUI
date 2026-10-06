@@ -827,6 +827,11 @@ bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
 /// shows over it - what a test reads.
 bool stateui_winui_reaches(StateUIObjectRef element, double x, double y);
 
+/// Where `child` - or the element it stands in among `panel`'s children - is drawn in `panel`: its `Canvas.ZIndex`
+/// in `depth`, its place among the panel's children in `place`, the higher of either drawn later; false where it
+/// stands in no child of the panel - what a test reads.
+bool stateui_winui_drawn_place(StateUIObjectRef panel, StateUIObjectRef child, int32_t *depth, int32_t *place);
+
 /// Tells `focused` whenever the keyboard comes into the element or leaves it, while `hearing`; false stops.
 void stateui_winui_hear_focus(StateUIObjectRef element, int64_t view, bool hearing);
 

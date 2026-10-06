@@ -196,6 +196,30 @@ final class AndroidDriver: HostDriver {
         return Self.color(argb | 0xFF00_0000)
     }
 
+    /// The layout's children by where each one's view stands in the order its group draws them
+    /// (`TestDrawing.drawingOrder`), the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let group = (layout.native as? AndroidElement)?.view else { throw cannot }
+        let places: [Int?] = Java.frame {
+            guard let order = Java.callStaticObject(Self.testDrawing, Self.drawingOrderOf, .object(group.reference))
+            else { return [] }
+            let drawn = Java.intsOf(order).compactMap { Java.callObject(group.reference, TestJava.getChildAt, .int($0)) }
+            return layout.children.map { (child: MountedElement) -> Int? in
+                guard let view = (child.native as? AndroidElement)?.view else { return nil }
+                return drawn.firstIndex { (holder: jobject) in
+                    Java.callStaticBool(Self.testDrawing, Self.isWithin, .object(view.reference), .object(holder))
+                }
+            }
+        }
+        guard places.count == layout.children.count else { throw cannot }
+        return try zip(layout.children, places).map { child, place in
+            guard let place else { throw cannot }
+            return (child, place)
+        }
+        .sorted { $0.1 < $1.1 }.map(\.0)
+    }
+
     /// Where the element's view stands in its window, as Android placed it.
     func place(of element: MountedElement) throws -> Rect {
         guard let view = (element.native as? AndroidElement)?.layoutItem?.view else {
@@ -227,6 +251,10 @@ final class AndroidDriver: HostDriver {
         files, "answerForTesting", "(Landroid/content/Context;[Ljava/lang/String;)Z")
     static let launchedForTesting = Java.staticMethod(files, "launchedForTesting", "()[Ljava/lang/String;")
     static let testFiles = Java.findClass("stateui/android/test/TestFiles")
+    static let testDrawing = Java.findClass("stateui/android/test/TestDrawing")
+    static let drawingOrderOf = Java.staticMethod(testDrawing, "drawingOrder", "(Landroid/view/ViewGroup;)[I")
+    static let isWithin = Java.staticMethod(
+        testDrawing, "isWithin", "(Landroid/view/View;Landroid/view/View;)Z")
     static let emptied = Java.staticMethod(testFiles, "emptied", "(Landroid/content/Context;)Ljava/lang/String;")
     static let setContentView = Java.method(
         Java.findClass("android/app/Activity"), "setContentView", "(Landroid/view/View;)V")

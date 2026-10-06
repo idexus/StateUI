@@ -131,4 +131,18 @@ extension UIKitDriver {
         guard let hit = window.hitTest(touched, with: nil) else { return false }
         return hit === view || hit.isDescendant(of: view)
     }
+
+    /// The layout's children by where each one's view stands among its view's subviews - a higher layer's
+    /// `zPosition` drawn later still - the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let parent = (layout.native as? UIKitElement)?.view else { throw cannot }
+        return try layout.children.map { child in
+            guard var view = (child.native as? UIKitElement)?.view else { throw cannot }
+            while let above = view.superview, above !== parent { view = above }
+            guard let place = parent.subviews.firstIndex(where: { $0 === view }) else { throw cannot }
+            return (child, view.layer.zPosition, place)
+        }
+        .sorted { ($0.1, $0.2) < ($1.1, $1.2) }.map(\.0)
+    }
 }
