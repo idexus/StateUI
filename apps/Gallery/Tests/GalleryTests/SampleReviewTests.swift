@@ -28,6 +28,7 @@ final class SampleReviewTests: XCTestCase {
             samples.append(((file.path as NSString).lastPathComponent, read, Self.fingerprint(of: read, in: texts)))
         }
         samples.sort { $0.name < $1.name }
+        guard !samples.isEmpty else { return XCTFail("no sample is found under Sources/Samples/, so none is read") }
 
         if ProcessInfo.processInfo.environment["STATEUI_UPDATE_SAMPLES"] == "1" {
             let lines = samples.map { "\($0.name) \($0.fingerprint)" }
