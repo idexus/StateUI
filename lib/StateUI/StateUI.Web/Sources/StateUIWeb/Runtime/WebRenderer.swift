@@ -78,6 +78,9 @@ final class WebRenderer {
             self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
         }
         WebRelay.afterEntry = { [weak self] in self?.entryEnded() }
+        WebRelay.listenToPage(
+            changed: WebRelay.listener { [weak self] in self?.pageChanged(WebRelay.pageState) },
+            leaving: WebRelay.listener { [weak self] in self?.runtime.ending() })
         // The scenes kept when the page was left come back; else the window launch opens.
         scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime)
         entryEnded()
@@ -114,6 +117,14 @@ final class WebRenderer {
             controller.refreshChrome()
         }
         runtime.frames.laidOut()
+    }
+
+    /// The page's tab shows or not, and the page holds the keyboard or not: the window it shows is put away while
+    /// its tab hides - it stops - and is the one in front while the page holds the keyboard.
+    /// Design: docs/design/platforms/web/runtime.md#the-window
+    func pageChanged(_ state: (shown: Bool, focused: Bool)) {
+        guard let window = roster.windows.first?.element else { return }
+        runtime.windowStateChanged(window, minimized: !state.shown, activated: state.shown && state.focused)
     }
 
     /// Writes the window's chrome again from what it shows now.

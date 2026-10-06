@@ -135,6 +135,13 @@ The browser's window is one window: the first window element the tree holds is
 shown in the page's whole room, a grid of one cell that the page's arrangement
 fills, and the page the user sees names the browser's tab.
 
+The window's phases are the page's, told to the host layer's lifecycle
+(`ApplicationLifecycle`) as the browser tells them: the window is put away
+while the page's tab hides - it stops, and resumes as the tab shows - and it
+is in front while the page holds the keyboard; the browser leaving the page
+ends it. The page tells what it stands as once as it starts, in a task of its
+own, so the window hears it was made before it hears it is in front.
+
 ## The conformance run
 
 The conformance suite runs in a browser, headless: its cases need the

@@ -15,6 +15,8 @@ extension WebDriver {
     func perform(_ act: UserAct, on element: MountedElement) throws {
         if element.type == .toolbarItem, act == .activate { return try chooseAction(element) }
         if element.type == .menuItem, act == .activate { return try choose(element) }
+        if let page = Self.pageState(after: act) { return try running().pageChanged(page) }
+        if act == .close, element.type == .window { return try running().runtime.ending() }
         if case .answer(let caption, let typing) = act { return try answer(caption, typing: typing, on: element) }
         // The browser's way back, over the page's own entry: from one it did not put there, the user leaves the site.
         if act == .goBack {
@@ -82,6 +84,17 @@ extension WebDriver {
     /// Whether the element `e` stands under a question the page shows over it.
     private func isBehindAQuestion(_ e: Int32) throws -> Bool {
         try WebBrowser.truth("((q) => !!q && !q.contains(e))(document.querySelector('dialog.stateui-question[open]'))", on: e)
+    }
+
+    /// What the page stands as after each act on its window, as the browser would tell it: whether its tab shows,
+    /// whether it holds the keyboard.
+    static func pageState(after act: UserAct) -> (shown: Bool, focused: Bool)? {
+        switch act {
+        case .switchAway: (true, false)
+        case .switchBack, .restore: (true, true)
+        case .minimize: (false, false)
+        default: nil
+        }
     }
 
     // MARK: - The mouse

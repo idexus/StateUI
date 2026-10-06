@@ -196,6 +196,18 @@ enum WebRelay {
         stateui_web_back_history() != 0
     }
 
+    /// What the page stands as: whether its tab shows, and whether it holds the keyboard.
+    static var pageState: (shown: Bool, focused: Bool) {
+        let state = stateui_web_page_state()
+        return (state & 1 != 0, state & 2 != 0)
+    }
+
+    /// Calls `changed` as the page's tab shows or hides or the page takes or loses the keyboard, and `leaving` as
+    /// the browser leaves the page.
+    static func listenToPage(changed: Int32, leaving: Int32) {
+        stateui_web_listen_page(changed, leaving)
+    }
+
     /// Calls `listener` whenever the browser's history moves.
     static func listenToHistory(_ listener: Int32) {
         stateui_web_listen_history(listener)

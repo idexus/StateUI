@@ -114,6 +114,11 @@ STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
 
+/// What the page stands as: 1 its tab shows, 2 it holds the keyboard; `listen_page` calls `changed` once as the
+/// page starts and again as either changes, and `leaving` as the browser leaves the page.
+STATEUI_WEB(page_state) int32_t stateui_web_page_state(void);
+STATEUI_WEB(listen_page) void stateui_web_listen_page(int32_t changed, int32_t leaving);
+
 /// Calls the act `name` of the application's own scripts - `StateUI.acts` - with the words, and `listener` once its
 /// promise settles: the event's number 0 is 1 kept, 0 broken, and `script_words` reads what it gave, or why.
 STATEUI_WEB(call_script) void stateui_web_call_script(
