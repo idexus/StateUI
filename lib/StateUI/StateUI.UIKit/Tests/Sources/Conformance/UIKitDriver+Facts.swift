@@ -89,6 +89,19 @@ extension UIKitDriver {
             field: field)
     }
 
+    /// The file dialog UIKit's document picker shows now: one that opens or one that exports.
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        guard let shown = renderer?.fileToolkit.showing, shown.picker != nil else { return nil }
+        return shown.dialog.kind == .save ? .save : .open
+    }
+
+    /// What the host handed iOS to launch, in order: an address as written, a file by its name.
+    func launched() throws -> [String] {
+        (renderer?.fileToolkit.launchedForTesting ?? []).map { target in
+            target.contains("://") ? target : URL(fileURLWithPath: target).lastPathComponent
+        }
+    }
+
     /// What the host told VoiceOver, in order.
     func announced() throws -> [String] {
         renderer?.actToolkit.announcedForTesting ?? []

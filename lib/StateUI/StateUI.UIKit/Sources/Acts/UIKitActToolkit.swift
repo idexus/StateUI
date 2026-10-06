@@ -46,8 +46,7 @@ final class UIKitActToolkit: ActToolkit {
 
     /// Asks in UIKit's alert over what the user's window shows now - its top sheet, else its pages.
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        guard var presenter = renderer.userWindow?.rootViewController else { return false }
-        while let top = presenter.presentedViewController, !top.isBeingDismissed { presenter = top }
+        guard let presenter = renderer.userPresenter else { return false }
         let asked = UIKitQuestion(question)
         showing = asked
         asked.ask(over: presenter) { [weak self] accepted, words in

@@ -76,6 +76,7 @@ final class UIKitDriver: HostDriver {
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
+        Self.holdFiles(of: renderer)
         return renderer.runtime.tree
     }
 
@@ -85,6 +86,7 @@ final class UIKitDriver: HostDriver {
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, application: application)
         self.renderer = renderer
+        Self.holdFiles(of: renderer)
         return renderer.runtime.tree
     }
 
@@ -128,8 +130,19 @@ final class UIKitDriver: HostDriver {
 
     /// Ends the host the driver started last.
     func finish() {
+        renderer?.fileToolkit.showing?.chooseForTesting([])
         renderer?.finish()
         renderer = nil
+    }
+
+    /// The folder the files a test opens and saves stand in, the process's own.
+    static let files = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-conformance-files")
+
+    /// Empties the files folder, so no case reads a file another saved, and holds `renderer`'s launches back.
+    private static func holdFiles(of renderer: UIKitRenderer) {
+        try? FileManager.default.removeItem(at: files)
+        try? FileManager.default.createDirectory(at: files, withIntermediateDirectories: true)
+        renderer.fileToolkit.holdsLaunchesForTesting = true
     }
 
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a
@@ -224,6 +237,11 @@ final class UIKitDriver: HostDriver {
             guard renderer?.actToolkit.showing?.press(caption, typing: words) == true else {
                 throw DriverCannot("press \(caption): no question shows it")
             }
+        case (.answerFiles(let names), _):
+            guard let dialog = renderer?.fileToolkit.showing, dialog.picker != nil else {
+                throw DriverCannot("answer a file dialog: none shows")
+            }
+            dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
         case (.switchAway, _) where element.type == .window: renderer?.window(element, movedTo: .inactive)
         case (.switchBack, _) where element.type == .window: renderer?.window(element, movedTo: .active)
         case (.minimize, _) where element.type == .window:

@@ -17,6 +17,8 @@ extension UIKitDriver {
             return "the host's choice called, not the menu's action"
         case "answer":
             return "the host's response called, not the alert's action"
+        case "answerFiles":
+            return "the host's response called with the driver's files, not the picker's choice"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             return "the host told the scene's phase, no scene moved"
         case "endContent":
@@ -35,6 +37,9 @@ extension UIKitDriver {
         case "read the menu of Window": return "the host's menu bar entries, not UIKit's main menu"
         case "read what the screen reader said": return "the host's own list of what it announced"
         case "read a question": return "the buttons' captions the host keeps"
+        case "read a file dialog": return "the host's own record of the picker it presented"
+        case "read what was launched":
+            return "the host's own record of what it handed iOS, which a test holds back from launching"
         default: break
         }
         if taken.readsATransform { return "the host's own transform, checked against the layer it composed itself" }

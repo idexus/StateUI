@@ -108,3 +108,23 @@ an action sheet - on an iPad standing in the middle of the window - its
 dangerous caption marked. Pressing a button takes the alert away and answers
 the question, once; the next question in line then shows.
 
+
+## Files
+
+A file dialog is UIKit's document picker, presented over what the user's
+window shows and waiting its turn among the questions
+([files](../../host/runtime.md#files)). One that opens offers the files of
+every kind's extensions - any file where none is asked - and several only
+where asked. iOS exports a ready file rather than ask for a place, so a save
+writes its contents first, beside the UI thread, to a file of the act's name
+in a folder of its own - "Untitled" where the name is empty, as the picker
+names none - and the picker exports it; the file the user saved is
+answered, and the one written goes. A file the picker answers is the
+application's while it runs: its access is taken as it is chosen and never
+given back. A chosen file's address is its path; a file is read beside the
+UI thread.
+
+A file is launched as iOS's preview of it, over what the window shows,
+answering whether it can be previewed; an address is opened by
+`UIApplication`, which answers whether an application took it. A test holds
+launches back, recording them.
