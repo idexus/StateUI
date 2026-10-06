@@ -58,4 +58,10 @@ extension MountedElement {
             words: value(.canDrag)?.bool == true ? value(.dragText)?.string ?? "" : nil,
             takesDrops: value(.allowsDrop)?.bool == true)
     }
+
+    /// Every element in this subtree whose view takes drops, in the tree's order: what a toolkit asks for under a
+    /// drag where a window, not each view, takes it.
+    public var takingDrops: [MountedElement] {
+        (dragAndDrop.takesDrops ? [self] : []) + children.flatMap(\.takingDrops)
+    }
 }

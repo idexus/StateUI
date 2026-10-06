@@ -28,6 +28,7 @@ final class DragAndDropTests: XCTestCase {
         XCTAssertEqual(try element("source", in: runtime).dragAndDrop, DragAndDrop(words: "Alpha", takesDrops: false))
         XCTAssertEqual(try element("basket", in: runtime).dragAndDrop, DragAndDrop(words: nil, takesDrops: true))
         XCTAssertEqual(try element("still", in: runtime).dragAndDrop, .none)
+        XCTAssertEqual(runtime.tree.root?.takingDrops.map(\.id), [.manual("basket")], "the views a window's drag finds")
     }
 
     func testADragOverAViewIsToldAsTheContractSays() throws {
