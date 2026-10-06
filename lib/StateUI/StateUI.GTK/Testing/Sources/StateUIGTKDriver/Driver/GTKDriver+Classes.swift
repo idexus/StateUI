@@ -33,6 +33,11 @@ extension GTKDriver {
         case (.background, is GTKButtonView), (.stroke, is GTKButtonView), (.lineWidth, is GTKButtonView),
              (.shape, is GTKButtonView):
             return .some(named("stateui-box").flatMap { Self.box(property, of: $0) })
+        // Any other view wears its fill on its own widget.
+        case (.background, _) where !(view is GTKLayoutView):
+            let fill = Self.classes(of: view.widget).first { $0.hasPrefix("stateui-fill-") }
+            return .some(fill.map { String($0.dropFirst("stateui-fill-".count)) }.flatMap(Self.color)
+                .map { Background.color($0).propValue })
         case (.placeholderColor, _):
             return .some(classes.first { $0.hasPrefix("stateui-words") }.flatMap { name in
                 name.split(separator: "-").first { $0.hasPrefix("p") && $0.count == 9 }

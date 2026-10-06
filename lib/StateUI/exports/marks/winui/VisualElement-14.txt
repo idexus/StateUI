@@ -17,7 +17,7 @@ Grid.opacity: ✅
 Grid.rotation: ✅
 HStack.style: ✅
 HStack.translationY: ✅
-Image.background: not realized
+Image.background: – WinUI's picture paints the picture alone, no ground around it.
 ItemsView.ignoresInput: ✅
 ItemsView.scaleX: ✅
 Line.frameChanged: ✅
@@ -44,17 +44,17 @@ ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, an
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.translationX: ✅
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-SearchField.background: not realized
+SearchField.background: ✅
 Slider.frame: ✅
 Slider.scaleY: ✅
-Stepper.background: not realized
+Stepper.background: ✅
 Switch.frame: ✅
 Switch.scaleY: ✅
 Text.automationExcludedWithChildren: ✅
-TextEditor.background: not realized
+TextEditor.background: ✅
 TextField.frame: ✅
 TextField.scaleY: ✅
-TimePicker.background: not realized
+TimePicker.background: ✅
 VStack.frame: ✅
 VStack.scaleY: ✅
 WebView.isAccessibilityHidden: ✅

@@ -54,10 +54,18 @@ enum GTKRealization {
         .complete("PageElement", "title"),
         .notPlanned("PropertyContainer", "accessibilityIdentifier", reason: "GTK 4 gives an accessible the identifier "
             + "a GtkBuilder file names alone: none is set on a widget made in code."),
+        .partial("VisualElement", "background", missing: "A brush fills the view with its first colour alone."),
         .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .complete("Grid", "background"),
+        .complete("HStack", "background"),
+        .complete("ScrollView", "background"),
+        .notPlanned("Switch", "background", reason: "GTK's switch paints its own box as its track: a colour there would "
+            + "recolour the track, not lie under it."),
+        .complete("VStack", "background"),
+        .complete("ZStack", "background"),
         .partial("DatePicker", "format", missing: "GTK writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
         .partial("DatePicker", "maximumDate",
                  missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
@@ -65,7 +73,6 @@ enum GTKRealization {
                  missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
-        .partial("Text", "background", missing: "A brush fills the box with its first colour alone."),
         .notPlanned("MenuItem", "icon", reason: "GNOME's menus show words alone, no picture beside them."),
         .notPlanned("MenuItem", "isDestructive", reason: "GNOME's menus mark no entry as destroying something."),
         .complete("ModalStack", "popped"),

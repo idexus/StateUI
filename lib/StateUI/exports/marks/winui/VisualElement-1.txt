@@ -28,7 +28,7 @@ Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and noth
 Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.translationX: ✅
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.background: not realized
+Polyline.background: – A WinUI shape is its figure alone: it paints no ground around it.
 ProgressBar.ignoresInput: ✅
 ProgressBar.scaleX: ✅
 RadioButton.isAccessibilityHidden: ✅

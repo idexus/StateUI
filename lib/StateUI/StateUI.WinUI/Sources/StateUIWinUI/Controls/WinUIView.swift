@@ -137,6 +137,16 @@ class WinUIView {
         stateui_winui_set_enabled(answering.handle, enabled)
     }
 
+    /// What the view is drawn over, under its whole frame; nil for WinUI's own. A control paints it as its template
+    /// paints its container, field or face; a view that paints no ground of its own takes none.
+    /// Design: docs/design/platforms/winui/drawing.md#a-views-background
+    func setBackground(_ value: HostValue?) {
+        let brush = WinUIBrush(value)
+        paint("background", followsSize: brush.followsSize) { [handle] size in
+            brush.withRelayBrush(over: size) { stateui_winui_set_background(handle, $0) }
+        }
+    }
+
     /// Whether clicks and touches go through the view to what is behind it.
     func setIgnoresInput(_ ignores: Bool) {
         stateui_winui_set_hit_testable(handle, !ignores)

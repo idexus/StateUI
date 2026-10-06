@@ -435,6 +435,9 @@ namespace {
             if (what == "background") return colour(held.Background());
             if (what == "cornerRadius") return corners(held.CornerRadius());
         }
+        if (auto panel = object.try_as<controls::Panel>(); panel && what == "background") {
+            return colour(panel.Background());
+        }
         if (auto element = object.try_as<xaml::FrameworkElement>()) {
             if (what == "automationName") return narrow(xaml::Automation::AutomationProperties::GetName(metOf(object)));
             if (what == "flowDirection") return number(static_cast<int32_t>(element.FlowDirection()));

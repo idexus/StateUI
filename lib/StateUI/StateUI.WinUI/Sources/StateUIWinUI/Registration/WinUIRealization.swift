@@ -52,6 +52,21 @@ enum WinUIRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .notPlanned("ActivityIndicator", "background", reason: "WinUI's progress ring paints its Background as its "
+            + "track, no ground under its frame."),
+        .partial("Canvas", "background", missing: "A brush fills the canvas with its first colour alone."),
+        .notPlanned("ColorBox", "background", reason: figurePaintsNoGround),
+        .notPlanned("Ellipse", "background", reason: figurePaintsNoGround),
+        .notPlanned("Image", "background", reason: "WinUI's picture paints the picture alone, no ground around it."),
+        .notPlanned("Line", "background", reason: figurePaintsNoGround),
+        .notPlanned("Path", "background", reason: figurePaintsNoGround),
+        .notPlanned("Polygon", "background", reason: figurePaintsNoGround),
+        .notPlanned("Polyline", "background", reason: figurePaintsNoGround),
+        .notPlanned("ProgressBar", "background", reason: "WinUI's progress bar paints its Background as its track, no "
+            + "ground under its frame."),
+        .notPlanned("Rectangle", "background", reason: figurePaintsNoGround),
+        .unrealized("WebView", "background", why: "WebView2 is no control and takes no Background: what shows "
+            + "where its page paints nothing is its DefaultBackgroundColor, which the backend does not set yet."),
         .unrealized("ActivityIndicator", "ignoresInput", why: hitOnlyWherePainted),
         .unrealized("ColorBox", "ignoresInput", why: hitOnlyWherePainted),
         .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
@@ -143,6 +158,9 @@ enum WinUIRealization {
         .complete("Window", "x"),
         .complete("Window", "y"),
     ]
+
+    /// Why a figure takes no background on WinUI.
+    static let figurePaintsNoGround = "A WinUI shape is its figure alone: it paints no ground around it."
 
     /// Why a drawing's press is not let through as the tree says.
     static let hitOnlyWherePainted = "WinUI hands a figure, a picture, a colour box and the activity ring only the "

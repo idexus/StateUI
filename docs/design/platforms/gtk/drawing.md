@@ -22,6 +22,15 @@ that does not clip cuts nothing.
 A colour box is a panel of one colour, its corners rounded each by its own
 radius; it takes the room its layout gives it and asks for none.
 
+
+## A view's background
+
+A view's background is the ground under its whole frame: the host's style
+sheet fills the widget's own CSS box with a class (`GTKStyleSheet.fill`),
+which GTK paints under whatever the widget draws - a field's box is its
+field, as GNOME's applications show one. A brush gives its first colour; a
+layout paints its box with the whole brush. A switch takes none: GTK paints
+its box as the track, so a colour there would recolour the track.
 ## A widget's own box
 
 GTK sizes and draws a widget's own box - the room between its edge and its

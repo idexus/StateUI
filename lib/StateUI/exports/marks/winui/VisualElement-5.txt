@@ -43,7 +43,7 @@ Rectangle.translationY: ✅
 ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 SearchField.frame: ✅
 SearchField.scaleY: ✅
-Slider.background: not realized
+Slider.background: ✅
 Stepper.frame: ✅
 Stepper.scaleY: ✅
 Switch.background: ✅
@@ -51,7 +51,7 @@ Text.ignoresInput: ✅
 Text.scaleX: ✅
 TextEditor.frame: ✅
 TextEditor.scaleY: ✅
-TextField.background: not realized
+TextField.background: ✅
 TimePicker.frame: ✅
 TimePicker.scaleY: ✅
 VStack.background: ✅

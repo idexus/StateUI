@@ -58,7 +58,7 @@ extension GTKElement {
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             case .ignoresInput: view.setIgnoresInput(value(.ignoresInput)?.bool ?? false)
             case .isVisible: view.setShown(isShown)
-            case .background: (view as? GTKLayoutView)?.setBackground(value(.background))
+            case .background: view.setBackground(value(.background))
             default: break
             }
         }

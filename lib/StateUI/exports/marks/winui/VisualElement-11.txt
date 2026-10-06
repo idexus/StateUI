@@ -28,7 +28,7 @@ Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and no
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.translationX: ✅
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.background: not realized
+ProgressBar.background: – WinUI's progress bar paints its Background as its track, no ground under its frame.
 RadioButton.ignoresInput: ✅
 RadioButton.scaleX: ✅
 Rectangle.automationExcludedWithChildren: ✅

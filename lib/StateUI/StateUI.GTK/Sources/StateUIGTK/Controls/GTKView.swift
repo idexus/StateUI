@@ -56,6 +56,9 @@ class GTKView {
     private(set) var tint: GdkRGBA?
     private var tintClass: String?
 
+    /// The class of the host's style sheet that fills the view's box; nil for none.
+    private var fillClass: String?
+
     /// Where the view draws the platform's accent, as a selector after its own (`GTKStyleSheet.tint`); nil for its
     /// words and marks.
     var accent: String? { nil }
@@ -101,6 +104,12 @@ class GTKView {
     /// Connects `handler` to the widget's `notify::<property>`, handing it this view's number.
     func notify(_ property: String, _ handler: GTKArgumentHandler) {
         connectNotify(UnsafeMutableRawPointer(widget), property, number: number, handler)
+    }
+
+    /// What fills the view's box, under its whole frame: a colour, or a brush's first colour; nil for nothing.
+    /// Design: docs/design/platforms/gtk/drawing.md#a-views-background
+    func setBackground(_ value: HostValue?) {
+        swapClass(&fillClass, to: GTKBrush(value).firstColor.map(GTKStyleSheet.fill))
     }
 
     /// Takes class `current` off `target` - the view's widget where nil - and puts `wanted` on it, where they differ.

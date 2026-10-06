@@ -37,6 +37,7 @@ enum GTKRegistrations {
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.ignoresInput)
+        registry.everyElementRealizes(VisualElementContract.background)
         // GTK 4 identifies an accessible by a GtkBuilder file's id alone: it is met by its role, its label and its place.
         registry.everyElementMeetsAssistiveTechnology(identifying: false)
         registry.everyElementTakesItsPlace()

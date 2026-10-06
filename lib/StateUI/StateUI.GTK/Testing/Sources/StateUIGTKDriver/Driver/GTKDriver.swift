@@ -43,6 +43,8 @@ final class GTKDriver: HostDriver {
         }
         none["read background of Page"] =
             "StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it"
+        none["read background of ItemsView"] =
+            "StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it"
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
             for member in ["background", "stroke", "lineWidth", "shape"] {
                 none["read \(member) of \(layout)"] =

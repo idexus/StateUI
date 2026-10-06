@@ -21,9 +21,6 @@ extension WinUIRegistrations {
             label.property(TextAlignmentElementContract.verticalTextAlignment) { view, alignment in
                 view.setVerticalAlignment(alignment ?? .start)
             }
-            label.property(VisualElementContract.background) { view, background in
-                view.setBackground(background?.propValue)
-            }
             label.property(TextStyleElementContract.tracking) { view, spacing in
                 view.setLetterSpacing(spacing ?? 0)
             }

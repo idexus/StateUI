@@ -21,7 +21,7 @@ ItemsView.pivotX: ✅
 Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Map.frame: 🧩
 Map.scaleY: 🧩
-Path.background: not realized
+Path.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Picker.ignoresInput: ✅
 Picker.scaleX: ✅
 Polygon.automationExcludedWithChildren: ✅

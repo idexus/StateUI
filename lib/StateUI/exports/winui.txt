@@ -2,7 +2,6 @@ ActivityIndicator
   isAnimating
   tint
 Button
-  background
   contentMode
   fontAttributes
   fontFamily
@@ -27,7 +26,6 @@ Canvas
   pressed()
   released()
 CheckBox
-  background
   isOn
   tint
   toggled()
@@ -59,7 +57,6 @@ Ellipse
   miterLimit
   stroke
 Grid
-  background
   clipsContent
   columnSpacing
   columns
@@ -70,7 +67,6 @@ Grid
   shape
   stroke
 HStack
-  background
   clipsContent
   lineWidth
   padding
@@ -161,7 +157,6 @@ ProgressBar
   progress
   tint
 RadioButton
-  background
   fontAttributes
   fontFamily
   fontSize
@@ -184,7 +179,6 @@ Rectangle
   miterLimit
   stroke
 ScrollView
-  background
   horizontalScrollIndicator
   lineWidth
   orientation
@@ -223,12 +217,10 @@ Stepper
   value
   valueChanged()
 Switch
-  background
   isOn
   tint
   toggled()
 Text
-  background
   fontAttributes
   fontFamily
   fontSize
@@ -291,7 +283,6 @@ TimePicker
   time
   timeChanged()
 VStack
-  background
   clipsContent
   lineWidth
   padding
@@ -307,7 +298,6 @@ WebView
   navigating()
   processTerminated()
 ZStack
-  background
   clipsContent
   lineWidth
   padding
@@ -321,6 +311,7 @@ ZStack
   allowsDrop
   area
   automationExcludedWithChildren
+  background
   canDrag
   dragText
   droppedFileTypes

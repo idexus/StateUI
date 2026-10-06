@@ -231,6 +231,9 @@ extension WinUIDriver {
             }
         }
         switch name {
+        case "background" where view is WinUICanvasView:
+            let ground = stateui_winui_canvas_ground(view.handle)
+            return ground == 0 ? nil : Background.color(Self.color(ground)).propValue
         case "background": return try Self.color(read(view, "background")).map { Background.color($0).propValue }
         case "stroke" where view is WinUIButtonView:
             return try Self.color(read(view, "borderBrush")).map { Brush.solidColor($0).propValue }

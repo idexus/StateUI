@@ -2,7 +2,6 @@ ActivityIndicator
   isAnimating
   tint
 Button
-  background
   contentMode
   fontAttributes
   fontFamily
@@ -58,7 +57,6 @@ Ellipse
   miterLimit
   stroke
 Grid
-  background
   clipsContent
   columnSpacing
   columns
@@ -70,7 +68,6 @@ Grid
   shape
   stroke
 HStack
-  background
   clipsContent
   letsInputThrough
   lineWidth
@@ -178,7 +175,6 @@ Rectangle
   miterLimit
   stroke
 ScrollView
-  background
   horizontalScrollIndicator
   lineWidth
   orientation
@@ -226,7 +222,6 @@ Switch
   tint
   toggled()
 Text
-  background
   fontAttributes
   fontFamily
   fontSize
@@ -292,7 +287,6 @@ TimePicker
   opened()
   timeChanged()
 VStack
-  background
   clipsContent
   letsInputThrough
   lineWidth
@@ -309,7 +303,6 @@ WebView
   navigating()
   processTerminated()
 ZStack
-  background
   clipsContent
   letsInputThrough
   lineWidth
@@ -323,6 +316,7 @@ ZStack
   allowsDrop
   area
   automationExcludedWithChildren
+  background
   canDrag
   dragText
   droppedFileTypes

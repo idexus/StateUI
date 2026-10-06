@@ -82,7 +82,7 @@ class WinUILayoutView: WinUIView {
     }
 
     /// What fills the box: a colour or a brush; nil for nothing.
-    func setBackground(_ value: HostValue?) {
+    override func setBackground(_ value: HostValue?) {
         box.fill = value
         paintBox()
     }

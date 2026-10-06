@@ -20,7 +20,7 @@ HStack.rotation: ✅
 Image.style: ✅
 Image.translationY: ✅
 ItemsView.layoutDirection: ✅
-Line.background: not realized
+Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Map.ignoresInput: 🧩
 Map.scaleX: 🧩
 Path.automationExcludedWithChildren: ✅

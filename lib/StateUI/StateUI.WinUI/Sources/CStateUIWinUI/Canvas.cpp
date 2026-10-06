@@ -371,6 +371,19 @@ namespace {
             invalidate();
         }
 
+        /// The colour the canvas is filled with under its drawing; clear for none.
+        void paintGround(D2D1_COLOR_F colour) {
+            ground = colour;
+            stale = true;
+            invalidate();
+        }
+
+        /// The colour under the drawing, as ARGB; 0 for none.
+        uint32_t groundColour() const {
+            auto channel = [](float value) { return static_cast<uint32_t>(std::lround(value * 255)); };
+            return channel(ground.a) << 24 | channel(ground.r) << 16 | channel(ground.g) << 8 | channel(ground.b);
+        }
+
     private:
         /// Draws on the next frame, however often it is asked before then.
         void invalidate() {
@@ -437,7 +450,7 @@ namespace {
             auto base = D2D1::Matrix3x2F::Translation(offset.x / scale, offset.y / scale);
             context->SetTransform(base);
             context->PushAxisAlignedClip(D2D1::RectF(0, 0, drawnAcross / scale, drawnDown / scale), D2D1_ANTIALIAS_MODE_ALIASED);
-            context->Clear(D2D1::ColorF(0, 0, 0, 0));
+            context->Clear(ground);
             try {
                 replay(context.get(), base, drawing);
             } catch (...) {
@@ -507,6 +520,7 @@ namespace {
 
         int64_t view;
         Drawing drawing;
+        D2D1_COLOR_F ground = D2D1::ColorF(0, 0, 0, 0);
         Size size{};
         bool stale = false;
 
@@ -554,6 +568,24 @@ extern "C" void stateui_winui_canvas_draw(
         canvas(handle)->show(std::move(drawing));
     } catch (...) {
         report("handing a canvas its drawing");
+    }
+}
+
+extern "C" void stateui_winui_canvas_set_ground(StateUIObjectRef handle, uint32_t argb) {
+    try {
+        auto channel = [argb](int shift) { return static_cast<float>((argb >> shift) & 0xFF) / 255.0f; };
+        canvas(handle)->paintGround(D2D1::ColorF(channel(16), channel(8), channel(0), channel(24)));
+    } catch (...) {
+        report("painting a canvas's ground");
+    }
+}
+
+extern "C" uint32_t stateui_winui_canvas_ground(StateUIObjectRef handle) {
+    try {
+        return canvas(handle)->groundColour();
+    } catch (...) {
+        report("reading a canvas's ground");
+        return 0;
     }
 }
 

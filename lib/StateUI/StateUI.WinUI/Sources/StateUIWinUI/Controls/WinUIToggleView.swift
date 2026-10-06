@@ -23,14 +23,6 @@ class WinUIToggleView: WinUIView {
         stateui_winui_toggle_set_on(handle, on)
     }
 
-    /// What the control is drawn over; nil for WinUI's own.
-    func setBackground(_ value: HostValue?) {
-        let brush = WinUIBrush(value)
-        paint("background", followsSize: brush.followsSize) { [handle] size in
-            brush.withRelayBrush(over: size) { stateui_winui_toggle_set_background(handle, $0) }
-        }
-    }
-
     override func detach() {
         super.detach()
         onToggled = nil

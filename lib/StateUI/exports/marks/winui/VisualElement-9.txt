@@ -11,7 +11,7 @@ ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and no
 ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.translationX: ✅
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-DatePicker.background: not realized
+DatePicker.background: ✅
 Ellipse.frame: ✅
 Ellipse.scaleY: ✅
 Grid.automationExcludedWithChildren: ✅
@@ -30,7 +30,7 @@ Map.unfocus: 🧩
 Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Picker.frame: ✅
 Picker.scaleY: ✅
-Polygon.background: not realized
+Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Polyline.ignoresInput: not realized
 Polyline.scaleX: ✅
 ProgressBar.isAccessibilityHidden: ✅

@@ -12,7 +12,7 @@ CheckBox.unfocus: ✅
 ColorBox.layoutDirection: ✓ read layoutDirection of ColorBox: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 DatePicker.frame: ✅
 DatePicker.scaleY: ✅
-Ellipse.background: not realized
+Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Grid.ignoresInput: ✅
 Grid.scaleX: ✅
 HStack.accessibilityHeading: ✅
@@ -26,7 +26,7 @@ Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is
 Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.translationX: ✅
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Picker.background: not realized
+Picker.background: ✅
 Polygon.frame: ✅
 Polygon.scaleY: ✅
 Polyline.automationExcludedWithChildren: ✅

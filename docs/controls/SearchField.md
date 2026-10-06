@@ -39,8 +39,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>43 ✅ · 36 ✓ · 3 –</td><td><code>NSSearchField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>49 ✅ · 1 ☑️ · 35 ✓</td><td><code>UISearchBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>72 ✅ · 1 ☑️ · 10 ✓ · 1 –</td><td><code>SearchView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>67 ✅ · 1 ☑️ · 12 ✓</td><td><code>AutoSuggestBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>62 ✅ · 22 ✓ · 1 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>68 ✅ · 1 ☑️ · 12 ✓</td><td><code>AutoSuggestBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>62 ✅ · 23 ✓ · 1 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 20 ✓</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
 </table>
 
@@ -76,8 +76,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>automationExcludedWithChildren</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Background</code></td><td>native</td><td align="center">–</td><td align="center">☑️</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: AppKit draws its own rounded search field, which takes no fill colour.<br>UIKit: UIKit paints a colour on this view; a brush is drawn only by a layout.<br>WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Background</code></td><td>native</td><td align="center">–</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center"></td></tr>
+<tr><td colspan="9">AppKit: AppKit draws its own rounded search field, which takes no fill colour.<br>UIKit: UIKit paints a colour on this view; a brush is drawn only by a layout.<br>GTK 4: only through the host's own: read background of SearchField: the class of the host's style sheet the widget wears: GTK reads back no background<br>Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⏸</td></tr>
 <tr><td colspan="9">Web: waits on SearchField.isFocusedChanged, not realized yet</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

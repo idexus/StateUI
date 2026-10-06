@@ -27,7 +27,7 @@ Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing 
 Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.translationX: ✅
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-ItemsView.background: not realized
+ItemsView.background: ✅
 Line.automationExcludedWithChildren: ✅
 Map.frameChanged: 🧩
 Map.maximumHeight: 🧩

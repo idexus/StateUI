@@ -303,6 +303,10 @@ void stateui_winui_frame(StateUIObjectRef element, double *frame);
 /// A control's IsEnabled; a view that is no control keeps none, and nothing is done.
 void stateui_winui_set_enabled(StateUIObjectRef control, bool enabled);
 
+/// What an element is drawn over, under its whole frame; none for WinUI's own: a control's Background and the theme
+/// resources its template paints its container, field or face from, a panel's Background; nothing for any other.
+void stateui_winui_set_background(StateUIObjectRef element, StateUIBrush background);
+
 /// Cuts what the element shows to `outline` over `width` by `height` DIPs; `cuts` false shows it whole.
 void stateui_winui_set_clip(StateUIObjectRef element, bool cuts, StateUIOutline outline, double radius,
                             double width, double height);
@@ -556,8 +560,6 @@ StateUIObjectRef stateui_winui_check_box_make(int64_t view);
 StateUIObjectRef stateui_winui_radio_make(int64_t view);
 void stateui_winui_toggle_set_on(StateUIObjectRef toggle, bool on);
 
-/// What a switch, a check box or a radio button is drawn over, in every state it can be in; none for WinUI's own.
-void stateui_winui_toggle_set_background(StateUIObjectRef toggle, StateUIBrush background);
 bool stateui_winui_toggle_is_on(StateUIObjectRef toggle);
 
 /// Turns a control as UI Automation does, which the user's turn is: a switch or a check box toggled, a radio
@@ -671,6 +673,13 @@ StateUIObjectRef stateui_winui_canvas_make(int64_t view);
 /// `ints`, its numbers in `numbers`, and its text in `words`, `wordCount` UTF-8 runs of `lengths` bytes end to end.
 void stateui_winui_canvas_draw(StateUIObjectRef canvas, int32_t const *ints, int32_t intCount, double const *numbers,
                                int32_t numberCount, char const *words, int32_t const *lengths, int32_t wordCount);
+
+/// The colour, ARGB, the canvas is filled with under its drawing - its surface is its panel's own background, so a
+/// view's background is painted there; 0 for none.
+void stateui_winui_canvas_set_ground(StateUIObjectRef canvas, uint32_t argb);
+
+/// The colour the canvas is filled with under its drawing, ARGB; 0 for none - what a test reads.
+uint32_t stateui_winui_canvas_ground(StateUIObjectRef canvas);
 
 /// A ColorBox: a figure filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
 /// bottom left.

@@ -1,5 +1,5 @@
 # revision 3.1
-ActivityIndicator.background: not realized
+ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
 Button.ignoresInput: ✅
 Button.scaleX: ✅
 Canvas.automationExcludedWithChildren: ✅
