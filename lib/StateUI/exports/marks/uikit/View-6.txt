@@ -4,10 +4,10 @@ ActivityIndicator.tapped: ✓ tap on ActivityIndicator: the view's listening han
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
-Canvas.allowsDrop: not realized
-Canvas.dragLeave: not realized
-Canvas.dragOver: not realized
-Canvas.drop: not realized
+Canvas.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Canvas.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Canvas.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Canvas.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 Canvas.frameChanged: ✅
 Canvas.horizontalAlignment: ✅
 Canvas.verticalAlignment: ✅
@@ -27,10 +27,10 @@ Ellipse.gridColumnSpan: ✅
 Ellipse.gridRowSpan: ✅
 Grid.area: ✅
 Grid.frameChanged: ✅
-HStack.canDrag: not realized
-HStack.dragEnded: not realized
-HStack.dragStarting: not realized
-HStack.dragText: not realized
+HStack.canDrag: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
+HStack.dragEnded: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
+HStack.dragStarting: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
+HStack.dragText: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
 HStack.frameChanged: ✅
 HStack.margin: ✅
 Image.pinchUpdated: ✓ pinch on Image: the view's listening handed the recognizer's states, no touch sent
@@ -38,10 +38,10 @@ ItemsView.panYChannel: ✓ pan on ItemsView: the view's listening handed the rec
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
-Map.allowsDrop: not realized
-Map.dragLeave: not realized
-Map.dragOver: not realized
-Map.drop: not realized
+Map.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Map.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Map.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Map.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 Map.frameChanged: ✅
 Map.horizontalAlignment: ✅
 Map.verticalAlignment: ✅
@@ -61,10 +61,10 @@ Polyline.gridColumnSpan: ✅
 Polyline.gridRowSpan: ✅
 ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
-RadioButton.canDrag: not realized
-RadioButton.dragEnded: not realized
-RadioButton.dragStarting: not realized
-RadioButton.dragText: not realized
+RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the drag and drop interactions' handlers called, no drag session
+RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the drag and drop interactions' handlers called, no drag session
+RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the drag and drop interactions' handlers called, no drag session
+RadioButton.dragText: ✓ dragAndDrop on RadioButton: the drag and drop interactions' handlers called, no drag session
 RadioButton.frameChanged: ✅
 RadioButton.margin: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: the view's listening handed the recognizer's states, no touch sent
@@ -74,10 +74,10 @@ SearchField.tapped: ✓ tap on SearchField: the view's listening handed the reco
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridRow: ✅
-Stepper.allowsDrop: not realized
-Stepper.dragLeave: not realized
-Stepper.dragOver: not realized
-Stepper.drop: not realized
+Stepper.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Stepper.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Stepper.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Stepper.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 Stepper.frameChanged: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.verticalAlignment: ✅
@@ -99,10 +99,10 @@ TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
 VStack.area: ✅
 VStack.frameChanged: ✅
-WebView.canDrag: not realized
-WebView.dragEnded: not realized
-WebView.dragStarting: not realized
-WebView.dragText: not realized
+WebView.canDrag: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
+WebView.dragEnded: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
+WebView.dragStarting: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
+WebView.dragText: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
 WebView.frameChanged: ✅
 WebView.margin: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: the view's listening handed the recognizer's states, no touch sent

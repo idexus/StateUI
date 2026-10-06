@@ -6,10 +6,10 @@ Canvas.tapped: ✓ tap on Canvas: the view's listening handed the recognizer's s
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅
-ColorBox.allowsDrop: not realized
-ColorBox.dragLeave: not realized
-ColorBox.dragOver: not realized
-ColorBox.drop: not realized
+ColorBox.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+ColorBox.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+ColorBox.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+ColorBox.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 ColorBox.frameChanged: ✅
 ColorBox.horizontalAlignment: ✅
 ColorBox.verticalAlignment: ✅
@@ -29,10 +29,10 @@ HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
 Image.area: ✅
 Image.frameChanged: ✅
-ItemsView.canDrag: not realized
-ItemsView.dragEnded: not realized
-ItemsView.dragStarting: not realized
-ItemsView.dragText: not realized
+ItemsView.canDrag: ✓ dragAndDrop on ItemsView: the drag and drop interactions' handlers called, no drag session
+ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the drag and drop interactions' handlers called, no drag session
+ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the drag and drop interactions' handlers called, no drag session
+ItemsView.dragText: ✓ dragAndDrop on ItemsView: the drag and drop interactions' handlers called, no drag session
 ItemsView.frameChanged: ✅
 ItemsView.margin: ✅
 Line.panYChannel: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
@@ -41,10 +41,10 @@ Map.tapped: ✓ tap on Map: the view's listening handed the recognizer's states,
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
-Picker.allowsDrop: not realized
-Picker.dragLeave: not realized
-Picker.dragOver: not realized
-Picker.drop: not realized
+Picker.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Picker.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Picker.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Picker.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 Picker.frameChanged: ✅
 Picker.horizontalAlignment: ✅
 Picker.verticalAlignment: ✅
@@ -64,10 +64,10 @@ RadioButton.gridColumnSpan: ✅
 RadioButton.gridRowSpan: ✅
 Rectangle.area: ✅
 Rectangle.frameChanged: ✅
-ScrollView.canDrag: not realized
-ScrollView.dragEnded: not realized
-ScrollView.dragStarting: not realized
-ScrollView.dragText: not realized
+ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the drag and drop interactions' handlers called, no drag session
+ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the drag and drop interactions' handlers called, no drag session
+ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the drag and drop interactions' handlers called, no drag session
+ScrollView.dragText: ✓ dragAndDrop on ScrollView: the drag and drop interactions' handlers called, no drag session
 ScrollView.frameChanged: ✅
 ScrollView.margin: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the view's listening handed the recognizer's states, no touch sent
@@ -78,10 +78,10 @@ Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridRow: ✅
 Text.pinchUpdated: ✓ pinch on Text: the view's listening handed the recognizer's states, no touch sent
-TextEditor.allowsDrop: not realized
-TextEditor.dragLeave: not realized
-TextEditor.dragOver: not realized
-TextEditor.drop: not realized
+TextEditor.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+TextEditor.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+TextEditor.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+TextEditor.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 TextEditor.frameChanged: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.verticalAlignment: ✅

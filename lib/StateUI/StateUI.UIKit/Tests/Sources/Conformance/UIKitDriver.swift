@@ -135,6 +135,33 @@ final class UIKitDriver: HostDriver {
         renderer = nil
     }
 
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as UIKit's
+    /// interactions tell it: the drag starts, comes over the view crossed and goes, comes over the target and is let
+    /// go there, and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func interactions(_ id: String) throws -> UIKitDragAndDrop {
+            let found = renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? UIKitElement
+            guard let dragAndDrop = found?.dragAndDrop, dragAndDrop.offered.takesDrops else {
+                throw DriverCannot(act, on: element)
+            }
+            return dragAndDrop
+        }
+        guard let source = (element.native as? UIKitElement)?.dragAndDrop, let words = source.offered.words else {
+            throw DriverCannot(act, on: element)
+        }
+        source.hearForTesting(.dragStarted)
+        if let across {
+            let crossed = try interactions(across)
+            crossed.hearForTesting(.dragOver)
+            crossed.hearForTesting(.dragLeft)
+        }
+        let landing = try interactions(target)
+        landing.hearForTesting(.dragOver)
+        landing.hearForTesting(.dropped(words))
+        source.hearForTesting(.dragEnded)
+    }
+
     /// The folder the files a test opens and saves stand in, the process's own.
     static let files = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-conformance-files")
 
@@ -237,6 +264,8 @@ final class UIKitDriver: HostDriver {
             guard renderer?.actToolkit.showing?.press(caption, typing: words) == true else {
                 throw DriverCannot("press \(caption): no question shows it")
             }
+        case (.dragAndDrop(let target, let across), _):
+            try dragAndDrop(element, onto: target, across: across)
         case (.answerFiles(let names), _):
             guard let dialog = renderer?.fileToolkit.showing, dialog.picker != nil else {
                 throw DriverCannot("answer a file dialog: none shows")

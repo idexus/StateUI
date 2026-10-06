@@ -33,3 +33,15 @@ user swipe back from anywhere in its page, and that swipe would take a drag
 meant for the view - the page went back as the user moved a square. A view
 listening for drags comes first: the stack's swipe waits for its drag to
 fail, and the two never recognize together.
+
+## A drag between views
+
+A view's drag between views is UIKit's own pair of interactions on the view
+itself, which asks no subclass and survives its layout. A view that can be
+dragged holds a drag interaction - turned on, as an iPhone leaves it off -
+whose item carries the view's words as a string; the session tells it the
+drag began and, wherever it ended, that it ended. A view that takes drops
+holds a drop interaction that takes a session carrying words: each update
+says the drag is over it, an exit that it went, and a drop loads the words
+and hands them over. The host layer's rule makes over once and no leave
+after a drop.

@@ -335,8 +335,11 @@ ZStack
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  allowsDrop
   area
   automationExcludedWithChildren
+  canDrag
+  dragText
   frame
   gridColumn
   gridColumnSpan
@@ -370,6 +373,11 @@ ZStack
   translationY
   verticalAlignment
   width
+  dragEnded()
+  dragLeave()
+  dragOver()
+  dragStarting()
+  drop()
   frameChanged()
   isFocusedChanged()
   panUpdated()

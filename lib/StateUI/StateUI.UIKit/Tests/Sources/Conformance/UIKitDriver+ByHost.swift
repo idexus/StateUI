@@ -17,6 +17,8 @@ extension UIKitDriver {
             return "the host's choice called, not the menu's action"
         case "answer":
             return "the host's response called, not the alert's action"
+        case "dragAndDrop":
+            return "the drag and drop interactions' handlers called, no drag session"
         case "answerFiles":
             return "the host's response called with the driver's files, not the picker's choice"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":

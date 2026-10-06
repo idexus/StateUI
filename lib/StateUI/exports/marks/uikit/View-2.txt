@@ -1,8 +1,8 @@
 # revision 3.1
-ActivityIndicator.allowsDrop: not realized
-ActivityIndicator.dragLeave: not realized
-ActivityIndicator.dragOver: not realized
-ActivityIndicator.drop: not realized
+ActivityIndicator.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+ActivityIndicator.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+ActivityIndicator.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+ActivityIndicator.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.horizontalAlignment: ✅
 ActivityIndicator.verticalAlignment: ✅
@@ -22,10 +22,10 @@ ColorBox.gridColumnSpan: ✅
 ColorBox.gridRowSpan: ✅
 DatePicker.area: ✅
 DatePicker.frameChanged: ✅
-Ellipse.canDrag: not realized
-Ellipse.dragEnded: not realized
-Ellipse.dragStarting: not realized
-Ellipse.dragText: not realized
+Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
+Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
+Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
+Ellipse.dragText: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Ellipse.frameChanged: ✅
 Ellipse.margin: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: the view's listening handed the recognizer's states, no touch sent
@@ -51,10 +51,10 @@ Picker.gridColumnSpan: ✅
 Picker.gridRowSpan: ✅
 Polygon.area: ✅
 Polygon.frameChanged: ✅
-Polyline.canDrag: not realized
-Polyline.dragEnded: not realized
-Polyline.dragStarting: not realized
-Polyline.dragText: not realized
+Polyline.canDrag: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
+Polyline.dragEnded: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
+Polyline.dragStarting: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
+Polyline.dragText: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
 Polyline.frameChanged: ✅
 Polyline.margin: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the view's listening handed the recognizer's states, no touch sent
@@ -64,10 +64,10 @@ Rectangle.tapped: ✓ tap on Rectangle: the view's listening handed the recogniz
 ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridRow: ✅
-SearchField.allowsDrop: not realized
-SearchField.dragLeave: not realized
-SearchField.dragOver: not realized
-SearchField.drop: not realized
+SearchField.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+SearchField.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+SearchField.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+SearchField.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 SearchField.frameChanged: ✅
 SearchField.horizontalAlignment: ✅
 SearchField.verticalAlignment: ✅
@@ -82,10 +82,10 @@ Stepper.swiped: ✓ pan on Stepper: the view's listening handed the recognizer's
 Switch.panTouchCount: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panUpdated: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panXChannel: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
-Text.allowsDrop: not realized
-Text.dragLeave: not realized
-Text.dragOver: not realized
-Text.drop: not realized
+Text.allowsDrop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Text.dragLeave: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Text.dragOver: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
+Text.drop: ✓ dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session
 Text.frameChanged: ✅
 Text.horizontalAlignment: ✅
 Text.verticalAlignment: ✅
@@ -94,10 +94,10 @@ TextEditor.gridColumnSpan: ✅
 TextEditor.gridRowSpan: ✅
 TextField.area: ✅
 TextField.frameChanged: ✅
-TimePicker.canDrag: not realized
-TimePicker.dragEnded: not realized
-TimePicker.dragStarting: not realized
-TimePicker.dragText: not realized
+TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
+TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
+TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
+TimePicker.dragText: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
 TimePicker.frameChanged: ✅
 TimePicker.margin: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: the view's listening handed the recognizer's states, no touch sent
