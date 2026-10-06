@@ -58,6 +58,9 @@ final class WebDriver: HostDriver {
         "read selectedItems of ItemsView": "the identities the host chose: the page marks a cell chosen, not which item it shows",
         "read windowType of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
+        "read a file dialog": "the dialog the relay holds on a page a test drives, which the browser never shows",
+        "read what was launched": "the relay's own record of what it would open, which a test holds back",
+        "answerFiles": "the relay's answer handed the driver's files, no dialog shown",
     ]
 
     var renderer: WebRenderer?
@@ -71,6 +74,7 @@ final class WebDriver: HostDriver {
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
     ) -> MountedTree {
         written.listen()
+        emptyFiles()
         let renderer = WebRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         return renderer.runtime.tree
@@ -78,6 +82,7 @@ final class WebDriver: HostDriver {
 
     func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
         written.listen()
+        emptyFiles()
         let renderer = WebRenderer.running(clock: clock, keeping: true, application: application)
         self.renderer = renderer
         return renderer.runtime.tree

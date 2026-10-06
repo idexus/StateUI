@@ -31,10 +31,10 @@ final class WebRenderer {
         makeNative: { [unowned self] element in WebElement(element, host: self) }, log: { WebRenderer.log.error($0) },
         views: { WebDOMView.liveCount })
 
-    /// The Web's part of the acts, and what performs them and answers them by the host layer's rules.
+    /// The Web's part of the acts and of the files, and what performs them and answers them by the host layer's rules.
     private(set) lazy var actToolkit = WebActToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        toolkit: actToolkit, files: WebFileToolkit(), answers: runtime.core, tree: { [unowned self] in runtime.tree },
         answered: { [unowned self] in runtime.pump.turn() })
 
     /// Whether the call ending reports what it laid out: a call the browser makes inside it reports nothing.

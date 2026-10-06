@@ -195,6 +195,28 @@ STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);
 STATEUI_WEB(draw_canvas) void stateui_web_draw_canvas(
     int32_t element, const double *numbers, int32_t count, const char *words, int32_t length);
 
+/// One file to open, or several, of the extensions `accept` lists (".txt,.md"), any where it lists none; `listener`
+/// hears the answer once: event 1 kept, 0 broken, and `file_words` reads each file chosen - its number, then its
+/// name - or why it broke.
+STATEUI_WEB(open_files) void stateui_web_open_files(
+    int32_t several, const char *accept, int32_t length, int32_t listener);
+
+/// A place to save `contents` in, `name` suggested and the kinds offered - each its caption, then its extensions
+/// apart by spaces - answered as `open_files` answers: the file saved, none where the user cancelled.
+STATEUI_WEB(save_file) void stateui_web_save_file(
+    const char *name, int32_t nameLength, const char *kinds, int32_t kindsLength,
+    const uint8_t *contents, int32_t length, int32_t listener);
+
+/// Reads the file whole: `listener` hears event 1 and its length, its bytes read by `copy_read` - or 0 and why.
+STATEUI_WEB(read_file) void stateui_web_read_file(int32_t file, int32_t listener);
+
+/// What a file's act answered last, read by `copy_read`: its length.
+STATEUI_WEB(file_words) int32_t stateui_web_file_words(void);
+
+/// Opens the file, or the address, in a window of its own; `listener` hears event 1 where the browser opened one.
+STATEUI_WEB(launch_file) void stateui_web_launch_file(int32_t file, int32_t listener);
+STATEUI_WEB(launch_address) void stateui_web_launch_address(const char *address, int32_t length, int32_t listener);
+
 /// The local time of day into `into`: hour, minute, second, millisecond.
 STATEUI_WEB(local_time) void stateui_web_local_time(double *into);
 

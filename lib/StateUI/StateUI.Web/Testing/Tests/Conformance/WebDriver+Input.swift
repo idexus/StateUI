@@ -18,6 +18,7 @@ extension WebDriver {
         if let page = Self.pageState(after: act) { return try running().pageChanged(page) }
         if act == .close, element.type == .window { return try running().runtime.ending() }
         if case .answer(let caption, let typing) = act { return try answer(caption, typing: typing, on: element) }
+        if case .answerFiles(let names) = act { return try answerFiles(names, on: element) }
         // The browser's way back, over the page's own entry: from one it did not put there, the user leaves the site.
         if act == .goBack {
             guard try WebBrowser.truth("history.state?.stateui === true && (history.back(), true)", on: 0) else {

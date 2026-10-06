@@ -81,6 +81,35 @@ extension WebDriver {
         mouse("mouseReleased", at: Point(x: box.width / 2, y: box.height / 2), in: box)
     }
 
+    /// The file dialog the relay holds: one that opens or one that saves.
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        switch try WebBrowser.evaluate("stateui.fileDialog?.kind ?? ''", on: 0) {
+        case "open": .open
+        case "save": .save
+        default: nil
+        }
+    }
+
+    /// The file dialog the relay holds answered as the user does, by the driver's files of `names` - none cancels it -
+    /// in a turn of the page's own.
+    func answerFiles(_ names: [String], on element: MountedElement) throws {
+        let chosen = names.map(WebBrowser.quoted).joined(separator: ",")
+        let answering = "(d) => !!d && (stateui.fileDialog = null, setTimeout(() => d.answer([\(chosen)]), 0), true)"
+        guard try WebBrowser.truth("(\(answering))(stateui.fileDialog)", on: 0) else {
+            throw DriverCannot(.answerFiles(names), on: element)
+        }
+    }
+
+    /// What the relay would have opened, in order: an address as written, a file by its name.
+    func launched() throws -> [String] {
+        try words("stateui.launched", on: 0)
+    }
+
+    /// Empties the driver's files, the dialog held and what was launched, as each case starts.
+    func emptyFiles() {
+        try? WebBrowser.run("stateui.files = new Map(); stateui.fileDialog = null; stateui.launched = []")
+    }
+
     /// What assistive technology was told, a few frames given for the page's live region to say it.
     func announced() throws -> [String] {
         for _ in 0..<10 where try words("stateui.announced", on: 0).isEmpty { WebBrowser.pause() }

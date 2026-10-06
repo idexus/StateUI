@@ -101,9 +101,9 @@ enum WebRealization {
         .notPlanned("Window", "y", reason: "A page places no browser window: the system does."),
     ]
 
-    /// The acts this host performs: every host's (`HostActs.performed`), a list scrolled to an item, and a web view's
-    /// steps and scripts.
-    static let acts: [any ContractMember] = HostActs.performed + [
+    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), a list
+    /// scrolled to an item, and a web view's steps and scripts.
+    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + [
         ItemsViewContract.scrollTo, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
         WebViewContract.evaluateJavaScript,
     ]

@@ -447,7 +447,7 @@ enum WebRelay {
     }
 
     /// The words the relay read last, `length` bytes of UTF-8.
-    private static func copyRead(length: Int32) -> String {
+    static func copyRead(length: Int32) -> String {
         guard length > 0 else { return "" }
         let bytes = [UInt8](unsafeUninitializedCapacity: Int(length)) { buffer, count in
             buffer.withMemoryRebound(to: CChar.self) { stateui_web_copy_read($0.baseAddress) }
@@ -457,7 +457,7 @@ enum WebRelay {
     }
 
     /// `text` as the relay reads words: its UTF-8 and their length.
-    private static func utf8<Result>(_ text: String, _ body: (UnsafePointer<CChar>?, Int32) -> Result) -> Result {
+    static func utf8<Result>(_ text: String, _ body: (UnsafePointer<CChar>?, Int32) -> Result) -> Result {
         var text = text
         return text.withUTF8 { bytes in
             bytes.withMemoryRebound(to: CChar.self) { body($0.baseAddress, Int32($0.count)) }
