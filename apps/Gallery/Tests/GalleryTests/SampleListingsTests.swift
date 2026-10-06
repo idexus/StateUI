@@ -68,29 +68,54 @@ final class SampleListingsTests: XCTestCase {
         XCTAssertEqual(unshown, [], "bodies of views no listing shows")
     }
 
-    /// The listings as the Swift file every host compiles, in the order of their names.
+    /// The listings as the Swift file every host compiles, in the order of their names: a host's own code - cut
+    /// from `Platforms/` - under the condition every host's build defines, which the samples showing it stand under.
     static func file(of listings: [String: String]) -> String {
-        var file = """
+        func entries(_ names: [String]) -> String {
+            names.map { name in
+                let text = listings[name]!
+                var hashes = "#"
+                while text.contains("\"\"\"" + hashes) { hashes += "#" }
+                let indented = text.split(separator: "\n", omittingEmptySubsequences: false)
+                    .map { $0.isEmpty ? "" : "        " + $0 }
+                    .joined(separator: "\n")
+                return "        \"\(name)\": \(hashes)\"\"\"\n\(indented)\n        \"\"\"\(hashes),\n"
+            }.joined()
+        }
+        let names = listings.keys.sorted()
+        let ofHosts = names.filter { listings[$0]!.hasPrefix("// Platforms/") }
+        let shared = names.filter { !ofHosts.contains($0) }
+        return """
             // The code each example shows, by name - written by SampleListingsTests from the regions the
             // sources mark `// listing: <name>`. Change the marked code, never this file.
 
             /// The code each example shows, by the name its region is marked with.
             enum Listings {
-                /// Every listing, by name.
-                static let all: [String: String] = [
+                /// Every listing, by name: the code every host runs, and a host's own where a host's build shows it.
+                static let all: [String: String] = shared.merging(ofHosts) { shared, _ in shared }
+
+                /// The code every host runs, by name.
+                private static let shared: [String: String] = [
+
+            """ + entries(shared) + """
+                ]
+            }
+
+            #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+            extension Listings {
+                /// The hosts' own code, which only a host's build shows.
+                fileprivate static let ofHosts: [String: String] = [
+
+            """ + entries(ofHosts) + """
+                ]
+            }
+            #else
+            extension Listings {
+                /// No host's code: a build for none shows none.
+                fileprivate static let ofHosts: [String: String] = [:]
+            }
+            #endif
 
             """
-
-        for name in listings.keys.sorted() {
-            let text = listings[name]!
-            var hashes = "#"
-            while text.contains("\"\"\"" + hashes) { hashes += "#" }
-            let indented = text.split(separator: "\n", omittingEmptySubsequences: false)
-                .map { $0.isEmpty ? "" : "        " + $0 }
-                .joined(separator: "\n")
-            file += "        \"\(name)\": \(hashes)\"\"\"\n\(indented)\n        \"\"\"\(hashes),\n"
-        }
-
-        return file + "    ]\n}\n"
     }
 }

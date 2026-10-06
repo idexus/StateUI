@@ -164,7 +164,7 @@ struct HostCode {
     let listings: [HostListing]
 
     /// `host`'s half, from the regions its sources mark - each name ending in its language,
-    /// `Cube3DSample.AppKit.metal`; names of one language one after another make one listing.
+    /// `Cube3DSample.<Host>.metal`; names of one language one after another make one listing.
     init(in host: String, marked names: String...) {
         self.host = host
         var listings: [HostListing] = []

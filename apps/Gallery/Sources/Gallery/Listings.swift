@@ -3,8 +3,11 @@
 
 /// The code each example shows, by the name its region is marked with.
 enum Listings {
-    /// Every listing, by name.
-    static let all: [String: String] = [
+    /// Every listing, by name: the code every host runs, and a host's own where a host's build shows it.
+    static let all: [String: String] = shared.merging(ofHosts) { shared, _ in shared }
+
+    /// The code every host runs, by name.
+    private static let shared: [String: String] = [
         "AboutScene": #"""
         // Sources/Samples/Windows/AboutScene.swift
         extension WindowType {
@@ -1777,1196 +1780,6 @@ enum Listings {
             }
         }
         """#,
-        "Cube3DSample.Android.glsl": #"""
-        // Platforms/Android/Swift/Host/GLESCube3DView.swift
-        // The vertex shader, compiled for OpenGL ES 3.0: a corner carries its face's brightness in w, and the
-        // colour is the frame's.
-        layout(location = 0) in vec4 corner;
-        uniform mat4 transform;
-        uniform vec4 color;
-        out vec4 painted;
-        void main() {
-            gl_Position = transform * vec4(corner.xyz, 1.0);
-            painted = vec4(color.rgb * corner.w, color.a);
-        }
-
-        // The fragment shader: every point of a face takes the colour its corners were painted.
-        precision mediump float;
-        in vec4 painted;
-        out vec4 fragment;
-        void main() { fragment = painted; }
-        """#,
-        "Cube3DSample.Android.java": #"""
-        // Platforms/Android/Java/com/stateui/gallery/Cube3DView.java
-        /**
-         * The surface a cube is drawn into by the Swift half, with OpenGL ES: a TextureView, drawn as a view is, so the
-         * opacity, transform and clip StateUI puts on every view hold for it. It hands its surface over as it comes and goes,
-         * and asks for the display's frames while it spins and stands in a window.
-         */
-        final class Cube3DView extends TextureView implements TextureView.SurfaceTextureListener, Choreographer.FrameCallback {
-            private static final float SIDE = 240;
-
-            private final long control;
-            private final float density;
-            private Surface surface;
-            private boolean spinning = true;
-            private boolean following;
-
-            Cube3DView(Context context, long control) {
-                super(context);
-                this.control = control;
-                density = context.getResources().getDisplayMetrics().density;
-                setSurfaceTextureListener(this);
-            }
-
-            /** Whether the cube turns: frames come only while it does. */
-            void setSpinning(boolean value) {
-                spinning = value;
-                follow();
-            }
-
-            @Override
-            protected void onMeasure(int width, int height) {
-                int side = Math.round(SIDE * density);
-                setMeasuredDimension(resolveSize(side, width), resolveSize(side, height));
-            }
-
-            @Override
-            protected void onAttachedToWindow() {
-                super.onAttachedToWindow();
-                follow();
-            }
-
-            @Override
-            protected void onDetachedFromWindow() {
-                super.onDetachedFromWindow();
-                follow();
-            }
-
-            @Override
-            public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
-                surface = new Surface(texture);
-                GalleryNatives.surfaceReady(control, surface, width, height);
-                follow();
-            }
-
-            @Override
-            public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
-                if (surface != null) GalleryNatives.surfaceReady(control, surface, width, height);
-            }
-
-            @Override
-            public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
-                GalleryNatives.surfaceGone(control);
-                surface.release();
-                surface = null;
-                follow();
-                return true;
-            }
-
-            @Override
-            public void onSurfaceTextureUpdated(SurfaceTexture texture) {}
-
-            @Override
-            public void doFrame(long nanoseconds) {
-                if (!following) return;
-                GalleryNatives.cubeFrame(control, nanoseconds);
-                Choreographer.getInstance().postFrameCallback(this);
-            }
-
-            /** Asks for frames while the cube spins on a surface in a window, and for none otherwise. */
-            private void follow() {
-                boolean wanted = spinning && surface != null && isAttachedToWindow();
-                if (wanted == following) return;
-                following = wanted;
-                if (wanted) {
-                    Choreographer.getInstance().postFrameCallback(this);
-                } else {
-                    Choreographer.getInstance().removeFrameCallback(this);
-                }
-            }
-        }
-
-        // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java
-        /**
-         * What the gallery's own Android views tell its Swift half, each by the number
-         * its control was made with. The Swift half answers each, in Host/GalleryNatives.swift.
-         */
-        final class GalleryNatives {
-            private GalleryNatives() {}
-
-            /** A traffic light's lamp was tapped, counted from the top. */
-            static native void lampTapped(long control, int lamp);
-
-            /** A rating bar's user chose a rating. */
-            static native void rated(long control, double rating);
-
-            /** A cube's surface came, or changed its size in pixels. */
-            static native void surfaceReady(long control, Surface surface, int width, int height);
-
-            /** A cube's surface is going: nothing draws into it once this returns. */
-            static native void surfaceGone(long control);
-
-            /** A display frame for a cube, while it asks for them. */
-            static native void cubeFrame(long control, long nanoseconds);
-
-            /** The battery said its level, 0 to 1, and whether it charges. */
-            static native void batteryChanged(double level, boolean charging);
-        }
-        """#,
-        "Cube3DSample.Android.swift": #"""
-        // Platforms/Android/Swift/Host/GLESCube3DView.swift
-        /// A cube drawn with OpenGL ES 3.0 into the surface of the gallery's own Java view, com.stateui.gallery.Cube3DView -
-        /// a TextureView that asks for the display's frames while the cube spins and stands in a window. The Swift half is
-        /// Sources/Samples/Interop/Cube3D.swift.
-        @MainActor
-        final class GLESCube3DView: AndroidControl {
-            let view: JavaObject
-
-            /// How long the cube's edge is, as a share of the view.
-            var cubeSize = 0.6 {
-                didSet { if cubeSize != oldValue { draw() } }
-            }
-
-            /// Which colour it is painted.
-            var color = CubeColor.teal {
-                didSet { if color != oldValue { draw() } }
-            }
-
-            /// Whether it turns. Stopped, it holds the angle it had.
-            var isSpinning = true {
-                didSet { if isSpinning != oldValue { Java.call(view.reference, Self.setSpinning, .bool(isSpinning)) } }
-            }
-
-            private let number: Int64
-
-            /// The surface drawn into, while the view has one: its window, the EGL objects over it, its size in pixels.
-            private var drawing: Drawing?
-
-            /// The angle turned, and the display's time of the frame it last turned on - 0 for none yet.
-            private var angle = 0.0
-            private var lastFrame: Int64 = 0
-
-            private static let viewClass = Java.findClass("com/stateui/gallery/Cube3DView")
-            private static let make = Java.method(viewClass, "<init>", "(Landroid/content/Context;J)V")
-            private static let setSpinning = Java.method(viewClass, "setSpinning", "(Z)V")
-
-            init() {
-                number = GalleryControls.reserve()
-                view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
-                GalleryControls.hold(self, as: number)
-            }
-
-            isolated deinit {
-                drawing?.close()
-                GalleryControls.forget(number)
-            }
-
-            /// The view's surface came, or changed size: the EGL context and the cube's program are made the first time.
-            func surfaceReady(_ surface: jobject?, environment: UnsafeMutablePointer<JNIEnv?>?, width: Int32, height: Int32) {
-                if drawing == nil, let surface, let window = ANativeWindow_fromSurface(environment, surface) {
-                    drawing = Drawing(window: window)
-                }
-                drawing?.size = (width, height)
-                lastFrame = 0
-                draw()
-            }
-
-            /// The view's surface is going: nothing is drawn into it again.
-            func surfaceGone() {
-                drawing?.close()
-                drawing = nil
-            }
-
-            /// One display frame while spinning: the angle moves by the time since the last, in seconds.
-            func frame(at time: Int64) {
-                if lastFrame != 0 { angle += Double(time - lastFrame) / 1_000_000_000 }
-                lastFrame = time
-                draw()
-            }
-
-        }
-
-        extension GLESCube3DView {
-            /// Adds the cube for `Cube3DContract`. Said once, as the library loads.
-            @MainActor
-            static func register() {
-                StateUIControls.add(Cube3DContract.self, create: { _ in GLESCube3DView() }) { cube in
-                    cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
-                    cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
-                    cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
-                }
-            }
-        }
-        """#,
-        "Cube3DSample.AppKit.metal": #"""
-        // Platforms/AppKit/Host/MetalCube3DView.swift
-        // Compiled as MetalCube3DView is made. A vertex is one float4 - the
-        // corner in xyz, the face's brightness in w - so there is no struct
-        // whose padding Swift and Metal could measure differently.
-        #include <metal_stdlib>
-        using namespace metal;
-
-        struct Uniforms {
-            float4x4 transform;
-            float4 color;
-        };
-
-        struct Painted {
-            float4 position [[position]];
-            float4 color;
-        };
-
-        vertex Painted cube_vertex(const device float4 *corners [[buffer(0)]],
-                                   constant Uniforms &uniforms [[buffer(1)]],
-                                   uint id [[vertex_id]]) {
-            float4 corner = corners[id];
-
-            Painted out;
-            out.position = uniforms.transform * float4(corner.xyz, 1.0);
-            out.color = float4(uniforms.color.rgb * corner.w, 1.0);
-            return out;
-        }
-
-        fragment float4 cube_fragment(Painted in [[stage_in]]) {
-            return in.color;
-        }
-        """#,
-        "Cube3DSample.AppKit.swift": #"""
-        // Platforms/AppKit/Host/MetalCube3DView.swift
-        /// A cube turning on the GPU - an ordinary `MTKView` that knows nothing of
-        /// StateUI.
-        ///
-        /// `register()`, at the end of this file, adds it for `Cube3DContract`, and
-        /// that registration is the whole bridge. The Swift half is
-        /// Sources/Samples/Interop/Cube3D.swift.
-        ///
-        /// Its shaders are compiled FROM SOURCE as the view is made, so the
-        /// application ships no `.metal` file and its build needs nothing added to it.
-        ///
-        /// It renders in `draw(_:)` rather than through an `MTKViewDelegate`: a view
-        /// that draws itself needs no second object, and this way the drawing runs
-        /// where every other `NSView` draws.
-        final class MetalCube3DView: MTKView {
-            /// How long the cube's edge is, as a share of the room it is given: 1
-            /// turns corner to corner inside the view.
-            var cubeSize: Double = 0.6 {
-                didSet { if cubeSize != oldValue { drawIfStill() } }
-            }
-
-            /// Which colour the cube is painted, as the member number the Swift side
-            /// sends: teal 0, amber 1, violet 2. Anything else is teal.
-            var color: Int32 = 0 {
-                didSet { if color != oldValue { drawIfStill() } }
-            }
-
-            /// Whether the cube turns. Stopped, it holds the angle it had.
-            var isSpinning: Bool = true {
-                didSet {
-                    guard isSpinning != oldValue else { return }
-
-                    // The clock restarts with the motion, or the time spent stopped
-                    // would arrive as one jump.
-                    lastTime = CACurrentMediaTime()
-                    resumeOrStop()
-                }
-            }
-
-            private static let colors: [SIMD3<Float>] = [
-                SIMD3(0.161, 0.722, 0.678),
-                SIMD3(0.961, 0.710, 0.275),
-                SIMD3(0.580, 0.443, 0.929),
-            ]
-
-            /// The eight corners as six faces, each face two triangles. `xyz` is the
-            /// corner and `w` is how brightly that face takes the colour - which is
-            /// what makes a solid read as a solid.
-            private static let corners: [SIMD4<Float>] = {
-                let faces: [(SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, Float)] = [
-                    (SIMD3(1, -1, -1), SIMD3(1, 1, -1), SIMD3(1, 1, 1), SIMD3(1, -1, 1), 1.00),
-                    (SIMD3(-1, -1, -1), SIMD3(-1, 1, -1), SIMD3(-1, 1, 1), SIMD3(-1, -1, 1), 0.55),
-                    (SIMD3(-1, 1, -1), SIMD3(1, 1, -1), SIMD3(1, 1, 1), SIMD3(-1, 1, 1), 0.88),
-                    (SIMD3(-1, -1, -1), SIMD3(1, -1, -1), SIMD3(1, -1, 1), SIMD3(-1, -1, 1), 0.42),
-                    (SIMD3(-1, -1, 1), SIMD3(1, -1, 1), SIMD3(1, 1, 1), SIMD3(-1, 1, 1), 0.97),
-                    (SIMD3(-1, -1, -1), SIMD3(1, -1, -1), SIMD3(1, 1, -1), SIMD3(-1, 1, -1), 0.50),
-                ]
-
-                return faces.flatMap { a, b, c, d, shade in
-                    [a, b, c, a, c, d].map { SIMD4($0.x, $0.y, $0.z, shade) }
-                }
-            }()
-
-            /// What the vertex function is handed for the whole frame.
-            ///
-            /// Its layout is the shader's: a 4x4 of floats, then four floats. Both
-            /// sides measure 80 bytes, which is what lets it cross as raw bytes.
-            private struct Uniforms {
-                var transform: simd_float4x4
-                var color: SIMD4<Float>
-            }
-
-            private let queue: MTLCommandQueue?
-            private var pipeline: MTLRenderPipelineState?
-            private var depth: MTLDepthStencilState?
-            private var mesh: MTLBuffer?
-
-            private var angle: Double = 0
-            private var lastTime: CFTimeInterval = CACurrentMediaTime()
-
-            /// The view, its pipeline and its mesh, built once.
-            ///
-            /// A machine with no Metal device leaves the pipeline empty and the view
-            /// draws its background alone - a gallery is worth more than a crash.
-            init() {
-                let device = MTLCreateSystemDefaultDevice()
-                queue = device?.makeCommandQueue()
-
-                super.init(frame: .zero, device: device)
-
-                colorPixelFormat = .bgra8Unorm
-                depthStencilPixelFormat = .depth32Float
-                clearColor = MTLClearColor(red: 0.102, green: 0.090, blue: 0.145, alpha: 1)
-                preferredFramesPerSecond = 60
-
-                wantsLayer = true
-                layer?.cornerRadius = 18
-                layer?.masksToBounds = true
-
-                guard let device else { return }
-
-                mesh = device.makeBuffer(
-                    bytes: Self.corners,
-                    length: MemoryLayout<SIMD4<Float>>.stride * Self.corners.count)
-
-                let describedDepth = MTLDepthStencilDescriptor()
-                describedDepth.depthCompareFunction = .less
-                describedDepth.isDepthWriteEnabled = true
-                depth = device.makeDepthStencilState(descriptor: describedDepth)
-
-                pipeline = Self.pipeline(on: device, colorFormat: colorPixelFormat)
-            }
-
-            @available(*, unavailable)
-            required init(coder: NSCoder) {
-                fatalError("MetalCube3DView is created in code")
-            }
-
-            /// Square, and big enough to see a solid turn in.
-            override var intrinsicContentSize: NSSize {
-                NSSize(width: 240, height: 240)
-            }
-
-            /// Nothing turns while the view is off screen, and nothing is left turning
-            /// behind it: the loop stops with the window it was shown in.
-            override func viewDidMoveToWindow() {
-                super.viewDidMoveToWindow()
-
-                lastTime = CACurrentMediaTime()
-                resumeOrStop()
-            }
-
-            /// One frame: the angle the clock has reached, the cube at the size and
-            /// colour it was given.
-            override func draw(_ dirtyRect: NSRect) {
-                let now = CACurrentMediaTime()
-                let elapsed = now - lastTime
-                lastTime = now
-
-                // Only a turning cube moves with the clock. Stopped, the frame drawn
-                // for a changed size or colour finds the angle where it was left.
-                if isSpinning {
-                    angle += elapsed
-                }
-
-                guard let pipeline, let mesh, let queue,
-                      let pass = currentRenderPassDescriptor,
-                      let drawable = currentDrawable,
-                      let buffer = queue.makeCommandBuffer(),
-                      let encoder = buffer.makeRenderCommandEncoder(descriptor: pass),
-                      drawableSize.height > 0
-                else { return }
-
-                var uniforms = Uniforms(
-                    transform: transform(aspect: Float(drawableSize.width / drawableSize.height)),
-                    color: Self.paint(color))
-
-                encoder.setRenderPipelineState(pipeline)
-                encoder.setDepthStencilState(depth)
-                encoder.setVertexBuffer(mesh, offset: 0, index: 0)
-                encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 1)
-                encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: Self.corners.count)
-                encoder.endEncoding()
-
-                buffer.present(drawable)
-                buffer.commit()
-            }
-
-            /// Where the cube stands, how big it is, and how it is turned - one matrix
-            /// the vertex function multiplies each corner by.
-            private func transform(aspect: Float) -> simd_float4x4 {
-                let scale = Float(max(0, min(1, cubeSize)))
-                let turn = Float(angle)
-
-                return Self.perspective(fieldOfView: 50 * .pi / 180, aspect: aspect)
-                    * Self.translation(z: -4)
-                    * Self.rotation(aroundX: turn * 0.35)
-                    * Self.rotation(aroundY: turn * 0.60)
-                    * Self.scaling(scale)
-            }
-
-            /// The colour a member number names, opaque - teal for a number naming
-            /// none, so a value from outside the vocabulary paints rather than
-            /// vanishes.
-            private static func paint(_ color: Int32) -> SIMD4<Float> {
-                let index = Int(color)
-                let rgb = colors.indices.contains(index) ? colors[index] : colors[0]
-
-                return SIMD4(rgb, 1)
-            }
-
-            /// Turning, or stopped where it stands - and never running for a view no
-            /// window shows.
-            private func resumeOrStop() {
-                isPaused = window == nil || !isSpinning
-            }
-
-            /// Draws the one frame a stopped cube needs to show a changed size or
-            /// colour. A turning one is already drawing.
-            private func drawIfStill() {
-                guard isPaused, window != nil else { return }
-
-                draw()
-            }
-
-        }
-
-        // MARK: - Registration
-
-        extension MetalCube3DView {
-            /// Adds the cube for `Cube3DContract`. Said once, before the application
-            /// runs.
-            ///
-            /// A view that draws on the GPU registers exactly like one that draws with a
-            /// layer: an `MTKView` is an `NSView`. It reports nothing, so `create` only
-            /// makes it - every member here goes one way, from the description to the
-            /// frames. The cube is declared only for the hosts that draw it, and this
-            /// file names it with no condition around it because nothing but an AppKit
-            /// build compiles this folder.
-            @MainActor
-            static func register() {
-                StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
-                    MetalCube3DView()
-                }) { cube in
-                    cube.property(Cube3DContract.size) { view, size in
-                        view.cubeSize = size ?? 0.6
-                    }
-                    cube.property(Cube3DContract.color) { view, color in
-                        view.color = (color ?? .teal).rawValue
-                    }
-                    cube.property(Cube3DContract.isSpinning) { view, spinning in
-                        view.isSpinning = spinning ?? true
-                    }
-                }
-            }
-        }
-        """#,
-        "Cube3DSample.GTK.glsl": #"""
-        // Platforms/GTK/Host/OpenGLCube3DWidget.swift
-        // GLSL 3.30 core, compiled from source as the area is realized. A corner carries the brightness of its face
-        // in w; the colour comes with each frame.
-        layout(location = 0) in vec4 corner;
-        uniform mat4 transform;
-        uniform vec4 color;
-        out vec4 painted;
-        void main() {
-            gl_Position = transform * vec4(corner.xyz, 1.0);
-            painted = vec4(color.rgb * corner.w, color.a);
-        }
-
-        in vec4 painted;
-        out vec4 fragment;
-        void main() { fragment = painted; }
-        """#,
-        "Cube3DSample.GTK.swift": #"""
-        // Platforms/GTK/Host/OpenGLCube3DWidget.swift
-        /// A cube drawn by OpenGL 3.3 core in a `GtkGLArea`, turning on the widget's frame clock - a widget that knows
-        /// nothing of StateUI. The Swift half is Sources/Samples/Interop/Cube3D.swift.
-        ///
-        /// Its GL calls go through libepoxy, the loader GTK itself draws with. A `GTKControl` is an object holding the widget
-        /// it shows.
-        @MainActor
-        final class OpenGLCube3DWidget: GTKControl {
-            let widget: UnsafeMutablePointer<GtkWidget>
-
-            /// How long the cube's edge is, as a share of the area.
-            var cubeSize = 0.6 {
-                didSet { if cubeSize != oldValue { gtk_gl_area_queue_render(area) } }
-            }
-
-            /// Which colour it is painted.
-            var color = CubeColor.teal {
-                didSet { if color != oldValue { gtk_gl_area_queue_render(area) } }
-            }
-
-            /// Whether it turns. Stopped, it holds the angle it had.
-            var isSpinning = true {
-                didSet { if isSpinning != oldValue { followClock() } }
-            }
-
-            /// An area asking GTK for OpenGL 3.3 core with a depth buffer, its GL made where the widget is realized.
-            init() {
-                widget = gtk_gl_area_new()
-                g_object_ref_sink(widget)
-                gtk_widget_set_size_request(widget, 240, 240)
-                gtk_gl_area_set_required_version(area, 3, 3)
-                gtk_gl_area_set_allowed_apis(area, GDK_GL_API_GL)
-                gtk_gl_area_set_has_depth_buffer(area, 1)
-
-                // "realize" compiles the shaders and loads the corners, "render" draws a frame, "unrealize" lets them go,
-                // and "map" forgets the last frame, so the cube does not leap by the time it spent off screen.
-                // Each a C callback, handed the control as its data: it lives as long as its widget.
-                let me = Unmanaged.passUnretained(self).toOpaque()
-                let realized: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
-                    MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).realize() }
-                }
-                let unrealized: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
-                    MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).unrealize() }
-                }
-                let render: @convention(c) (OpaquePointer?, OpaquePointer?, gpointer?) -> gboolean = { _, _, data in
-                    MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).render() }
-                }
-                let mapped: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
-                    MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).lastFrame = 0 }
-                }
-                for (signal, handler) in [
-                    ("realize", unsafeBitCast(realized, to: GCallback.self)),
-                    ("unrealize", unsafeBitCast(unrealized, to: GCallback.self)),
-                    ("render", unsafeBitCast(render, to: GCallback.self)),
-                    ("map", unsafeBitCast(mapped, to: GCallback.self)),
-                ] {
-                    g_signal_connect_data(UnsafeMutableRawPointer(widget), signal, handler, me, nil, GConnectFlags(rawValue: 0))
-                }
-                followClock()
-            }
-
-            /// Turns on the widget's frames while spinning: GTK ticks only a mapped widget, so the cube stops behind a page
-            /// the user has left. A stopped cube still owes one frame to a value that changed.
-            private func followClock() {
-                if isSpinning, tick == 0 {
-                    lastFrame = 0
-                    let turn: @convention(c) (UnsafeMutablePointer<GtkWidget>?, OpaquePointer?, gpointer?) -> gboolean = {
-                        _, clock, data in
-                        nonisolated(unsafe) let clock = clock
-                        return MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).turn(at: gdk_frame_clock_get_frame_time(clock)) }
-                    }
-                    tick = gtk_widget_add_tick_callback(widget, turn, Unmanaged.passUnretained(self).toOpaque(), nil)
-                } else if !isSpinning, tick != 0 {
-                    gtk_widget_remove_tick_callback(widget, tick)
-                    tick = 0
-                }
-            }
-
-            /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
-            private func render() -> gboolean {
-                epoxy_glClearColor(0.102, 0.090, 0.145, 1)
-                epoxy_glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
-                guard program != 0 else { return 1 }
-
-                epoxy_glEnable(GLenum(GL_DEPTH_TEST))
-                epoxy_glUseProgram(program)
-                let width = Double(max(gtk_widget_get_width(widget), 1))
-                let height = Double(max(gtk_widget_get_height(widget), 1))
-                var transform = Self.transform(aspect: width / height, turn: angle, scale: min(max(cubeSize, 0), 1))
-                epoxy_glUniformMatrix4fv(transformAt, 1, GLboolean(GL_FALSE), &transform)
-                let (red, green, blue) = Self.colors[Int(color.rawValue)]
-                epoxy_glUniform4f(colorAt, red, green, blue, 1)
-                epoxy_glBindVertexArray(vertexArray)
-                epoxy_glDrawArrays(GLenum(GL_TRIANGLES), 0, GLsizei(Self.corners.count / 4))
-                return 1
-            }
-
-            extension OpenGLCube3DWidget {
-                /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
-                @MainActor
-                static func register() {
-                    StateUIControls.add(Cube3DContract.self, create: { _ in OpenGLCube3DWidget() }) { cube in
-                        cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
-                        cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
-                        cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
-                    }
-                }
-            }
-        """#,
-        "Cube3DSample.UIKit.metal": #"""
-        // Platforms/UIKit/Host/MetalCube3DView.swift
-        // The cube's shaders, compiled from this source as the view is made. A
-        // corner is one float4: its position in xyz, its face's brightness in w.
-        #include <metal_stdlib>
-        using namespace metal;
-
-        struct Uniforms {
-            float4x4 transform;
-            float4 color;
-        };
-
-        struct Painted {
-            float4 position [[position]];
-            float4 color;
-        };
-
-        vertex Painted cube_vertex(const device float4 *corners [[buffer(0)]],
-                                   constant Uniforms &uniforms [[buffer(1)]],
-                                   uint id [[vertex_id]]) {
-            float4 corner = corners[id];
-
-            Painted out;
-            out.position = uniforms.transform * float4(corner.xyz, 1.0);
-            out.color = float4(uniforms.color.rgb * corner.w, 1.0);
-            return out;
-        }
-
-        fragment float4 cube_fragment(Painted in [[stage_in]]) {
-            return in.color;
-        }
-        """#,
-        "Cube3DSample.UIKit.swift": #"""
-        // Platforms/UIKit/Host/MetalCube3DView.swift
-        /// A cube turning on the GPU - an ordinary `MTKView` that knows nothing of
-        /// StateUI.
-        ///
-        /// `register()`, at the end of this file, adds it for `Cube3DContract`, and
-        /// that registration is the whole bridge. The Swift half is
-        /// Sources/Samples/Interop/Cube3D.swift.
-        ///
-        /// Its shaders are compiled FROM SOURCE as the view is made, so the
-        /// application ships no `.metal` file and its build needs nothing added to it.
-        ///
-        /// It renders in `draw(_:)` rather than through an `MTKViewDelegate`: a view
-        /// that draws itself needs no second object, and this way the drawing runs
-        /// where every other `UIView` draws.
-        final class MetalCube3DView: MTKView {
-
-            /// How long the cube's edge is, as a share of the room it is given: 1
-            /// turns corner to corner inside the view.
-            var cubeSize: Double = 0.6 {
-                didSet { if cubeSize != oldValue { drawIfStill() } }
-            }
-
-            /// Which colour the cube is painted, as the member number the Swift side
-            /// sends: teal 0, amber 1, violet 2. Anything else is teal.
-            var color: Int32 = 0 {
-                didSet { if color != oldValue { drawIfStill() } }
-            }
-
-            /// Whether the cube turns. Stopped, it holds the angle it had.
-            var isSpinning: Bool = true {
-                didSet {
-                    guard isSpinning != oldValue else { return }
-
-                    // The clock restarts with the motion, or the time spent stopped
-                    // would arrive as one jump.
-                    lastTime = CACurrentMediaTime()
-                    resumeOrStop()
-                }
-            }
-
-            /// The view, its pipeline and its mesh, built once.
-            ///
-            /// A machine with no Metal device leaves the pipeline empty and the view
-            /// draws its background alone - a gallery is worth more than a crash.
-            init() {
-                let device = MTLCreateSystemDefaultDevice()
-                queue = device?.makeCommandQueue()
-
-                super.init(frame: .zero, device: device)
-
-                colorPixelFormat = .bgra8Unorm
-                depthStencilPixelFormat = .depth32Float
-                clearColor = MTLClearColor(red: 0.102, green: 0.090, blue: 0.145, alpha: 1)
-                preferredFramesPerSecond = 60
-
-                layer.cornerRadius = 18
-                layer.masksToBounds = true
-
-                guard let device else { return }
-
-                mesh = device.makeBuffer(
-                    bytes: Self.corners,
-                    length: MemoryLayout<SIMD4<Float>>.stride * Self.corners.count)
-
-                let describedDepth = MTLDepthStencilDescriptor()
-                describedDepth.depthCompareFunction = .less
-                describedDepth.isDepthWriteEnabled = true
-                depth = device.makeDepthStencilState(descriptor: describedDepth)
-
-                pipeline = Self.pipeline(on: device, colorFormat: colorPixelFormat)
-            }
-
-            /// Nothing turns while the view is off screen, and nothing is left turning
-            /// behind it: the loop stops with the window it was shown in.
-            override func didMoveToWindow() {
-                super.didMoveToWindow()
-
-                lastTime = CACurrentMediaTime()
-                resumeOrStop()
-            }
-
-            /// One frame: the angle the clock has reached, the cube at the size and
-            /// colour it was given.
-            override func draw(_ rect: CGRect) {
-                let now = CACurrentMediaTime()
-                let elapsed = now - lastTime
-                lastTime = now
-
-                // Only a turning cube moves with the clock. Stopped, the frame drawn
-                // for a changed size or colour finds the angle where it was left.
-                if isSpinning {
-                    angle += elapsed
-                }
-
-                guard let pipeline, let mesh, let queue,
-                      let pass = currentRenderPassDescriptor,
-                      let drawable = currentDrawable,
-                      let buffer = queue.makeCommandBuffer(),
-                      let encoder = buffer.makeRenderCommandEncoder(descriptor: pass),
-                      drawableSize.height > 0
-                else { return }
-
-                var uniforms = Uniforms(
-                    transform: transform(aspect: Float(drawableSize.width / drawableSize.height)),
-                    color: Self.paint(color))
-
-                encoder.setRenderPipelineState(pipeline)
-                encoder.setDepthStencilState(depth)
-                encoder.setVertexBuffer(mesh, offset: 0, index: 0)
-                encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 1)
-                encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: Self.corners.count)
-                encoder.endEncoding()
-
-                buffer.present(drawable)
-                buffer.commit()
-            }
-
-            /// Turning, or stopped where it stands - and never running for a view no
-            /// window shows.
-            private func resumeOrStop() {
-                isPaused = window == nil || !isSpinning
-            }
-
-        }
-
-        extension MetalCube3DView {
-            /// Adds the cube for `Cube3DContract`. Said once, before the application
-            /// runs.
-            ///
-            /// A view that draws on the GPU registers exactly like one that draws with a
-            /// layer: an `MTKView` is a `UIView`. It reports nothing, so `create` only
-            /// makes it - every member here goes one way, from the description to the
-            /// frames. This file names the cube with no condition around it because
-            /// nothing but a UIKit build compiles this folder.
-            @MainActor
-            static func register() {
-                StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
-                    MetalCube3DView()
-                }) { cube in
-                    cube.property(Cube3DContract.size) { view, size in
-                        view.cubeSize = size ?? 0.6
-                    }
-                    cube.property(Cube3DContract.color) { view, color in
-                        view.color = (color ?? .teal).rawValue
-                    }
-                    cube.property(Cube3DContract.isSpinning) { view, spinning in
-                        view.isSpinning = spinning ?? true
-                    }
-                }
-            }
-        }
-        """#,
-        "Cube3DSample.Web.javascript": #"""
-        // Platforms/Web/Page/cube3d.js
-        // <gallery-cube3d>: a cube drawn by WebGL 2 on a canvas of its own, turning on the browser's display frames while
-        // it is in view - an element that knows nothing of StateUI. Its attributes say what it is: `size`, the edge as a
-        // share of its room from 0 to 1; `color`, 0 teal, 1 amber, 2 violet; `spinning`, present while it turns. The Swift
-        // half is Platforms/Web/Host/WebGLCube3DView.swift.
-
-        const colors = [[0.161, 0.722, 0.678], [0.961, 0.710, 0.275], [0.580, 0.443, 0.929]];
-
-        // Six faces of two triangles each, every corner its position and its face's brightness in w.
-        const corners = new Float32Array([
-          [[[1, -1, -1], [1, 1, -1], [1, 1, 1], [1, -1, 1]], 1.00],
-          [[[-1, -1, -1], [-1, 1, -1], [-1, 1, 1], [-1, -1, 1]], 0.55],
-          [[[-1, 1, -1], [1, 1, -1], [1, 1, 1], [-1, 1, 1]], 0.88],
-          [[[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]], 0.42],
-          [[[-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]], 0.97],
-          [[[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1]], 0.50],
-        ].flatMap(([face, shade]) => [0, 1, 2, 0, 2, 3].flatMap((at) => [...face[at], shade])));
-
-        const vertexShader = `#version 300 es
-        layout(location = 0) in vec4 corner;
-        uniform mat4 transform;
-        uniform vec4 color;
-        out vec4 painted;
-        void main() {
-          gl_Position = transform * vec4(corner.xyz, 1.0);
-          painted = vec4(color.rgb * corner.w, color.a);
-        }`;
-
-        const fragmentShader = `#version 300 es
-        precision mediump float;
-        in vec4 painted;
-        out vec4 fragment;
-        void main() { fragment = painted; }`;
-
-        class Cube3D extends HTMLElement {
-          static observedAttributes = ["size", "color", "spinning"];
-
-          constructor() {
-            super();
-            const shadow = this.attachShadow({ mode: "open" });
-            shadow.innerHTML = `<style>
-              :host { display: block; position: relative; min-width: 240px; min-height: 240px; }
-              canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border-radius: inherit; }
-              p { position: absolute; inset: 0; margin: auto; height: fit-content; text-align: center; color: #bbb; font: 14px system-ui; }
-            </style><canvas></canvas>`;
-            this.canvas = shadow.querySelector("canvas");
-            this.angle = 0;
-            this.lastFrame = 0;
-            this.inView = false;
-            this.canvas.addEventListener("webglcontextlost", (lost) => { lost.preventDefault(); this.gl = null; });
-            this.canvas.addEventListener("webglcontextrestored", () => this.makeContext());
-          }
-
-          connectedCallback() {
-            if (!this.gl) this.makeContext();
-            this.resized = new ResizeObserver(() => this.draw());
-            this.resized.observe(this);
-            // The cube turns only where the user can see it: behind a page left, it holds its angle.
-            this.seen = new IntersectionObserver(([entry]) => {
-              this.inView = entry.isIntersecting;
-              this.follow();
-            });
-            this.seen.observe(this);
-          }
-
-          disconnectedCallback() {
-            this.resized?.disconnect();
-            this.seen?.disconnect();
-            this.inView = false;
-            this.follow();
-          }
-
-          attributeChangedCallback() {
-            this.follow();
-            this.draw();
-          }
-
-          get size() { return Math.min(Math.max(Number(this.getAttribute("size") ?? 0.6), 0), 1); }
-          get color() { return colors[Number(this.getAttribute("color") ?? 0)] ?? colors[0]; }
-          get spinning() { return this.hasAttribute("spinning"); }
-
-          // The shaders, the corners and where the uniforms stand, made in the canvas's own context.
-          makeContext() {
-            const gl = this.canvas.getContext("webgl2", { antialias: true });
-            if (!gl) {
-              this.shadowRoot.append(Object.assign(document.createElement("p"), { textContent: "This browser draws no WebGL 2." }));
-              return;
-            }
-            const program = gl.createProgram();
-            for (const [kind, source] of [[gl.VERTEX_SHADER, vertexShader], [gl.FRAGMENT_SHADER, fragmentShader]]) {
-              const shader = gl.createShader(kind);
-              gl.shaderSource(shader, source);
-              gl.compileShader(shader);
-              gl.attachShader(program, shader);
-              gl.deleteShader(shader);
-            }
-            gl.linkProgram(program);
-            const vertexArray = gl.createVertexArray();
-            gl.bindVertexArray(vertexArray);
-            gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-            gl.bufferData(gl.ARRAY_BUFFER, corners, gl.STATIC_DRAW);
-            gl.enableVertexAttribArray(0);
-            gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 16, 0);
-            this.gl = gl;
-            this.program = program;
-            this.vertexArray = vertexArray;
-            this.transformAt = gl.getUniformLocation(program, "transform");
-            this.colorAt = gl.getUniformLocation(program, "color");
-            this.draw();
-          }
-
-          // Turns on the display's frames while spinning in view; a stopped cube still owes one frame to a value changed.
-          follow() {
-            const turns = this.spinning && this.inView;
-            if (turns && !this.frame) {
-              this.lastFrame = 0;
-              const turn = (time) => {
-                if (this.lastFrame) this.angle += (time - this.lastFrame) / 1000;
-                this.lastFrame = time;
-                this.draw();
-                this.frame = requestAnimationFrame(turn);
-              };
-              this.frame = requestAnimationFrame(turn);
-            } else if (!turns && this.frame) {
-              cancelAnimationFrame(this.frame);
-              this.frame = 0;
-            }
-          }
-
-          // Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
-          draw() {
-            const gl = this.gl;
-            if (!gl) return;
-            const ratio = devicePixelRatio || 1;
-            const width = Math.max(1, Math.round(this.clientWidth * ratio)), height = Math.max(1, Math.round(this.clientHeight * ratio));
-            if (this.canvas.width !== width) this.canvas.width = width;
-            if (this.canvas.height !== height) this.canvas.height = height;
-            gl.viewport(0, 0, width, height);
-            gl.clearColor(0.102, 0.090, 0.145, 1);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-            gl.enable(gl.DEPTH_TEST);
-            gl.useProgram(this.program);
-            gl.uniformMatrix4fv(this.transformAt, false, transform(width / height, this.angle, this.size));
-            gl.uniform4f(this.colorAt, ...this.color, 1);
-            gl.bindVertexArray(this.vertexArray);
-            gl.drawArrays(gl.TRIANGLES, 0, corners.length / 4);
-          }
-        }
-
-        customElements.define("gallery-cube3d", Cube3D);
-        """#,
-        "Cube3DSample.Web.swift": #"""
-        // Platforms/Web/Host/WebGLCube3DView.swift
-        /// A cube drawn by WebGL 2 in the page: the gallery's own element, `<gallery-cube3d>` of Page/cube3d.js, which knows
-        /// nothing of StateUI - told what it is through its attributes. The Swift half is Sources/Samples/Interop/Cube3D.swift.
-        @MainActor
-        final class WebGLCube3DView: WebControl {
-            let element = WebPageElement(tag: "gallery-cube3d")
-
-            /// How long the cube's edge is, as a share of the element.
-            var cubeSize = 0.6 {
-                didSet { if cubeSize != oldValue { element.setAttribute("size", String(cubeSize)) } }
-            }
-
-            /// Which colour it is painted, as the element reads it: the vocabulary's member number.
-            var color = CubeColor.teal {
-                didSet { if color != oldValue { element.setAttribute("color", String(color.rawValue)) } }
-            }
-
-            /// Whether it turns. Stopped, it holds the angle it had.
-            var isSpinning = true {
-                didSet { if isSpinning != oldValue { element.setAttribute("spinning", isSpinning ? "" : nil) } }
-            }
-
-            init() {
-                element.setAttribute("size", String(cubeSize))
-                element.setAttribute("color", String(color.rawValue))
-                element.setAttribute("spinning", "")
-            }
-        }
-
-        extension WebGLCube3DView {
-            /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
-            static func register() {
-                StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { cube in
-                    cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
-                    cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
-                    cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
-                }
-            }
-        }
-        """#,
-        "Cube3DSample.WinUI.cpp": #"""
-        // Platforms/WinUI/Relay/Cube3D.cpp
-        // A cube drawn by Direct3D 11.1 into WinUI's SwapChainPanel - an element that knows nothing of StateUI. Its device
-        // asks for feature level 11_1 alone; its swap chain is the panel's, sized in pixels for the panel's scale; it turns
-        // on WinUI's frames only while it spins and stands on screen, so nothing turns behind a page the user has left, and
-        // a value changed while it stands still draws the one frame it needs.
-
-        namespace {
-            // First what a cube draws with: its paints, its shaders, and its device, corners and swap chain - made once, and
-            // sized again with the panel by standChain. Then the drawing itself, and the frames it follows.
-
-                /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
-                void draw(Cube &cube) {
-                    auto panel = cube.panel.get();
-                    if (!panel || panel.ActualWidth() < 1 || panel.ActualHeight() < 1) return;
-                    standChain(cube, panel);
-
-                    float const housing[4] = {0.102f, 0.090f, 0.145f, 1};
-                    auto target = cube.target.get();
-                    cube.context->OMSetRenderTargets(1, &target, cube.depth.get());
-                    cube.context->ClearRenderTargetView(target, housing);
-                    cube.context->ClearDepthStencilView(cube.depth.get(), D3D11_CLEAR_DEPTH, 1, 0);
-                    D3D11_VIEWPORT viewport{0, 0, static_cast<float>(cube.width), static_cast<float>(cube.height), 0, 1};
-                    cube.context->RSSetViewports(1, &viewport);
-
-                    Frame frame{};
-                    transform(double(cube.width) / cube.height, cube.angle, std::clamp(cube.size, 0.0, 1.0), frame.transform);
-                    auto const &paint = paints[std::clamp(cube.color, 0, 2)];
-                    std::copy(paint, paint + 3, frame.color);
-                    frame.color[3] = 1;
-                    cube.context->UpdateSubresource(cube.frame.get(), 0, nullptr, &frame, 0, 0);
-
-                    UINT const stride = 4 * sizeof(float), offset = 0;
-                    auto corners = cube.corners.get();
-                    auto constants = cube.frame.get();
-                    cube.context->IASetInputLayout(cube.layout.get());
-                    cube.context->IASetVertexBuffers(0, 1, &corners, &stride, &offset);
-                    cube.context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                    cube.context->VSSetShader(cube.vertexShader.get(), nullptr, 0);
-                    cube.context->VSSetConstantBuffers(0, 1, &constants);
-                    cube.context->PSSetShader(cube.pixelShader.get(), nullptr, 0);
-                    cube.context->RSSetState(cube.bothSides.get());
-                    cube.context->OMSetDepthStencilState(cube.nearest.get(), 0);
-                    cube.context->Draw(36, 0);
-                    check_hresult(cube.chain->Present(1, 0));
-                }
-
-                /// Follows WinUI's frames while the cube spins and stands on screen, and lets go of them otherwise.
-                void followFrames(std::shared_ptr<Cube> const &cube) {
-                    auto follows = static_cast<bool>(cube->rendering);
-                    if (cube->spinning && cube->shown && !follows) {
-                        cube->lastFrame = -1;
-                        std::weak_ptr<Cube> weak = cube;
-                        cube->rendering = xaml::Media::CompositionTarget::Rendering(
-                            [weak](auto const &, winrt::Windows::Foundation::IInspectable const &args) {
-                                auto cube = weak.lock();
-                                if (!cube) return;
-                                try {
-                                    auto now = std::chrono::duration<double>(
-                                        args.as<xaml::Media::RenderingEventArgs>().RenderingTime()).count();
-                                    if (cube->lastFrame >= 0) cube->angle += now - cube->lastFrame;
-                                    cube->lastFrame = now;
-                                    draw(*cube);
-                                } catch (...) {
-                                    report("drawing the cube");
-                                }
-                            });
-                    } else if (!(cube->spinning && cube->shown) && follows) {
-                        xaml::Media::CompositionTarget::Rendering(cube->rendering);
-                        cube->rendering = {};
-                    }
-                }
-            }
-
-            extern "C" GalleryObjectRef gallery_cube_make(void) {
-                try {
-                    controls::SwapChainPanel panel;
-                    panel.MinWidth(240);
-                    panel.MinHeight(240);
-                    auto cube = std::make_shared<Cube>();
-                    cube->panel = winrt::make_weak(panel);
-                    std::weak_ptr<Cube> weak = cube;
-                    panel.Loaded([weak](auto const &, auto const &) {
-                        if (auto cube = weak.lock()) {
-                            cube->shown = true;
-                            followFrames(cube);
-                            try { draw(*cube); } catch (...) { report("drawing the cube"); }
-                        }
-                    });
-                    panel.Unloaded([weak](auto const &, auto const &) {
-                        if (auto cube = weak.lock()) {
-                            cube->shown = false;
-                            followFrames(cube);
-                        }
-                    });
-                    auto redraw = [weak](auto const &, auto const &) {
-                        if (auto cube = weak.lock()) {
-                            try { draw(*cube); } catch (...) { report("drawing the cube"); }
-                        }
-                    };
-                    panel.SizeChanged(redraw);
-                    panel.CompositionScaleChanged(redraw);
-                    cubes[identity(panel)] = cube;
-                    return detach(panel);
-                } catch (...) {
-                    report("making a cube");
-                    return nullptr;
-                }
-            }
-
-            extern "C" void gallery_cube_set(GalleryObjectRef handle, double size, int32_t color, bool spinning) {
-                try {
-                    auto found = cube(handle);
-                    if (!found) return;
-                    found->size = size;
-                    found->color = color;
-                    found->spinning = spinning;
-                    followFrames(found);
-                    if (found->shown) draw(*found);
-                } catch (...) {
-                    report("setting the cube");
-                }
-            }
-        """#,
-        "Cube3DSample.WinUI.hlsl": #"""
-        // Platforms/WinUI/Relay/Cube3D.cpp
-        // Compiled by D3DCompile as the cube's device is made: `vertex` as vs_5_0, `pixel` as ps_5_0. A corner
-        // carries its face's brightness in w; the colour is the frame's.
-        cbuffer Frame : register(b0) { float4x4 transform; float4 color; };
-        struct Corner { float4 at : POSITION; };
-        struct Painted { float4 position : SV_POSITION; float4 color : COLOR; };
-        Painted vertex(Corner corner) {
-            Painted painted;
-            painted.position = mul(transform, float4(corner.at.xyz, 1));
-            painted.color = float4(color.rgb * corner.at.w, color.a);
-            return painted;
-        }
-        float4 pixel(Painted painted) : SV_TARGET { return painted.color; }
-        """#,
-        "Cube3DSample.WinUI.swift": #"""
-        // Platforms/WinUI/Host/Direct3DCube3DControl.swift
-        /// A cube drawn by Direct3D 11.1 in a SwapChainPanel the gallery's relay makes - Platforms/WinUI/Relay/Cube3D.cpp,
-        /// an element that knows nothing of StateUI. It turns on WinUI's frames only while it spins and stands on screen.
-        /// The Swift half is Sources/Samples/Interop/Cube3D.swift.
-        @MainActor
-        final class Direct3DCube3DControl: WinUIControl {
-            // The relay's SwapChainPanel: a WinUIControl is the object holding the element it shows.
-            let element: OpaquePointer
-
-            /// How long the cube's edge is, as a share of the panel.
-            var cubeSize = 0.6 {
-                didSet { if cubeSize != oldValue { tell() } }
-            }
-
-            /// Which colour it is painted.
-            var color = CubeColor.teal {
-                didSet { if color != oldValue { tell() } }
-            }
-
-            /// Whether it turns. Stopped, it holds the angle it had.
-            var isSpinning = true {
-                didSet { if isSpinning != oldValue { tell() } }
-            }
-
-            init() {
-                element = gallery_cube_make()!
-            }
-
-            isolated deinit {
-                gallery_cube_close(element)
-                gallery_winui_release(element)
-            }
-
-                private func tell() {
-                    gallery_cube_set(element, cubeSize, color.rawValue, isSpinning)
-                }
-            }
-
-            // MARK: - Registration
-
-            extension Direct3DCube3DControl {
-                /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
-                @MainActor
-                static func register() {
-                    StateUIControls.add(Cube3DContract.self, create: { _ in Direct3DCube3DControl() }) { cube in
-                        cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
-                        cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
-                        cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
-                    }
-                }
-            }
-        """#,
         "DatePickerSample": #"""
         // Sources/Samples/DateTime/DatePickerSample.swift
         @State private var due = CalendarDate(year: 2026, month: 8, day: 2)
@@ -4644,474 +3457,6 @@ enum Listings {
             }
         }
         """#,
-        "InteropActsSample.Android.java": #"""
-        // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
-        /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
-        final class GalleryDevice {
-            private GalleryDevice() {}
-
-            /** Puts `text` on the clipboard. */
-            static void copy(Context context, String text) {
-                context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
-            }
-
-            /** The clipboard's text; empty where it holds none. */
-            static String paste(Context context) {
-                ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
-                if (clip == null || clip.getItemCount() == 0) return "";
-                CharSequence text = clip.getItemAt(0).coerceToText(context);
-                return text == null ? "" : text.toString();
-            }
-
-            /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */
-            static double[] battery(Context context) {
-                return reading(context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)));
-            }
-
-            /** Tells each change of the battery - the one standing first - until the receiver is unregistered. */
-            static BroadcastReceiver watchBattery(Context context) {
-                BroadcastReceiver receiver = new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        double[] battery = reading(intent);
-                        GalleryNatives.batteryChanged(battery[0], battery[1] != 0);
-                    }
-                };
-                IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-                if (Build.VERSION.SDK_INT >= 33) {
-                    context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
-                } else {
-                    context.registerReceiver(receiver, filter);
-                }
-                return receiver;
-            }
-
-            /** A battery status read as `battery` gives it: the level, 0 to 1, and 1 where it charges, else 0. */
-            private static double[] reading(Intent status) {
-                if (status == null) return new double[] {0, 0};
-                int level = status.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                int scale = status.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                int state = status.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-                boolean charging = state == BatteryManager.BATTERY_STATUS_CHARGING || state == BatteryManager.BATTERY_STATUS_FULL;
-                return new double[] {level >= 0 && scale > 0 ? (double) level / scale : 0, charging ? 1 : 0};
-            }
-        }
-
-        // Platforms/Android/Java/com/stateui/gallery/RatingBarView.java
-        /** Fades the bar out and back, as its act asks. */
-        void flash() {
-            animate().alpha(0.25f).setDuration(120).withEndAction(() -> animate().alpha(1).setDuration(120));
-        }
-        """#,
-        "InteropActsSample.Android.load.swift": #"""
-        // Platforms/Android/Swift/GalleryAndroid.swift
-        // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
-        // says what it answers for the application - the controls it realizes, the acts it performs, the events it raises,
-        // each in Host/ beside this file - and the host registers the native methods its activity calls.
-        @_cdecl("JNI_OnLoad")
-        public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-            stateui_app_register()
-            MainActor.assumeIsolated {
-                GalleryControls.register()
-                GalleryActs.register()
-                GalleryEventSources.register()
-            }
-            return StateUIAndroid.load(machine)
-        }
-        """#,
-        "InteropActsSample.Android.swift": #"""
-        // Platforms/Android/Swift/Host/GalleryActs.swift
-        /// The acts the gallery performs on this head: its clipboard and its battery, asked of the device through the
-        /// gallery's own Java, com.stateui.gallery.GalleryDevice.
-        enum GalleryActs {
-            /// Registers each act with the host. Said once, as the library loads.
-            @MainActor
-            static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    Java.frame {
-                        Java.callStatic(Self.device, Self.copy, .object(StateUIAndroid.context), .object(Java.string(text)))
-                    }
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    let text: String = Java.frame {
-                        Java.text(Java.callStaticObject(Self.device, Self.paste, .object(StateUIAndroid.context)))
-                    }
-                    return text
-                }
-
-                StateUIActs.add(GalleryContract.batteryLevel) {
-                    // The sticky ACTION_BATTERY_CHANGED, read in GalleryDevice.java.
-                    battery()
-                }
-            }
-
-            /// The battery's level, 0 to 1 - 0 where the device has none - and whether it charges.
-            @MainActor
-            static func battery() -> (Double, Bool) {
-                let reading = Java.frame { () -> [Double] in
-                    var values = [0.0, 0.0]
-                    guard let array = Java.callStaticObject(Self.device, Self.batteryNow, .object(StateUIAndroid.context))
-                    else { return values }
-                    values.withUnsafeMutableBufferPointer { Java.jni.GetDoubleArrayRegion(Java.env, array, 0, 2, $0.baseAddress) }
-                    return values
-                }
-                return (reading[0], reading[1] != 0)
-            }
-
-            @MainActor private static let device = Java.findClass("com/stateui/gallery/GalleryDevice")
-            @MainActor private static let copy = Java.staticMethod(
-                device, "copy", "(Landroid/content/Context;Ljava/lang/String;)V")
-            @MainActor private static let paste = Java.staticMethod(
-                device, "paste", "(Landroid/content/Context;)Ljava/lang/String;")
-            @MainActor private static let batteryNow = Java.staticMethod(device, "battery", "(Landroid/content/Context;)[D")
-        }
-
-        // Platforms/Android/Swift/Host/RatingBarView.swift
-        extension RatingBarView {
-            /// Adds the bar for `RatingBarContract`, and the act aimed at it. Said once, as the library loads.
-            @MainActor
-            static func register() {
-                StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
-                    let bar = RatingBarView()
-                    bar.onRatingChanged = { rating in
-                        reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
-                    }
-                    return bar
-                }) { bar in
-                    bar.property(RatingBarContract.rating) { control, rating in control.rating = rating ?? 0 }
-                    bar.raises(RatingBarContract.ratingChanged)
-                }
-
-                // An act aimed at a control is its control's: the identity the aim sent is turned back into the control
-                // this host made, and the performer is handed that control.
-                StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
-                    // The Java view fades itself, with its own animate().
-                    bar.flash()
-                }
-            }
-        }
-        """#,
-        "InteropActsSample.AppKit.swift": #"""
-        // Platforms/AppKit/Host/GalleryActs.swift
-        /// The gallery's own acts, as this host answers them.
-        ///
-        /// `GalleryContract` declares each name with what it takes and answers - see
-        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
-        /// performs them. An act aimed at a control is its view's, registered beside
-        /// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
-        /// "Calling AppKit" sample calls it to show what a missing registration does.
-        enum GalleryActs {
-            /// Registers every act this host performs. Said once, before the
-            /// application runs.
-            @MainActor
-            static func register() {
-                // A performer is handed the arguments its act declares and answers
-                // the values it declares.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(text, forType: .string)
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    NSPasteboard.general.string(forType: .string) ?? ""
-                }
-
-                StateUIActs.add(GalleryContract.batteryLevel) {
-                    battery()
-                }
-            }
-
-        }
-
-        // Platforms/AppKit/Host/RatingBarView.swift
-        extension RatingBarView {
-            /// Adds the bar for `RatingBarContract`, and performs the act aimed at
-            /// one. Said once, before the application runs.
-            @MainActor
-            static func register() {
-
-                        // Aimed at one bar: the identity the aim sent is turned back into the
-                        // view this host made, and the performer is handed that view.
-                        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
-                            bar.flash()
-                        }
-                    }
-                }
-
-        // Platforms/AppKit/main.swift
-        // What this host answers for the application, said before it runs: the
-        // controls it realizes, the acts it performs, and the pushes it reports. Each
-        // lives in Host/ beside this file.
-        GalleryControls.register()
-        GalleryActs.register()
-        GalleryEventSources.start()
-        """#,
-        "InteropActsSample.GTK.swift": #"""
-        // Platforms/GTK/Host/GalleryActs.swift
-        /// The gallery's own acts, as this host answers them.
-        ///
-        /// `GalleryContract` declares each name with what it takes and answers - see
-        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarWidget.register()` performs `flash`. `Gallery.Nobody` is
-        /// registered nowhere on purpose: the "Calling GTK" sample calls it to show what a missing registration does.
-        enum GalleryActs {
-            /// Registers every act this host performs. Said once, before the application runs.
-            @MainActor
-            static func register() {
-                // A performer is handed the arguments its act declares and answers the values it declares.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    gdk_clipboard_set_text(clipboard(), text)
-                }
-                // GTK reads a clipboard only asynchronously: the performer awaits it.
-                // clipboardText() asks gdk_clipboard_read_text_async and resumes with its answer.
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    await clipboardText()
-                }
-                // The battery, as UPower tells it on the system bus.
-                StateUIActs.add(GalleryContract.batteryLevel) {
-                    GalleryPower.battery()
-                }
-            }
-
-        // Platforms/GTK/Host/RatingBarWidget.swift
-        extension RatingBarWidget {
-            /// Adds the bar for `RatingBarContract`, and the act aimed at one bar. Said once, before the application runs.
-            @MainActor
-            static func register() {
-
-                        // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
-                        // The performer is handed that control, and flash() dims it and brings it back with libadwaita's animation.
-                        StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
-                            bar.flash()
-                        }
-                    }
-                }
-
-        // Platforms/GTK/main.swift
-        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
-        // the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
-        // the last window closes.
-        stateui_app_register()
-        // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
-        GalleryControls.register()
-        GalleryActs.register()
-        GalleryEventSources.start()
-        """#,
-        "InteropActsSample.UIKit.swift": #"""
-        // Platforms/UIKit/Host/GalleryActs.swift
-        /// The gallery's own acts, as this host answers them.
-        ///
-        /// `GalleryContract` declares each name with what it takes and answers - see
-        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
-        /// performs them. An act aimed at a control is its view's, registered beside
-        /// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
-        /// "Calling UIKit" sample calls it to show what a missing registration does.
-        enum GalleryActs {
-            /// Registers every act this host performs. Said once, before the
-            /// application runs.
-            @MainActor
-            static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    UIPasteboard.general.string = text
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    UIPasteboard.general.string ?? ""
-                }
-
-                StateUIActs.add(GalleryContract.batteryLevel) {
-                    battery()
-                }
-            }
-
-        }
-
-        // Platforms/UIKit/Host/RatingBarView.swift
-        extension RatingBarView {
-            /// Adds the bar for `RatingBarContract`, and performs the act aimed at
-            /// one. Said once, before the application runs.
-            @MainActor
-            static func register() {
-                // The bar, added for its contract: its rating put on it, a tapped star reported.
-
-                        // Aimed at one bar: the identity the aim sent is turned back into the
-                        // view this host made, and the performer is handed that view.
-                        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
-                            bar.flash()
-                        }
-                    }
-                }
-
-        // Platforms/UIKit/main.swift
-        // What this host answers for the application, said before it runs: the
-        // controls it realizes, the acts it performs, and the pushes it reports. Each
-        // lives in Host/ beside this file.
-        GalleryControls.register()
-        GalleryActs.register()
-        GalleryEventSources.start()
-
-        StateUIUIKit.run()
-        """#,
-        "InteropActsSample.Web.javascript": #"""
-        // Platforms/Web/Page/gallery-acts.js
-        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
-        // battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
-        // GalleryEventSources.swift.
-        // The page loads this script before the application starts.
-
-        // The clipboard: a page served over plain http, or one the user gave no leave, has none - the act then fails
-        // with the reason.
-        StateUI.acts.setClipboard = (words) => {
-          if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
-          return navigator.clipboard.writeText(words);
-        };
-
-        StateUI.acts.readClipboard = () => {
-          if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
-          return navigator.clipboard.readText();
-        };
-
-        // The battery as two words, its level from 0 to 1 and whether it charges; a browser that says nothing of it - a
-        // desktop's mains, Safari, Firefox - answers 0.
-        const battery = navigator.getBattery?.().catch(() => null) ?? Promise.resolve(null);
-        const said = (power) => (power ? `${power.level} ${power.charging}` : "0 false");
-
-        StateUI.acts.batteryLevel = async () => said(await battery);
-        """#,
-        "InteropActsSample.Web.swift": #"""
-        // Platforms/Web/Host/GalleryActs.swift
-        /// The gallery's own acts, as this host answers them: through the page's own scripts, Page/gallery-acts.js, which
-        /// reach the browser's clipboard and battery.
-        ///
-        /// `GalleryContract` declares each name with what it takes and answers - see
-        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarElement.register()` performs `flash`. `Gallery.Nobody` is
-        /// registered nowhere on purpose: the "Calling Web" sample calls it to show what a missing registration does.
-        enum GalleryActs {
-            /// Registers every act this host performs. Said once, before the application runs.
-            @MainActor
-            static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    _ = try await StateUIScripts.call("setClipboard", text)
-                }
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    try await StateUIScripts.call("readClipboard")
-                }
-                StateUIActs.add(GalleryContract.batteryLevel) {
-                    battery(try await StateUIScripts.call("batteryLevel"))
-                }
-            }
-
-            /// The battery as the page's scripts say it - its level from 0 to 1 and whether it charges, two words - 0 where
-            /// they say nothing of it.
-            static func battery(_ words: String) -> (Double, Bool) {
-                let said = words.split(separator: " ")
-                return (said.first.flatMap { Double($0) } ?? 0, said.count > 1 && said[1] == "true")
-            }
-        }
-
-        // Platforms/Web/Host/RatingBarElement.swift
-        /// Dims the bar and brings it back: the element's own animation of its opacity.
-        func flash() {
-            element.call("flash")
-        }
-
-        // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
-        StateUIActs.add(RatingBarContract.flash, on: RatingBarElement.self) { bar in
-            bar.flash()
-        }
-        """#,
-        "InteropActsSample.WinUI.cpp": #"""
-        // Platforms/WinUI/Relay/System.cpp
-        // The battery as Windows knows it: the power status every desktop reads, and the notices Windows sends as the
-        // battery's charge or the power source changes.
-
-        // The reading GalleryPower.battery() in the Swift half calls: for the battery act, and after each notice.
-        extern "C" void gallery_battery(double *level, bool *charging) {
-            try {
-                *level = 0;
-                *charging = false;
-                SYSTEM_POWER_STATUS status{};
-                // No system battery, or a charge Windows does not know: nothing to say.
-                if (!GetSystemPowerStatus(&status) || (status.BatteryFlag & 128) || status.BatteryLifePercent > 100) return;
-                *level = status.BatteryLifePercent / 100.0;
-                *charging = status.ACLineStatus == 1;
-            } catch (...) {
-                report("reading the battery");
-            }
-        }
-        """#,
-        "InteropActsSample.WinUI.flash.cpp": #"""
-        // Platforms/WinUI/Relay/Controls.cpp
-        // The act aimed at the bar: a Storyboard fading WinUI's RatingControl down and back, twice.
-        extern "C" void gallery_rating_bar_flash(GalleryObjectRef bar) {
-            try {
-                auto rating = as<controls::RatingControl>(bar);
-                animation::DoubleAnimation fade;
-                fade.From(1.0);
-                fade.To(0.25);
-                fade.Duration(xaml::DurationHelper::FromTimeSpan(std::chrono::milliseconds(120)));
-                fade.AutoReverse(true);
-                fade.RepeatBehavior(animation::RepeatBehaviorHelper::FromCount(2));
-                // Stopped, the opacity is the host's again.
-                fade.FillBehavior(animation::FillBehavior::Stop);
-                animation::Storyboard::SetTarget(fade, rating);
-                animation::Storyboard::SetTargetProperty(fade, L"Opacity");
-                animation::Storyboard flash;
-                flash.Children().Append(fade);
-                flash.Begin();
-            } catch (...) {
-                report("flashing a rating bar");
-            }
-        }
-        """#,
-        "InteropActsSample.WinUI.swift": #"""
-        // Platforms/WinUI/Host/GalleryActs.swift
-        /// The gallery's own acts, as this host answers them.
-        ///
-        /// `GalleryContract` declares each name with what it takes and answers - see
-        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarControl.register()` performs `flash`. `Gallery.Nobody` is
-        /// registered nowhere on purpose: the "Calling WinUI" sample calls it to show what a missing registration does.
-        enum GalleryActs {
-            /// Registers every act this host performs. Said once, before the application runs.
-            @MainActor
-            static func register() {
-                // The clipboard needs no relay: Swift calls Win32 itself - OpenClipboard, CF_UNICODETEXT.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    Clipboard.write(text)
-                }
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    Clipboard.read()
-                }
-                // The power status, GetSystemPowerStatus, read by the gallery's relay.
-                StateUIActs.add(GalleryContract.batteryLevel) {
-                    GalleryPower.battery()
-                }
-            }
-        }
-
-        // Platforms/WinUI/Host/RatingBarControl.swift
-        extension RatingBarControl {
-            /// Adds the bar for `RatingBarContract`, and performs its aimed `flash`. Said once, before the application runs.
-            @MainActor
-            static func register() {
-                // The bar, made once per element, reporting the rating its user chooses.
-
-                        // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
-                        StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
-                            // A Storyboard in the relay fades the bar's opacity down and back, twice.
-                            bar.flash()
-                        }
-                    }
-                }
-
-        // Platforms/WinUI/main.swift
-        // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
-        GalleryControls.register()
-        GalleryActs.register()
-        """#,
         "InteropControlSample": #"""
         // Sources/Samples/Interop/InteropControlSample.swift
         @State private var signal = TrafficSignal.stop
@@ -5134,694 +3479,6 @@ enum Listings {
                         let all = TrafficSignal.allCases
                         signal = all[(all.firstIndex(of: signal)! + 1) % all.count]
                     }
-            }
-        }
-        """#,
-        "InteropControlSample.Android.controls.swift": #"""
-        // Platforms/Android/Swift/Host/GalleryControls.swift
-        /// Registers every control this host realizes. Said once, as the library loads.
-        @MainActor
-        static func register() {
-            TrafficLightView.register()
-            RatingBarView.register()
-            GLESCube3DView.register()
-        }
-        """#,
-        "InteropControlSample.Android.java": #"""
-        // Platforms/Android/Java/com/stateui/gallery/TrafficLightView.java
-        /** Three lamps in a dark housing, one lit; a tap on a lamp is told, and lights nothing by itself. */
-        final class TrafficLightView extends View {
-            private static final int[] LAMPS = {0xFFE5484D, 0xFFF5B546, 0xFF46B45F};
-            private static final float LAMP = 44, SPACING = 10, PADDING = 12;
-
-            private final long control;
-            private final float density;
-            private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            private final RectF housing = new RectF();
-            private int signal = -1;
-
-            TrafficLightView(Context context, long control) {
-                super(context);
-                this.control = control;
-                density = context.getResources().getDisplayMetrics().density;
-                setClickable(true);
-            }
-
-            /** Which lamp is lit, from the top; none for any other number. */
-            void setSignal(int lamp) {
-                if (lamp == signal) return;
-                signal = lamp;
-                invalidate();
-            }
-
-            /** How big it is, which the host asks by measuring it as Android measures any view. */
-            @Override
-            protected void onMeasure(int width, int height) {
-                setMeasuredDimension(
-                        resolveSize(Math.round((PADDING * 2 + LAMP) * density), width),
-                        resolveSize(Math.round((PADDING * 2 + LAMP * 3 + SPACING * 2) * density), height));
-            }
-
-            @Override
-            protected void onDraw(Canvas canvas) {
-                housing.set(0, 0, getWidth(), getHeight());
-                paint.setColor(0xFF1A1725);
-                canvas.drawRoundRect(housing, 18 * density, 18 * density, paint);
-                for (int lamp = 0; lamp < 3; lamp++) {
-                    paint.setColor(lamp == signal ? LAMPS[lamp] : (LAMPS[lamp] & 0x00FFFFFF) | 0x2E000000);
-                    canvas.drawCircle(getWidth() / 2f, centre(lamp), LAMP / 2 * density, paint);
-                }
-            }
-
-            /** Tells a tapped lamp to the Swift half by the number it made this view with; whoever owns the state decides. */
-            @Override
-            public boolean onTouchEvent(MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                    for (int lamp = 0; lamp < 3; lamp++) {
-                        if (Math.abs(event.getY() - centre(lamp)) <= LAMP / 2 * density) {
-                            GalleryNatives.lampTapped(control, lamp);
-                            break;
-                        }
-                    }
-                }
-                return true;
-            }
-
-            private float centre(int lamp) {
-                return (PADDING + LAMP / 2 + lamp * (LAMP + SPACING)) * density;
-            }
-        }
-        """#,
-        "InteropControlSample.Android.natives.java": #"""
-        // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java
-        /**
-         * What the gallery's own Android views tell its Swift half, each by the number
-         * its control was made with. The Swift half answers each, in Host/GalleryNatives.swift.
-         */
-        final class GalleryNatives {
-            private GalleryNatives() {}
-
-            /** A traffic light's lamp was tapped, counted from the top. */
-            static native void lampTapped(long control, int lamp);
-
-            /** A rating bar's user chose a rating. */
-            static native void rated(long control, double rating);
-
-            /** A cube's surface came, or changed its size in pixels. */
-            static native void surfaceReady(long control, Surface surface, int width, int height);
-
-            /** A cube's surface is going: nothing draws into it once this returns. */
-            static native void surfaceGone(long control);
-
-            /** A display frame for a cube, while it asks for them. */
-            static native void cubeFrame(long control, long nanoseconds);
-
-            /** The battery said its level, 0 to 1, and whether it charges. */
-            static native void batteryChanged(double level, boolean charging);
-        }
-        """#,
-        "InteropControlSample.Android.swift": #"""
-        // Platforms/Android/Swift/Host/TrafficLightView.swift
-        /// Three lamps in a dark housing, one lit: the gallery's own Java view, com.stateui.gallery.TrafficLightView, which
-        /// knows nothing of StateUI. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
-        @MainActor
-        final class TrafficLightView: AndroidControl {
-            let view: JavaObject
-
-            /// A lamp was tapped; the argument is its index, top to bottom. The light does not switch itself: it reports,
-            /// and whoever owns the state decides.
-            var onLampTapped: ((Int) -> Void)?
-
-            /// Which lamp is lit.
-            var signal = TrafficSignal.stop {
-                didSet { if signal != oldValue { Java.call(view.reference, Self.setSignal, .int(signal.rawValue)) } }
-            }
-
-            private let number: Int64
-
-            private static let viewClass = Java.findClass("com/stateui/gallery/TrafficLightView")
-            private static let make = Java.method(viewClass, "<init>", "(Landroid/content/Context;J)V")
-            private static let setSignal = Java.method(viewClass, "setSignal", "(I)V")
-
-            init() {
-                number = GalleryControls.reserve()
-                view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
-                Java.call(view.reference, Self.setSignal, .int(signal.rawValue))
-                GalleryControls.hold(self, as: number)
-            }
-
-            isolated deinit {
-                GalleryControls.forget(number)
-            }
-
-            /// The view says lamp `index` was tapped.
-            /// It reaches here through a native method of the gallery's, GalleryNatives.lampTapped, by this control's number.
-            func tapped(_ index: Int) {
-                onLampTapped?(index)
-            }
-        }
-
-        extension TrafficLightView {
-            /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
-            /// reports, and `property` puts the described signal on it. Said once, as the library loads.
-            @MainActor
-            static func register() {
-                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
-                    let light = TrafficLightView()
-                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
-                    return light
-                }) { light in
-                    light.property(TrafficLightContract.signal) { control, signal in
-                        control.signal = signal ?? .stop
-                    }
-                    light.raises(TrafficLightContract.lampTapped)
-                }
-            }
-        }
-        """#,
-        "InteropControlSample.AppKit.list.swift": #"""
-        // Platforms/AppKit/Host/GalleryControls.swift
-        /// The gallery's own controls, as this host realizes them.
-        ///
-        /// The contracts and the Swift halves are shared by every host - see
-        /// Sources/Samples/Interop. What each control IS on screen is its view's, and
-        /// so is its registration: `register()` at the end of the view's own file.
-        /// This is the list of them, and nothing else.
-        enum GalleryControls {
-            /// Registers every control this host realizes. Said once, before the
-            /// application runs.
-            @MainActor
-            static func register() {
-                TrafficLightView.register()
-                RatingBarView.register()
-                MetalCube3DView.register()
-            }
-        }
-        """#,
-        "InteropControlSample.AppKit.swift": #"""
-        // Platforms/AppKit/Host/TrafficLightView.swift
-        /// Three lamps in a housing, one lit at a time - an ordinary `NSView` that
-        /// knows nothing of StateUI.
-        ///
-        /// `register()`, at the end of this file, adds it for `TrafficLightContract`,
-        /// and that registration is the whole bridge. The Swift half is
-        /// Sources/Samples/Interop/TrafficLight.swift.
-        final class TrafficLightView: NSView {
-            /// A lamp was tapped; the argument is its index, top to bottom.
-            ///
-            /// The control does not switch itself: it reports, and whoever owns the
-            /// state decides.
-            var onLampTapped: ((Int) -> Void)?
-
-            /// Which lamp is lit, as the member number the Swift side sends: stop 0,
-            /// caution 1, go 2. Anything else - the initial -1 included - lights
-            /// nothing.
-            var signal: Int32 = -1 {
-                didSet { if signal != oldValue { repaint() } }
-            }
-
-            private static let lampColors = [
-                NSColor(srgbRed: 0.898, green: 0.282, blue: 0.302, alpha: 1),
-                NSColor(srgbRed: 0.961, green: 0.710, blue: 0.275, alpha: 1),
-                NSColor(srgbRed: 0.275, green: 0.706, blue: 0.373, alpha: 1),
-            ]
-
-            private static let lampSide: CGFloat = 44
-            private static let spacing: CGFloat = 10
-            private static let padding: CGFloat = 12
-
-            private var lamps: [NSView] = []
-
-            override var isFlipped: Bool { true }
-
-            /// The housing and its three lamps, wired once.
-            init() {
-                super.init(frame: .zero)
-
-                wantsLayer = true
-                layer?.backgroundColor = NSColor(srgbRed: 0.102, green: 0.090, blue: 0.145, alpha: 1).cgColor
-                layer?.cornerRadius = 18
-
-                for _ in 0..<3 {
-                    let lamp = NSView()
-                    lamp.wantsLayer = true
-                    lamp.layer?.cornerRadius = Self.lampSide / 2
-                    addSubview(lamp)
-                    lamps.append(lamp)
-                }
-
-                // ONE recognizer on the housing, the lamp read from the click's
-                // position - nothing to keep in step with the layout.
-                let click = NSClickGestureRecognizer(target: self, action: #selector(clicked(_:)))
-                addGestureRecognizer(click)
-                repaint()
-            }
-
-            @available(*, unavailable)
-            required init?(coder: NSCoder) {
-                fatalError("TrafficLightView is created in code")
-            }
-
-            /// As tall as its three lamps and their padding, and as wide as one.
-            override var intrinsicContentSize: NSSize {
-                NSSize(
-                    width: Self.padding * 2 + Self.lampSide,
-                    height: Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2)
-            }
-
-            override func layout() {
-                super.layout()
-
-                for (index, lamp) in lamps.enumerated() {
-                    lamp.frame = NSRect(
-                        x: (bounds.width - Self.lampSide) / 2,
-                        y: Self.padding + CGFloat(index) * (Self.lampSide + Self.spacing),
-                        width: Self.lampSide,
-                        height: Self.lampSide)
-                }
-            }
-
-            /// Which lamp the click landed on, reported - the state decides what is
-            /// lit next.
-            @objc private func clicked(_ recognizer: NSClickGestureRecognizer) {
-                let at = recognizer.location(in: self)
-
-                for (index, lamp) in lamps.enumerated() where lamp.frame.contains(at) {
-                    onLampTapped?(index)
-                    return
-                }
-            }
-
-            /// The lit lamp at full colour, the others dimmed to embers.
-            private func repaint() {
-                for (index, lamp) in lamps.enumerated() {
-                    let colour = Self.lampColors[index]
-                    lamp.layer?.backgroundColor = Int32(index) == signal
-                        ? colour.cgColor
-                        : colour.withAlphaComponent(0.18).cgColor
-                }
-            }
-        }
-
-        // MARK: - Registration
-
-        extension TrafficLightView {
-            /// Adds the light for `TrafficLightContract`: `create` makes the view once
-            /// per element and wires the tap it reports, and `property` puts the
-            /// described signal on it. Said once, before the application runs.
-            @MainActor
-            static func register() {
-                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
-                    let light = TrafficLightView()
-                    light.onLampTapped = { index in
-                        reports.raise(TrafficLightContract.lampTapped, index)
-                    }
-                    return light
-                }) { light in
-                    light.property(TrafficLightContract.signal) { view, signal in
-                        view.signal = (signal ?? .stop).rawValue
-                    }
-                    light.raises(TrafficLightContract.lampTapped)
-                }
-            }
-        }
-        """#,
-        "InteropControlSample.GTK.swift": #"""
-        // Platforms/GTK/Host/TrafficLightWidget.swift
-        /// Three lamps in a housing, one lit at a time - a `GtkDrawingArea` that knows nothing of StateUI.
-        ///
-        /// `register()`, at the end of this file, adds it for `TrafficLightContract`, and that registration is the whole
-        /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
-        ///
-        /// A `GTKControl` is an object holding the widget it shows.
-        @MainActor
-        final class TrafficLightWidget: GTKControl {
-            let widget: UnsafeMutablePointer<GtkWidget>
-
-            /// A lamp was tapped; the argument is its index, top to bottom. The control does not switch itself: it reports,
-            /// and whoever owns the state decides.
-            var onLampTapped: ((Int) -> Void)?
-
-            /// Which lamp is lit.
-            var signal = TrafficSignal.stop {
-                didSet { if signal != oldValue { gtk_widget_queue_draw(widget) } }
-            }
-
-            private static let lampColors: [(red: Double, green: Double, blue: Double)] = [
-                (0.898, 0.282, 0.302), (0.961, 0.710, 0.275), (0.275, 0.706, 0.373),
-            ]
-            private static let lampSide = 44.0
-            private static let spacing = 10.0
-            private static let padding = 12.0
-
-            private let click: OpaquePointer
-
-            /// The housing and its three lamps, drawn by cairo, and one click gesture read by where it lands.
-            init() {
-                widget = gtk_drawing_area_new()
-                g_object_ref_sink(widget)
-                click = gtk_gesture_click_new()
-                let area = UnsafeMutablePointer<GtkDrawingArea>(OpaquePointer(widget))
-                gtk_drawing_area_set_content_width(area, Int32(Self.padding * 2 + Self.lampSide))
-                gtk_drawing_area_set_content_height(area, Int32(Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2))
-
-                // A C callback carries no context: the control rides along as its data, and lives as long as the widget.
-                let me = Unmanaged.passUnretained(self).toOpaque()
-                gtk_drawing_area_set_draw_func(area, { _, cairo, width, height, data in
-                    nonisolated(unsafe) let cairo = cairo
-                    MainActor.assumeIsolated {
-                        Unmanaged<TrafficLightWidget>.fromOpaque(data!).takeUnretainedValue()
-                            .draw(cairo, width: Double(width), height: Double(height))
-                    }
-                }, me, nil)
-
-                let released: @convention(c) (OpaquePointer?, Int32, Double, Double, gpointer?) -> Void = { _, _, x, y, data in
-                    MainActor.assumeIsolated {
-                        Unmanaged<TrafficLightWidget>.fromOpaque(data!).takeUnretainedValue().clicked(x: x, y: y)
-                    }
-                }
-                g_signal_connect_data(
-                    UnsafeMutableRawPointer(click), "released", unsafeBitCast(released, to: GCallback.self), me, nil,
-                    GConnectFlags(rawValue: 0))
-                gtk_widget_add_controller(widget, click)
-            }
-
-            extension TrafficLightWidget {
-                /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
-                /// reports, and `property` puts the described signal on it. Said once, before the application runs.
-                @MainActor
-                static func register() {
-                    StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightWidget in
-                        let light = TrafficLightWidget()
-                        light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
-                        return light
-                    }) { light in
-                        // Handed back typed - a TrafficSignal, not its number.
-                        light.property(TrafficLightContract.signal) { control, signal in
-                            control.signal = signal ?? .stop
-                        }
-                        light.raises(TrafficLightContract.lampTapped)
-                    }
-                }
-            }
-        """#,
-        "InteropControlSample.UIKit.list.swift": #"""
-        // Platforms/UIKit/Host/GalleryControls.swift
-        /// The gallery's own controls, as this host realizes them.
-        ///
-        /// The contracts and the Swift halves are shared by every host - see
-        /// Sources/Samples/Interop. What each control IS on screen is its view's, and
-        /// so is its registration: `register()` at the end of the view's own file.
-        /// This is the list of them, and nothing else.
-        enum GalleryControls {
-            /// Registers every control this host realizes. Said once, before the
-            /// application runs.
-            @MainActor
-            static func register() {
-                TrafficLightView.register()
-                RatingBarView.register()
-                MetalCube3DView.register()
-            }
-        }
-        """#,
-        "InteropControlSample.UIKit.swift": #"""
-        // Platforms/UIKit/Host/TrafficLightView.swift
-        /// Three lamps in a housing, one lit at a time - an ordinary `UIView` that
-        /// knows nothing of StateUI.
-        ///
-        /// `register()`, at the end of this file, adds it for `TrafficLightContract`,
-        /// and that registration is the whole bridge. The Swift half is
-        /// Sources/Samples/Interop/TrafficLight.swift.
-        final class TrafficLightView: UIView {
-
-            /// A lamp was tapped; the argument is its index, top to bottom.
-            ///
-            /// The control does not switch itself: it reports, and whoever owns the
-            /// state decides.
-            var onLampTapped: ((Int) -> Void)?
-
-            /// Which lamp is lit, as the member number the Swift side sends: stop 0,
-            /// caution 1, go 2. Anything else - the initial -1 included - lights
-            /// nothing.
-            var signal: Int32 = -1 {
-                didSet { if signal != oldValue { repaint() } }
-            }
-
-            /// The housing and its three lamps, wired once.
-            init() {
-                super.init(frame: .zero)
-
-                backgroundColor = UIColor(red: 0.102, green: 0.090, blue: 0.145, alpha: 1)
-                layer.cornerRadius = 18
-
-                for _ in 0..<3 {
-                    let lamp = UIView()
-                    lamp.layer.cornerRadius = Self.lampSide / 2
-                    lamp.isUserInteractionEnabled = false
-                    addSubview(lamp)
-                    lamps.append(lamp)
-                }
-
-                // One recognizer on the housing, the lamp read from where the tap lands.
-                addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped(_:))))
-                repaint()
-            }
-
-            /// As tall as its three lamps and their padding, and as wide as one.
-            override func sizeThatFits(_ size: CGSize) -> CGSize {
-                CGSize(
-                    width: Self.padding * 2 + Self.lampSide,
-                    height: Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2)
-            }
-
-            /// The lit lamp at full colour, the others dimmed to embers.
-            private func repaint() {
-                for (index, lamp) in lamps.enumerated() {
-                    let colour = Self.lampColors[index]
-                    lamp.backgroundColor = Int32(index) == signal ? colour : colour.withAlphaComponent(0.18)
-                }
-            }
-
-        }
-
-        extension TrafficLightView {
-            /// Adds the light for `TrafficLightContract`: `create` makes the view once
-            /// per element and wires the tap it reports, and `property` puts the
-            /// described signal on it. Said once, before the application runs.
-            @MainActor
-            static func register() {
-                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
-                    let light = TrafficLightView()
-                    light.onLampTapped = { index in
-                        reports.raise(TrafficLightContract.lampTapped, index)
-                    }
-                    return light
-                }) { light in
-                    light.property(TrafficLightContract.signal) { view, signal in
-                        view.signal = (signal ?? .stop).rawValue
-                    }
-                    light.raises(TrafficLightContract.lampTapped)
-                }
-            }
-        }
-        """#,
-        "InteropControlSample.Web.javascript": #"""
-        // Platforms/Web/Page/traffic-light.js
-        // <gallery-traffic-light>: three lamps in a housing, one lit at a time - an element that knows nothing of StateUI.
-        // Its `signal` attribute says which lamp is lit, 0 red, 1 amber, 2 green; a tap on a lamp raises `lamptap`, its
-        // `detail` the lamp's index top to bottom. It does not switch itself: whoever owns the state decides. The Swift
-        // half is Platforms/Web/Host/TrafficLightElement.swift.
-
-        class TrafficLight extends HTMLElement {
-          static observedAttributes = ["signal"];
-
-          constructor() {
-            super();
-            // A housing and three lamp buttons in its shadow root, each raising `lamptap` with its index as it is tapped.
-            const shadow = this.attachShadow({ mode: "open" });
-            shadow.innerHTML = `<style>
-              :host { display: inline-grid; gap: 10px; padding: 12px; border-radius: 16px; background: #1a1725; }
-              button { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
-                background: var(--lamp); opacity: 0.22; transition: opacity 0.15s ease, box-shadow 0.15s ease; }
-              button[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 18px var(--lamp); }
-              button:focus-visible { outline: 2px solid white; outline-offset: 2px; }
-            </style>`;
-            ["#e5484d", "#f5b546", "#46b45f"].forEach((lamp, index) => {
-              const button = document.createElement("button");
-              button.style.setProperty("--lamp", lamp);
-              button.setAttribute("aria-label", ["Red", "Amber", "Green"][index]);
-              button.addEventListener("click", () => this.dispatchEvent(new CustomEvent("lamptap", { detail: index })));
-              shadow.append(button);
-            });
-            this.show();
-          }
-
-          attributeChangedCallback() {
-            this.show();
-          }
-
-          show() {
-            const lit = Number(this.getAttribute("signal") ?? 0);
-            this.shadowRoot.querySelectorAll("button").forEach((lamp, index) => lamp.setAttribute("aria-pressed", String(index === lit)));
-          }
-        }
-
-        customElements.define("gallery-traffic-light", TrafficLight);
-        """#,
-        "InteropControlSample.Web.swift": #"""
-        // Platforms/Web/Host/TrafficLightElement.swift
-        /// Three lamps in a housing, one lit at a time: the gallery's own element, `<gallery-traffic-light>` of
-        /// Page/traffic-light.js, which knows nothing of StateUI.
-        /// Told what it is through its attributes, heard through the events it raises.
-        ///
-        /// `register()`, at the end of this file, adds it for `TrafficLightContract`, and that registration is the whole
-        /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
-        @MainActor
-        final class TrafficLightElement: WebControl {
-            let element = WebPageElement(tag: "gallery-traffic-light")
-
-            /// A lamp was tapped; the argument is its index, top to bottom. The control does not switch itself: it reports,
-            /// and whoever owns the state decides.
-            var onLampTapped: ((Int) -> Void)?
-
-            /// Which lamp is lit.
-            var signal = TrafficSignal.stop {
-                didSet { if signal != oldValue { element.setAttribute("signal", String(signal.rawValue)) } }
-            }
-
-            init() {
-                element.setAttribute("signal", String(signal.rawValue))
-                element.listen("lamptap") { [weak self] (index: Double) in self?.onLampTapped?(Int(index)) }
-            }
-        }
-
-        extension TrafficLightElement {
-            /// Adds the lamps for `TrafficLightContract`. Said once, before the application runs.
-            static func register() {
-                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightElement in
-                    let light = TrafficLightElement()
-                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
-                    return light
-                }) { light in
-                    // The value arrives typed - a TrafficSignal, not its number.
-                    light.property(TrafficLightContract.signal) { control, signal in
-                        control.signal = signal ?? .stop
-                    }
-                    light.raises(TrafficLightContract.lampTapped)
-                }
-            }
-        }
-        """#,
-        "InteropControlSample.WinUI.cpp": #"""
-        // Platforms/WinUI/Relay/Controls.cpp
-        // The gallery's traffic light and rating bar as WinUI elements that know nothing of StateUI: a housing of three
-        // lamps drawn with XAML's shapes, and WinUI's own RatingControl.
-        // Each function is C++/WinRT behind the C name the Swift half calls, declared in include/CGalleryWinUI.h.
-
-        // The housing and its lamps. A tap is told through the callbacks the Swift half handed over, by the number it made
-        // the control with.
-        extern "C" GalleryObjectRef gallery_traffic_light_make(int64_t control) {
-            try {
-                controls::Border housing;
-                housing.Background(brush(26, 23, 37));
-                housing.CornerRadius(xaml::CornerRadius{18, 18, 18, 18});
-                housing.Padding(xaml::Thickness{12, 12, 12, 12});
-                housing.HorizontalAlignment(xaml::HorizontalAlignment::Center);
-                controls::StackPanel lamps;
-                lamps.Spacing(10);
-                for (int32_t lamp = 0; lamp < 3; ++lamp) {
-                    shapes::Ellipse ellipse;
-                    ellipse.Width(44);
-                    ellipse.Height(44);
-                    ellipse.Fill(brush(lampColors[lamp][0], lampColors[lamp][1], lampColors[lamp][2]));
-                    ellipse.Opacity(lamp == 0 ? 1 : 0.18);
-                    xaml::Automation::AutomationProperties::SetName(ellipse, lampNames[lamp]);
-                    // The light does not switch itself: it reports, and whoever owns the state decides.
-                    ellipse.Tapped([control, lamp](auto const &, xaml::Input::TappedRoutedEventArgs const &args) {
-                        args.Handled(true);
-                        if (callbacks.lampTapped) callbacks.lampTapped(control, lamp);
-                    });
-                    lamps.Children().Append(ellipse);
-                }
-                housing.Child(lamps);
-                return detach(housing);
-            } catch (...) {
-                report("making a traffic light");
-                return nullptr;
-            }
-        }
-
-        extern "C" void gallery_traffic_light_set_signal(GalleryObjectRef light, int32_t signal) {
-            try {
-                auto lamps = as<controls::Border>(light).Child().as<controls::StackPanel>().Children();
-                for (uint32_t lamp = 0; lamp < lamps.Size(); ++lamp) {
-                    lamps.GetAt(lamp).as<xaml::UIElement>().Opacity(static_cast<int32_t>(lamp) == signal ? 1 : 0.18);
-                }
-            } catch (...) {
-                report("lighting a lamp");
-            }
-        }
-        """#,
-        "InteropControlSample.WinUI.swift": #"""
-        // Platforms/WinUI/Host/TrafficLightControl.swift
-        /// Three lamps in a housing, one lit at a time - a XAML Border of three Ellipses the gallery's relay makes, which
-        /// knows nothing of StateUI.
-        ///
-        /// `register()`, at the end of this file, adds it for `TrafficLightContract`, and that registration is the whole
-        /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
-        @MainActor
-        final class TrafficLightControl: WinUIControl {
-            // The relay's Border, made by C++/WinRT behind C functions: a WinUIControl is the object holding the element it
-            // shows.
-            let element: OpaquePointer
-
-            /// A lamp was tapped; the argument is its index, top to bottom. The control does not switch itself: it reports,
-            /// and whoever owns the state decides.
-            var onLampTapped: ((Int) -> Void)?
-
-            /// Which lamp is lit.
-            var signal = TrafficSignal.stop {
-                didSet { if signal != oldValue { gallery_traffic_light_set_signal(element, signal.rawValue) } }
-            }
-
-            private let number: Int64
-
-            init() {
-                // The relay tells a tap by the number the control makes its element with.
-                number = GalleryControls.reserve()
-                element = gallery_traffic_light_make(number)!
-                GalleryControls.hold(self, as: number)
-            }
-
-            isolated deinit {
-                GalleryControls.forget(number)
-                gallery_winui_release(element)
-            }
-
-            /// The relay says lamp `index` was tapped.
-            func tapped(_ index: Int) {
-                onLampTapped?(index)
-            }
-        }
-
-        // MARK: - Registration
-
-        extension TrafficLightControl {
-            /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
-            /// reports, and `property` puts the described signal on it. Said once, before the application runs.
-            @MainActor
-            static func register() {
-                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightControl in
-                    let light = TrafficLightControl()
-                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
-                    return light
-                }) { light in
-                    // Handed back typed - a TrafficSignal, not its number.
-                    light.property(TrafficLightContract.signal) { control, signal in
-                        control.signal = signal ?? .stop
-                    }
-                    light.raises(TrafficLightContract.lampTapped)
-                }
             }
         }
         """#,
@@ -5855,429 +3512,6 @@ enum Listings {
                 heard = []
             }
         }
-        """#,
-        "InteropEventsSample.Android.java": #"""
-        // Platforms/Android/Java/com/stateui/gallery/GalleryActivity.java
-        /** The gallery's activity: the host's own, and the battery watched while it lives, for the gallery's own event. */
-        public final class GalleryActivity extends StateUIActivity {
-            private BroadcastReceiver battery;
-
-            @Override
-            protected void onCreate(Bundle state) {
-                super.onCreate(state);
-                battery = GalleryDevice.watchBattery(this);
-            }
-
-            @Override
-            protected void onDestroy() {
-                unregisterReceiver(battery);
-                super.onDestroy();
-            }
-        }
-
-        // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
-        /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
-        final class GalleryDevice {
-            private GalleryDevice() {}
-
-            /** Puts `text` on the clipboard. */
-            static void copy(Context context, String text) {
-                context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
-            }
-
-            /** The clipboard's text; empty where it holds none. */
-            static String paste(Context context) {
-                ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
-                if (clip == null || clip.getItemCount() == 0) return "";
-                CharSequence text = clip.getItemAt(0).coerceToText(context);
-                return text == null ? "" : text.toString();
-            }
-
-            /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */
-            static double[] battery(Context context) {
-                return reading(context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)));
-            }
-
-            /** Tells each change of the battery - the one standing first - until the receiver is unregistered. */
-            static BroadcastReceiver watchBattery(Context context) {
-                BroadcastReceiver receiver = new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        double[] battery = reading(intent);
-                        GalleryNatives.batteryChanged(battery[0], battery[1] != 0);
-                    }
-                };
-                IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-                if (Build.VERSION.SDK_INT >= 33) {
-                    context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
-                } else {
-                    context.registerReceiver(receiver, filter);
-                }
-                return receiver;
-            }
-
-            /** A battery status read as `battery` gives it: the level, 0 to 1, and 1 where it charges, else 0. */
-            private static double[] reading(Intent status) {
-                if (status == null) return new double[] {0, 0};
-                int level = status.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                int scale = status.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                int state = status.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-                boolean charging = state == BatteryManager.BATTERY_STATUS_CHARGING || state == BatteryManager.BATTERY_STATUS_FULL;
-                return new double[] {level >= 0 && scale > 0 ? (double) level / scale : 0, charging ? 1 : 0};
-            }
-        }
-
-        // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java
-        /**
-         * What the gallery's own Android views tell its Swift half, each by the number
-         * its control was made with. The Swift half answers each, in Host/GalleryNatives.swift.
-         */
-        final class GalleryNatives {
-            private GalleryNatives() {}
-
-            /** A traffic light's lamp was tapped, counted from the top. */
-            static native void lampTapped(long control, int lamp);
-
-            /** A rating bar's user chose a rating. */
-            static native void rated(long control, double rating);
-
-            /** A cube's surface came, or changed its size in pixels. */
-            static native void surfaceReady(long control, Surface surface, int width, int height);
-
-            /** A cube's surface is going: nothing draws into it once this returns. */
-            static native void surfaceGone(long control);
-
-            /** A display frame for a cube, while it asks for them. */
-            static native void cubeFrame(long control, long nanoseconds);
-
-            /** The battery said its level, 0 to 1, and whether it charges. */
-            static native void batteryChanged(double level, boolean charging);
-        }
-        """#,
-        "InteropEventsSample.Android.swift": #"""
-        // Platforms/Android/Swift/Host/GalleryEventSources.swift
-        /// The gallery's own event on this head: the battery, which the gallery's activity watches while it lives and tells
-        /// through GalleryNatives.
-        enum GalleryEventSources {
-            /// Declares the event the activity's watcher raises. Said once, as the library loads.
-            @MainActor
-            static func register() {
-                StateUIEvents.raises(GalleryContract.batteryChanged)
-            }
-
-            @MainActor private static var lastSaid: (level: Double, charging: Bool)?
-
-            /// The battery said its level and whether it charges: raised where it changed, and a device with no battery
-            /// says nothing.
-            @MainActor
-            static func report(level: Double, charging: Bool) {
-                guard level > 0 else { return }
-                guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
-
-                lastSaid = (level, charging)
-                StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
-            }
-        }
-
-        // Platforms/Android/Swift/Host/GalleryNatives.swift
-        // The native methods of the gallery's Java views, com.stateui.gallery.GalleryNatives - found by their JNI names, each
-        // called on the UI thread, where Swift's main actor runs.
-
-        @_cdecl("Java_com_stateui_gallery_GalleryNatives_batteryChanged")
-        public func galleryBatteryChanged(
-            _ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jclass?, _ level: jdouble, _ charging: jboolean
-        ) {
-            MainActor.assumeIsolated { GalleryEventSources.report(level: level, charging: charging != 0) }
-        }
-        """#,
-        "InteropEventsSample.AppKit.swift": #"""
-        // Platforms/AppKit/Host/GalleryEventSources.swift
-        /// The gallery's own pushes: what this host reports without being asked.
-        ///
-        /// `GalleryContract` declares each event with what it carries, and every
-        /// `HostEvents.on` subscription hears it. A raise nobody hears is an ordinary
-        /// answer, so the sources are wired unconditionally.
-        ///
-        /// THE SPLIT IS THE PLATFORM'S: a desktop with no battery reports nothing at
-        /// all, and the sample's own words say so. What is watched here is the power
-        /// source, which macOS reports through a run-loop source of its own.
-        enum GalleryEventSources {
-            /// What was last said, so an unchanged reading raises nothing - a power
-            /// source notifies on far more than a level change.
-            nonisolated(unsafe) private static var lastSaid: (level: Double, charging: Bool)?
-
-            /// Declares what the gallery raises and starts watching. Said once,
-            /// before the application runs.
-            @MainActor
-            static func start() {
-                // Declared where the source is wired: a handler listening for an
-                // event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
-
-                // Named in full: a C function pointer carries no context at all, and
-                // an unqualified call to a static method captures the type implicitly.
-                let notify: IOPowerSourceCallbackType = { _ in GalleryEventSources.report() }
-
-                guard let source = IOPSNotificationCreateRunLoopSource(notify, nil)?.takeRetainedValue()
-                else { return }
-
-                CFRunLoopAddSource(CFRunLoopGetMain(), source, .defaultMode)
-                report()
-            }
-
-            /// Raises the battery's reading, where it has changed and there is one.
-            private static func report() {
-                let (level, charging) = GalleryActs.battery()
-
-                guard level > 0 else { return }
-                guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
-
-                lastSaid = (level, charging)
-                StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
-            }
-        }
-
-        // Platforms/AppKit/main.swift
-        // What this host answers for the application, said before it runs: the
-        // controls it realizes, the acts it performs, and the pushes it reports. Each
-        // lives in Host/ beside this file.
-        GalleryControls.register()
-        GalleryActs.register()
-        GalleryEventSources.start()
-        """#,
-        "InteropEventsSample.GTK.swift": #"""
-        // Platforms/GTK/Host/GalleryEventSources.swift
-        /// The gallery's own pushes, as this host raises them: the battery, as UPower tells it.
-        ///
-        /// Raising is safe from any thread, and a raise nobody hears is an ordinary answer, so the source is wired whether or
-        /// not anything listens.
-        enum GalleryEventSources {
-            /// The battery as it was last said, so a notice that changed nothing of it raises nothing.
-            @MainActor private static var lastSaid: (level: Double, charging: Bool)?
-
-            /// Declares what the host raises and wires its source. Said once, before the application runs.
-            @MainActor
-            static func start() {
-                // A handler listening for an event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
-
-                // UPower's display device signals each change of its properties, the battery's among them.
-                guard let device = GalleryPower.device else { return }
-                // A C callback carries no context; the report is named in full.
-                let changed: @convention(c) (OpaquePointer?, OpaquePointer?, OpaquePointer?, gpointer?) -> Void = { _, _, _, _ in
-                    MainActor.assumeIsolated { GalleryEventSources.report() }
-                }
-                g_signal_connect_data(
-                    UnsafeMutableRawPointer(device), "g-properties-changed", unsafeBitCast(changed, to: GCallback.self), nil,
-                    nil, GConnectFlags(rawValue: 0))
-                report()
-            }
-
-            @MainActor
-            private static func report() {
-                let (level, charging) = GalleryPower.battery()
-                // Nothing is raised without a battery, nor for a notice that left it as it was.
-                guard level > 0, lastSaid?.level != level || lastSaid?.charging != charging else { return }
-
-                lastSaid = (level, charging)
-                StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
-            }
-        }
-
-        // Platforms/GTK/main.swift
-        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
-        // the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
-        // the last window closes.
-        stateui_app_register()
-        // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
-        GalleryControls.register()
-        GalleryActs.register()
-        GalleryEventSources.start()
-        """#,
-        "InteropEventsSample.UIKit.swift": #"""
-        // Platforms/UIKit/Host/GalleryEventSources.swift
-        /// The gallery's own pushes: what this host reports without being asked.
-        ///
-        /// `GalleryContract` declares each event with what it carries, and every
-        /// `HostEvents.on` subscription hears it. A raise nobody hears is an ordinary
-        /// answer, so the sources are wired unconditionally.
-        ///
-        /// THE SPLIT IS THE PLATFORM'S: a device UIKit knows no battery of - the
-        /// simulator - reports nothing at all, and the sample's own words say so.
-        /// What is watched here is the battery, which UIKit reports through the
-        /// notification centre once its monitoring is on.
-        @MainActor
-        enum GalleryEventSources {
-
-                /// Declares what the gallery raises and starts watching. Said once,
-                /// before the application runs.
-                static func start() {
-                    // What the host raises, declared where its source is wired: a handler
-                    // listening for an event nothing raises is told so.
-                    StateUIEvents.raises(GalleryContract.batteryChanged)
-
-                    UIDevice.current.isBatteryMonitoringEnabled = true
-                    for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {
-                        observers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { _ in
-                            MainActor.assumeIsolated { report() }
-                        })
-                    }
-                    report()
-                }
-
-                /// Raises the battery's reading, where it has changed and there is one.
-                private static func report() {
-                    let (level, charging) = GalleryActs.battery()
-
-                    guard level > 0 else { return }
-                    guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
-
-                    lastSaid = (level, charging)
-                    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
-                }
-            }
-
-        // Platforms/UIKit/main.swift
-        // What this host answers for the application, said before it runs: the
-        // controls it realizes, the acts it performs, and the pushes it reports. Each
-        // lives in Host/ beside this file.
-        GalleryControls.register()
-        GalleryActs.register()
-        GalleryEventSources.start()
-
-        StateUIUIKit.run()
-        """#,
-        "InteropEventsSample.Web.javascript": #"""
-        // Platforms/Web/Page/gallery-acts.js
-        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
-        // battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
-        // GalleryEventSources.swift.
-        // The page loads this script before the application starts.
-
-        // The battery as two words, its level from 0 to 1 and whether it charges; a browser that says nothing of it - a
-        // desktop's mains, Safari, Firefox - answers 0.
-        const battery = navigator.getBattery?.().catch(() => null) ?? Promise.resolve(null);
-        const said = (power) => (power ? `${power.level} ${power.charging}` : "0 false");
-
-        // A browser that offers its battery - Chrome, Edge - tells it at once and at each change; the others tell nothing.
-        battery.then((power) => {
-          if (!power) return;
-          const tell = () => StateUI.tell("battery", said(power));
-          power.addEventListener("levelchange", tell);
-          power.addEventListener("chargingchange", tell);
-          tell();
-        });
-        """#,
-        "InteropEventsSample.Web.swift": #"""
-        // Platforms/Web/Host/GalleryEventSources.swift
-        /// The gallery's own pushes, as this host raises them: the battery, as the browser tells the page's scripts.
-        enum GalleryEventSources {
-            /// Declares what the host raises and wires its source. Said once, before the application runs.
-            @MainActor
-            static func start() {
-                // What the host raises, declared where its source is wired: a handler listening for an event nothing
-                // declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
-                StateUIScripts.hear("battery") { words in
-                    let (level, charging) = GalleryActs.battery(words)
-                    guard level > 0 else { return }
-                    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
-                }
-            }
-        }
-
-        // Platforms/Web/main.swift
-        GalleryEventSources.start()
-        StateUIWeb.run(name: "Gallery")
-        """#,
-        "InteropEventsSample.WinUI.cpp": #"""
-        // Platforms/WinUI/Relay/System.cpp
-        // The battery as Windows knows it: the power status every desktop reads, and the notices Windows sends as the
-        // battery's charge or the power source changes.
-
-        namespace {
-            /// Windows' names for the battery's charge and for the power source.
-            constexpr GUID batteryPercentage = {0xa7ad8041, 0xb45a, 0x4cae, {0x87, 0xa3, 0xee, 0xcb, 0xb4, 0x68, 0xa9, 0xe1}};
-            constexpr GUID powerSource = {0x5d3e9a59, 0xe9d5, 0x4b00, {0xa6, 0xbd, 0xff, 0x34, 0xff, 0x51, 0x65, 0x48}};
-
-            // The function the Swift half handed over: each notice is passed on to it, on a thread of Windows' own.
-            void (*told)(void) = nullptr;
-
-            ULONG CALLBACK changed(PVOID, ULONG, PVOID) {
-                if (told) told();
-                return 0;
-            }
-
-            DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS subscription{changed, nullptr};
-        }
-
-        // The reading GalleryPower.battery() in the Swift half calls: for the battery act, and after each notice.
-        extern "C" void gallery_battery(double *level, bool *charging) {
-            try {
-                *level = 0;
-                *charging = false;
-                SYSTEM_POWER_STATUS status{};
-                // No system battery, or a charge Windows does not know: nothing to say.
-                if (!GetSystemPowerStatus(&status) || (status.BatteryFlag & 128) || status.BatteryLifePercent > 100) return;
-                *level = status.BatteryLifePercent / 100.0;
-                *charging = status.ACLineStatus == 1;
-            } catch (...) {
-                report("reading the battery");
-            }
-        }
-
-        extern "C" void gallery_battery_watch(void (*changedTold)(void)) {
-            try {
-                told = changedTold;
-                for (auto setting : {&batteryPercentage, &powerSource}) {
-                    HPOWERNOTIFY handle = nullptr;
-                    PowerSettingRegisterNotification(setting, DEVICE_NOTIFY_CALLBACK, &subscription, &handle);
-                }
-            } catch (...) {
-                report("watching the battery");
-            }
-        }
-        """#,
-        "InteropEventsSample.WinUI.swift": #"""
-        // Platforms/WinUI/Host/GalleryEventSources.swift
-        /// The gallery's own pushes, as this host raises them: the battery, as Windows tells it.
-        enum GalleryEventSources {
-            /// The battery as it was last said, so a notice that changed nothing of it raises nothing.
-            @MainActor private static var lastSaid: (level: Double, charging: Bool)?
-
-            /// Declares what the host raises and wires its source. Said once, before the application runs.
-            @MainActor
-            static func start() {
-                // A handler listening for an event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
-
-                // The gallery's relay asks Windows for each change of the battery's charge and of the power source
-                // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.
-                gallery_battery_watch(batteryChanged)
-                report()
-            }
-
-            @MainActor
-            fileprivate static func report() {
-                let (level, charging) = GalleryPower.battery()
-                // Windows tells more than a level change: no battery, or a reading unchanged, raises nothing.
-                guard level > 0, lastSaid?.level != level || lastSaid?.charging != charging else { return }
-
-                lastSaid = (level, charging)
-                StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
-            }
-        }
-
-        /// What Windows calls as the battery's charge or the power source changes - on a thread of its own, and once as the
-        /// watch begins: the report is the main actor's.
-        /// It stands outside the main actor, as a closure written inside `start()` would be the main actor's.
-        private let batteryChanged: @convention(c) () -> Void = {
-            Task { @MainActor in GalleryEventSources.report() }
-        }
-
-        // Platforms/WinUI/main.swift
-        // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
-        GalleryEventSources.start()
         """#,
         "KeyboardSample": #"""
         // Sources/Samples/Text/KeyboardSample.swift
@@ -11669,3 +8903,2785 @@ enum Listings {
         """#,
     ]
 }
+
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+extension Listings {
+    /// The hosts' own code, which only a host's build shows.
+    fileprivate static let ofHosts: [String: String] = [
+        "Cube3DSample.Android.glsl": #"""
+        // Platforms/Android/Swift/Host/GLESCube3DView.swift
+        // The vertex shader, compiled for OpenGL ES 3.0: a corner carries its face's brightness in w, and the
+        // colour is the frame's.
+        layout(location = 0) in vec4 corner;
+        uniform mat4 transform;
+        uniform vec4 color;
+        out vec4 painted;
+        void main() {
+            gl_Position = transform * vec4(corner.xyz, 1.0);
+            painted = vec4(color.rgb * corner.w, color.a);
+        }
+
+        // The fragment shader: every point of a face takes the colour its corners were painted.
+        precision mediump float;
+        in vec4 painted;
+        out vec4 fragment;
+        void main() { fragment = painted; }
+        """#,
+        "Cube3DSample.Android.java": #"""
+        // Platforms/Android/Java/com/stateui/gallery/Cube3DView.java
+        /**
+         * The surface a cube is drawn into by the Swift half, with OpenGL ES: a TextureView, drawn as a view is, so the
+         * opacity, transform and clip StateUI puts on every view hold for it. It hands its surface over as it comes and goes,
+         * and asks for the display's frames while it spins and stands in a window.
+         */
+        final class Cube3DView extends TextureView implements TextureView.SurfaceTextureListener, Choreographer.FrameCallback {
+            private static final float SIDE = 240;
+
+            private final long control;
+            private final float density;
+            private Surface surface;
+            private boolean spinning = true;
+            private boolean following;
+
+            Cube3DView(Context context, long control) {
+                super(context);
+                this.control = control;
+                density = context.getResources().getDisplayMetrics().density;
+                setSurfaceTextureListener(this);
+            }
+
+            /** Whether the cube turns: frames come only while it does. */
+            void setSpinning(boolean value) {
+                spinning = value;
+                follow();
+            }
+
+            @Override
+            protected void onMeasure(int width, int height) {
+                int side = Math.round(SIDE * density);
+                setMeasuredDimension(resolveSize(side, width), resolveSize(side, height));
+            }
+
+            @Override
+            protected void onAttachedToWindow() {
+                super.onAttachedToWindow();
+                follow();
+            }
+
+            @Override
+            protected void onDetachedFromWindow() {
+                super.onDetachedFromWindow();
+                follow();
+            }
+
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+                surface = new Surface(texture);
+                GalleryNatives.surfaceReady(control, surface, width, height);
+                follow();
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+                if (surface != null) GalleryNatives.surfaceReady(control, surface, width, height);
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+                GalleryNatives.surfaceGone(control);
+                surface.release();
+                surface = null;
+                follow();
+                return true;
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture texture) {}
+
+            @Override
+            public void doFrame(long nanoseconds) {
+                if (!following) return;
+                GalleryNatives.cubeFrame(control, nanoseconds);
+                Choreographer.getInstance().postFrameCallback(this);
+            }
+
+            /** Asks for frames while the cube spins on a surface in a window, and for none otherwise. */
+            private void follow() {
+                boolean wanted = spinning && surface != null && isAttachedToWindow();
+                if (wanted == following) return;
+                following = wanted;
+                if (wanted) {
+                    Choreographer.getInstance().postFrameCallback(this);
+                } else {
+                    Choreographer.getInstance().removeFrameCallback(this);
+                }
+            }
+        }
+
+        // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java
+        /**
+         * What the gallery's own Android views tell its Swift half, each by the number
+         * its control was made with. The Swift half answers each, in Host/GalleryNatives.swift.
+         */
+        final class GalleryNatives {
+            private GalleryNatives() {}
+
+            /** A traffic light's lamp was tapped, counted from the top. */
+            static native void lampTapped(long control, int lamp);
+
+            /** A rating bar's user chose a rating. */
+            static native void rated(long control, double rating);
+
+            /** A cube's surface came, or changed its size in pixels. */
+            static native void surfaceReady(long control, Surface surface, int width, int height);
+
+            /** A cube's surface is going: nothing draws into it once this returns. */
+            static native void surfaceGone(long control);
+
+            /** A display frame for a cube, while it asks for them. */
+            static native void cubeFrame(long control, long nanoseconds);
+
+            /** The battery said its level, 0 to 1, and whether it charges. */
+            static native void batteryChanged(double level, boolean charging);
+        }
+        """#,
+        "Cube3DSample.Android.swift": #"""
+        // Platforms/Android/Swift/Host/GLESCube3DView.swift
+        /// A cube drawn with OpenGL ES 3.0 into the surface of the gallery's own Java view, com.stateui.gallery.Cube3DView -
+        /// a TextureView that asks for the display's frames while the cube spins and stands in a window. The Swift half is
+        /// Sources/Samples/Interop/Cube3D.swift.
+        @MainActor
+        final class GLESCube3DView: AndroidControl {
+            let view: JavaObject
+
+            /// How long the cube's edge is, as a share of the view.
+            var cubeSize = 0.6 {
+                didSet { if cubeSize != oldValue { draw() } }
+            }
+
+            /// Which colour it is painted.
+            var color = CubeColor.teal {
+                didSet { if color != oldValue { draw() } }
+            }
+
+            /// Whether it turns. Stopped, it holds the angle it had.
+            var isSpinning = true {
+                didSet { if isSpinning != oldValue { Java.call(view.reference, Self.setSpinning, .bool(isSpinning)) } }
+            }
+
+            private let number: Int64
+
+            /// The surface drawn into, while the view has one: its window, the EGL objects over it, its size in pixels.
+            private var drawing: Drawing?
+
+            /// The angle turned, and the display's time of the frame it last turned on - 0 for none yet.
+            private var angle = 0.0
+            private var lastFrame: Int64 = 0
+
+            private static let viewClass = Java.findClass("com/stateui/gallery/Cube3DView")
+            private static let make = Java.method(viewClass, "<init>", "(Landroid/content/Context;J)V")
+            private static let setSpinning = Java.method(viewClass, "setSpinning", "(Z)V")
+
+            init() {
+                number = GalleryControls.reserve()
+                view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+                GalleryControls.hold(self, as: number)
+            }
+
+            isolated deinit {
+                drawing?.close()
+                GalleryControls.forget(number)
+            }
+
+            /// The view's surface came, or changed size: the EGL context and the cube's program are made the first time.
+            func surfaceReady(_ surface: jobject?, environment: UnsafeMutablePointer<JNIEnv?>?, width: Int32, height: Int32) {
+                if drawing == nil, let surface, let window = ANativeWindow_fromSurface(environment, surface) {
+                    drawing = Drawing(window: window)
+                }
+                drawing?.size = (width, height)
+                lastFrame = 0
+                draw()
+            }
+
+            /// The view's surface is going: nothing is drawn into it again.
+            func surfaceGone() {
+                drawing?.close()
+                drawing = nil
+            }
+
+            /// One display frame while spinning: the angle moves by the time since the last, in seconds.
+            func frame(at time: Int64) {
+                if lastFrame != 0 { angle += Double(time - lastFrame) / 1_000_000_000 }
+                lastFrame = time
+                draw()
+            }
+
+        }
+
+        extension GLESCube3DView {
+            /// Adds the cube for `Cube3DContract`. Said once, as the library loads.
+            @MainActor
+            static func register() {
+                StateUIControls.add(Cube3DContract.self, create: { _ in GLESCube3DView() }) { cube in
+                    cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+                    cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+                    cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
+                }
+            }
+        }
+        """#,
+        "Cube3DSample.AppKit.metal": #"""
+        // Platforms/AppKit/Host/MetalCube3DView.swift
+        // Compiled as MetalCube3DView is made. A vertex is one float4 - the
+        // corner in xyz, the face's brightness in w - so there is no struct
+        // whose padding Swift and Metal could measure differently.
+        #include <metal_stdlib>
+        using namespace metal;
+
+        struct Uniforms {
+            float4x4 transform;
+            float4 color;
+        };
+
+        struct Painted {
+            float4 position [[position]];
+            float4 color;
+        };
+
+        vertex Painted cube_vertex(const device float4 *corners [[buffer(0)]],
+                                   constant Uniforms &uniforms [[buffer(1)]],
+                                   uint id [[vertex_id]]) {
+            float4 corner = corners[id];
+
+            Painted out;
+            out.position = uniforms.transform * float4(corner.xyz, 1.0);
+            out.color = float4(uniforms.color.rgb * corner.w, 1.0);
+            return out;
+        }
+
+        fragment float4 cube_fragment(Painted in [[stage_in]]) {
+            return in.color;
+        }
+        """#,
+        "Cube3DSample.AppKit.swift": #"""
+        // Platforms/AppKit/Host/MetalCube3DView.swift
+        /// A cube turning on the GPU - an ordinary `MTKView` that knows nothing of
+        /// StateUI.
+        ///
+        /// `register()`, at the end of this file, adds it for `Cube3DContract`, and
+        /// that registration is the whole bridge. The Swift half is
+        /// Sources/Samples/Interop/Cube3D.swift.
+        ///
+        /// Its shaders are compiled FROM SOURCE as the view is made, so the
+        /// application ships no `.metal` file and its build needs nothing added to it.
+        ///
+        /// It renders in `draw(_:)` rather than through an `MTKViewDelegate`: a view
+        /// that draws itself needs no second object, and this way the drawing runs
+        /// where every other `NSView` draws.
+        final class MetalCube3DView: MTKView {
+            /// How long the cube's edge is, as a share of the room it is given: 1
+            /// turns corner to corner inside the view.
+            var cubeSize: Double = 0.6 {
+                didSet { if cubeSize != oldValue { drawIfStill() } }
+            }
+
+            /// Which colour the cube is painted, as the member number the Swift side
+            /// sends: teal 0, amber 1, violet 2. Anything else is teal.
+            var color: Int32 = 0 {
+                didSet { if color != oldValue { drawIfStill() } }
+            }
+
+            /// Whether the cube turns. Stopped, it holds the angle it had.
+            var isSpinning: Bool = true {
+                didSet {
+                    guard isSpinning != oldValue else { return }
+
+                    // The clock restarts with the motion, or the time spent stopped
+                    // would arrive as one jump.
+                    lastTime = CACurrentMediaTime()
+                    resumeOrStop()
+                }
+            }
+
+            private static let colors: [SIMD3<Float>] = [
+                SIMD3(0.161, 0.722, 0.678),
+                SIMD3(0.961, 0.710, 0.275),
+                SIMD3(0.580, 0.443, 0.929),
+            ]
+
+            /// The eight corners as six faces, each face two triangles. `xyz` is the
+            /// corner and `w` is how brightly that face takes the colour - which is
+            /// what makes a solid read as a solid.
+            private static let corners: [SIMD4<Float>] = {
+                let faces: [(SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, Float)] = [
+                    (SIMD3(1, -1, -1), SIMD3(1, 1, -1), SIMD3(1, 1, 1), SIMD3(1, -1, 1), 1.00),
+                    (SIMD3(-1, -1, -1), SIMD3(-1, 1, -1), SIMD3(-1, 1, 1), SIMD3(-1, -1, 1), 0.55),
+                    (SIMD3(-1, 1, -1), SIMD3(1, 1, -1), SIMD3(1, 1, 1), SIMD3(-1, 1, 1), 0.88),
+                    (SIMD3(-1, -1, -1), SIMD3(1, -1, -1), SIMD3(1, -1, 1), SIMD3(-1, -1, 1), 0.42),
+                    (SIMD3(-1, -1, 1), SIMD3(1, -1, 1), SIMD3(1, 1, 1), SIMD3(-1, 1, 1), 0.97),
+                    (SIMD3(-1, -1, -1), SIMD3(1, -1, -1), SIMD3(1, 1, -1), SIMD3(-1, 1, -1), 0.50),
+                ]
+
+                return faces.flatMap { a, b, c, d, shade in
+                    [a, b, c, a, c, d].map { SIMD4($0.x, $0.y, $0.z, shade) }
+                }
+            }()
+
+            /// What the vertex function is handed for the whole frame.
+            ///
+            /// Its layout is the shader's: a 4x4 of floats, then four floats. Both
+            /// sides measure 80 bytes, which is what lets it cross as raw bytes.
+            private struct Uniforms {
+                var transform: simd_float4x4
+                var color: SIMD4<Float>
+            }
+
+            private let queue: MTLCommandQueue?
+            private var pipeline: MTLRenderPipelineState?
+            private var depth: MTLDepthStencilState?
+            private var mesh: MTLBuffer?
+
+            private var angle: Double = 0
+            private var lastTime: CFTimeInterval = CACurrentMediaTime()
+
+            /// The view, its pipeline and its mesh, built once.
+            ///
+            /// A machine with no Metal device leaves the pipeline empty and the view
+            /// draws its background alone - a gallery is worth more than a crash.
+            init() {
+                let device = MTLCreateSystemDefaultDevice()
+                queue = device?.makeCommandQueue()
+
+                super.init(frame: .zero, device: device)
+
+                colorPixelFormat = .bgra8Unorm
+                depthStencilPixelFormat = .depth32Float
+                clearColor = MTLClearColor(red: 0.102, green: 0.090, blue: 0.145, alpha: 1)
+                preferredFramesPerSecond = 60
+
+                wantsLayer = true
+                layer?.cornerRadius = 18
+                layer?.masksToBounds = true
+
+                guard let device else { return }
+
+                mesh = device.makeBuffer(
+                    bytes: Self.corners,
+                    length: MemoryLayout<SIMD4<Float>>.stride * Self.corners.count)
+
+                let describedDepth = MTLDepthStencilDescriptor()
+                describedDepth.depthCompareFunction = .less
+                describedDepth.isDepthWriteEnabled = true
+                depth = device.makeDepthStencilState(descriptor: describedDepth)
+
+                pipeline = Self.pipeline(on: device, colorFormat: colorPixelFormat)
+            }
+
+            @available(*, unavailable)
+            required init(coder: NSCoder) {
+                fatalError("MetalCube3DView is created in code")
+            }
+
+            /// Square, and big enough to see a solid turn in.
+            override var intrinsicContentSize: NSSize {
+                NSSize(width: 240, height: 240)
+            }
+
+            /// Nothing turns while the view is off screen, and nothing is left turning
+            /// behind it: the loop stops with the window it was shown in.
+            override func viewDidMoveToWindow() {
+                super.viewDidMoveToWindow()
+
+                lastTime = CACurrentMediaTime()
+                resumeOrStop()
+            }
+
+            /// One frame: the angle the clock has reached, the cube at the size and
+            /// colour it was given.
+            override func draw(_ dirtyRect: NSRect) {
+                let now = CACurrentMediaTime()
+                let elapsed = now - lastTime
+                lastTime = now
+
+                // Only a turning cube moves with the clock. Stopped, the frame drawn
+                // for a changed size or colour finds the angle where it was left.
+                if isSpinning {
+                    angle += elapsed
+                }
+
+                guard let pipeline, let mesh, let queue,
+                      let pass = currentRenderPassDescriptor,
+                      let drawable = currentDrawable,
+                      let buffer = queue.makeCommandBuffer(),
+                      let encoder = buffer.makeRenderCommandEncoder(descriptor: pass),
+                      drawableSize.height > 0
+                else { return }
+
+                var uniforms = Uniforms(
+                    transform: transform(aspect: Float(drawableSize.width / drawableSize.height)),
+                    color: Self.paint(color))
+
+                encoder.setRenderPipelineState(pipeline)
+                encoder.setDepthStencilState(depth)
+                encoder.setVertexBuffer(mesh, offset: 0, index: 0)
+                encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 1)
+                encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: Self.corners.count)
+                encoder.endEncoding()
+
+                buffer.present(drawable)
+                buffer.commit()
+            }
+
+            /// Where the cube stands, how big it is, and how it is turned - one matrix
+            /// the vertex function multiplies each corner by.
+            private func transform(aspect: Float) -> simd_float4x4 {
+                let scale = Float(max(0, min(1, cubeSize)))
+                let turn = Float(angle)
+
+                return Self.perspective(fieldOfView: 50 * .pi / 180, aspect: aspect)
+                    * Self.translation(z: -4)
+                    * Self.rotation(aroundX: turn * 0.35)
+                    * Self.rotation(aroundY: turn * 0.60)
+                    * Self.scaling(scale)
+            }
+
+            /// The colour a member number names, opaque - teal for a number naming
+            /// none, so a value from outside the vocabulary paints rather than
+            /// vanishes.
+            private static func paint(_ color: Int32) -> SIMD4<Float> {
+                let index = Int(color)
+                let rgb = colors.indices.contains(index) ? colors[index] : colors[0]
+
+                return SIMD4(rgb, 1)
+            }
+
+            /// Turning, or stopped where it stands - and never running for a view no
+            /// window shows.
+            private func resumeOrStop() {
+                isPaused = window == nil || !isSpinning
+            }
+
+            /// Draws the one frame a stopped cube needs to show a changed size or
+            /// colour. A turning one is already drawing.
+            private func drawIfStill() {
+                guard isPaused, window != nil else { return }
+
+                draw()
+            }
+
+        }
+
+        // MARK: - Registration
+
+        extension MetalCube3DView {
+            /// Adds the cube for `Cube3DContract`. Said once, before the application
+            /// runs.
+            ///
+            /// A view that draws on the GPU registers exactly like one that draws with a
+            /// layer: an `MTKView` is an `NSView`. It reports nothing, so `create` only
+            /// makes it - every member here goes one way, from the description to the
+            /// frames. The cube is declared only for the hosts that draw it, and this
+            /// file names it with no condition around it because nothing but an AppKit
+            /// build compiles this folder.
+            @MainActor
+            static func register() {
+                StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
+                    MetalCube3DView()
+                }) { cube in
+                    cube.property(Cube3DContract.size) { view, size in
+                        view.cubeSize = size ?? 0.6
+                    }
+                    cube.property(Cube3DContract.color) { view, color in
+                        view.color = (color ?? .teal).rawValue
+                    }
+                    cube.property(Cube3DContract.isSpinning) { view, spinning in
+                        view.isSpinning = spinning ?? true
+                    }
+                }
+            }
+        }
+        """#,
+        "Cube3DSample.GTK.glsl": #"""
+        // Platforms/GTK/Host/OpenGLCube3DWidget.swift
+        // GLSL 3.30 core, compiled from source as the area is realized. A corner carries the brightness of its face
+        // in w; the colour comes with each frame.
+        layout(location = 0) in vec4 corner;
+        uniform mat4 transform;
+        uniform vec4 color;
+        out vec4 painted;
+        void main() {
+            gl_Position = transform * vec4(corner.xyz, 1.0);
+            painted = vec4(color.rgb * corner.w, color.a);
+        }
+
+        in vec4 painted;
+        out vec4 fragment;
+        void main() { fragment = painted; }
+        """#,
+        "Cube3DSample.GTK.swift": #"""
+        // Platforms/GTK/Host/OpenGLCube3DWidget.swift
+        /// A cube drawn by OpenGL 3.3 core in a `GtkGLArea`, turning on the widget's frame clock - a widget that knows
+        /// nothing of StateUI. The Swift half is Sources/Samples/Interop/Cube3D.swift.
+        ///
+        /// Its GL calls go through libepoxy, the loader GTK itself draws with. A `GTKControl` is an object holding the widget
+        /// it shows.
+        @MainActor
+        final class OpenGLCube3DWidget: GTKControl {
+            let widget: UnsafeMutablePointer<GtkWidget>
+
+            /// How long the cube's edge is, as a share of the area.
+            var cubeSize = 0.6 {
+                didSet { if cubeSize != oldValue { gtk_gl_area_queue_render(area) } }
+            }
+
+            /// Which colour it is painted.
+            var color = CubeColor.teal {
+                didSet { if color != oldValue { gtk_gl_area_queue_render(area) } }
+            }
+
+            /// Whether it turns. Stopped, it holds the angle it had.
+            var isSpinning = true {
+                didSet { if isSpinning != oldValue { followClock() } }
+            }
+
+            /// An area asking GTK for OpenGL 3.3 core with a depth buffer, its GL made where the widget is realized.
+            init() {
+                widget = gtk_gl_area_new()
+                g_object_ref_sink(widget)
+                gtk_widget_set_size_request(widget, 240, 240)
+                gtk_gl_area_set_required_version(area, 3, 3)
+                gtk_gl_area_set_allowed_apis(area, GDK_GL_API_GL)
+                gtk_gl_area_set_has_depth_buffer(area, 1)
+
+                // "realize" compiles the shaders and loads the corners, "render" draws a frame, "unrealize" lets them go,
+                // and "map" forgets the last frame, so the cube does not leap by the time it spent off screen.
+                // Each a C callback, handed the control as its data: it lives as long as its widget.
+                let me = Unmanaged.passUnretained(self).toOpaque()
+                let realized: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
+                    MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).realize() }
+                }
+                let unrealized: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
+                    MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).unrealize() }
+                }
+                let render: @convention(c) (OpaquePointer?, OpaquePointer?, gpointer?) -> gboolean = { _, _, data in
+                    MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).render() }
+                }
+                let mapped: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
+                    MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).lastFrame = 0 }
+                }
+                for (signal, handler) in [
+                    ("realize", unsafeBitCast(realized, to: GCallback.self)),
+                    ("unrealize", unsafeBitCast(unrealized, to: GCallback.self)),
+                    ("render", unsafeBitCast(render, to: GCallback.self)),
+                    ("map", unsafeBitCast(mapped, to: GCallback.self)),
+                ] {
+                    g_signal_connect_data(UnsafeMutableRawPointer(widget), signal, handler, me, nil, GConnectFlags(rawValue: 0))
+                }
+                followClock()
+            }
+
+            /// Turns on the widget's frames while spinning: GTK ticks only a mapped widget, so the cube stops behind a page
+            /// the user has left. A stopped cube still owes one frame to a value that changed.
+            private func followClock() {
+                if isSpinning, tick == 0 {
+                    lastFrame = 0
+                    let turn: @convention(c) (UnsafeMutablePointer<GtkWidget>?, OpaquePointer?, gpointer?) -> gboolean = {
+                        _, clock, data in
+                        nonisolated(unsafe) let clock = clock
+                        return MainActor.assumeIsolated { OpenGLCube3DWidget.from(data).turn(at: gdk_frame_clock_get_frame_time(clock)) }
+                    }
+                    tick = gtk_widget_add_tick_callback(widget, turn, Unmanaged.passUnretained(self).toOpaque(), nil)
+                } else if !isSpinning, tick != 0 {
+                    gtk_widget_remove_tick_callback(widget, tick)
+                    tick = 0
+                }
+            }
+
+            /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+            private func render() -> gboolean {
+                epoxy_glClearColor(0.102, 0.090, 0.145, 1)
+                epoxy_glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
+                guard program != 0 else { return 1 }
+
+                epoxy_glEnable(GLenum(GL_DEPTH_TEST))
+                epoxy_glUseProgram(program)
+                let width = Double(max(gtk_widget_get_width(widget), 1))
+                let height = Double(max(gtk_widget_get_height(widget), 1))
+                var transform = Self.transform(aspect: width / height, turn: angle, scale: min(max(cubeSize, 0), 1))
+                epoxy_glUniformMatrix4fv(transformAt, 1, GLboolean(GL_FALSE), &transform)
+                let (red, green, blue) = Self.colors[Int(color.rawValue)]
+                epoxy_glUniform4f(colorAt, red, green, blue, 1)
+                epoxy_glBindVertexArray(vertexArray)
+                epoxy_glDrawArrays(GLenum(GL_TRIANGLES), 0, GLsizei(Self.corners.count / 4))
+                return 1
+            }
+
+            extension OpenGLCube3DWidget {
+                /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
+                @MainActor
+                static func register() {
+                    StateUIControls.add(Cube3DContract.self, create: { _ in OpenGLCube3DWidget() }) { cube in
+                        cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+                        cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+                        cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
+                    }
+                }
+            }
+        """#,
+        "Cube3DSample.UIKit.metal": #"""
+        // Platforms/UIKit/Host/MetalCube3DView.swift
+        // The cube's shaders, compiled from this source as the view is made. A
+        // corner is one float4: its position in xyz, its face's brightness in w.
+        #include <metal_stdlib>
+        using namespace metal;
+
+        struct Uniforms {
+            float4x4 transform;
+            float4 color;
+        };
+
+        struct Painted {
+            float4 position [[position]];
+            float4 color;
+        };
+
+        vertex Painted cube_vertex(const device float4 *corners [[buffer(0)]],
+                                   constant Uniforms &uniforms [[buffer(1)]],
+                                   uint id [[vertex_id]]) {
+            float4 corner = corners[id];
+
+            Painted out;
+            out.position = uniforms.transform * float4(corner.xyz, 1.0);
+            out.color = float4(uniforms.color.rgb * corner.w, 1.0);
+            return out;
+        }
+
+        fragment float4 cube_fragment(Painted in [[stage_in]]) {
+            return in.color;
+        }
+        """#,
+        "Cube3DSample.UIKit.swift": #"""
+        // Platforms/UIKit/Host/MetalCube3DView.swift
+        /// A cube turning on the GPU - an ordinary `MTKView` that knows nothing of
+        /// StateUI.
+        ///
+        /// `register()`, at the end of this file, adds it for `Cube3DContract`, and
+        /// that registration is the whole bridge. The Swift half is
+        /// Sources/Samples/Interop/Cube3D.swift.
+        ///
+        /// Its shaders are compiled FROM SOURCE as the view is made, so the
+        /// application ships no `.metal` file and its build needs nothing added to it.
+        ///
+        /// It renders in `draw(_:)` rather than through an `MTKViewDelegate`: a view
+        /// that draws itself needs no second object, and this way the drawing runs
+        /// where every other `UIView` draws.
+        final class MetalCube3DView: MTKView {
+
+            /// How long the cube's edge is, as a share of the room it is given: 1
+            /// turns corner to corner inside the view.
+            var cubeSize: Double = 0.6 {
+                didSet { if cubeSize != oldValue { drawIfStill() } }
+            }
+
+            /// Which colour the cube is painted, as the member number the Swift side
+            /// sends: teal 0, amber 1, violet 2. Anything else is teal.
+            var color: Int32 = 0 {
+                didSet { if color != oldValue { drawIfStill() } }
+            }
+
+            /// Whether the cube turns. Stopped, it holds the angle it had.
+            var isSpinning: Bool = true {
+                didSet {
+                    guard isSpinning != oldValue else { return }
+
+                    // The clock restarts with the motion, or the time spent stopped
+                    // would arrive as one jump.
+                    lastTime = CACurrentMediaTime()
+                    resumeOrStop()
+                }
+            }
+
+            /// The view, its pipeline and its mesh, built once.
+            ///
+            /// A machine with no Metal device leaves the pipeline empty and the view
+            /// draws its background alone - a gallery is worth more than a crash.
+            init() {
+                let device = MTLCreateSystemDefaultDevice()
+                queue = device?.makeCommandQueue()
+
+                super.init(frame: .zero, device: device)
+
+                colorPixelFormat = .bgra8Unorm
+                depthStencilPixelFormat = .depth32Float
+                clearColor = MTLClearColor(red: 0.102, green: 0.090, blue: 0.145, alpha: 1)
+                preferredFramesPerSecond = 60
+
+                layer.cornerRadius = 18
+                layer.masksToBounds = true
+
+                guard let device else { return }
+
+                mesh = device.makeBuffer(
+                    bytes: Self.corners,
+                    length: MemoryLayout<SIMD4<Float>>.stride * Self.corners.count)
+
+                let describedDepth = MTLDepthStencilDescriptor()
+                describedDepth.depthCompareFunction = .less
+                describedDepth.isDepthWriteEnabled = true
+                depth = device.makeDepthStencilState(descriptor: describedDepth)
+
+                pipeline = Self.pipeline(on: device, colorFormat: colorPixelFormat)
+            }
+
+            /// Nothing turns while the view is off screen, and nothing is left turning
+            /// behind it: the loop stops with the window it was shown in.
+            override func didMoveToWindow() {
+                super.didMoveToWindow()
+
+                lastTime = CACurrentMediaTime()
+                resumeOrStop()
+            }
+
+            /// One frame: the angle the clock has reached, the cube at the size and
+            /// colour it was given.
+            override func draw(_ rect: CGRect) {
+                let now = CACurrentMediaTime()
+                let elapsed = now - lastTime
+                lastTime = now
+
+                // Only a turning cube moves with the clock. Stopped, the frame drawn
+                // for a changed size or colour finds the angle where it was left.
+                if isSpinning {
+                    angle += elapsed
+                }
+
+                guard let pipeline, let mesh, let queue,
+                      let pass = currentRenderPassDescriptor,
+                      let drawable = currentDrawable,
+                      let buffer = queue.makeCommandBuffer(),
+                      let encoder = buffer.makeRenderCommandEncoder(descriptor: pass),
+                      drawableSize.height > 0
+                else { return }
+
+                var uniforms = Uniforms(
+                    transform: transform(aspect: Float(drawableSize.width / drawableSize.height)),
+                    color: Self.paint(color))
+
+                encoder.setRenderPipelineState(pipeline)
+                encoder.setDepthStencilState(depth)
+                encoder.setVertexBuffer(mesh, offset: 0, index: 0)
+                encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 1)
+                encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: Self.corners.count)
+                encoder.endEncoding()
+
+                buffer.present(drawable)
+                buffer.commit()
+            }
+
+            /// Turning, or stopped where it stands - and never running for a view no
+            /// window shows.
+            private func resumeOrStop() {
+                isPaused = window == nil || !isSpinning
+            }
+
+        }
+
+        extension MetalCube3DView {
+            /// Adds the cube for `Cube3DContract`. Said once, before the application
+            /// runs.
+            ///
+            /// A view that draws on the GPU registers exactly like one that draws with a
+            /// layer: an `MTKView` is a `UIView`. It reports nothing, so `create` only
+            /// makes it - every member here goes one way, from the description to the
+            /// frames. This file names the cube with no condition around it because
+            /// nothing but a UIKit build compiles this folder.
+            @MainActor
+            static func register() {
+                StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
+                    MetalCube3DView()
+                }) { cube in
+                    cube.property(Cube3DContract.size) { view, size in
+                        view.cubeSize = size ?? 0.6
+                    }
+                    cube.property(Cube3DContract.color) { view, color in
+                        view.color = (color ?? .teal).rawValue
+                    }
+                    cube.property(Cube3DContract.isSpinning) { view, spinning in
+                        view.isSpinning = spinning ?? true
+                    }
+                }
+            }
+        }
+        """#,
+        "Cube3DSample.Web.javascript": #"""
+        // Platforms/Web/Page/cube3d.js
+        // <gallery-cube3d>: a cube drawn by WebGL 2 on a canvas of its own, turning on the browser's display frames while
+        // it is in view - an element that knows nothing of StateUI. Its attributes say what it is: `size`, the edge as a
+        // share of its room from 0 to 1; `color`, 0 teal, 1 amber, 2 violet; `spinning`, present while it turns. The Swift
+        // half is Platforms/Web/Host/WebGLCube3DView.swift.
+
+        const colors = [[0.161, 0.722, 0.678], [0.961, 0.710, 0.275], [0.580, 0.443, 0.929]];
+
+        // Six faces of two triangles each, every corner its position and its face's brightness in w.
+        const corners = new Float32Array([
+          [[[1, -1, -1], [1, 1, -1], [1, 1, 1], [1, -1, 1]], 1.00],
+          [[[-1, -1, -1], [-1, 1, -1], [-1, 1, 1], [-1, -1, 1]], 0.55],
+          [[[-1, 1, -1], [1, 1, -1], [1, 1, 1], [-1, 1, 1]], 0.88],
+          [[[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]], 0.42],
+          [[[-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]], 0.97],
+          [[[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1]], 0.50],
+        ].flatMap(([face, shade]) => [0, 1, 2, 0, 2, 3].flatMap((at) => [...face[at], shade])));
+
+        const vertexShader = `#version 300 es
+        layout(location = 0) in vec4 corner;
+        uniform mat4 transform;
+        uniform vec4 color;
+        out vec4 painted;
+        void main() {
+          gl_Position = transform * vec4(corner.xyz, 1.0);
+          painted = vec4(color.rgb * corner.w, color.a);
+        }`;
+
+        const fragmentShader = `#version 300 es
+        precision mediump float;
+        in vec4 painted;
+        out vec4 fragment;
+        void main() { fragment = painted; }`;
+
+        class Cube3D extends HTMLElement {
+          static observedAttributes = ["size", "color", "spinning"];
+
+          constructor() {
+            super();
+            const shadow = this.attachShadow({ mode: "open" });
+            shadow.innerHTML = `<style>
+              :host { display: block; position: relative; min-width: 240px; min-height: 240px; }
+              canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border-radius: inherit; }
+              p { position: absolute; inset: 0; margin: auto; height: fit-content; text-align: center; color: #bbb; font: 14px system-ui; }
+            </style><canvas></canvas>`;
+            this.canvas = shadow.querySelector("canvas");
+            this.angle = 0;
+            this.lastFrame = 0;
+            this.inView = false;
+            this.canvas.addEventListener("webglcontextlost", (lost) => { lost.preventDefault(); this.gl = null; });
+            this.canvas.addEventListener("webglcontextrestored", () => this.makeContext());
+          }
+
+          connectedCallback() {
+            if (!this.gl) this.makeContext();
+            this.resized = new ResizeObserver(() => this.draw());
+            this.resized.observe(this);
+            // The cube turns only where the user can see it: behind a page left, it holds its angle.
+            this.seen = new IntersectionObserver(([entry]) => {
+              this.inView = entry.isIntersecting;
+              this.follow();
+            });
+            this.seen.observe(this);
+          }
+
+          disconnectedCallback() {
+            this.resized?.disconnect();
+            this.seen?.disconnect();
+            this.inView = false;
+            this.follow();
+          }
+
+          attributeChangedCallback() {
+            this.follow();
+            this.draw();
+          }
+
+          get size() { return Math.min(Math.max(Number(this.getAttribute("size") ?? 0.6), 0), 1); }
+          get color() { return colors[Number(this.getAttribute("color") ?? 0)] ?? colors[0]; }
+          get spinning() { return this.hasAttribute("spinning"); }
+
+          // The shaders, the corners and where the uniforms stand, made in the canvas's own context.
+          makeContext() {
+            const gl = this.canvas.getContext("webgl2", { antialias: true });
+            if (!gl) {
+              this.shadowRoot.append(Object.assign(document.createElement("p"), { textContent: "This browser draws no WebGL 2." }));
+              return;
+            }
+            const program = gl.createProgram();
+            for (const [kind, source] of [[gl.VERTEX_SHADER, vertexShader], [gl.FRAGMENT_SHADER, fragmentShader]]) {
+              const shader = gl.createShader(kind);
+              gl.shaderSource(shader, source);
+              gl.compileShader(shader);
+              gl.attachShader(program, shader);
+              gl.deleteShader(shader);
+            }
+            gl.linkProgram(program);
+            const vertexArray = gl.createVertexArray();
+            gl.bindVertexArray(vertexArray);
+            gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+            gl.bufferData(gl.ARRAY_BUFFER, corners, gl.STATIC_DRAW);
+            gl.enableVertexAttribArray(0);
+            gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 16, 0);
+            this.gl = gl;
+            this.program = program;
+            this.vertexArray = vertexArray;
+            this.transformAt = gl.getUniformLocation(program, "transform");
+            this.colorAt = gl.getUniformLocation(program, "color");
+            this.draw();
+          }
+
+          // Turns on the display's frames while spinning in view; a stopped cube still owes one frame to a value changed.
+          follow() {
+            const turns = this.spinning && this.inView;
+            if (turns && !this.frame) {
+              this.lastFrame = 0;
+              const turn = (time) => {
+                if (this.lastFrame) this.angle += (time - this.lastFrame) / 1000;
+                this.lastFrame = time;
+                this.draw();
+                this.frame = requestAnimationFrame(turn);
+              };
+              this.frame = requestAnimationFrame(turn);
+            } else if (!turns && this.frame) {
+              cancelAnimationFrame(this.frame);
+              this.frame = 0;
+            }
+          }
+
+          // Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+          draw() {
+            const gl = this.gl;
+            if (!gl) return;
+            const ratio = devicePixelRatio || 1;
+            const width = Math.max(1, Math.round(this.clientWidth * ratio)), height = Math.max(1, Math.round(this.clientHeight * ratio));
+            if (this.canvas.width !== width) this.canvas.width = width;
+            if (this.canvas.height !== height) this.canvas.height = height;
+            gl.viewport(0, 0, width, height);
+            gl.clearColor(0.102, 0.090, 0.145, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.enable(gl.DEPTH_TEST);
+            gl.useProgram(this.program);
+            gl.uniformMatrix4fv(this.transformAt, false, transform(width / height, this.angle, this.size));
+            gl.uniform4f(this.colorAt, ...this.color, 1);
+            gl.bindVertexArray(this.vertexArray);
+            gl.drawArrays(gl.TRIANGLES, 0, corners.length / 4);
+          }
+        }
+
+        customElements.define("gallery-cube3d", Cube3D);
+        """#,
+        "Cube3DSample.Web.swift": #"""
+        // Platforms/Web/Host/WebGLCube3DView.swift
+        /// A cube drawn by WebGL 2 in the page: the gallery's own element, `<gallery-cube3d>` of Page/cube3d.js, which knows
+        /// nothing of StateUI - told what it is through its attributes. The Swift half is Sources/Samples/Interop/Cube3D.swift.
+        @MainActor
+        final class WebGLCube3DView: WebControl {
+            let element = WebPageElement(tag: "gallery-cube3d")
+
+            /// How long the cube's edge is, as a share of the element.
+            var cubeSize = 0.6 {
+                didSet { if cubeSize != oldValue { element.setAttribute("size", String(cubeSize)) } }
+            }
+
+            /// Which colour it is painted, as the element reads it: the vocabulary's member number.
+            var color = CubeColor.teal {
+                didSet { if color != oldValue { element.setAttribute("color", String(color.rawValue)) } }
+            }
+
+            /// Whether it turns. Stopped, it holds the angle it had.
+            var isSpinning = true {
+                didSet { if isSpinning != oldValue { element.setAttribute("spinning", isSpinning ? "" : nil) } }
+            }
+
+            init() {
+                element.setAttribute("size", String(cubeSize))
+                element.setAttribute("color", String(color.rawValue))
+                element.setAttribute("spinning", "")
+            }
+        }
+
+        extension WebGLCube3DView {
+            /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
+            static func register() {
+                StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { cube in
+                    cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+                    cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+                    cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
+                }
+            }
+        }
+        """#,
+        "Cube3DSample.WinUI.cpp": #"""
+        // Platforms/WinUI/Relay/Cube3D.cpp
+        // A cube drawn by Direct3D 11.1 into WinUI's SwapChainPanel - an element that knows nothing of StateUI. Its device
+        // asks for feature level 11_1 alone; its swap chain is the panel's, sized in pixels for the panel's scale; it turns
+        // on WinUI's frames only while it spins and stands on screen, so nothing turns behind a page the user has left, and
+        // a value changed while it stands still draws the one frame it needs.
+
+        namespace {
+            // First what a cube draws with: its paints, its shaders, and its device, corners and swap chain - made once, and
+            // sized again with the panel by standChain. Then the drawing itself, and the frames it follows.
+
+                /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+                void draw(Cube &cube) {
+                    auto panel = cube.panel.get();
+                    if (!panel || panel.ActualWidth() < 1 || panel.ActualHeight() < 1) return;
+                    standChain(cube, panel);
+
+                    float const housing[4] = {0.102f, 0.090f, 0.145f, 1};
+                    auto target = cube.target.get();
+                    cube.context->OMSetRenderTargets(1, &target, cube.depth.get());
+                    cube.context->ClearRenderTargetView(target, housing);
+                    cube.context->ClearDepthStencilView(cube.depth.get(), D3D11_CLEAR_DEPTH, 1, 0);
+                    D3D11_VIEWPORT viewport{0, 0, static_cast<float>(cube.width), static_cast<float>(cube.height), 0, 1};
+                    cube.context->RSSetViewports(1, &viewport);
+
+                    Frame frame{};
+                    transform(double(cube.width) / cube.height, cube.angle, std::clamp(cube.size, 0.0, 1.0), frame.transform);
+                    auto const &paint = paints[std::clamp(cube.color, 0, 2)];
+                    std::copy(paint, paint + 3, frame.color);
+                    frame.color[3] = 1;
+                    cube.context->UpdateSubresource(cube.frame.get(), 0, nullptr, &frame, 0, 0);
+
+                    UINT const stride = 4 * sizeof(float), offset = 0;
+                    auto corners = cube.corners.get();
+                    auto constants = cube.frame.get();
+                    cube.context->IASetInputLayout(cube.layout.get());
+                    cube.context->IASetVertexBuffers(0, 1, &corners, &stride, &offset);
+                    cube.context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+                    cube.context->VSSetShader(cube.vertexShader.get(), nullptr, 0);
+                    cube.context->VSSetConstantBuffers(0, 1, &constants);
+                    cube.context->PSSetShader(cube.pixelShader.get(), nullptr, 0);
+                    cube.context->RSSetState(cube.bothSides.get());
+                    cube.context->OMSetDepthStencilState(cube.nearest.get(), 0);
+                    cube.context->Draw(36, 0);
+                    check_hresult(cube.chain->Present(1, 0));
+                }
+
+                /// Follows WinUI's frames while the cube spins and stands on screen, and lets go of them otherwise.
+                void followFrames(std::shared_ptr<Cube> const &cube) {
+                    auto follows = static_cast<bool>(cube->rendering);
+                    if (cube->spinning && cube->shown && !follows) {
+                        cube->lastFrame = -1;
+                        std::weak_ptr<Cube> weak = cube;
+                        cube->rendering = xaml::Media::CompositionTarget::Rendering(
+                            [weak](auto const &, winrt::Windows::Foundation::IInspectable const &args) {
+                                auto cube = weak.lock();
+                                if (!cube) return;
+                                try {
+                                    auto now = std::chrono::duration<double>(
+                                        args.as<xaml::Media::RenderingEventArgs>().RenderingTime()).count();
+                                    if (cube->lastFrame >= 0) cube->angle += now - cube->lastFrame;
+                                    cube->lastFrame = now;
+                                    draw(*cube);
+                                } catch (...) {
+                                    report("drawing the cube");
+                                }
+                            });
+                    } else if (!(cube->spinning && cube->shown) && follows) {
+                        xaml::Media::CompositionTarget::Rendering(cube->rendering);
+                        cube->rendering = {};
+                    }
+                }
+            }
+
+            extern "C" GalleryObjectRef gallery_cube_make(void) {
+                try {
+                    controls::SwapChainPanel panel;
+                    panel.MinWidth(240);
+                    panel.MinHeight(240);
+                    auto cube = std::make_shared<Cube>();
+                    cube->panel = winrt::make_weak(panel);
+                    std::weak_ptr<Cube> weak = cube;
+                    panel.Loaded([weak](auto const &, auto const &) {
+                        if (auto cube = weak.lock()) {
+                            cube->shown = true;
+                            followFrames(cube);
+                            try { draw(*cube); } catch (...) { report("drawing the cube"); }
+                        }
+                    });
+                    panel.Unloaded([weak](auto const &, auto const &) {
+                        if (auto cube = weak.lock()) {
+                            cube->shown = false;
+                            followFrames(cube);
+                        }
+                    });
+                    auto redraw = [weak](auto const &, auto const &) {
+                        if (auto cube = weak.lock()) {
+                            try { draw(*cube); } catch (...) { report("drawing the cube"); }
+                        }
+                    };
+                    panel.SizeChanged(redraw);
+                    panel.CompositionScaleChanged(redraw);
+                    cubes[identity(panel)] = cube;
+                    return detach(panel);
+                } catch (...) {
+                    report("making a cube");
+                    return nullptr;
+                }
+            }
+
+            extern "C" void gallery_cube_set(GalleryObjectRef handle, double size, int32_t color, bool spinning) {
+                try {
+                    auto found = cube(handle);
+                    if (!found) return;
+                    found->size = size;
+                    found->color = color;
+                    found->spinning = spinning;
+                    followFrames(found);
+                    if (found->shown) draw(*found);
+                } catch (...) {
+                    report("setting the cube");
+                }
+            }
+        """#,
+        "Cube3DSample.WinUI.hlsl": #"""
+        // Platforms/WinUI/Relay/Cube3D.cpp
+        // Compiled by D3DCompile as the cube's device is made: `vertex` as vs_5_0, `pixel` as ps_5_0. A corner
+        // carries its face's brightness in w; the colour is the frame's.
+        cbuffer Frame : register(b0) { float4x4 transform; float4 color; };
+        struct Corner { float4 at : POSITION; };
+        struct Painted { float4 position : SV_POSITION; float4 color : COLOR; };
+        Painted vertex(Corner corner) {
+            Painted painted;
+            painted.position = mul(transform, float4(corner.at.xyz, 1));
+            painted.color = float4(color.rgb * corner.at.w, color.a);
+            return painted;
+        }
+        float4 pixel(Painted painted) : SV_TARGET { return painted.color; }
+        """#,
+        "Cube3DSample.WinUI.swift": #"""
+        // Platforms/WinUI/Host/Direct3DCube3DControl.swift
+        /// A cube drawn by Direct3D 11.1 in a SwapChainPanel the gallery's relay makes - Platforms/WinUI/Relay/Cube3D.cpp,
+        /// an element that knows nothing of StateUI. It turns on WinUI's frames only while it spins and stands on screen.
+        /// The Swift half is Sources/Samples/Interop/Cube3D.swift.
+        @MainActor
+        final class Direct3DCube3DControl: WinUIControl {
+            // The relay's SwapChainPanel: a WinUIControl is the object holding the element it shows.
+            let element: OpaquePointer
+
+            /// How long the cube's edge is, as a share of the panel.
+            var cubeSize = 0.6 {
+                didSet { if cubeSize != oldValue { tell() } }
+            }
+
+            /// Which colour it is painted.
+            var color = CubeColor.teal {
+                didSet { if color != oldValue { tell() } }
+            }
+
+            /// Whether it turns. Stopped, it holds the angle it had.
+            var isSpinning = true {
+                didSet { if isSpinning != oldValue { tell() } }
+            }
+
+            init() {
+                element = gallery_cube_make()!
+            }
+
+            isolated deinit {
+                gallery_cube_close(element)
+                gallery_winui_release(element)
+            }
+
+                private func tell() {
+                    gallery_cube_set(element, cubeSize, color.rawValue, isSpinning)
+                }
+            }
+
+            // MARK: - Registration
+
+            extension Direct3DCube3DControl {
+                /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
+                @MainActor
+                static func register() {
+                    StateUIControls.add(Cube3DContract.self, create: { _ in Direct3DCube3DControl() }) { cube in
+                        cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+                        cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+                        cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
+                    }
+                }
+            }
+        """#,
+        "InteropActsSample.Android.java": #"""
+        // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
+        /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
+        final class GalleryDevice {
+            private GalleryDevice() {}
+
+            /** Puts `text` on the clipboard. */
+            static void copy(Context context, String text) {
+                context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
+            }
+
+            /** The clipboard's text; empty where it holds none. */
+            static String paste(Context context) {
+                ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
+                if (clip == null || clip.getItemCount() == 0) return "";
+                CharSequence text = clip.getItemAt(0).coerceToText(context);
+                return text == null ? "" : text.toString();
+            }
+
+            /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */
+            static double[] battery(Context context) {
+                return reading(context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)));
+            }
+
+            /** Tells each change of the battery - the one standing first - until the receiver is unregistered. */
+            static BroadcastReceiver watchBattery(Context context) {
+                BroadcastReceiver receiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        double[] battery = reading(intent);
+                        GalleryNatives.batteryChanged(battery[0], battery[1] != 0);
+                    }
+                };
+                IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                if (Build.VERSION.SDK_INT >= 33) {
+                    context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                } else {
+                    context.registerReceiver(receiver, filter);
+                }
+                return receiver;
+            }
+
+            /** A battery status read as `battery` gives it: the level, 0 to 1, and 1 where it charges, else 0. */
+            private static double[] reading(Intent status) {
+                if (status == null) return new double[] {0, 0};
+                int level = status.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                int scale = status.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                int state = status.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                boolean charging = state == BatteryManager.BATTERY_STATUS_CHARGING || state == BatteryManager.BATTERY_STATUS_FULL;
+                return new double[] {level >= 0 && scale > 0 ? (double) level / scale : 0, charging ? 1 : 0};
+            }
+        }
+
+        // Platforms/Android/Java/com/stateui/gallery/RatingBarView.java
+        /** Fades the bar out and back, as its act asks. */
+        void flash() {
+            animate().alpha(0.25f).setDuration(120).withEndAction(() -> animate().alpha(1).setDuration(120));
+        }
+        """#,
+        "InteropActsSample.Android.load.swift": #"""
+        // Platforms/Android/Swift/GalleryAndroid.swift
+        // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
+        // says what it answers for the application - the controls it realizes, the acts it performs, the events it raises,
+        // each in Host/ beside this file - and the host registers the native methods its activity calls.
+        @_cdecl("JNI_OnLoad")
+        public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
+            stateui_app_register()
+            MainActor.assumeIsolated {
+                GalleryControls.register()
+                GalleryActs.register()
+                GalleryEventSources.register()
+            }
+            return StateUIAndroid.load(machine)
+        }
+        """#,
+        "InteropActsSample.Android.swift": #"""
+        // Platforms/Android/Swift/Host/GalleryActs.swift
+        /// The acts the gallery performs on this head: its clipboard and its battery, asked of the device through the
+        /// gallery's own Java, com.stateui.gallery.GalleryDevice.
+        enum GalleryActs {
+            /// Registers each act with the host. Said once, as the library loads.
+            @MainActor
+            static func register() {
+                StateUIActs.add(GalleryContract.setClipboard) { text in
+                    Java.frame {
+                        Java.callStatic(Self.device, Self.copy, .object(StateUIAndroid.context), .object(Java.string(text)))
+                    }
+                }
+
+                StateUIActs.add(GalleryContract.readClipboard) {
+                    let text: String = Java.frame {
+                        Java.text(Java.callStaticObject(Self.device, Self.paste, .object(StateUIAndroid.context)))
+                    }
+                    return text
+                }
+
+                StateUIActs.add(GalleryContract.batteryLevel) {
+                    // The sticky ACTION_BATTERY_CHANGED, read in GalleryDevice.java.
+                    battery()
+                }
+            }
+
+            /// The battery's level, 0 to 1 - 0 where the device has none - and whether it charges.
+            @MainActor
+            static func battery() -> (Double, Bool) {
+                let reading = Java.frame { () -> [Double] in
+                    var values = [0.0, 0.0]
+                    guard let array = Java.callStaticObject(Self.device, Self.batteryNow, .object(StateUIAndroid.context))
+                    else { return values }
+                    values.withUnsafeMutableBufferPointer { Java.jni.GetDoubleArrayRegion(Java.env, array, 0, 2, $0.baseAddress) }
+                    return values
+                }
+                return (reading[0], reading[1] != 0)
+            }
+
+            @MainActor private static let device = Java.findClass("com/stateui/gallery/GalleryDevice")
+            @MainActor private static let copy = Java.staticMethod(
+                device, "copy", "(Landroid/content/Context;Ljava/lang/String;)V")
+            @MainActor private static let paste = Java.staticMethod(
+                device, "paste", "(Landroid/content/Context;)Ljava/lang/String;")
+            @MainActor private static let batteryNow = Java.staticMethod(device, "battery", "(Landroid/content/Context;)[D")
+        }
+
+        // Platforms/Android/Swift/Host/RatingBarView.swift
+        extension RatingBarView {
+            /// Adds the bar for `RatingBarContract`, and the act aimed at it. Said once, as the library loads.
+            @MainActor
+            static func register() {
+                StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+                    let bar = RatingBarView()
+                    bar.onRatingChanged = { rating in
+                        reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+                    }
+                    return bar
+                }) { bar in
+                    bar.property(RatingBarContract.rating) { control, rating in control.rating = rating ?? 0 }
+                    bar.raises(RatingBarContract.ratingChanged)
+                }
+
+                // An act aimed at a control is its control's: the identity the aim sent is turned back into the control
+                // this host made, and the performer is handed that control.
+                StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+                    // The Java view fades itself, with its own animate().
+                    bar.flash()
+                }
+            }
+        }
+        """#,
+        "InteropActsSample.AppKit.swift": #"""
+        // Platforms/AppKit/Host/GalleryActs.swift
+        /// The gallery's own acts, as this host answers them.
+        ///
+        /// `GalleryContract` declares each name with what it takes and answers - see
+        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
+        /// performs them. An act aimed at a control is its view's, registered beside
+        /// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
+        /// "Calling AppKit" sample calls it to show what a missing registration does.
+        enum GalleryActs {
+            /// Registers every act this host performs. Said once, before the
+            /// application runs.
+            @MainActor
+            static func register() {
+                // A performer is handed the arguments its act declares and answers
+                // the values it declares.
+                StateUIActs.add(GalleryContract.setClipboard) { text in
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(text, forType: .string)
+                }
+
+                StateUIActs.add(GalleryContract.readClipboard) {
+                    NSPasteboard.general.string(forType: .string) ?? ""
+                }
+
+                StateUIActs.add(GalleryContract.batteryLevel) {
+                    battery()
+                }
+            }
+
+        }
+
+        // Platforms/AppKit/Host/RatingBarView.swift
+        extension RatingBarView {
+            /// Adds the bar for `RatingBarContract`, and performs the act aimed at
+            /// one. Said once, before the application runs.
+            @MainActor
+            static func register() {
+
+                        // Aimed at one bar: the identity the aim sent is turned back into the
+                        // view this host made, and the performer is handed that view.
+                        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+                            bar.flash()
+                        }
+                    }
+                }
+
+        // Platforms/AppKit/main.swift
+        // What this host answers for the application, said before it runs: the
+        // controls it realizes, the acts it performs, and the pushes it reports. Each
+        // lives in Host/ beside this file.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+        """#,
+        "InteropActsSample.GTK.swift": #"""
+        // Platforms/GTK/Host/GalleryActs.swift
+        /// The gallery's own acts, as this host answers them.
+        ///
+        /// `GalleryContract` declares each name with what it takes and answers - see
+        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
+        /// is its control's, registered beside it: `RatingBarWidget.register()` performs `flash`. `Gallery.Nobody` is
+        /// registered nowhere on purpose: the "Calling GTK" sample calls it to show what a missing registration does.
+        enum GalleryActs {
+            /// Registers every act this host performs. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                // A performer is handed the arguments its act declares and answers the values it declares.
+                StateUIActs.add(GalleryContract.setClipboard) { text in
+                    gdk_clipboard_set_text(clipboard(), text)
+                }
+                // GTK reads a clipboard only asynchronously: the performer awaits it.
+                // clipboardText() asks gdk_clipboard_read_text_async and resumes with its answer.
+                StateUIActs.add(GalleryContract.readClipboard) {
+                    await clipboardText()
+                }
+                // The battery, as UPower tells it on the system bus.
+                StateUIActs.add(GalleryContract.batteryLevel) {
+                    GalleryPower.battery()
+                }
+            }
+
+        // Platforms/GTK/Host/RatingBarWidget.swift
+        extension RatingBarWidget {
+            /// Adds the bar for `RatingBarContract`, and the act aimed at one bar. Said once, before the application runs.
+            @MainActor
+            static func register() {
+
+                        // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
+                        // The performer is handed that control, and flash() dims it and brings it back with libadwaita's animation.
+                        StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
+                            bar.flash()
+                        }
+                    }
+                }
+
+        // Platforms/GTK/main.swift
+        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
+        // the last window closes.
+        stateui_app_register()
+        // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+        """#,
+        "InteropActsSample.UIKit.swift": #"""
+        // Platforms/UIKit/Host/GalleryActs.swift
+        /// The gallery's own acts, as this host answers them.
+        ///
+        /// `GalleryContract` declares each name with what it takes and answers - see
+        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
+        /// performs them. An act aimed at a control is its view's, registered beside
+        /// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
+        /// "Calling UIKit" sample calls it to show what a missing registration does.
+        enum GalleryActs {
+            /// Registers every act this host performs. Said once, before the
+            /// application runs.
+            @MainActor
+            static func register() {
+                StateUIActs.add(GalleryContract.setClipboard) { text in
+                    UIPasteboard.general.string = text
+                }
+
+                StateUIActs.add(GalleryContract.readClipboard) {
+                    UIPasteboard.general.string ?? ""
+                }
+
+                StateUIActs.add(GalleryContract.batteryLevel) {
+                    battery()
+                }
+            }
+
+        }
+
+        // Platforms/UIKit/Host/RatingBarView.swift
+        extension RatingBarView {
+            /// Adds the bar for `RatingBarContract`, and performs the act aimed at
+            /// one. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                // The bar, added for its contract: its rating put on it, a tapped star reported.
+
+                        // Aimed at one bar: the identity the aim sent is turned back into the
+                        // view this host made, and the performer is handed that view.
+                        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+                            bar.flash()
+                        }
+                    }
+                }
+
+        // Platforms/UIKit/main.swift
+        // What this host answers for the application, said before it runs: the
+        // controls it realizes, the acts it performs, and the pushes it reports. Each
+        // lives in Host/ beside this file.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+
+        StateUIUIKit.run()
+        """#,
+        "InteropActsSample.Web.javascript": #"""
+        // Platforms/Web/Page/gallery-acts.js
+        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
+        // battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
+        // GalleryEventSources.swift.
+        // The page loads this script before the application starts.
+
+        // The clipboard: a page served over plain http, or one the user gave no leave, has none - the act then fails
+        // with the reason.
+        StateUI.acts.setClipboard = (words) => {
+          if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
+          return navigator.clipboard.writeText(words);
+        };
+
+        StateUI.acts.readClipboard = () => {
+          if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
+          return navigator.clipboard.readText();
+        };
+
+        // The battery as two words, its level from 0 to 1 and whether it charges; a browser that says nothing of it - a
+        // desktop's mains, Safari, Firefox - answers 0.
+        const battery = navigator.getBattery?.().catch(() => null) ?? Promise.resolve(null);
+        const said = (power) => (power ? `${power.level} ${power.charging}` : "0 false");
+
+        StateUI.acts.batteryLevel = async () => said(await battery);
+        """#,
+        "InteropActsSample.Web.swift": #"""
+        // Platforms/Web/Host/GalleryActs.swift
+        /// The gallery's own acts, as this host answers them: through the page's own scripts, Page/gallery-acts.js, which
+        /// reach the browser's clipboard and battery.
+        ///
+        /// `GalleryContract` declares each name with what it takes and answers - see
+        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
+        /// is its control's, registered beside it: `RatingBarElement.register()` performs `flash`. `Gallery.Nobody` is
+        /// registered nowhere on purpose: the "Calling Web" sample calls it to show what a missing registration does.
+        enum GalleryActs {
+            /// Registers every act this host performs. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIActs.add(GalleryContract.setClipboard) { text in
+                    _ = try await StateUIScripts.call("setClipboard", text)
+                }
+                StateUIActs.add(GalleryContract.readClipboard) {
+                    try await StateUIScripts.call("readClipboard")
+                }
+                StateUIActs.add(GalleryContract.batteryLevel) {
+                    battery(try await StateUIScripts.call("batteryLevel"))
+                }
+            }
+
+            /// The battery as the page's scripts say it - its level from 0 to 1 and whether it charges, two words - 0 where
+            /// they say nothing of it.
+            static func battery(_ words: String) -> (Double, Bool) {
+                let said = words.split(separator: " ")
+                return (said.first.flatMap { Double($0) } ?? 0, said.count > 1 && said[1] == "true")
+            }
+        }
+
+        // Platforms/Web/Host/RatingBarElement.swift
+        /// Dims the bar and brings it back: the element's own animation of its opacity.
+        func flash() {
+            element.call("flash")
+        }
+
+        // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
+        StateUIActs.add(RatingBarContract.flash, on: RatingBarElement.self) { bar in
+            bar.flash()
+        }
+        """#,
+        "InteropActsSample.WinUI.cpp": #"""
+        // Platforms/WinUI/Relay/System.cpp
+        // The battery as Windows knows it: the power status every desktop reads, and the notices Windows sends as the
+        // battery's charge or the power source changes.
+
+        // The reading GalleryPower.battery() in the Swift half calls: for the battery act, and after each notice.
+        extern "C" void gallery_battery(double *level, bool *charging) {
+            try {
+                *level = 0;
+                *charging = false;
+                SYSTEM_POWER_STATUS status{};
+                // No system battery, or a charge Windows does not know: nothing to say.
+                if (!GetSystemPowerStatus(&status) || (status.BatteryFlag & 128) || status.BatteryLifePercent > 100) return;
+                *level = status.BatteryLifePercent / 100.0;
+                *charging = status.ACLineStatus == 1;
+            } catch (...) {
+                report("reading the battery");
+            }
+        }
+        """#,
+        "InteropActsSample.WinUI.flash.cpp": #"""
+        // Platforms/WinUI/Relay/Controls.cpp
+        // The act aimed at the bar: a Storyboard fading WinUI's RatingControl down and back, twice.
+        extern "C" void gallery_rating_bar_flash(GalleryObjectRef bar) {
+            try {
+                auto rating = as<controls::RatingControl>(bar);
+                animation::DoubleAnimation fade;
+                fade.From(1.0);
+                fade.To(0.25);
+                fade.Duration(xaml::DurationHelper::FromTimeSpan(std::chrono::milliseconds(120)));
+                fade.AutoReverse(true);
+                fade.RepeatBehavior(animation::RepeatBehaviorHelper::FromCount(2));
+                // Stopped, the opacity is the host's again.
+                fade.FillBehavior(animation::FillBehavior::Stop);
+                animation::Storyboard::SetTarget(fade, rating);
+                animation::Storyboard::SetTargetProperty(fade, L"Opacity");
+                animation::Storyboard flash;
+                flash.Children().Append(fade);
+                flash.Begin();
+            } catch (...) {
+                report("flashing a rating bar");
+            }
+        }
+        """#,
+        "InteropActsSample.WinUI.swift": #"""
+        // Platforms/WinUI/Host/GalleryActs.swift
+        /// The gallery's own acts, as this host answers them.
+        ///
+        /// `GalleryContract` declares each name with what it takes and answers - see
+        /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
+        /// is its control's, registered beside it: `RatingBarControl.register()` performs `flash`. `Gallery.Nobody` is
+        /// registered nowhere on purpose: the "Calling WinUI" sample calls it to show what a missing registration does.
+        enum GalleryActs {
+            /// Registers every act this host performs. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                // The clipboard needs no relay: Swift calls Win32 itself - OpenClipboard, CF_UNICODETEXT.
+                StateUIActs.add(GalleryContract.setClipboard) { text in
+                    Clipboard.write(text)
+                }
+                StateUIActs.add(GalleryContract.readClipboard) {
+                    Clipboard.read()
+                }
+                // The power status, GetSystemPowerStatus, read by the gallery's relay.
+                StateUIActs.add(GalleryContract.batteryLevel) {
+                    GalleryPower.battery()
+                }
+            }
+        }
+
+        // Platforms/WinUI/Host/RatingBarControl.swift
+        extension RatingBarControl {
+            /// Adds the bar for `RatingBarContract`, and performs its aimed `flash`. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                // The bar, made once per element, reporting the rating its user chooses.
+
+                        // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
+                        StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
+                            // A Storyboard in the relay fades the bar's opacity down and back, twice.
+                            bar.flash()
+                        }
+                    }
+                }
+
+        // Platforms/WinUI/main.swift
+        // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+        GalleryControls.register()
+        GalleryActs.register()
+        """#,
+        "InteropControlSample.Android.controls.swift": #"""
+        // Platforms/Android/Swift/Host/GalleryControls.swift
+        /// Registers every control this host realizes. Said once, as the library loads.
+        @MainActor
+        static func register() {
+            TrafficLightView.register()
+            RatingBarView.register()
+            GLESCube3DView.register()
+        }
+        """#,
+        "InteropControlSample.Android.java": #"""
+        // Platforms/Android/Java/com/stateui/gallery/TrafficLightView.java
+        /** Three lamps in a dark housing, one lit; a tap on a lamp is told, and lights nothing by itself. */
+        final class TrafficLightView extends View {
+            private static final int[] LAMPS = {0xFFE5484D, 0xFFF5B546, 0xFF46B45F};
+            private static final float LAMP = 44, SPACING = 10, PADDING = 12;
+
+            private final long control;
+            private final float density;
+            private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            private final RectF housing = new RectF();
+            private int signal = -1;
+
+            TrafficLightView(Context context, long control) {
+                super(context);
+                this.control = control;
+                density = context.getResources().getDisplayMetrics().density;
+                setClickable(true);
+            }
+
+            /** Which lamp is lit, from the top; none for any other number. */
+            void setSignal(int lamp) {
+                if (lamp == signal) return;
+                signal = lamp;
+                invalidate();
+            }
+
+            /** How big it is, which the host asks by measuring it as Android measures any view. */
+            @Override
+            protected void onMeasure(int width, int height) {
+                setMeasuredDimension(
+                        resolveSize(Math.round((PADDING * 2 + LAMP) * density), width),
+                        resolveSize(Math.round((PADDING * 2 + LAMP * 3 + SPACING * 2) * density), height));
+            }
+
+            @Override
+            protected void onDraw(Canvas canvas) {
+                housing.set(0, 0, getWidth(), getHeight());
+                paint.setColor(0xFF1A1725);
+                canvas.drawRoundRect(housing, 18 * density, 18 * density, paint);
+                for (int lamp = 0; lamp < 3; lamp++) {
+                    paint.setColor(lamp == signal ? LAMPS[lamp] : (LAMPS[lamp] & 0x00FFFFFF) | 0x2E000000);
+                    canvas.drawCircle(getWidth() / 2f, centre(lamp), LAMP / 2 * density, paint);
+                }
+            }
+
+            /** Tells a tapped lamp to the Swift half by the number it made this view with; whoever owns the state decides. */
+            @Override
+            public boolean onTouchEvent(MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                    for (int lamp = 0; lamp < 3; lamp++) {
+                        if (Math.abs(event.getY() - centre(lamp)) <= LAMP / 2 * density) {
+                            GalleryNatives.lampTapped(control, lamp);
+                            break;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            private float centre(int lamp) {
+                return (PADDING + LAMP / 2 + lamp * (LAMP + SPACING)) * density;
+            }
+        }
+        """#,
+        "InteropControlSample.Android.natives.java": #"""
+        // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java
+        /**
+         * What the gallery's own Android views tell its Swift half, each by the number
+         * its control was made with. The Swift half answers each, in Host/GalleryNatives.swift.
+         */
+        final class GalleryNatives {
+            private GalleryNatives() {}
+
+            /** A traffic light's lamp was tapped, counted from the top. */
+            static native void lampTapped(long control, int lamp);
+
+            /** A rating bar's user chose a rating. */
+            static native void rated(long control, double rating);
+
+            /** A cube's surface came, or changed its size in pixels. */
+            static native void surfaceReady(long control, Surface surface, int width, int height);
+
+            /** A cube's surface is going: nothing draws into it once this returns. */
+            static native void surfaceGone(long control);
+
+            /** A display frame for a cube, while it asks for them. */
+            static native void cubeFrame(long control, long nanoseconds);
+
+            /** The battery said its level, 0 to 1, and whether it charges. */
+            static native void batteryChanged(double level, boolean charging);
+        }
+        """#,
+        "InteropControlSample.Android.swift": #"""
+        // Platforms/Android/Swift/Host/TrafficLightView.swift
+        /// Three lamps in a dark housing, one lit: the gallery's own Java view, com.stateui.gallery.TrafficLightView, which
+        /// knows nothing of StateUI. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
+        @MainActor
+        final class TrafficLightView: AndroidControl {
+            let view: JavaObject
+
+            /// A lamp was tapped; the argument is its index, top to bottom. The light does not switch itself: it reports,
+            /// and whoever owns the state decides.
+            var onLampTapped: ((Int) -> Void)?
+
+            /// Which lamp is lit.
+            var signal = TrafficSignal.stop {
+                didSet { if signal != oldValue { Java.call(view.reference, Self.setSignal, .int(signal.rawValue)) } }
+            }
+
+            private let number: Int64
+
+            private static let viewClass = Java.findClass("com/stateui/gallery/TrafficLightView")
+            private static let make = Java.method(viewClass, "<init>", "(Landroid/content/Context;J)V")
+            private static let setSignal = Java.method(viewClass, "setSignal", "(I)V")
+
+            init() {
+                number = GalleryControls.reserve()
+                view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+                Java.call(view.reference, Self.setSignal, .int(signal.rawValue))
+                GalleryControls.hold(self, as: number)
+            }
+
+            isolated deinit {
+                GalleryControls.forget(number)
+            }
+
+            /// The view says lamp `index` was tapped.
+            /// It reaches here through a native method of the gallery's, GalleryNatives.lampTapped, by this control's number.
+            func tapped(_ index: Int) {
+                onLampTapped?(index)
+            }
+        }
+
+        extension TrafficLightView {
+            /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+            /// reports, and `property` puts the described signal on it. Said once, as the library loads.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                    let light = TrafficLightView()
+                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+                    return light
+                }) { light in
+                    light.property(TrafficLightContract.signal) { control, signal in
+                        control.signal = signal ?? .stop
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "InteropControlSample.AppKit.list.swift": #"""
+        // Platforms/AppKit/Host/GalleryControls.swift
+        /// The gallery's own controls, as this host realizes them.
+        ///
+        /// The contracts and the Swift halves are shared by every host - see
+        /// Sources/Samples/Interop. What each control IS on screen is its view's, and
+        /// so is its registration: `register()` at the end of the view's own file.
+        /// This is the list of them, and nothing else.
+        enum GalleryControls {
+            /// Registers every control this host realizes. Said once, before the
+            /// application runs.
+            @MainActor
+            static func register() {
+                TrafficLightView.register()
+                RatingBarView.register()
+                MetalCube3DView.register()
+            }
+        }
+        """#,
+        "InteropControlSample.AppKit.swift": #"""
+        // Platforms/AppKit/Host/TrafficLightView.swift
+        /// Three lamps in a housing, one lit at a time - an ordinary `NSView` that
+        /// knows nothing of StateUI.
+        ///
+        /// `register()`, at the end of this file, adds it for `TrafficLightContract`,
+        /// and that registration is the whole bridge. The Swift half is
+        /// Sources/Samples/Interop/TrafficLight.swift.
+        final class TrafficLightView: NSView {
+            /// A lamp was tapped; the argument is its index, top to bottom.
+            ///
+            /// The control does not switch itself: it reports, and whoever owns the
+            /// state decides.
+            var onLampTapped: ((Int) -> Void)?
+
+            /// Which lamp is lit, as the member number the Swift side sends: stop 0,
+            /// caution 1, go 2. Anything else - the initial -1 included - lights
+            /// nothing.
+            var signal: Int32 = -1 {
+                didSet { if signal != oldValue { repaint() } }
+            }
+
+            private static let lampColors = [
+                NSColor(srgbRed: 0.898, green: 0.282, blue: 0.302, alpha: 1),
+                NSColor(srgbRed: 0.961, green: 0.710, blue: 0.275, alpha: 1),
+                NSColor(srgbRed: 0.275, green: 0.706, blue: 0.373, alpha: 1),
+            ]
+
+            private static let lampSide: CGFloat = 44
+            private static let spacing: CGFloat = 10
+            private static let padding: CGFloat = 12
+
+            private var lamps: [NSView] = []
+
+            override var isFlipped: Bool { true }
+
+            /// The housing and its three lamps, wired once.
+            init() {
+                super.init(frame: .zero)
+
+                wantsLayer = true
+                layer?.backgroundColor = NSColor(srgbRed: 0.102, green: 0.090, blue: 0.145, alpha: 1).cgColor
+                layer?.cornerRadius = 18
+
+                for _ in 0..<3 {
+                    let lamp = NSView()
+                    lamp.wantsLayer = true
+                    lamp.layer?.cornerRadius = Self.lampSide / 2
+                    addSubview(lamp)
+                    lamps.append(lamp)
+                }
+
+                // ONE recognizer on the housing, the lamp read from the click's
+                // position - nothing to keep in step with the layout.
+                let click = NSClickGestureRecognizer(target: self, action: #selector(clicked(_:)))
+                addGestureRecognizer(click)
+                repaint()
+            }
+
+            @available(*, unavailable)
+            required init?(coder: NSCoder) {
+                fatalError("TrafficLightView is created in code")
+            }
+
+            /// As tall as its three lamps and their padding, and as wide as one.
+            override var intrinsicContentSize: NSSize {
+                NSSize(
+                    width: Self.padding * 2 + Self.lampSide,
+                    height: Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2)
+            }
+
+            override func layout() {
+                super.layout()
+
+                for (index, lamp) in lamps.enumerated() {
+                    lamp.frame = NSRect(
+                        x: (bounds.width - Self.lampSide) / 2,
+                        y: Self.padding + CGFloat(index) * (Self.lampSide + Self.spacing),
+                        width: Self.lampSide,
+                        height: Self.lampSide)
+                }
+            }
+
+            /// Which lamp the click landed on, reported - the state decides what is
+            /// lit next.
+            @objc private func clicked(_ recognizer: NSClickGestureRecognizer) {
+                let at = recognizer.location(in: self)
+
+                for (index, lamp) in lamps.enumerated() where lamp.frame.contains(at) {
+                    onLampTapped?(index)
+                    return
+                }
+            }
+
+            /// The lit lamp at full colour, the others dimmed to embers.
+            private func repaint() {
+                for (index, lamp) in lamps.enumerated() {
+                    let colour = Self.lampColors[index]
+                    lamp.layer?.backgroundColor = Int32(index) == signal
+                        ? colour.cgColor
+                        : colour.withAlphaComponent(0.18).cgColor
+                }
+            }
+        }
+
+        // MARK: - Registration
+
+        extension TrafficLightView {
+            /// Adds the light for `TrafficLightContract`: `create` makes the view once
+            /// per element and wires the tap it reports, and `property` puts the
+            /// described signal on it. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                    let light = TrafficLightView()
+                    light.onLampTapped = { index in
+                        reports.raise(TrafficLightContract.lampTapped, index)
+                    }
+                    return light
+                }) { light in
+                    light.property(TrafficLightContract.signal) { view, signal in
+                        view.signal = (signal ?? .stop).rawValue
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "InteropControlSample.GTK.swift": #"""
+        // Platforms/GTK/Host/TrafficLightWidget.swift
+        /// Three lamps in a housing, one lit at a time - a `GtkDrawingArea` that knows nothing of StateUI.
+        ///
+        /// `register()`, at the end of this file, adds it for `TrafficLightContract`, and that registration is the whole
+        /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
+        ///
+        /// A `GTKControl` is an object holding the widget it shows.
+        @MainActor
+        final class TrafficLightWidget: GTKControl {
+            let widget: UnsafeMutablePointer<GtkWidget>
+
+            /// A lamp was tapped; the argument is its index, top to bottom. The control does not switch itself: it reports,
+            /// and whoever owns the state decides.
+            var onLampTapped: ((Int) -> Void)?
+
+            /// Which lamp is lit.
+            var signal = TrafficSignal.stop {
+                didSet { if signal != oldValue { gtk_widget_queue_draw(widget) } }
+            }
+
+            private static let lampColors: [(red: Double, green: Double, blue: Double)] = [
+                (0.898, 0.282, 0.302), (0.961, 0.710, 0.275), (0.275, 0.706, 0.373),
+            ]
+            private static let lampSide = 44.0
+            private static let spacing = 10.0
+            private static let padding = 12.0
+
+            private let click: OpaquePointer
+
+            /// The housing and its three lamps, drawn by cairo, and one click gesture read by where it lands.
+            init() {
+                widget = gtk_drawing_area_new()
+                g_object_ref_sink(widget)
+                click = gtk_gesture_click_new()
+                let area = UnsafeMutablePointer<GtkDrawingArea>(OpaquePointer(widget))
+                gtk_drawing_area_set_content_width(area, Int32(Self.padding * 2 + Self.lampSide))
+                gtk_drawing_area_set_content_height(area, Int32(Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2))
+
+                // A C callback carries no context: the control rides along as its data, and lives as long as the widget.
+                let me = Unmanaged.passUnretained(self).toOpaque()
+                gtk_drawing_area_set_draw_func(area, { _, cairo, width, height, data in
+                    nonisolated(unsafe) let cairo = cairo
+                    MainActor.assumeIsolated {
+                        Unmanaged<TrafficLightWidget>.fromOpaque(data!).takeUnretainedValue()
+                            .draw(cairo, width: Double(width), height: Double(height))
+                    }
+                }, me, nil)
+
+                let released: @convention(c) (OpaquePointer?, Int32, Double, Double, gpointer?) -> Void = { _, _, x, y, data in
+                    MainActor.assumeIsolated {
+                        Unmanaged<TrafficLightWidget>.fromOpaque(data!).takeUnretainedValue().clicked(x: x, y: y)
+                    }
+                }
+                g_signal_connect_data(
+                    UnsafeMutableRawPointer(click), "released", unsafeBitCast(released, to: GCallback.self), me, nil,
+                    GConnectFlags(rawValue: 0))
+                gtk_widget_add_controller(widget, click)
+            }
+
+            extension TrafficLightWidget {
+                /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+                /// reports, and `property` puts the described signal on it. Said once, before the application runs.
+                @MainActor
+                static func register() {
+                    StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightWidget in
+                        let light = TrafficLightWidget()
+                        light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+                        return light
+                    }) { light in
+                        // Handed back typed - a TrafficSignal, not its number.
+                        light.property(TrafficLightContract.signal) { control, signal in
+                            control.signal = signal ?? .stop
+                        }
+                        light.raises(TrafficLightContract.lampTapped)
+                    }
+                }
+            }
+        """#,
+        "InteropControlSample.UIKit.list.swift": #"""
+        // Platforms/UIKit/Host/GalleryControls.swift
+        /// The gallery's own controls, as this host realizes them.
+        ///
+        /// The contracts and the Swift halves are shared by every host - see
+        /// Sources/Samples/Interop. What each control IS on screen is its view's, and
+        /// so is its registration: `register()` at the end of the view's own file.
+        /// This is the list of them, and nothing else.
+        enum GalleryControls {
+            /// Registers every control this host realizes. Said once, before the
+            /// application runs.
+            @MainActor
+            static func register() {
+                TrafficLightView.register()
+                RatingBarView.register()
+                MetalCube3DView.register()
+            }
+        }
+        """#,
+        "InteropControlSample.UIKit.swift": #"""
+        // Platforms/UIKit/Host/TrafficLightView.swift
+        /// Three lamps in a housing, one lit at a time - an ordinary `UIView` that
+        /// knows nothing of StateUI.
+        ///
+        /// `register()`, at the end of this file, adds it for `TrafficLightContract`,
+        /// and that registration is the whole bridge. The Swift half is
+        /// Sources/Samples/Interop/TrafficLight.swift.
+        final class TrafficLightView: UIView {
+
+            /// A lamp was tapped; the argument is its index, top to bottom.
+            ///
+            /// The control does not switch itself: it reports, and whoever owns the
+            /// state decides.
+            var onLampTapped: ((Int) -> Void)?
+
+            /// Which lamp is lit, as the member number the Swift side sends: stop 0,
+            /// caution 1, go 2. Anything else - the initial -1 included - lights
+            /// nothing.
+            var signal: Int32 = -1 {
+                didSet { if signal != oldValue { repaint() } }
+            }
+
+            /// The housing and its three lamps, wired once.
+            init() {
+                super.init(frame: .zero)
+
+                backgroundColor = UIColor(red: 0.102, green: 0.090, blue: 0.145, alpha: 1)
+                layer.cornerRadius = 18
+
+                for _ in 0..<3 {
+                    let lamp = UIView()
+                    lamp.layer.cornerRadius = Self.lampSide / 2
+                    lamp.isUserInteractionEnabled = false
+                    addSubview(lamp)
+                    lamps.append(lamp)
+                }
+
+                // One recognizer on the housing, the lamp read from where the tap lands.
+                addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped(_:))))
+                repaint()
+            }
+
+            /// As tall as its three lamps and their padding, and as wide as one.
+            override func sizeThatFits(_ size: CGSize) -> CGSize {
+                CGSize(
+                    width: Self.padding * 2 + Self.lampSide,
+                    height: Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2)
+            }
+
+            /// The lit lamp at full colour, the others dimmed to embers.
+            private func repaint() {
+                for (index, lamp) in lamps.enumerated() {
+                    let colour = Self.lampColors[index]
+                    lamp.backgroundColor = Int32(index) == signal ? colour : colour.withAlphaComponent(0.18)
+                }
+            }
+
+        }
+
+        extension TrafficLightView {
+            /// Adds the light for `TrafficLightContract`: `create` makes the view once
+            /// per element and wires the tap it reports, and `property` puts the
+            /// described signal on it. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                    let light = TrafficLightView()
+                    light.onLampTapped = { index in
+                        reports.raise(TrafficLightContract.lampTapped, index)
+                    }
+                    return light
+                }) { light in
+                    light.property(TrafficLightContract.signal) { view, signal in
+                        view.signal = (signal ?? .stop).rawValue
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "InteropControlSample.Web.javascript": #"""
+        // Platforms/Web/Page/traffic-light.js
+        // <gallery-traffic-light>: three lamps in a housing, one lit at a time - an element that knows nothing of StateUI.
+        // Its `signal` attribute says which lamp is lit, 0 red, 1 amber, 2 green; a tap on a lamp raises `lamptap`, its
+        // `detail` the lamp's index top to bottom. It does not switch itself: whoever owns the state decides. The Swift
+        // half is Platforms/Web/Host/TrafficLightElement.swift.
+
+        class TrafficLight extends HTMLElement {
+          static observedAttributes = ["signal"];
+
+          constructor() {
+            super();
+            // A housing and three lamp buttons in its shadow root, each raising `lamptap` with its index as it is tapped.
+            const shadow = this.attachShadow({ mode: "open" });
+            shadow.innerHTML = `<style>
+              :host { display: inline-grid; gap: 10px; padding: 12px; border-radius: 16px; background: #1a1725; }
+              button { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+                background: var(--lamp); opacity: 0.22; transition: opacity 0.15s ease, box-shadow 0.15s ease; }
+              button[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 18px var(--lamp); }
+              button:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+            </style>`;
+            ["#e5484d", "#f5b546", "#46b45f"].forEach((lamp, index) => {
+              const button = document.createElement("button");
+              button.style.setProperty("--lamp", lamp);
+              button.setAttribute("aria-label", ["Red", "Amber", "Green"][index]);
+              button.addEventListener("click", () => this.dispatchEvent(new CustomEvent("lamptap", { detail: index })));
+              shadow.append(button);
+            });
+            this.show();
+          }
+
+          attributeChangedCallback() {
+            this.show();
+          }
+
+          show() {
+            const lit = Number(this.getAttribute("signal") ?? 0);
+            this.shadowRoot.querySelectorAll("button").forEach((lamp, index) => lamp.setAttribute("aria-pressed", String(index === lit)));
+          }
+        }
+
+        customElements.define("gallery-traffic-light", TrafficLight);
+        """#,
+        "InteropControlSample.Web.swift": #"""
+        // Platforms/Web/Host/TrafficLightElement.swift
+        /// Three lamps in a housing, one lit at a time: the gallery's own element, `<gallery-traffic-light>` of
+        /// Page/traffic-light.js, which knows nothing of StateUI.
+        /// Told what it is through its attributes, heard through the events it raises.
+        ///
+        /// `register()`, at the end of this file, adds it for `TrafficLightContract`, and that registration is the whole
+        /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
+        @MainActor
+        final class TrafficLightElement: WebControl {
+            let element = WebPageElement(tag: "gallery-traffic-light")
+
+            /// A lamp was tapped; the argument is its index, top to bottom. The control does not switch itself: it reports,
+            /// and whoever owns the state decides.
+            var onLampTapped: ((Int) -> Void)?
+
+            /// Which lamp is lit.
+            var signal = TrafficSignal.stop {
+                didSet { if signal != oldValue { element.setAttribute("signal", String(signal.rawValue)) } }
+            }
+
+            init() {
+                element.setAttribute("signal", String(signal.rawValue))
+                element.listen("lamptap") { [weak self] (index: Double) in self?.onLampTapped?(Int(index)) }
+            }
+        }
+
+        extension TrafficLightElement {
+            /// Adds the lamps for `TrafficLightContract`. Said once, before the application runs.
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightElement in
+                    let light = TrafficLightElement()
+                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+                    return light
+                }) { light in
+                    // The value arrives typed - a TrafficSignal, not its number.
+                    light.property(TrafficLightContract.signal) { control, signal in
+                        control.signal = signal ?? .stop
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "InteropControlSample.WinUI.cpp": #"""
+        // Platforms/WinUI/Relay/Controls.cpp
+        // The gallery's traffic light and rating bar as WinUI elements that know nothing of StateUI: a housing of three
+        // lamps drawn with XAML's shapes, and WinUI's own RatingControl.
+        // Each function is C++/WinRT behind the C name the Swift half calls, declared in include/CGalleryWinUI.h.
+
+        // The housing and its lamps. A tap is told through the callbacks the Swift half handed over, by the number it made
+        // the control with.
+        extern "C" GalleryObjectRef gallery_traffic_light_make(int64_t control) {
+            try {
+                controls::Border housing;
+                housing.Background(brush(26, 23, 37));
+                housing.CornerRadius(xaml::CornerRadius{18, 18, 18, 18});
+                housing.Padding(xaml::Thickness{12, 12, 12, 12});
+                housing.HorizontalAlignment(xaml::HorizontalAlignment::Center);
+                controls::StackPanel lamps;
+                lamps.Spacing(10);
+                for (int32_t lamp = 0; lamp < 3; ++lamp) {
+                    shapes::Ellipse ellipse;
+                    ellipse.Width(44);
+                    ellipse.Height(44);
+                    ellipse.Fill(brush(lampColors[lamp][0], lampColors[lamp][1], lampColors[lamp][2]));
+                    ellipse.Opacity(lamp == 0 ? 1 : 0.18);
+                    xaml::Automation::AutomationProperties::SetName(ellipse, lampNames[lamp]);
+                    // The light does not switch itself: it reports, and whoever owns the state decides.
+                    ellipse.Tapped([control, lamp](auto const &, xaml::Input::TappedRoutedEventArgs const &args) {
+                        args.Handled(true);
+                        if (callbacks.lampTapped) callbacks.lampTapped(control, lamp);
+                    });
+                    lamps.Children().Append(ellipse);
+                }
+                housing.Child(lamps);
+                return detach(housing);
+            } catch (...) {
+                report("making a traffic light");
+                return nullptr;
+            }
+        }
+
+        extern "C" void gallery_traffic_light_set_signal(GalleryObjectRef light, int32_t signal) {
+            try {
+                auto lamps = as<controls::Border>(light).Child().as<controls::StackPanel>().Children();
+                for (uint32_t lamp = 0; lamp < lamps.Size(); ++lamp) {
+                    lamps.GetAt(lamp).as<xaml::UIElement>().Opacity(static_cast<int32_t>(lamp) == signal ? 1 : 0.18);
+                }
+            } catch (...) {
+                report("lighting a lamp");
+            }
+        }
+        """#,
+        "InteropControlSample.WinUI.swift": #"""
+        // Platforms/WinUI/Host/TrafficLightControl.swift
+        /// Three lamps in a housing, one lit at a time - a XAML Border of three Ellipses the gallery's relay makes, which
+        /// knows nothing of StateUI.
+        ///
+        /// `register()`, at the end of this file, adds it for `TrafficLightContract`, and that registration is the whole
+        /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
+        @MainActor
+        final class TrafficLightControl: WinUIControl {
+            // The relay's Border, made by C++/WinRT behind C functions: a WinUIControl is the object holding the element it
+            // shows.
+            let element: OpaquePointer
+
+            /// A lamp was tapped; the argument is its index, top to bottom. The control does not switch itself: it reports,
+            /// and whoever owns the state decides.
+            var onLampTapped: ((Int) -> Void)?
+
+            /// Which lamp is lit.
+            var signal = TrafficSignal.stop {
+                didSet { if signal != oldValue { gallery_traffic_light_set_signal(element, signal.rawValue) } }
+            }
+
+            private let number: Int64
+
+            init() {
+                // The relay tells a tap by the number the control makes its element with.
+                number = GalleryControls.reserve()
+                element = gallery_traffic_light_make(number)!
+                GalleryControls.hold(self, as: number)
+            }
+
+            isolated deinit {
+                GalleryControls.forget(number)
+                gallery_winui_release(element)
+            }
+
+            /// The relay says lamp `index` was tapped.
+            func tapped(_ index: Int) {
+                onLampTapped?(index)
+            }
+        }
+
+        // MARK: - Registration
+
+        extension TrafficLightControl {
+            /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+            /// reports, and `property` puts the described signal on it. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightControl in
+                    let light = TrafficLightControl()
+                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+                    return light
+                }) { light in
+                    // Handed back typed - a TrafficSignal, not its number.
+                    light.property(TrafficLightContract.signal) { control, signal in
+                        control.signal = signal ?? .stop
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "InteropEventsSample.Android.java": #"""
+        // Platforms/Android/Java/com/stateui/gallery/GalleryActivity.java
+        /** The gallery's activity: the host's own, and the battery watched while it lives, for the gallery's own event. */
+        public final class GalleryActivity extends StateUIActivity {
+            private BroadcastReceiver battery;
+
+            @Override
+            protected void onCreate(Bundle state) {
+                super.onCreate(state);
+                battery = GalleryDevice.watchBattery(this);
+            }
+
+            @Override
+            protected void onDestroy() {
+                unregisterReceiver(battery);
+                super.onDestroy();
+            }
+        }
+
+        // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
+        /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
+        final class GalleryDevice {
+            private GalleryDevice() {}
+
+            /** Puts `text` on the clipboard. */
+            static void copy(Context context, String text) {
+                context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
+            }
+
+            /** The clipboard's text; empty where it holds none. */
+            static String paste(Context context) {
+                ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
+                if (clip == null || clip.getItemCount() == 0) return "";
+                CharSequence text = clip.getItemAt(0).coerceToText(context);
+                return text == null ? "" : text.toString();
+            }
+
+            /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */
+            static double[] battery(Context context) {
+                return reading(context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)));
+            }
+
+            /** Tells each change of the battery - the one standing first - until the receiver is unregistered. */
+            static BroadcastReceiver watchBattery(Context context) {
+                BroadcastReceiver receiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        double[] battery = reading(intent);
+                        GalleryNatives.batteryChanged(battery[0], battery[1] != 0);
+                    }
+                };
+                IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                if (Build.VERSION.SDK_INT >= 33) {
+                    context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                } else {
+                    context.registerReceiver(receiver, filter);
+                }
+                return receiver;
+            }
+
+            /** A battery status read as `battery` gives it: the level, 0 to 1, and 1 where it charges, else 0. */
+            private static double[] reading(Intent status) {
+                if (status == null) return new double[] {0, 0};
+                int level = status.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                int scale = status.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                int state = status.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                boolean charging = state == BatteryManager.BATTERY_STATUS_CHARGING || state == BatteryManager.BATTERY_STATUS_FULL;
+                return new double[] {level >= 0 && scale > 0 ? (double) level / scale : 0, charging ? 1 : 0};
+            }
+        }
+
+        // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java
+        /**
+         * What the gallery's own Android views tell its Swift half, each by the number
+         * its control was made with. The Swift half answers each, in Host/GalleryNatives.swift.
+         */
+        final class GalleryNatives {
+            private GalleryNatives() {}
+
+            /** A traffic light's lamp was tapped, counted from the top. */
+            static native void lampTapped(long control, int lamp);
+
+            /** A rating bar's user chose a rating. */
+            static native void rated(long control, double rating);
+
+            /** A cube's surface came, or changed its size in pixels. */
+            static native void surfaceReady(long control, Surface surface, int width, int height);
+
+            /** A cube's surface is going: nothing draws into it once this returns. */
+            static native void surfaceGone(long control);
+
+            /** A display frame for a cube, while it asks for them. */
+            static native void cubeFrame(long control, long nanoseconds);
+
+            /** The battery said its level, 0 to 1, and whether it charges. */
+            static native void batteryChanged(double level, boolean charging);
+        }
+        """#,
+        "InteropEventsSample.Android.swift": #"""
+        // Platforms/Android/Swift/Host/GalleryEventSources.swift
+        /// The gallery's own event on this head: the battery, which the gallery's activity watches while it lives and tells
+        /// through GalleryNatives.
+        enum GalleryEventSources {
+            /// Declares the event the activity's watcher raises. Said once, as the library loads.
+            @MainActor
+            static func register() {
+                StateUIEvents.raises(GalleryContract.batteryChanged)
+            }
+
+            @MainActor private static var lastSaid: (level: Double, charging: Bool)?
+
+            /// The battery said its level and whether it charges: raised where it changed, and a device with no battery
+            /// says nothing.
+            @MainActor
+            static func report(level: Double, charging: Bool) {
+                guard level > 0 else { return }
+                guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+                lastSaid = (level, charging)
+                StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+            }
+        }
+
+        // Platforms/Android/Swift/Host/GalleryNatives.swift
+        // The native methods of the gallery's Java views, com.stateui.gallery.GalleryNatives - found by their JNI names, each
+        // called on the UI thread, where Swift's main actor runs.
+
+        @_cdecl("Java_com_stateui_gallery_GalleryNatives_batteryChanged")
+        public func galleryBatteryChanged(
+            _ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jclass?, _ level: jdouble, _ charging: jboolean
+        ) {
+            MainActor.assumeIsolated { GalleryEventSources.report(level: level, charging: charging != 0) }
+        }
+        """#,
+        "InteropEventsSample.AppKit.swift": #"""
+        // Platforms/AppKit/Host/GalleryEventSources.swift
+        /// The gallery's own pushes: what this host reports without being asked.
+        ///
+        /// `GalleryContract` declares each event with what it carries, and every
+        /// `HostEvents.on` subscription hears it. A raise nobody hears is an ordinary
+        /// answer, so the sources are wired unconditionally.
+        ///
+        /// THE SPLIT IS THE PLATFORM'S: a desktop with no battery reports nothing at
+        /// all, and the sample's own words say so. What is watched here is the power
+        /// source, which macOS reports through a run-loop source of its own.
+        enum GalleryEventSources {
+            /// What was last said, so an unchanged reading raises nothing - a power
+            /// source notifies on far more than a level change.
+            nonisolated(unsafe) private static var lastSaid: (level: Double, charging: Bool)?
+
+            /// Declares what the gallery raises and starts watching. Said once,
+            /// before the application runs.
+            @MainActor
+            static func start() {
+                // Declared where the source is wired: a handler listening for an
+                // event nothing declared is told, once, that it will not hear it.
+                StateUIEvents.raises(GalleryContract.batteryChanged)
+
+                // Named in full: a C function pointer carries no context at all, and
+                // an unqualified call to a static method captures the type implicitly.
+                let notify: IOPowerSourceCallbackType = { _ in GalleryEventSources.report() }
+
+                guard let source = IOPSNotificationCreateRunLoopSource(notify, nil)?.takeRetainedValue()
+                else { return }
+
+                CFRunLoopAddSource(CFRunLoopGetMain(), source, .defaultMode)
+                report()
+            }
+
+            /// Raises the battery's reading, where it has changed and there is one.
+            private static func report() {
+                let (level, charging) = GalleryActs.battery()
+
+                guard level > 0 else { return }
+                guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+                lastSaid = (level, charging)
+                StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+            }
+        }
+
+        // Platforms/AppKit/main.swift
+        // What this host answers for the application, said before it runs: the
+        // controls it realizes, the acts it performs, and the pushes it reports. Each
+        // lives in Host/ beside this file.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+        """#,
+        "InteropEventsSample.GTK.swift": #"""
+        // Platforms/GTK/Host/GalleryEventSources.swift
+        /// The gallery's own pushes, as this host raises them: the battery, as UPower tells it.
+        ///
+        /// Raising is safe from any thread, and a raise nobody hears is an ordinary answer, so the source is wired whether or
+        /// not anything listens.
+        enum GalleryEventSources {
+            /// The battery as it was last said, so a notice that changed nothing of it raises nothing.
+            @MainActor private static var lastSaid: (level: Double, charging: Bool)?
+
+            /// Declares what the host raises and wires its source. Said once, before the application runs.
+            @MainActor
+            static func start() {
+                // A handler listening for an event nothing declared is told, once, that it will not hear it.
+                StateUIEvents.raises(GalleryContract.batteryChanged)
+
+                // UPower's display device signals each change of its properties, the battery's among them.
+                guard let device = GalleryPower.device else { return }
+                // A C callback carries no context; the report is named in full.
+                let changed: @convention(c) (OpaquePointer?, OpaquePointer?, OpaquePointer?, gpointer?) -> Void = { _, _, _, _ in
+                    MainActor.assumeIsolated { GalleryEventSources.report() }
+                }
+                g_signal_connect_data(
+                    UnsafeMutableRawPointer(device), "g-properties-changed", unsafeBitCast(changed, to: GCallback.self), nil,
+                    nil, GConnectFlags(rawValue: 0))
+                report()
+            }
+
+            @MainActor
+            private static func report() {
+                let (level, charging) = GalleryPower.battery()
+                // Nothing is raised without a battery, nor for a notice that left it as it was.
+                guard level > 0, lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+                lastSaid = (level, charging)
+                StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+            }
+        }
+
+        // Platforms/GTK/main.swift
+        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
+        // the last window closes.
+        stateui_app_register()
+        // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+        """#,
+        "InteropEventsSample.UIKit.swift": #"""
+        // Platforms/UIKit/Host/GalleryEventSources.swift
+        /// The gallery's own pushes: what this host reports without being asked.
+        ///
+        /// `GalleryContract` declares each event with what it carries, and every
+        /// `HostEvents.on` subscription hears it. A raise nobody hears is an ordinary
+        /// answer, so the sources are wired unconditionally.
+        ///
+        /// THE SPLIT IS THE PLATFORM'S: a device UIKit knows no battery of - the
+        /// simulator - reports nothing at all, and the sample's own words say so.
+        /// What is watched here is the battery, which UIKit reports through the
+        /// notification centre once its monitoring is on.
+        @MainActor
+        enum GalleryEventSources {
+
+                /// Declares what the gallery raises and starts watching. Said once,
+                /// before the application runs.
+                static func start() {
+                    // What the host raises, declared where its source is wired: a handler
+                    // listening for an event nothing raises is told so.
+                    StateUIEvents.raises(GalleryContract.batteryChanged)
+
+                    UIDevice.current.isBatteryMonitoringEnabled = true
+                    for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {
+                        observers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { _ in
+                            MainActor.assumeIsolated { report() }
+                        })
+                    }
+                    report()
+                }
+
+                /// Raises the battery's reading, where it has changed and there is one.
+                private static func report() {
+                    let (level, charging) = GalleryActs.battery()
+
+                    guard level > 0 else { return }
+                    guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+                    lastSaid = (level, charging)
+                    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+                }
+            }
+
+        // Platforms/UIKit/main.swift
+        // What this host answers for the application, said before it runs: the
+        // controls it realizes, the acts it performs, and the pushes it reports. Each
+        // lives in Host/ beside this file.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+
+        StateUIUIKit.run()
+        """#,
+        "InteropEventsSample.Web.javascript": #"""
+        // Platforms/Web/Page/gallery-acts.js
+        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
+        // battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
+        // GalleryEventSources.swift.
+        // The page loads this script before the application starts.
+
+        // The battery as two words, its level from 0 to 1 and whether it charges; a browser that says nothing of it - a
+        // desktop's mains, Safari, Firefox - answers 0.
+        const battery = navigator.getBattery?.().catch(() => null) ?? Promise.resolve(null);
+        const said = (power) => (power ? `${power.level} ${power.charging}` : "0 false");
+
+        // A browser that offers its battery - Chrome, Edge - tells it at once and at each change; the others tell nothing.
+        battery.then((power) => {
+          if (!power) return;
+          const tell = () => StateUI.tell("battery", said(power));
+          power.addEventListener("levelchange", tell);
+          power.addEventListener("chargingchange", tell);
+          tell();
+        });
+        """#,
+        "InteropEventsSample.Web.swift": #"""
+        // Platforms/Web/Host/GalleryEventSources.swift
+        /// The gallery's own pushes, as this host raises them: the battery, as the browser tells the page's scripts.
+        enum GalleryEventSources {
+            /// Declares what the host raises and wires its source. Said once, before the application runs.
+            @MainActor
+            static func start() {
+                // What the host raises, declared where its source is wired: a handler listening for an event nothing
+                // declared is told, once, that it will not hear it.
+                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIScripts.hear("battery") { words in
+                    let (level, charging) = GalleryActs.battery(words)
+                    guard level > 0 else { return }
+                    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+                }
+            }
+        }
+
+        // Platforms/Web/main.swift
+        GalleryEventSources.start()
+        StateUIWeb.run(name: "Gallery")
+        """#,
+        "InteropEventsSample.WinUI.cpp": #"""
+        // Platforms/WinUI/Relay/System.cpp
+        // The battery as Windows knows it: the power status every desktop reads, and the notices Windows sends as the
+        // battery's charge or the power source changes.
+
+        namespace {
+            /// Windows' names for the battery's charge and for the power source.
+            constexpr GUID batteryPercentage = {0xa7ad8041, 0xb45a, 0x4cae, {0x87, 0xa3, 0xee, 0xcb, 0xb4, 0x68, 0xa9, 0xe1}};
+            constexpr GUID powerSource = {0x5d3e9a59, 0xe9d5, 0x4b00, {0xa6, 0xbd, 0xff, 0x34, 0xff, 0x51, 0x65, 0x48}};
+
+            // The function the Swift half handed over: each notice is passed on to it, on a thread of Windows' own.
+            void (*told)(void) = nullptr;
+
+            ULONG CALLBACK changed(PVOID, ULONG, PVOID) {
+                if (told) told();
+                return 0;
+            }
+
+            DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS subscription{changed, nullptr};
+        }
+
+        // The reading GalleryPower.battery() in the Swift half calls: for the battery act, and after each notice.
+        extern "C" void gallery_battery(double *level, bool *charging) {
+            try {
+                *level = 0;
+                *charging = false;
+                SYSTEM_POWER_STATUS status{};
+                // No system battery, or a charge Windows does not know: nothing to say.
+                if (!GetSystemPowerStatus(&status) || (status.BatteryFlag & 128) || status.BatteryLifePercent > 100) return;
+                *level = status.BatteryLifePercent / 100.0;
+                *charging = status.ACLineStatus == 1;
+            } catch (...) {
+                report("reading the battery");
+            }
+        }
+
+        extern "C" void gallery_battery_watch(void (*changedTold)(void)) {
+            try {
+                told = changedTold;
+                for (auto setting : {&batteryPercentage, &powerSource}) {
+                    HPOWERNOTIFY handle = nullptr;
+                    PowerSettingRegisterNotification(setting, DEVICE_NOTIFY_CALLBACK, &subscription, &handle);
+                }
+            } catch (...) {
+                report("watching the battery");
+            }
+        }
+        """#,
+        "InteropEventsSample.WinUI.swift": #"""
+        // Platforms/WinUI/Host/GalleryEventSources.swift
+        /// The gallery's own pushes, as this host raises them: the battery, as Windows tells it.
+        enum GalleryEventSources {
+            /// The battery as it was last said, so a notice that changed nothing of it raises nothing.
+            @MainActor private static var lastSaid: (level: Double, charging: Bool)?
+
+            /// Declares what the host raises and wires its source. Said once, before the application runs.
+            @MainActor
+            static func start() {
+                // A handler listening for an event nothing declared is told, once, that it will not hear it.
+                StateUIEvents.raises(GalleryContract.batteryChanged)
+
+                // The gallery's relay asks Windows for each change of the battery's charge and of the power source
+                // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.
+                gallery_battery_watch(batteryChanged)
+                report()
+            }
+
+            @MainActor
+            fileprivate static func report() {
+                let (level, charging) = GalleryPower.battery()
+                // Windows tells more than a level change: no battery, or a reading unchanged, raises nothing.
+                guard level > 0, lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+                lastSaid = (level, charging)
+                StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+            }
+        }
+
+        /// What Windows calls as the battery's charge or the power source changes - on a thread of its own, and once as the
+        /// watch begins: the report is the main actor's.
+        /// It stands outside the main actor, as a closure written inside `start()` would be the main actor's.
+        private let batteryChanged: @convention(c) () -> Void = {
+            Task { @MainActor in GalleryEventSources.report() }
+        }
+
+        // Platforms/WinUI/main.swift
+        // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+        GalleryEventSources.start()
+        """#,
+    ]
+}
+#else
+extension Listings {
+    /// No host's code: a build for none shows none.
+    fileprivate static let ofHosts: [String: String] = [:]
+}
+#endif
