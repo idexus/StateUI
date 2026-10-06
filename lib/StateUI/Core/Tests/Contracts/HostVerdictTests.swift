@@ -20,6 +20,7 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "Text", member: "text", mark: .partly("cannot read text of Text - Hidden.")),
             HostVerdict(element: "Text", member: "tapped", mark: .byHost("tap on Text: the recognizer is handed it")),
             HostVerdict(element: "Marker", member: "label", mark: .byApplication),
+            HostVerdict(element: "Line", member: "isEnabled", mark: .inapplicable("read isEnabled of Line - None.")),
         ]
 
         for verdict in verdicts {
@@ -81,6 +82,25 @@ final class HostVerdictTests: XCTestCase {
             """)
     }
 
+    /// A case that does not apply on the host - its platform holds nothing the case reads - judges a subject only
+    /// where no other case does: beside a proof, written in another part of its family, the proof stands whole.
+    func testACaseThatDoesNotApplyGivesWayToAnyOther() {
+        let text = HostVerdict.text([
+            HostVerdict(element: "Polygon", member: "isEnabled", mark: .inapplicable("read isEnabled of Polygon - None.")),
+            HostVerdict(element: "Polygon", member: "isEnabled", mark: .proven),
+            HostVerdict(element: "Line", member: "isEnabled", mark: .byHost("tap on Line: handed")),
+            HostVerdict(element: "Line", member: "isEnabled", mark: .inapplicable("read isEnabled of Line - None.")),
+            HostVerdict(element: "Text", member: "isEnabled", mark: .inapplicable("read isEnabled of Text - None.")),
+        ])
+
+        XCTAssertEqual(text, """
+            Line.isEnabled: ✓ tap on Line: handed
+            Polygon.isEnabled: ✅
+            Text.isEnabled: does not apply - read isEnabled of Text - None.
+
+            """)
+    }
+
     /// A run's text says, over its verdicts, the revision of its family the run was made at; reading it gives both
     /// back, and a text without the line gives no revision.
     func testARunsTextCarriesItsRevision() throws {
@@ -121,11 +141,11 @@ final class HostVerdictTests: XCTestCase {
     func testMetIsProvenNeverOrTheApplications() {
         let marks: [HostVerdict.Mark] = [
             .proven, .partial(missing: "m"), .notPlanned(reason: "r"), .notRealized, .cannot("c"), .waiting(on: "w"),
-            .failed("f"), .partly("p"), .byHost("b"), .byApplication,
+            .failed("f"), .partly("p"), .byHost("b"), .byApplication, .inapplicable("i"),
         ]
 
         XCTAssertEqual(
             marks.map { HostVerdict(element: "Text", member: "text", mark: $0).meets },
-            [true, false, true, false, false, false, false, false, false, true])
+            [true, false, true, false, false, false, false, false, false, true, false])
     }
 }

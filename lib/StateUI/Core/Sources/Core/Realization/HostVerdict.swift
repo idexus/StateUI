@@ -17,6 +17,9 @@
         case notRealized
         /// Empty: the host's driver cannot do or read what the case needs; what, and why.
         case cannot(String)
+        /// Empty: the case does not apply - the host's platform holds nothing it reads - and no other case judges the
+        /// subject; what, and why. Beside any other verdict it gives way.
+        case inapplicable(String)
         /// Empty: the host realizes it, and its case waits on another member the host does not realize yet; which.
         case waiting(on: String)
         /// ❌: a case proving it failed on the host; what was expected and what came.
@@ -60,6 +63,7 @@
         case .notPlanned(let reason): "\(subject): – \(reason)"
         case .notRealized: "\(subject): not realized"
         case .cannot(let why): "\(subject): cannot \(why)"
+        case .inapplicable(let why): "\(subject): does not apply - \(why)"
         case .waiting(let gap): "\(subject): waits on \(gap)"
         case .failed(let message): "\(subject): ❌ \(message)"
         case .partly(let why): "\(subject): ◐ \(why)"
@@ -92,6 +96,8 @@
             mark = .notRealized
         } else if let why = text(after: "cannot"), !why.isEmpty {
             mark = .cannot(why)
+        } else if let why = text(after: "does not apply -"), !why.isEmpty {
+            mark = .inapplicable(why)
         } else if let gap = text(after: "waits on"), !gap.isEmpty {
             mark = .waiting(on: gap)
         } else if let message = text(after: "❌"), !message.isEmpty {
@@ -113,7 +119,7 @@
     public var meets: Bool {
         switch mark {
         case .proven, .notPlanned, .byApplication: true
-        case .partial, .notRealized, .cannot, .waiting, .failed, .partly, .byHost: false
+        case .partial, .notRealized, .cannot, .inapplicable, .waiting, .failed, .partly, .byHost: false
         }
     }
 
@@ -121,7 +127,7 @@
     private var passed: Bool {
         switch mark {
         case .proven, .partial, .notPlanned, .byHost, .byApplication: true
-        case .notRealized, .cannot, .waiting, .failed, .partly: false
+        case .notRealized, .cannot, .inapplicable, .waiting, .failed, .partly: false
         }
     }
 
@@ -130,13 +136,16 @@
         String(description.dropFirst(subject.count + 2))
     }
 
-    /// The worst of two verdicts on one subject: a failure over everything; a proof beside a case that did not
+    /// The worst of two verdicts on one subject: a case that does not apply gives way to any other; a failure over
+    /// everything; a proof beside a case that did not
     /// prove it, partly proven; a proof in part over one whole, and one through the toolkit over one only through
     /// the host's own entry; the host realizing nothing below any word of a case.
     /// Design: docs/design/contracts/dictionary.md#marks
     static func worse(_ one: HostVerdict, _ other: HostVerdict) -> HostVerdict {
         let (first, second) = one.description <= other.description ? (one, other) : (other, one)
         switch (first.mark, second.mark) {
+        case (.inapplicable, _): return second
+        case (_, .inapplicable): return first
         case (.failed, _): return first
         case (_, .failed): return second
         case (.notRealized, _): return second

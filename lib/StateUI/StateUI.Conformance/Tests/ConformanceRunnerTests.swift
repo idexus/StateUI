@@ -284,7 +284,7 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertEqual(failures, [])
         XCTAssertEqual(HostVerdict.text(verdicts), """
             Switch.isOn: ✅
-            Switch.toggled: cannot read isOn of Switch - The toolkit keeps no such value; its effect proves it.
+            Switch.toggled: does not apply - read isOn of Switch - The toolkit keeps no such value; its effect proves it.
 
             """)
 

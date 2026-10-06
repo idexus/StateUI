@@ -96,11 +96,20 @@ a host writes by hand and what its runtime registers - and by the case:
                                    registers its own control for it
   Line.x1: not realized            empty: the host has no realization yet
   TextField.submitted: cannot ...  empty: the driver cannot do or read it, and why
+  Text.isEnabled: does not apply - ...
+                                   empty: the host's platform holds nothing the case
+                                   reads, and why - beside any other case's word,
+                                   that word stands
   SplitView: waits on <member>     empty: realized, its case stopped by a member
                                    the host does not realize yet
   Switch.toggled: ❌ <failure>      a case proving it failed, its first failure
   Text.lineBreak: ◐ <why>         one case proved it, another could not run or read
 ```
+
+A family split into parts writes a file a part, and the dictionary takes the
+worst word each subject has across them; a case that does not apply on the
+host gives way there to any other case, so a member another part proves
+stands proven.
 
 A case runs only where the host realizes every member it covers; a member
 the register calls never is marked – without the case running, and one of an
