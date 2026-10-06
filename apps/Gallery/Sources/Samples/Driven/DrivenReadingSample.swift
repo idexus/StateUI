@@ -19,8 +19,8 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
         VStack {
             // NOTHING in this closure reads: the bar is a channel and both
             // readings are CONVERSIONS of it, worked out by the host on its own
-            // frames. So this stays at one build while the numbers move sixty
-            // times a second.
+            // frames. So this stays at one build while the numbers move on
+            // every frame.
             DebugInfoLabel()
 
             // The bar: one driven property, and the host moves it.
@@ -120,10 +120,9 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("There is no cadence to choose. A conversion is worked out once a "
-                + "frame, and what it answers is another driven state - so asking for "
-                + "a reading sixty times a second costs what asking for one twice a "
-                + "second would.")
+            Text("There is no cadence to choose. A conversion is worked out on every "
+                + "frame the value moves, and what it answers is another driven state - "
+                + "so however often the reading changes, it costs no render.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

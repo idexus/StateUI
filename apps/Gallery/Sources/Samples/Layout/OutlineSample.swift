@@ -38,8 +38,6 @@ struct OutlineSample: SampleContent, ExampleContent {
             .lineWidth(3)
             .shape(.rectangle)
 
-            // The box fills the ZStack; its corners are cut only while the
-            // ZStack clips what it holds.
             ZStack {
                 Text("An ellipse")
                     .fontSize(15)
@@ -50,6 +48,8 @@ struct OutlineSample: SampleContent, ExampleContent {
             .stroke(Palette.accent)
             .shape(.ellipse)
 
+            // The box fills the ZStack; its corners are cut only while the
+            // ZStack clips what it holds.
             ZStack {
                 ColorBox(Palette.accent)
             }

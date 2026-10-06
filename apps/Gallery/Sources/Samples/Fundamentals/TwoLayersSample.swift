@@ -25,12 +25,12 @@ private struct LayerRows: ExampleContent {
     @State private var counter = 0
 
     var body: some View {
-        // LAYER ONE - A GET. The value is read here, so this closure is
-        // its reader and every press builds it again.
+        // Each layer stands in a row of its own below, so each takes its
+        // own reading.
         VStack {
             // Nothing here reads the count - a handler reads when it fires -
             // so this closure stands at one build however often you press.
-            DebugInfoLabel()   // climbs, "for counter"
+            DebugInfoLabel()
 
             Button("+1")
                 .fontSize(14)
@@ -45,14 +45,14 @@ private struct LayerRows: ExampleContent {
                 Text("Counter \(counter)")
                     .fontSize(20)
                     .fontAttributes(.bold)
-                DebugInfoLabel()
+                DebugInfoLabel()   // climbs, "for counter"
             }
 
             boxed("Layer two · a channel") {
                 Text($counter.convert { "Counter \($0)" })
                     .fontSize(20)
                     .fontAttributes(.bold)
-                DebugInfoLabel()
+                DebugInfoLabel()   // stays: "1 build, first time"
             }
         }
         .spacing(12)
@@ -114,10 +114,11 @@ private struct LayerCost: ExampleContent {
         // The same two layers inside a subtree worth describing: `leaves`
         // little views, plus the counter. Each side times its OWN describe -
         // the clock is read at the top of the closure and again at the
-        // bottom - so the number is what that press cost in Swift.
+        // bottom - so the number is what describing it cost.
         VStack {
-            // LAYER ONE: the get is in the closure, so a press describes every
-            // leaf again and the reading below says how long that took.
+            // In layer one the get is in the block's own closure, so a press
+            // describes every leaf in it again, and its reading says how long
+            // that took.
             HStack {
                 Button("+1")
                     .fontSize(13)
@@ -165,10 +166,10 @@ private struct LayerCost: ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Press +1: the first block is described again - every view in it - and "
-                + "its build count and its microseconds climb. The second is not "
-                + "described at all, and its count stays at one. Raise the views to 400 "
-                + "and the difference grows with them.")
+            Text("Press +1: the first block is described again - every view in it - so "
+                + "its build count climbs and its microseconds are taken afresh. The "
+                + "second is not described at all, and its count stays at one. Raise the "
+                + "views to 400 and the difference grows with them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -224,8 +225,8 @@ private struct Described: View {
 // listing: end
 
 // listing: LayerCost
-/// The same block wired to layer two: the number rides a channel, so this
-/// closure is built once and its clock stands still.
+/// The same block wired to layer two: the number rides a channel, so +1
+/// builds nothing here and its clock stands still.
 private struct Channelled: View {
     @Binding var counter: Int
 
@@ -255,7 +256,7 @@ private struct Channelled: View {
                 .textColor(Palette.accent)
                 .height(15)
 
-            DebugInfoLabel()   // climbs on every press
+            DebugInfoLabel()   // stays at one on +1
                 .height(15)
         }
         .spacing(2)
@@ -279,7 +280,7 @@ private func took(_ began: ContinuousClock.Instant, _ views: Int) -> String {
     let parts = spent.components
     let nanoseconds = parts.seconds * 1_000_000_000 + parts.attoseconds / 1_000_000_000
 
-    return "\(views) views described in \(microseconds(nanoseconds)) µs, "
+    return "\(views) views described in \(microseconds(nanoseconds)) µs"
 }
 // listing: end
 

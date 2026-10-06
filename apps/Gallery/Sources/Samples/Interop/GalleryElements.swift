@@ -11,7 +11,7 @@ import StateUI
 /// and a control drawn on the GPU.
 enum GalleryElements {
     /// Every element the gallery declares, whichever host realizes it - and,
-    /// under its own condition, the one element only a single host can.
+    /// in a build for a host, the cube that host draws on its GPU.
     static let all: [any ElementContract.Type] = {
         var all: [any ElementContract.Type] = [
             TrafficLightContract.self, RatingBarContract.self,

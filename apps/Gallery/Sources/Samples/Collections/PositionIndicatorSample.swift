@@ -16,8 +16,8 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
     var body: some View {
         VStack {
-            // The step is read here, so moving between pages builds this
-            // closure - one build a page, whatever the movement costs.
+            // `step` and `cap` are read here, so each press of Back, Next or
+            // the stepper builds this closure once.
             DebugInfoLabel()
 
             Text(Self.steps[step])
@@ -94,9 +94,10 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .maximum(12)
                 .horizontalAlignment(.center)
 
-            // One item twice. `hidesForSinglePage` is true by default, so the
-            // left-hand one draws NOTHING at all - a lone dot says nothing
-            // about where the user is - and the right-hand one asks for it.
+            // One item twice. `hidesForSinglePage` is true by default: the
+            // left-hand one says so and draws NOTHING at all - a lone dot says
+            // nothing about where the user is - and the right-hand one turns
+            // it off and draws its dot.
             HStack {
                 VStack {
                     Text("hidesForSinglePage(true)")

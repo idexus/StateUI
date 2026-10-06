@@ -108,9 +108,9 @@ private struct DescribedOffset: View {
 
 // listing: OffsetStrips
 /// THE SAME GET, OFF A SAMPLE: the scroller writes a state of its own, as the
-/// column before does, and this column shows a READING of it taken ten times a
-/// second - so the number is as right whenever it is read, and the count is a
-/// tenth.
+/// column before does, and this column shows a READING of it taken at most ten
+/// times a second - so the number is as right whenever it is read, and the
+/// count climbs no faster than that.
 private struct PacedOffset: View {
     /// Handed to the scroller, as the column before.
     @Binding var offset: Point
@@ -201,8 +201,8 @@ private struct OffsetStrips: ExampleContent {
 
     @State private var paced = Point.zero
 
-    /// What the middle column shows: a reading of `paced`, taken ten times a
-    /// second. An ordinary state, rebuilt from by an ordinary get.
+    /// What the middle column shows: a reading of `paced`, taken at most ten
+    /// times a second. An ordinary state, rebuilt from by an ordinary get.
     @State private var pacedShown = Point.zero
 
     @State private var driven = Point.zero
@@ -273,7 +273,7 @@ private struct OffsetStrips: ExampleContent {
             Text("Described reads the offset in its own braces, so the column is built "
                 + "again on every report. On a cadence reads a sample of it - "
                 + "`.samples($offset, into: $shown, .every(100))` - at most ten times a "
-                + "second, so its count is a tenth. A channel reads nothing: "
+                + "second, so its count climbs no faster. A channel reads nothing: "
                 + "`$offset.journey.convert { … }` is a second state the host works out "
                 + "on its own frames, and the count stays at one.")
                 .fontSize(12)
@@ -365,8 +365,8 @@ private struct RestStrips: ExampleContent {
 
             Text("`.onScrollStopped` runs once a movement of the user's has ended - "
                 + "a drag, a throw, a wheel - and not after the glide it asked for itself. "
-                + "That is the moment work costs nothing, so it is also where a list builds "
-                + "the rows the next swipe needs.")
+                + "That is the moment work no longer shows as a hitch, so it is also where "
+                + "a list builds the rows the next swipe needs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

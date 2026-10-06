@@ -62,7 +62,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                     expected = 200 * 100
 
                     // The BOX, not the view: it is Sendable, so every task can
-                    // hold it. Two tasks doing `count += 1` would each read,
+                    // hold it. Two tasks doing `total += 1` would each read,
                     // add and write, and lose one another's increments;
                     // `update` runs the three steps under the state's own lock,
                     // so every one of the 20,000 lands.
@@ -96,8 +96,8 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
         VStack {
             Text("A `@State` write is whole from ANY thread - a handler, a "
                 + "`Task.detached` that worked something out, an `async let` "
-                + "child. The value sits behind a lock and the write redraws from "
-                + "wherever it was made, and a write that "
+                + "child. The value sits behind a lock and the write asks for a render "
+                + "from wherever it was made, and a write that "
                 + "lands mid-render is kept for the next one. So there is nothing "
                 + "to hop back to a UI thread for.")
                 .fontSize(12)
@@ -117,7 +117,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 + "a write, and two of them interleave and lose a count; "
                 + "`_count.update { $0 + 1 }` holds the state's lock across all "
                 + "three steps. This sample counts 20,000 that way and loses none "
-                + "- take the `update` out for `counter += 1` from 200 tasks and "
+                + "- take the `update` out for `counter.wrappedValue += 1` from 200 tasks and "
                 + "the total comes up short.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -20,12 +20,12 @@ struct VisualStateSample: SampleContent, ExampleContent {
     static let title = "Visual states"
     static let summary = "What a control looks like while it is held down, disabled or chosen."
 
-    // listing: VisualStateSample
+    // listing: VisualStateSample keep
     var body: some View {
         VStack {
-            // A state describes the button alone. What renders this closure is
-            // `entered`, written by the handler and read here - so the count
-            // follows what was heard, not the look.
+            // A state describes the button alone. This closure reads `entered`,
+            // which the handler writes, `presses` and `enabled` - so the count
+            // follows what was heard and pressed, not the look.
             DebugInfoLabel()
 
             SectionTitle("On the control, not in a style")
@@ -45,10 +45,10 @@ struct VisualStateSample: SampleContent, ExampleContent {
                         .background(Palette.outline)
                         .textColor(Palette.disabled)
                     }
-                    // The colour is a setter and the engine carries it at the
-                    // button's own motion; this takes 90ms, because a handler may
-                    // await. The scale is DRIVEN by `press`, so the handler sends
-                    // the state and the button follows it.
+                    // The colour is a setter, which travels under the button's
+                    // own motion. The scale is DRIVEN by `press`: the handler
+                    // moves the state over 90ms - a handler may await - and the
+                    // button follows it.
                     .onVisualStateChanged { state in
                         entered = state.name
                         try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))

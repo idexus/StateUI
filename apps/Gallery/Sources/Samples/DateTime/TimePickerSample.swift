@@ -9,7 +9,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
 
     static let id = "timePicker"
     static let title = "TimePicker"
-    static let summary = "A time of day - three integers, the way a date is three integers."
+    static let summary = "A time of day, crossing as three integers the way a date does."
 
     // listing: TimePickerSample
     var body: some View {
@@ -74,8 +74,8 @@ struct TimePickerSample: SampleContent, ExampleContent {
         VStack {
             Text("A `ClockTime` rather than a Foundation value, for the reason a "
                 + "`CalendarDate` is not a `Date`: formatting one needs ICU, and ICU is "
-                + "the dependency this library cannot take. It is three numbers - hour, "
-                + "minute, second - and whether the user sees 21:05 or 9:05 PM is the "
+                + "the dependency this library cannot take. It crosses as three numbers - "
+                + "hour, minute, second - and whether the user sees 21:05 or 9:05 PM is the "
                 + "host's to decide, from the user's locale and the `.format`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -8,7 +8,6 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 
     // listing: StackLayoutSample
     var body: some View {
-        // Where a child sits in the room its stack gives it.
         VStack {
             SectionTitle("Vertical")
 
@@ -30,6 +29,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 
             SectionTitle("Alignment")
 
+            // Where a child sits in the room its stack gives it.
             VStack {
                 StackCell(text: "start")
                     .horizontalAlignment(.start)

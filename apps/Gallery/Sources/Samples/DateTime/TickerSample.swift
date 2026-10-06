@@ -73,8 +73,8 @@ struct TickerSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("It sleeps to a DEADLINE rather than for a length, so the lateness of "
-                + "each lap is spent instead of added up - where a loop written by hand "
-                + "adds every one of them.")
+                + "each lap is spent instead of added up - where the Task.sleep sample's "
+                + "loop adds every one of them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

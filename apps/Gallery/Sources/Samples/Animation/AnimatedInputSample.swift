@@ -3,7 +3,7 @@ import StateUI
 /// A slider's value and a stepper's - the two properties a USER can move,
 /// both carried by the host. Two sliders and a stepper, and what differs is who
 /// reads the value: the top caption PRINTS it in this body, the two below are
-/// CONVERSIONS the host works out on its own frames.
+/// CONVERSIONS worked out on the display's frames.
 struct AnimatedInputSample: SampleContent, ExampleContent {
     // listing: AnimatedInputSample
     /// The TOP slider's value. The caption above the slider PRINTS it, which
@@ -22,28 +22,29 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
     /// once.
     @State private var level = 0.2   // handed on: no reader
 
-    /// The stepper's value, declared the same way - and it needs it more than
-    /// the slider does: a Stepper draws two buttons and NO number, so the
-    /// caption beside it is the only thing that shows the value at all.
+    /// The stepper's value, declared the same way. Its caption matters more
+    /// than the slider's: on some platforms a Stepper draws two buttons and
+    /// no number, and there the caption above it is what shows the value.
     @State private var count = 3.0
     // listing: end
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
-    static let summary = "Two sliders over identical states - one read by the page, one handed on with `$`."
+    static let summary = "Two sliders over identical states - one also read by the page, one only handed on with `$`."
 
     // listing: AnimatedInputSample
     var body: some View {
-        // Each half is a closure of its own and takes its own reading, which
-        // is the instrument the two are told apart by.
+        // Each part is a closure of its own and takes its own build reading,
+        // which is what tells them apart.
         VStack {
             VStack {
                 Text("A get")
                     .fontSize(12)
                     .textColor(Palette.subtle)
 
-                // A GET. This label prints `volume`, which makes THIS closure
-                // a reader of it - so every report the thumb makes builds it.
+                // A GET. The label below prints `volume`, which makes THIS
+                // closure a reader of it - so every report the thumb makes
+                // builds it.
                 DebugInfoLabel()
 
                 Text("volume · \(percent(volume))")
@@ -71,9 +72,9 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
 
                 DebugInfoLabel()
 
-                // A CONVERTED TEXT: the host works it out from the same image
-                // the thumb is walking, on its own frames, so the words keep
-                // up with the movement and cost no render.
+                // A CONVERTED TEXT: an engine works it out from the same image
+                // the thumb is walking, on the display's frames, so the words
+                // keep up with the movement and cost no render.
                 Text()
                     .text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
                     .fontSize(15)
@@ -158,8 +159,8 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                 + "writes for you: it runs on the display's own frames, from the same "
                 + "image the control is walking, so a drag and a journey both cost the "
                 + "arithmetic and no renders. The stepper needs its caption more than "
-                + "the slider does: a Stepper draws two buttons and NO number, so the "
-                + "caption is the only thing that shows the value at all.")
+                + "the slider does: on some platforms a Stepper draws two buttons and "
+                + "no number, and there the caption is what shows the value.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

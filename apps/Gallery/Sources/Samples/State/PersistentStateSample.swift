@@ -53,17 +53,17 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The application LISTS its keys, in its session's persistentKeys. That is not "
-                + "ceremony: a settings store is read one key at a time and offers no "
-                + "list of what it holds, so naming them is what puts the values in "
-                + "memory before the first view asks for one.")
+                + "ceremony: the host reads the store key by key, each with its kind, so "
+                + "naming them is what puts the values in memory before the first view "
+                + "asks for one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("They are kept in the platform's own settings store - NSUserDefaults, "
-                + "SharedPreferences, ApplicationDataContainer - beside whatever else "
-                + "the app keeps there. So a key can hold only what such a store holds: "
-                + "a whole number, a number, true or false, or text. An enum over one of "
-                + "those is one line, as Shade is here.")
+            Text("They are kept in the platform's own settings store where it has one - "
+                + "UserDefaults, SharedPreferences - beside whatever else the app keeps "
+                + "there, and in a file of the host's where it has none. So a key holds "
+                + "only what such a store holds: a whole number, a number, true or false, "
+                + "or text. An enum over one of those is one line, as Shade is here.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

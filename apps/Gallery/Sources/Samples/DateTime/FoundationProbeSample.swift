@@ -117,7 +117,8 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Each row is one question put to Foundation on this platform. The "
+            Text("Each row is one question put to Foundation on this platform, beside "
+                + "two put to the host. The "
                 + "library crosses the boundary with three-integer dates; Foundation here "
                 + "is the application's own import. On Apple it is the system's; on "
                 + "Android it is swift-foundation, whose zones come from an ICU it "
@@ -128,8 +129,8 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
             Text("Android cannot detect the current zone - its tz database is packed "
                 + "in a format Foundation does not read, so TimeZone.current starts as "
                 + "GMT. The host knows the zone, so the handler asks it and sets TZ "
-                + "before Foundation first looks. Every row above depends on that one "
-                + "line.")
+                + "before Foundation first looks. Every row that reads the current zone "
+                + "depends on that one line.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

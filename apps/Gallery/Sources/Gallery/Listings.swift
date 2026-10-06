@@ -13,9 +13,9 @@ enum Listings {
         }
 
         /// About the gallery: one window for the whole application, in a scene of its
-        /// own. It belongs to no gallery window, so it stands while they open and
-        /// close, and `application.openWindow(.about)` finds it from any of them. See
-        /// `ScenesSample`.
+        /// own. It belongs to no other scene, so it stands while the gallery's windows
+        /// open and close, and `application.openWindow(.about)` opens it from any of
+        /// them - or answers `WindowError.alreadyOpen`. See `ScenesSample`.
         struct AboutScene: Scene {
             var body: some Scene {
                 Window(.about) { AboutPage() }
@@ -87,9 +87,9 @@ enum Listings {
         /// act aims at exactly the view it was put on.
         @Aim(TextField.self) private var note
 
-        /// What the last act did. Written by the HANDLER rather than read in the
-        /// body: the differ fills an aim as it WALKS, which is after the body that
-        /// reads it was built.
+        /// What the last act did, written by the handler that reads the aim: the
+        /// differ fills an aim as it WALKS, which is after the body that would read
+        /// it was built.
         @State private var says = "Press a button, and it says which view it reached."
 
         var body: some View {
@@ -142,7 +142,8 @@ enum Listings {
         @State private var ticking = false
 
         /// Whether the first reading of this visit has SET the clock. Travelling
-        /// there from noon would wind the whole day forward in a blur.
+        /// there from where the hands stand - noon, on the first visit - would
+        /// sweep them round in a blur.
         @State private var started = false
 
         /// Which visit to this page the running loop belongs to. Each visit begins
@@ -156,8 +157,8 @@ enum Listings {
         ///
         /// It only ever grows - a movement to 0 from 354 would turn the long way
         /// back - and each tick's target is this angle plus the FORWARD distance
-        /// to where the time says the hand should point, so a wrap and a catch-up
-        /// after the page returns are the same small spring.
+        /// to where the time says the hand should point, so a wrap and the
+        /// catch-up after a late tick are the same short movement.
         @State private var sAngle = 0.0
         @State private var mAngle = 0.0
         @State private var hAngle = 0.0
@@ -235,13 +236,13 @@ enum Listings {
 
                     if started {
                         // Advance by the forward distance only, so a wrap never
-                        // spins back and a return catches up in one spring. The
-                        // STATE is where the last movement was going, which is
-                        // where the hand belongs now, so the arithmetic starts
+                        // spins back and a late tick catches up in one movement.
+                        // The STATE is where the last movement was going, which
+                        // is where the hand belongs now, so the arithmetic starts
                         // from it - never from the journey's value, which is
-                        // wherever the host had got to when this reading came in. `async let` starts
-                        // all three at once; short and springy, because the snap
-                        // IS the tick.
+                        // wherever the host had got to when this reading came
+                        // in. `async let` starts all three at once; each is
+                        // short, because the movement IS the tick.
                         let atSecond = sAngle
                         let atMinute = mAngle
                         let atHour = hAngle
@@ -331,20 +332,21 @@ enum Listings {
         /// once.
         @State private var level = 0.2   // handed on: no reader
 
-        /// The stepper's value, declared the same way - and it needs it more than
-        /// the slider does: a Stepper draws two buttons and NO number, so the
-        /// caption beside it is the only thing that shows the value at all.
+        /// The stepper's value, declared the same way. Its caption matters more
+        /// than the slider's: on some platforms a Stepper draws two buttons and
+        /// no number, and there the caption above it is what shows the value.
         @State private var count = 3.0
 
         var body: some View {
-            // Each half is a closure of its own and takes its own reading, which
-            // is the instrument the two are told apart by.
+            // Each part is a closure of its own and takes its own build reading,
+            // which is what tells them apart.
             VStack {
                 VStack {
                     Text("A get")
 
-                    // A GET. This label prints `volume`, which makes THIS closure
-                    // a reader of it - so every report the thumb makes builds it.
+                    // A GET. The label below prints `volume`, which makes THIS
+                    // closure a reader of it - so every report the thumb makes
+                    // builds it.
                     DebugInfoLabel()
 
                     Text("volume · \(percent(volume))")
@@ -365,9 +367,9 @@ enum Listings {
 
                     DebugInfoLabel()
 
-                    // A CONVERTED TEXT: the host works it out from the same image
-                    // the thumb is walking, on its own frames, so the words keep
-                    // up with the movement and cost no render.
+                    // A CONVERTED TEXT: an engine works it out from the same image
+                    // the thumb is walking, on the display's frames, so the words
+                    // keep up with the movement and cost no render.
                     Text()
                         .text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
 
@@ -508,7 +510,7 @@ enum Listings {
         @State private var scale = 1.0
         @State private var angle = 0.0
 
-        static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
+        static let curves = ["Linear", "Cubic in-out", "Bounce out", "Back out"]
 
         var body: some View {
             VStack {
@@ -611,7 +613,7 @@ enum Listings {
         // A PAIR, and the second is written from the first: everything
         // about the shape of a quotation is stated once here, and
         // "QuoteLoud" adds the one property that makes it loud. The Styles
-        // sample draws both, side by side.
+        // sample draws both, one under the other.
         Style<Text>("Quote")
             .textColor(Palette.subtle)
             .fontSize(17)
@@ -629,7 +631,7 @@ enum Listings {
             .fontSize(14)
             .fontAttributes(.bold)
             .lineWidth(0)
-            .shape(.roundedRectangle(10))                
+            .shape(.roundedRectangle(10))
             .padding(horizontal: 16, vertical: 11)
             .minimumHeight(44)
             .minimumWidth(44)
@@ -683,10 +685,10 @@ enum Listings {
                 // press builds this closure.
                 DebugInfoLabel()
 
-                Text("Pick None, then open another sample: nothing in the application travels.")
+                Text("Pick None, then open another sample: only what has a motion of its own still travels.")
 
                 // One write for the whole application: every value without a
-                // motion of its own travels so from now on.
+                // motion of its own takes it.
                 Picker(Self.laws)
                     .onSelectedIndexChanged { application.motion = Self.law($0) }
                     .selectedIndex(Self.laws.indices.first { Self.law($0) == application.motion } ?? 0)
@@ -915,14 +917,14 @@ enum Listings {
         /// the one row that renders.
         @State private var on = false   // a toggle: set and reported
 
-        /// A CHOICE: an enum the host sets as it stands. It crosses as the
-        /// member's number and the host resolves it into the platform's own.
+        /// A MEMBER: an enum the host sets as it stands. It crosses as the
+        /// member's number, which the host resolves.
         @State private var side = Alignment.start   // a member: the host sets it
 
         var body: some View {
-            // A JOURNEY. `size = 30` sends the font size there under the
-            // label's law; the row is never built again.
             VStack {
+                // A JOURNEY. `size = 30` sends the font size there under the
+                // label's law; the row is never built again.
                 row("1 · a number the host walks - fontSize($size)") {
                     Text("The quick brown fox")
                     DebugInfoLabel()   // stays at one
@@ -936,7 +938,7 @@ enum Listings {
 
                 row("2 · a colour the host walks - textColor($tint)") {
                     Text("Tinted words")
-                    DebugInfoLabel()   // climbs on every flip
+                    DebugInfoLabel()   // stays at one
                 }
 
                 button("Swap the tint") {
@@ -982,7 +984,7 @@ enum Listings {
                     Switch($on)
                         .horizontalAlignment(.start)
                     Text(on ? "on" : "off")
-                    DebugInfoLabel()
+                    DebugInfoLabel()   // climbs on every flip
                 }
             }
         }
@@ -1011,7 +1013,7 @@ enum Listings {
         // Sources/Samples/Shapes/BrushSample.swift
         @State private var end = 0
 
-        /// The two stops every gradient here runs between.
+        /// The two stops the linear gradients here run between.
         private static let stops = [
             GradientStop(Palette.accent, 0),
             GradientStop(.steelBlue, 1),
@@ -1025,8 +1027,6 @@ enum Listings {
         ]
 
         var body: some View {
-            // Not a shape at all: `.background` takes a brush, so any view can
-            // carry one.
             VStack {
                 // The gradient's end is read here, so moving it builds this closure.
                 DebugInfoLabel()
@@ -1065,6 +1065,8 @@ enum Listings {
                 .lineWidth(4)
                 .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
+                // Not a shape at all: `.background` takes a brush, so any view can
+                // carry one.
                 VStack {
                     Text("A whole stack, behind a gradient")
                 }
@@ -1101,7 +1103,7 @@ enum Listings {
                 TextField($note)
                     .placeholder("Type here, then flip the switch")
 
-                // Two branches are two elements, even though both are Entries:
+                // Two branches are two elements, even though both are TextFields:
                 // switching REPLACES the control rather than editing it, which is
                 // what the author wrote.
                 if editing {
@@ -1403,7 +1405,7 @@ enum Listings {
                         expected = 200 * 100
 
                         // The BOX, not the view: it is Sendable, so every task can
-                        // hold it. Two tasks doing `count += 1` would each read,
+                        // hold it. Two tasks doing `total += 1` would each read,
                         // add and write, and lose one another's increments;
                         // `update` runs the three steps under the state's own lock,
                         // so every one of the 20,000 lands.
@@ -1468,8 +1470,8 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The run and what was chosen are read here, so every menu item
-                // that acts builds this closure.
+                // What was chosen is read here, so every menu item that acts
+                // builds this closure.
                 DebugInfoLabel()
 
                 VStack {
@@ -1573,10 +1575,6 @@ enum Listings {
                     // both. A step of one on each would leave the state on 20.56
                     // and the two captions would round it their own way.
                     HStack {
-                        // 5 °C IS 9 °F EXACTLY, and the ends line up too
-                        // (-20 °C = -4 °F, 60 °C = 140 °F), so every value either
-                        // stepper can reach is whole in both scales and the two
-                        // captions can never disagree.
                         Stepper($celsius)
                             .step(5)
                             .minimum(-20)
@@ -1747,6 +1745,37 @@ enum Listings {
         /// The names the picker offers, in the order `CubeColor` declares them -
         /// so the chosen index IS the vocabulary's member number.
         static let colors = ["Teal", "Amber", "Violet"]
+
+        var body: some View {
+            VStack {
+                DebugInfoLabel()
+
+                Cube3D()
+                    .size($size)
+                    .color(CubeColor(rawValue: Int32(color)) ?? .teal)
+                    .isSpinning($spinning)
+                    .horizontalAlignment(.center)
+
+                Text()
+                    .text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
+
+                Slider($size)
+                    .minimum(0.2)
+                    .maximum(1)
+
+                Picker(Self.colors)
+                    .selectedIndex($color)
+                    .placeholder("Color")
+
+                HStack {
+                    Text("Spin")
+                        .verticalAlignment(.center)
+
+                    Switch($spinning)
+                }
+                .horizontalAlignment(.center)
+            }
+        }
         """#,
         "Cube3DSample.Android.glsl": #"""
         // Platforms/Android/Swift/Host/GLESCube3DView.swift
@@ -2980,8 +3009,8 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The display is read here, so a turn or a resize builds
-                // this closure.
+                // The display is read here, so each change the host reports
+                // builds this closure.
                 DebugInfoLabel()
 
                 Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
@@ -3002,8 +3031,8 @@ enum Listings {
         """#,
         "DeviceInfoSample": #"""
         // Sources/Samples/Environment/DeviceInfoSample.swift
-        /// The machine's facts - the formFactor is the one the gallery itself builds
-        /// by, listing desktop chrome only where it draws.
+        /// The machine's facts - the formFactor among them, which this gallery
+        /// itself builds by.
         @Environment(\.device) var device
 
         /// The app's facts, from its own manifest.
@@ -3011,7 +3040,7 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The device never changes, so this stands at one build.
+                // These facts stand still, so this closure stands at one build.
                 DebugInfoLabel()
 
                 Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")
@@ -3092,8 +3121,8 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The two runs and what the last drag did are read here, so a drop
-                // builds this closure.
+                // The basket, its light and what the last drag did are read here,
+                // so a drop builds this closure.
                 DebugInfoLabel()
 
                 SectionTitle("Drag from here")
@@ -3161,8 +3190,8 @@ enum Listings {
             VStack {
                 // NOTHING in this closure reads: the bar is a channel and both
                 // readings are CONVERSIONS of it, worked out by the host on its own
-                // frames. So this stays at one build while the numbers move sixty
-                // times a second.
+                // frames. So this stays at one build while the numbers move on
+                // every frame.
                 DebugInfoLabel()
 
                 // The bar: one driven property, and the host moves it.
@@ -3272,7 +3301,8 @@ enum Listings {
                     .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                     .horizontalAlignment(.center)
 
-                // Off state: written twice a page, and described both times.
+                // Off ordinary state: described again each time the switch is
+                // thrown.
                 Text("Sent under \(law)")
                     .horizontalAlignment(.center)
 
@@ -3322,7 +3352,7 @@ enum Listings {
         @State private var running = false   // followed by the engine, read by no view
 
         /// How long the clock has run, in milliseconds - the engine's own to
-        /// count up, read by nobody: the reading is worked out FROM it, so
+        /// count up, read by no view: the reading is worked out FROM it, so
         /// nothing outside this page ever needs the number itself.
         @State private var elapsed = 0.0   // the engine's own count
 
@@ -3692,12 +3722,11 @@ enum Listings {
         }
 
         /// What the galleries look like, and how their tool windows stand - stepping
-        /// aside for another scene, floating on top - the context every window of the
-        /// galleries' scene shares.
+        /// aside for another scene, floating on top.
         ///
-        /// Held by the galleries' scene and offered to every window of it, so the Fonts
-        /// and Colours windows change every gallery window at once, with nothing passed
-        /// between them.
+        /// Held by the galleries' scene and handed to its gallery windows and to its
+        /// Fonts and Colours windows, so the Fonts and Colours windows change every
+        /// gallery window at once, with nothing passed between them.
         final class SessionStyle {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
@@ -3724,8 +3753,9 @@ enum Listings {
         struct GalleryApp: Application {
             /// Which kind of device this is, from the standard environment - answered
             /// by the host before the application is made, so the styles below already
-            /// know whether the SearchField wants a touch floor. An APPLICATION's
-            /// unfilled slot answers the standard provider directly.
+            /// know whether the SearchField wants a touch floor. An application stands
+            /// outside every view, so its `@Environment` is answered by the library's
+            /// own provider.
             @Environment(\.device) var device
 
             /// The application as it runs - where its styles and its kept keys go.
@@ -3733,12 +3763,11 @@ enum Listings {
 
             /// What every gallery shares, written as the application is made.
             init() {
-                // The styles every control in the gallery is given. The formFactor goes in
-                // because one style reads
-                // it: the SearchField's touch floor is a touch screen's, not the
-                // desktop's - and the application is made at its first need, after the
-                // host says the device. A colour in a style follows the theme by itself.
-                // See Styles/AppStyles.swift.
+                // The styles every control in the gallery is given. The formFactor goes
+                // in because one style reads it: the SearchField's touch floor is a
+                // touch screen's, not the desktop's - and the application is made at
+                // its first need, after the host says the device. A colour in a style
+                // follows the theme by itself. See Styles/AppStyles.swift.
                 application.styles = AppStyles.sheet(on: device.info.formFactor)
 
                 // What the gallery KEEPS between launches - `PersistentStateSample`'s
@@ -3746,11 +3775,13 @@ enum Listings {
                 // is read one key at a time and offers no list of what it holds, so
                 // this is the only way the host can have the values in memory before
                 // the first view asks for one - which is why it is written HERE, as
-                // the application is made. Kept in the platform's own settings store.
+                // the application is made. Each host keeps them in the platform's
+                // settings store, or in a file of its own where the platform offers an
+                // application none.
                 application.persistentKeys = [.visits, .who, .shade]
             }
 
-            /// The galleries - launch and *File ▸ New Window* open one more gallery window; the scratchpads; and one
+            /// The galleries - launch opens a gallery window, and *File ▸ New Window* one more; the scratchpads; and one
             /// About window for the whole application, in a scene of its own. See `ScenesSample`.
             var body: some Scene {
                 GalleryScene()
@@ -3802,8 +3833,9 @@ enum Listings {
         /// the windows they open beside them, all sharing what the scene holds.
         ///
         /// What the scene holds is the gallery's LOOK (`SessionStyle` - the font and
-        /// the accent its Fonts and Colours windows choose), offered to every window of
-        /// it: nothing is passed between the Colours window and the bars it paints.
+        /// the accent its Fonts and Colours windows choose), handed to the gallery
+        /// windows and to the Fonts and Colours windows: nothing is passed between the
+        /// Colours window and the bars it paints.
         /// What one gallery window is doing - where it is, its bar, its log, its
         /// catalog - is that window's own: see Gallery/GalleryWindow.swift.
         struct GalleryScene: Scene {
@@ -3812,9 +3844,9 @@ enum Listings {
             @State private var style = SessionStyle()
 
             /// The scene's windows: the gallery windows, which launch and *File ▸ New
-            /// Window* open; its Fonts and Colours windows, which may step aside while
-            /// another scene is in front or float above it and read the scene's look;
-            /// its inspector; and a swatch per number.
+            /// Window* open; its Fonts and Colours windows, which read the scene's
+            /// look and may step aside while another scene is in front or float above
+            /// the application's other windows; its inspector; and a swatch per number.
             var body: some Scene {
                 let style = self.style
 
@@ -3892,16 +3924,14 @@ enum Listings {
                 // rather than painted over the page.
                 .clipsContent(true)
 
-                // A LIVE READING, so it stays with the example rather than going to
-                // the notes: the position binding is written as the run moves - and
-                // the dots read the SAME state, which is the whole of how the two
-                // controls are joined.
+                // A LIVE READING: the position binding is written as the run
+                // moves - and the dots read the SAME state, which is the whole of
+                // how the two controls are joined.
                 VStack {
-                    // INSIDE these braces, because that is where `shown` and
-                    // `opened` are read - the dots and the caption are written
-                    // from them - so a swipe that changes which card is in front
-                    // builds this closure, once per card and not once per frame of
-                    // the movement.
+                    // INSIDE these braces, because that is where `shown`, `opened`
+                    // and `moves` are read - the dots and the caption are written
+                    // from them - so a swipe builds this closure as each card comes
+                    // to the middle, not on every frame of the movement.
                     DebugInfoLabel()
 
                     PositionIndicator()
@@ -3931,7 +3961,6 @@ enum Listings {
                         .isEnabled(shown < Self.cards.count - 1)
                         .onClicked { shown += 1 }
 
-
                     SwitchRow("Swipeable", $swipes)
 
                     SwitchRow("Shaded", $shaded)
@@ -3943,10 +3972,11 @@ enum Listings {
         }
 
         /// The run, either way the switch is set - and the two are worth watching
-        /// side by side rather than reading about. SHADED, a card going away is
-        /// darkened by a view drawn over it, so what is under it stays hidden;
-        /// FADED, the same card goes transparent and the card behind it shows
-        /// through, which on a wheel is the next card rather than the board.
+        /// side by side. SHADED, a card going away is darkened by a view drawn
+        /// over it and keeps a quarter of its fade, so what is under it stays
+        /// mostly hidden; FADED, the same card goes transparent and the card
+        /// behind it shows through, which on a wheel is the next card rather than
+        /// the board.
         ///
         /// The shade wears the card's own corners, and that is why it is the
         /// application's to give: nothing in the library knows what shape a card
@@ -3964,7 +3994,8 @@ enum Listings {
             // whatever is behind it, which on a wheel is the next card - so
             // depth is a shade drawn OVER the card. It wears the card's own
             // corners, which is why the view is the application's to give.
-            // `.fade(_:)` says how much fade is left beside it.
+            // A quarter of the fade is left beside it, unless `.fade(_:)` says
+            // otherwise.
             return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
         }
 
@@ -4057,7 +4088,7 @@ enum Listings {
                 // THE PARENT, DRAWN in a gentle tint, because `slot` below is
                 // measured against THIS box and the numbers say nothing until
                 // there is something on the screen for them to be relative to.
-                // It fills the page's width, so widening the panel walks its x
+                // It fills the page's width, so narrowing the panel walks its x
                 // in towards the middle.
                 VStack {
                     Text("the parent")
@@ -4099,8 +4130,8 @@ enum Listings {
                 Button("Animate the width")
                     .horizontalAlignment(.center)
                     .onClicked {
-                        // Nothing is described: the host carries the width and the
-                        // slider's thumb off the same state, and the frame reports
+                        // The width describes nothing: the host carries the width and
+                        // the slider's thumb off the same state, and the frame reports
                         // say where the panel actually got to.
                         try await $width.journey.move(to: $width.journey.value < 240 ? 340 : 140)
                     }
@@ -4128,7 +4159,7 @@ enum Listings {
                 DebugInfoLabel()
                     .gridRow(1)
 
-                Text(opened.map { "Tile \($0) opened." } ?? "Tap a tile.")
+                Text(opened.map { "Tile \($0) opened." } ?? "Open a tile.")
                     .gridRow(1)
             }
             .rows(.fill, .auto)
@@ -4232,8 +4263,8 @@ enum Listings {
         @State private var season = ""
 
         /// A few zones a user will recognize, including one at half past the
-        /// hour - Kolkata is +05:30, and an offset held as minutes is what makes
-        /// that ordinary rather than a special case.
+        /// hour - Kolkata is +05:30, and an offset that crosses as whole minutes
+        /// is what makes that ordinary rather than a special case.
         static let cities = [
             "UTC", "America/New_York", "Europe/Warsaw", "Asia/Kolkata", "Asia/Tokyo",
         ]
@@ -4241,7 +4272,7 @@ enum Listings {
         var body: some View {
             VStack {
                 // What the host answered is read here, so each ask builds this
-                // closure once.
+                // closure again.
                 DebugInfoLabel()
 
                 Text("Here: \(zone.isEmpty ? "…" : zone)")
@@ -4460,8 +4491,8 @@ enum Listings {
 
                 SectionTitle("Fit or fill")
 
-                // The same square picture in the same wide box, so the only thing
-                // between the two is the aspect.
+                // The same square picture in the same wide box, so the only
+                // difference between the two is the content mode.
                 HStack {
                     VStack {
                         Image(light: "nav_media.png", dark: "nav_media_dark.png")
@@ -4485,10 +4516,10 @@ enum Listings {
 
                 SectionTitle("One per theme")
 
-                // The same shape drawn black and white. An Image has no tint, so
-                // what changes is the SOURCE - and the half in force is picked as
-                // the view is built, so switching the system theme builds this
-                // view again with the other file.
+                // The same shape twice: one black file, and one file per theme. An
+                // Image has no tint, so what changes is the SOURCE - the half in
+                // force is picked as the image is built, and switching the system
+                // theme builds that image again with the other file.
                 HStack {
                     Image("nav_gestures.png")
                         .width(32)
@@ -4514,6 +4545,61 @@ enum Listings {
         @State private var draft = "Copy me somewhere"
         @State private var status = "nothing asked yet"
         @Aim(RatingBar.self) private var stars
+
+        var body: some View {
+            VStack {
+                DebugInfoLabel()
+
+                TextField($draft)
+
+                Button("Copy to the clipboard")
+                    .onClicked {
+                        try await stateUICall(GalleryContract.setClipboard, draft)
+                        status = "copied"
+                    }
+
+                Button("Paste from the clipboard")
+                    .onClicked {
+                        let text = try await stateUICall(GalleryContract.readClipboard)
+                        draft = text
+                        status = text.isEmpty ? "the clipboard is empty" : "pasted"
+                    }
+
+                Button("Ask about the battery")
+                    .onClicked {
+                        let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
+
+                        // A desktop without a battery answers 0, so only a level
+                        // above zero counts.
+                        status = level <= 0
+                            ? "this device does not say"
+                            : "battery \(Int((level * 100).rounded()))%" + (charging ? ", charging" : "")
+                    }
+
+                Button("Call something nobody registered")
+                    .onClicked {
+                        do {
+                            try await stateUICall(GalleryContract.nobody)
+                            status = "that should have thrown"
+                        } catch {
+                            status = "thrown: \(error)"
+                        }
+                    }
+
+                RatingBar()
+                    .rating(4)
+                    .horizontalAlignment(.center)
+                    .aim(stars)
+
+                Button("Flash the bar")
+                    .onClicked {
+                        try await stars.flash()
+                        status = "flashed \(stars)"
+                    }
+
+                Text(status)
+            }
+        }
         """#,
         "InteropActsSample.Android.java": #"""
         // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
@@ -4986,6 +5072,27 @@ enum Listings {
         "InteropControlSample": #"""
         // Sources/Samples/Interop/InteropControlSample.swift
         @State private var signal = TrafficSignal.stop
+
+        var body: some View {
+            VStack {
+                DebugInfoLabel()
+
+                TrafficLight()
+                    .signal(signal)
+                    .onLampTapped { index in
+                        signal = TrafficSignal(rawValue: Int32(index)) ?? signal
+                    }
+                    .horizontalAlignment(.center)
+
+                Text("signal: \(signal)")
+
+                Button("Advance")
+                    .onClicked {
+                        let all = TrafficSignal.allCases
+                        signal = all[(all.firstIndex(of: signal)! + 1) % all.count]
+                    }
+            }
+        }
         """#,
         "InteropControlSample.Android.controls.swift": #"""
         // Platforms/Android/Swift/Host/GalleryControls.swift
@@ -5680,6 +5787,31 @@ enum Listings {
         @State private var battery = "not heard yet"
         @State private var log: [String] = []
         @State private var heard: [HostEventSubscription] = []
+
+        var body: some View {
+            VStack {
+                DebugInfoLabel()
+
+                Text("battery: \(battery)")
+
+                Text(log.isEmpty
+                    ? "Plug or unplug the power."
+                    : log.suffix(4).joined(separator: "\n"))
+            }
+            .onCreated {
+                heard.forEach { $0.cancel() }
+                heard = [
+                    HostEvents.on(GalleryContract.batteryChanged) { level, charging in
+                        battery = "\(Int((level * 100).rounded()))%" + (charging ? ", charging" : "")
+                        log.append("\(log.count + 1). battery: \(battery)")
+                    },
+                ]
+            }
+            .onDestroying {
+                heard.forEach { $0.cancel() }
+                heard = []
+            }
+        }
         """#,
         "InteropEventsSample.Android.java": #"""
         // Platforms/Android/Java/com/stateui/gallery/GalleryActivity.java
@@ -6157,10 +6289,11 @@ enum Listings {
             // The same two layers inside a subtree worth describing: `leaves`
             // little views, plus the counter. Each side times its OWN describe -
             // the clock is read at the top of the closure and again at the
-            // bottom - so the number is what that press cost in Swift.
+            // bottom - so the number is what describing it cost.
             VStack {
-                // LAYER ONE: the get is in the closure, so a press describes every
-                // leaf again and the reading below says how long that took.
+                // In layer one the get is in the block's own closure, so a press
+                // describes every leaf in it again, and its reading says how long
+                // that took.
                 HStack {
                     Button("+1")
                         .onClicked { counter += 1 }
@@ -6215,8 +6348,8 @@ enum Listings {
             }
         }
 
-        /// The same block wired to layer two: the number rides a channel, so this
-        /// closure is built once and its clock stands still.
+        /// The same block wired to layer two: the number rides a channel, so +1
+        /// builds nothing here and its clock stands still.
         private struct Channelled: View {
             @Binding var counter: Int
 
@@ -6239,7 +6372,7 @@ enum Listings {
                     Text(took(began, leaves))
                         .height(15)
 
-                    DebugInfoLabel()   // climbs on every press
+                    DebugInfoLabel()   // stays at one on +1
                         .height(15)
                 }
             }
@@ -6260,7 +6393,7 @@ enum Listings {
             let parts = spent.components
             let nanoseconds = parts.seconds * 1_000_000_000 + parts.attoseconds / 1_000_000_000
 
-            return "\(views) views described in \(microseconds(nanoseconds)) µs, "
+            return "\(views) views described in \(microseconds(nanoseconds)) µs"
         }
 
         /// Nanoseconds as microseconds, to one decimal - the unit a describe lands in.
@@ -6280,12 +6413,12 @@ enum Listings {
         @State private var counter = 0
 
         var body: some View {
-            // LAYER ONE - A GET. The value is read here, so this closure is
-            // its reader and every press builds it again.
+            // Each layer stands in a row of its own below, so each takes its
+            // own reading.
             VStack {
                 // Nothing here reads the count - a handler reads when it fires -
                 // so this closure stands at one build however often you press.
-                DebugInfoLabel()   // climbs, "for counter"
+                DebugInfoLabel()
 
                 Button("+1")
                     .horizontalAlignment(.center)
@@ -6293,12 +6426,12 @@ enum Listings {
 
                 boxed("Layer one · a get") {
                     Text("Counter \(counter)")
-                    DebugInfoLabel()
+                    DebugInfoLabel()   // climbs, "for counter"
                 }
 
                 boxed("Layer two · a channel") {
                     Text($counter.convert { "Counter \($0)" })
-                    DebugInfoLabel()
+                    DebugInfoLabel()   // stays: "1 build, first time"
                 }
             }
         }
@@ -6362,7 +6495,8 @@ enum Listings {
             VStack {
                 Text(caption)
 
-                // Left to right, whatever the view above says.
+                // Laid out the way `direction` says - at `.inherited`, the way the
+                // view above it is.
                 HStack {
                     ColorBox(Palette.accent)
                         .width(60)
@@ -6379,7 +6513,7 @@ enum Listings {
         // Sources/Samples/Windows/LifecycleSample.swift
         /// The window's log, kept by its gallery window. It is written by `MainPage`
         /// as the window is made and by `WindowPhaseLog` as its phase moves - see
-        /// Gallery/WindowLog.swift - and this sample only reads it.
+        /// WindowLog.swift - and this sample only reads it.
         let log: WindowLog
 
         var body: some View {
@@ -6417,9 +6551,9 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // Every button builds this closure again. Build this again changes
-                // nothing the card is built with, so it carries the card and
-                // creates nothing.
+                // The switch and both buttons build this closure again. Build this
+                // again changes nothing the card is built with, so it carries the
+                // card and creates nothing.
                 DebugInfoLabel()
 
                 SwitchRow("Show the card", $shown)
@@ -6487,8 +6621,8 @@ enum Listings {
 
         var body: some View {
             // NOTHING HERE SAYS "ANIMATE". Where a child sits is worked out by the
-            // layout; what carries it from the old place to the new one is the
-            // host's engine, so an insert slides everything under it down.
+            // layout, and the host animates it from the old place to the new
+            // one, so an insert slides everything under it down.
             VStack {
                 // `wide` is read in THESE braces - `.columns` below asks
                 // it - so widening the grid builds this closure. What the rows do
@@ -6531,8 +6665,8 @@ enum Listings {
                 Text("A grid, its columns changing width")
                     .tracking(1)
 
-                // A grid whose column widths change: every child crosses to its
-                // new column, because a placement is a placement whoever worked it
+                // A grid whose column widths change: every child travels to its
+                // new place, because a placement is a placement whoever worked it
                 // out.
                 Grid {
                     cell("one", Palette.brand, at: 0)
@@ -6660,8 +6794,8 @@ enum Listings {
         // Sources/Gallery/MainPage.swift
         // The gallery's own actions, declared once around every page: a page's
         // own stand nearer the title, and these keep their place at the edge.
-        // Icons give both a stable native footprint; their captions remain
-        // available to accessibility and to platforms that show text.
+        // Each wears an icon, which keeps its size on the bar steady; its
+        // caption stays for accessibility and for bars that show words.
         .toolbar(id: "gallery") {
             ToolbarItem.inspector(window)
                 .text("Inspector")
@@ -6677,21 +6811,22 @@ enum Listings {
                     .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
             }
         }
-        // What the window's bar says of the gallery: its name and mark, and
-        // the line the Window bar sample types - where the platform's
-        // chrome names the application.
+        // What the window's bar says of the gallery: its name and mark,
+        // where the platform's chrome names the application, and under the
+        // title the line the Window bar sample types.
         .barTitle("StateUI")
         .barSubtitle(bar.subtitle)
         .barIcon("stateui_mark.png")
         """#,
         "MainPage.created": #"""
         // Sources/Gallery/MainPage.swift
-        // A size and a minimum: the size is the window's as it opens, the
-        // minimum how small the user may drag it before the layout stops
-        // making sense. A phone ignores both, an app there being the whole
-        // screen - and there is no `x` or `y` on purpose: pinning an app to
-        // the same corner of the screen at every launch is worse than letting
-        // the platform place it.
+        // The window's name and its size: `width` and `height` are its size
+        // as it opens, the minimum how small the user may drag it before the
+        // layout stops making sense, the maximum how large. On a phone or a
+        // tablet the system sizes the window and these go unused - and the
+        // gallery writes no `x` or `y` on purpose: pinning an app to the same
+        // corner of the screen at every launch is worse than letting the
+        // platform place it.
         .onCreated {
             window.title = "StateUI Gallery"
             window.width = 1100
@@ -6708,7 +6843,8 @@ enum Listings {
             window.isMaximizable = true
             window.isMinimizable = true
 
-            // On a desktop the menu is a sidebar beside the page.
+            // On a desktop the menu stands beside the page, so choosing a
+            // row leaves it open.
             if device.info.formFactor == .desktop {
                 nav.menuOverlays = false
             }
@@ -6725,8 +6861,7 @@ enum Listings {
         /// section's own page underneath. The tabs demonstration is the exception,
         /// and it is the reason this is a function rather than one expression: a
         /// `TabView` is a page like any other, so a section may simply be one -
-        /// and a stack may sit inside a tab, because pages nest without a rule
-        /// about which may hold which.
+        /// and a stack may sit inside one of its tabs.
         @ViewBuilder
         func detail() -> some View {
             if case .tabs = nav.section {
@@ -6744,11 +6879,12 @@ enum Listings {
         // Sources/Gallery/MainPage.swift
         // What is over all of it: the pages presented over the split view, the
         // stack and the bars alike - empty almost always: presenting is
-        // `sheets.append`, and a sheet the user drags down shortens the array
+        // `sheets.append`, and a sheet the user dismisses shortens the array
         // itself.
         ModalStack(nav.$sheets) {
 
-            // The split view, its bars and its pages - all the window shows.
+            // The split view, its bars and its pages - what the sheets are
+            // presented over.
 
         } destination: { _ in
             ModalPage(nav: nav)
@@ -6777,8 +6913,8 @@ enum Listings {
         """#,
         "MainPage.tabs": #"""
         // Sources/Gallery/MainPage.swift
-        /// The one section that is not a stack: a `TabView` over the author's own
-        /// enum, with a stack inside the first tab.
+        /// The one section that is not a stack: a `TabView` over a list of the
+        /// author's own enum, with a stack inside its `.stack` tab.
         func tabs() -> some View {
             TabView(nav.tabs) { which in
                 switch which {
@@ -6788,10 +6924,9 @@ enum Listings {
                     } destination: { route in
                         page(for: route, path: nav.$tabsPath)
                     }
-                    // A tab's caption and picture are the TAB PAGE's, and the tab
-                    // page here is the stack rather than what is inside it -
-                    // measured, and it is where the first live run showed no icons
-                    // at all.
+                    // A tab's caption and picture are what its page says, and this
+                    // tab's page is the stack rather than the page inside it - so
+                    // they are written on the stack.
                     .title("Stack")
                     .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
@@ -6979,15 +7114,16 @@ enum Listings {
             /// row the user is on.
             let nav: Navigation
 
-            /// What the window has said about its life - written by `WindowPhaseLog`
-            /// at the foot of this page as the window's phase moves.
+            /// What the window has said about its life - written by the
+            /// `WindowPhaseLog` this page holds, as the window's phase moves.
             let log: WindowLog
 
             /// Whether the row that is hidden by default is listed - the Split view sample
             /// writes it, and here it is an `if` around the row.
             let listsHiddenRow: Bool
 
-            /// The device's facts, for the line at the bottom.
+            /// The device's facts: whether the header shows the mark, which samples
+            /// Surprise me draws from, and the line at the bottom.
             @Environment(\.device) private var device
 
             /// The window the menu stands in - whether the desktop shows through it.
@@ -7013,19 +7149,21 @@ enum Listings {
                 // top edge while only the rows participate in scrolling.
                 .rows(.auto, .fill, .auto)
                 // EDGE TO EDGE, so the gradient runs behind the status bar the way the
-                // navigation bar beside it does. Every LAYOUT insets itself, so the
-                // header says it too.
+                // navigation bar beside it does. A layout stays clear of the bars
+                // unless it says otherwise, so the header says it too.
                 .avoidsSafeArea(.none)
                 .title("StateUI")
-                // The image hosts use for the pane's navigation affordance.
+                // The picture on the button that opens the menu, where the host draws
+                // that button from this page.
                 .icon("nav_menu_dark.png")
                 // A window the desktop shows through shows it through the menu as well.
                 .pageBackground(surface)
             }
 
             /// What the menu is drawn on: the sidebar's own tone - and, where the
-            /// window shows the desktop, a thin layer of it over the sidebar's glass,
-            /// which shows the desktop in the tint the window's bars lay over it.
+            /// window shows the desktop, the sidebar's glass, bare in the light theme
+            /// and under a thin layer of that tone in the dark; the glass shows the
+            /// desktop in the tint the window's bars lay over it.
             private var surface: Color {
                 window.isTranslucent == true ? Palette.sidebarOverGlass : Palette.sidebar
             }
@@ -7048,18 +7186,16 @@ enum Listings {
                     Text("Native interfaces, written in Swift")
                         .opacity(0.85)
                 }
-                // Edge to edge, and padded down by hand. An iOS layout insets its
-                // children below the status bar at ARRANGE time while its MEASURED
-                // height knows nothing of it - so a header left to the platform kept its
-                // content-sized frame and had its bottom clipped by exactly the inset
-                // (measured on an iPhone 15 Pro simulator: 59 points, the tagline gone
-                // and the name cut mid-letter). The gradient was always meant to run
-                // behind the status bar anyway.
+                // Edge to edge, so the gradient runs behind the status bar. A layout
+                // that stays clear of the bars is inset by them, and a header meant to
+                // reach the top edge says `.none`: its frame then fits its content, and
+                // its top padding keeps the words below the status bar.
                 .avoidsSafeArea(.none)
+                .padding(left: 20, top: 40, right: 20, bottom: 22)
             }
 
             /// Home, one row per group, the row that is not always listed, and the one
-            /// row that performs an act rather than going anywhere.
+            /// row that goes nowhere fixed: it opens a sample chosen at random.
             private var rows: some View {
                 VStack {
                     MenuRow("Home") { nav.open(.home) }
@@ -7075,17 +7211,18 @@ enum Listings {
                     }
 
                     // A row the menu lists only when it is told to. The page behind it
-                    // is reachable either way - `nav.open(.hidden)` is a value, and a
-                    // value nobody drew a row for is still a value. The list being a
-                    // view, the answer is an `if`.
+                    // is reachable either way - `.hidden` is a value, and a value nobody
+                    // drew a row for is still a value. The list being a view, the answer
+                    // is an `if`.
                     if listsHiddenRow {
                         MenuRow("Not in the list") { nav.open(.hidden) }
                             .icon(ImageSource(light: "nav_hidden.png", dark: "nav_hidden_dark.png"))
                             .chosen(nav.showing(.hidden))
                     }
 
-                    // A row that DOES something rather than going somewhere. It needs
-                    // no type of its own: the same view, with a different handler.
+                    // A row with no fixed place to go: it pushes a sample chosen at
+                    // random. It needs no type of its own: the same view, with a
+                    // different handler.
                     MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
                         .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
                 }
@@ -7095,10 +7232,12 @@ enum Listings {
             /// answered before the first render, and the StateUI release it is built on.
             private var footer: some View {
                 Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
-                    // Room under it for the home indicator, the content being edge to
-                    // edge: a phone or a tablet with no home button draws a bar across
-                    // the bottom of the screen, and these lines would otherwise sit
-                    // under it. A desktop has none: the margins are even there.
+                    // Its bottom padding leaves room for the home indicator, the content
+                    // being edge to edge: a phone or a tablet with no home button draws
+                    // a bar across the bottom of the screen, and these lines would
+                    // otherwise sit under it. A desktop has none: the margins are even
+                    // there.
+                    .padding(left: 16, top: 12, right: 16, bottom: device.info.formFactor == .desktop ? 12 : 30)
                     // The footer's own row, written on the footer.
                     .gridRow(2)
             }
@@ -7205,7 +7344,7 @@ enum Listings {
 
         /// One panel, either travelling at the chosen law or arriving at once.
         private func panel(travels: Bool) -> some View {
-            // The same panel, told to stay still. `.motion` is per view.
+            // `.motion` is per view: the chosen law, or `.none` to arrive at once.
             ColorBox()
                 .color(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
@@ -7214,7 +7353,8 @@ enum Listings {
                 .motion(travels ? Self.law(law) : .none)
         }
 
-        /// The same panel with a RULE: everything travels except how big it is.
+        /// The same panel with a RULE: everything travels except its size, which
+        /// `.size` takes to be its width, its height and its corner radius.
         private func sized() -> some View {
             ColorBox()
                 .color(warm ? Palette.accent : Palette.brand)
@@ -7301,6 +7441,7 @@ enum Listings {
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
             let line = Text("The quick brown fox jumps over the lazy dog.")
+                .textColor(style.accent.color)
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }
@@ -7394,16 +7535,17 @@ enum Listings {
         // Sources/Gallery/Navigation.swift
         /// A page the gallery presents OVER everything - see `ModalSample`.
         ///
-        /// The modal stack is the WINDOW's, so this is the one place in the gallery
-        /// where a value names something that covers the bars as well as the content.
+        /// The modal stack is the WINDOW's page, so a sheet this value names covers
+        /// the bars as well as the content.
         enum Sheet: Hashable {
             /// A page shown through the host's adaptive native modal presentation.
             case page
         }
 
-        /// What is presented over all of it, innermost first. Usually empty, and
-        /// almost always one deep when it is not - it is a stack because the
-        /// platforms make it one: a sheet may present a sheet.
+        /// What is presented over all of it, the first presented first and the
+        /// top one last. Usually empty, and almost always one deep when it is not -
+        /// it is a stack because the platforms make it one: a sheet may present a
+        /// sheet.
         @State var sheets: [Sheet] = []
 
         /// Presents a page over everything - the bars included, which is the whole
@@ -7413,8 +7555,8 @@ enum Listings {
         }
 
         /// Closes the top one. A sheet the USER dismisses needs none of this: the
-        /// host reports what survived and the array is truncated for us, the same
-        /// way a back gesture shortens a path.
+        /// host reports how many survived and `ModalStack` shortens the array, the
+        /// same way a back gesture shortens a path.
         func dismiss() {
             if !sheets.isEmpty {
                 sheets.removeLast()
@@ -7536,9 +7678,9 @@ enum Listings {
         }
 
         /// THE SAME GET, OFF A SAMPLE: the scroller writes a state of its own, as the
-        /// column before does, and this column shows a READING of it taken ten times a
-        /// second - so the number is as right whenever it is read, and the count is a
-        /// tenth.
+        /// column before does, and this column shows a READING of it taken at most ten
+        /// times a second - so the number is as right whenever it is read, and the
+        /// count climbs no faster than that.
         private struct PacedOffset: View {
             /// Handed to the scroller, as the column before.
             @Binding var offset: Point
@@ -7614,8 +7756,8 @@ enum Listings {
 
         @State private var paced = Point.zero
 
-        /// What the middle column shows: a reading of `paced`, taken ten times a
-        /// second. An ordinary state, rebuilt from by an ordinary get.
+        /// What the middle column shows: a reading of `paced`, taken at most ten
+        /// times a second. An ordinary state, rebuilt from by an ordinary get.
         @State private var pacedShown = Point.zero
 
         @State private var driven = Point.zero
@@ -7686,7 +7828,7 @@ enum Listings {
                     .minimum(-10)
                     .maximum(40)
 
-                // Watches ROUNDED degrees, so dragging fires once per whole degree
+                // Watches WHOLE degrees, so dragging fires once per whole degree
                 // rather than once per pixel. It does not fire when the page
                 // appears - a view arriving is not a value changing.
                 VStack {
@@ -7726,8 +7868,6 @@ enum Listings {
                 .stroke(Palette.accent)
                 .lineWidth(3)
 
-                // The box fills the ZStack; its corners are cut only while the
-                // ZStack clips what it holds.
                 ZStack {
                     Text("An ellipse")
                         .horizontalAlignment(.center)
@@ -7735,6 +7875,8 @@ enum Listings {
                 }
                 .stroke(Palette.accent)
 
+                // The box fills the ZStack; its corners are cut only while the
+                // ZStack clips what it holds.
                 ZStack {
                     ColorBox(Palette.accent)
                 }
@@ -7756,12 +7898,11 @@ enum Listings {
         @State private var shown = 1.0
 
         var body: some View {
-            // A CONVERTER - the host works the words out on its own frames.
-            // NO RENDER AT ALL, however long the walk.
+            // One walked value, shown three ways.
             VStack {
-                // A CONVERTER. The host works the words out on its own frames and
-                // wears them, so nothing here is described again - this count
-                // stands still for the whole walk.
+                // A CONVERTER. The words are worked out on the display's frames
+                // and the host wears them, so nothing here is described again -
+                // this count stands still for the whole walk.
                 VStack {
                     DebugInfoLabel()
 
@@ -7778,7 +7919,7 @@ enum Listings {
                 }
 
                 // A READING, ten times a second, into an ordinary state. Same
-                // number, a tenth of the builds.
+                // number, at most ten builds a second.
                 VStack {
                     DebugInfoLabel()
 
@@ -8097,7 +8238,7 @@ enum Listings {
                 }
 
                 // Per cent rather than a formatted double: String(format:) is
-                // Foundation, which the library never imports.
+                // Foundation, which this sample does not import.
                 //
                 // The count is here on purpose: a pinch that reports once is a pinch
                 // that has been interrupted, and the number says so at a glance.
@@ -8205,13 +8346,11 @@ enum Listings {
             // moves left, and a finger going left reports a negative distance.
             let turned = ($scrolled.journey.value.x - dragged) / Self.reach
 
+            guard turned.isFinite else { return 0 }
+
             // AND A DRAG HAS NO ENDS: a scroller cannot be pulled past its length,
             // but a hand can - so the arithmetic is what holds the ring to its
             // cards.
-            guard turned.isFinite else { return 0 }
-
-            // A hand has no ends the way a scroller does, so the arithmetic
-            // holds the ring to its cards.
             return min(max(turned, 0), Double(Self.cards.count - 1))
         }
 
@@ -8390,8 +8529,8 @@ enum Listings {
                     .verticalAlignment(.end)
                 }
                 // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-                // the card is painted at its own size all over the layout, so the
-                // grid holding it - a layout, with edges to cut at - clips it.
+                // the card covers it and spills past its edges, so the grid
+                // holding it - a layout, with edges to cut at - clips it.
                 .clipsContent(true)
             }
             .style("Card")
@@ -8522,8 +8661,8 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // What the poll last answered is read here, so every answer
-                // builds this closure once.
+                // What the poll last answered is read here, so this closure is
+                // built as each check begins and again as it answers.
                 DebugInfoLabel()
 
                 Text(status)
@@ -8548,9 +8687,9 @@ enum Listings {
                     }
             }
             .onCreated {
-                // Set here rather than in the initializer: the closure reads this
-                // view's @State, which does not exist yet while the property that
-                // holds the ticker is being initialized.
+                // Set here rather than in the initializer: the closure reaches this
+                // view's @State and the ticker itself, neither of which exists yet
+                // while the property that holds the ticker is being initialized.
                 poll.onTick = {
                     checking = true
                     status = "Checking"
@@ -8583,8 +8722,8 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The step is read here, so moving between pages builds this
-                // closure - one build a page, whatever the movement costs.
+                // `step` and `cap` are read here, so each press of Back, Next or
+                // the stepper builds this closure once.
                 DebugInfoLabel()
 
                 Text(Self.steps[step])
@@ -8647,9 +8786,10 @@ enum Listings {
                     .maximum(12)
                     .horizontalAlignment(.center)
 
-                // One item twice. `hidesForSinglePage` is true by default, so the
-                // left-hand one draws NOTHING at all - a lone dot says nothing
-                // about where the user is - and the right-hand one asks for it.
+                // One item twice. `hidesForSinglePage` is true by default: the
+                // left-hand one says so and draws NOTHING at all - a lone dot says
+                // nothing about where the user is - and the right-hand one turns
+                // it off and draws its dot.
                 HStack {
                     VStack {
                         Text("hidesForSinglePage(true)")
@@ -8807,7 +8947,8 @@ enum Listings {
         "ReaderSample": #"""
         // Sources/Samples/Fundamentals/ReaderSample.swift
         /// The one value this page is about. Nothing in this view's own braces
-        /// reads it: every get is inside a row, so a write builds that row alone.
+        /// reads it: every get is inside a row, so a write builds the closures that
+        /// read it and nothing around them.
         @State private var value = 0.3   // the one value
 
         /// A state no view reads, lent to a child as `$pulses`: written by a
@@ -8815,8 +8956,8 @@ enum Listings {
         @State private var pulses = 0   // read by no view, followed by an engine
 
         var body: some View {
-            // 2. A GET in a container's braces: THIS stack is the reader.
-            //    Every write builds its content again - and nothing outside.
+            // This stack reads nothing: each numbered row below is a closure of
+            // its own, with its own reading.
             VStack {
                 // THE WRITERS. A slider handed $value reads nothing at build; a
                 // handler reads when it fires, not at build. Neither is a reader.
@@ -8970,8 +9111,8 @@ enum Listings {
         @State private var left = 0
         @State private var right = 0
 
-        // Reads nothing and is built with nothing, so every rebuild of the
-        // panel carries it - it keeps saying `1 build, first time`.
+        // Reads nothing - the buttons write in handlers, the panels are handed
+        // bindings - so this body is built once.
         var body: some View {
             VStack {
                 HStack {
@@ -8983,9 +9124,9 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
 
-                // TWO OF THEM, side by side, because the reading is only worth
-                // anything against another: one panel answers and the other stands
-                // still, and the counts say which.
+                // TWO OF THEM, because the reading is only worth anything against
+                // another: one panel answers and the other stands still, and the
+                // counts say which.
                 RebuildPanel(name: "left", value: $left)
 
                 RebuildPanel(name: "right", value: $right)
@@ -9181,9 +9322,8 @@ enum Listings {
             }
         }
 
-        /// One block: the caption, and the value it was built with. Whether it is
-        /// built again is decided by that value alone, which is what its own reading
-        /// says.
+        /// One block: the caption, and the value it was built with. It reads nothing,
+        /// so what it is built with alone decides whether it is built again.
         private struct Block: View {
             let caption: String
             let value: String
@@ -9343,11 +9483,11 @@ enum Listings {
         var body: some View {
             VStack {
                 // The list below is filtered from `query`, so every keystroke builds
-                // this closure; the bar itself is handed the state.
+                // this closure; the fields themselves are handed the state.
                 DebugInfoLabel()
 
-                // The same query again, in the accent - where the platform lets
-                // an application tint a search field.
+                // Every keystroke lands on `query`; `.onSubmitted` hears the
+                // keyboard's search key.
                 SearchField($query)
                     .placeholder("Search the list")
                     .onSubmitted { searched = query }
@@ -9485,7 +9625,7 @@ enum Listings {
 
                     VStack {
                         // The same button, saying what it is and what using it does.
-                        // Written as a value rather than in the chain, so throwing the
+                        // One value, not two branches of an `if`, so throwing the
                         // switch CLEARS the property off the same control instead of
                         // building a different one.
                         describedButton
@@ -9600,17 +9740,12 @@ enum Listings {
         ]
 
         var body: some View {
-            // The same dashes twice, half a pattern apart: the offset, like
-            // the pattern itself, is counted in stroke widths.
             VStack {
                 // The fill rule is read here, so switching it builds this closure.
                 DebugInfoLabel()
 
                 SectionTitle("Filled")
 
-                // The same sharp corner twice. A miter join carries the two outer
-                // edges on until they cross, and the limit is how long that join
-                // may be, in stroke widths; past it the point is cut flat.
                 HStack {
                     Rectangle()
                         .fill(Palette.accent)
@@ -9689,6 +9824,8 @@ enum Listings {
 
                 SectionTitle("Where the dashes start")
 
+                // The same dashes twice, half a pattern apart: the offset, like
+                // the pattern itself, is counted in stroke widths.
                 VStack {
                     Line()
                         .x1(0).y1(4)
@@ -9714,6 +9851,9 @@ enum Listings {
 
                 SectionTitle("How far a sharp corner reaches")
 
+                // The same sharp corner twice. A miter join carries the two outer
+                // edges on until they cross, and the limit is how long that join
+                // may be, in stroke widths; past it the point is cut flat.
                 HStack {
                     Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                         .stroke(Palette.accent)
@@ -9751,7 +9891,6 @@ enum Listings {
         "SizingSample": #"""
         // Sources/Samples/Layout/SizingSample.swift
         var body: some View {
-            // A child drawn past the layout's edge, cut off at it.
             VStack {
                 row("width(120)",
                     // A request, not an instruction: the layout has the last word.
@@ -9766,8 +9905,6 @@ enum Listings {
                 // The pair is the point: both ask for 80 high, and only the one
                 // without a ceiling on it is allowed to have it.
                 row("height(80), then the same with maximumHeight(32)",
-                    // The same ceiling on the other axis, against the same request
-                    // without it: 80 asked for on the left, 32 allowed on the right.
                     HStack {
                         ColorBox(Palette.outline)
                             .width(60)
@@ -9781,6 +9918,7 @@ enum Listings {
                             .verticalAlignment(.start)
                     })
 
+                // A child drawn past the layout's edge, cut off at it.
                 row("clipsContent(true)",
                     VStack {
                         ColorBox(Palette.accent)
@@ -9875,7 +10013,6 @@ enum Listings {
         "StackLayoutSample": #"""
         // Sources/Samples/Layout/StackLayoutSample.swift
         var body: some View {
-            // Where a child sits in the room its stack gives it.
             VStack {
                 SectionTitle("Vertical")
 
@@ -9895,6 +10032,7 @@ enum Listings {
 
                 SectionTitle("Alignment")
 
+                // Where a child sits in the room its stack gives it.
                 VStack {
                     StackCell(text: "start")
                         .horizontalAlignment(.start)
@@ -10093,7 +10231,7 @@ enum Listings {
 
                 // Neither of these says anything about its own appearance. The
                 // orange, the corners, the padding and the 44pt minimum all come
-                // from Style<Button> in Styles/AppStyles.swift.
+                // from Style<Button> in AppStyles.swift.
                 HStack {
                     Button("Save")
                     Button("Cancel")
@@ -10130,10 +10268,10 @@ enum Listings {
                 // `.basedOn("Quote")` plus one colour - so everything that matches
                 // below is inherited, and the one thing that differs is the one
                 // thing it declares.
-                Text("The same nine words, and one of these declares a colour.")
+                Text("The same eleven words, and one of these declares a colour.")
                     .style("Quote")
 
-                Text("The same nine words, and one of these declares a colour.")
+                Text("The same eleven words, and one of these declares a colour.")
                     .style("QuoteLoud")
             }
         }
@@ -10268,10 +10406,10 @@ enum Listings {
 
         @State private var running = false
 
-        /// Which visit to this page the running loop belongs to. Leaving stops the
-        /// loop through `.onDestroying`; the token is what retires a loop still
-        /// asleep when the next one starts, so a return cannot end up with two
-        /// loops counting the same numbers down.
+        /// Which start the running loop belongs to. Leaving stops the loop
+        /// through `.onDestroying`; the token is what retires a loop still asleep
+        /// when the next one starts - Stop and Start within a second - so two
+        /// loops never count the same numbers down.
         @State private var visit = 0
 
         var body: some View {
@@ -10297,10 +10435,10 @@ enum Listings {
                             let mine = visit
                             running = true
 
-                            // Plain Swift concurrency, on any platform: the host
-                            // parks a thread waiting for work and a resume
-                            // wakes it, so a sleep coming due reaches the handler
-                            // without a Timer or a RunLoop anywhere.
+                            // Plain Swift concurrency, on every platform: when the
+                            // sleep comes due, the handler resumes on `MainActor` -
+                            // the thread the host draws on - with no `Timer`
+                            // anywhere.
                             while running && visit == mine && remaining > 0 {
                                 try await Task.sleep(for: .seconds(1))
 
@@ -10421,8 +10559,8 @@ enum Listings {
                 // SELECTING IS SOMETHING THAT HAPPENS, so it is a button rather
                 // than a switch - and it says which of the two it will do next,
                 // because a press has to WRITE a value the field has not been
-                // given: an absent field means unchanged, so a press that asks
-                // for the selection the field already has says nothing at all.
+                // given: a value the patch leaves out means unchanged, so a press
+                // that asks for the selection the field already has says nothing.
                 Button(selectAll ? "Clear the selection" : "Select the lot")
                     .horizontalAlignment(.center)
                     .onClicked { selectAll.toggle() }
@@ -10458,63 +10596,84 @@ enum Listings {
         var body: some View {
             VStack {
                 Text("Plain")
+                    .fontSize(16)
 
                 Text("Bold")
+                    .fontSize(16)
+                    .fontAttributes(.bold)
 
                 Text("Italic, and coloured")
+                    .fontSize(16)
+                    .fontAttributes(.italic)
+                    .textColor(Palette.accent)
 
                 Text("Underlined and struck through")
+                    .fontSize(16)
                     .textDecorations([.underline, .strikethrough])
 
                 Text("Centred, with room around it")
+                    .fontSize(16)
+                    .horizontalTextAlignment(.center)
+                    .padding(8)
 
                 Text("A long line that has nowhere left to go, so it is cut short with an ellipsis")
+                    .fontSize(16)
                     .lineBreak(.tailTruncation)
                     .maximumLines(1)
 
                 Text("Letters spaced out")
+                    .fontSize(16)
                     .tracking(3)
 
                 // The height of a line as a MULTIPLE of the font's own: the same
                 // two lines packed tight, then opened out.
                 HStack {
                     Text("Two lines,\nlineHeight 0.8")
+                        .fontSize(16)
                         .lineHeight(0.8)
 
                     Text("Two lines,\nlineHeight 2")
+                        .fontSize(16)
                         .lineHeight(2)
                 }
+                .spacing(16)
 
                 // One string in mixed case, drawn twice. The case is the DRAWING;
                 // the text stays as it was written.
                 Text("One string, drawn in Two Ways")
+                    .fontSize(16)
                     .textCase(.uppercase)
 
                 Text("One string, drawn in Two Ways")
+                    .fontSize(16)
                     .textCase(.lowercase)
 
                 // Text follows the system's text-size setting unless a label says
                 // it does not.
                 Text("Grows with the system text size")
+                    .fontSize(16)
 
                 Text("Stays at 16 whatever the system says")
+                    .fontSize(16)
                     .isFontAutoScalingEnabled(false)
             }
+            .spacing(10)
         }
         """#,
         "TextSpanSample": #"""
         // Sources/Samples/Text/TextSpanSample.swift
         @State private var highlighted = 1
 
-        /// The line the last example colours one word of.
+        /// The line one word of which is coloured - the word the button moves.
         private let words = ["A", "Text", "has", "one", "TextColor"]
 
         var body: some View {
             VStack {
-                // The chosen run is read here, so tapping one builds this closure.
+                // `highlighted` is read here, so moving the highlight builds this
+                // closure.
                 DebugInfoLabel()
 
-                // Two colours in one line, which is what runs are FOR: a label
+                // Three colours in one line, which is what runs are FOR: a label
                 // has one `textColor`, so this is the only way.
                 Text()
                     .spans {
@@ -10522,18 +10681,29 @@ enum Listings {
                         TextSpan("counter").textColor(Palette.accent)
                         TextSpan(" = 0")
                     }
+                    .fontSize(17)
+                    .fontFamily("Menlo")
 
                 Text()
                     .spans {
                         TextSpan("Sold ")
+                            .fontSize(17)
+                            .textColor(Palette.text)
 
                         TextSpan("out")
+                            .fontSize(17)
+                            .fontAttributes(.bold)
+                            .textColor(Palette.onAccent)
+                            .background(Palette.accent)
                     }
 
                 Text()
                     .spans {
                         words.enumerated().map { index, word in
                             TextSpan(word + " ")
+                                .fontSize(17)
+                                .textColor(index == highlighted ? Palette.accent : Palette.text)
+                                .fontAttributes(index == highlighted ? .bold : .none)
                         }
                     }
 
@@ -10545,9 +10715,12 @@ enum Listings {
                 Text("this text never appears")
                     .spans {
                         TextSpan("the runs win")
+                            .fontSize(17)
+                            .textColor(Palette.text)
                     }
 
             }
+            .spacing(12)
         }
         """#,
         "TickerSample": #"""
@@ -10816,9 +10989,6 @@ enum Listings {
         @State private var childrenToo = false
 
         var body: some View {
-            // On top. Its own empty area lets taps through to the box below
-            // while the label inside still answers - or, with the switch on,
-            // the whole of it ignores input, the label included.
             VStack {
                 // Both counts are read here, so a tap on either builds this closure.
                 DebugInfoLabel()
@@ -10829,6 +10999,9 @@ enum Listings {
                         .height(120)
                         .onTapped { below += 1 }
 
+                    // On top. Its own empty area lets taps through to the box below
+                    // while the label inside still answers - or, with the switch on,
+                    // the whole of it ignores input, the label included.
                     VStack {
                         // The child wears its own colour and its own padding, so
                         // what is the child and what is the empty area around it
@@ -10893,7 +11066,7 @@ enum Listings {
         public struct TrafficLight: ElementView {
             public var node = Node(contract: TrafficLightContract.self)
 
-            /// A light showing nothing until `signal(_:)` says what.
+            /// A light; `signal(_:)` says which lamp is lit.
             public init() {}
 
             /// Which lamp is lit.
@@ -11032,9 +11205,9 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // A state describes the button alone. What renders this closure is
-                // `entered`, written by the handler and read here - so the count
-                // follows what was heard, not the look.
+                // A state describes the button alone. This closure reads `entered`,
+                // which the handler writes, `presses` and `enabled` - so the count
+                // follows what was heard and pressed, not the look.
                 DebugInfoLabel()
 
                 SectionTitle("On the control, not in a style")
@@ -11051,11 +11224,13 @@ enum Listings {
                         .scale($press)
                         .visualState(.pressed) { $0.background(Palette.brand) }
                         .visualState(.disabled) { $0
+                            .background(Palette.outline)
+                            .textColor(Palette.disabled)
                         }
-                        // The colour is a setter and the engine carries it at the
-                        // button's own motion; this takes 90ms, because a handler may
-                        // await. The scale is DRIVEN by `press`, so the handler sends
-                        // the state and the button follows it.
+                        // The colour is a setter, which travels under the button's
+                        // own motion. The scale is DRIVEN by `press`: the handler
+                        // moves the state over 90ms - a handler may await - and the
+                        // button follows it.
                         .onVisualStateChanged { state in
                             entered = state.name
                             try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
@@ -11073,20 +11248,28 @@ enum Listings {
                         .motion(.none)
                         .visualState(.pressed) { $0.background(Palette.brand) }
                         .visualState(.disabled) { $0
+                            .background(Palette.outline)
+                            .textColor(Palette.disabled)
                         }
                         .onClicked { presses += 1 }
                 }
+                .spacing(12)
                 .horizontalAlignment(.center)
 
                 HStack {
                     Text("Enabled")
+                        .fontSize(14)
                         .verticalAlignment(.center)
 
                     Switch($enabled)
                 }
+                .spacing(12)
                 .horizontalAlignment(.center)
 
                 Text("entered \(entered) · pressed \(presses) times")
+                    .fontSize(13)
+                    .textColor(Palette.subtle)
+                    .horizontalTextAlignment(.center)
 
                 SectionTitle("States only a RadioButton has")
 
@@ -11099,6 +11282,7 @@ enum Listings {
                     .isOn($busy)
                     .visualState(.checked) { $0.background(Palette.selected) }
             }
+            .spacing(12)
         }
         """#,
         "WebBrowserPart": #"""
@@ -11113,8 +11297,8 @@ enum Listings {
         var body: some View {
             Grid {
                 VStack {
-                    // The history flags are read by this bar, so every
-                    // page that loads builds this closure.
+                    // The grid around this reads the status every page that
+                    // loads writes, so this closure is built with it.
                     DebugInfoLabel()
 
                     HStack {
@@ -11209,7 +11393,7 @@ enum Listings {
             /// The last six moments, each numbered.
             @State var events: [String] = []
 
-            /// How many moments have come since the gallery opened - the number in
+            /// How many moments have come since the window opened - the number in
             /// front of each row, so a repeat plainly reads as a new one.
             @State private(set) var count = 0
 
@@ -11222,7 +11406,8 @@ enum Listings {
         }
 
         /// The window's phase, one line of the log per moment - a view of its own that
-        /// draws nothing, so a phase change builds this and nothing else.
+        /// draws nothing, so a phase change builds this rather than the menu holding
+        /// it.
         ///
         /// The log's first line is `created`, which `MainPage` writes as the window
         /// is made: `.onChanged` hears a CHANGE, and the phase starts there. The
@@ -11309,7 +11494,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 PhaseRow(name: "application", value: "\(application.phase)")   // active, inactive or background
-                PhaseRow(name: "this gallery", value: "\(scene.phase)")   // active, inactive or background
+                PhaseRow(name: "the galleries", value: "\(scene.phase)")   // active, inactive or background
                 PhaseRow(name: "this window", value: "\(window.phase)")   // from created to destroying
 
                 Text(verdict)
@@ -11327,10 +11512,10 @@ enum Listings {
             }
 
             if scene.phase != .active {
-                return "Another gallery is in front of this one."
+                return "Another scene is in front of the galleries."
             }
 
-            return "This gallery is the one in front."
+            return "A gallery window is the one in front."
         }
 
         /// One phase: whose it is, and where it stands.

@@ -16,12 +16,11 @@ struct PacedStateSample: SampleContent, ExampleContent {
     @State private var shown = 1.0
 
     var body: some View {
-        // A CONVERTER - the host works the words out on its own frames.
-        // NO RENDER AT ALL, however long the walk.
+        // One walked value, shown three ways.
         VStack {
-            // A CONVERTER. The host works the words out on its own frames and
-            // wears them, so nothing here is described again - this count
-            // stands still for the whole walk.
+            // A CONVERTER. The words are worked out on the display's frames
+            // and the host wears them, so nothing here is described again -
+            // this count stands still for the whole walk.
             VStack {
                 DebugInfoLabel()
 
@@ -46,7 +45,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .background(Palette.surface)
 
             // A READING, ten times a second, into an ordinary state. Same
-            // number, a tenth of the builds.
+            // number, at most ten builds a second.
             VStack {
                 DebugInfoLabel()
 

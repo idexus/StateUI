@@ -25,9 +25,9 @@ struct LifetimeSample: SampleContent, ExampleContent {
     // listing: LifetimeSample
     var body: some View {
         VStack {
-            // Every button builds this closure again. Build this again changes
-            // nothing the card is built with, so it carries the card and
-            // creates nothing.
+            // The switch and both buttons build this closure again. Build this
+            // again changes nothing the card is built with, so it carries the
+            // card and creates nothing.
             DebugInfoLabel()
 
             SwitchRow("Show the card", $shown)
@@ -84,9 +84,8 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
             Text("Tap the card before it goes: what it says as it is destroyed is its "
                 + "own count, because its state still answers - the place to save what it "
-                + "holds. Both are on every view and control and on the pages the library "
-                + "builds - a page of your own writes them on its content - and both run "
-                + "after the render that made the change.")
+                + "holds. Both are on every view and control, and both run after the "
+                + "render that made the change.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

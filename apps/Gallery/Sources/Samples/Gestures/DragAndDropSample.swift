@@ -21,8 +21,8 @@ struct DragAndDropSample: SampleContent, ExampleContent {
     // listing: DragAndDropSample
     var body: some View {
         VStack {
-            // The two runs and what the last drag did are read here, so a drop
-            // builds this closure.
+            // The basket, its light and what the last drag did are read here,
+            // so a drop builds this closure.
             DebugInfoLabel()
 
             SectionTitle("Drag from here")
@@ -108,25 +108,21 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Reading what was dropped is asynchronous - it may be coming from "
-                + "another application - so the host reads it, and `onDrop` runs with the "
-                + "text when there is something to say.")
+            Text("No host realizes dragging between views, so on every platform the "
+                + "words stay where they are; the code shows what the contract promises.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`onDragOver` runs again and again while a drag is held over the "
-                + "target, not once, so it SETS the highlight rather than counting; "
-                + "`onDragLeave` runs when the drag goes away without being let go. A "
-                + "drop is not a leave, so `onDrop` takes the highlight down as well.")
+            Text("`onDrop` is what makes a view accept a drop. `onDragOver` puts the "
+                + "basket's light up while a drag is over it, and `onDragLeave` takes it "
+                + "down when the drag goes away without being let go. A drop is not a "
+                + "leave, so `onDrop` takes the light down as well.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Both of those belong to a view that ACCEPTS a drop, and `onDrop` is "
-                + "what makes a view one - written without it, neither ever runs. "
-                + "`onDragEnded` is the other end: it belongs to the view that was "
-                + "dragged, so it needs `draggable(text:)` beside it, and it runs when "
-                + "that drag ends wherever it ended - over the basket, or over nothing "
-                + "at all.")
+            Text("`onDragEnded` is the other end: it belongs to the view that was "
+                + "dragged, beside its `draggable(text:)`, and runs when that drag ends "
+                + "wherever it ended - over the basket, or over nothing at all.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

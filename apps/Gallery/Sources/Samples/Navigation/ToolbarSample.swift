@@ -139,8 +139,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Recent files live in the desktop File menu, after Save: "
-                + "Add puts one there, choosing one removes it, and an empty submenu disables "
-                + "itself.")
+                + "Add puts one there, choosing one removes it, and the submenu is disabled "
+                + "while it is empty.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

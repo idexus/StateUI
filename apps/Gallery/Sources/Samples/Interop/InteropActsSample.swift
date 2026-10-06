@@ -34,6 +34,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
     static let hostCode = HostCode(in: InteropHost.name, marked: "InteropActsSample.Android.swift", "InteropActsSample.Android.load.swift", "InteropActsSample.Android.java")
     #endif
 
+    // listing: InteropActsSample
     var body: some View {
         VStack {
             DebugInfoLabel()
@@ -93,6 +94,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
         }
         .spacing(8)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

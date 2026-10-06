@@ -53,7 +53,7 @@ private struct PickList: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Tap rows to choose several; Row 500 scrolls there.")
+        Text("Choose several rows; Row 500 scrolls there.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

@@ -20,15 +20,16 @@ struct MenuPage: View {
     /// row the user is on.
     let nav: Navigation
 
-    /// What the window has said about its life - written by `WindowPhaseLog`
-    /// at the foot of this page as the window's phase moves.
+    /// What the window has said about its life - written by the
+    /// `WindowPhaseLog` this page holds, as the window's phase moves.
     let log: WindowLog
 
     /// Whether the row that is hidden by default is listed - the Split view sample
     /// writes it, and here it is an `if` around the row.
     let listsHiddenRow: Bool
 
-    /// The device's facts, for the line at the bottom.
+    /// The device's facts: whether the header shows the mark, which samples
+    /// Surprise me draws from, and the line at the bottom.
     @Environment(\.device) private var device
 
     /// The window the menu stands in - whether the desktop shows through it.
@@ -54,19 +55,21 @@ struct MenuPage: View {
         // top edge while only the rows participate in scrolling.
         .rows(.auto, .fill, .auto)
         // EDGE TO EDGE, so the gradient runs behind the status bar the way the
-        // navigation bar beside it does. Every LAYOUT insets itself, so the
-        // header says it too.
+        // navigation bar beside it does. A layout stays clear of the bars
+        // unless it says otherwise, so the header says it too.
         .avoidsSafeArea(.none)
         .title("StateUI")
-        // The image hosts use for the pane's navigation affordance.
+        // The picture on the button that opens the menu, where the host draws
+        // that button from this page.
         .icon("nav_menu_dark.png")
         // A window the desktop shows through shows it through the menu as well.
         .pageBackground(surface)
     }
 
     /// What the menu is drawn on: the sidebar's own tone - and, where the
-    /// window shows the desktop, a thin layer of it over the sidebar's glass,
-    /// which shows the desktop in the tint the window's bars lay over it.
+    /// window shows the desktop, the sidebar's glass, bare in the light theme
+    /// and under a thin layer of that tone in the dark; the glass shows the
+    /// desktop in the tint the window's bars lay over it.
     private var surface: Color {
         window.isTranslucent == true ? Palette.sidebarOverGlass : Palette.sidebar
     }
@@ -95,20 +98,17 @@ struct MenuPage: View {
                 .opacity(0.85)
         }
         .spacing(6)
-        // Edge to edge, and padded down by hand. An iOS layout insets its
-        // children below the status bar at ARRANGE time while its MEASURED
-        // height knows nothing of it - so a header left to the platform kept its
-        // content-sized frame and had its bottom clipped by exactly the inset
-        // (measured on an iPhone 15 Pro simulator: 59 points, the tagline gone
-        // and the name cut mid-letter). The gradient was always meant to run
-        // behind the status bar anyway.
+        // Edge to edge, so the gradient runs behind the status bar. A layout
+        // that stays clear of the bars is inset by them, and a header meant to
+        // reach the top edge says `.none`: its frame then fits its content, and
+        // its top padding keeps the words below the status bar.
         .avoidsSafeArea(.none)
-        .padding(left: 20, top: 40, right: 20, bottom: 22)
+        .padding(left: 20, top: 40, right: 20, bottom: 22)   // listing: keep
         .background(Palette.identity)
     }
 
     /// Home, one row per group, the row that is not always listed, and the one
-    /// row that performs an act rather than going anywhere.
+    /// row that goes nowhere fixed: it opens a sample chosen at random.
     private var rows: some View {
         VStack {
             MenuRow("Home") { nav.open(.home) }
@@ -124,17 +124,18 @@ struct MenuPage: View {
             }
 
             // A row the menu lists only when it is told to. The page behind it
-            // is reachable either way - `nav.open(.hidden)` is a value, and a
-            // value nobody drew a row for is still a value. The list being a
-            // view, the answer is an `if`.
+            // is reachable either way - `.hidden` is a value, and a value nobody
+            // drew a row for is still a value. The list being a view, the answer
+            // is an `if`.
             if listsHiddenRow {
                 MenuRow("Not in the list") { nav.open(.hidden) }
                     .icon(ImageSource(light: "nav_hidden.png", dark: "nav_hidden_dark.png"))
                     .chosen(nav.showing(.hidden))
             }
 
-            // A row that DOES something rather than going somewhere. It needs
-            // no type of its own: the same view, with a different handler.
+            // A row with no fixed place to go: it pushes a sample chosen at
+            // random. It needs no type of its own: the same view, with a
+            // different handler.
             MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
                 .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
         }
@@ -147,11 +148,12 @@ struct MenuPage: View {
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)
-            // Room under it for the home indicator, the content being edge to
-            // edge: a phone or a tablet with no home button draws a bar across
-            // the bottom of the screen, and these lines would otherwise sit
-            // under it. A desktop has none: the margins are even there.
-            .padding(left: 16, top: 12, right: 16, bottom: device.info.formFactor == .desktop ? 12 : 30)
+            // Its bottom padding leaves room for the home indicator, the content
+            // being edge to edge: a phone or a tablet with no home button draws
+            // a bar across the bottom of the screen, and these lines would
+            // otherwise sit under it. A desktop has none: the margins are even
+            // there.
+            .padding(left: 16, top: 12, right: 16, bottom: device.info.formFactor == .desktop ? 12 : 30)   // listing: keep
             // The footer's own row, written on the footer.
             .gridRow(2)
     }

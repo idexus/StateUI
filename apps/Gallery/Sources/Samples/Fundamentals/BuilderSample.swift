@@ -43,7 +43,7 @@ struct BuilderSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Note")
                 .placeholder("Type here, then flip the switch")
 
-            // Two branches are two elements, even though both are Entries:
+            // Two branches are two elements, even though both are TextFields:
             // switching REPLACES the control rather than editing it, which is
             // what the author wrote.
             if editing {
@@ -86,9 +86,9 @@ struct BuilderSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("An `if` above a view does not move it: type in the field, flip the "
-                + "switch, and the TextField keeps its control - and with it the text, the "
-                + "caret and the focus.")
+            Text("An `if` above a view does not replace it: type in the field, flip the "
+                + "switch, and the TextField keeps its control - and with it the text and "
+                + "the caret.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

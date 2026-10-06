@@ -62,8 +62,8 @@ struct CheckBoxSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("A `CheckBox` is the box and nothing else: it has no caption, so the words "
-                + "beside it are a `Text`. Tapping the words does nothing; that is the "
-                + "platform's behaviour.")
+                + "beside it are a `Text`. Tapping the words does nothing: they are a "
+                + "view of their own, not part of the box.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

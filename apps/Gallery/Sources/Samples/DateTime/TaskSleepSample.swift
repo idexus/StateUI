@@ -12,10 +12,10 @@ struct TaskSleepSample: SampleContent, ExampleContent {
 
     @State private var running = false
 
-    /// Which visit to this page the running loop belongs to. Leaving stops the
-    /// loop through `.onDestroying`; the token is what retires a loop still
-    /// asleep when the next one starts, so a return cannot end up with two
-    /// loops counting the same numbers down.
+    /// Which start the running loop belongs to. Leaving stops the loop
+    /// through `.onDestroying`; the token is what retires a loop still asleep
+    /// when the next one starts - Stop and Start within a second - so two
+    /// loops never count the same numbers down.
     @State private var visit = 0
     // listing: end
 
@@ -54,10 +54,10 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                         let mine = visit
                         running = true
 
-                        // Plain Swift concurrency, on any platform: the host
-                        // parks a thread waiting for work and a resume
-                        // wakes it, so a sleep coming due reaches the handler
-                        // without a Timer or a RunLoop anywhere.
+                        // Plain Swift concurrency, on every platform: when the
+                        // sleep comes due, the handler resumes on `MainActor` -
+                        // the thread the host draws on - with no `Timer`
+                        // anywhere.
                         while running && visit == mine && remaining > 0 {
                             try await Task.sleep(for: .seconds(1))
 
@@ -110,9 +110,9 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Leaving the page stops it: .onDestroying clears the flag, and the visit "
-                + "token retires a loop still asleep when the next one starts. Without one, "
-                + "coming back would start a second loop counting the same number down "
-                + "twice as fast.")
+                + "token retires a loop still asleep when the next one starts. Without it, "
+                + "Stop and Start within a second would leave the sleeping loop to wake "
+                + "and count beside the new one, twice as fast.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

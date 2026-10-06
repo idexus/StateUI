@@ -61,23 +61,23 @@ struct NavigationSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The stack is this array, so where the gallery is can be read, written, "
-                + "tested and serialized in Swift - and the platform's own back gesture "
-                + "writes it too, so the array is still the answer after a swipe.")
+            Text("The stack is this array, so where the gallery is can be read, written "
+                + "and tested in Swift - and the platform's own back gesture writes it "
+                + "too, so the array is still the answer after a swipe.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Push the same route again from a pushed page and it builds another "
-                + "page: identity on a stack is the depth together with the route, so two "
-                + "`.level(2)` pages are two pages with `@State` of their own.")
+            Text("Identity on a stack is the depth together with the route, so a route "
+                + "may stand on it twice: `[.level(1), .level(2), .level(2)]` is two "
+                + "`.level(2)` pages, each with `@State` of its own.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`home()` is three assignments - the section, the empty path and the "
-                + "closed menu - with nothing to await. `path = []` takes everything off, "
-                + "this page and the group page under it included, so you land on the "
-                + "home page. Assigning the state you want is the navigation, and the "
-                + "host brings the native stack to it in one move.")
+            Text("`home()` is plain assignments - the section, the empty path and, where "
+                + "the menu lies over the page, the closed menu - with nothing to await. "
+                + "`path = []` takes everything off, this page and the group page under it "
+                + "included, so you land on the home page. Assigning the state you want is "
+                + "the navigation, and the host brings the native stack to it in one move.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

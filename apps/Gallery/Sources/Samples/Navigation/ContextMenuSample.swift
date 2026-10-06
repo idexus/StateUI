@@ -14,8 +14,8 @@ struct ContextMenuSample: SampleContent, ExampleContent {
     // listing: ContextMenuSample
     var body: some View {
         VStack {
-            // The run and what was chosen are read here, so every menu item
-            // that acts builds this closure.
+            // What was chosen is read here, so every menu item that acts
+            // builds this closure.
             DebugInfoLabel()
 
             VStack {

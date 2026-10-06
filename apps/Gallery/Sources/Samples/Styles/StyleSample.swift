@@ -19,7 +19,7 @@ struct StyleSample: SampleContent, ExampleContent {
 
             // Neither of these says anything about its own appearance. The
             // orange, the corners, the padding and the 44pt minimum all come
-            // from Style<Button> in Styles/AppStyles.swift.
+            // from Style<Button> in AppStyles.swift.
             HStack {
                 Button("Save")
                 Button("Cancel")
@@ -61,10 +61,10 @@ struct StyleSample: SampleContent, ExampleContent {
             // `.basedOn("Quote")` plus one colour - so everything that matches
             // below is inherited, and the one thing that differs is the one
             // thing it declares.
-            Text("The same nine words, and one of these declares a colour.")
+            Text("The same eleven words, and one of these declares a colour.")
                 .style("Quote")
 
-            Text("The same nine words, and one of these declares a colour.")
+            Text("The same eleven words, and one of these declares a colour.")
                 .style("QuoteLoud")
         }
         .spacing(14)
@@ -73,7 +73,7 @@ struct StyleSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Nothing in the example sets a colour, a size or a corner: every "
+            Text("No button in the example sets a colour, a size or a corner: every "
                 + "button takes all of it from the gallery's one `Style<Button>`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -92,7 +92,7 @@ struct StyleSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Every colour the styles use is one `Color(light:dark:)`, a value "
+            Text("Every colour these styles use is one `Color(light:dark:)`, a value "
                 + "for each theme. None of this crosses the boundary: the styles are "
                 + "resolved in Swift, into the controls, so what the host receives is "
                 + "a button with its colours already on it.")

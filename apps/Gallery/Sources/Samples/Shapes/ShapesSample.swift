@@ -8,7 +8,7 @@ struct ShapesSample: SampleContent, ExampleContent {
 
     static let id = "shapes"
     static let title = "Shapes"
-    static let summary = "Six native outlines sharing one deterministic shape vocabulary."
+    static let summary = "Six outlines sharing one shape vocabulary, drawn with each platform's own paths."
 
     // listing: ShapesSample
     /// A pentagram: five points, each joined to the one two along, so the
@@ -19,17 +19,12 @@ struct ShapesSample: SampleContent, ExampleContent {
     ]
 
     var body: some View {
-        // The same dashes twice, half a pattern apart: the offset, like
-        // the pattern itself, is counted in stroke widths.
         VStack {
             // The fill rule is read here, so switching it builds this closure.
             DebugInfoLabel()
 
             SectionTitle("Filled")
 
-            // The same sharp corner twice. A miter join carries the two outer
-            // edges on until they cross, and the limit is how long that join
-            // may be, in stroke widths; past it the point is cut flat.
             HStack {
                 Rectangle()
                     .fill(Palette.accent)
@@ -113,6 +108,8 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             SectionTitle("Where the dashes start")
 
+            // The same dashes twice, half a pattern apart: the offset, like
+            // the pattern itself, is counted in stroke widths.
             VStack {
                 Line()
                     .x1(0).y1(4)
@@ -139,6 +136,9 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             SectionTitle("How far a sharp corner reaches")
 
+            // The same sharp corner twice. A miter join carries the two outer
+            // edges on until they cross, and the limit is how long that join
+            // may be, in stroke widths; past it the point is cut flat.
             HStack {
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                     .stroke(Palette.accent)
@@ -182,8 +182,8 @@ struct ShapesSample: SampleContent, ExampleContent {
         VStack {
             Text("Fill, stroke and everything about the stroke form one `Shape` protocol, "
                 + "shared by all six outlines and every native host. A shape with no "
-                + "stroke width draws no outline and one with no fill has no inside - a "
-                + "`Line` has only the first, as there is nothing to fill. A `Rectangle` "
+                + "stroke draws no outline and one with no fill has no inside - a "
+                + "`Line` has only an outline, as there is nothing to fill. A `Rectangle` "
                 + "rounds its corners with `cornerRadius`: one number for all four, or "
                 + "each corner by name.")
                 .fontSize(12)

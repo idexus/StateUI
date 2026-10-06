@@ -116,7 +116,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 + "the wash across the stage, the caption breathing, and the bars "
                 + "hopping one after another inside both. Every one of them is a DRIVEN "
                 + "state: the host reads the value off the state on its own frames, so "
-                + "a beat of 1200ms costs no renders at all however many things are "
+                + "a whole beat costs no renders at all however many things are "
                 + "moving inside it. `async let` starts a movement without waiting for "
                 + "it, which is why the wash, the breath and the hop of the moment are "
                 + "three in the air together.")
@@ -130,8 +130,8 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A state holds both readings at once: `breath` is 0.25 on the "
-                + "line after the movement starts, while `$breath.journey.value` is whatever is "
+            Text("A state holds both readings at once: `breath` is 0.25 from the "
+                + "moment the movement is sent, while `$breath.journey.value` is whatever is "
                 + "on the screen. That is what lets one movement follow another with "
                 + "nothing to put back afterwards.")
                 .fontSize(12)

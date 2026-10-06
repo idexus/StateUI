@@ -6,31 +6,36 @@ import Foundation
 /// The code a page shows, read from the code that runs: each region a source marks
 /// `// listing: <name>` to `// listing: end` - `// listing: <name>, <name>` for code several listings show - a
 /// name's regions in one file joined in order, the decoration left out; `// listing: <name> keep` keeps a region's
-/// decoration, where the look is what it shows.
+/// look, where the look is what it shows.
 enum ListingRegions {
-    /// The modifiers a listing leaves out - how a view looks rather than what it is or does. A line ending
-    /// `// listing: keep` stays, where the look is the point.
-    static let decoration: Set<String> = [
+    /// The modifiers a listing leaves out as decoration - how a view looks rather than what it is or does. A
+    /// region marked `keep` keeps them, and a line ending `// listing: keep` stays, where the look is the point.
+    static let look: Set<String> = [
         "fontSize", "fontAttributes", "fontFamily", "textColor", "tint", "background", "barBackgroundColor",
         "barForegroundColor", "padding", "margin", "spacing", "rowSpacing", "columnSpacing", "shape", "cornerRadius",
-        "horizontalTextAlignment", "verticalTextAlignment", "accessibilityIdentifier", "accessibilityLabel",
-        "accessibilityHint",
+        "horizontalTextAlignment", "verticalTextAlignment",
     ]
+
+    /// What a view says about itself, left out of every listing but where a line ending `// listing: keep` is
+    /// about it.
+    static let semantics: Set<String> = ["accessibilityIdentifier", "accessibilityLabel", "accessibilityHint"]
 
     /// The extensions of the sources a region may stand in.
     static let extensions: Set = ["swift", "java", "kt", "js", "mjs", "c", "h", "cpp", "hpp", "metal", "glsl", "hlsl"]
 
-    /// Every listing the Gallery's sources and hosts mark, by name - or what is wrong with their marks. A name
+    /// Every listing the Gallery's sources and hosts mark, by name, with the files each is cut from - or what is
+    /// wrong with their marks. A name
     /// marked in several files joins them in the order of their paths, each part headed by the path of the file
     /// it stands in.
-    static func all() throws -> (listings: [String: String], problems: [String]) {
+    static func all() throws -> (listings: [String: String], files: [String: [String]], problems: [String]) {
         var listings: [String: String] = [:]
+        var files: [String: [String]] = [:]
         var problems: [String] = []
-        let files = try (GallerySources.files(under: "Sources", extensions: extensions)
+        let sources = try (GallerySources.files(under: "Sources", extensions: extensions)
             + GallerySources.files(under: "Platforms", extensions: extensions))
             .filter { !$0.path.hasSuffix("/Listings.swift") }
 
-        for file in files {
+        for file in sources {
             // A view's code leaves its decoration out; a host's stands as written, whatever its language.
             let read = regions(in: file.text, swift: file.path.hasPrefix("Sources/") && file.path.hasSuffix(".swift"))
             problems += read.problems.map { "\(file.path): \($0)" }
@@ -38,10 +43,23 @@ enum ListingRegions {
             for (name, text) in read.regions {
                 let part = "// \(file.path)\n\(text)"
                 listings[name] = listings[name].map { $0 + "\n\n" + part } ?? part
+                files[name, default: []].append(file.path)
             }
         }
 
-        return (listings, problems)
+        return (listings, files, problems)
+    }
+
+    /// The listings a sample's file shows: each example it declares, by its name, and every name its code joins
+    /// or its host's half marks.
+    static func names(shownBy text: String) -> (examples: [String], named: [String]) {
+        let declared = try! Regex(#"(?m)^(?:private |fileprivate )?struct (\w+)\s*:[^{]*\bExampleContent\b"#)
+        let examples = text.matches(of: declared).compactMap { $0.output[1].substring.map(String.init) }
+        let named = text.matches(of: try! Regex(#"Listings\.joined\(([^)]*)\)|marked: ([^)]*)\)"#)).flatMap { match in
+            String(text[match.range]).matches(of: try! Regex(#""([^"]+)""#))
+                .compactMap { $0.output[1].substring.map(String.init) }
+        }
+        return (examples, named)
     }
 
     /// The regions `text` marks, by name, each name's joined in order with a blank line between; Swift's leave
@@ -88,7 +106,7 @@ enum ListingRegions {
             }
             guard open != nil else { continue }
 
-            if swift, !keepsLook, skipped != nil || isDecoration(marker) {
+            if swift, skipped != nil || isDecoration(marker, keepingLook: keepsLook) {
                 // The modifier's call is left out; what follows its closing bracket stays, on the line before.
                 let after = remainder(of: marker, depth: &skipped)
                 if !after.isEmpty, let last = lines.indices.last { lines[last] += after }
@@ -103,10 +121,12 @@ enum ListingRegions {
         return (regions.map { ($0.name, $0.text) }, problems)
     }
 
-    /// Whether `line` is a decoration modifier the listing leaves out.
-    private static func isDecoration(_ line: String) -> Bool {
+    /// Whether `line` is a decoration modifier the listing leaves out - its semantics always, its look unless
+    /// the region keeps it.
+    private static func isDecoration(_ line: String, keepingLook: Bool) -> Bool {
         guard line.hasPrefix("."), !line.hasSuffix("// listing: keep") else { return false }
-        return decoration.contains(String(line.dropFirst().prefix { $0.isLetter }))
+        let modifier = String(line.dropFirst().prefix { $0.isLetter })
+        return semantics.contains(modifier) || !keepingLook && look.contains(modifier)
     }
 
     /// What follows a decoration modifier's call on `line`, once the call closes there; `depth` is how far

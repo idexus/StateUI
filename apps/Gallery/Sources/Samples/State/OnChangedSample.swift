@@ -30,7 +30,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
                 .minimum(-10)
                 .maximum(40)
 
-            // Watches ROUNDED degrees, so dragging fires once per whole degree
+            // Watches WHOLE degrees, so dragging fires once per whole degree
             // rather than once per pixel. It does not fire when the page
             // appears - a view arriving is not a value changing.
             VStack {
@@ -63,7 +63,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("It watches rounded degrees here, so dragging fires once per whole "
+            Text("It watches whole degrees here, so dragging fires once per whole "
                 + "degree rather than once per pixel. It does not fire when the page "
                 + "appears: a view arriving is not a value changing.")
                 .fontSize(12)

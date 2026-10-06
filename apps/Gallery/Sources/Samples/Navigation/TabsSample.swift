@@ -36,14 +36,13 @@ struct TabsSample: SampleContent, ExampleContent {
             Text("A `TabView` is a page, so a section of this gallery is one: the "
                 + "button opens a section arranged as tabs rather than as a stack. The "
                 + "tabs are an array of your own type and the selection is a binding of "
-                + "it, so moving the tabs from code is an assignment.")
+                + "it, so moving between them from code is an assignment.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The binding is two-way: tapping a tab writes it, and on Android so does "
-                + "swiping between them. Each tab keeps its own place because each stack "
-                + "is its own array - push a page on the first tab, change tabs and come "
-                + "back, and the page is still on top.")
+            Text("The binding is two-way: tapping a tab writes it. Each tab keeps its own "
+                + "place because each stack is its own array - push a page on the first "
+                + "tab, change tabs and come back, and the page is still on top.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -56,9 +55,9 @@ struct TabsSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Closing the tab you are on is the one move with nothing left to keep "
-                + "showing: the first tab shows instead, and the binding follows it. The "
-                + "menu draws no row for this section, so every tab page carries a button "
-                + "back to the samples.")
+                + "showing: the tab that takes its place shows instead, or the last one "
+                + "where none does. The menu draws no row for this section, so every tab "
+                + "page carries a button back to the samples.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -12,7 +12,7 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
 
     static let id = "applicationSession"
     static let title = "Application session"
-    static let summary = "The application's own session, read and written like any state - here the motion every value takes."
+    static let summary = "The application's session, read and written like any state - here the motion values take by default."
 
     // listing: ApplicationSessionSample
     static let laws = ["Standard", "Spring", "None"]
@@ -31,13 +31,13 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
             // press builds this closure.
             DebugInfoLabel()
 
-            Text("Pick None, then open another sample: nothing in the application travels.")
+            Text("Pick None, then open another sample: only what has a motion of its own still travels.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
             // One write for the whole application: every value without a
-            // motion of its own travels so from now on.
+            // motion of its own takes it.
             Picker(Self.laws)
                 .onSelectedIndexChanged { application.motion = Self.law($0) }
                 .selectedIndex(Self.laws.indices.first { Self.law($0) == application.motion } ?? 0)

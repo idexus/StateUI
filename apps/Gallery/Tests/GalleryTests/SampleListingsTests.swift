@@ -29,32 +29,43 @@ final class SampleListingsTests: XCTestCase {
             """)
     }
 
-    /// Every example the sources declare shows code: the listing of its own name, or the listings its `code` joins.
+    /// Every example the sources declare shows code - the listing of its own name, or the listings its `code`
+    /// joins - and every listing a sample names is marked.
     func testEveryExampleShowsItsCode() throws {
         let listings = try ListingRegions.all().listings
-        let example = try! Regex(#"(?m)^(?:private |fileprivate )?struct (\w+)\s*:[^{]*\bExampleContent\b"#)
         var silent: [String] = []
+        var unmarked: [String] = []
 
         for file in try GallerySources.files(under: "Sources", extensions: ["swift"]) {
-            for match in file.text.matches(of: example) {
-                guard let name = match.output[1].substring.map(String.init) else { continue }
-                if listings[name] == nil, !file.text.contains("static var code: String { Listings.joined(") {
-                    silent.append(name)
+            let shown = ListingRegions.names(shownBy: file.text)
+            let joins = file.text.contains("static var code: String { Listings.joined(")
+            silent += shown.examples.filter { listings[$0] == nil && !joins }
+            unmarked += shown.named.filter { listings[$0] == nil }
+        }
+
+        XCTAssertEqual(silent, [], "examples whose code no region marks")
+        XCTAssertEqual(unmarked, [], "listings named in the sources that no region marks")
+    }
+
+    /// Every view's body a file of examples declares stands in a listing: a region around its states alone shows
+    /// a page none of what it does.
+    func testEveryExamplesBodyIsShown() throws {
+        var unshown: [String] = []
+
+        for file in try GallerySources.files(under: "Sources", extensions: ["swift"])
+        where !ListingRegions.names(shownBy: file.text).examples.isEmpty {
+            var inRegion = false
+            for (number, line) in file.text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
+                let marker = line.trimmingCharacters(in: .whitespaces)
+                if marker.hasPrefix("// listing: "), !marker.hasSuffix("// listing: keep") {
+                    inRegion = marker != "// listing: end"
+                } else if !inRegion, marker.hasPrefix("var body: some View") {
+                    unshown.append("\(file.path):\(number + 1)")
                 }
             }
         }
 
-        XCTAssertEqual(silent, [], "examples whose code no region marks")
-
-        let named = try! Regex(#"Listings\.joined\(([^)]*)\)|Listings\.all\["([^"]+)"\]|marked: ([^)]*)\)"#)
-        var unmarked: [String] = []
-        for file in try GallerySources.files(under: "Sources", extensions: ["swift"]) {
-            for match in file.text.matches(of: named) {
-                let quoted = String(file.text[match.range]).matches(of: try! Regex(#""([^"]+)""#))
-                unmarked += quoted.compactMap { $0.output[1].substring.map(String.init) }.filter { listings[$0] == nil }
-            }
-        }
-        XCTAssertEqual(unmarked, [], "listings named in the sources that no region marks")
+        XCTAssertEqual(unshown, [], "bodies of views no listing shows")
     }
 
     /// The listings as the Swift file every host compiles, in the order of their names.

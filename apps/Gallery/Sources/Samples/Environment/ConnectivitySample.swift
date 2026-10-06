@@ -53,16 +53,16 @@ struct ConnectivitySample: SampleContent, ExampleContent {
         VStack {
             Text("The button above is enabled by a READ - "
                 + "`device.connectivity.networkAccess == .internet` - so it follows the "
-                + "network with no handler anywhere. On a phone, flip airplane "
-                + "mode and watch this page change twice; on Android that is "
-                + "`adb shell svc wifi disable`.")
+                + "network with no handler anywhere. On a phone, turn airplane "
+                + "mode on and off and watch this page follow; on Android, "
+                + "`adb shell svc wifi disable` takes the Wi-Fi away.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("A desktop wired to Ethernet may never CHANGE, but the "
-                + "values here are still the host's answer, pushed before "
-                + "the first render. A host that cannot observe reachability "
-                + "reports `.unknown` and no profiles.")
+                + "values here are still the host's answer. A host that "
+                + "cannot observe reachability reports `.unknown` and no "
+                + "profiles.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

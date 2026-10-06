@@ -22,7 +22,7 @@ struct AnimationSample: SampleContent, ExampleContent {
     static let summary = "Fade, move, scale and spin a view by sending the driven state behind it."
 
     // listing: AnimationSample
-    static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
+    static let curves = ["Linear", "Cubic in-out", "Bounce out", "Back out"]
 
     var body: some View {
         VStack {

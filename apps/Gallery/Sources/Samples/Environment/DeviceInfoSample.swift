@@ -4,8 +4,8 @@ import StateUI
 /// still: what machine this is, and what app this is.
 struct DeviceInfoSample: SampleContent, ExampleContent {
     // listing: DeviceInfoSample
-    /// The machine's facts - the formFactor is the one the gallery itself builds
-    /// by, listing desktop chrome only where it draws.
+    /// The machine's facts - the formFactor among them, which this gallery
+    /// itself builds by.
     @Environment(\.device) var device
 
     /// The app's facts, from its own manifest.
@@ -20,7 +20,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
     // listing: DeviceInfoSample
     var body: some View {
         VStack {
-            // The device never changes, so this stands at one build.
+            // These facts stand still, so this closure stands at one build.
             DebugInfoLabel()
 
             Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")

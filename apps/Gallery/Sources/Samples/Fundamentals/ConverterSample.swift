@@ -71,10 +71,6 @@ struct ConverterSample: SampleContent, ExampleContent {
                 // both. A step of one on each would leave the state on 20.56
                 // and the two captions would round it their own way.
                 HStack {
-                    // 5 °C IS 9 °F EXACTLY, and the ends line up too
-                    // (-20 °C = -4 °F, 60 °C = 140 °F), so every value either
-                    // stepper can reach is whole in both scales and the two
-                    // captions can never disagree.
                     Stepper($celsius)
                         .accessibilityIdentifier("converters.celsius")
                         .accessibilityLabel("Celsius")
@@ -153,7 +149,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 + "out from the first by an engine the differ writes for you: drag either "
                 + "slider and the other follows, because `convertBack` is the engine the "
                 + "other way, landing a report on the source in the source's own terms. "
-                + "The caption under them is words written from the same conversion.")
+                + "The caption under them is words converted from the same state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

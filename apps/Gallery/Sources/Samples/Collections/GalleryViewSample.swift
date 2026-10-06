@@ -73,16 +73,14 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             // rather than painted over the page.
             .clipsContent(true)
 
-            // A LIVE READING, so it stays with the example rather than going to
-            // the notes: the position binding is written as the run moves - and
-            // the dots read the SAME state, which is the whole of how the two
-            // controls are joined.
+            // A LIVE READING: the position binding is written as the run
+            // moves - and the dots read the SAME state, which is the whole of
+            // how the two controls are joined.
             VStack {
-                // INSIDE these braces, because that is where `shown` and
-                // `opened` are read - the dots and the caption are written
-                // from them - so a swipe that changes which card is in front
-                // builds this closure, once per card and not once per frame of
-                // the movement.
+                // INSIDE these braces, because that is where `shown`, `opened`
+                // and `moves` are read - the dots and the caption are written
+                // from them - so a swipe builds this closure as each card comes
+                // to the middle, not on every frame of the movement.
                 DebugInfoLabel()
 
                 PositionIndicator()
@@ -119,8 +117,6 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .isEnabled(shown < Self.cards.count - 1)
                     .onClicked { shown += 1 }
 
-                    .margin(horizontal: 4, vertical: 0)
-
                 SwitchRow("Swipeable", $swipes)
                     .margin(horizontal: 4, vertical: 0)
 
@@ -136,10 +132,11 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     }
 
     /// The run, either way the switch is set - and the two are worth watching
-    /// side by side rather than reading about. SHADED, a card going away is
-    /// darkened by a view drawn over it, so what is under it stays hidden;
-    /// FADED, the same card goes transparent and the card behind it shows
-    /// through, which on a wheel is the next card rather than the board.
+    /// side by side. SHADED, a card going away is darkened by a view drawn
+    /// over it and keeps a quarter of its fade, so what is under it stays
+    /// mostly hidden; FADED, the same card goes transparent and the card
+    /// behind it shows through, which on a wheel is the next card rather than
+    /// the board.
     ///
     /// The shade wears the card's own corners, and that is why it is the
     /// application's to give: nothing in the library knows what shape a card
@@ -157,7 +154,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // whatever is behind it, which on a wheel is the next card - so
         // depth is a shade drawn OVER the card. It wears the card's own
         // corners, which is why the view is the application's to give.
-        // `.fade(_:)` says how much fade is left beside it.
+        // A quarter of the fade is left beside it, unless `.fade(_:)` says
+        // otherwise.
         return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
     }
 
@@ -199,7 +197,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             Text("Swipe, drag with the mouse or turn a wheel: the run settles on the "
                 + "card it is nearest. WHICH of those the run answers is the platform's: "
                 + "a finger drags the run itself, so on a phone and a tablet that is the "
-                + "whole of it, while on a desktop - where a pointer scrolls nothing - "
+                + "whole of it, while on a desktop - where a mouse drag scrolls nothing - "
                 + "the cards take a drag of their own. `.position($shown)` is which "
                 + "one, written as the user moves and glided to when it is assigned - "
                 + "which is what Back and Next do. The dots under the cards are a "
@@ -219,14 +217,15 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded. Turn it off and watch a far card go transparent - "
                 + "what shows through is the card behind it. The shade is a view because "
-                + "it has to wear the card's own corners, and `.fade(_:)` beside it "
-                + "says how much fade is left, from 0 to 1.")
+                + "it has to wear the card's own corners, and `.fade(_:)` says how much "
+                + "fade is left beside it, from 0 to 1 - a quarter unless said.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("Nothing is described while the cards move: the one render is the "
-                + "card CHANGING. `.itemSize(width:height:)` says how big a card is, and "
-                + "the run scales down to fit a small window.")
+                + "card CHANGING. `.itemSize(width:height:)` gives a card's proportions, "
+                + "and the run is fitted to its room - smaller in a small window, larger "
+                + "in a big one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

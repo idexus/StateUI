@@ -51,7 +51,7 @@ public enum TrafficLightContract: ElementContract {
 public struct TrafficLight: ElementView {
     public var node = Node(contract: TrafficLightContract.self)
 
-    /// A light showing nothing until `signal(_:)` says what.
+    /// A light; `signal(_:)` says which lamp is lit.
     public init() {}
 
     /// Which lamp is lit.

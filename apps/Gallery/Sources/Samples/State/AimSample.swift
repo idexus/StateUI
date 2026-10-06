@@ -14,9 +14,9 @@ struct AimSample: SampleContent, ExampleContent {
     /// act aims at exactly the view it was put on.
     @Aim(TextField.self) private var note
 
-    /// What the last act did. Written by the HANDLER rather than read in the
-    /// body: the differ fills an aim as it WALKS, which is after the body that
-    /// reads it was built.
+    /// What the last act did, written by the handler that reads the aim: the
+    /// differ fills an aim as it WALKS, which is after the body that would read
+    /// it was built.
     @State private var says = "Press a button, and it says which view it reached."
     // listing: end
 
@@ -96,7 +96,7 @@ struct AimSample: SampleContent, ExampleContent {
                 + "@State, which the modifier that shows it also animates through its $ "
                 + "binding. A control is @Aim: `.aim(field)` puts the view's address into "
                 + "the aim, and on the aim you call the control's methods - `focus()`, "
-                + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(_:)`.")
+                + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(latitude:longitude:radiusMeters:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -115,9 +115,9 @@ struct AimSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Read an aim from a handler, not from a body: it is filled while the view "
-                + "is drawn, so a body sees what the last render left, and `nowhere` on the "
-                + "very first.")
+            Text("Read an aim from a handler, not from a body: it is filled as the view is "
+                + "walked, after its body is built, so a body sees what the last render "
+                + "left, and `nowhere` on the very first.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

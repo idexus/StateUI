@@ -31,8 +31,8 @@ struct ImageSample: SampleContent, ExampleContent {
 
             SectionTitle("Fit or fill")
 
-            // The same square picture in the same wide box, so the only thing
-            // between the two is the aspect.
+            // The same square picture in the same wide box, so the only
+            // difference between the two is the content mode.
             HStack {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
@@ -67,10 +67,10 @@ struct ImageSample: SampleContent, ExampleContent {
 
             SectionTitle("One per theme")
 
-            // The same shape drawn black and white. An Image has no tint, so
-            // what changes is the SOURCE - and the half in force is picked as
-            // the view is built, so switching the system theme builds this
-            // view again with the other file.
+            // The same shape twice: one black file, and one file per theme. An
+            // Image has no tint, so what changes is the SOURCE - the half in
+            // force is picked as the image is built, and switching the system
+            // theme builds that image again with the other file.
             HStack {
                 Image("nav_gestures.png")
                     .width(32)

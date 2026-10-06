@@ -33,7 +33,7 @@ enum AppStyles {
             Style<Text>()
                 .textColor(Palette.text)
                 .background(.transparent)
-                .fontSize(15)                
+                .fontSize(15)
 
             // listing: AppStyles.sample keep
             // A page's own name for itself. Tight tracking, because a large
@@ -49,7 +49,7 @@ enum AppStyles {
             // A PAIR, and the second is written from the first: everything
             // about the shape of a quotation is stated once here, and
             // "QuoteLoud" adds the one property that makes it loud. The Styles
-            // sample draws both, side by side.
+            // sample draws both, one under the other.
             Style<Text>("Quote")
                 .textColor(Palette.subtle)
                 .fontSize(17)
@@ -81,7 +81,7 @@ enum AppStyles {
                 .fontSize(14)
                 .fontAttributes(.bold)
                 .lineWidth(0)
-                .shape(.roundedRectangle(10))                
+                .shape(.roundedRectangle(10))
                 .padding(horizontal: 16, vertical: 11)
                 .minimumHeight(44)
                 .minimumWidth(44)

@@ -8,7 +8,6 @@ struct SizingSample: SampleContent, ExampleContent {
 
     // listing: SizingSample
     var body: some View {
-        // A child drawn past the layout's edge, cut off at it.
         VStack {
             row("width(120)",
                 // A request, not an instruction: the layout has the last word.
@@ -23,8 +22,6 @@ struct SizingSample: SampleContent, ExampleContent {
             // The pair is the point: both ask for 80 high, and only the one
             // without a ceiling on it is allowed to have it.
             row("height(80), then the same with maximumHeight(32)",
-                // The same ceiling on the other axis, against the same request
-                // without it: 80 asked for on the left, 32 allowed on the right.
                 HStack {
                     ColorBox(Palette.outline)
                         .width(60)
@@ -39,6 +36,7 @@ struct SizingSample: SampleContent, ExampleContent {
                 }
                 .spacing(10))
 
+            // A child drawn past the layout's edge, cut off at it.
             row("clipsContent(true)",
                 VStack {
                     ColorBox(Palette.accent)

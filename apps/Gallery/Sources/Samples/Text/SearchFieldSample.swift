@@ -15,11 +15,11 @@ struct SearchFieldSample: SampleContent, ExampleContent {
     var body: some View {
         VStack {
             // The list below is filtered from `query`, so every keystroke builds
-            // this closure; the bar itself is handed the state.
+            // this closure; the fields themselves are handed the state.
             DebugInfoLabel()
 
-            // The same query again, in the accent - where the platform lets
-            // an application tint a search field.
+            // Every keystroke lands on `query`; `.onSubmitted` hears the
+            // keyboard's search key.
             SearchField($query)
                 .accessibilityIdentifier("searchBar.query")
                 .accessibilityLabel("Search the list")
@@ -62,16 +62,13 @@ struct SearchFieldSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The same query, drawn twice: the first field is left as the platform "
-                + "draws it, and the second tints the two icons the platform puts in every "
-                + "search box. Type something to bring the clear button out - it only "
-                + "appears once there is text to clear.")
+            Text("The same query, drawn twice. Type something: where the platform draws "
+                + "a clear button, it appears once there is text to clear.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Those two colours are all a `SearchField` offers over the artwork: the "
-                + "icons themselves are the platform's, and there is no picture to put in "
-                + "their place.")
+            Text("The icons are the platform's, and a `SearchField` has no picture to put "
+                + "in their place.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

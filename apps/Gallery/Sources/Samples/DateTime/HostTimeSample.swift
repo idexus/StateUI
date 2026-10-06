@@ -8,8 +8,8 @@ struct HostTimeSample: SampleContent, ExampleContent {
     @State private var season = ""
 
     /// A few zones a user will recognize, including one at half past the
-    /// hour - Kolkata is +05:30, and an offset held as minutes is what makes
-    /// that ordinary rather than a special case.
+    /// hour - Kolkata is +05:30, and an offset that crosses as whole minutes
+    /// is what makes that ordinary rather than a special case.
     static let cities = [
         "UTC", "America/New_York", "Europe/Warsaw", "Asia/Kolkata", "Asia/Tokyo",
     ]
@@ -24,7 +24,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
     var body: some View {
         VStack {
             // What the host answered is read here, so each ask builds this
-            // closure once.
+            // closure again.
             DebugInfoLabel()
 
             Text("Here: \(zone.isEmpty ? "…" : zone)")
@@ -65,13 +65,12 @@ struct HostTimeSample: SampleContent, ExampleContent {
         VStack {
             Text("Every line above crossed the boundary as an act - `ClockTime.now()`, "
                 + "`TimeZoneInfo.local()`, `TimeZoneInfo.utcOffset` - and came back as "
-                + "a `ClockTime` and a `Duration`, both of which this side owns. No "
-                + "Foundation is involved, which is why the answers are the same on every "
-                + "platform.")
+                + "a zone's name, a `ClockTime` and a `Duration`. No Foundation is "
+                + "involved: the host answers, the same way on every platform.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("An offset is a whole number of minutes, so +05:30 is not a special case, "
+            Text("An offset crosses as a whole number of minutes, so +05:30 is not a special case, "
                 + "and it is asked for a DAY - which is how the same zone answers "
                 + "differently in January than it does in August.")
                 .fontSize(12)

@@ -58,12 +58,13 @@ struct MainPage: View {
         // listing: MainPage.modal
         // What is over all of it: the pages presented over the split view, the
         // stack and the bars alike - empty almost always: presenting is
-        // `sheets.append`, and a sheet the user drags down shortens the array
+        // `sheets.append`, and a sheet the user dismisses shortens the array
         // itself.
         ModalStack(nav.$sheets) {
         // listing: end
             // listing: MainPage.modal
-            // The split view, its bars and its pages - all the window shows.
+            // The split view, its bars and its pages - what the sheets are
+            // presented over.
             // listing: end
             // listing: MainPage.split
             SplitView(nav.$menuOpen) {
@@ -79,8 +80,8 @@ struct MainPage: View {
             // listing: MainPage.bar
             // The gallery's own actions, declared once around every page: a page's
             // own stand nearer the title, and these keep their place at the edge.
-            // Icons give both a stable native footprint; their captions remain
-            // available to accessibility and to platforms that show text.
+            // Each wears an icon, which keeps its size on the bar steady; its
+            // caption stays for accessibility and for bars that show words.
             .toolbar(id: "gallery") {
                 ToolbarItem.inspector(window)
                     .text("Inspector")
@@ -96,9 +97,9 @@ struct MainPage: View {
                         .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
                 }
             }
-            // What the window's bar says of the gallery: its name and mark, and
-            // the line the Window bar sample types - where the platform's
-            // chrome names the application.
+            // What the window's bar says of the gallery: its name and mark,
+            // where the platform's chrome names the application, and under the
+            // title the line the Window bar sample types.
             .barTitle("StateUI")
             .barSubtitle(bar.subtitle)
             .barIcon("stateui_mark.png")
@@ -116,12 +117,13 @@ struct MainPage: View {
             }
             // listing: end
             // listing: MainPage.created
-            // A size and a minimum: the size is the window's as it opens, the
-            // minimum how small the user may drag it before the layout stops
-            // making sense. A phone ignores both, an app there being the whole
-            // screen - and there is no `x` or `y` on purpose: pinning an app to
-            // the same corner of the screen at every launch is worse than letting
-            // the platform place it.
+            // The window's name and its size: `width` and `height` are its size
+            // as it opens, the minimum how small the user may drag it before the
+            // layout stops making sense, the maximum how large. On a phone or a
+            // tablet the system sizes the window and these go unused - and the
+            // gallery writes no `x` or `y` on purpose: pinning an app to the same
+            // corner of the screen at every launch is worse than letting the
+            // platform place it.
             .onCreated {
                 window.title = "StateUI Gallery"
                 window.width = 1100
@@ -138,7 +140,8 @@ struct MainPage: View {
                 window.isMaximizable = true
                 window.isMinimizable = true
 
-                // On a desktop the menu is a sidebar beside the page.
+                // On a desktop the menu stands beside the page, so choosing a
+                // row leaves it open.
                 if device.info.formFactor == .desktop {
                     nav.menuOverlays = false
                 }
@@ -161,8 +164,7 @@ struct MainPage: View {
     /// section's own page underneath. The tabs demonstration is the exception,
     /// and it is the reason this is a function rather than one expression: a
     /// `TabView` is a page like any other, so a section may simply be one -
-    /// and a stack may sit inside a tab, because pages nest without a rule
-    /// about which may hold which.
+    /// and a stack may sit inside one of its tabs.
     @ViewBuilder
     func detail() -> some View {
         if case .tabs = nav.section {
@@ -237,8 +239,8 @@ struct MainPage: View {
     }
 
     // listing: MainPage.tabs
-    /// The one section that is not a stack: a `TabView` over the author's own
-    /// enum, with a stack inside the first tab.
+    /// The one section that is not a stack: a `TabView` over a list of the
+    /// author's own enum, with a stack inside its `.stack` tab.
     func tabs() -> some View {
         TabView(nav.tabs) { which in
             switch which {
@@ -248,10 +250,9 @@ struct MainPage: View {
                 } destination: { route in
                     page(for: route, path: nav.$tabsPath)
                 }
-                // A tab's caption and picture are the TAB PAGE's, and the tab
-                // page here is the stack rather than what is inside it -
-                // measured, and it is where the first live run showed no icons
-                // at all.
+                // A tab's caption and picture are what its page says, and this
+                // tab's page is the stack rather than the page inside it - so
+                // they are written on the stack.
                 .title("Stack")
                 .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 

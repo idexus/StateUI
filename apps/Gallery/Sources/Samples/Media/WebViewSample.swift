@@ -34,8 +34,8 @@ private struct WebBrowserPart: ExampleContent {
     var body: some View {
         Grid {
             VStack {
-                // The history flags are read by this bar, so every
-                // page that loads builds this closure.
+                // The grid around this reads the status every page that
+                // loads writes, so this closure is built with it.
                 DebugInfoLabel()
 
                 HStack {

@@ -25,7 +25,7 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             PhaseRow(name: "application", value: "\(application.phase)")   // active, inactive or background
-            PhaseRow(name: "this gallery", value: "\(scene.phase)")   // active, inactive or background
+            PhaseRow(name: "the galleries", value: "\(scene.phase)")   // active, inactive or background
             PhaseRow(name: "this window", value: "\(window.phase)")   // from created to destroying
 
             Text(verdict)
@@ -47,10 +47,10 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
         }
 
         if scene.phase != .active {
-            return "Another gallery is in front of this one."
+            return "Another scene is in front of the galleries."
         }
 
-        return "This gallery is the one in front."
+        return "A gallery window is the one in front."
     }
     // listing: end
 }

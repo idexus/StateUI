@@ -10,7 +10,7 @@ struct StateSample: SampleContent, ExampleContent {
 
     static let id = "state"
     static let title = "State and bindings"
-    static let summary = "A view is rebuilt on every render - and its @State survives that."
+    static let summary = "A view is a value, made again and again - and its @State survives that."
 
     // listing: StateSample
     var body: some View {
@@ -92,9 +92,9 @@ struct StateSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("This view is a value, rebuilt on every render, and its @State is "
-                + "declared right on it. The same view at the same place keeps its state "
-                + "through the rebuild; nothing is invalidated by hand.")
+            Text("This view is a value, made afresh whenever the closure around it runs, "
+                + "and its @State is declared right on it. The same view at the same place "
+                + "keeps its state through every build; nothing is invalidated by hand.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -113,9 +113,9 @@ struct StateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("State lives as long as its owner stays in the tree. This gallery keeps "
-                + "its samples in the catalog its pages hold, so the count is still here "
-                + "when you come back.")
+            Text("State lives as long as its owner is held - by the tree, or here by the "
+                + "catalog each gallery window keeps, so the count is still here when you "
+                + "come back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

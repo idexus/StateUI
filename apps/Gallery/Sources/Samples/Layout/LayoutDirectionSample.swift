@@ -43,7 +43,8 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
                 .fontSize(11)
                 .textColor(Palette.subtle)
 
-            // Left to right, whatever the view above says.
+            // Laid out the way `direction` says - at `.inherited`, the way the
+            // view above it is.
             HStack {
                 ColorBox(Palette.accent)
                     .width(60)

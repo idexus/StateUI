@@ -5,7 +5,7 @@ struct LifecycleSample: SampleContent, ExampleContent {
     // listing: LifecycleSample
     /// The window's log, kept by its gallery window. It is written by `MainPage`
     /// as the window is made and by `WindowPhaseLog` as its phase moves - see
-    /// Gallery/WindowLog.swift - and this sample only reads it.
+    /// WindowLog.swift - and this sample only reads it.
     let log: WindowLog
     // listing: end
 

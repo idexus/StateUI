@@ -1,12 +1,13 @@
 import StateUI
 
-/// A driven rotation, sprung to real time by a plain Swift loop.
+/// A driven rotation, moved to real time by a plain Swift loop.
 struct AnalogClockSample: SampleContent, ExampleContent {
     // listing: AnalogClockSample
     @State private var ticking = false
 
     /// Whether the first reading of this visit has SET the clock. Travelling
-    /// there from noon would wind the whole day forward in a blur.
+    /// there from where the hands stand - noon, on the first visit - would
+    /// sweep them round in a blur.
     @State private var started = false
 
     /// Which visit to this page the running loop belongs to. Each visit begins
@@ -20,8 +21,8 @@ struct AnalogClockSample: SampleContent, ExampleContent {
     ///
     /// It only ever grows - a movement to 0 from 354 would turn the long way
     /// back - and each tick's target is this angle plus the FORWARD distance
-    /// to where the time says the hand should point, so a wrap and a catch-up
-    /// after the page returns are the same small spring.
+    /// to where the time says the hand should point, so a wrap and the
+    /// catch-up after a late tick are the same short movement.
     @State private var sAngle = 0.0
     @State private var mAngle = 0.0
     @State private var hAngle = 0.0
@@ -40,7 +41,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
     static let id = "analogClock"
     static let title = "Analog clock"
-    static let summary = "Real time on springing hands, from a plain Swift loop."
+    static let summary = "Real time on ticking hands, from a plain Swift loop."
 
     // listing: AnalogClockSample
     var body: some View {
@@ -110,13 +111,13 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
                 if started {
                     // Advance by the forward distance only, so a wrap never
-                    // spins back and a return catches up in one spring. The
-                    // STATE is where the last movement was going, which is
-                    // where the hand belongs now, so the arithmetic starts
+                    // spins back and a late tick catches up in one movement.
+                    // The STATE is where the last movement was going, which
+                    // is where the hand belongs now, so the arithmetic starts
                     // from it - never from the journey's value, which is
-                    // wherever the host had got to when this reading came in. `async let` starts
-                    // all three at once; short and springy, because the snap
-                    // IS the tick.
+                    // wherever the host had got to when this reading came
+                    // in. `async let` starts all three at once; each is
+                    // short, because the movement IS the tick.
                     let atSecond = sAngle
                     let atMinute = mAngle
                     let atHour = hAngle
@@ -163,7 +164,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             Text("The time comes from the platform - `ClockTime.now()` - and the wait is "
                 + "plain `Task.sleep`, which resumes on time on every platform. Every tick "
                 + "sleeps to the NEXT whole second rather than for a fixed while - the "
-                + "reading carries milliseconds, so the spring lands just past each "
+                + "reading carries milliseconds, so each tick lands just past a "
                 + "boundary instead of drifting across one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -177,7 +178,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
             Text("A hand's rotation is DRIVEN - .rotation($sAngle) over a state "
                 + "the host moves - so a tick is that state being sent somewhere "
-                + "and the hand springs there on the display's own frames, with "
+                + "and the hand turns there on the display's own frames, with "
                 + "nothing described in between. sAngle answers where "
                 + "the hand is GOING, which is what the next tick's arithmetic "
                 + "wants - it adds the FORWARD distance to the time, so the "

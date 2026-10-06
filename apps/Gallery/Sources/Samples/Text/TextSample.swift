@@ -5,7 +5,7 @@ struct TextSample: SampleContent, ExampleContent {
     static let title = "Text"
     static let summary = "Read-only native text with StateUI typography and alignment."
 
-    // listing: TextSample
+    // listing: TextSample keep
     var body: some View {
         VStack {
             Text("Plain")

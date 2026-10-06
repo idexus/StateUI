@@ -61,7 +61,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
                 VStack {
                     // The same button, saying what it is and what using it does.
-                    // Written as a value rather than in the chain, so throwing the
+                    // One value, not two branches of an `if`, so throwing the
                     // switch CLEARS the property off the same control instead of
                     // building a different one.
                     describedButton

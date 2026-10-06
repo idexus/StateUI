@@ -64,8 +64,8 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("A CalendarDate rather than a Date: formatting a Date needs a "
-                + "DateFormatter, a DateFormatter needs ICU, and ICU is the one "
-                + "dependency this library cannot take. It is three numbers both "
+                + "DateFormatter, a DateFormatter needs ICU, and ICU is what this "
+                + "library cannot take. It is three numbers both "
                 + "ways - into the picker, and back out of it when a day is picked "
                 + "on screen.")
                 .fontSize(12)

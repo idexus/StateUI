@@ -11,7 +11,7 @@ struct PointerSample: SampleContent, ExampleContent {
 
     static let id = "pointer"
     static let title = "Pointer"
-    static let summary = "A mouse, a trackpad or a pen - the gestures a touch-only device never sends."
+    static let summary = "A pointer entering, moving, pressing and letting go over one view."
 
     // A gesture sample is not put in a scroller: a scroller would claim the
     // drag before the example heard about it, so the page holds the example
@@ -72,9 +72,9 @@ struct PointerSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Five events: entered, exited, moved, pressed and released. A pointer "
-                + "is a mouse, a trackpad or a pen, so on a touch-only device none of "
-                + "them fires.")
+            Text("Five events: entered, exited, moved, pressed and released. Entered "
+                + "and exited follow a hovering pointer - a mouse, a trackpad or a pen - "
+                + "so a finger never sends them; a finger's touch still presses and releases.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

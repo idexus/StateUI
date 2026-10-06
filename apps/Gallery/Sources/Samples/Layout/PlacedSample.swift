@@ -113,13 +113,11 @@ struct PlacedSample: SampleContent, ExampleContent {
         // moves left, and a finger going left reports a negative distance.
         let turned = ($scrolled.journey.value.x - dragged) / Self.reach
 
+        guard turned.isFinite else { return 0 }
+
         // AND A DRAG HAS NO ENDS: a scroller cannot be pulled past its length,
         // but a hand can - so the arithmetic is what holds the ring to its
         // cards.
-        guard turned.isFinite else { return 0 }
-
-        // A hand has no ends the way a scroller does, so the arithmetic
-        // holds the ring to its cards.
         return min(max(turned, 0), Double(Self.cards.count - 1))
     }
 
@@ -313,8 +311,8 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-            // the card is painted at its own size all over the layout, so the
-            // grid holding it - a layout, with edges to cut at - clips it.
+            // the card covers it and spills past its edges, so the grid
+            // holding it - a layout, with edges to cut at - clips it.
             .clipsContent(true)
         }
         .style("Card")
@@ -393,7 +391,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 + "is turned, scaled, faded and stacked - and writes them as a `PlacedRun` on "
                 + "the state `.placement(_:)` names, in the room `.frame(_:)` reports. That is "
                 + "the whole layout: this ring is six lines of arithmetic. `GalleryView`, "
-                + "under Cards, is the same layout with the arithmetic for a wheel, "
+                + "under Items and Cards, is the same layout with the arithmetic for a wheel, "
                 + "a fan and a row already written.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

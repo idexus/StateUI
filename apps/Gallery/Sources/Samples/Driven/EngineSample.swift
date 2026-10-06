@@ -27,7 +27,7 @@ struct EngineSample: SampleContent, ExampleContent {
     @State private var running = false   // followed by the engine, read by no view
 
     /// How long the clock has run, in milliseconds - the engine's own to
-    /// count up, read by nobody: the reading is worked out FROM it, so
+    /// count up, read by no view: the reading is worked out FROM it, so
     /// nothing outside this page ever needs the number itself.
     @State private var elapsed = 0.0   // the engine's own count
     // listing: end
@@ -126,7 +126,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`Text($reading)` reads its words off a driven state the engine writes "
+            Text("`.text($reading)` takes its words off a driven state the engine writes "
                 + "on the display's own frame, and the button's caption is driven the same "
                 + "way by the handler that toggles the clock: one tap starts the clock and "
                 + "renames the button, and neither is a render. Driven text is written onto "

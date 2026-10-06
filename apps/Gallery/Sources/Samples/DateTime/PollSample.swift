@@ -21,8 +21,8 @@ struct PollSample: SampleContent, ExampleContent {
     // listing: PollSample
     var body: some View {
         VStack {
-            // What the poll last answered is read here, so every answer
-            // builds this closure once.
+            // What the poll last answered is read here, so this closure is
+            // built as each check begins and again as it answers.
             DebugInfoLabel()
 
             Text(status)
@@ -57,9 +57,9 @@ struct PollSample: SampleContent, ExampleContent {
         }
         .spacing(12)
         .onCreated {
-            // Set here rather than in the initializer: the closure reads this
-            // view's @State, which does not exist yet while the property that
-            // holds the ticker is being initialized.
+            // Set here rather than in the initializer: the closure reaches this
+            // view's @State and the ticker itself, neither of which exists yet
+            // while the property that holds the ticker is being initialized.
             poll.onTick = {
                 checking = true
                 status = "Checking"
@@ -86,11 +86,11 @@ struct PollSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("A repeating timer would fire again while the work of the last round "
-                + "was still going, and two checks would overlap. This one does not "
-                + "repeat: it ticks once, the tick does the work, and the tick starts "
-                + "the next round when that work is done - so the gap is measured from "
-                + "the END of the work rather than from the start.")
+            Text("A repeating ticker counts each interval from the last tick's deadline, "
+                + "so a long check eats into the gap. This one does not repeat: it ticks "
+                + "once, the tick does the work, and the tick starts the next round when "
+                + "that work is done - so the gap is measured from the END of the work "
+                + "rather than from the start.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -102,10 +102,10 @@ struct PollSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The work runs on a task of its own and the restart comes back from "
-                + "there, off the thread the host draws on. `Ticker` keeps its state "
-                + "behind a lock for exactly this: `start`, `stop` and `reset` are safe "
-                + "from any thread.")
+            Text("The work runs on a detached task of its own. The tick is `@MainActor`, "
+                + "so it resumes on the thread the host draws on to write state and "
+                + "start the next round. `start`, `stop` and `reset` are safe "
+                + "from any thread all the same: `Ticker` keeps its state behind a lock.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

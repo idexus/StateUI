@@ -106,8 +106,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The last badge sits under its OWN `.environment` - a different "
-                + "Session, so its branch resolves that one: a nearer provider wins for "
-                + "its branch, and the button moves nothing there.")
+                + "Session, which its branch resolves, so the button moves nothing there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -10,8 +10,8 @@ struct RebuildSample: SampleContent, ExampleContent {
     @State private var left = 0
     @State private var right = 0
 
-    // Reads nothing and is built with nothing, so every rebuild of the
-    // panel carries it - it keeps saying `1 build, first time`.
+    // Reads nothing - the buttons write in handlers, the panels are handed
+    // bindings - so this body is built once.
     var body: some View {
         VStack {
             HStack {
@@ -24,9 +24,9 @@ struct RebuildSample: SampleContent, ExampleContent {
             .spacing(8)
             .horizontalAlignment(.center)
 
-            // TWO OF THEM, side by side, because the reading is only worth
-            // anything against another: one panel answers and the other stands
-            // still, and the counts say which.
+            // TWO OF THEM, because the reading is only worth anything against
+            // another: one panel answers and the other stands still, and the
+            // counts say which.
             RebuildPanel(name: "left", value: $left)
 
             RebuildPanel(name: "right", value: $right)

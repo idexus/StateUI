@@ -42,9 +42,8 @@ struct ColorBoxSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A ColorBox draws the colour its initializer takes, which is its `.color`. "
-            + "`.background` is a second surface behind it that the corner radius "
-            + "does not round. A one-pixel ColorBox is also the usual divider.")
+        Text("A ColorBox draws the colour its initializer takes, which is its `.color`, "
+            + "and `.cornerRadius` rounds it. A one-pixel ColorBox is also the usual divider.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

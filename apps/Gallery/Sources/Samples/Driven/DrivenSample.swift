@@ -70,7 +70,8 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .fontAttributes(.bold)
                 .horizontalAlignment(.center)
 
-            // Off state: written twice a page, and described both times.
+            // Off ordinary state: described again each time the switch is
+            // thrown.
             Text("Sent under \(law)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -112,11 +113,12 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`$offset.journey` holds three things at once: `offset` itself is where "
-                + "the value is going, `$offset.journey.value` where it is, and "
-                + "`$offset.journey.velocity` how fast. Writing the state asks the host for "
-                + "a journey; writing `$offset.journey.value` puts it there at once, which "
-                + "is what arithmetic worked out per frame does. `$offset.journey.convert "
+            Text("`$offset.journey` holds where the value is going, where it is and how "
+                + "fast: `offset` itself is the destination, `$offset.journey.value` where "
+                + "it is, and `$offset.journey.velocity` how fast. Writing the state asks the "
+                + "host for a journey; `$offset.journey.snap(to:)` puts the value there at "
+                + "once, while a write to `$offset.journey.value` moves only what is shown "
+                + "and the host goes straight back to the destination. `$offset.journey.convert "
                 + "{ … }` writes the percentage from where the marker has got to, and a "
                 + "converted text is written only when its letters change, so a reading "
                 + "that rounds to the same number costs nothing.")
@@ -126,7 +128,7 @@ struct DrivenSample: SampleContent, ExampleContent {
             Text("A conversion rewrites one value as another; an engine is for arithmetic "
                 + "that keeps state of its own between frames, which Engine shows. The "
                 + "marker moves rather than resizing: a translation is a drawing field and "
-                + "costs nothing, while a width written per frame measures the layout again "
+                + "costs no layout, while a width written per frame measures the layout again "
                 + "every time. Wherever a value moves quickly, reach for the transform.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

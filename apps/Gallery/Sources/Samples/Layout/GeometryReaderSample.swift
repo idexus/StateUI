@@ -25,7 +25,7 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
             // THE PARENT, DRAWN in a gentle tint, because `slot` below is
             // measured against THIS box and the numbers say nothing until
             // there is something on the screen for them to be relative to.
-            // It fills the page's width, so widening the panel walks its x
+            // It fills the page's width, so narrowing the panel walks its x
             // in towards the middle.
             VStack {
                 Text("the parent")
@@ -86,8 +86,8 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked {
-                    // Nothing is described: the host carries the width and the
-                    // slider's thumb off the same state, and the frame reports
+                    // The width describes nothing: the host carries the width and
+                    // the slider's thumb off the same state, and the frame reports
                     // say where the panel actually got to.
                     try await $width.journey.move(to: $width.journey.value < 240 ? 340 : 140)
                 }
@@ -100,7 +100,7 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
         VStack {
             Text("The tinted box is the parent, drawn because the first reading is measured "
                 + "against it: `in its parent` is where the panel sits inside that box. "
-                + "Widening the panel walks its x in towards the middle, while the window "
+                + "Narrowing the panel walks its x in towards the middle, while the window "
                 + "and safe-area readings move by the same amount from wherever the page is.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

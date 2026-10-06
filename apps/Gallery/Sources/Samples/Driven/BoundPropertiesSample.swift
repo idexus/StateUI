@@ -30,8 +30,8 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     /// the one row that renders.
     @State private var on = false   // a toggle: set and reported
 
-    /// A CHOICE: an enum the host sets as it stands. It crosses as the
-    /// member's number and the host resolves it into the platform's own.
+    /// A MEMBER: an enum the host sets as it stands. It crosses as the
+    /// member's number, which the host resolves.
     @State private var side = Alignment.start   // a member: the host sets it
     // listing: end
 
@@ -41,9 +41,9 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
     // listing: BoundPropertiesSample
     var body: some View {
-        // A JOURNEY. `size = 30` sends the font size there under the
-        // label's law; the row is never built again.
         VStack {
+            // A JOURNEY. `size = 30` sends the font size there under the
+            // label's law; the row is never built again.
             row("1 · a number the host walks - fontSize($size)") {
                 Text("The quick brown fox")
                     .fontSize($size)
@@ -61,7 +61,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                 Text("Tinted words")
                     .fontSize(17)
                     .textColor($tint)
-                DebugInfoLabel()   // climbs on every flip
+                DebugInfoLabel()   // stays at one
             }
 
             button("Swap the tint") {
@@ -116,7 +116,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.start)
                 Text(on ? "on" : "off")
                     .fontSize(15)
-                DebugInfoLabel()
+                DebugInfoLabel()   // climbs on every flip
             }
         }
         .spacing(10)
@@ -130,17 +130,17 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                 + "element's law, a flag is SET as it stands, words are WRITTEN, and a "
                 + "choice or a toggle is set from the state and landed on it when the "
                 + "user moves it. A MEMBER - an alignment, a keyboard, a line break - "
-                + "crosses as its number and the host resolves it into the platform's own. "
+                + "crosses as its number and the host resolves it. "
                 + "Every row wears its own build count, and only row 7 climbs: it is the "
                 + "one whose braces read the value.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("The rule is the same one everywhere: a get makes the closure it sits "
-                + "in a reader, a binding makes none. What a property can be handed is "
-                + "every value form's twin taking `Binding<T>` - a number, a colour, a "
-                + "insets, a flag, a count, a string - so a value that moves is never "
-                + "a reason to build the view again.")
+                + "in a reader, a binding makes none. Properties like these have a twin "
+                + "taking `Binding<T>` beside the value form - a number, a colour, "
+                + "insets, a flag, a count, a string - so a value that moves is no "
+                + "reason to build the view again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

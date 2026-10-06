@@ -47,9 +47,9 @@ struct SplitViewSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The pane is an ordinary page. Every row is a view whose action chooses "
-                + "a section and closes the menu, and a row the app does not want is an "
-                + "`if` around it.")
+            Text("The pane is an ordinary page. Every row is a view whose action writes "
+                + "where the gallery goes - closing the menu where it lies over the page - "
+                + "and a row the app does not want is an `if` around it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -58,9 +58,9 @@ struct PickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`$size` and the handler are one event written twice: the binding sets "
-                + "the index and registers the write-back, and an `.onSelectedIndexChanged` "
-                + "written beside it still runs - whichever order the two are written in.")
+            Text("`$size` and the handler both hear the user's choice: the binding lands "
+                + "the index on the state, and an `.onSelectedIndexChanged` written beside "
+                + "it runs after it has landed - whichever order the two are written in.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

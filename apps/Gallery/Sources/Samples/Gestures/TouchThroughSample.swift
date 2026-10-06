@@ -17,9 +17,6 @@ struct TouchThroughSample: SampleContent, ExampleContent {
     @State private var childrenToo = false
 
     var body: some View {
-        // On top. Its own empty area lets taps through to the box below
-        // while the label inside still answers - or, with the switch on,
-        // the whole of it ignores input, the label included.
         VStack {
             // Both counts are read here, so a tap on either builds this closure.
             DebugInfoLabel()
@@ -30,6 +27,9 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                     .height(120)
                     .onTapped { below += 1 }
 
+                // On top. Its own empty area lets taps through to the box below
+                // while the label inside still answers - or, with the switch on,
+                // the whole of it ignores input, the label included.
                 VStack {
                     // The child wears its own colour and its own padding, so
                     // what is the child and what is the empty area around it

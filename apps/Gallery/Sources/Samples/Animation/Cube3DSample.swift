@@ -61,6 +61,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
     static let hostCode = HostCode(in: InteropHost.name, marked: "Cube3DSample.Android.swift", "Cube3DSample.Android.java", "Cube3DSample.Android.glsl")
     #endif
 
+    // listing: Cube3DSample
     var body: some View {
         VStack {
             DebugInfoLabel()
@@ -106,6 +107,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     #if APPKIT
     private static let drawnBy = "The cube is an `MTKView` the gallery registers with "

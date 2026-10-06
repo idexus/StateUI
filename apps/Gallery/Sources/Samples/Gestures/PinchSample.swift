@@ -53,7 +53,7 @@ struct PinchSample: SampleContent, ExampleContent {
             }
 
             // Per cent rather than a formatted double: String(format:) is
-            // Foundation, which the library never imports.
+            // Foundation, which this sample does not import.
             //
             // The count is here on purpose: a pinch that reports once is a pinch
             // that has been interrupted, and the number says so at a glance.

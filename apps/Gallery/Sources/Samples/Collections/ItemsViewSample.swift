@@ -133,7 +133,7 @@ private struct GridList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(1)
 
-            Text(opened.map { "Tile \($0) opened." } ?? "Tap a tile.")
+            Text(opened.map { "Tile \($0) opened." } ?? "Open a tile.")
                 .fontSize(13)
                 .textColor(Palette.accent)
                 .gridRow(1)

@@ -1,12 +1,13 @@
 import StateUI
 
-/// WHO IS THE READER: one state, written by a slider and a button, and seven
-/// places it is used - each wearing its own build count, so the rule is on the
-/// screen. A get makes the closure it sits in a reader; a binding makes none.
+/// WHO IS THE READER: seven ways to use a state - each wearing its own build
+/// count, so the rule is on the screen. A get makes the closure it sits in a
+/// reader; a binding makes none.
 struct ReaderSample: SampleContent, ExampleContent {
     // listing: ReaderSample
     /// The one value this page is about. Nothing in this view's own braces
-    /// reads it: every get is inside a row, so a write builds that row alone.
+    /// reads it: every get is inside a row, so a write builds the closures that
+    /// read it and nothing around them.
     @State private var value = 0.3   // the one value
 
     /// A state no view reads, lent to a child as `$pulses`: written by a
@@ -16,12 +17,12 @@ struct ReaderSample: SampleContent, ExampleContent {
 
     static let id = "reader"
     static let title = "Who is the reader"
-    static let summary = "One state used in seven places: a get makes a reader, a binding makes none."
+    static let summary = "Seven ways to use a state: a get makes a reader, a binding makes none."
 
     // listing: ReaderSample
     var body: some View {
-        // 2. A GET in a container's braces: THIS stack is the reader.
-        //    Every write builds its content again - and nothing outside.
+        // This stack reads nothing: each numbered row below is a closure of
+        // its own, with its own reading.
         VStack {
             // THE WRITERS. A slider handed $value reads nothing at build; a
             // handler reads when it fires, not at build. Neither is a reader.
@@ -113,11 +114,12 @@ struct ReaderSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A binding makes no reader. Handed to a control, a child or an engine, "
-                + "the host carries the value on its own frames and renders nobody for it. "
-                + "Row 3 is a second slider on `$value`, and the host moves both thumbs; "
-                + "row 4 shows the value through a conversion without reading it; the "
-                + "child in row 7 only hands the binding on. None of them is built again.")
+            Text("A binding makes no reader: handing `$value` to a control, a child or an "
+                + "engine reads nothing, and the host carries a control's value on its own "
+                + "frames with nobody built for it. Row 3 is a second slider on `$value`, "
+                + "and the host moves both thumbs; row 4 shows the value through a "
+                + "conversion without reading it; the child in row 7 only hands the "
+                + "binding on. None of them is built again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -63,8 +63,8 @@ struct TextFieldSample: SampleContent, ExampleContent {
             // SELECTING IS SOMETHING THAT HAPPENS, so it is a button rather
             // than a switch - and it says which of the two it will do next,
             // because a press has to WRITE a value the field has not been
-            // given: an absent field means unchanged, so a press that asks
-            // for the selection the field already has says nothing at all.
+            // given: a value the patch leaves out means unchanged, so a press
+            // that asks for the selection the field already has says nothing.
             Button(selectAll ? "Clear the selection" : "Select the lot")
                 .fontSize(13)
                 .padding(horizontal: 16, vertical: 6)

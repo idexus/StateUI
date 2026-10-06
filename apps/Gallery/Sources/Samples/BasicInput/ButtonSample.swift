@@ -1,6 +1,6 @@
 import StateUI
 
-/// A button wired to a click, beside an outlined one and a disabled one.
+/// A button wired to a click, above an outlined one and a disabled one.
 struct ButtonSample: SampleContent, ExampleContent {
     // listing: ButtonSample
     @State private var counter = 0
@@ -9,7 +9,7 @@ struct ButtonSample: SampleContent, ExampleContent {
     static let id = "button"
     static let title = "Button"
     static let summary = "A tappable button wired to a click, with an outlined "
-        + "and a disabled one beside it."
+        + "and a disabled one below it."
 
     // listing: ButtonSample
     var body: some View {

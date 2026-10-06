@@ -15,8 +15,8 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
     // listing: DeviceDisplaySample
     var body: some View {
         VStack {
-            // The display is read here, so a turn or a resize builds
-            // this closure.
+            // The display is read here, so each change the host reports
+            // builds this closure.
             DebugInfoLabel()
 
             Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
@@ -47,10 +47,10 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
     var notes: (any View)? {
         Text("The host measures the screen in PIXELS; a layout speaks "
             + "points, which is width divided by density. Rotate a phone "
-            + "and every number above moves in one push - orientation, "
+            + "and four values above move in one push - orientation, "
             + "rotation, and the width and height swapping places. A "
-            + "desktop usually answers `.unknown` for both, its window "
-            + "being the thing that turns.")
+            + "desktop answers by its screen's shape: landscape unless it "
+            + "is taller than wide.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

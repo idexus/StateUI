@@ -11,7 +11,7 @@ struct BrushSample: SampleContent, ExampleContent {
     static let summary = "Gradients: on a shape's fill, a layout's outline, and behind any view at all."
 
     // listing: BrushSample
-    /// The two stops every gradient here runs between.
+    /// The two stops the linear gradients here run between.
     private static let stops = [
         GradientStop(Palette.accent, 0),
         GradientStop(.steelBlue, 1),
@@ -25,8 +25,6 @@ struct BrushSample: SampleContent, ExampleContent {
     ]
 
     var body: some View {
-        // Not a shape at all: `.background` takes a brush, so any view can
-        // carry one.
         VStack {
             // The gradient's end is read here, so moving it builds this closure.
             DebugInfoLabel()
@@ -71,6 +69,8 @@ struct BrushSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
+            // Not a shape at all: `.background` takes a brush, so any view can
+            // carry one.
             VStack {
                 Text("A whole stack, behind a gradient")
                     .fontSize(14)
@@ -89,8 +89,7 @@ struct BrushSample: SampleContent, ExampleContent {
             Text("A gradient's points are fractions of the thing being painted, not device "
                 + "units: `Point(0, 0)` is its top left corner and `Point(1, 1)` its bottom "
                 + "right. So the axis follows the box's own corners rather than a fixed "
-                + "angle - and on a bar this wide, corner to corner is only a few degrees "
-                + "off straight across.")
+                + "angle, whatever the box's size.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

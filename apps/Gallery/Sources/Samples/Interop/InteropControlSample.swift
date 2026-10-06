@@ -30,6 +30,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
     static let hostCode = HostCode(in: InteropHost.name, marked: "InteropControlSample.Android.swift", "InteropControlSample.Android.controls.swift", "InteropControlSample.Android.java", "InteropControlSample.Android.natives.java")
     #endif
 
+    // listing: InteropControlSample
     var body: some View {
         VStack {
             DebugInfoLabel()
@@ -53,6 +54,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
         }
         .spacing(8)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

@@ -99,7 +99,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Size moves the panel between 90 and 160 points. Back restores "
+            Text("Size moves the panel's height between 90 and 160. Back restores "
                 + "the values that remain after their journeys.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

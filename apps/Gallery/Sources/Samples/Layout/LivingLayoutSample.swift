@@ -15,8 +15,8 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
 
     var body: some View {
         // NOTHING HERE SAYS "ANIMATE". Where a child sits is worked out by the
-        // layout; what carries it from the old place to the new one is the
-        // host's engine, so an insert slides everything under it down.
+        // layout, and the host animates it from the old place to the new
+        // one, so an insert slides everything under it down.
         VStack {
             // `wide` is read in THESE braces - `.columns` below asks
             // it - so widening the grid builds this closure. What the rows do
@@ -68,8 +68,8 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .tracking(1)
                 .textColor(Palette.subtle)
 
-            // A grid whose column widths change: every child crosses to its
-            // new column, because a placement is a placement whoever worked it
+            // A grid whose column widths change: every child travels to its
+            // new place, because a placement is a placement whoever worked it
             // out.
             Grid {
                 cell("one", Palette.brand, at: 0)

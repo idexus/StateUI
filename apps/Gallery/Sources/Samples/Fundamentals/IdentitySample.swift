@@ -63,8 +63,8 @@ struct IdentitySample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Type in a field, then insert a row above it: the text stays where it "
-                + "is, because the control did.")
+            Text("Type in a field, then insert a row above it: the text stays with its "
+                + "row, because its control does.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

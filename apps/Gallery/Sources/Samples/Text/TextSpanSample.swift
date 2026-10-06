@@ -5,7 +5,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
     // listing: TextSpanSample
     @State private var highlighted = 1
 
-    /// The line the last example colours one word of.
+    /// The line one word of which is coloured - the word the button moves.
     private let words = ["A", "Text", "has", "one", "TextColor"]
     // listing: end
 
@@ -13,13 +13,14 @@ struct TextSpanSample: SampleContent, ExampleContent {
     static let title = "TextSpan"
     static let summary = "Text in more than one colour: a Text's runs, each with a look of its own."
 
-    // listing: TextSpanSample
+    // listing: TextSpanSample keep
     var body: some View {
         VStack {
-            // The chosen run is read here, so tapping one builds this closure.
+            // `highlighted` is read here, so moving the highlight builds this
+            // closure.
             DebugInfoLabel()
 
-            // Two colours in one line, which is what runs are FOR: a label
+            // Three colours in one line, which is what runs are FOR: a label
             // has one `textColor`, so this is the only way.
             Text()
                 .spans {
@@ -75,7 +76,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
             Text("Two colours in one line is what runs are for: a label has one `textColor`, "
                 + "so text in two colours is two runs. A run carries font and text properties "
                 + "of its own - size, family, weight, a background behind those words alone. "
-                + "It is not a view, so there is no margin and no size on it.")
+                + "It is not a view, so it has no margin, width or height.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -91,8 +92,8 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The Swift type is `TextSpan`, not `TextSpan`: Swift's own standard library has "
-                + "a `TextSpan` in scope in every file, and it wins - `TextSpan(\"…\")` does not "
+            Text("The type is `TextSpan`, not `Span`: Swift's own standard library has "
+                + "a `Span` in scope in every file, and it wins - `Span(\"…\")` does not "
                 + "compile.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
