@@ -43,6 +43,7 @@ enum AndroidRegistrations {
     static func shared(_ registry: Registry<AndroidView>) {
         registry.everyElementMeetsAssistiveTechnology()
         registry.everyElementHearsTheUser()
+        registry.everyElementDragsAndDrops()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementRealizes(VisualElementContract.opacity)

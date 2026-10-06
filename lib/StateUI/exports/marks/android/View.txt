@@ -1,13 +1,13 @@
 # revision 3.1
-ActivityIndicator.allowsDrop: not realized
+ActivityIndicator.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ActivityIndicator.area: ✅
-ActivityIndicator.canDrag: not realized
-ActivityIndicator.dragEnded: not realized
-ActivityIndicator.dragLeave: not realized
-ActivityIndicator.dragOver: not realized
-ActivityIndicator.dragStarting: not realized
-ActivityIndicator.dragText: not realized
-ActivityIndicator.drop: not realized
+ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
+ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
+ActivityIndicator.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ActivityIndicator.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
+ActivityIndicator.dragText: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
+ActivityIndicator.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridColumnSpan: ✅
@@ -31,15 +31,15 @@ ActivityIndicator.swiped: ✅
 ActivityIndicator.tapCount: ✅
 ActivityIndicator.tapped: ✅
 ActivityIndicator.verticalAlignment: ✅
-Button.allowsDrop: not realized
+Button.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Button.area: ✅
-Button.canDrag: not realized
-Button.dragEnded: not realized
-Button.dragLeave: not realized
-Button.dragOver: not realized
-Button.dragStarting: not realized
-Button.dragText: not realized
-Button.drop: not realized
+Button.canDrag: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
+Button.dragEnded: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
+Button.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Button.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Button.dragStarting: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
+Button.dragText: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
+Button.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
@@ -63,15 +63,15 @@ Button.swiped: ✅
 Button.tapCount: ✅
 Button.tapped: ✅
 Button.verticalAlignment: ✅
-Canvas.allowsDrop: not realized
+Canvas.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Canvas.area: ✅
-Canvas.canDrag: not realized
-Canvas.dragEnded: not realized
-Canvas.dragLeave: not realized
-Canvas.dragOver: not realized
-Canvas.dragStarting: not realized
-Canvas.dragText: not realized
-Canvas.drop: not realized
+Canvas.canDrag: ✓ dragAndDrop on Canvas: the views' drag listeners' reports told by the driver, no drag started
+Canvas.dragEnded: ✓ dragAndDrop on Canvas: the views' drag listeners' reports told by the driver, no drag started
+Canvas.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Canvas.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Canvas.dragStarting: ✓ dragAndDrop on Canvas: the views' drag listeners' reports told by the driver, no drag started
+Canvas.dragText: ✓ dragAndDrop on Canvas: the views' drag listeners' reports told by the driver, no drag started
+Canvas.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
@@ -95,15 +95,15 @@ Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
-CheckBox.allowsDrop: not realized
+CheckBox.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.area: ✅
-CheckBox.canDrag: not realized
-CheckBox.dragEnded: not realized
-CheckBox.dragLeave: not realized
-CheckBox.dragOver: not realized
-CheckBox.dragStarting: not realized
-CheckBox.dragText: not realized
-CheckBox.drop: not realized
+CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started
+CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started
+CheckBox.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+CheckBox.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started
+CheckBox.dragText: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started
+CheckBox.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
@@ -127,15 +127,15 @@ CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
-ColorBox.allowsDrop: not realized
+ColorBox.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ColorBox.area: ✅
-ColorBox.canDrag: not realized
-ColorBox.dragEnded: not realized
-ColorBox.dragLeave: not realized
-ColorBox.dragOver: not realized
-ColorBox.dragStarting: not realized
-ColorBox.dragText: not realized
-ColorBox.drop: not realized
+ColorBox.canDrag: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ColorBox.dragEnded: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ColorBox.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ColorBox.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ColorBox.dragStarting: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ColorBox.dragText: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ColorBox.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ColorBox.frameChanged: ◐ cannot scroll on ScrollView - Android's driver has no path for it yet
 ColorBox.gridColumn: ✅
 ColorBox.gridColumnSpan: ✅
@@ -159,15 +159,15 @@ ColorBox.swiped: ✅
 ColorBox.tapCount: ✅
 ColorBox.tapped: ✅
 ColorBox.verticalAlignment: ✅
-DatePicker.allowsDrop: not realized
+DatePicker.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.area: ✅
-DatePicker.canDrag: not realized
-DatePicker.dragEnded: not realized
-DatePicker.dragLeave: not realized
-DatePicker.dragOver: not realized
-DatePicker.dragStarting: not realized
-DatePicker.dragText: not realized
-DatePicker.drop: not realized
+DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
+DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
+DatePicker.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+DatePicker.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
+DatePicker.dragText: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
+DatePicker.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
@@ -191,15 +191,15 @@ DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
-Ellipse.allowsDrop: not realized
+Ellipse.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.area: ✅
-Ellipse.canDrag: not realized
-Ellipse.dragEnded: not realized
-Ellipse.dragLeave: not realized
-Ellipse.dragOver: not realized
-Ellipse.dragStarting: not realized
-Ellipse.dragText: not realized
-Ellipse.drop: not realized
+Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
+Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
+Ellipse.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Ellipse.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
+Ellipse.dragText: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
+Ellipse.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
@@ -223,15 +223,15 @@ Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
-Grid.allowsDrop: not realized
+Grid.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Grid.area: ✅
-Grid.canDrag: not realized
-Grid.dragEnded: not realized
-Grid.dragLeave: not realized
-Grid.dragOver: not realized
-Grid.dragStarting: not realized
-Grid.dragText: not realized
-Grid.drop: not realized
+Grid.canDrag: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
+Grid.dragEnded: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
+Grid.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Grid.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Grid.dragStarting: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
+Grid.dragText: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
+Grid.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
@@ -255,15 +255,15 @@ Grid.swiped: ✅
 Grid.tapCount: ✅
 Grid.tapped: ✅
 Grid.verticalAlignment: ✅
-HStack.allowsDrop: not realized
+HStack.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 HStack.area: ✅
-HStack.canDrag: not realized
-HStack.dragEnded: not realized
-HStack.dragLeave: not realized
-HStack.dragOver: not realized
-HStack.dragStarting: not realized
-HStack.dragText: not realized
-HStack.drop: not realized
+HStack.canDrag: ✓ dragAndDrop on HStack: the views' drag listeners' reports told by the driver, no drag started
+HStack.dragEnded: ✓ dragAndDrop on HStack: the views' drag listeners' reports told by the driver, no drag started
+HStack.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+HStack.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+HStack.dragStarting: ✓ dragAndDrop on HStack: the views' drag listeners' reports told by the driver, no drag started
+HStack.dragText: ✓ dragAndDrop on HStack: the views' drag listeners' reports told by the driver, no drag started
+HStack.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 HStack.frameChanged: ✅
 HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
@@ -287,15 +287,15 @@ HStack.swiped: ✅
 HStack.tapCount: ✅
 HStack.tapped: ✅
 HStack.verticalAlignment: ✅
-Image.allowsDrop: not realized
+Image.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Image.area: ✅
-Image.canDrag: not realized
-Image.dragEnded: not realized
-Image.dragLeave: not realized
-Image.dragOver: not realized
-Image.dragStarting: not realized
-Image.dragText: not realized
-Image.drop: not realized
+Image.canDrag: ✓ dragAndDrop on Image: the views' drag listeners' reports told by the driver, no drag started
+Image.dragEnded: ✓ dragAndDrop on Image: the views' drag listeners' reports told by the driver, no drag started
+Image.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Image.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Image.dragStarting: ✓ dragAndDrop on Image: the views' drag listeners' reports told by the driver, no drag started
+Image.dragText: ✓ dragAndDrop on Image: the views' drag listeners' reports told by the driver, no drag started
+Image.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
@@ -319,15 +319,15 @@ Image.swiped: ✅
 Image.tapCount: ✅
 Image.tapped: ✅
 Image.verticalAlignment: ✅
-ItemsView.allowsDrop: not realized
+ItemsView.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.area: ✅
-ItemsView.canDrag: not realized
-ItemsView.dragEnded: not realized
-ItemsView.dragLeave: not realized
-ItemsView.dragOver: not realized
-ItemsView.dragStarting: not realized
-ItemsView.dragText: not realized
-ItemsView.drop: not realized
+ItemsView.canDrag: ✓ dragAndDrop on ItemsView: the views' drag listeners' reports told by the driver, no drag started
+ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the views' drag listeners' reports told by the driver, no drag started
+ItemsView.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ItemsView.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the views' drag listeners' reports told by the driver, no drag started
+ItemsView.dragText: ✓ dragAndDrop on ItemsView: the views' drag listeners' reports told by the driver, no drag started
+ItemsView.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridColumnSpan: ✅
@@ -351,15 +351,15 @@ ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-Line.allowsDrop: not realized
+Line.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Line.area: ✅
-Line.canDrag: not realized
-Line.dragEnded: not realized
-Line.dragLeave: not realized
-Line.dragOver: not realized
-Line.dragStarting: not realized
-Line.dragText: not realized
-Line.drop: not realized
+Line.canDrag: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
+Line.dragEnded: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
+Line.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Line.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Line.dragStarting: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
+Line.dragText: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
+Line.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
@@ -415,15 +415,15 @@ Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 Map.verticalAlignment: 🧩
-Path.allowsDrop: not realized
+Path.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Path.area: ✅
-Path.canDrag: not realized
-Path.dragEnded: not realized
-Path.dragLeave: not realized
-Path.dragOver: not realized
-Path.dragStarting: not realized
-Path.dragText: not realized
-Path.drop: not realized
+Path.canDrag: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
+Path.dragEnded: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
+Path.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Path.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Path.dragStarting: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
+Path.dragText: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
+Path.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
@@ -447,15 +447,15 @@ Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
 Path.verticalAlignment: ✅
-Picker.allowsDrop: not realized
+Picker.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Picker.area: ✅
-Picker.canDrag: not realized
-Picker.dragEnded: not realized
-Picker.dragLeave: not realized
-Picker.dragOver: not realized
-Picker.dragStarting: not realized
-Picker.dragText: not realized
-Picker.drop: not realized
+Picker.canDrag: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started
+Picker.dragEnded: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started
+Picker.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Picker.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Picker.dragStarting: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started
+Picker.dragText: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started
+Picker.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
@@ -479,15 +479,15 @@ Picker.swiped: ✅
 Picker.tapCount: ✅
 Picker.tapped: ✅
 Picker.verticalAlignment: ✅
-Polygon.allowsDrop: not realized
+Polygon.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Polygon.area: ✅
-Polygon.canDrag: not realized
-Polygon.dragEnded: not realized
-Polygon.dragLeave: not realized
-Polygon.dragOver: not realized
-Polygon.dragStarting: not realized
-Polygon.dragText: not realized
-Polygon.drop: not realized
+Polygon.canDrag: ✓ dragAndDrop on Polygon: the views' drag listeners' reports told by the driver, no drag started
+Polygon.dragEnded: ✓ dragAndDrop on Polygon: the views' drag listeners' reports told by the driver, no drag started
+Polygon.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Polygon.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Polygon.dragStarting: ✓ dragAndDrop on Polygon: the views' drag listeners' reports told by the driver, no drag started
+Polygon.dragText: ✓ dragAndDrop on Polygon: the views' drag listeners' reports told by the driver, no drag started
+Polygon.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
@@ -511,15 +511,15 @@ Polygon.swiped: ✅
 Polygon.tapCount: ✅
 Polygon.tapped: ✅
 Polygon.verticalAlignment: ✅
-Polyline.allowsDrop: not realized
+Polyline.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Polyline.area: ✅
-Polyline.canDrag: not realized
-Polyline.dragEnded: not realized
-Polyline.dragLeave: not realized
-Polyline.dragOver: not realized
-Polyline.dragStarting: not realized
-Polyline.dragText: not realized
-Polyline.drop: not realized
+Polyline.canDrag: ✓ dragAndDrop on Polyline: the views' drag listeners' reports told by the driver, no drag started
+Polyline.dragEnded: ✓ dragAndDrop on Polyline: the views' drag listeners' reports told by the driver, no drag started
+Polyline.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Polyline.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Polyline.dragStarting: ✓ dragAndDrop on Polyline: the views' drag listeners' reports told by the driver, no drag started
+Polyline.dragText: ✓ dragAndDrop on Polyline: the views' drag listeners' reports told by the driver, no drag started
+Polyline.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
@@ -543,15 +543,15 @@ Polyline.swiped: ✅
 Polyline.tapCount: ✅
 Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
-ProgressBar.allowsDrop: not realized
+ProgressBar.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.area: ✅
-ProgressBar.canDrag: not realized
-ProgressBar.dragEnded: not realized
-ProgressBar.dragLeave: not realized
-ProgressBar.dragOver: not realized
-ProgressBar.dragStarting: not realized
-ProgressBar.dragText: not realized
-ProgressBar.drop: not realized
+ProgressBar.canDrag: ✓ dragAndDrop on ProgressBar: the views' drag listeners' reports told by the driver, no drag started
+ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the views' drag listeners' reports told by the driver, no drag started
+ProgressBar.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ProgressBar.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the views' drag listeners' reports told by the driver, no drag started
+ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the views' drag listeners' reports told by the driver, no drag started
+ProgressBar.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumn: ✅
 ProgressBar.gridColumnSpan: ✅
@@ -575,15 +575,15 @@ ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowsDrop: not realized
+RadioButton.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 RadioButton.area: ✅
-RadioButton.canDrag: not realized
-RadioButton.dragEnded: not realized
-RadioButton.dragLeave: not realized
-RadioButton.dragOver: not realized
-RadioButton.dragStarting: not realized
-RadioButton.dragText: not realized
-RadioButton.drop: not realized
+RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
+RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
+RadioButton.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+RadioButton.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
+RadioButton.dragText: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
+RadioButton.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 RadioButton.frameChanged: ✅
 RadioButton.gridColumn: ✅
 RadioButton.gridColumnSpan: ✅
@@ -607,15 +607,15 @@ RadioButton.swiped: ✅
 RadioButton.tapCount: ✅
 RadioButton.tapped: ✅
 RadioButton.verticalAlignment: ✅
-Rectangle.allowsDrop: not realized
+Rectangle.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.area: ✅
-Rectangle.canDrag: not realized
-Rectangle.dragEnded: not realized
-Rectangle.dragLeave: not realized
-Rectangle.dragOver: not realized
-Rectangle.dragStarting: not realized
-Rectangle.dragText: not realized
-Rectangle.drop: not realized
+Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Rectangle.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Rectangle.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Rectangle.dragText: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Rectangle.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
@@ -639,15 +639,15 @@ Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
 Rectangle.tapped: ✅
 Rectangle.verticalAlignment: ✅
-ScrollView.allowsDrop: not realized
+ScrollView.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.area: ✅
-ScrollView.canDrag: not realized
-ScrollView.dragEnded: not realized
-ScrollView.dragLeave: not realized
-ScrollView.dragOver: not realized
-ScrollView.dragStarting: not realized
-ScrollView.dragText: not realized
-ScrollView.drop: not realized
+ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the views' drag listeners' reports told by the driver, no drag started
+ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the views' drag listeners' reports told by the driver, no drag started
+ScrollView.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ScrollView.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the views' drag listeners' reports told by the driver, no drag started
+ScrollView.dragText: ✓ dragAndDrop on ScrollView: the views' drag listeners' reports told by the driver, no drag started
+ScrollView.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
@@ -671,15 +671,15 @@ ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
-SearchField.allowsDrop: not realized
+SearchField.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 SearchField.area: ✅
-SearchField.canDrag: not realized
-SearchField.dragEnded: not realized
-SearchField.dragLeave: not realized
-SearchField.dragOver: not realized
-SearchField.dragStarting: not realized
-SearchField.dragText: not realized
-SearchField.drop: not realized
+SearchField.canDrag: ✓ dragAndDrop on SearchField: the views' drag listeners' reports told by the driver, no drag started
+SearchField.dragEnded: ✓ dragAndDrop on SearchField: the views' drag listeners' reports told by the driver, no drag started
+SearchField.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+SearchField.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+SearchField.dragStarting: ✓ dragAndDrop on SearchField: the views' drag listeners' reports told by the driver, no drag started
+SearchField.dragText: ✓ dragAndDrop on SearchField: the views' drag listeners' reports told by the driver, no drag started
+SearchField.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
@@ -703,15 +703,15 @@ SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
-Slider.allowsDrop: not realized
+Slider.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Slider.area: ✅
-Slider.canDrag: not realized
-Slider.dragEnded: not realized
-Slider.dragLeave: not realized
-Slider.dragOver: not realized
-Slider.dragStarting: not realized
-Slider.dragText: not realized
-Slider.drop: not realized
+Slider.canDrag: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
+Slider.dragEnded: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
+Slider.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Slider.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Slider.dragStarting: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
+Slider.dragText: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
+Slider.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridColumnSpan: ✅
@@ -735,15 +735,15 @@ Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.verticalAlignment: ✅
-Stepper.allowsDrop: not realized
+Stepper.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Stepper.area: ✅
-Stepper.canDrag: not realized
-Stepper.dragEnded: not realized
-Stepper.dragLeave: not realized
-Stepper.dragOver: not realized
-Stepper.dragStarting: not realized
-Stepper.dragText: not realized
-Stepper.drop: not realized
+Stepper.canDrag: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
+Stepper.dragEnded: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
+Stepper.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Stepper.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Stepper.dragStarting: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
+Stepper.dragText: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
+Stepper.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
@@ -767,15 +767,15 @@ Stepper.swiped: ✅
 Stepper.tapCount: ✅
 Stepper.tapped: ✅
 Stepper.verticalAlignment: ✅
-Switch.allowsDrop: not realized
+Switch.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Switch.area: ✅
-Switch.canDrag: not realized
-Switch.dragEnded: not realized
-Switch.dragLeave: not realized
-Switch.dragOver: not realized
-Switch.dragStarting: not realized
-Switch.dragText: not realized
-Switch.drop: not realized
+Switch.canDrag: ✓ dragAndDrop on Switch: the views' drag listeners' reports told by the driver, no drag started
+Switch.dragEnded: ✓ dragAndDrop on Switch: the views' drag listeners' reports told by the driver, no drag started
+Switch.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Switch.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Switch.dragStarting: ✓ dragAndDrop on Switch: the views' drag listeners' reports told by the driver, no drag started
+Switch.dragText: ✓ dragAndDrop on Switch: the views' drag listeners' reports told by the driver, no drag started
+Switch.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
@@ -799,15 +799,15 @@ Switch.swiped: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
 Switch.verticalAlignment: ✅
-Text.allowsDrop: not realized
+Text.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Text.area: ✅
-Text.canDrag: not realized
-Text.dragEnded: not realized
-Text.dragLeave: not realized
-Text.dragOver: not realized
-Text.dragStarting: not realized
-Text.dragText: not realized
-Text.drop: not realized
+Text.canDrag: ✓ dragAndDrop on Text: the views' drag listeners' reports told by the driver, no drag started
+Text.dragEnded: ✓ dragAndDrop on Text: the views' drag listeners' reports told by the driver, no drag started
+Text.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Text.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Text.dragStarting: ✓ dragAndDrop on Text: the views' drag listeners' reports told by the driver, no drag started
+Text.dragText: ✓ dragAndDrop on Text: the views' drag listeners' reports told by the driver, no drag started
+Text.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Text.frameChanged: ✅
 Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
@@ -831,15 +831,15 @@ Text.swiped: ✅
 Text.tapCount: ✅
 Text.tapped: ✅
 Text.verticalAlignment: ✅
-TextEditor.allowsDrop: not realized
+TextEditor.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.area: ✅
-TextEditor.canDrag: not realized
-TextEditor.dragEnded: not realized
-TextEditor.dragLeave: not realized
-TextEditor.dragOver: not realized
-TextEditor.dragStarting: not realized
-TextEditor.dragText: not realized
-TextEditor.drop: not realized
+TextEditor.canDrag: ✓ dragAndDrop on TextEditor: the views' drag listeners' reports told by the driver, no drag started
+TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the views' drag listeners' reports told by the driver, no drag started
+TextEditor.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+TextEditor.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+TextEditor.dragStarting: ✓ dragAndDrop on TextEditor: the views' drag listeners' reports told by the driver, no drag started
+TextEditor.dragText: ✓ dragAndDrop on TextEditor: the views' drag listeners' reports told by the driver, no drag started
+TextEditor.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridColumnSpan: ✅
@@ -863,15 +863,15 @@ TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
 TextEditor.verticalAlignment: ✅
-TextField.allowsDrop: not realized
+TextField.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 TextField.area: ✅
-TextField.canDrag: not realized
-TextField.dragEnded: not realized
-TextField.dragLeave: not realized
-TextField.dragOver: not realized
-TextField.dragStarting: not realized
-TextField.dragText: not realized
-TextField.drop: not realized
+TextField.canDrag: ✓ dragAndDrop on TextField: the views' drag listeners' reports told by the driver, no drag started
+TextField.dragEnded: ✓ dragAndDrop on TextField: the views' drag listeners' reports told by the driver, no drag started
+TextField.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+TextField.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+TextField.dragStarting: ✓ dragAndDrop on TextField: the views' drag listeners' reports told by the driver, no drag started
+TextField.dragText: ✓ dragAndDrop on TextField: the views' drag listeners' reports told by the driver, no drag started
+TextField.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
@@ -895,15 +895,15 @@ TextField.swiped: ✅
 TextField.tapCount: ✅
 TextField.tapped: ✅
 TextField.verticalAlignment: ✅
-TimePicker.allowsDrop: not realized
+TimePicker.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.area: ✅
-TimePicker.canDrag: not realized
-TimePicker.dragEnded: not realized
-TimePicker.dragLeave: not realized
-TimePicker.dragOver: not realized
-TimePicker.dragStarting: not realized
-TimePicker.dragText: not realized
-TimePicker.drop: not realized
+TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the views' drag listeners' reports told by the driver, no drag started
+TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the views' drag listeners' reports told by the driver, no drag started
+TimePicker.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+TimePicker.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the views' drag listeners' reports told by the driver, no drag started
+TimePicker.dragText: ✓ dragAndDrop on TimePicker: the views' drag listeners' reports told by the driver, no drag started
+TimePicker.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
@@ -927,15 +927,15 @@ TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
-VStack.allowsDrop: not realized
+VStack.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 VStack.area: ✅
-VStack.canDrag: not realized
-VStack.dragEnded: not realized
-VStack.dragLeave: not realized
-VStack.dragOver: not realized
-VStack.dragStarting: not realized
-VStack.dragText: not realized
-VStack.drop: not realized
+VStack.canDrag: ✓ dragAndDrop on VStack: the views' drag listeners' reports told by the driver, no drag started
+VStack.dragEnded: ✓ dragAndDrop on VStack: the views' drag listeners' reports told by the driver, no drag started
+VStack.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+VStack.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+VStack.dragStarting: ✓ dragAndDrop on VStack: the views' drag listeners' reports told by the driver, no drag started
+VStack.dragText: ✓ dragAndDrop on VStack: the views' drag listeners' reports told by the driver, no drag started
+VStack.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 VStack.frameChanged: ✅
 VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
@@ -959,15 +959,15 @@ VStack.swiped: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
 VStack.verticalAlignment: ✅
-WebView.allowsDrop: not realized
+WebView.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 WebView.area: ✅
-WebView.canDrag: not realized
-WebView.dragEnded: not realized
-WebView.dragLeave: not realized
-WebView.dragOver: not realized
-WebView.dragStarting: not realized
-WebView.dragText: not realized
-WebView.drop: not realized
+WebView.canDrag: ✓ dragAndDrop on WebView: the views' drag listeners' reports told by the driver, no drag started
+WebView.dragEnded: ✓ dragAndDrop on WebView: the views' drag listeners' reports told by the driver, no drag started
+WebView.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+WebView.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+WebView.dragStarting: ✓ dragAndDrop on WebView: the views' drag listeners' reports told by the driver, no drag started
+WebView.dragText: ✓ dragAndDrop on WebView: the views' drag listeners' reports told by the driver, no drag started
+WebView.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 WebView.frameChanged: ✅
 WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
@@ -991,15 +991,15 @@ WebView.swiped: ✅
 WebView.tapCount: ✅
 WebView.tapped: ✅
 WebView.verticalAlignment: ✅
-ZStack.allowsDrop: not realized
+ZStack.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ZStack.area: ✅
-ZStack.canDrag: not realized
-ZStack.dragEnded: not realized
-ZStack.dragLeave: not realized
-ZStack.dragOver: not realized
-ZStack.dragStarting: not realized
-ZStack.dragText: not realized
-ZStack.drop: not realized
+ZStack.canDrag: ✓ dragAndDrop on ZStack: the views' drag listeners' reports told by the driver, no drag started
+ZStack.dragEnded: ✓ dragAndDrop on ZStack: the views' drag listeners' reports told by the driver, no drag started
+ZStack.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ZStack.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+ZStack.dragStarting: ✓ dragAndDrop on ZStack: the views' drag listeners' reports told by the driver, no drag started
+ZStack.dragText: ✓ dragAndDrop on ZStack: the views' drag listeners' reports told by the driver, no drag started
+ZStack.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅

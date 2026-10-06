@@ -75,8 +75,8 @@ and says which call raised it.
 The Java layer declares the host's native methods on `StateUIHost`: the
 activity's start and its lifecycle, the display's frame, what the user does
 to a control - a click, a turn, a slider's move and drag, words typed, a
-Return, a menu asked for and its item chosen - a question's answer, a
-document picker's, a document read and a launch taken, a layout's measure and
+Return, a menu asked for and its item chosen, a drag between views - a
+question's answer, a document picker's, a document read and a launch taken, a layout's measure and
 arrangement, and what an ItemsView's recycler does with its cells
 ([items](items.md)). The head's `JNI_OnLoad` registers them by name, so the
 host's library exports no other symbol, and a native Java declares that

@@ -13,6 +13,8 @@ extension AndroidDriver {
             if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
         case "toggle" where Ability(ability).element == "SplitView":
             return "the host's own entry the scrim's tap and the bar's button call"
+        case "dragAndDrop":
+            return "the views' drag listeners' reports told by the driver, no drag started"
         case "answerFiles":
             return "the relay's result path handed the driver's documents, no picker shown"
         default: break

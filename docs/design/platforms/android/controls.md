@@ -23,6 +23,18 @@ field's listener while the value is being set, so the listener's call during
 that write is the write's echo, and the element reports nothing. A control
 does not keep a flag of its own.
 
+## A drag between views
+
+A view's drag between views is Android's own drag and drop, through one drag
+listener a view (`StateUIDrags`). A view that can be dragged starts a drag
+on a long press - Android's gesture for it - carrying the view's words as
+plain text, its shadow the view, the view's number its local state; a view
+that takes drops takes a drag of plain text as it starts. The listener tells
+the host the drag over the view at each of Android's entering and moving,
+its leaving, the drop with the clip's text, and - for the view whose own
+drag it is - its start and, wherever it ended, its end. The host layer's
+rule makes over once and no leave after a drop.
+
 ## A slider in steps
 
 `SeekBar` moves in whole steps from zero. The host gives it ten thousand steps

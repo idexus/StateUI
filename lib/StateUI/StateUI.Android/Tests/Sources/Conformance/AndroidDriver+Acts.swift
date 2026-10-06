@@ -47,6 +47,8 @@ extension AndroidDriver {
                     Self.dialogs, Self.answer, .object(Java.string(caption)), .object(words.flatMap(Java.string)))
             }
             guard answered else { throw DriverCannot("answer by \(caption)") }
+        case (.dragAndDrop(let target, let across), _):
+            try dragAndDrop(element, onto: target, across: across)
         case (.answerFiles(let names), _):
             let answered = Java.frame {
                 Java.callStaticBool(
@@ -143,4 +145,29 @@ extension AndroidDriver {
     static let setSelection = Java.method(inputConnection, "setSelection", "(II)Z")
     static let commitText = Java.method(inputConnection, "commitText", "(Ljava/lang/CharSequence;I)Z")
 
+
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as the views' drag
+    /// listeners tell it (`StateUIDrags`): the drag starts, comes over the view crossed and goes, comes over the
+    /// target and is let go there, and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func taking(_ id: String) throws -> AndroidView {
+            let found = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? AndroidElement)?.view
+            guard let found, found.offered.takesDrops else { throw DriverCannot(act, on: element) }
+            return found
+        }
+        guard let source = (element.native as? AndroidElement)?.view, let words = source.offered.words else {
+            throw DriverCannot(act, on: element)
+        }
+        source.heardDrag(kind: 0, words: nil)
+        if let across {
+            let crossed = try taking(across)
+            crossed.heardDrag(kind: 2, words: nil)
+            crossed.heardDrag(kind: 3, words: nil)
+        }
+        let landing = try taking(target)
+        landing.heardDrag(kind: 2, words: nil)
+        landing.heardDrag(kind: 4, words: words)
+        source.heardDrag(kind: 1, words: nil)
+    }
 }
