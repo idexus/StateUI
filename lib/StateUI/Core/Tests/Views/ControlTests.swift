@@ -548,6 +548,7 @@ final class ControlTests: XCTestCase {
                 .draggable(text: "Alpha", canDrag: true) {}
                 .onDragEnded {}
                 .onDrop { _ in }
+                .onDrop(files: [FileType("Text", extensions: ["txt"])]) { _ in }
                 .onDragOver {}
                 .onDragLeave {}),
         ]

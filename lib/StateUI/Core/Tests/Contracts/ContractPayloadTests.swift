@@ -26,6 +26,7 @@ final class ContractPayloadTests: XCTestCase {
         check(ViewContract.dragOver)
         check(ViewContract.dragStarting)
         check(ViewContract.drop, [.string("dropped")])
+        check(ViewContract.filesDropped, [[ChosenFile(address: "/Reports/Report.txt", name: "Report.txt")].propValue])
         check(ViewContract.dragEnded)
         check(ViewContract.frameChanged, [.numbers(frame)])
         check(ViewContract.panUpdated, [.enumeration(1), .number(3), .number(4)])
