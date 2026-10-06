@@ -84,8 +84,8 @@ final class StateUIEnvironment {
     }
 
     /**
-     * The language, the region, the locale's tag, the zone, "1" for a 24-hour clock, the week's first day (1 is
-     * Sunday), "1" for metric units, and "1" where the language is written right to left.
+     * The language, the region, the locale's tag, the zone, "1" for a 24-hour clock, the week's first day from
+     * Sunday's 0, "1" for metric units, and "1" where the language is written right to left.
      */
     static String[] locale(Context context) {
         Locale locale = context.getResources().getConfiguration().getLocales().get(0);
@@ -94,7 +94,7 @@ final class StateUIEnvironment {
         return new String[] {
             locale.getLanguage(), locale.getCountry(), locale.toLanguageTag(), TimeZone.getDefault().getID(),
             DateFormat.is24HourFormat(context) ? "1" : "0",
-            Integer.toString(Calendar.getInstance(locale).getFirstDayOfWeek()),
+            Integer.toString(Calendar.getInstance(locale).getFirstDayOfWeek() - Calendar.SUNDAY),
             metric ? "1" : "0", rightToLeft ? "1" : "0",
         };
     }

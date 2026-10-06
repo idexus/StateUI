@@ -83,7 +83,10 @@ version - the name its user gave it in Settings, which tells one terminal of
 a model from another, else the model's code name; the display's
 size in pixels, its density, rotation and refresh rate; the application's
 name, package and version. A device whose smallest width is 600
-density-independent pixels or more is a tablet, any other a phone. The
+density-independent pixels or more is a tablet, any other a phone - the host
+layer's rule for every touch screen, the Web's too. The relay hands the
+device, the locale and the network as the words and numbers the host layer
+reads for every relay ([The environment](../../host/runtime.md#the-environment)). The
 system's dark or light theme is read with them, and the activity is made in
 the matching one: a change of theme makes Android create the activity again,
 and the new one takes the scene over, its controls drawn in the new theme.

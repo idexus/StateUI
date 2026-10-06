@@ -47,6 +47,15 @@ struct EnvironmentPage: View {
     }
 }
 
+/// A page showing the day the user's week starts on.
+struct WeekPage: View {
+    @Environment(\.locale) var locale
+
+    var body: some View {
+        Text("week \(locale.firstDayOfWeek)")
+    }
+}
+
 /// A page showing what the device is called.
 struct DevicePage: View {
     @Environment(\.device) var device
@@ -70,6 +79,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAStartedHostSaysWhatItRealizes", testAStartedHostSaysWhatItRealizes),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
             ("testTheHostReportsTheLocaleTheBatteryAndTheNetwork", testTheHostReportsTheLocaleTheBatteryAndTheNetwork),
+            ("testTheLocaleIsTheHostLayersReadingOfTheRelaysWords", testTheLocaleIsTheHostLayersReadingOfTheRelaysWords),
         ]
     }
 
@@ -224,6 +234,21 @@ final class AndroidRendererTests: XCTestCase {
 }
 
 extension AndroidRendererTests {
+    /// The locale is the host layer's reading of the relay's words - its week starting on the day they name from
+    /// Sunday's 0, as on every host.
+    func testTheLocaleIsTheHostLayersReadingOfTheRelaysWords() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running { WeekPage() }
+            let words = Java.frame {
+                Java.texts(Java.callStaticObject(
+                    JavaAPI.environment, JavaAPI.localeFacts, .object(TestContext.context.reference)))
+            }
+            let locale = try XCTUnwrap(HostLocaleInfo(words: words), "\(words)")
+
+            XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["week \(locale.firstDayOfWeek)"])
+        }
+    }
+
     /// The window's title is what the activity - and its task among the recent ones - is called.
     func testTheWindowsTitleNamesTheActivity() {
         onMainActor {
