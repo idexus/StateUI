@@ -114,6 +114,8 @@ final class AppKitDriver: HostDriver {
             resourceDirectory: Self.pictures, preferences: store, clock: clock.map { clock in { clock.now } },
             reducesMotion: { reducesMotion })
         self.renderer = renderer
+        Self.emptyFiles()
+        renderer.fileToolkit.holdsLaunchesForTesting = true
         AppKitRestorationBroker.shared.host = renderer
         for window in restorable { Self.restore(window) }
         renderer.startForTesting()
@@ -266,5 +268,15 @@ final class AppKitDriver: HostDriver {
         .deletingLastPathComponent()    // Conformance
         .deletingLastPathComponent()    // Tests
         .appendingPathComponent("Resources/Images")
+
+    /// The folder the files a test opens and saves stand in, the process's own.
+    static let files = FileManager.default.temporaryDirectory
+        .appendingPathComponent("stateui-conformance-files-\(ProcessInfo.processInfo.processIdentifier)")
+
+    /// Leaves the files folder empty, so no case reads a file another saved.
+    private static func emptyFiles() {
+        try? FileManager.default.removeItem(at: files)
+        try? FileManager.default.createDirectory(at: files, withIntermediateDirectories: true)
+    }
 }
 #endif

@@ -123,6 +123,18 @@ extension AppKitDriver {
         renderer?.actToolkit.announcedForTesting ?? []
     }
 
+    /// The file dialog AppKit's panel shows now: one that opens or one that saves.
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        renderer?.fileToolkit.showing.map { $0.dialog.kind == .save ? .save : .open }
+    }
+
+    /// What the host handed macOS to launch, in order: an address as written, a file by its name.
+    func launched() throws -> [String] {
+        (renderer?.fileToolkit.launchedForTesting ?? []).map { target in
+            target.contains("://") ? target : URL(fileURLWithPath: target).lastPathComponent
+        }
+    }
+
     /// What the host wrote to its log since it started.
     func logged() throws -> [String] {
         written.lines

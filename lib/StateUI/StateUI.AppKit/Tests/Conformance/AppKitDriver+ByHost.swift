@@ -26,6 +26,8 @@ extension AppKitDriver {
             return "the collection's delegate told, no click"
         case "answer":
             return "the host's response called, no alert shown"
+        case "answerFiles":
+            return "the host's response called with the driver's files, no panel shown"
         case "goBack":
             return "the host's toolbar or sheet entry called, no toolbar item or sheet touched"
         case "activate" where element == "ToolbarItem":
@@ -45,6 +47,9 @@ extension AppKitDriver {
         case "read the menu of Window": return "menu items built from the tree at the read, not the main menu"
         case "read what the screen reader said": return "the host's own list of what it announced"
         case "read a question": return "the captions the host keeps, not the alert's buttons"
+        case "read a file dialog": return "the host's own panel, held unshown"
+        case "read what was launched":
+            return "the host's own record of what it handed macOS, which a test holds back from launching"
         default: break
         }
         if Ability(ability).readsATransform {

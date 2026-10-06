@@ -126,6 +126,26 @@ A choice answers the caption pressed, its cancel's included; a prompt its
 field's words, cut to their bound. A host that shows no window holds the
 alert unshown, answered as a press answers it.
 
+## Files
+
+A file dialog is AppKit's own panel, a sheet on the window the user is
+looking at, waiting its turn among the questions
+([files](../../host/runtime.md#files)). An open panel enables the files of
+every kind's extensions and chooses several only where asked; a save panel
+offers each kind once, by its first extension, under its caption in the
+panel's menu of kinds where there are two or more, and suggests the act's
+name - an empty name is the panel's own. A save's contents are written
+beside the UI thread where the user said, in place, as a sandbox lets an
+application write the file the user chose and not a neighbour swapped in;
+the file is answered once they stand written, or the act fails with the
+system's reason. A chosen file's address is its path; the sandbox keeps it
+the application's while it runs. A file is read beside the UI thread too.
+
+A file or an address is launched through `NSWorkspace`, which answers
+whether an application took it; an address with no scheme is taken by none.
+A host that shows no window holds the panel unshown, answered as the user's
+choice answers it, and a test holds launches back, recording them.
+
 ## The environment
 
 The device, the main display, the application and the system's appearance are

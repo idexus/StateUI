@@ -96,6 +96,9 @@ extension AppKitDriver {
             guard renderer?.actToolkit.showing?.pressForTesting(caption, typing: words) == true else {
                 throw DriverCannot("press \(caption): no question shows it")
             }
+        case (.answerFiles(let names), _):
+            guard let dialog = renderer?.fileToolkit.showing else { throw DriverCannot("answer a file dialog: none shows") }
+            dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
         case (.goBack, _) where element.type == .navigationStack: try controller(of: element).toolbarForTesting
             .performForTesting(AppKitWindowToolbar.back)
         case (.goBack, _) where element.type == .window:
