@@ -40,6 +40,9 @@ class GTKView {
 
     /// The controllers the view listens through, and what hears them; nil while it listens for nothing.
     private(set) var listening: GTKListening?
+
+    /// The view's drags, once it offers or takes one.
+    private(set) var dragAndDrop: GTKDragAndDrop?
     private var onHeard: ((HeardInput) -> Void)?
 
     /// What hears the keyboard come into the view and leave it, and the controller telling it; nil while none does.
@@ -247,6 +250,16 @@ class GTKView {
         let listening = listening ?? GTKListening(widget: widget, number: number)
         listening.listen(for: hearing)
         self.listening = hearing.isEmpty ? nil : listening
+    }
+
+    /// Offers and takes what `offered` says of a drag, `heard` hearing it.
+    /// Design: docs/design/platforms/gtk/input.md#a-drag-between-views
+    func offer(_ offered: DragAndDrop, _ heard: @escaping (HeardInput) -> Void) {
+        guard offered != (dragAndDrop?.offered ?? .none) || dragAndDrop != nil else { return }
+        let dragAndDrop = dragAndDrop ?? GTKDragAndDrop(widget: widget, number: number)
+        dragAndDrop.heard = heard
+        dragAndDrop.offer(offered)
+        self.dragAndDrop = offered == .none ? nil : dragAndDrop
     }
 
     /// What the view heard, handed to what hears it.

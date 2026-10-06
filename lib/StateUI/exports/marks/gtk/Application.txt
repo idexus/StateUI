@@ -8,7 +8,12 @@ Application.currentTime: ✅
 Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
+Application.launchFile: ✓ read a file dialog: the dialog the host holds, which a test never shows
+Application.launchLink: ✓ read a file dialog: the dialog the host holds, which a test never shows
+Application.openFiles: ✓ read a file dialog: the dialog the host holds, which a test never shows
 Application.persistSceneValue: ✅
 Application.persistValue: ✅
 Application.prompt: ✅
+Application.readFile: ✓ read a file dialog: the dialog the host holds, which a test never shows
+Application.saveFile: ✓ read a file dialog: the dialog the host holds, which a test never shows
 Application.utcOffset: ✅

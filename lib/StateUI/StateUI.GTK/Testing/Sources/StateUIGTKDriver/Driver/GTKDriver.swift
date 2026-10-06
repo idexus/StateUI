@@ -87,6 +87,11 @@ final class GTKDriver: HostDriver {
         "read tint of CheckBox": "the tint the host gave the box's node: GTK's style sheet tells no one",
         "read tint of Slider": "the tint the host gave the track's node: GTK's style sheet tells no one",
         "read what the screen reader said": "the host's own list of what it asked GTK to announce",
+        "read a file dialog": "the dialog the host holds, which a test never shows",
+        "read what was launched": "the host's own record of what it handed the desktop, which a test holds back",
+        "answerFiles": "the host's answer handed the driver's files, no dialog shown",
+        "dragAndDrop": "the drag source's and the drop targets' signals told by the driver, no drag GTK began",
+        "dropFiles": "the drop target's signal told the driver's files, no drag GTK began",
         "switchAway": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "switchBack": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "bringToFront": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
@@ -116,6 +121,7 @@ final class GTKDriver: HostDriver {
         written.listen()
         let renderer = GTKRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
+        Self.holdFiles(of: renderer)
         return renderer.runtime.tree
     }
 
@@ -132,6 +138,18 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
+        if case .dropFiles(let names) = act {
+            guard let drop = (element.native as? GTKElement)?.view?.dragAndDrop, drop.offered.takesFiles else {
+                throw DriverCannot(act, on: element)
+            }
+            for name in names { g_file_set_contents(Self.files + "/" + name, name, -1, nil) }
+            return drop.heard?(.filesDropped(names.map { ChosenFile(address: Self.files + "/" + $0, name: $0) })) ?? ()
+        }
+        if case .answerFiles(let names) = act {
+            guard let files = renderer?.fileToolkit, files.held != nil else { throw DriverCannot(act, on: element) }
+            return files.chooseForTesting(names.map { Self.files + "/" + $0 })
+        }
         if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
         if act == .activate, element.type == .menuItem { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
@@ -340,5 +358,33 @@ extension GTKItemsView {
         guard let selection else { return [] }
         let count = g_list_model_get_n_items(selection)
         return (0..<count).filter { gtk_selection_model_is_selected(selection, $0) != 0 }.map { identity(at: $0) }
+    }
+}
+
+extension GTKDriver {
+
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as GTK's controllers
+    /// tell it: the drag begins, comes over the view crossed and leaves it, comes over the target and drops there,
+    /// and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func taking(_ id: String) throws -> GTKDragAndDrop {
+            let found = renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? GTKElement
+            guard let drop = found?.view?.dragAndDrop, drop.offered.takesWords else { throw DriverCannot(act, on: element) }
+            return drop
+        }
+        guard let source = (element.native as? GTKElement)?.view?.dragAndDrop, let words = source.offered.words else {
+            throw DriverCannot(act, on: element)
+        }
+        source.heard?(.dragStarted)
+        if let across {
+            let crossed = try taking(across)
+            crossed.heard?(.dragOver)
+            crossed.heard?(.dragLeft)
+        }
+        let landing = try taking(target)
+        landing.heard?(.dragOver)
+        landing.heard?(.dropped(words))
+        source.heard?(.dragEnded)
     }
 }

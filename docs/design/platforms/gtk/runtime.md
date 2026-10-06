@@ -145,6 +145,21 @@ prompt's field takes the placeholder, the most characters and the keyboard
 its purpose asks for, holds the keyboard as the dialog shows, and Enter in
 it accepts.
 
+## Files
+
+A file dialog is GTK's `GtkFileDialog` - the desktop's own dialog, through
+its portal, where the session has one - over the window the user is in,
+waiting its turn among the questions ([files](../../host/runtime.md#files)).
+One that opens shows every kind's files under one filter; one that saves
+offers each kind under its caption, the first chosen, and suggests the act's
+name. A chosen file's address is its path. GIO writes a save's contents,
+replacing what stood there, and reads a file, each beside the UI thread; the
+file is answered once its contents stand written, or the act fails with
+GIO's reason. A dialog dismissed answers nothing. A file is launched by
+`GtkFileLauncher`, an address by `GtkUriLauncher`, each answering whether an
+application took it; an address with no scheme is taken by none. A test
+holds the dialog and the launches back in the host, which records them.
+
 ## Kept values
 
 The desktop keeps no store an application can use without a schema

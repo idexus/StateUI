@@ -324,8 +324,12 @@ ZStack
   accessibilityHeading
   accessibilityHint
   accessibilityLabel
+  allowsDrop
   area
   automationExcludedWithChildren
+  canDrag
+  dragText
+  droppedFileTypes
   frame
   gridColumn
   gridColumnSpan
@@ -360,6 +364,12 @@ ZStack
   translationY
   verticalAlignment
   width
+  dragEnded()
+  dragLeave()
+  dragOver()
+  dragStarting()
+  drop()
+  filesDropped()
   frameChanged()
   isFocusedChanged()
   panUpdated()
@@ -381,9 +391,14 @@ ZStack
   focus()
   handlerFailed()
   hideOnScreenKeyboard()
+  launchFile()
+  launchLink()
+  openFiles()
   persistSceneValue()
   persistValue()
   prompt()
+  readFile()
+  saveFile()
   scrollTo()
   unfocus()
   utcOffset()

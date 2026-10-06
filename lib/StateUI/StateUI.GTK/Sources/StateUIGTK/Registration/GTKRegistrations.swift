@@ -41,11 +41,14 @@ enum GTKRegistrations {
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()
+        registry.everyElementDragsAndDrops()
+        registry.everyElementTakesDroppedFiles()
         registry.everyElementRaises(VisualElementContract.isFocusedChanged)
     }
 
-    /// The acts this host performs: every host's (`HostActs.performed`) and a list scrolled to an item.
+    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`) and a list
+    /// scrolled to an item.
     static let acts: [any ContractMember] =
-        HostActs.performed + [ItemsViewContract.scrollTo]
+        HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo]
 
 }

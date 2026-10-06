@@ -33,9 +33,12 @@ final class GTKRenderer {
     /// GTK's part of the acts: the clock, the dialogs, the screen reader, the focus, the kept values.
     private(set) lazy var actToolkit = GTKActToolkit(renderer: self)
 
+    /// GTK's part of the files the user opens and saves, and of what the desktop launches.
+    private(set) lazy var fileToolkit = GTKFileToolkit(renderer: self)
+
     /// What performs the acts the application calls, and answers them, by the host layer's rules.
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
         answered: { [unowned self] in runtime.pump.turn() })
 
     /// The application's ID, which the desktop knows it by.

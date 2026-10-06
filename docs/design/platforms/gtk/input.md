@@ -90,3 +90,14 @@ the keyboard moving between a control's own parts tells nothing. A widget
 GTK gives no keyboard focus - a label, a box, a picture - never takes it,
 whoever asks, so its element hears nothing; the act that puts the keyboard
 on it answers that it did not.
+
+## A drag between views
+
+A view's drags are GTK's own controllers. A view that can be dragged holds a
+`GtkDragSource` that copies, whose content - asked as the drag prepares - is
+the view's words as UTF-8 text; its `drag-begin` and `drag-end` say the drag
+started and, wherever it ended, ended. A view taking drops holds a
+`GtkDropTarget` of a string where it takes words and of GDK's list of files
+where it takes files: its `enter` and `motion` say the drag is over it, its
+`leave` that it went, and its `drop` hands over the words or each file's
+path. The host layer's rule makes over once and no leave after a drop.

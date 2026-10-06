@@ -9,9 +9,11 @@
 extension GTKElement {
     func configureGestures() {
         guard let view else { return }
-        view.hear(element.hearing) { [weak self] heard in
+        let heard: (HeardInput) -> Void = { [weak self] heard in
             guard let self, let host else { return }
             element.hear(heard, in: host.runtime)
         }
+        view.hear(element.hearing, heard)
+        view.offer(element.dragAndDrop, heard)
     }
 }
