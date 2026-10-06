@@ -75,7 +75,7 @@ The scene, the window and the page an application is made of, the arrangements a
 <!-- structure:begin -->
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](Application.md) | 17 | 7 ✅ · 10 ✓ | 7 ✅ · 10 ✓ | 6 ✅ · 4 ✓ | 15 ✅ · 2 ✓ | 11 ✅ · 1 ✓ | 12 ✅ |
+| [Application](Application.md) | 17 | 7 ✅ · 10 ✓ | 7 ✅ · 10 ✓ | 6 ✅ · 9 ✓ | 15 ✅ · 2 ✓ | 11 ✅ · 1 ✓ | 12 ✅ |
 | [ContextMenu](ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Divider](Divider.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -96,9 +96,9 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ · 9 – | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – | 7 ✅ · 15 – |
 | ✅ |  | 67 | 70 | 42 | 113 | 75 | 87 |
-| ✓ |  | 20 | 17 | 10 | 2 | 7 | 0 |
+| ✓ |  | 20 | 17 | 15 | 2 | 7 | 0 |
 | – |  | 1 | 18 | 13 | 0 | 27 | 20 |
-| **Met** | 126 | **88** | **105** | **65** | **115** | **109** | **107** |
+| **Met** | 126 | **88** | **105** | **70** | **115** | **109** | **107** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 

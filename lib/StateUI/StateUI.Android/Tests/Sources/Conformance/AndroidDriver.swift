@@ -66,6 +66,9 @@ final class AndroidDriver: HostDriver {
     /// What the hosts wrote to their log since the last one started.
     private let written = AndroidLogLines()
 
+    /// The address of the folder the files a case opens and saves stand in, a slash after it.
+    private(set) var filesFolder = ""
+
     var register: HostRegister { AndroidRealization.register }
 
     func start(
@@ -84,6 +87,8 @@ final class AndroidDriver: HostDriver {
         Java.call(window.reference, Self.setContentView, .object(root.reference))
         Java.callStatic(Self.testPixels, Self.paintNothing, .object(window.reference))
         AndroidPersistence.writeScenes("", context: window.reference)  // no scenes an earlier case kept
+        Java.callStatic(Self.files, Self.holdForTesting)
+        filesFolder = Java.frame { Java.text(Java.callStaticObject(Self.testFiles, Self.emptied, .object(window.reference))) }
         renderer.show()
         layOut()
         // The activity comes to the front: onResume.
@@ -165,6 +170,20 @@ final class AndroidDriver: HostDriver {
             field: words[2])
     }
 
+    /// The document picker the relay holds: one that opens or one that saves.
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        switch Java.callStaticInt(Self.files, Self.heldForTesting) {
+        case 0: .open
+        case 1: .save
+        default: nil
+        }
+    }
+
+    /// What the relay handed the system to launch, in order: an address as written, a document by its name.
+    func launched() throws -> [String] {
+        Java.frame { Java.texts(Java.callStaticObject(Self.files, Self.launchedForTesting)) }
+    }
+
     /// The colour the window shows at `point` of the view, as the user sees it (`TestPixels.color`); nil where the
     /// view draws nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
@@ -201,6 +220,14 @@ final class AndroidDriver: HostDriver {
     static let answer = Java.staticMethod(
         dialogs, "answer", "(Ljava/lang/String;Ljava/lang/String;)Z")
     static let dismissAll = Java.staticMethod(dialogs, "dismissAll", "()V")
+    static let files = Java.findClass("stateui/android/StateUIFiles")
+    static let holdForTesting = Java.staticMethod(files, "holdForTesting", "()V")
+    static let heldForTesting = Java.staticMethod(files, "heldForTesting", "()I")
+    static let answerForTesting = Java.staticMethod(
+        files, "answerForTesting", "(Landroid/content/Context;[Ljava/lang/String;)Z")
+    static let launchedForTesting = Java.staticMethod(files, "launchedForTesting", "()[Ljava/lang/String;")
+    static let testFiles = Java.findClass("stateui/android/test/TestFiles")
+    static let emptied = Java.staticMethod(testFiles, "emptied", "(Landroid/content/Context;)Ljava/lang/String;")
     static let setContentView = Java.method(
         Java.findClass("android/app/Activity"), "setContentView", "(Landroid/view/View;)V")
     static let looper = Java.findClass("stateui/android/test/TestLooper")

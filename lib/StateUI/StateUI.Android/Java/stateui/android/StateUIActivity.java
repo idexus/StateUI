@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -77,6 +78,12 @@ public class StateUIActivity extends Activity {
     public void onConfigurationChanged(Configuration configuration) {
         super.onConfigurationChanged(configuration);
         StateUIHost.configured();
+    }
+
+    /** A document picker's result reaches the files it was asked for; any other the activity's own. */
+    @Override
+    protected void onActivityResult(int request, int result, Intent data) {
+        if (!StateUIFiles.result(this, request, result, data)) super.onActivityResult(request, result, data);
     }
 
     /** Before the system's own predictive back: the host goes back, or the activity does as it always does. */

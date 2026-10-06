@@ -124,6 +124,25 @@ web view waits the same way, until the page answers. A ticket is one number
 across the process, so an answer that arrives after its renderer has gone
 answers nothing of another's.
 
+## Files
+
+A file dialog is the system's document picker, started for its result over
+the activity and waiting its turn among the questions
+([files](../../host/runtime.md#files)); the activity hands its result to the
+relay by the request's code, and the picker answers under its ticket. One
+that opens asks for the MIME types of every kind's extensions - any document
+where none is known - and several only where asked; one that saves suggests
+the act's name and the type of its extension, and the contents are written
+to the document the user made, beside the UI thread, before it is answered.
+A document's address is its `content:` URI and its name the one its provider
+shows; the leave to read it lasts while the application runs. A document is
+read beside the UI thread; every answer comes back on it.
+
+A document is launched by a view intent with leave to read it, an address by
+a view intent of its own; each answers whether an application took it. A
+test holds the picker and the launches back in the relay, which records
+them.
+
 ## The application's own acts
 
 An act no control of the library's stands behind - one the application's

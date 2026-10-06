@@ -47,6 +47,13 @@ extension AndroidDriver {
                     Self.dialogs, Self.answer, .object(Java.string(caption)), .object(words.flatMap(Java.string)))
             }
             guard answered else { throw DriverCannot("answer by \(caption)") }
+        case (.answerFiles(let names), _):
+            let answered = Java.frame {
+                Java.callStaticBool(
+                    Self.files, Self.answerForTesting, .object(TestContext.window.reference),
+                    .object(Java.array(of: JavaAPI.string, names.map { Java.string(filesFolder + $0) })))
+            }
+            guard answered else { throw DriverCannot("answer a file dialog: none is held") }
         case (.choose(let place), let picker as AndroidPickerView):
             // The row after the title's, as the user's tap on it in the open list chooses it.
             Java.callStatic(Self.testPicker, Self.choosePicker, .object(picker.reference), .int(Int32(place + 1)))

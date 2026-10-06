@@ -101,9 +101,11 @@ none, and takes only theirs off the device.
 ## What goes past Android
 
 The driver hands the activity's lifecycle - the window's phases, its closing -
-to the host's own entry, as no activity moves in a test's window. A few reads
-are the host's or its relay's own: a slider's range, which the SeekBar keeps
-only as steps, a picker's rows, and what the relay keeps of a dialog. The
+to the host's own entry, as no activity moves in a test's window, and a
+document picker's answer to the relay's result path, as no picker is shown. A
+few reads are the host's or its relay's own: a slider's range, which the
+SeekBar keeps only as steps, a picker's rows, what the relay keeps of a
+dialog, the document picker it holds and what it launched. The
 driver names each (`byHost`), and a member a case proves only through them is
 the host's own - ✓ - never ✅. A frame report reads where Android holds the
 view, not where the host placed it last.

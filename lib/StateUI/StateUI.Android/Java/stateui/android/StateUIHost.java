@@ -86,6 +86,15 @@ final class StateUIHost {
      */
     static native void answered(long ticket, boolean accepted, String words);
 
+    /** The document picker under `ticket` closed: the documents chosen, by address and name, or why it failed. */
+    static native void filesChosen(long ticket, String[] addresses, String[] names, String failure);
+
+    /** The document read under `ticket`: its bytes, or why they could not be read. */
+    static native void fileRead(long ticket, byte[] bytes, String failure);
+
+    /** What was launched under `ticket` was taken by an application, or not. */
+    static native void launched(long ticket, boolean taken);
+
     /**
      * What the user did to a view, as `StateUIGestures` numbers its kind: a tap and its place in its run; a pinch's
      * phase, its scale since the last and where it is centred; the pointer entering, moving, pressing, releasing or

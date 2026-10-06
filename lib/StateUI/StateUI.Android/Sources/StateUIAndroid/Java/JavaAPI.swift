@@ -166,6 +166,13 @@ enum JavaAPI {
         dialogs, "prompt",
         "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;)V")
 
+    static let files = Java.findClass("stateui/android/StateUIFiles")
+    static let openFiles = Java.staticMethod(files, "open", "(Landroid/content/Context;J[Ljava/lang/String;Z)V")
+    static let saveFile = Java.staticMethod(
+        files, "save", "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;[B)V")
+    static let readFile = Java.staticMethod(files, "read", "(Landroid/content/Context;JLjava/lang/String;)V")
+    static let launch = Java.staticMethod(files, "launch", "(Landroid/content/Context;JLjava/lang/String;Z)V")
+
     static let store = Java.findClass("stateui/android/StateUIStore")
     static let readStore = Java.staticMethod(
         store, "read", "(Landroid/content/Context;[Ljava/lang/String;)[Ljava/lang/String;")
