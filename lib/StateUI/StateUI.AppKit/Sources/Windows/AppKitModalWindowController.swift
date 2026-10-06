@@ -50,6 +50,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
             content.frame = NSRect(origin: .zero, size: window.contentLayoutRect.size)
             content.autoresizingMask = [.width, .height]
             window.contentView = content
+            (content as? AppKitHitTestView)?.drops = AppKitDrops { [weak host = node.host] in host?.dropTakers() ?? [:] }
         }
         window.title = node.element.visiblePage?.value(.title)?.string ?? "StateUI"
     }

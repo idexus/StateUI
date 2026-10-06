@@ -26,6 +26,8 @@ extension AppKitDriver {
             return "the collection's delegate told, no click"
         case "answer":
             return "the host's response called, no alert shown"
+        case "dragAndDrop":
+            return "the drag source and the window's drop routing told by the driver, no dragging session"
         case "answerFiles":
             return "the host's response called with the driver's files, no panel shown"
         case "goBack":

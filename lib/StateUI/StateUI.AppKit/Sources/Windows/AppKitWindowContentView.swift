@@ -28,6 +28,28 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     /// What lies over the whole material, in `materialTint`.
     private var materialTintView: NSView?
 
+    /// The window's drags between views, where this view is the window's root.
+    /// Design: docs/design/platforms/appkit/input.md#a-drag-between-views
+    var drops: AppKitDrops? {
+        didSet { drops == nil ? unregisterDraggedTypes() : registerForDraggedTypes([.string]) }
+    }
+
+    override func draggingEntered(_ sender: any NSDraggingInfo) -> NSDragOperation {
+        drops?.entered(at: sender.draggingLocation, carrying: sender.words, in: self) ?? []
+    }
+
+    override func draggingUpdated(_ sender: any NSDraggingInfo) -> NSDragOperation {
+        drops?.moved(to: sender.draggingLocation, carrying: sender.words, in: self) ?? []
+    }
+
+    override func draggingExited(_ sender: (any NSDraggingInfo)?) {
+        drops?.exited()
+    }
+
+    override func performDragOperation(_ sender: any NSDraggingInfo) -> Bool {
+        drops?.dropped(sender.words) ?? false
+    }
+
     /// Whether the desktop shows through the window: its material lies under
     /// the page, wherever the page leaves it uncovered or paints a colour it
     /// shows through - in `materialTint`, where one is written.

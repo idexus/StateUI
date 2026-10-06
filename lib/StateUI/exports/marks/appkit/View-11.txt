@@ -15,10 +15,10 @@ CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅
 ColorBox.area: ✅
 ColorBox.frameChanged: ✅
-DatePicker.canDrag: not realized
-DatePicker.dragEnded: not realized
-DatePicker.dragStarting: not realized
-DatePicker.dragText: not realized
+DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
+DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
+DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
+DatePicker.dragText: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
 DatePicker.frameChanged: ✅
 DatePicker.margin: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
@@ -28,10 +28,10 @@ HStack.tapped: ✓ tap on HStack: handed to the host's recognizer or handler, no
 Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridRow: ✅
-ItemsView.allowsDrop: not realized
-ItemsView.dragLeave: not realized
-ItemsView.dragOver: not realized
-ItemsView.drop: not realized
+ItemsView.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+ItemsView.dragLeave: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+ItemsView.dragOver: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+ItemsView.drop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
 ItemsView.frameChanged: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.verticalAlignment: ✅
@@ -46,10 +46,10 @@ Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
 Picker.area: ✅
 Picker.frameChanged: ✅
-Polygon.canDrag: not realized
-Polygon.dragEnded: not realized
-Polygon.dragStarting: not realized
-Polygon.dragText: not realized
+Polygon.canDrag: ✓ dragAndDrop on Polygon: the drag source and the window's drop routing told by the driver, no dragging session
+Polygon.dragEnded: ✓ dragAndDrop on Polygon: the drag source and the window's drop routing told by the driver, no dragging session
+Polygon.dragStarting: ✓ dragAndDrop on Polygon: the drag source and the window's drop routing told by the driver, no dragging session
+Polygon.dragText: ✓ dragAndDrop on Polygon: the drag source and the window's drop routing told by the driver, no dragging session
 Polygon.frameChanged: ✅
 Polygon.margin: ✅
 Polyline.pinchUpdated: ✓ pinch on Polyline: handed to the host's recognizer or handler, no NSEvent sent
@@ -59,10 +59,10 @@ RadioButton.tapped: ✓ tap on RadioButton: handed to the host's recognizer or h
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridRow: ✅
-ScrollView.allowsDrop: not realized
-ScrollView.dragLeave: not realized
-ScrollView.dragOver: not realized
-ScrollView.drop: not realized
+ScrollView.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+ScrollView.dragLeave: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+ScrollView.dragOver: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+ScrollView.drop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
 ScrollView.frameChanged: ✅
 ScrollView.horizontalAlignment: ✅
 ScrollView.verticalAlignment: ✅
@@ -87,10 +87,10 @@ Text.pointerPressed: ✓ hover on Text: handed to the host's recognizer or handl
 Text.pointerReleased: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.area: ✅
 TextEditor.frameChanged: ✅
-TextField.canDrag: not realized
-TextField.dragEnded: not realized
-TextField.dragStarting: not realized
-TextField.dragText: not realized
+TextField.canDrag: ✓ dragAndDrop on TextField: the drag source and the window's drop routing told by the driver, no dragging session
+TextField.dragEnded: ✓ dragAndDrop on TextField: the drag source and the window's drop routing told by the driver, no dragging session
+TextField.dragStarting: ✓ dragAndDrop on TextField: the drag source and the window's drop routing told by the driver, no dragging session
+TextField.dragText: ✓ dragAndDrop on TextField: the drag source and the window's drop routing told by the driver, no dragging session
 TextField.frameChanged: ✅
 TextField.margin: ✅
 TimePicker.pinchUpdated: ✓ pinch on TimePicker: handed to the host's recognizer or handler, no NSEvent sent

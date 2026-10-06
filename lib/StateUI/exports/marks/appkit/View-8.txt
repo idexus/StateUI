@@ -5,10 +5,10 @@ Button.tapped: ✓ tap on Button: handed to the host's recognizer or handler, no
 Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridRow: ✅
-CheckBox.allowsDrop: not realized
-CheckBox.dragLeave: not realized
-CheckBox.dragOver: not realized
-CheckBox.drop: not realized
+CheckBox.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+CheckBox.dragLeave: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+CheckBox.dragOver: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+CheckBox.drop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
 CheckBox.frameChanged: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.verticalAlignment: ✅
@@ -28,10 +28,10 @@ Grid.gridColumnSpan: ✅
 Grid.gridRowSpan: ✅
 HStack.area: ✅
 HStack.frameChanged: ✅
-Image.canDrag: not realized
-Image.dragEnded: not realized
-Image.dragStarting: not realized
-Image.dragText: not realized
+Image.canDrag: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session
+Image.dragEnded: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session
+Image.dragStarting: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session
+Image.dragText: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session
 Image.frameChanged: ✅
 Image.margin: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
@@ -40,10 +40,10 @@ Line.tapped: ✓ tap on Line: handed to the host's recognizer or handler, no NSE
 Map.frameChanged: ✅
 Map.gridColumn: ✅
 Map.gridRow: ✅
-Path.allowsDrop: not realized
-Path.dragLeave: not realized
-Path.dragOver: not realized
-Path.drop: not realized
+Path.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+Path.dragLeave: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+Path.dragOver: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+Path.drop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
 Path.frameChanged: ✅
 Path.horizontalAlignment: ✅
 Path.verticalAlignment: ✅
@@ -63,10 +63,10 @@ ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRowSpan: ✅
 RadioButton.area: ✅
 RadioButton.frameChanged: ✅
-Rectangle.canDrag: not realized
-Rectangle.dragEnded: not realized
-Rectangle.dragStarting: not realized
-Rectangle.dragText: not realized
+Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Rectangle.dragText: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Rectangle.frameChanged: ✅
 Rectangle.margin: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
@@ -76,10 +76,10 @@ Slider.tapped: ✓ tap on Slider: handed to the host's recognizer or handler, no
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
-Switch.allowsDrop: not realized
-Switch.dragLeave: not realized
-Switch.dragOver: not realized
-Switch.drop: not realized
+Switch.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+Switch.dragLeave: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+Switch.dragOver: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+Switch.drop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
 Switch.frameChanged: ✅
 Switch.horizontalAlignment: ✅
 Switch.verticalAlignment: ✅
@@ -100,9 +100,9 @@ VStack.gridColumnSpan: ✅
 VStack.gridRowSpan: ✅
 WebView.area: ✅
 WebView.frameChanged: ✅
-ZStack.canDrag: not realized
-ZStack.dragEnded: not realized
-ZStack.dragStarting: not realized
-ZStack.dragText: not realized
+ZStack.canDrag: ✓ dragAndDrop on ZStack: the drag source and the window's drop routing told by the driver, no dragging session
+ZStack.dragEnded: ✓ dragAndDrop on ZStack: the drag source and the window's drop routing told by the driver, no dragging session
+ZStack.dragStarting: ✓ dragAndDrop on ZStack: the drag source and the window's drop routing told by the driver, no dragging session
+ZStack.dragText: ✓ dragAndDrop on ZStack: the drag source and the window's drop routing told by the driver, no dragging session
 ZStack.frameChanged: ✅
 ZStack.margin: ✅

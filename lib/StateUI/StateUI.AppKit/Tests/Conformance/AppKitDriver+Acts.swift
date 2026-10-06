@@ -96,6 +96,8 @@ extension AppKitDriver {
             guard renderer?.actToolkit.showing?.pressForTesting(caption, typing: words) == true else {
                 throw DriverCannot("press \(caption): no question shows it")
             }
+        case (.dragAndDrop(let target, let across), _):
+            try dragAndDrop(element, onto: target, across: across)
         case (.answerFiles(let names), _):
             guard let dialog = renderer?.fileToolkit.showing else { throw DriverCannot("answer a file dialog: none shows") }
             dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
@@ -248,6 +250,27 @@ extension AppKitDriver {
         else { throw DriverCannot("submit a field with no editor") }
         editor.insertNewline(nil)
     }
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as AppKit's dragging
+    /// session tells it: its source starts, the window's root hears the drag over each view's middle and let go
+    /// there, and the source ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        let native = element.native as? AppKitElement
+        guard let source = native?.dragSource, let root = native?.view?.window?.contentView,
+              let drops = (root as? AppKitWindowContentView)?.drops ?? (root as? AppKitHitTestView)?.drops
+        else { throw DriverCannot(act, on: element) }
+        func middle(_ id: String) throws -> NSPoint {
+            guard let view = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? AppKitElement)?.view else {
+                throw DriverCannot(act, on: element)
+            }
+            return view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil)
+        }
+        source.started()
+        _ = drops.entered(at: try middle(across ?? target), carrying: source.words, in: root)
+        if across != nil { _ = drops.moved(to: try middle(target), carrying: source.words, in: root) }
+        _ = drops.dropped(source.words)
+        source.ended()
+    }
 }
 
 extension NSPoint {
@@ -255,5 +278,6 @@ extension NSPoint {
     init(_ point: Point) {
         self.init(x: point.x, y: point.y)
     }
+
 }
 #endif

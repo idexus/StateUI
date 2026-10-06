@@ -103,6 +103,7 @@ final class AppKitWindowController: NSWindowController {
         window.isReleasedWhenClosed = false
         super.init(window: window)
 
+        content.drops = AppKitDrops { [weak self] in self?.host?.dropTakers() ?? [:] }
         window.delegate = self
         configureChrome(window)
         // Tab and Shift-Tab go through the views as they stand on screen: AppKit works the loop out.

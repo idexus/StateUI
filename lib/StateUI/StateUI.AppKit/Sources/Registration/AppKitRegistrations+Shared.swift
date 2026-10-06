@@ -15,6 +15,7 @@ extension AppKitRegistrations {
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()
+        registry.everyElementDragsAndDrops()
         registry.everyElementRealizes(VisualElementContract.ignoresInput)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.opacity)

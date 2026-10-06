@@ -303,8 +303,11 @@ WebView
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  allowsDrop
   area
   automationExcludedWithChildren
+  canDrag
+  dragText
   frame
   gridColumn
   gridColumnSpan
@@ -340,6 +343,11 @@ WebView
   translationY
   verticalAlignment
   width
+  dragEnded()
+  dragLeave()
+  dragOver()
+  dragStarting()
+  drop()
   frameChanged()
   isFocusedChanged()
   panUpdated()
