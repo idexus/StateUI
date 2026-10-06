@@ -86,6 +86,13 @@
     /// What the platform's screen reader was told to say, in order, since the host started.
     func announced() throws -> [String]
 
+    /// The file dialog the window of `element` shows now; nil where it shows none.
+    func fileDialog(over element: MountedElement) throws -> FileDialog?
+
+    /// What the host handed the system to launch, in order, since the host started: an address as written, a file
+    /// by its name.
+    func launched() throws -> [String]
+
     /// The colour `element` shows at `point`, in its own coordinates; nil where it shows nothing there. Asked only of
     /// what StateUI draws itself - a canvas, a shape, a box's fill - never of a native control's look.
     func color(of element: MountedElement, at point: Point) throws -> Color?
@@ -152,6 +159,14 @@ extension HostDriver {
         throw DriverCannot("read what the screen reader said")
     }
 
+    public func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        throw DriverCannot("read a file dialog")
+    }
+
+    public func launched() throws -> [String] {
+        throw DriverCannot("read what was launched")
+    }
+
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
         throw DriverCannot("read the colour of \(element.type.name)")
     }
@@ -190,4 +205,12 @@ public struct Question: Equatable, Sendable {
         self.buttons = buttons.sorted()
         self.field = field
     }
+}
+
+/// A file dialog a window shows the user: one that opens files, or one that saves.
+public enum FileDialog: Equatable, Sendable {
+    /// It asks for files to open.
+    case open
+    /// It asks for a place to save.
+    case save
 }

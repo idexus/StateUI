@@ -63,6 +63,9 @@ final class WinUIDriver: HostDriver {
     ) -> MountedTree {
         written.listen()
         Self.emptyStore()
+        Self.emptyFiles()
+        stateui_winui_hold_launches(true)
+        closeFileDialogs()
         let renderer = WinUIRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         return renderer.runtime.tree
@@ -159,6 +162,7 @@ final class WinUIDriver: HostDriver {
             }
             try state(of: element, minimized: false, activated: true)
         case (.answer(let caption, let words), _): try answer(caption, typing: words)
+        case (.answerFiles(let names), _): try answerFiles(names)
         default: throw DriverCannot(act, on: element)
         }
     }
@@ -272,6 +276,33 @@ final class WinUIDriver: HostDriver {
         throw DriverCannot("answer by \(caption)")
     }
 
+    /// Answers the file dialog showing as the user does, by the files of `names` in the driver's folder - none
+    /// cancels it: Windows shows its dialog a moment after it is asked for, and a dialog just shown may not take its
+    /// answer yet, so the answer is given again until the dialog is gone.
+    private func answerFiles(_ names: [String]) throws {
+        let paths = names.map { Self.files + "\\" + $0 }
+        var answering: Int64 = 0
+        for _ in 0..<150 {
+            let answered = WinUIStrings.withCStrings(paths) { pointers in
+                pointers.withUnsafeBufferPointer {
+                    stateui_winui_answer_file_dialog(answering, $0.baseAddress, Int32(paths.count))
+                }
+            }
+            if answered == 0, answering != 0 { return }
+            answering = answered
+            WinUITestHost.pump(0.1)
+        }
+        throw DriverCannot("answer a file dialog by \(names)")
+    }
+
+    /// Cancels a file dialog a case before left showing, so it stands over no other case.
+    private func closeFileDialogs() {
+        for _ in 0..<50 where stateui_winui_file_dialog() >= 0 {
+            _ = stateui_winui_answer_file_dialog(0, nil, 0)
+            WinUITestHost.pump(0.05)
+        }
+    }
+
     /// The place of the dialog's button of `caption`: its accept 0, its cancel 1, its choices from 2; nil for none.
     private static func button(of caption: String, in asked: WinUIAsked) -> Int32? {
         if caption == asked.accept { return 0 }
@@ -301,6 +332,22 @@ final class WinUIDriver: HostDriver {
         stateui_winui_set_store(folder)
         return folder
     }()
+
+    /// The folder the files a test opens and saves stand in, its own and empty at each start.
+    static let files: String = {
+        let folder = FileManager.default.temporaryDirectory
+            .appendingPathComponent("stateui-conformance-files-\(ProcessInfo.processInfo.processIdentifier)").path
+            .replacingOccurrences(of: "/", with: "\\")
+        try? FileManager.default.createDirectory(atPath: folder, withIntermediateDirectories: true)
+        stateui_winui_keep_test_files_in(folder)
+        return folder
+    }()
+
+    private static func emptyFiles() {
+        for name in (try? FileManager.default.contentsOfDirectory(atPath: files)) ?? [] {
+            try? FileManager.default.removeItem(atPath: files + "\\" + name)
+        }
+    }
 
     private static func emptyStore() {
         for file in [WinUIPersistence.valuesFile, WinUIPersistence.scenesFile] {

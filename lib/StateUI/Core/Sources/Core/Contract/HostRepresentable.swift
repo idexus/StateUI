@@ -139,6 +139,27 @@ extension String: HostRepresentable {
     public static func list(from value: PropValue) -> [String]? { value.strings }
 }
 
+extension UInt8: HostRepresentable {
+    /// A byte, as every number crosses: a Double.
+    public var propValue: PropValue { .number(Double(self)) }
+
+    /// A number from 0 to 255 with no fraction, or nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .number(let value) = propValue, let byte = UInt8(exactly: value) else { return nil }
+
+        self = byte
+    }
+
+    /// Bytes cross as one run of bytes - a file's contents.
+    /// - Parameter list: the bytes, in order.
+    public static func propValue(of list: [UInt8]) -> PropValue { .bytes(list) }
+
+    /// The run of bytes, or nil for anything else.
+    /// - Parameter value: what the host sent.
+    public static func list(from value: PropValue) -> [UInt8]? { value.bytes }
+}
+
 extension Optional: HostRepresentable where Wrapped: HostRepresentable {
     /// The value, or nothing.
     public var propValue: PropValue { self?.propValue ?? .nothing }

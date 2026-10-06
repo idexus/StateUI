@@ -152,6 +152,9 @@ enum PatchDump {
         case .strings(let strings):
             guard !strings.isEmpty else { return "strings []" }
             return "strings " + strings.map { "\"\($0)\"" }.joined(separator: ",")
+        case .bytes(let bytes):
+            guard !bytes.isEmpty else { return "bytes []" }
+            return "bytes " + bytes.map(hex2).joined()
         case .name(let name):
             return "name \"\(name)\""
         case .enumeration(let member):

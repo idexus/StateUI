@@ -34,6 +34,7 @@ DrivenReadingSample.swift 99af12687b7517ee
 DrivenSample.swift 2e5ae190e45a0758
 EngineSample.swift ca2415c7a8d40401
 EnvironmentSample.swift 8f1610dd6f570bb2
+FilesSample.swift d8dc8f8128cd0593
 FoundationProbeSample.swift 53fe7a3368cb73e8
 GalleryViewSample.swift dd523cffc1d09ec0
 GeometryReaderSample.swift e8e33f2e98f447f4

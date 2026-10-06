@@ -179,6 +179,52 @@ modal page. `await` determines sequencing: two actions queued together start
 in queue order but may finish independently; awaiting the first before issuing
 the second makes the dependency explicit.
 
+## Files and links
+
+The dialogs that open and save files are dialogs too, awaited the same way:
+
+```swift
+struct ReportPage: View {
+    @State private var report = "<h1>Report</h1>"
+    @State private var opened = ""
+
+    var body: some View {
+        VStack {
+            Button("Save report…").onClicked {
+                let page = FileType("HTML page", extensions: ["html"])
+                let saved = try await Dialogs.saveFile(
+                    Array(report.utf8), name: "Report", types: [page])
+                if let saved { try await saved.launch() }
+            }
+            Button("Open…").onClicked {
+                guard let file = try await Dialogs.openFile() else { return }
+                opened = String(decoding: try await file.read(), as: UTF8.self)
+            }
+            Button("Help").onClicked {
+                try await Links.launch("https://www.swift.org")
+            }
+        }
+    }
+}
+```
+
+`Dialogs.openFile` answers the `ChosenFile` the user picked, or `nil` on
+cancellation; `Dialogs.openFiles` answers as many as they pick, none on
+cancellation. A `FileType` gives a kind of file its caption and extensions;
+the dialog that opens shows only those kinds, the one that saves offers them
+with the first chosen. No kind means any file.
+
+`Dialogs.saveFile` takes the contents first and writes them where the user
+says, answering the file saved or `nil`. Its name gains the first kind's
+extension where it ends in none of theirs.
+
+A `ChosenFile` shows only its `name`. Where it stands belongs to the platform -
+a path, a document's address, a browser's file - so the application reads it
+with `read()` and hands it to the system with `launch()`, which opens it in
+the application the system gives its kind. `Links.launch` does the same for an
+address. Both answer whether an application took it. A chosen file stays good
+while the application runs.
+
 ## Host-extension actions
 
 An application reaches its own host code through acts it declares in a tier

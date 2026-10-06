@@ -164,6 +164,19 @@
         return try driver.announced()
     }
 
+    /// The file dialog the window shows now; nil where it shows none.
+    public func fileDialog() throws -> FileDialog? {
+        guard let root = tree?.root else { return nil }
+        note("read a file dialog")
+        return try driver.fileDialog(over: root)
+    }
+
+    /// What the host handed the system to launch, in order: an address as written, a file by its name.
+    public func launched() throws -> [String] {
+        note("read what was launched")
+        return try driver.launched()
+    }
+
     /// The colour `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
         try driver.color(of: element, at: point)

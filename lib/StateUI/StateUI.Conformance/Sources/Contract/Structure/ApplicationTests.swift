@@ -6,8 +6,9 @@
 
 /// `ApplicationContract` on a host: the application runs, and each act its host does for it with no control behind it
 /// answers as the contract says - every question shown and answered as the user answers it, cancelled as the user
-/// cancels it; the clock, the zone and a zone's distance from UTC; a word to the screen reader; the keyboard taken
-/// down; a value kept for the next launch; a handler's failure reported.
+/// cancels it; a file saved where the user says, opened and read back; an address and a file launched; the clock, the
+/// zone and a zone's distance from UTC; a word to the screen reader; the keyboard taken down; a value kept for the
+/// next launch; a handler's failure reported.
 @_spi(Host) public enum ApplicationTests: ConformanceFamily {
     public static let name = "Application"
 
@@ -160,6 +161,122 @@
                 try s.perform(.answer("Yes"), on: window)
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["first", "second true"])
+            },
+            ConformanceCase("aFileSavedIsOpenedAndReadBack", proves: [
+                Covered(ApplicationContract.saveFile), Covered(ApplicationContract.openFiles),
+                Covered(ApplicationContract.readFile),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let said = Received<String>()
+                let text = FileType("Text", extensions: ["txt"])
+                s.start {
+                    VStack {
+                        Button("Save").onClicked {
+                            let saved = try await Dialogs.saveFile(Array("Kept words".utf8), name: "note", types: [text])
+                            said.values.append(saved?.name ?? "nothing")
+                        }.id("save")
+                        Button("Open").onClicked {
+                            guard let file = try await Dialogs.openFile(types: [text]) else {
+                                return said.values.append("nothing")
+                            }
+                            said.values.append("\(file.name): \(String(decoding: try await file.read(), as: UTF8.self))")
+                        }.id("open")
+                    }
+                }
+                let window = try s.element(ofType: WindowContract.nodeType)
+
+                try s.perform(.activate, on: s.element("save"))
+                try s.settle { try s.fileDialog() != nil }
+                s.expect(try s.fileDialog(), .save)
+                try s.perform(.answerFiles(["note.txt"]), on: window)
+                s.settle { said.values.count == 1 }
+                s.expect(said.values, ["note.txt"], "saved under its name, which ends in its kind's extension")
+
+                try s.perform(.activate, on: s.element("open"))
+                try s.settle { try s.fileDialog() != nil }
+                s.expect(try s.fileDialog(), .open)
+                try s.perform(.answerFiles(["note.txt"]), on: window)
+                s.settle { said.values.count == 2 }
+                s.expect(said.values, ["note.txt", "note.txt: Kept words"], "saved, then opened and read back")
+            },
+            ConformanceCase("severalFilesAreOpenedAtOnce", proves: [
+                Covered(ApplicationContract.openFiles),
+            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
+                let said = Received<String>()
+                s.start {
+                    VStack {
+                        Button("Save").onClicked {
+                            said.values.append(try await Dialogs.saveFile([1], name: "file.txt")?.name ?? "nothing")
+                        }.id("save")
+                        Button("Open").onClicked {
+                            let names = try await Dialogs.openFiles().map(\.name).sorted()
+                            said.values.append(names.joined(separator: " "))
+                        }.id("open")
+                    }
+                }
+                let window = try s.element(ofType: WindowContract.nodeType)
+
+                for name in ["first.txt", "second.txt"] {
+                    let saved = said.values.count
+                    try s.perform(.activate, on: s.element("save"))
+                    try s.settle { try s.fileDialog() != nil }
+                    try s.perform(.answerFiles([name]), on: window)
+                    s.settle { said.values.count > saved }
+                }
+                try s.perform(.activate, on: s.element("open"))
+                try s.settle { try s.fileDialog() != nil }
+                try s.perform(.answerFiles(["first.txt", "second.txt"]), on: window)
+                s.settle { said.values.count == 3 }
+                s.expect(said.values, ["first.txt", "second.txt", "first.txt second.txt"], "both saved, then both chosen")
+            },
+            ConformanceCase("aFileDialogCancelledAnswersNothing", proves: [
+                Covered(ApplicationContract.openFiles), Covered(ApplicationContract.saveFile),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let said = Received<String>()
+                s.start {
+                    VStack {
+                        Button("Open").onClicked {
+                            said.values.append("opened \(try await Dialogs.openFiles().count)")
+                        }.id("open")
+                        Button("Save").onClicked {
+                            let saved = try await Dialogs.saveFile([1], name: "never.txt")
+                            said.values.append("saved \(saved?.name ?? "nothing")")
+                        }.id("save")
+                    }
+                }
+                let window = try s.element(ofType: WindowContract.nodeType)
+
+                try s.perform(.activate, on: s.element("open"))
+                try s.settle { try s.fileDialog() != nil }
+                try s.perform(.answerFiles([]), on: window)
+                s.settle { said.values.count == 1 }
+                try s.perform(.activate, on: s.element("save"))
+                try s.settle { try s.fileDialog() != nil }
+                try s.perform(.answerFiles([]), on: window)
+                s.settle { said.values.count == 2 }
+                s.expect(said.values, ["opened 0", "saved nothing"])
+                s.expect(try s.fileDialog(), nil, "and the dialog is gone")
+            },
+            ConformanceCase("anAddressAndAFileAreLaunched", proves: [
+                Covered(ApplicationContract.launchLink), Covered(ApplicationContract.launchFile),
+            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
+                let said = Received<Bool>()
+                s.start {
+                    VStack {
+                        Button("Launch").onClicked {
+                            said.values.append(try await Links.launch("https://www.swift.org"))
+                            if let saved = try await Dialogs.saveFile(Array("<p>Report</p>".utf8), name: "report.html") {
+                                said.values.append(try await saved.launch())
+                            }
+                        }.id("launch")
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("launch"))
+                try s.settle { try s.fileDialog() != nil }
+                try s.perform(.answerFiles(["report.html"]), on: s.element(ofType: WindowContract.nodeType))
+                s.settle { said.values.count == 2 }
+                s.expect(said.values, [true, true], "each taken")
+                s.expect(try s.launched(), ["https://www.swift.org", "report.html"])
             },
             ConformanceCase("theScreenReaderIsToldAndTheCallerGoesOn", proves: [
                 Covered(ApplicationContract.announce),

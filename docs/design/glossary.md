@@ -117,6 +117,9 @@ and this table maps the two.
 | pump, turn | event-loop pass | one pass of the host's work: jobs, a cycle, a render, then acts |
 | program write | programmatic change | a write to a control made by the program, not the user |
 | act | imperative control call | a call the application makes on a control, such as `focus` |
+| chosen file (`ChosenFile`) | file handle, picked file | a file the user opened or saved in a dialog: its name, and its place, which only the host reads |
+| kind of file (`FileType`) | file type filter | a caption and the extensions a dialog shows or offers |
+| launch | open with the default application | a file or an address handed to the system, which opens it in the application it gives it |
 | aim (`@Aim`) | control reference | the reference an act is called through |
 | completion id | continuation handle | the negative id an awaited act or animation is answered by |
 | declaration (`HostDeclaration`) | capability manifest | which elements and members a host realizes: presence, not ownership |

@@ -81,6 +81,20 @@ typedef struct {
     char const *initial;
 } StateUIQuestion;
 
+/// A file dialog: `kind` 0 one file to open, 1 several, 2 a place to save; the kinds of file it offers, `typeCount`
+/// captions, each with the count of its extensions - bare, without the dot - in `extensions` in turn; a save's name
+/// and the `length` bytes it writes.
+typedef struct {
+    int32_t kind;
+    int32_t typeCount;
+    char const *const *captions;
+    int32_t const *extensionCounts;
+    char const *const *extensions;
+    char const *name;
+    uint8_t const *contents;
+    int64_t length;
+} StateUIFileDialog;
+
 /// What the relay calls on the UI thread. Every one is set: the relay calls them unchecked.
 typedef struct {
     /// WinUI stands on the thread: the host's first render.
@@ -135,6 +149,17 @@ typedef struct {
     /// The user answered the question asked under `ticket`: whether it was accepted, and the words chosen or
     /// typed, in UTF-8; null for none.
     void (*answered)(int64_t ticket, bool accepted, char const *utf8);
+
+    /// The file dialog shown under `ticket` closed: the `count` files chosen - a save's once its contents stand
+    /// written - their paths and names in UTF-8, none for a cancel; or why it failed, in UTF-8, null where it did not.
+    void (*filesChosen)(int64_t ticket, int32_t count, char const *const *paths, char const *const *names,
+                        char const *failure);
+
+    /// The file read under `ticket`: its `length` bytes; or why it could not be read, in UTF-8, null where it was.
+    void (*fileRead)(int64_t ticket, uint8_t const *bytes, int64_t length, char const *failure);
+
+    /// What was launched under `ticket`: whether an application took it.
+    void (*launchAnswered)(int64_t ticket, bool taken);
 
     /// A press on a canvas, followed from down to up: `phase` 0 pressed, 1 dragged, 2 released, at (x, y) DIPs of it.
     void (*canvasPressed)(int64_t view, int32_t phase, double x, double y);
@@ -862,6 +887,30 @@ void stateui_winui_ask(StateUIObjectRef element, int64_t ticket, StateUIQuestion
 /// was showing and had that button. What a test does.
 bool stateui_winui_answer(StateUIObjectRef element, int32_t button, char const *words);
 
+/// Shows `dialog` in Windows' own file dialog over `window` (a `Window`); a save writes its contents where the user
+/// said, beside the UI thread. The answer comes back through `filesChosen`, under `ticket`, on the UI thread.
+void stateui_winui_show_file_dialog(StateUIObjectRef window, int64_t ticket, StateUIFileDialog const *dialog);
+
+/// Reads the file at `path`, in UTF-8, whole, beside the UI thread; its bytes come back through `fileRead`, under
+/// `ticket`, on the UI thread.
+void stateui_winui_read_file(int64_t ticket, char const *path);
+
+/// Hands the file at the path `target`, or the address `target`, to Windows to open in the application it gives it;
+/// whether one took it comes back through `launchAnswered`, under `ticket`, on the UI thread.
+void stateui_winui_launch(int64_t ticket, char const *target, bool file);
+
+/// What a test does: while `held`, a launch is answered as taken and Windows is asked nothing.
+void stateui_winui_hold_launches(bool held);
+
+/// What a test does: a dialog that saves opens in `folder`, in UTF-8, so what a test saves stays there.
+void stateui_winui_keep_test_files_in(char const *folder);
+
+/// What a test does: answers the file dialog `dialog` - the one showing in the process where 0 - as the user would,
+/// by the `count` files of `paths`, in UTF-8: typed whole, several each in quotes, and taken once its field holds
+/// them; none cancels it. The dialog answered, 0 where it no longer shows: a dialog shown a moment ago may not take
+/// its answer yet, so a test answers it again until it is gone.
+int64_t stateui_winui_answer_file_dialog(int64_t dialog, char const *const *paths, int32_t count);
+
 /// The folder the host's stores stand in, in UTF-8; empty for the application's own in the user's local data.
 void stateui_winui_set_store(char const *utf8);
 
@@ -902,6 +951,13 @@ int32_t stateui_winui_question(StateUIObjectRef element, char *utf8, int32_t cap
 /// What the screen reader was told since the relay started, in UTF-8, each ended by the unit separator (0x1F) but
 /// the last, as far as `capacity` goes; its whole length. What a test reads.
 int32_t stateui_winui_announced(char *utf8, int32_t capacity);
+
+/// The file dialog showing in the process: 0 one that opens, 1 one that saves, -1 none. What a test reads.
+int32_t stateui_winui_file_dialog(void);
+
+/// What was launched since the relay started - a file by its path, an address as written - in UTF-8, each ended by
+/// the unit separator (0x1F) but the last, as far as `capacity` goes; its whole length. What a test reads.
+int32_t stateui_winui_launched(char *utf8, int32_t capacity);
 
 #ifdef STATEUI_WINUI_RELAY
 #pragma clang attribute pop

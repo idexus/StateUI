@@ -19,6 +19,13 @@
         ApplicationContract.utcOffset,
     ]
 
+    /// The acts a host with a `FileToolkit` performs: the files the user opens and saves, read, and what the system
+    /// launches.
+    public static let files: [any ContractMember] = [
+        ApplicationContract.openFiles, ApplicationContract.saveFile, ApplicationContract.readFile,
+        ApplicationContract.launchFile, ApplicationContract.launchLink,
+    ]
+
     /// The answer to `currentTime`: the hour, the minute, the second and the millisecond of the local time.
     public static func currentTime(hour: Int, minute: Int, second: Int, millisecond: Int) -> [HostValue] {
         [[Double(hour), Double(minute), Double(second), Double(millisecond)].propValue]

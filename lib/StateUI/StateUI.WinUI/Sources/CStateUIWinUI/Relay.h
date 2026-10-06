@@ -13,6 +13,7 @@
 #undef GetCurrentTime
 
 #include <cstdio>
+#include <functional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -39,6 +40,9 @@ namespace stateui {
 
     /// Runs `work` on the UI thread, in its turn; from any thread.
     void post(void (*work)());
+
+    /// Runs `work` on the UI thread, in its turn; from any thread - what a WinRT operation ending beside it hands back.
+    void runOnUIThread(std::function<void()> work);
 
     /// WinUI's own brush for a brush as the host hands it; null for none.
     xaml::Media::Brush brush(StateUIBrush const &brush);
@@ -124,6 +128,13 @@ namespace stateui {
 
     /// Keeps what the screen reader was told, which a test reads back (`stateui_winui_announced`).
     void announced(std::string const &words);
+
+    /// Keeps what was handed to Windows to launch, which a test reads back (`stateui_winui_launched`).
+    void launched(std::string const &target);
+
+    /// The file dialog showing in the process, and the field its file's name is typed in; null for none.
+    HWND fileDialog();
+    HWND fileNameField(HWND dialog);
 
     /// Says on standard error, where the host's log goes, what failed and why - the exception being handled,
     /// WinUI's, the standard library's or any other - so that none crosses the C boundary; answers its code, WinUI's

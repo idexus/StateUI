@@ -99,6 +99,22 @@ enum WinUICallbacks {
                 let words = utf8.map { String(cString: $0) }
                 MainActor.assumeIsolated { WinUIRenderer.shared?.answered(ticket: ticket, accepted: accepted, words: words) }
             },
+            filesChosen: { ticket, count, paths, names, failure in
+                let files = (0..<Int(count)).compactMap { index -> ChosenFile? in
+                    guard let path = paths?[index], let name = names?[index] else { return nil }
+                    return ChosenFile(address: String(cString: path), name: String(cString: name))
+                }
+                let why = failure.map { String(cString: $0) }
+                MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.chose(ticket: ticket, files: files, failure: why) }
+            },
+            fileRead: { ticket, bytes, length, failure in
+                let read = bytes.map { Array(UnsafeBufferPointer(start: $0, count: Int(length))) } ?? []
+                let why = failure.map { String(cString: $0) }
+                MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.read(ticket: ticket, bytes: read, failure: why) }
+            },
+            launchAnswered: { ticket, taken in
+                MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.launched(ticket: ticket, taken: taken) }
+            },
             canvasPressed: { view, phase, x, y in
                 MainActor.assumeIsolated {
                     (WinUIView.find(view) as? WinUICanvasView)?.pressed(phase: phase, at: Point(x: x, y: y))

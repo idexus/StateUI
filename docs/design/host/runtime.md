@@ -392,6 +392,21 @@ time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.
 
+## Files
+
+A file dialog is read from its act alike on every host (`HostFileDialog`):
+one file to open, several, or a place to save, the kinds it offers, a
+save's contents and its name. A save's name ends in an extension of its
+kinds: where it ends in none, the first kind's first is added - unless it
+is empty, which the platform names. A dialog that filters by extension
+alone shows every kind's, in order, each once. A file dialog waits its turn
+among the questions, one showing at a time, so a question never stands
+over a dialog the user is still in, or under one. A host performing files
+hands its `FileToolkit` to its performer beside its `ActToolkit`, and
+declares `HostActs.files`; a host without one fails every act for files by
+name. A file read and a launch answer when the platform does, never in the
+turn that asked.
+
 ## Kept values
 
 Every host keeps a value as its words, by one rule (`KeptWord`): a value is

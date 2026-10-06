@@ -296,9 +296,10 @@ say what each host supplies.
 ## Host acts
 
 An act is what the application asks a host to do rather than describes: ask
-the user a question, read the clock or the time zone, keep a value, take a
-web view back or move a map. An act of the application's contract aims at
-nothing; an element's act aims at one element of its kind. Calendar values are
+the user a question or for a file, launch an address, read the clock or the
+time zone, keep a value, take a web view back or move a map. An act of the
+application's contract aims at nothing; an element's act aims at one element
+of its kind. Calendar values are
 portable StateUI values; reading the current clock or time zone is a host act
 because the host owns the active locale and zone database - `currentTime` is
 `ClockTime.now()`, `currentTimeZone` is `TimeZoneInfo.local()`, and `utcOffset`
@@ -319,9 +320,14 @@ the tier.
 | `currentTimeZone` | [Application](controls/Application.md) |
 | `handlerFailed` | [Application](controls/Application.md) |
 | `hideOnScreenKeyboard` | [Application](controls/Application.md) |
+| `launchFile` | [Application](controls/Application.md) |
+| `launchLink` | [Application](controls/Application.md) |
+| `openFiles` | [Application](controls/Application.md) |
 | `persistSceneValue` | [Application](controls/Application.md) |
 | `persistValue` | [Application](controls/Application.md) |
 | `prompt` | [Application](controls/Application.md) |
+| `readFile` | [Application](controls/Application.md) |
+| `saveFile` | [Application](controls/Application.md) |
 | `utcOffset` | [Application](controls/Application.md) |
 | `scrollTo` | [ItemsView](controls/ItemsView.md) |
 | `moveToRegion` | [Map](controls/Map.md) |
@@ -467,7 +473,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 12 | 7 ✅ · 5 ✓ | 7 ✅ · 5 ✓ | 6 ✅ · 4 ✓ | 12 ✅ | 11 ✅ · 1 ✓ | 12 ✅ |
+| [Application](controls/Application.md) | 17 | 7 ✅ · 5 ✓ | 7 ✅ · 5 ✓ | 6 ✅ · 4 ✓ | 15 ✅ · 2 ✓ | 11 ✅ · 1 ✓ | 12 ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Divider](controls/Divider.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -487,10 +493,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – | 8 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ · 9 – | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – | 7 ✅ · 15 – |
-| ✅ |  | 67 | 70 | 42 | 110 | 75 | 87 |
-| ✓ |  | 15 | 12 | 10 | 0 | 7 | 0 |
+| ✅ |  | 67 | 70 | 42 | 113 | 75 | 87 |
+| ✓ |  | 15 | 12 | 10 | 2 | 7 | 0 |
 | – |  | 1 | 18 | 13 | 0 | 27 | 20 |
-| **Met** | 121 | **83** | **100** | **65** | **110** | **109** | **107** |
+| **Met** | 126 | **83** | **100** | **65** | **115** | **109** | **107** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -658,6 +664,7 @@ realizes the element and each of its members.
 
 `alert`, `announce`, `chooseAction`, `confirm`, `currentTime`,
 `currentTimeZone`, `evaluateJavaScript`, `focus`, `goBack`, `goForward`,
-`handlerFailed`, `hideOnScreenKeyboard`, `moveToRegion`, `persistSceneValue`,
-`persistValue`, `prompt`, `reload`, `scrollTo`, `unfocus`, `utcOffset`.
+`handlerFailed`, `hideOnScreenKeyboard`, `launchFile`, `launchLink`,
+`moveToRegion`, `openFiles`, `persistSceneValue`, `persistValue`, `prompt`,
+`readFile`, `reload`, `saveFile`, `scrollTo`, `unfocus`, `utcOffset`.
 <!-- vocabulary:end -->

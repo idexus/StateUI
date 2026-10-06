@@ -5,9 +5,9 @@
 // user answers.
 // Design: docs/design/core/acts.md#dialogs
 
-/// Questions for the user - an alert, a confirmation, a choice among actions and
-/// a prompt - asked of the page that is showing. Each suspends the handler until
-/// the user answers.
+/// Questions for the user - an alert, a confirmation, a choice among actions, a
+/// prompt, files to open and a place to save - asked of the page that is
+/// showing. Each suspends the handler until the user answers.
 public enum Dialogs {
     /// Tells the user something, with one button to dismiss it.
     ///

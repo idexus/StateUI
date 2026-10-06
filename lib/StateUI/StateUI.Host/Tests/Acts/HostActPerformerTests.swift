@@ -152,4 +152,94 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(toolkit.announced, ["Saved"])
         XCTAssertEqual(answers.replies[5], [])
     }
+
+    // MARK: - Files
+
+    private let report = ChosenFile(address: "C:\\Reports\\Report.html", name: "Report.html")
+
+    /// A file dialog waits its turn among the questions, and a question behind it waits for it; its caller hears the
+    /// files chosen, or why the toolkit failed.
+    func testAFileDialogWaitsItsTurnAmongTheQuestions() throws {
+        let (toolkit, files, answers) = (Toolkit(), Files(), Answers())
+        let acts = HostActPerformer(toolkit: toolkit, files: files, answers: answers, tree: { nil })
+
+        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
+        acts.perform(HostActCall(act: .alert, arguments: [.string("Done")], completion: 3))
+        acts.perform(HostActCall(
+            act: .saveFile, arguments: [[UInt8]([7]).propValue, .string("Report"), [FileType]().propValue],
+            completion: 4))
+        XCTAssertTrue(files.shown.isEmpty, "the dialog waits for the question")
+
+        toolkit.shown[0].answered(true, nil)
+        XCTAssertEqual(files.shown.map(\.dialog.kind), [.openSeveral], "then shows")
+        XCTAssertEqual(toolkit.shown.count, 1, "and the question behind it waits for it")
+
+        files.shown[0].answered(.success([report]))
+        XCTAssertEqual(answers.replies[2], [[report].propValue])
+        toolkit.shown[1].answered(true, nil)
+        XCTAssertEqual(files.shown.map(\.dialog.contents), [[], [7]])
+
+        files.shown[1].answered(.failure(ActFailure("the disk is full")))
+        XCTAssertEqual(answers.failures[4], "the disk is full")
+    }
+
+    /// A file is read and launched, and an address launched, as the toolkit answers.
+    func testAFileIsReadAndLaunchedAndAnAddressLaunched() {
+        let (files, answers) = (Files(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), files: files, answers: answers, tree: { nil })
+        files.contents = [report: [60, 104, 49, 62]]
+
+        acts.perform(HostActCall(act: .readFile, arguments: [report.propValue], completion: 1))
+        acts.perform(HostActCall(
+            act: .readFile, arguments: [ChosenFile(address: "gone", name: "gone").propValue], completion: 2))
+        acts.perform(HostActCall(act: .launchFile, arguments: [report.propValue], completion: 3))
+        acts.perform(HostActCall(act: .launchLink, arguments: [.string("https://www.swift.org")], completion: 4))
+        acts.perform(HostActCall(act: .readFile, arguments: [], completion: 5))
+
+        XCTAssertEqual(answers.replies[1], [.bytes([60, 104, 49, 62])])
+        XCTAssertEqual(answers.failures[2], "no file 'gone'")
+        XCTAssertEqual(answers.replies[3], [.bool(true)])
+        XCTAssertEqual(answers.replies[4], [.bool(false)])
+        XCTAssertEqual(files.launched, ["Report.html", "https://www.swift.org"])
+        XCTAssertEqual(answers.failures[5], "the act names no file")
+    }
+
+    /// A host with no toolkit for files fails every act for files by name and the host's.
+    func testAHostWithNoFilesFailsTheirActsByName() {
+        let answers = Answers()
+        let acts = performer(Toolkit(), answers)
+
+        for (completion, act) in [Act.openFiles, .saveFile, .readFile, .launchFile, .launchLink].enumerated() {
+            acts.perform(HostActCall(act: act, arguments: [], completion: completion))
+            XCTAssertEqual(answers.failures[completion], "the Test host does not perform the act '\(act.name)'")
+        }
+    }
+}
+
+/// A toolkit for files the tests answer for: the dialogs shown, the files it reads, what it launched.
+@MainActor
+private final class Files: FileToolkit {
+    var shown: [(dialog: HostFileDialog, answered: (Result<[ChosenFile], ActFailure>) -> Void)] = []
+    var contents: [ChosenFile: [UInt8]] = [:]
+    var launched: [String] = []
+
+    func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
+        shown.append((dialog, answered))
+        return true
+    }
+
+    func read(_ file: ChosenFile, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
+        answered(contents[file].map { .success($0) } ?? .failure(ActFailure("no file '\(file.name)'")))
+    }
+
+    func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
+        launched.append(file.name)
+        answered(true)
+    }
+
+    func launch(address: String, answered: @escaping (Bool) -> Void) {
+        launched.append(address)
+        answered(false)
+    }
 }

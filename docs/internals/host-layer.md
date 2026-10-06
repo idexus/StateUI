@@ -516,6 +516,10 @@ on every host.
   from its act - an alert, a confirmation, a choice, a prompt - and its answer;
   questions show one at a time, each under a ticket of its own.
   ([Questions for the user](../design/host/runtime.md#questions-for-the-user))
+- **`HostFileDialog`**, **`FileToolkit`** and **`HostActs.files`** read a file
+  dialog from its act and answer it, and are what a host performing files
+  hands its performer; a file dialog waits its turn among the questions.
+  ([Files](../design/host/runtime.md#files))
 - **`InteropActs`** performs the acts an application registers on its host,
   each handed the values its contract declares, an aimed one also the control
   of the element it names.

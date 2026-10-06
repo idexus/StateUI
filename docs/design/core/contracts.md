@@ -79,8 +79,8 @@ animates, is cleared, and says nothing of motion.
 `Bool`, `Int` (a `Double`, read back as its whole part), `Double`, `String`, an
 optional of any of them (nil crosses as `.nothing`), `PropValue` itself, and an
 `Int32` enum (its member's number). A list of numbers crosses as one run of
-numbers and a list of text as one list of text; any other list as a list of
-values.
+numbers, a list of text as one list of text, and a list of bytes - a file's
+contents - as one run of bytes (`.bytes`); any other list as a list of values.
 
 `MemberValues` encodes a member's positional values - what an event carries,
 what an act is handed and what it answers - and decodes them against the

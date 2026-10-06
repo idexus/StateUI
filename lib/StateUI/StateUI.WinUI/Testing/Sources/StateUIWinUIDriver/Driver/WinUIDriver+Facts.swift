@@ -52,6 +52,22 @@ extension WinUIDriver {
         return words.isEmpty ? [] : words.split(separator: "\u{1F}", omittingEmptySubsequences: false).map(String.init)
     }
 
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        switch stateui_winui_file_dialog() {
+        case 0: .open
+        case 1: .save
+        default: nil
+        }
+    }
+
+    func launched() throws -> [String] {
+        let targets = WinUIStrings.read { stateui_winui_launched($0, $1) }
+        // An address as written; a file - a path, no scheme - by its name.
+        return targets.isEmpty ? [] : targets.split(separator: "\u{1F}", omittingEmptySubsequences: false).map { target in
+            target.contains("://") ? String(target) : String(target.split { $0 == "\\" || $0 == "/" }.last ?? target)
+        }
+    }
+
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read the colour of \(element.type.name)") }
         // A shape or a picture renders only what it draws, from the first thing drawn; a layout renders whole from

@@ -2,7 +2,7 @@
 
 # Application
 
-The application at the root of a StateUI tree, and what its host does for it with no control behind it: questions for the user, the clock and the time zone, the screen reader, what is kept.
+The application at the root of a StateUI tree, and what its host does for it with no control behind it: questions for the user, the files they open and save, what the system launches, the clock and the time zone, the screen reader, what is kept.
 
 ```swift
 struct NotesApp: Application {
@@ -38,11 +38,11 @@ Inherits nothing: every member below is its own.
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr></thead>
+<thead><tr><th>Host</th><th>Created</th><th>Members (17)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 5 ✓</td><td><code>NSApplication</code> / structure</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>7 ✅ · 5 ✓</td><td><code>UIApplication</code> / <code>UIWindowScene</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 4 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>12 ✅</td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>15 ✅ · 2 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>11 ✅ · 1 ✓</td><td><code>GtkApplication</code> / structure</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>12 ✅</td><td><code>document</code> / structure</td></tr></tbody>
 </table>
@@ -66,9 +66,16 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationCo
 <tbody><tr></tr><tr><td><code>handlerFailed</code></td><td>act</td><td><code>(String) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>hideOnScreenKeyboard</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: cannot focus on TextField - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>launchFile</code></td><td>act</td><td><code>(ChosenFile) -&gt; Bool</code></td><td></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✓</td><td align="center"></td><td align="center"></td></tr>
+<tr><td colspan="9">WinUI 3: only through the host's own: read what was launched: the host's own record of what it handed Windows, which a test holds back from launching</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>launchLink</code></td><td>act</td><td><code>(String) -&gt; Bool</code></td><td></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✓</td><td align="center"></td><td align="center"></td></tr>
+<tr><td colspan="9">WinUI 3: only through the host's own: read what was launched: the host's own record of what it handed Windows, which a test holds back from launching</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>openFiles</code></td><td>act</td><td><code>([FileType], Bool) -&gt; [ChosenFile]</code></td><td></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center"></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>persistSceneValue</code></td><td>act</td><td><code>(Name, Name, PropValue) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>persistValue</code></td><td>act</td><td><code>(Name, PropValue) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>prompt</code></td><td>act</td><td><code>(String, String, String, String, String?, Int?, InputPurpose, String) -&gt; String?</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>readFile</code></td><td>act</td><td><code>(ChosenFile) -&gt; [UInt8]</code></td><td></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center"></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>saveFile</code></td><td>act</td><td><code>([UInt8], String, [FileType]) -&gt; ChosenFile?</code></td><td></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center"></td></tr></tbody>
 <tbody><tr></tr><tr><td><code>utcOffset</code></td><td>act</td><td><code>(String?, CalendarDate?) -&gt; Int</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

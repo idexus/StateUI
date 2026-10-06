@@ -3480,6 +3480,49 @@ enum Listings {
             }
         }
         """#,
+        "FilesSample": #"""
+        // Sources/Samples/Navigation/FilesSample.swift
+        @State private var words = "Words to keep"
+        @State private var saved: ChosenFile?
+        @State private var answer = "nothing opened or saved yet"
+
+        var body: some View {
+            VStack {
+                TextEditor($words)
+                    .height(96)
+
+                // The contents go first; nil is a cancel.
+                Button("Save…")
+                    .onClicked {
+                        let text = FileType("Text", extensions: ["txt"])
+                        saved = try await Dialogs.saveFile(Array(words.utf8), name: "Note", types: [text])
+                        answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
+                    }
+
+                Button("Open…")
+                    .onClicked {
+                        let text = FileType("Text", extensions: ["txt", "md"])
+                        guard let file = try await Dialogs.openFile(types: [text]) else {
+                            return answer = "cancelled"
+                        }
+                        words = String(decoding: try await file.read(), as: UTF8.self)
+                        answer = "opened \(file.name)"
+                    }
+
+                // The system opens it in the application it gives its kind.
+                Button("Launch the saved file")
+                    .isEnabled(saved != nil)
+                    .onClicked {
+                        if let saved { try await saved.launch() }
+                    }
+
+                Button("Launch swift.org")
+                    .onClicked { try await Links.launch("https://www.swift.org") }
+
+                Text(answer)
+            }
+        }
+        """#,
         "FollowsAFinger": #"""
         // Sources/Samples/Shapes/CanvasSample.swift
         @State private var trail: [Point] = []

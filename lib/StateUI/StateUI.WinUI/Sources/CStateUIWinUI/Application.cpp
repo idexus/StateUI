@@ -97,6 +97,14 @@ namespace stateui {
             report("posting work to the UI thread");
         }
     }
+
+    void runOnUIThread(std::function<void()> work) {
+        try {
+            if (queue) queue.TryEnqueue(guarded("handling TryEnqueue", [work = std::move(work)] { work(); }));
+        } catch (...) {
+            report("handing work to the UI thread");
+        }
+    }
 }
 
 using namespace stateui;

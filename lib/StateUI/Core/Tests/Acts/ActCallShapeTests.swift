@@ -257,6 +257,44 @@ final class ActCallShapeTests: XCTestCase {
         taken(drain(), "persistValue", [.name("com.example.theme"), .string("dusk")], awaited: false)
     }
 
+    /// The kinds of file as ONE argument - each its caption and its extensions,
+    /// bare - then whether the dialog takes several: false for one, true for
+    /// several.
+    func testAFileToOpenCrossesWithItsArgumentsInPlace() async throws {
+        let page: PropValue = .values([.string("HTML page"), .strings(["html", "htm"])])
+        try await check("openFiles", [.values([page]), .bool(false)]) {
+            _ = try await Dialogs.openFile(types: [FileType("HTML page", extensions: [".html", "*.HTM"])])
+        }
+        try await check("openFiles", [.values([]), .bool(true)]) {
+            _ = try await Dialogs.openFiles()
+        }
+    }
+
+    /// The contents first, as ONE run of bytes, then the name it suggests as
+    /// written, then the kinds.
+    func testAFileToSaveCrossesWithItsArgumentsInPlace() async throws {
+        try await check("saveFile", [
+            .bytes([60, 112, 62]), .string("Report"), .values([.values([.string("Page"), .strings(["html"])])]),
+        ]) {
+            _ = try await Dialogs.saveFile(Array("<p>".utf8), name: "Report", types: [FileType("Page", extensions: ["html"])])
+        }
+    }
+
+    /// A file read or launched crosses as where it stands, then its name.
+    func testAChosenFileCrossesAsWhereItStandsAndItsName() async throws {
+        let file = ChosenFile(address: "C:\\Reports\\Report.html", name: "Report.html")
+        let crossed: PropValue = .strings(["C:\\Reports\\Report.html", "Report.html"])
+        try await check("readFile", [crossed]) { _ = try await file.read() }
+        try await check("launchFile", [crossed]) { _ = try await file.launch() }
+    }
+
+    /// An address launched crosses as written.
+    func testALinkCrossesAsWritten() async throws {
+        try await check("launchLink", [.string("https://www.swift.org")]) {
+            _ = try await Links.launch("https://www.swift.org")
+        }
+    }
+
     /// A scene's kept value on its way to the platform's record of that scene:
     /// the scene and the key as NAMES, then the value, and nobody waiting -
     /// the act `OpenScenes.takeSaves` queues, which SceneTests reads off a live

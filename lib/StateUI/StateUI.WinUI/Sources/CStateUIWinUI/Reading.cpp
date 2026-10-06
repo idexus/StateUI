@@ -3,8 +3,9 @@
 
 // What a test reads of what WinUI holds, by the property's name: the relay's
 // one reader, so a test of the contract reads the native control rather than
-// what the host last wrote. And what the dialogs ask and the screen reader was
-// told, which WinUI keeps nowhere a test can ask.
+// what the host last wrote. And what the dialogs ask, the screen reader was
+// told and Windows was handed to launch, which WinUI keeps nowhere a test can
+// ask.
 // Design: docs/design/platforms/winui/relay.md#what-a-test-reads
 
 #include "Figure.h"
@@ -32,6 +33,9 @@ namespace shapes = winrt::Microsoft::UI::Xaml::Shapes;
 namespace {
     /// What the screen reader was told, in order.
     std::vector<std::string> announcements;
+
+    /// What was handed to Windows to launch, in order.
+    std::vector<std::string> launches;
 
     std::string number(double value) {
         char words[32];
@@ -516,4 +520,27 @@ extern "C" int32_t stateui_winui_announced(char *utf8, int32_t capacity) {
 
 void stateui::announced(std::string const &words) {
     announcements.push_back(words);
+}
+
+extern "C" int32_t stateui_winui_launched(char *utf8, int32_t capacity) {
+    try {
+        std::string targets;
+        for (auto const &target : launches) targets += (targets.empty() ? "" : "\x1f") + target;
+        copy(targets, utf8, capacity);
+        return static_cast<int32_t>(targets.size());
+    } catch (...) {
+        report("reading what was launched");
+        return 0;
+    }
+}
+
+void stateui::launched(std::string const &target) {
+    launches.push_back(target);
+}
+
+extern "C" int32_t stateui_winui_file_dialog(void) {
+    auto dialog = fileDialog();
+    if (!dialog) return -1;
+    // A dialog that opens types its file's name in a combo box of its own (cmb13, 1148); one that saves does not.
+    return GetDlgItem(dialog, 1148) ? 0 : 1;
 }

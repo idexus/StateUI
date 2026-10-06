@@ -333,4 +333,9 @@ extension NodeType {
     static let persistValue = ApplicationContract.persistValue.token
     static let persistSceneValue = ApplicationContract.persistSceneValue.token
     static let handlerFailed = ApplicationContract.handlerFailed.token
+    static let openFiles = ApplicationContract.openFiles.token
+    static let saveFile = ApplicationContract.saveFile.token
+    static let readFile = ApplicationContract.readFile.token
+    static let launchFile = ApplicationContract.launchFile.token
+    static let launchLink = ApplicationContract.launchLink.token
 }

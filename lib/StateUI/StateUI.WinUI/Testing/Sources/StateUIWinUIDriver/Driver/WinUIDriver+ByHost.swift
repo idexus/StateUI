@@ -12,6 +12,9 @@ extension WinUIDriver {
             return "the direction the host lays it out in: in WinUI it stands left to right, where a layout told right "
                 + "to left would mirror its places again and a drawing would be turned"
         }
+        if ability == "read what was launched" {
+            return "the host's own record of what it handed Windows, which a test holds back from launching"
+        }
         if ability.hasPrefix("read rotationX of ") || ability.hasPrefix("read rotationY of ") {
             return "the host's own tip, checked against the projection it laid on the element"
         }

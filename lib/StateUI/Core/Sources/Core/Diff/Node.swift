@@ -39,6 +39,9 @@ public enum PropValue: Equatable, Sendable {
     /// A list of strings. What a Picker is given to choose from.
     case strings([String])
 
+    /// Bytes as they stand - a file's contents read or written.
+    case bytes([UInt8])
+
     /// A colour: four sRGB channels from 0 to 255, alpha included (Color.swift).
     case color(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)
 
@@ -143,6 +146,12 @@ public enum PropValue: Equatable, Sendable {
     /// choose from.
     public var strings: [String]? {
         if case .strings(let value) = self { return value }
+        return nil
+    }
+
+    /// The bytes, when this value is a run of them - a file's contents.
+    public var bytes: [UInt8]? {
+        if case .bytes(let value) = self { return value }
         return nil
     }
 

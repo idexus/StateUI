@@ -378,6 +378,11 @@ type's extensions in its folder as `Type+Responsibility.swift`
   an aim are the library's own acts. *Application.*
   ([Dialogs](../design/core/acts.md#dialogs),
   [focus and the keyboard](../design/core/acts.md#focus-and-the-keyboard))
+- **`ChosenFile`**, **`FileType`** and **`Links`** are the files the dialogs
+  open and save, read and launched, and an address launched. *Application.*
+  ([Files](../design/core/acts.md#files),
+  [launching](../design/core/acts.md#launching);
+  [files and links](../interface/interaction-and-actions.md#files-and-links))
 - **`HostEvents`** and **`HostEventSubscription`** hear the events of the
   application's tier that a host raises. *Application.*
   ([Host events](../design/core/acts.md#host-events);

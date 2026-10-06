@@ -67,6 +67,9 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case bringToFront
     /// The question the window shows answered by its button of that caption, its field first holding the words.
     case answer(String, typing: String? = nil)
+    /// The file dialog the window shows answered by the files of these names in the driver's own folder - a save's
+    /// place by one; none cancels it.
+    case answerFiles([String])
     /// A web view's content ended, as the platform ends it when its process goes.
     case endContent
 
@@ -103,6 +106,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .bringToFront: "bringToFront"
         case .switchBack: "switchBack"
         case .answer: "answer"
+        case .answerFiles: "answerFiles"
         case .endContent: "endContent"
         }
     }

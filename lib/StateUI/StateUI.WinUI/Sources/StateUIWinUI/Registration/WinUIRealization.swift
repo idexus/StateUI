@@ -155,7 +155,7 @@ enum WinUIRealization {
         let registry = WinUIRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + [ItemsViewContract.scrollTo]).map(\.name))
+            acts: (HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo]).map(\.name))
     }
 
     /// What WinUI realizes, member by member: these records before what its registry says.
