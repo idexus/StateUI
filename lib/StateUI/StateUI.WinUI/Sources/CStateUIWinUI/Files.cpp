@@ -138,7 +138,8 @@ namespace {
     /// Hands over the file a dialog for one chose; a save's once its contents stand written, beside the UI thread.
     void chosenOne(IAsyncOperation<pickers::PickFileResult> const &picking, int64_t ticket,
                    std::shared_ptr<Request> const &saving) {
-        picking.Completed([ticket, saving](IAsyncOperation<pickers::PickFileResult> const &picked, AsyncStatus status) {
+        picking.Completed(guarded("handling a file dialog's answer", [ticket, saving](
+                IAsyncOperation<pickers::PickFileResult> const &picked, AsyncStatus status) {
             Chosen chosen;
             try {
                 if (status != AsyncStatus::Completed) chosen.failure = failure(picked);
@@ -152,13 +153,13 @@ namespace {
                 if (!why.empty()) chosen = {{}, why};
                 handOver(ticket, std::move(chosen));
             }).detach();
-        });
+        }));
     }
 
     /// Hands over the files a dialog for several chose.
     void chosenSeveral(IAsyncOperation<IVectorView<pickers::PickFileResult>> const &picking, int64_t ticket) {
-        picking.Completed([ticket](IAsyncOperation<IVectorView<pickers::PickFileResult>> const &picked,
-                                   AsyncStatus status) {
+        picking.Completed(guarded("handling a file dialog's answer", [ticket](
+                IAsyncOperation<IVectorView<pickers::PickFileResult>> const &picked, AsyncStatus status) {
             Chosen chosen;
             try {
                 if (status != AsyncStatus::Completed) chosen.failure = failure(picked);
@@ -167,7 +168,7 @@ namespace {
                 chosen.failure = "the file dialog failed: 0x" + std::to_string(report("taking a file dialog's answer"));
             }
             handOver(ticket, std::move(chosen));
-        });
+        }));
     }
 
     /// Tells the host, on the UI thread, whether what was launched under `ticket` was taken.
@@ -208,13 +209,19 @@ extern "C" void stateui_winui_show_file_dialog(StateUIObjectRef handle, int64_t 
 }
 
 extern "C" void stateui_winui_read_file(int64_t ticket, char const *path) {
-    std::thread([ticket, path = std::string(path ? path : "")] {
-        auto bytes = std::make_shared<std::vector<uint8_t>>();
-        auto why = read(path, *bytes);
-        runOnUIThread([ticket, bytes, why] {
-            callbacks.fileRead(ticket, bytes->data(), static_cast<int64_t>(bytes->size()), why.empty() ? nullptr : why.c_str());
-        });
-    }).detach();
+    try {
+        std::thread([ticket, path = std::string(path ? path : "")] {
+            auto bytes = std::make_shared<std::vector<uint8_t>>();
+            auto why = read(path, *bytes);
+            runOnUIThread([ticket, bytes, why] {
+                callbacks.fileRead(
+                    ticket, bytes->data(), static_cast<int64_t>(bytes->size()), why.empty() ? nullptr : why.c_str());
+            });
+        }).detach();
+    } catch (...) {
+        auto why = "the file could not be read: 0x" + std::to_string(report("reading a file"));
+        runOnUIThread([ticket, why] { callbacks.fileRead(ticket, nullptr, 0, why.c_str()); });
+    }
 }
 
 extern "C" void stateui_winui_launch(int64_t ticket, char const *target, bool file) {
@@ -225,25 +232,28 @@ extern "C" void stateui_winui_launch(int64_t ticket, char const *target, bool fi
         using winrt::Windows::System::Launcher;
         if (!file) {
             Launcher::LaunchUriAsync(winrt::Windows::Foundation::Uri(winrt::to_hstring(named)))
-                .Completed([ticket](IAsyncOperation<bool> const &launching, AsyncStatus status) {
+                .Completed(guarded("handling a launch's answer", [ticket](IAsyncOperation<bool> const &launching,
+                                                                         AsyncStatus status) {
                     launchAnswer(ticket, status == AsyncStatus::Completed && launching.GetResults());
-                });
+                }));
             return;
         }
         using winrt::Windows::Storage::StorageFile;
         StorageFile::GetFileFromPathAsync(winrt::to_hstring(named))
-            .Completed([ticket](IAsyncOperation<StorageFile> const &found, AsyncStatus status) {
+            .Completed(guarded("handling a launched file", [ticket](IAsyncOperation<StorageFile> const &found,
+                                                                   AsyncStatus status) {
                 try {
                     if (status != AsyncStatus::Completed) return launchAnswer(ticket, false);
                     Launcher::LaunchFileAsync(found.GetResults())
-                        .Completed([ticket](IAsyncOperation<bool> const &launching, AsyncStatus status) {
+                        .Completed(guarded("handling a launch's answer", [ticket](
+                                IAsyncOperation<bool> const &launching, AsyncStatus status) {
                             launchAnswer(ticket, status == AsyncStatus::Completed && launching.GetResults());
-                        });
+                        }));
                 } catch (...) {
                     report("launching a file");
                     launchAnswer(ticket, false);
                 }
-            });
+            }));
     } catch (...) {
         report("launching");
         launchAnswer(ticket, false);
@@ -251,11 +261,19 @@ extern "C" void stateui_winui_launch(int64_t ticket, char const *target, bool fi
 }
 
 extern "C" void stateui_winui_hold_launches(bool held) {
-    launchesHeld = held;
+    try {
+        launchesHeld = held;
+    } catch (...) {
+        report("holding launches");
+    }
 }
 
 extern "C" void stateui_winui_keep_test_files_in(char const *folder) {
-    testFolder = text(folder);
+    try {
+        testFolder = text(folder);
+    } catch (...) {
+        report("keeping a test's files");
+    }
 }
 
 namespace stateui {

@@ -539,8 +539,13 @@ void stateui::launched(std::string const &target) {
 }
 
 extern "C" int32_t stateui_winui_file_dialog(void) {
-    auto dialog = fileDialog();
-    if (!dialog) return -1;
-    // A dialog that opens types its file's name in a combo box of its own (cmb13, 1148); one that saves does not.
-    return GetDlgItem(dialog, 1148) ? 0 : 1;
+    try {
+        auto dialog = fileDialog();
+        if (!dialog) return -1;
+        // A dialog that opens types its file's name in a combo box of its own (cmb13, 1148); one that saves does not.
+        return GetDlgItem(dialog, 1148) ? 0 : 1;
+    } catch (...) {
+        report("reading a file dialog");
+        return -1;
+    }
 }
