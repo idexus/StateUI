@@ -45,7 +45,8 @@ final class WebDriver: HostDriver {
         if Ability(ability).readsATransform {
             return "the host's own transform: the page holds one matrix of it, its parts no longer told apart"
         }
-        return Self.byHostReasons[ability]
+        // An act is noted with the element it is done on: its reason is the act's, on any element.
+        return Self.byHostReasons[ability] ?? Self.byHostReasons[Ability(ability).act]
     }
 
     private static let byHostReasons = [

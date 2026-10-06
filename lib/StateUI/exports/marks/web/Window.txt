@@ -2,8 +2,8 @@
 Window: ✅
 Window.activated: ✅
 Window.created: ✅
-Window.deactivated: ✅
-Window.destroying: ✅
+Window.deactivated: ✓ switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window
+Window.destroying: ✓ close on Window: the notice the browser gives as it leaves the page, told by the driver: a page closes no tab
 Window.floatsOnTop: – A page keeps no browser window above the others: the system stacks them.
 Window.height: – A page sizes no browser window: the user does, and the page fills it.
 Window.hidesWhenInactive: – The browser shows a page whenever its tab shows, whichever application the user is in.
@@ -14,8 +14,8 @@ Window.maximumHeight: – A page bounds no browser window: the user sizes it.
 Window.maximumWidth: – A page bounds no browser window: the user sizes it.
 Window.minimumHeight: – A page bounds no browser window: the user sizes it.
 Window.minimumWidth: – A page bounds no browser window: the user sizes it.
-Window.resumed: ✅
-Window.stopped: ✅
+Window.resumed: ✓ minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab
+Window.stopped: ✓ minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab
 Window.title: ✅
 Window.width: – A page sizes no browser window: the user does, and the page fills it.
 Window.windowType: – A page is one window: it opens none of a kind.

@@ -94,9 +94,9 @@ The scene, the window and the page an application is made of, the arrangements a
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – | 8 ✅ |
 | [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
-| [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ · 9 – | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – | 7 ✅ · 15 – |
-| ✅ |  | 67 | 70 | 42 | 113 | 75 | 87 |
-| ✓ |  | 20 | 17 | 15 | 2 | 7 | 5 |
+| [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ · 9 – | 2 ✅ · 4 ✓ | 22 ✅ | 8 ✅ · 6 ✓ · 8 – | 3 ✅ · 4 ✓ · 15 – |
+| ✅ |  | 67 | 70 | 42 | 113 | 75 | 83 |
+| ✓ |  | 20 | 17 | 15 | 2 | 7 | 9 |
 | – |  | 1 | 18 | 13 | 0 | 27 | 20 |
 | **Met** | 126 | **88** | **105** | **70** | **115** | **109** | **112** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
