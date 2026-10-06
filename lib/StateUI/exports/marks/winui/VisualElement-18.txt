@@ -1,49 +1,62 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.pivotX: ✅
-Button.style: ✅
-Button.translationY: ✅
-Canvas.pivotX: ✅
-CheckBox.style: ✅
-CheckBox.translationY: ✅
-ColorBox.pivotX: ✅
-DatePicker.style: ✅
-DatePicker.translationY: ✅
-Ellipse.pivotX: ✅
-Grid.style: ✅
-Grid.translationY: ✅
-HStack.pivotX: ✅
-Image.style: ✅
-Image.translationY: ✅
-ItemsView.pivotX: ✅
-Line.pivotX: ✅
-Map.style: 🧩
-Map.translationY: 🧩
-Path.pivotX: ✅
-Picker.style: ✅
-Picker.translationY: ✅
-Polygon.pivotX: ✅
-Polyline.style: ✅
-Polyline.translationY: ✅
-ProgressBar.pivotX: ✅
-RadioButton.style: ✅
-RadioButton.translationY: ✅
-Rectangle.pivotX: ✅
-ScrollView.style: ✅
-ScrollView.translationY: ✅
-SearchField.pivotX: ✅
-Slider.style: ✅
-Slider.translationY: ✅
-Stepper.pivotX: ✅
-Switch.style: ✅
-Switch.translationY: ✅
-Text.style: ✅
-Text.translationY: ✅
-TextEditor.pivotX: ✅
-TextField.style: ✅
-TextField.translationY: ✅
-TimePicker.pivotX: ✅
-VStack.style: ✅
-VStack.translationY: ✅
+Button.focus: ✅
+Button.isFocusedChanged: ✅
+Button.translationX: ✅
+Button.unfocus: ✅
+Canvas.layoutDirection: ✓ read layoutDirection of Canvas: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+CheckBox.focus: ✅
+CheckBox.isFocusedChanged: ✅
+CheckBox.translationX: ✅
+CheckBox.unfocus: ✅
+ColorBox.layoutDirection: ✓ read layoutDirection of ColorBox: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+DatePicker.frame: ✅
+DatePicker.scaleY: ✅
+Ellipse.background: not realized
+Grid.ignoresInput: ✅
+Grid.scaleX: ✅
+HStack.accessibilityHeading: ✅
+Image.opacity: ✅
+Image.rotation: ✅
+ItemsView.zIndex: ✅
+Line.style: ✅
+Line.translationY: ✅
+Map.layoutDirection: 🧩
+Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Path.translationX: ✅
+Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Picker.background: not realized
+Polygon.frame: ✅
+Polygon.scaleY: ✅
+Polyline.automationExcludedWithChildren: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.maximumHeight: ✅
+ProgressBar.maximumWidth: ✅
+ProgressBar.minimumHeight: ✅
+ProgressBar.minimumWidth: ✅
+ProgressBar.scale: ✅
+RadioButton.accessibilityHeading: ✅
+Rectangle.frameChanged: ✅
+Rectangle.height: ✅
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
+Rectangle.width: ✅
+ScrollView.accessibilityHint: ✅
+SearchField.opacity: ✅
+SearchField.rotation: ✅
+Slider.accessibilityLabel: ✅
+Stepper.opacity: ✅
+Stepper.rotation: ✅
+Switch.accessibilityLabel: ✅
+Text.isVisible: ✅
+Text.pivotY: ✅
+TextEditor.opacity: ✅
+TextEditor.rotation: ✅
+TextField.accessibilityLabel: ✅
+TimePicker.opacity: ✅
+TimePicker.rotation: ✅
+VStack.accessibilityLabel: ✅
+VStack.isEnabled: ✅
 WebView.pivotX: ✅
 ZStack.style: ✅
 ZStack.translationY: ✅

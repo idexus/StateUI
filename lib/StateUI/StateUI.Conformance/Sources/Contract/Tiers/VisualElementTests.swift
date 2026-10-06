@@ -36,8 +36,20 @@
                 Aspects.holds(VisualElementContract.translationX, on: element, 0, then: 10),
                 Aspects.holds(VisualElementContract.translationY, on: element, 0, then: -10),
             ]
+                + (answeringByGestures.contains(element) ? [answering(element)] : [])
+                + (layouts.contains(element) ? [disablingItsBranch(element)] : [])
         }
     }
+
+    /// The views whose only answer to the hand is the View tier's gestures: what disabling one stops is what it hears
+    /// of them.
+    static let answeringByGestures: Set<String> = [
+        "ActivityIndicator", "ColorBox", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
+        "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
+    ]
+
+    /// The views holding others, whose `isEnabled` is their branch's.
+    static let layouts: Set<String> = ["Grid", "HStack", "ScrollView", "VStack", "ZStack"]
 
     /// A view is shown or not as the tree says, and hides when the tree says so.
     static func shown(_ element: String) -> ConformanceCase {
@@ -102,6 +114,62 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { abs((try s.held(VisualElementContract.opacity, on: view) ?? 0) - 0.25) < 0.01 }
             s.expect(try s.held(VisualElementContract.opacity, on: view), 0.25, within: 0.01)
+        }
+    }
+
+    /// A view the tree disables answers no tap, and answers once the tree enables it.
+    static func answering(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).answersNoTapWhileDisabled", proves: [
+            Covered(VisualElementContract.isEnabled, on: element),
+        ], needs: [Covered(ButtonContract.clicked), Covered(ViewContract.tapped, on: element)]) { s in
+            let enabled = State(wrappedValue: false)
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    Specimens.view(element, [
+                        Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
+                        Write(VisualElementContract.isEnabled, enabled.wrappedValue),
+                        HearDone(ViewContract.tapped) { heard.values.append("tapped") },
+                    ])
+                    Button("Enable").onClicked { enabled.wrappedValue = true }.id("change")
+                }
+                .horizontalAlignment(.start)
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.tap(count: 1), on: view)
+            s.turn()
+            s.expect(heard.values, [], "disabled, it answers no tap")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle {
+                if heard.values.isEmpty { try s.perform(.tap(count: 1), on: view) }
+                return !heard.values.isEmpty
+            }
+            s.expect(heard.values, ["tapped"], "enabled, it answers")
+        }
+    }
+
+    /// A control in a layout the tree disables takes no input, and takes it again as the layout is enabled.
+    static func disablingItsBranch(_ layout: String) -> ConformanceCase {
+        ConformanceCase("\(layout).disablesTheControlsInIt", proves: [
+            Covered(VisualElementContract.isEnabled, on: layout),
+        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.isEnabled, on: "Button")]) { s in
+            let enabled = State(wrappedValue: false)
+            s.start {
+                VStack {
+                    Specimens.holding(layout, Button("Inside").id("inside"), [
+                        Write(VisualElementContract.isEnabled, enabled.wrappedValue),
+                    ])
+                    Button("Enable").onClicked { enabled.wrappedValue = true }.id("change")
+                }
+            }
+            let inside = try s.element("inside")
+            s.expect(try s.held(VisualElementContract.isEnabled, on: inside), false, "disabled with its layout")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(VisualElementContract.isEnabled, on: inside) == true }
+            s.expect(try s.held(VisualElementContract.isEnabled, on: inside), true, "enabled with it")
         }
     }
 

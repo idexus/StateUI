@@ -1,49 +1,64 @@
-# revision 2.1
+# revision 3.1
+ActivityIndicator.isEnabled: ✅
 ActivityIndicator.zIndex: ✅
-Button.isVisible: ✅
-Button.pivotY: ✅
-Canvas.zIndex: ✅
-CheckBox.isVisible: ✅
-CheckBox.pivotY: ✅
-ColorBox.zIndex: ✅
-DatePicker.isVisible: ✅
-DatePicker.pivotY: ✅
-Ellipse.zIndex: ✅
-Grid.isVisible: ✅
-Grid.pivotY: ✅
-HStack.zIndex: ✅
-Image.isVisible: ✅
-Image.pivotY: ✅
-ItemsView.zIndex: ✅
-Line.zIndex: ✅
-Map.isVisible: 🧩
-Map.pivotY: 🧩
-Path.zIndex: ✅
-Picker.isVisible: ✅
-Picker.pivotY: ✅
-Polygon.zIndex: ✅
-Polyline.isVisible: ✅
-Polyline.pivotY: ✅
-ProgressBar.zIndex: ✅
-RadioButton.isVisible: ✅
-RadioButton.pivotY: ✅
-Rectangle.zIndex: ✅
-ScrollView.isVisible: ✅
-ScrollView.pivotY: ✅
-SearchField.zIndex: ✅
-Slider.isVisible: ✅
-Slider.pivotY: ✅
-Stepper.zIndex: ✅
-Switch.isVisible: ✅
-Switch.pivotY: ✅
-Text.isVisible: ✅
-Text.pivotY: ✅
-TextEditor.zIndex: ✅
-TextField.isVisible: ✅
-TextField.pivotY: ✅
-TimePicker.zIndex: ✅
-VStack.isVisible: ✅
-VStack.pivotY: ✅
+Button.pivotX: ✅
+Canvas.style: ✅
+Canvas.translationY: ✅
+CheckBox.pivotX: ✅
+ColorBox.style: ✅
+ColorBox.translationY: ✅
+DatePicker.layoutDirection: ✅
+Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
+Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
+Ellipse.translationX: ✅
+Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
+Grid.background: ✅
+HStack.frameChanged: ✅
+HStack.maximumHeight: ✅
+HStack.maximumWidth: ✅
+HStack.minimumHeight: ✅
+HStack.minimumWidth: ✅
+HStack.scale: ✅
+Image.accessibilityHint: ✅
+ItemsView.opacity: ✅
+ItemsView.rotation: ✅
+Line.isVisible: ✅
+Line.pivotY: ✅
+Map.style: 🧩
+Map.translationY: 🧩
+Path.pivotX: ✅
+Picker.focus: ✅
+Picker.isFocusedChanged: ✅
+Picker.translationX: ✅
+Picker.unfocus: ✅
+Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Polyline.frame: ✅
+Polyline.scaleY: ✅
+ProgressBar.automationExcludedWithChildren: ✅
+RadioButton.frameChanged: ✅
+RadioButton.maximumHeight: ✅
+RadioButton.maximumWidth: ✅
+RadioButton.minimumHeight: ✅
+RadioButton.minimumWidth: ✅
+RadioButton.scale: ✅
+Rectangle.isAccessibilityHidden: ✅
+ScrollView.frameChanged: ✅
+ScrollView.height: ✅
+ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own tip, checked against the projection it laid on the element
+ScrollView.width: ✅
+SearchField.accessibilityHint: ✅
+Slider.isEnabled: ✅
+Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
+Stepper.accessibilityHint: ✅
+Switch.isEnabled: ✅
+Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
+Text.accessibilityLabel: ✅
+TextEditor.accessibilityHint: ✅
+TextField.isEnabled: ✅
+TextField.rotationX: ✓ read rotationX of TextField: the host's own tip, checked against the projection it laid on the element
+TimePicker.accessibilityHint: ✅
+VStack.isEnabled: does not apply - read isEnabled of VStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
 WebView.zIndex: ✅
 ZStack.isVisible: ✅
 ZStack.pivotY: ✅

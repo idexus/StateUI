@@ -12,10 +12,6 @@ class WinUIValueView: WinUIView {
     /// What the control does when its value moves, handed the value it stands at.
     var onValueChanged: ((Double) -> Void)?
 
-    func setEnabled(_ enabled: Bool) {
-        stateui_winui_set_enabled(handle, enabled)
-    }
-
     override func detach() {
         super.detach()
         onValueChanged = nil

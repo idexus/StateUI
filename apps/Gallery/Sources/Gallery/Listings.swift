@@ -8279,6 +8279,7 @@ enum Listings {
         @State private var below = 0
         @State private var child = 0
         @State private var childrenToo = false
+        @State private var disabled = false
 
         var body: some View {
             VStack {
@@ -8292,8 +8293,9 @@ enum Listings {
                         .onTapped { below += 1 }
 
                     // On top. Its own empty area lets taps through to the box below
-                    // while the label inside still answers - or, with the switch on,
-                    // the whole of it ignores input, the label included.
+                    // while the label inside still answers - or, with "Children too",
+                    // the whole of it ignores input, the label included; disabled,
+                    // it takes every tap on it and answers none.
                     VStack {
                         // The child wears its own colour and its own padding, so
                         // what is the child and what is the empty area around it
@@ -8305,6 +8307,7 @@ enum Listings {
                     }
                     .letsInputThrough(!childrenToo)
                     .ignoresInput(childrenToo)
+                    .isEnabled(!disabled)
                 }
 
                 Text("below \(below)   child \(child)")
@@ -8312,6 +8315,8 @@ enum Listings {
 
                 HStack {
                     SwitchRow("Children too", $childrenToo)
+
+                    SwitchRow("Disabled", $disabled)
 
                     Button("Reset")
                         .onClicked { below = 0; child = 0 }

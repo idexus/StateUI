@@ -1,49 +1,76 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.scaleX: ✅
-Button.automationExcludedWithChildren: ✅
-Canvas.ignoresInput: ✅
-Canvas.scaleX: ✅
-CheckBox.automationExcludedWithChildren: ✅
-ColorBox.ignoresInput: not realized
-ColorBox.scaleX: ✅
-DatePicker.automationExcludedWithChildren: ✅
-Ellipse.ignoresInput: not realized
-Ellipse.scaleX: ✅
-Grid.automationExcludedWithChildren: ✅
-HStack.ignoresInput: ✅
-HStack.scaleX: ✅
-Image.automationExcludedWithChildren: ✅
-ItemsView.ignoresInput: ✅
-ItemsView.scaleX: ✅
-Line.ignoresInput: not realized
-Line.scaleX: ✅
-Map.automationExcludedWithChildren: 🧩
-Path.ignoresInput: not realized
-Path.scaleX: ✅
-Picker.automationExcludedWithChildren: ✅
-Polygon.ignoresInput: not realized
-Polygon.scaleX: ✅
-Polyline.automationExcludedWithChildren: ✅
-ProgressBar.ignoresInput: ✅
-ProgressBar.scaleX: ✅
-RadioButton.automationExcludedWithChildren: ✅
-Rectangle.ignoresInput: not realized
-Rectangle.scaleX: ✅
-ScrollView.automationExcludedWithChildren: ✅
-SearchField.ignoresInput: ✅
-SearchField.scaleX: ✅
-Slider.automationExcludedWithChildren: ✅
-Stepper.ignoresInput: ✅
-Stepper.scaleX: ✅
-Switch.automationExcludedWithChildren: ✅
-Text.automationExcludedWithChildren: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.scaleX: ✅
-TextField.automationExcludedWithChildren: ✅
-TimePicker.ignoresInput: ✅
-TimePicker.scaleX: ✅
-VStack.automationExcludedWithChildren: ✅
+Button.isAccessibilityHidden: ✅
+Canvas.frameChanged: ✅
+Canvas.maximumHeight: ✅
+Canvas.maximumWidth: ✅
+Canvas.minimumHeight: ✅
+Canvas.minimumWidth: ✅
+Canvas.scale: ✅
+CheckBox.isAccessibilityHidden: ✅
+ColorBox.frameChanged: ✅
+ColorBox.maximumHeight: ✅
+ColorBox.maximumWidth: ✅
+ColorBox.minimumHeight: ✅
+ColorBox.minimumWidth: ✅
+ColorBox.scale: ✅
+DatePicker.accessibilityHeading: ✅
+Ellipse.frameChanged: ✅
+Ellipse.height: ✅
+Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
+Ellipse.width: ✅
+Grid.accessibilityHint: ✅
+HStack.isVisible: ✅
+HStack.pivotY: ✅
+Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+Image.translationX: ✅
+Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.background: not realized
+Line.automationExcludedWithChildren: ✅
+Map.frameChanged: 🧩
+Map.maximumHeight: 🧩
+Map.maximumWidth: 🧩
+Map.minimumHeight: 🧩
+Map.minimumWidth: 🧩
+Map.scale: 🧩
+Path.isAccessibilityHidden: ✅
+Picker.frameChanged: ✅
+Picker.height: ✅
+Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
+Picker.width: ✅
+Polygon.accessibilityHeading: ✅
+Polyline.isEnabled: does not apply - read isEnabled of Polyline - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
+ProgressBar.accessibilityLabel: ✅
+RadioButton.isVisible: ✅
+RadioButton.pivotY: ✅
+Rectangle.isEnabled: ✅
+Rectangle.zIndex: ✅
+ScrollView.pivotX: ✅
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.translationX: ✅
+SearchField.unfocus: ✅
+Slider.layoutDirection: ✅
+Stepper.focus: ✅
+Stepper.isFocusedChanged: ✅
+Stepper.translationX: ✅
+Stepper.unfocus: ✅
+Switch.layoutDirection: ✅
+Text.frame: ✅
+Text.scaleY: ✅
+TextEditor.focus: ✅
+TextEditor.isFocusedChanged: ✅
+TextEditor.translationX: ✅
+TextEditor.unfocus: ✅
+TextField.layoutDirection: ✅
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.translationX: ✅
+TimePicker.unfocus: ✅
+VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 WebView.ignoresInput: ✅
 WebView.scaleX: ✅
 ZStack.automationExcludedWithChildren: ✅

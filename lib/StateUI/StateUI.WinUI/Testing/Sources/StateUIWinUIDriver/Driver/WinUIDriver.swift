@@ -13,12 +13,30 @@ import Foundation
 /// Design: docs/design/host/conformance.md#the-driver
 @MainActor
 final class WinUIDriver: HostDriver {
+    /// Why a view that is no control holds no `isEnabled` on WinUI.
+    static let noEnabledState =
+        "WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it"
+
     let host = "WinUI 3"
     let cannot = [
         "submit on TextField":
             "WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field",
     ]
     let platformHasNone = [
+        "read isEnabled of Canvas": WinUIDriver.noEnabledState,
+        "read isEnabled of ColorBox": WinUIDriver.noEnabledState,
+        "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
+        "read isEnabled of Grid": WinUIDriver.noEnabledState,
+        "read isEnabled of HStack": WinUIDriver.noEnabledState,
+        "read isEnabled of Image": WinUIDriver.noEnabledState,
+        "read isEnabled of Line": WinUIDriver.noEnabledState,
+        "read isEnabled of Path": WinUIDriver.noEnabledState,
+        "read isEnabled of Polygon": WinUIDriver.noEnabledState,
+        "read isEnabled of Polyline": WinUIDriver.noEnabledState,
+        "read isEnabled of Rectangle": WinUIDriver.noEnabledState,
+        "read isEnabled of Text": WinUIDriver.noEnabledState,
+        "read isEnabled of VStack": WinUIDriver.noEnabledState,
+        "read isEnabled of ZStack": WinUIDriver.noEnabledState,
         "read growsWithText of TextEditor":
             "an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it",
         "read contentMode of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
@@ -166,7 +184,7 @@ final class WinUIDriver: HostDriver {
         case (.dragAndDrop(let target, let across), _): try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):
             guard view.offered.takesFiles else { throw DriverCannot(act, on: element) }
-            for name in names { FileManager.default.createFile(atPath: Self.files + "\\" + name, contents: Data(name.utf8)) }
+            for name in names { _ = FileManager.default.createFile(atPath: Self.files + "\\" + name, contents: Data(name.utf8)) }
             view.heardDrag(.filesDropped(names.map { ChosenFile(address: Self.files + "\\" + $0, name: $0) }))
         default: throw DriverCannot(act, on: element)
         }

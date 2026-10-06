@@ -108,10 +108,6 @@ final class WinUIButtonView: WinUIView {
         }
     }
 
-    func setEnabled(_ enabled: Bool) {
-        stateui_winui_set_enabled(handle, enabled)
-    }
-
     override func clicked() {
         onClicked?()
     }

@@ -1,49 +1,63 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.opacity: ✅
 ActivityIndicator.rotation: ✅
-Button.accessibilityLabel: ✅
-Canvas.opacity: ✅
-Canvas.rotation: ✅
-CheckBox.accessibilityLabel: ✅
-ColorBox.opacity: ✅
-ColorBox.rotation: ✅
-DatePicker.accessibilityLabel: ✅
-Ellipse.opacity: ✅
-Ellipse.rotation: ✅
-Grid.accessibilityLabel: ✅
-HStack.opacity: ✅
-HStack.rotation: ✅
-Image.accessibilityLabel: ✅
-ItemsView.opacity: ✅
-ItemsView.rotation: ✅
-Line.opacity: ✅
-Line.rotation: ✅
-Map.accessibilityLabel: 🧩
-Path.opacity: ✅
-Path.rotation: ✅
-Picker.accessibilityLabel: ✅
-Polygon.opacity: ✅
-Polygon.rotation: ✅
-Polyline.accessibilityLabel: ✅
-ProgressBar.opacity: ✅
-ProgressBar.rotation: ✅
-RadioButton.accessibilityLabel: ✅
-Rectangle.opacity: ✅
-Rectangle.rotation: ✅
-ScrollView.accessibilityLabel: ✅
-SearchField.opacity: ✅
-SearchField.rotation: ✅
-Slider.accessibilityLabel: ✅
-Stepper.opacity: ✅
-Stepper.rotation: ✅
-Switch.accessibilityLabel: ✅
-Text.accessibilityLabel: ✅
-TextEditor.opacity: ✅
-TextEditor.rotation: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.opacity: ✅
-TimePicker.rotation: ✅
-VStack.accessibilityLabel: ✅
+Button.zIndex: ✅
+Canvas.isVisible: ✅
+Canvas.pivotY: ✅
+CheckBox.zIndex: ✅
+ColorBox.isVisible: ✅
+ColorBox.pivotY: ✅
+DatePicker.style: ✅
+DatePicker.translationY: ✅
+Ellipse.pivotX: ✅
+Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+Grid.translationX: ✅
+Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+HStack.automationExcludedWithChildren: ✅
+Image.frameChanged: ✅
+Image.height: ✅
+Image.rotationY: ✓ read rotationY of Image: the host's own tip, checked against the projection it laid on the element
+Image.width: ✅
+ItemsView.accessibilityHint: ✅
+Line.accessibilityLabel: ✅
+Map.isVisible: 🧩
+Map.pivotY: 🧩
+Path.isEnabled: ✅
+Path.zIndex: ✅
+Picker.pivotX: ✅
+Polygon.style: ✅
+Polygon.translationY: ✅
+Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ProgressBar.frame: ✅
+ProgressBar.scaleY: ✅
+RadioButton.automationExcludedWithChildren: ✅
+Rectangle.ignoresInput: not realized
+Rectangle.scaleX: ✅
+ScrollView.isAccessibilityHidden: ✅
+SearchField.frameChanged: ✅
+SearchField.height: ✅
+SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
+SearchField.width: ✅
+Slider.accessibilityHeading: ✅
+Stepper.frameChanged: ✅
+Stepper.height: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
+Stepper.width: ✅
+Switch.accessibilityHeading: ✅
+Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Text.rotationX: ✓ read rotationX of Text: the host's own tip, checked against the projection it laid on the element
+TextEditor.frameChanged: ✅
+TextEditor.height: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextEditor.width: ✅
+TextField.accessibilityHeading: ✅
+TimePicker.frameChanged: ✅
+TimePicker.height: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+TimePicker.width: ✅
+VStack.accessibilityHeading: ✅
 WebView.opacity: ✅
 WebView.rotation: ✅
 ZStack.accessibilityLabel: ✅
+ZStack.isEnabled: ✅

@@ -15,6 +15,12 @@ view's number, which forwards each call to Swift by the number
 ([JNI](jni.md)). A view hands the same listener to every setter it needs, so a
 field's typing and its Return reach the same Swift view.
 
+## A disabled view
+
+Every view takes the enablement `presented(_:)` gives it with Android's own
+`setEnabled`: a control in a disabled branch is off as a disabled one is, and
+the host layer hears nothing of the hand in any view there.
+
 ## Nothing the program writes is heard
 
 Every native write of an element - a patch applied, a display frame presented

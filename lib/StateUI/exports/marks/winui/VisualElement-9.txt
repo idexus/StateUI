@@ -1,49 +1,60 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.style: ✅
 ActivityIndicator.translationY: ✅
-Button.pivotX: ✅
-Canvas.style: ✅
-Canvas.translationY: ✅
-CheckBox.pivotX: ✅
-ColorBox.style: ✅
-ColorBox.translationY: ✅
-DatePicker.pivotX: ✅
-Ellipse.style: ✅
-Ellipse.translationY: ✅
-Grid.pivotX: ✅
-HStack.style: ✅
-HStack.translationY: ✅
-Image.pivotX: ✅
-ItemsView.style: not realized
-ItemsView.translationY: ✅
-Line.style: ✅
-Line.translationY: ✅
-Map.pivotX: 🧩
-Path.style: ✅
-Path.translationY: ✅
-Picker.pivotX: ✅
-Polygon.style: ✅
-Polygon.translationY: ✅
-Polyline.pivotX: ✅
-ProgressBar.style: ✅
-ProgressBar.translationY: ✅
-RadioButton.pivotX: ✅
-Rectangle.style: ✅
-Rectangle.translationY: ✅
-ScrollView.pivotX: ✅
-SearchField.style: ✅
-SearchField.translationY: ✅
-Slider.pivotX: ✅
-Stepper.style: ✅
-Stepper.translationY: ✅
-Switch.pivotX: ✅
-Text.pivotX: ✅
-TextEditor.style: ✅
-TextEditor.translationY: ✅
-TextField.pivotX: ✅
-TimePicker.style: ✅
-TimePicker.translationY: ✅
-VStack.pivotX: ✅
+Button.layoutDirection: ✅
+Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
+Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
+Canvas.translationX: ✅
+Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
+CheckBox.layoutDirection: ✅
+ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.translationX: ✅
+ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+DatePicker.background: not realized
+Ellipse.frame: ✅
+Ellipse.scaleY: ✅
+Grid.automationExcludedWithChildren: ✅
+HStack.frameChanged: ✅
+HStack.height: ✅
+HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked against the projection it laid on the element
+HStack.width: ✅
+Image.accessibilityLabel: ✅
+ItemsView.isVisible: ✅
+ItemsView.pivotY: ✅
+Line.pivotX: ✅
+Map.focus: 🧩
+Map.isFocusedChanged: 🧩
+Map.translationX: 🧩
+Map.unfocus: 🧩
+Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Picker.frame: ✅
+Picker.scaleY: ✅
+Polygon.background: not realized
+Polyline.ignoresInput: not realized
+Polyline.scaleX: ✅
+ProgressBar.isAccessibilityHidden: ✅
+RadioButton.frameChanged: ✅
+RadioButton.height: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
+RadioButton.width: ✅
+Rectangle.accessibilityHeading: ✅
+ScrollView.isEnabled: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
+SearchField.accessibilityLabel: ✅
+Slider.opacity: ✅
+Slider.rotation: ✅
+Stepper.accessibilityLabel: ✅
+Switch.opacity: ✅
+Switch.rotation: ✅
+Text.isEnabled: ✅
+Text.zIndex: ✅
+TextEditor.accessibilityLabel: ✅
+TextField.opacity: ✅
+TextField.rotation: ✅
+TimePicker.accessibilityLabel: ✅
+VStack.opacity: ✅
+VStack.rotation: ✅
 WebView.style: ✅
 WebView.translationY: ✅
 ZStack.pivotX: ✅

@@ -23,6 +23,14 @@ press action runs the same handler a click runs, so VoiceOver and automation
 reach it through the native accessibility press rather than a synthetic
 click.
 
+## A disabled view
+
+A control the tree disables, or one in a disabled branch, is an `NSControl`
+with `isEnabled` off, as `presented(_:)` gives it. A view that is no control
+keeps its place and takes the press, but the host layer hears nothing of the
+hand in it; it tells assistive technology it answers nothing
+(`setAccessibilityEnabled(false)`), what the driver reads back.
+
 ## The first click
 
 An element that answers a tap takes the first click into an inactive window,

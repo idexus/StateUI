@@ -58,6 +58,21 @@
         return ModifiedContent(node: view.node)
     }
 
+    /// The layout `layout` - a stack, a grid, a ZStack or a scroll view - holding `child`, wearing `worn`, found by
+    /// the id "specimen"; words naming the layout for any other element, which the case finding it then fails on.
+    public static func holding(_ layout: String, _ child: some View, _ worn: [any Worn] = []) -> ModifiedContent {
+        let dressing = Dressing(worn)
+        let view: any View = switch layout {
+        case "Grid": dressing.dress(Grid { child })
+        case "HStack": dressing.dress(HStack { child })
+        case "ScrollView": dressing.dress(ScrollView { child })
+        case "VStack": dressing.dress(VStack { child })
+        case "ZStack": dressing.dress(ZStack { child })
+        default: Text("no layout \(layout) holding a child")
+        }
+        return ModifiedContent(node: view.node)
+    }
+
     /// A page holding `element`'s specimen wearing `worn` where an application puts one, `beside` it on the page. A
     /// session finds it by the id "specimen", or - a span, an arrangement - as the one element of its kind
     /// (`Session.specimen(_:)`).

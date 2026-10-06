@@ -183,6 +183,7 @@
         }
 
         restack()
+        if changed.contains(.isEnabled), described { enablementTurned() }
         if changed.contains(.layoutDirection) {
             directionTurned(arrangingItself: false)
         } else if !described {
@@ -190,7 +191,9 @@
         }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || held.contains { $0.framesRead }
-        native.applied(changed: changed, wasDescribed: described)
+        // Made in a disabled branch, it presents an `isEnabled` it never wrote.
+        let presenting = !described && parent?.isEffectivelyEnabled == false ? changed.union([.isEnabled]) : changed
+        native.applied(changed: presenting, wasDescribed: described)
         described = true
         reconcilePresentation(from: previouslyShown)
     }

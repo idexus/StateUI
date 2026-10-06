@@ -5,7 +5,7 @@ SearchField.isEnabled: ✅
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: – Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off.
 SearchField.isTextPredictionEnabled: ✅
-SearchField.maximumLength: ◐ cannot read maximumLength of SearchField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it
+SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
 SearchField.placeholderColor: ✅
 SearchField.selectionLength: ✅
@@ -17,7 +17,7 @@ TextEditor.isEnabled: ✅
 TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: – Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off.
 TextEditor.isTextPredictionEnabled: ✅
-TextEditor.maximumLength: ◐ cannot read maximumLength of TextEditor - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it
+TextEditor.maximumLength: ✅
 TextEditor.placeholder: ✅
 TextEditor.placeholderColor: ✅
 TextEditor.selectionLength: ✅
@@ -29,7 +29,7 @@ TextField.isEnabled: ✅
 TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: – Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off.
 TextField.isTextPredictionEnabled: ✅
-TextField.maximumLength: ◐ cannot read maximumLength of TextField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it
+TextField.maximumLength: ✅
 TextField.placeholder: ✅
 TextField.placeholderColor: ✅
 TextField.selectionLength: ✅

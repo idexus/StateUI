@@ -103,10 +103,11 @@ extension AppKitElement {
         // A family the registry realizes takes its own members there, each read
         // as this element presents it; the arms below are the families still
         // to move.
-        AppKitRegistrations.registry.apply(
-            changed, to: view, of: type,
-            reading: { self.value($0) },
-            carriedIn: { self.driven[$0]?.mode == .in })
+        let taken = AppKitRegistrations.registry.apply(changed, to: view, presenting: element)
+        if changed.contains(.isEnabled), !taken.contains(.isEnabled) {
+            // A view that is no control tells assistive technology whether it answers; its hand is the host layer's.
+            view.setAccessibilityEnabled(element.presented(.isEnabled)?.bool ?? true)
+        }
 
         if type == .toolbarItem, let button = view as? NSButton {
             button.title = string(.text) ?? ""

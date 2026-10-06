@@ -5,7 +5,7 @@ MenuItem.isDestructive: ✅
 MenuItem.isEnabled: ✅
 MenuItem.text: ✅
 ToolbarItem.clicked: ✅
-ToolbarItem.icon: cannot read a picture's name - Android's item keeps its picture, not its name
+ToolbarItem.icon: does not apply - read a picture's name - Android's item keeps its picture, not its name
 ToolbarItem.isDestructive: ✅
 ToolbarItem.isEnabled: ✅
 ToolbarItem.text: ✅

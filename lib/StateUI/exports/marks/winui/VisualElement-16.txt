@@ -1,49 +1,62 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.background: not realized
-Button.frame: ✅
-Button.scaleY: ✅
-Canvas.background: not realized
-CheckBox.frame: ✅
-CheckBox.scaleY: ✅
-ColorBox.background: not realized
-DatePicker.frame: ✅
-DatePicker.scaleY: ✅
-Ellipse.background: not realized
-Grid.frame: ✅
-Grid.scaleY: ✅
-HStack.background: ✅
-Image.frame: ✅
-Image.scaleY: ✅
-ItemsView.background: not realized
-Line.background: not realized
-Map.frame: 🧩
-Map.scaleY: 🧩
-Path.background: not realized
-Picker.frame: ✅
-Picker.scaleY: ✅
-Polygon.background: not realized
-Polyline.frame: ✅
-Polyline.scaleY: ✅
-ProgressBar.background: not realized
-RadioButton.frame: ✅
-RadioButton.scaleY: ✅
-Rectangle.background: not realized
-ScrollView.frame: ✅
-ScrollView.scaleY: ✅
-SearchField.background: not realized
-Slider.frame: ✅
-Slider.scaleY: ✅
-Stepper.background: not realized
-Switch.frame: ✅
-Switch.scaleY: ✅
-Text.frame: ✅
-Text.scaleY: ✅
-TextEditor.background: not realized
-TextField.frame: ✅
-TextField.scaleY: ✅
-TimePicker.background: not realized
-VStack.frame: ✅
-VStack.scaleY: ✅
+Button.ignoresInput: ✅
+Button.scaleX: ✅
+Canvas.automationExcludedWithChildren: ✅
+CheckBox.ignoresInput: ✅
+CheckBox.scaleX: ✅
+ColorBox.automationExcludedWithChildren: ✅
+DatePicker.frameChanged: ✅
+DatePicker.maximumHeight: ✅
+DatePicker.maximumWidth: ✅
+DatePicker.minimumHeight: ✅
+DatePicker.minimumWidth: ✅
+DatePicker.scale: ✅
+Ellipse.isAccessibilityHidden: ✅
+Grid.frameChanged: ✅
+Grid.height: ✅
+Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
+Grid.width: ✅
+HStack.accessibilityLabel: ✅
+HStack.isEnabled: ✅
+Image.pivotX: ✅
+ItemsView.focus: ✅
+ItemsView.isFocusedChanged: ✅
+ItemsView.translationX: ✅
+ItemsView.unfocus: ✅
+Line.frame: ✅
+Line.scaleY: ✅
+Map.automationExcludedWithChildren: 🧩
+Path.ignoresInput: not realized
+Path.scaleX: ✅
+Picker.isAccessibilityHidden: ✅
+Polygon.frameChanged: ✅
+Polygon.maximumHeight: ✅
+Polygon.maximumWidth: ✅
+Polygon.minimumHeight: ✅
+Polygon.minimumWidth: ✅
+Polygon.scale: ✅
+Polyline.accessibilityHeading: ✅
+ProgressBar.isEnabled: ✅
+ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
+RadioButton.accessibilityLabel: ✅
+Rectangle.opacity: ✅
+Rectangle.rotation: ✅
+ScrollView.isEnabled: ✅
+ScrollView.zIndex: ✅
+SearchField.pivotX: ✅
+Slider.style: ✅
+Slider.translationY: ✅
+Stepper.pivotX: ✅
+Switch.style: ✅
+Switch.translationY: ✅
+Text.layoutDirection: ✅
+TextEditor.pivotX: ✅
+TextField.style: ✅
+TextField.translationY: ✅
+TimePicker.pivotX: ✅
+VStack.style: ✅
+VStack.translationY: ✅
 WebView.background: not realized
 ZStack.frame: ✅
 ZStack.scaleY: ✅

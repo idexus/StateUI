@@ -1,79 +1,58 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Button.focus: ✅
-Button.isFocusedChanged: ✅
-Button.translationX: ✅
-Button.unfocus: ✅
-Canvas.layoutDirection: ✓ read layoutDirection of Canvas: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-CheckBox.focus: ✅
-CheckBox.isFocusedChanged: ✅
-CheckBox.translationX: ✅
-CheckBox.unfocus: ✅
-ColorBox.layoutDirection: ✓ read layoutDirection of ColorBox: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-DatePicker.focus: ✅
-DatePicker.isFocusedChanged: ✅
-DatePicker.translationX: ✅
-DatePicker.unfocus: ✅
-Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.translationX: ✅
-Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-Image.translationX: ✅
-Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-ItemsView.layoutDirection: ✅
-Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Map.focus: 🧩
-Map.isFocusedChanged: 🧩
-Map.translationX: 🧩
-Map.unfocus: 🧩
-Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Picker.focus: ✅
-Picker.isFocusedChanged: ✅
-Picker.translationX: ✅
-Picker.unfocus: ✅
-Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.translationX: ✅
-Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.layoutDirection: ✅
-RadioButton.focus: ✅
-RadioButton.isFocusedChanged: ✅
-RadioButton.translationX: ✅
-RadioButton.unfocus: ✅
-Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.translationX: ✅
-ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-SearchField.layoutDirection: ✅
-Slider.focus: ✅
-Slider.isFocusedChanged: ✅
-Slider.translationX: ✅
-Slider.unfocus: ✅
-Stepper.layoutDirection: ✅
-Switch.focus: ✅
-Switch.isFocusedChanged: ✅
-Switch.translationX: ✅
-Switch.unfocus: ✅
-Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.translationX: ✅
-Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-TextEditor.layoutDirection: ✅
-TextField.focus: ✅
-TextField.isFocusedChanged: ✅
-TextField.translationX: ✅
-TextField.unfocus: ✅
-TimePicker.layoutDirection: ✅
-VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.translationX: ✅
-VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+Button.frame: ✅
+Button.scaleY: ✅
+Canvas.background: not realized
+CheckBox.frame: ✅
+CheckBox.scaleY: ✅
+ColorBox.background: not realized
+DatePicker.ignoresInput: ✅
+DatePicker.scaleX: ✅
+Ellipse.automationExcludedWithChildren: ✅
+Grid.frameChanged: ✅
+Grid.maximumHeight: ✅
+Grid.maximumWidth: ✅
+Grid.minimumHeight: ✅
+Grid.minimumWidth: ✅
+Grid.scale: ✅
+HStack.accessibilityHint: ✅
+Image.isVisible: ✅
+Image.pivotY: ✅
+ItemsView.style: not realized
+ItemsView.translationY: ✅
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.translationX: ✅
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Map.background: 🧩
+Path.frame: ✅
+Path.scaleY: ✅
+Picker.automationExcludedWithChildren: ✅
+Polygon.ignoresInput: not realized
+Polygon.scaleX: ✅
+Polyline.isAccessibilityHidden: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.height: ✅
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
+ProgressBar.width: ✅
+RadioButton.accessibilityHint: ✅
+Rectangle.isEnabled: does not apply - read isEnabled of Rectangle - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
+ScrollView.accessibilityLabel: ✅
+SearchField.isVisible: ✅
+SearchField.pivotY: ✅
+Slider.zIndex: ✅
+Stepper.isVisible: ✅
+Stepper.pivotY: ✅
+Switch.zIndex: ✅
+Text.pivotX: ✅
+TextEditor.isVisible: ✅
+TextEditor.pivotY: ✅
+TextField.zIndex: ✅
+TimePicker.isVisible: ✅
+TimePicker.pivotY: ✅
+VStack.isEnabled: ✅
+VStack.zIndex: ✅
 WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

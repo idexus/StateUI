@@ -52,10 +52,7 @@ extension AndroidElement {
         }
 
         ProgramWrite.perform {
-            let taken = AndroidRegistrations.registry.apply(
-                changed, to: view, of: type,
-                reading: { [element] in element.value($0) },
-                carriedIn: { [element] in element.driven[$0]?.mode == .in })
+            let taken = AndroidRegistrations.registry.apply(changed, to: view, presenting: element)
 
             let own = changed.subtracting(taken)
             for property in own {
@@ -63,6 +60,7 @@ extension AndroidElement {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
                 case .background: view.setBackground(value(.background))
+                case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
                 default: break
                 }
             }

@@ -105,7 +105,7 @@ TickerSample.swift 88a474a43d0b0bba
 TimePickerSample.swift 04fb026dfef74c34
 ToolbarLayersSample.swift 0a9421dcd57b03c5
 ToolbarSample.swift 60eceb09d7abe3b2
-TouchThroughSample.swift f2a822268d4aaa71
+TouchThroughSample.swift d107a2f839022424
 TransformSample.swift 0221daa99b1635df
 TwoLayersSample.swift 45fa1ec3100d9ac4
 VisualStateSample.swift bf1599bdd8a5680d

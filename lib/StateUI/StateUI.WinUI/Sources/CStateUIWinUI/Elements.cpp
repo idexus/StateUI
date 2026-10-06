@@ -317,7 +317,8 @@ extern "C" bool stateui_winui_animations_enabled(void) {
 
 extern "C" void stateui_winui_set_enabled(StateUIObjectRef handle, bool enabled) {
     try {
-        as<controls::Control>(handle).IsEnabled(enabled);
+        // A view that is no control keeps no enabled state: the host layer holds the user's hand from it.
+        if (auto control = as<IInspectable>(handle).try_as<controls::Control>()) control.IsEnabled(enabled);
     } catch (...) {
         report("enabling");
     }

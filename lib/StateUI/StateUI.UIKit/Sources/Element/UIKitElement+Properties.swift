@@ -46,16 +46,18 @@ extension UIKitElement {
         }
 
         ProgramWrite.perform {
-            let taken = UIKitRegistrations.registry.apply(
-                changed, to: view, of: type,
-                reading: { [element] in element.value($0) },
-                carriedIn: { [element] in element.driven[$0]?.mode == .in })
+            let taken = UIKitRegistrations.registry.apply(changed, to: view, presenting: element)
 
             let own = changed.subtracting(taken)
             for property in own {
                 switch property {
                 case .opacity: drawing?.ownOpacity = element.number(.opacity) ?? 1
                 case .isVisible: view.isHidden = !element.standsShown
+                // A view that is no control tells VoiceOver whether it answers; its hand is the host layer's.
+                case .isEnabled:
+                    let traits = view.accessibilityTraits
+                    view.accessibilityTraits = element.presented(.isEnabled)?.bool == false
+                        ? traits.union(.notEnabled) : traits.subtracting(.notEnabled)
                 // Ignored, the view and all in it are passed over: a touch goes to what is under it.
                 case .ignoresInput: view.isUserInteractionEnabled = element.bool(.ignoresInput) != true
                 case .background:

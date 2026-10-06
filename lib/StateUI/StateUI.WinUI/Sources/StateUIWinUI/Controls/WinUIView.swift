@@ -129,6 +129,14 @@ class WinUIView {
         setOpacity(self.opacity)
     }
 
+    /// The view whose native control answers the user: this one, or the control a layout of it holds.
+    var answering: WinUIView { self }
+
+    /// Whether the control answers the user; a view that is no control keeps no such state on WinUI.
+    func setEnabled(_ enabled: Bool) {
+        stateui_winui_set_enabled(answering.handle, enabled)
+    }
+
     /// Whether clicks and touches go through the view to what is behind it.
     func setIgnoresInput(_ ignores: Bool) {
         stateui_winui_set_hit_testable(handle, !ignores)

@@ -103,6 +103,8 @@ enum WinUIRealization {
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
         .complete("ToolbarItem", "showsText"),
+        .notPlanned("WebView", "isEnabled", reason: "WinUI's WebView2 is no control: it keeps no enabled state, and "
+            + "its page takes the user's hand whatever the tree says."),
         .notPlanned("WebView", "panTouchCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "panUpdated", reason: webViewTakesTheHand),
         .notPlanned("WebView", "panXChannel", reason: webViewTakesTheHand),

@@ -70,10 +70,6 @@ final class WinUIDatePickerView: WinUIView {
         return CalendarDate(year: Int(parts[0]), month: Int(parts[1]), day: Int(parts[2]))
     }
 
-    func setEnabled(_ enabled: Bool) {
-        stateui_winui_set_enabled(handle, enabled)
-    }
-
     override func picked(_ first: Int32, _ second: Int32, _ third: Int32) {
         onChosen?(CalendarDate(year: Int(first), month: Int(second), day: Int(third)))
     }

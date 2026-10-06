@@ -300,7 +300,7 @@ void stateui_winui_origin(StateUIObjectRef element, double *origin);
 /// Where WinUI laid the element out in its parent: x, y, width, height, in DIPs.
 void stateui_winui_frame(StateUIObjectRef element, double *frame);
 
-/// A control's IsEnabled.
+/// A control's IsEnabled; a view that is no control keeps none, and nothing is done.
 void stateui_winui_set_enabled(StateUIObjectRef control, bool enabled);
 
 /// Cuts what the element shows to `outline` over `width` by `height` DIPs; `cuts` false shows it whole.

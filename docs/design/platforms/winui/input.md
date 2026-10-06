@@ -30,6 +30,14 @@ offers a context menu, so a row answers a click past its words as well as on
 them; once it does neither, the clear paint goes, and an author's background
 is never touched.
 
+## A disabled view
+
+A view's enablement reaches the control it answers through - its own, or the
+scroller or the list a layout of it holds (`WinUIView.answering`) - as WinUI's
+`IsEnabled`, and a control in a disabled branch is off with it. A view that is
+no control - a figure, a picture, a panel, a block of words - keeps no enabled
+state on WinUI: the host layer hears nothing of the hand in it.
+
 ## Taps
 
 WinUI tells a tap, and a second tap soon after as a double tap in place of a

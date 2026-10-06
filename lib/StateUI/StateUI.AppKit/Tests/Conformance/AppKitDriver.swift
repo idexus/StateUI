@@ -256,6 +256,8 @@ final class AppKitDriver: HostDriver {
             return (!editor.textView.isEditable && editor.textView.isSelectable).propValue
         case (.isEnabled, let control as NSControl): return control.isEnabled.propValue
         case (.isEnabled, let picker as AppKitPickerView): return picker.isEnabled.propValue
+        // A view that is no control holds whether it answers as assistive technology meets it.
+        case (.isEnabled, let view?): return view.isAccessibilityEnabled().propValue
         case (_, let view?):
             if let held = try Self.viewHolds(property, view, element.native as? AppKitElement) { return held }
             throw DriverCannot(reading: property, of: element)

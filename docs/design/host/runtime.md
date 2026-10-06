@@ -270,6 +270,19 @@ enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
 and where, as shares of the view (`PinchStep`). A host's toolkit hears the
 input and says it as `HeardInput`.
 
+
+## A disabled branch
+
+A view the tree disables keeps its place and still stands in the way of a
+press, but answers none; on a layout the whole branch in it answers none
+(`MountedElement.isEffectivelyEnabled`). The rule is the host layer's, once:
+`hear` drops what the user does to a view in a disabled branch - only a drag
+it began still ends there - and a view's `isEnabled` reaches its control as
+`presented(_:)` gives it, false wherever a view holding it is disabled. When
+a layout's `isEnabled` changes, every element in it presents its own again
+(`enablementTurned`), so a native control in the branch is disabled and
+enabled with it. A host reads its members through `presented`, never the
+element's own value, and needs no rule of its own.
 ## A press dragged
 
 A host whose toolkit tells a press and its moves, and no drag of its own,

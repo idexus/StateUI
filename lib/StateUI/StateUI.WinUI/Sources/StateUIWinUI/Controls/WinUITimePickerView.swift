@@ -32,10 +32,6 @@ final class WinUITimePickerView: WinUIView {
         return ClockTime(hour: Int(parts[0]), minute: Int(parts[1]))
     }
 
-    func setEnabled(_ enabled: Bool) {
-        stateui_winui_set_enabled(handle, enabled)
-    }
-
     override func picked(_ first: Int32, _ second: Int32, _ third: Int32) {
         onChosen?(ClockTime(hour: Int(first), minute: Int(second)))
     }

@@ -1,49 +1,74 @@
-# revision 2.1
-ActivityIndicator.isEnabled: not realized
+# revision 3.1
+ActivityIndicator.isEnabled: ✅
 ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
-Button.accessibilityHint: ✅
-Canvas.isEnabled: not realized
-Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
-CheckBox.accessibilityHint: ✅
-ColorBox.isEnabled: not realized
-ColorBox.rotationX: ✓ read rotationX of ColorBox: the host's own tip, checked against the projection it laid on the element
-DatePicker.accessibilityHint: ✅
-Ellipse.isEnabled: not realized
-Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own tip, checked against the projection it laid on the element
-Grid.accessibilityHint: ✅
-HStack.isEnabled: not realized
-HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
-Image.accessibilityHint: ✅
-ItemsView.isEnabled: not realized
-ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own tip, checked against the projection it laid on the element
-Line.isEnabled: not realized
-Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
-Map.accessibilityHint: 🧩
-Path.isEnabled: not realized
-Path.rotationX: ✓ read rotationX of Path: the host's own tip, checked against the projection it laid on the element
-Picker.accessibilityHint: ✅
-Polygon.isEnabled: not realized
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
-Polyline.accessibilityHint: ✅
-ProgressBar.isEnabled: not realized
-ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
-RadioButton.accessibilityHint: ✅
-Rectangle.isEnabled: not realized
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
-ScrollView.accessibilityHint: ✅
-SearchField.isEnabled: ✅
-SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
-Slider.accessibilityHint: ✅
-Stepper.isEnabled: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
-Switch.accessibilityHint: ✅
-Text.accessibilityHint: ✅
-TextEditor.isEnabled: ✅
-TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextField.accessibilityHint: ✅
-TimePicker.isEnabled: ✅
-TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
-VStack.accessibilityHint: ✅
-WebView.isEnabled: not realized
+Button.accessibilityLabel: ✅
+Canvas.opacity: ✅
+Canvas.rotation: ✅
+CheckBox.accessibilityLabel: ✅
+ColorBox.opacity: ✅
+ColorBox.rotation: ✅
+DatePicker.zIndex: ✅
+Ellipse.isVisible: ✅
+Ellipse.pivotY: ✅
+Grid.style: ✅
+Grid.translationY: ✅
+HStack.background: ✅
+Image.frameChanged: ✅
+Image.maximumHeight: ✅
+Image.maximumWidth: ✅
+Image.minimumHeight: ✅
+Image.minimumWidth: ✅
+Image.scale: ✅
+ItemsView.accessibilityHeading: ✅
+Line.accessibilityHint: ✅
+Map.opacity: 🧩
+Map.rotation: 🧩
+Path.accessibilityLabel: ✅
+Picker.isVisible: ✅
+Picker.pivotY: ✅
+Polygon.isEnabled: ✅
+Polygon.zIndex: ✅
+Polyline.pivotX: ✅
+ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.translationX: ✅
+ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+RadioButton.background: ✅
+Rectangle.frame: ✅
+Rectangle.scaleY: ✅
+ScrollView.automationExcludedWithChildren: ✅
+SearchField.frameChanged: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
+SearchField.scale: ✅
+Slider.isAccessibilityHidden: ✅
+Stepper.frameChanged: ✅
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
+Stepper.scale: ✅
+Switch.isAccessibilityHidden: ✅
+Text.frameChanged: ✅
+Text.height: ✅
+Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
+Text.width: ✅
+TextEditor.frameChanged: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextEditor.scale: ✅
+TextField.isAccessibilityHidden: ✅
+TimePicker.frameChanged: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.scale: ✅
+VStack.isAccessibilityHidden: ✅
+WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
 WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
 ZStack.accessibilityHint: ✅

@@ -421,6 +421,8 @@ final class UIKitDriver: HostDriver {
                 .propValue
         case (.isEnabled, let label as UILabel): return label.isEnabled.propValue
         case (.isEnabled, let editor as UITextView): return (editor.isEditable || editor.isSelectable).propValue
+        // A view that is no control holds whether it answers as VoiceOver meets it.
+        case (.isEnabled, let view?): return (!view.accessibilityTraits.contains(.notEnabled)).propValue
         case (.padding, let button as UIButton):
             guard let insets = button.configuration?.contentInsets else { return nil }
             return Insets(left: insets.leading, top: insets.top, right: insets.trailing, bottom: insets.bottom).propValue

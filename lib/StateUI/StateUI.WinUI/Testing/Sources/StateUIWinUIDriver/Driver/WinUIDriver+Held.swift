@@ -12,6 +12,10 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/conformance.md#what-the-driver-reads
 extension WinUIDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
+        // What WinUI holds nothing of is not read: the case does not apply here.
+        if platformHasNone["read \(property.name) of \(element.type.name)"] != nil {
+            throw DriverCannot(reading: property, of: element)
+        }
         if let value = backendHolds(property, on: element) { return value }
         let view = (element.native as? WinUIElement)?.view
         let cannot = DriverCannot(reading: property, of: element)
@@ -119,7 +123,7 @@ extension WinUIDriver {
         switch name {
         case "isVisible": return stateui_winui_is_shown(view.handle).propValue
         case "opacity": return stateui_winui_opacity(view.handle).propValue
-        case "isEnabled": return stateui_winui_is_enabled(view.handle).propValue
+        case "isEnabled": return stateui_winui_is_enabled(view.answering.handle).propValue
         case "accessibilityLabel" where view is WinUIActivityIndicatorView:
             // A running ring's peer says it is busy before the name its element holds.
             return .string(try read(view, "automationName"))

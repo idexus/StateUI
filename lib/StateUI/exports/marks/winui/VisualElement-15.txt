@@ -1,49 +1,74 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.automationExcludedWithChildren: ✅
-Button.ignoresInput: ✅
-Button.scaleX: ✅
-Canvas.automationExcludedWithChildren: ✅
-CheckBox.ignoresInput: ✅
-CheckBox.scaleX: ✅
-ColorBox.automationExcludedWithChildren: ✅
-DatePicker.ignoresInput: ✅
-DatePicker.scaleX: ✅
-Ellipse.automationExcludedWithChildren: ✅
-Grid.ignoresInput: ✅
-Grid.scaleX: ✅
-HStack.automationExcludedWithChildren: ✅
-Image.ignoresInput: not realized
-Image.scaleX: ✅
-ItemsView.automationExcludedWithChildren: ✅
-Line.automationExcludedWithChildren: ✅
-Map.ignoresInput: 🧩
-Map.scaleX: 🧩
-Path.automationExcludedWithChildren: ✅
-Picker.ignoresInput: ✅
-Picker.scaleX: ✅
-Polygon.automationExcludedWithChildren: ✅
-Polyline.ignoresInput: not realized
-Polyline.scaleX: ✅
-ProgressBar.automationExcludedWithChildren: ✅
-RadioButton.ignoresInput: ✅
-RadioButton.scaleX: ✅
-Rectangle.automationExcludedWithChildren: ✅
-ScrollView.ignoresInput: ✅
-ScrollView.scaleX: ✅
-SearchField.automationExcludedWithChildren: ✅
-Slider.ignoresInput: ✅
-Slider.scaleX: ✅
-Stepper.automationExcludedWithChildren: ✅
-Switch.ignoresInput: ✅
-Switch.scaleX: ✅
-Text.ignoresInput: ✅
-Text.scaleX: ✅
-TextEditor.automationExcludedWithChildren: ✅
-TextField.ignoresInput: ✅
-TextField.scaleX: ✅
-TimePicker.automationExcludedWithChildren: ✅
-VStack.ignoresInput: ✅
-VStack.scaleX: ✅
+Button.frameChanged: ✅
+Button.maximumHeight: ✅
+Button.maximumWidth: ✅
+Button.minimumHeight: ✅
+Button.minimumWidth: ✅
+Button.scale: ✅
+Canvas.isAccessibilityHidden: ✅
+CheckBox.frameChanged: ✅
+CheckBox.maximumHeight: ✅
+CheckBox.maximumWidth: ✅
+CheckBox.minimumHeight: ✅
+CheckBox.minimumWidth: ✅
+CheckBox.scale: ✅
+ColorBox.isAccessibilityHidden: ✅
+DatePicker.frameChanged: ✅
+DatePicker.height: ✅
+DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own tip, checked against the projection it laid on the element
+DatePicker.width: ✅
+Ellipse.accessibilityHeading: ✅
+Grid.isEnabled: does not apply - read isEnabled of Grid - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Grid.rotationX: ✓ read rotationX of Grid: the host's own tip, checked against the projection it laid on the element
+HStack.isEnabled: ✅
+HStack.zIndex: ✅
+Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ItemsView.frame: ✅
+ItemsView.scaleY: ✅
+Line.ignoresInput: not realized
+Line.scaleX: ✅
+Map.isAccessibilityHidden: 🧩
+Path.frameChanged: ✅
+Path.maximumHeight: ✅
+Path.maximumWidth: ✅
+Path.minimumHeight: ✅
+Path.minimumWidth: ✅
+Path.scale: ✅
+Picker.accessibilityHeading: ✅
+Polygon.frameChanged: ✅
+Polygon.height: ✅
+Polygon.rotationY: ✓ read rotationY of Polygon: the host's own tip, checked against the projection it laid on the element
+Polygon.width: ✅
+Polyline.accessibilityHint: ✅
+ProgressBar.opacity: ✅
+ProgressBar.rotation: ✅
+RadioButton.zIndex: ✅
+Rectangle.isVisible: ✅
+Rectangle.pivotY: ✅
+ScrollView.style: ✅
+ScrollView.translationY: ✅
+SearchField.layoutDirection: ✅
+Slider.focus: ✅
+Slider.isFocusedChanged: ✅
+Slider.translationX: ✅
+Slider.unfocus: ✅
+Stepper.layoutDirection: ✅
+Switch.focus: ✅
+Switch.isFocusedChanged: ✅
+Switch.translationX: ✅
+Switch.unfocus: ✅
+Text.background: ✅
+TextEditor.layoutDirection: ✅
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.translationX: ✅
+TextField.unfocus: ✅
+TimePicker.layoutDirection: ✅
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.translationX: ✅
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.automationExcludedWithChildren: ✅
 ZStack.ignoresInput: ✅
 ZStack.scaleX: ✅

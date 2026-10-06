@@ -47,16 +47,13 @@ extension WebElement {
     func applyProperties(changed: Set<Prop>) {
         guard let view else { return }
 
-        let taken = WebRegistrations.registry.apply(
-            changed, to: view, of: type,
-            reading: { [element] in element.value($0) },
-            carriedIn: { [element] in element.driven[$0]?.mode == .in })
+        let taken = WebRegistrations.registry.apply(changed, to: view, presenting: element)
 
         let own = changed.subtracting(taken)
         for property in own {
             switch property {
             case .opacity: view.setOpacity(element.value(.opacity)?.number ?? 1)
-            case .isEnabled: view.setEnabled(element.value(.isEnabled)?.bool ?? true)
+            case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             case .isVisible: view.setShown(element.standsShown)
             case .background: (view as? WebLayoutView)?.setBackground(element.value(.background))
             case .ignoresInput: view.style("pointer-events", element.value(.ignoresInput)?.bool == true ? "none" : nil)

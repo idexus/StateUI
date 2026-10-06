@@ -1,49 +1,62 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.frame: ✅
 ActivityIndicator.scaleY: ✅
-Button.background: ✅
-Canvas.frame: ✅
-Canvas.scaleY: ✅
-CheckBox.background: ✅
-ColorBox.frame: ✅
-ColorBox.scaleY: ✅
-DatePicker.background: not realized
-Ellipse.frame: ✅
-Ellipse.scaleY: ✅
-Grid.background: ✅
-HStack.frame: ✅
-HStack.scaleY: ✅
-Image.background: not realized
-ItemsView.frame: ✅
-ItemsView.scaleY: ✅
-Line.frame: ✅
-Line.scaleY: ✅
-Map.background: 🧩
-Path.frame: ✅
-Path.scaleY: ✅
-Picker.background: not realized
-Polygon.frame: ✅
-Polygon.scaleY: ✅
-Polyline.background: not realized
-ProgressBar.frame: ✅
-ProgressBar.scaleY: ✅
-RadioButton.background: ✅
-Rectangle.frame: ✅
-Rectangle.scaleY: ✅
-ScrollView.background: ✅
-SearchField.frame: ✅
-SearchField.scaleY: ✅
-Slider.background: not realized
-Stepper.frame: ✅
-Stepper.scaleY: ✅
-Switch.background: ✅
-Text.background: ✅
-TextEditor.frame: ✅
-TextEditor.scaleY: ✅
-TextField.background: not realized
-TimePicker.frame: ✅
-TimePicker.scaleY: ✅
-VStack.background: ✅
+Button.automationExcludedWithChildren: ✅
+Canvas.ignoresInput: ✅
+Canvas.scaleX: ✅
+CheckBox.automationExcludedWithChildren: ✅
+ColorBox.ignoresInput: not realized
+ColorBox.scaleX: ✅
+DatePicker.isAccessibilityHidden: ✅
+Ellipse.frameChanged: ✅
+Ellipse.maximumHeight: ✅
+Ellipse.maximumWidth: ✅
+Ellipse.minimumHeight: ✅
+Ellipse.minimumWidth: ✅
+Ellipse.scale: ✅
+Grid.accessibilityHeading: ✅
+HStack.opacity: ✅
+HStack.rotation: ✅
+Image.style: ✅
+Image.translationY: ✅
+ItemsView.layoutDirection: ✅
+Line.background: not realized
+Map.ignoresInput: 🧩
+Map.scaleX: 🧩
+Path.automationExcludedWithChildren: ✅
+Picker.frameChanged: ✅
+Picker.maximumHeight: ✅
+Picker.maximumWidth: ✅
+Picker.minimumHeight: ✅
+Picker.minimumWidth: ✅
+Picker.scale: ✅
+Polygon.isAccessibilityHidden: ✅
+Polyline.frameChanged: ✅
+Polyline.height: ✅
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
+Polyline.width: ✅
+ProgressBar.accessibilityHint: ✅
+RadioButton.opacity: ✅
+RadioButton.rotation: ✅
+Rectangle.accessibilityLabel: ✅
+ScrollView.isVisible: ✅
+ScrollView.pivotY: ✅
+SearchField.style: ✅
+SearchField.translationY: ✅
+Slider.pivotX: ✅
+Stepper.style: ✅
+Stepper.translationY: ✅
+Switch.pivotX: ✅
+Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.translationX: ✅
+Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+TextEditor.style: ✅
+TextEditor.translationY: ✅
+TextField.pivotX: ✅
+TimePicker.style: ✅
+TimePicker.translationY: ✅
+VStack.pivotX: ✅
 WebView.frame: ✅
 WebView.scaleY: ✅
 ZStack.background: ✅

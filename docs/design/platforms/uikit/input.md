@@ -18,6 +18,14 @@ pointer is a hover's entering, moving and leaving, and a press - put down,
 held however far it moves, lifted - told as it goes down and as it is let
 go.
 
+## A disabled view
+
+A control the tree disables, or one in a disabled branch, is a `UIControl`
+with `isEnabled` off, as `presented(_:)` gives it. A view that is no control
+keeps its place and takes the touch, but the host layer hears nothing of the
+hand in it; it carries the `.notEnabled` trait for VoiceOver, what the driver
+reads back.
+
 ## A press dragged
 
 UIKit recognizes a pan past its own distance; the host puts its press back

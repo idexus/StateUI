@@ -72,6 +72,13 @@ rule makes over once and no leave after a drop. A view taking files takes a
 drag holding `Files`; its drop keeps each `File` as the relay keeps a chosen
 one, under a number of its own.
 
+## A disabled view
+
+Every element takes the enablement `presented(_:)` gives it: a control the
+`disabled` attribute, any other element `aria-disabled`, a control in a
+disabled branch disabled with it; the host layer hears nothing of the hand in
+any element there.
+
 ## What takes no input
 
 An element that ignores input takes no pointer events, nor does anything in

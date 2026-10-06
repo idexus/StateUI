@@ -48,6 +48,12 @@ A view that ignores input is one GTK picks for no click or touch:
 GTK's own picking then goes on to what stands behind it, and a layout off so
 takes all in it out. One arm of the element puts it on every view.
 
+## A disabled view
+
+Every widget takes the enablement `presented(_:)` gives it as GTK's
+sensitivity (`gtk_widget_set_sensitive`), which GTK passes on to what stands
+in it as well; the host layer hears nothing of the hand in a disabled branch.
+
 ## Pressed by assistive technology
 
 A panel carries one action, `panel.click`, enabled only while it listens for

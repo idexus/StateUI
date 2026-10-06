@@ -10,7 +10,6 @@ Button
   icon
   iconPosition
   iconSpacing
-  isEnabled
   lineBreak
   lineWidth
   padding
@@ -29,7 +28,6 @@ Canvas
   released()
 CheckBox
   background
-  isEnabled
   isOn
   tint
   toggled()
@@ -42,7 +40,6 @@ DatePicker
   fontFamily
   fontSize
   format
-  isEnabled
   isOpen
   maximumDate
   minimumDate
@@ -125,7 +122,6 @@ Picker
   fontFamily
   fontSize
   horizontalTextAlignment
-  isEnabled
   isOpen
   options
   placeholder
@@ -169,7 +165,6 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
-  isEnabled
   isOn
   padding
   text
@@ -206,7 +201,6 @@ SearchField
   fontFamily
   fontSize
   horizontalTextAlignment
-  isEnabled
   isReadOnly
   maximumLength
   placeholder
@@ -217,14 +211,12 @@ SearchField
   submitted()
   textChanged()
 Slider
-  isEnabled
   maximum
   minimum
   tint
   value
   valueChanged()
 Stepper
-  isEnabled
   maximum
   minimum
   step
@@ -232,7 +224,6 @@ Stepper
   valueChanged()
 Switch
   background
-  isEnabled
   isOn
   tint
   toggled()
@@ -260,7 +251,6 @@ TextEditor
   growsWithText
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
@@ -279,7 +269,6 @@ TextField
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isPassword
   isReadOnly
   isSpellCheckEnabled
@@ -298,7 +287,6 @@ TimePicker
   fontFamily
   fontSize
   format
-  isEnabled
   textColor
   time
   timeChanged()
@@ -344,6 +332,7 @@ ZStack
   height
   horizontalAlignment
   isAccessibilityHidden
+  isEnabled
   isVisible
   margin
   maximumHeight

@@ -35,6 +35,7 @@ enum UIKitRegistrations {
     static func shared(_ registry: Registry<UIView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
+        registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementMeetsAssistiveTechnology()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()

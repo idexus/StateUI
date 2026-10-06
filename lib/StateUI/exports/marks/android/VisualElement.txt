@@ -1,5 +1,5 @@
-# revision 2.1
-ActivityIndicator.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+# revision 3.1
+ActivityIndicator.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
@@ -10,7 +10,7 @@ ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.isAccessibilityHidden: ✅
-ActivityIndicator.isEnabled: not realized
+ActivityIndicator.isEnabled: ✅
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.layoutDirection: ✅
@@ -33,7 +33,7 @@ ActivityIndicator.translationY: ✅
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: ✅
-Button.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Button.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
@@ -67,7 +67,7 @@ Button.translationY: ✅
 Button.unfocus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 Button.width: ✅
 Button.zIndex: – Android draws a raised button over the flat views beside it whatever their depth: its elevation is the native button's own.
-Canvas.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Canvas.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
@@ -78,7 +78,7 @@ Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
 Canvas.isAccessibilityHidden: ✅
-Canvas.isEnabled: not realized
+Canvas.isEnabled: ✅
 Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
@@ -101,7 +101,7 @@ Canvas.translationY: ✅
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
 Canvas.zIndex: ✅
-CheckBox.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+CheckBox.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
@@ -135,7 +135,7 @@ CheckBox.translationY: ✅
 CheckBox.unfocus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
-ColorBox.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ColorBox.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
@@ -146,7 +146,7 @@ ColorBox.frameChanged: ✅
 ColorBox.height: ✅
 ColorBox.ignoresInput: not realized
 ColorBox.isAccessibilityHidden: ✅
-ColorBox.isEnabled: not realized
+ColorBox.isEnabled: ✅
 ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.isVisible: ✅
 ColorBox.layoutDirection: ✅
@@ -169,7 +169,7 @@ ColorBox.translationY: ✅
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
 ColorBox.zIndex: ✅
-DatePicker.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+DatePicker.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
@@ -203,7 +203,7 @@ DatePicker.translationY: ✅
 DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
-Ellipse.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Ellipse.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
@@ -214,7 +214,7 @@ Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isAccessibilityHidden: ✅
-Ellipse.isEnabled: not realized
+Ellipse.isEnabled: ✅
 Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
@@ -237,7 +237,7 @@ Ellipse.translationY: ✅
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
-Grid.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Grid.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
@@ -248,7 +248,7 @@ Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: cannot read what reaches Grid - Android's driver has no path for it yet
 Grid.isAccessibilityHidden: ✅
-Grid.isEnabled: not realized
+Grid.isEnabled: ✅
 Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
@@ -271,7 +271,7 @@ Grid.translationY: ✅
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
 Grid.zIndex: ✅
-HStack.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+HStack.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
@@ -282,7 +282,7 @@ HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: cannot read what reaches HStack - Android's driver has no path for it yet
 HStack.isAccessibilityHidden: ✅
-HStack.isEnabled: not realized
+HStack.isEnabled: ✅
 HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
@@ -305,7 +305,7 @@ HStack.translationY: ✅
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
 HStack.zIndex: ✅
-Image.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Image.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
@@ -316,7 +316,7 @@ Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
 Image.isAccessibilityHidden: ✅
-Image.isEnabled: not realized
+Image.isEnabled: ✅
 Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.isVisible: ✅
 Image.layoutDirection: ✅
@@ -339,7 +339,7 @@ Image.translationY: ✅
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
 Image.zIndex: ✅
-ItemsView.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ItemsView.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
@@ -350,7 +350,7 @@ ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
 ItemsView.isAccessibilityHidden: ✅
-ItemsView.isEnabled: not realized
+ItemsView.isEnabled: ✅
 ItemsView.isFocusedChanged: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
@@ -373,7 +373,7 @@ ItemsView.translationY: ✅
 ItemsView.unfocus: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
-Line.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Line.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
@@ -384,7 +384,7 @@ Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
 Line.isAccessibilityHidden: ✅
-Line.isEnabled: not realized
+Line.isEnabled: ✅
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.isVisible: ✅
 Line.layoutDirection: ✅
@@ -441,7 +441,7 @@ Map.translationY: 🧩
 Map.unfocus: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
-Path.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Path.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
@@ -452,7 +452,7 @@ Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
 Path.isAccessibilityHidden: ✅
-Path.isEnabled: not realized
+Path.isEnabled: ✅
 Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.isVisible: ✅
 Path.layoutDirection: ✅
@@ -475,7 +475,7 @@ Path.translationY: ✅
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
 Path.zIndex: ✅
-Picker.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Picker.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
@@ -509,7 +509,7 @@ Picker.translationY: ✅
 Picker.unfocus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.width: ✅
 Picker.zIndex: ✅
-Polygon.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Polygon.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
@@ -520,7 +520,7 @@ Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
 Polygon.isAccessibilityHidden: ✅
-Polygon.isEnabled: not realized
+Polygon.isEnabled: ✅
 Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
@@ -543,7 +543,7 @@ Polygon.translationY: ✅
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
 Polygon.zIndex: ✅
-Polyline.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Polyline.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
@@ -554,7 +554,7 @@ Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
 Polyline.isAccessibilityHidden: ✅
-Polyline.isEnabled: not realized
+Polyline.isEnabled: ✅
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
@@ -577,7 +577,7 @@ Polyline.translationY: ✅
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
 Polyline.zIndex: ✅
-ProgressBar.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ProgressBar.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
@@ -588,7 +588,7 @@ ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isAccessibilityHidden: ✅
-ProgressBar.isEnabled: not realized
+ProgressBar.isEnabled: ✅
 ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
@@ -611,7 +611,7 @@ ProgressBar.translationY: ✅
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
-RadioButton.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+RadioButton.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
@@ -645,7 +645,7 @@ RadioButton.translationY: ✅
 RadioButton.unfocus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
 RadioButton.width: ✅
 RadioButton.zIndex: ✅
-Rectangle.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Rectangle.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
@@ -656,7 +656,7 @@ Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isAccessibilityHidden: ✅
-Rectangle.isEnabled: not realized
+Rectangle.isEnabled: ✅
 Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
@@ -679,7 +679,7 @@ Rectangle.translationY: ✅
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
 Rectangle.zIndex: ✅
-ScrollView.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ScrollView.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
@@ -690,7 +690,7 @@ ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isAccessibilityHidden: ✅
-ScrollView.isEnabled: not realized
+ScrollView.isEnabled: ✅
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
@@ -713,7 +713,7 @@ ScrollView.translationY: ✅
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.width: ✅
 ScrollView.zIndex: ✅
-SearchField.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+SearchField.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
@@ -747,7 +747,7 @@ SearchField.translationY: ✅
 SearchField.unfocus: ✅
 SearchField.width: ✅
 SearchField.zIndex: ✅
-Slider.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Slider.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
@@ -781,7 +781,7 @@ Slider.translationY: ✅
 Slider.unfocus: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
 Slider.width: ✅
 Slider.zIndex: ✅
-Stepper.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Stepper.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
@@ -815,7 +815,7 @@ Stepper.translationY: ✅
 Stepper.unfocus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
 Stepper.width: ✅
 Stepper.zIndex: ✅
-Switch.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Switch.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
@@ -849,7 +849,7 @@ Switch.translationY: ✅
 Switch.unfocus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
 Switch.width: ✅
 Switch.zIndex: ✅
-Text.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Text.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
@@ -860,7 +860,7 @@ Text.frameChanged: ✅
 Text.height: ✅
 Text.ignoresInput: not realized
 Text.isAccessibilityHidden: ✅
-Text.isEnabled: not realized
+Text.isEnabled: ✅
 Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.isVisible: ✅
 Text.layoutDirection: ✅
@@ -883,7 +883,7 @@ Text.translationY: ✅
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.width: ✅
 Text.zIndex: ✅
-TextEditor.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+TextEditor.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
@@ -917,7 +917,7 @@ TextEditor.translationY: ✅
 TextEditor.unfocus: ✅
 TextEditor.width: ✅
 TextEditor.zIndex: ✅
-TextField.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+TextField.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
@@ -951,7 +951,7 @@ TextField.translationY: ✅
 TextField.unfocus: ✅
 TextField.width: ✅
 TextField.zIndex: ✅
-TimePicker.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+TimePicker.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
@@ -985,7 +985,7 @@ TimePicker.translationY: ✅
 TimePicker.unfocus: – TimePicker takes no keyboard focus here: it refuses it, and nothing is heard
 TimePicker.width: ✅
 TimePicker.zIndex: ✅
-VStack.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+VStack.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
@@ -996,7 +996,7 @@ VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: cannot read what reaches VStack - Android's driver has no path for it yet
 VStack.isAccessibilityHidden: ✅
-VStack.isEnabled: not realized
+VStack.isEnabled: ✅
 VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
@@ -1019,7 +1019,7 @@ VStack.translationY: ✅
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 VStack.zIndex: ✅
-WebView.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+WebView.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
@@ -1030,7 +1030,7 @@ WebView.frameChanged: ✅
 WebView.height: ✅
 WebView.ignoresInput: not realized
 WebView.isAccessibilityHidden: ✅
-WebView.isEnabled: not realized
+WebView.isEnabled: ✅
 WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
@@ -1053,7 +1053,7 @@ WebView.translationY: ✅
 WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.width: ✅
 WebView.zIndex: ✅
-ZStack.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ZStack.accessibilityHeading: does not apply - read a heading's level - Android marks a heading, not its level
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
@@ -1064,7 +1064,7 @@ ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: cannot read what reaches ZStack - Android's driver has no path for it yet
 ZStack.isAccessibilityHidden: ✅
-ZStack.isEnabled: not realized
+ZStack.isEnabled: ✅
 ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅

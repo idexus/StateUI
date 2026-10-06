@@ -1,49 +1,59 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.pivotY: ✅
-Button.zIndex: ✅
-Canvas.isVisible: ✅
-Canvas.pivotY: ✅
-CheckBox.zIndex: ✅
-ColorBox.isVisible: ✅
-ColorBox.pivotY: ✅
-DatePicker.zIndex: ✅
-Ellipse.isVisible: ✅
-Ellipse.pivotY: ✅
-Grid.zIndex: ✅
-HStack.isVisible: ✅
-HStack.pivotY: ✅
-Image.zIndex: ✅
-ItemsView.isVisible: ✅
-ItemsView.pivotY: ✅
-Line.isVisible: ✅
-Line.pivotY: ✅
-Map.zIndex: 🧩
-Path.isVisible: ✅
-Path.pivotY: ✅
-Picker.zIndex: ✅
-Polygon.isVisible: ✅
-Polygon.pivotY: ✅
-Polyline.zIndex: ✅
-ProgressBar.isVisible: ✅
-ProgressBar.pivotY: ✅
-RadioButton.zIndex: ✅
-Rectangle.isVisible: ✅
-Rectangle.pivotY: ✅
-ScrollView.zIndex: ✅
-SearchField.isVisible: ✅
-SearchField.pivotY: ✅
-Slider.zIndex: ✅
-Stepper.isVisible: ✅
-Stepper.pivotY: ✅
-Switch.zIndex: ✅
-Text.zIndex: ✅
-TextEditor.isVisible: ✅
-TextEditor.pivotY: ✅
-TextField.zIndex: ✅
-TimePicker.isVisible: ✅
-TimePicker.pivotY: ✅
-VStack.zIndex: ✅
+Button.style: ✅
+Button.translationY: ✅
+Canvas.pivotX: ✅
+CheckBox.style: ✅
+CheckBox.translationY: ✅
+ColorBox.pivotX: ✅
+DatePicker.focus: ✅
+DatePicker.isFocusedChanged: ✅
+DatePicker.translationX: ✅
+DatePicker.unfocus: ✅
+Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Grid.frame: ✅
+Grid.scaleY: ✅
+HStack.isAccessibilityHidden: ✅
+Image.isEnabled: does not apply - read isEnabled of Image - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Image.rotationX: ✓ read rotationX of Image: the host's own tip, checked against the projection it laid on the element
+ItemsView.accessibilityLabel: ✅
+Line.isEnabled: ✅
+Line.zIndex: ✅
+Map.pivotX: 🧩
+Path.style: ✅
+Path.translationY: ✅
+Picker.layoutDirection: ✅
+Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polygon.translationX: ✅
+Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.background: not realized
+ProgressBar.ignoresInput: ✅
+ProgressBar.scaleX: ✅
+RadioButton.isAccessibilityHidden: ✅
+Rectangle.frameChanged: ✅
+Rectangle.maximumHeight: ✅
+Rectangle.maximumWidth: ✅
+Rectangle.minimumHeight: ✅
+Rectangle.minimumWidth: ✅
+Rectangle.scale: ✅
+ScrollView.accessibilityHeading: ✅
+SearchField.isEnabled: ✅
+SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
+Slider.accessibilityHint: ✅
+Stepper.isEnabled: ✅
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
+Switch.accessibilityHint: ✅
+Text.opacity: ✅
+Text.rotation: ✅
+TextEditor.isEnabled: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.accessibilityHint: ✅
+TimePicker.isEnabled: ✅
+TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.accessibilityHint: ✅
 WebView.isVisible: ✅
 WebView.pivotY: ✅
+ZStack.isEnabled: ✅
 ZStack.zIndex: ✅
