@@ -16,58 +16,99 @@ struct WindowSample: SampleContent, ExampleContent {
     static let summary = "Change the native window while it stays on screen."
 
     static let code = """
+        // Gallery/MainPage.swift - what the window is as it is made: its
+        // title, its first size and how far the user may resize it.
         struct MainPage: View {
+            let catalog: Catalog
+            let nav: Navigation
+            let log: WindowLog
+
             @Environment(\\.window) private var window
 
             var body: some View {
-                HomePage()
-                    .onCreated {
-                        window.title = "Notes"
-                        window.width = 1100
-                        window.height = 800
-                        window.minimumWidth = 700
-                        window.minimumHeight = 500
-                        window.maximumWidth = 1600
-                        window.maximumHeight = 1200
-                        window.isMaximizable = true
-                        window.isMinimizable = true
-                        #if APPKIT
-                        window.isTranslucent = true
-                        #endif
-                    }
+                SplitView(nav.$menuOpen) {
+                    MenuPage(catalog: catalog, nav: nav, log: log, listsHiddenRow: nav.listsHiddenRow)
+                } detail: {
+                    HomePage(catalog: catalog, nav: nav)
+                }
+                .onCreated {
+                    window.title = "StateUI Gallery"
+                    window.width = 1100
+                    window.height = 800
+                    #if APPKIT
+                    window.isTranslucent = true
+                    #endif
+                    window.minimumWidth = 700
+                    window.minimumHeight = 500
+                    window.maximumWidth = 1600
+                    window.maximumHeight = 1200
+                    window.isMaximizable = true
+                    window.isMinimizable = true
+                }
             }
         }
 
         @Environment(\\.window) private var window
+        @State private var renames = 0
         @State private var maximizable = true
         @State private var minimizable = true
         @State private var translucent = false
+        @State private var width = 0.0
+        @State private var height = 0.0
 
-        DebugInfoLabel()
+        VStack {
+            DebugInfoLabel()
 
-        Button("Move to 80, 80").onClicked {
-            window.x = 80
-            window.y = 80
-        }
+            Text(window.title ?? "Platform title")
 
-        Button("900 × 650").onClicked {
-            window.width = 900
-            window.height = 650
-        }
-
-        Switch($maximizable).onChanged(maximizable) {
-            window.isMaximizable = maximizable
-        }
-
-        Switch($minimizable).onChanged(minimizable) {
-            window.isMinimizable = minimizable
-        }
-
-        Switch($translucent)
-            .onChanged(translucent) {
-                window.isTranslucent = translucent
+            HStack {
+                Button("Rename").onClicked {
+                    renames += 1
+                    window.title = "Gallery \\(renames)"
+                }
+                Button("Move to 80, 80").onClicked {
+                    window.x = 80
+                    window.y = 80
+                }
             }
-            .onCreated { translucent = window.isTranslucent == true }
+
+            HStack {
+                Button("900 × 650").onClicked {
+                    window.width = 900
+                    window.height = 650
+                }
+                Button("1100 × 800").onClicked {
+                    window.width = 1100
+                    window.height = 800
+                }
+            }
+
+            HStack {
+                Switch($maximizable)
+                Text("Maximize")
+            }
+            .onChanged(maximizable) { window.isMaximizable = maximizable }
+
+            HStack {
+                Switch($minimizable)
+                Text("Minimize")
+            }
+            .onChanged(minimizable) { window.isMinimizable = minimizable }
+
+            HStack {
+                Switch($translucent)
+                Text("Translucent")
+            }
+            .onChanged(translucent) { window.isTranslucent = translucent }
+
+            Text("Sample frame: \\(Int(width)) × \\(Int(height))")
+        }
+        .onFrameChanged(in: .global) { frame in
+            width = frame.width
+            height = frame.height
+        }
+        // The switch starts where the window stands.
+        .onCreated { translucent = window.isTranslucent == true }
         """
 
     var notes: (any View)? {

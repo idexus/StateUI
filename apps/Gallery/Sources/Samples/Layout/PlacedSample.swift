@@ -117,6 +117,19 @@ struct PlacedSample: SampleContent, ExampleContent {
     }
 
     static let code = """
+        // The circle's arithmetic, `cos` and `sin`, from the platform's C library.
+        #if canImport(Darwin)
+        import Darwin
+        #elseif canImport(Android)
+        import Android
+        #elseif canImport(Glibc)
+        import Glibc
+        #elseif canImport(CRT)
+        import CRT
+        #elseif canImport(WASILibc)
+        import WASILibc
+        #endif
+
         // HANDED ON. A scroller's offset moves many times a second, and a view
         // rebuilt for each of them is a view that lags. A state handed on is
         // read and written without the interface being described again - so
@@ -282,7 +295,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         // ask for it again. It runs on the display's own frames, reads those
         // values by name - reading one records nothing - and writes a run of
         // placements the host wears straight onto the cards.
-        var board: any View {
+        var board: some View {
             PlacedLayout(cards, id: \\.name) { card in
                 face(card)
             }

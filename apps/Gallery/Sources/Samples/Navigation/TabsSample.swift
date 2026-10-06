@@ -13,70 +13,48 @@ struct TabsSample: SampleContent, ExampleContent {
     static let summary = "A section arranged as tabs instead of a stack - the selection is a binding of your own type."
 
     static let code = """
-        enum DemoTab: Hashable {
-            case stack
-            case second
+        // Gallery/MainPage.swift - a section arranged as tabs. The tabs are a
+        // collection of the gallery's own type, `DemoTab` (.stack, .second,
+        // and .extra(Int) for a tab the user added), kept as STATE of its
+        // `Navigation` - so the list can change under a live selection - and
+        // the selection is a binding of it, not an index somebody has to keep
+        // in step. The choice is a modifier, the way every other choice is.
+        extension MainPage {
+            func tabs() -> some View {
+                TabView(nav.tabs) { which in
+                    switch which {
+                    case .stack:
+                        // A tab may hold a whole stack of its own. Its caption
+                        // and its picture are the TAB PAGE's - the stack's
+                        // here, not those of the page inside it.
+                        NavigationStack(nav.$tabsPath) {
+                            TabsPage(nav: nav, path: nav.$tabsPath)
+                        } destination: { route in
+                            // The same closure the main stack uses, told which
+                            // array the page it builds will be a member of.
+                            page(for: route, path: nav.$tabsPath)
+                        }
+                        .title("Stack")
+                        .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
-            // A tab the user added, which is what makes the LIST something
-            // that changes rather than a fixed set.
-            case extra(Int)
-        }
+                    case .second:
+                        SecondTabPage(nav: nav)
 
-        // The tabs are STATE, so the list can change under a live selection.
-        @State private var tabs: [DemoTab] = [.stack, .second]
-        @State private var tab: DemoTab = .stack
-        @State private var tabsPath: [Route] = []
-
-        let nav: Navigation
-        let style: SessionStyle
-
-        // The tabs are a collection of YOUR type and the selection is a
-        // binding of it - not an index somebody has to keep in step. The
-        // choice is a modifier, the way every other choice here is.
-        TabView(tabs) { which in
-            switch which {
-            case .stack:
-                // A tab may hold a whole stack of its own. Its caption and
-                // its picture are the TAB PAGE's - the stack's here, not
-                // those of the page inside it.
-                NavigationStack($tabsPath) {
-                    TabsPage(nav: nav, path: $tabsPath)
-                } destination: { route in
-                    // The same closure the main stack uses, told which
-                    // array the page it builds will be a member of.
-                    page(for: route, path: $tabsPath)
+                    case .extra(let number):
+                        TabsExtraPage(nav: nav, number: number)
+                    }
                 }
-                .title("Stack")
-                .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
-
-            case .second:
-                SecondTabPage(nav: nav)
-
-            case .extra(let number):
-                TabsExtraPage(nav: nav, number: number)
+                .selection(nav.$tab)
             }
         }
-        .selection($tab)
-        .barBackgroundColor(style.accent.color)
 
-        // Changing the list is changing an array. The selection is untouched
-        // by any of it - it names a TAB, not a position.
-        func addTab() {
-            // One past the highest number in use, so no two tabs share one
-            // however many are closed in between.
-            let numbers = tabs.compactMap { which -> Int? in
-                if case .extra(let number) = which { return number }
-                return nil
-            }
-
-            tabs.append(.extra((numbers.max() ?? 0) + 1))
-        }
-
-        func reverseTabs() {
-            tabs.reverse()
-        }
+        // On a tab, changing the list is changing an array - `Navigation`'s
+        // addTab, insertTab and reverseTabs. The selection is untouched by any
+        // of it: it names a TAB, not a position.
 
         // And from here, one move:
+        let nav: Navigation
+
         Button("Open the tabs")
             .onClicked { nav.open(.tabs) }
         """

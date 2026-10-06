@@ -40,8 +40,8 @@ struct AnimationSample: SampleContent, ExampleContent {
                 Text("Animate me")
             }
             .style("Card")
-            // Four DRIVEN properties. Read off a state the host moves, so none
-            // of them is on any message after the registration.
+            // Four DRIVEN properties. The host reads each off the state it
+            // moves, so none is in a patch after the one that registers it.
             .opacity($fade)
             .translationX($shift)
             .scale($scale)
@@ -116,8 +116,8 @@ struct AnimationSample: SampleContent, ExampleContent {
                     .padding(horizontal: 24, vertical: 16)
             }
             .style("Card")
-            // Four DRIVEN properties. Read off a state the host moves, so none
-            // of them is on any message after the registration.
+            // Four DRIVEN properties. The host reads each off the state it
+            // moves, so none is in a patch after the one that registers it.
             .opacity($fade)
             .translationX($shift)
             .scale($scale)
@@ -192,11 +192,11 @@ struct AnimationSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The state holds BOTH readings: `fade` is 0.1 from the "
-                + "line after the call, while `$fade.journey.value` is wherever the "
+            Text("The state holds BOTH readings: `fade` is 0.1 from the moment "
+                + "the movement is sent, while `$fade.journey.value` is wherever the "
                 + "host has got the card to. Nothing is described in between, so the "
-                + "whole 400ms costs no renders - and `$fade.journey.value = 0.5` "
-                + "instead of a movement simply snaps.")
+                + "whole 400ms costs no renders - and `$fade.journey.snap(to: 0.5)` "
+                + "puts the card there at once, with no movement.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

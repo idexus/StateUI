@@ -62,16 +62,28 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         struct GalleryWindow: View {                    // ONE gallery window
             let style: SessionStyle
             @State private var nav = Navigation()       // where it is: its own
+            @State private var bar = WindowBarState()
+            @State private var log = WindowLog()
+            @State private var kept = KeptCatalog()
 
-            var body: some View { MainPage(nav: nav, style: style) }
+            var body: some View {
+                let nav = self.nav
+                let style = self.style
+                let bar = self.bar
+                let log = self.log
+
+                return MainPage(
+                    catalog: kept.catalog { Catalog(nav: nav, style: style, bar: bar, log: log) },
+                    nav: nav,
+                    style: style,
+                    log: log,
+                    bar: bar)
+            }
         }
 
-        final class SessionStyle {                      // kept WITH its scene
-            @State(sceneKey: .font) var font = ""
-            @State(sceneKey: .accent) var accent = AccentChoice.violet
-            @State var hidesTools = false
-            @State var floatsTools = false
-        }
+        // SessionStyle.swift: the look every window of the scene wears, KEPT
+        // WITH its scene - its font and accent are `@State(sceneKey:)`, its
+        // hidesTools and floatsTools plain `@State`.
 
         // Opening and closing the scene's windows:
 

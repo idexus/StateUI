@@ -1,7 +1,7 @@
 import StateUI
 
-/// A value that changes TRAVELS - the default, and the three laws it can travel
-/// under.
+/// A value that changes TRAVELS - under the default law, a spring or a long
+/// eased one - or, under `.none`, arrives at once.
 struct MotionSample: SampleContent, ExampleContent {
     static let id = "motion"
     static let title = "Motion"
@@ -49,16 +49,18 @@ struct MotionSample: SampleContent, ExampleContent {
             ColorBox()
                 .color(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
-                .height(wide ? 120 : 60)
-                .cornerRadius(wide ? 32 : 8)
+                .height(wide ? 110 : 56)
+                .cornerRadius(wide ? 28 : 8)
+                .horizontalAlignment(.start)
                 .motion(Self.law(law))
 
             // The same panel, told to stay still. `.motion` is per view.
             ColorBox()
                 .color(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
-                .height(wide ? 120 : 60)
-                .cornerRadius(wide ? 32 : 8)
+                .height(wide ? 110 : 56)
+                .cornerRadius(wide ? 28 : 8)
+                .horizontalAlignment(.start)
                 .motion(.none)
 
             // And the same panel again, with a rule: everything travels
@@ -67,8 +69,9 @@ struct MotionSample: SampleContent, ExampleContent {
             ColorBox()
                 .color(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
-                .height(wide ? 120 : 60)
-                .cornerRadius(wide ? 32 : 8)
+                .height(wide ? 110 : 56)
+                .cornerRadius(wide ? 28 : 8)
+                .horizontalAlignment(.start)
                 .motion(Self.law(law))
                 .motion(.none, .size)
 

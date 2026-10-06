@@ -22,40 +22,47 @@ struct WindowBarSample: SampleContent, ExampleContent {
     static let code = """
         final class WindowBarState {
             @State var subtitle = ""
-            @State var showsAction = false
+            @State var showsSurprise = false
         }
 
+        // Gallery/MainPage.swift - the window's page says what its bar carries,
+        // whatever page the menu opens beside it.
         struct MainPage: View {
+            @Environment(\\.device) private var device
+
+            let catalog: Catalog
+            let nav: Navigation
+            let log: WindowLog
             let bar: WindowBarState
-            @State private var showsMenu = true
 
             var body: some View {
-                SplitView($showsMenu) {
-                    MenuPage()
+                SplitView(nav.$menuOpen) {
+                    MenuPage(catalog: catalog, nav: nav, log: log, listsHiddenRow: nav.listsHiddenRow)
                 } detail: {
-                    HomePage()
+                    HomePage(catalog: catalog, nav: nav)
+                }
+                .toolbar(id: "gallery") {
+                    if bar.showsSurprise {
+                        ToolbarItem("Surprise me")
+                            .icon("nav_surprise_chrome.png")
+                            .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
+                    }
                 }
                 .barTitle("StateUI")
                 .barSubtitle(bar.subtitle)
                 .barIcon("stateui_mark.png")
-                .toolbar {
-                    if bar.showsAction {
-                        ToolbarItem("Surprise me")
-                            .icon("surprise.png")
-                    }
-                }
             }
         }
 
-        struct WindowBarSample: View {
-            let bar: WindowBarState
+        let bar: WindowBarState
 
-            var body: some View {
-                VStack {
-                    TextField(bar.$subtitle)
-                        .placeholder("Window subtitle")
-                    Switch(bar.$showsAction)
-                }
+        VStack {
+            TextField(bar.$subtitle)
+                .placeholder("Window subtitle")
+
+            HStack {
+                Switch(bar.$showsSurprise)
+                Text("Surprise me on every page")
             }
         }
         """

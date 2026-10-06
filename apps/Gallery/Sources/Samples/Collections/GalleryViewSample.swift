@@ -56,7 +56,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
         struct Card { let name: String; let art: String }
 
-        private let cards = [
+        static let cards: [Card] = [
             Card(name: "Mural", art: "art_mural.png"),
             Card(name: "Nebula", art: "art_nebula.png"),
             Card(name: "Ridge", art: "art_ridge.png"),
@@ -68,7 +68,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
         // The three shapes, and what to call them on the button that cycles
         // them.
-        private let shapes: [(GalleryArrangement, String)] = [
+        static let shapes: [(GalleryArrangement, String)] = [
             (.default, "Wheel"),
             (.fan, "Fan"),
             (.row, "Row"),
@@ -77,10 +77,10 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // A GRID rather than a stack: the cards take whatever room is left
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
-            // THE WHOLE CONTROL: the run made below - one card per item, the
-            // item its identity - and one word for the shape they stand in.
+            // THE WHOLE CONTROL: the run made below - one card per item, each
+            // named by its name - and one word for the shape they stand in.
             gallery
-                .arrangement(shapes[shape].0)
+                .arrangement(Self.shapes[shape].0)
                 .position($shown)
                 .isSwipeEnabled(swipes)
                 .onItemTapped { card in opened = "tapped \\(card.name)" }
@@ -101,26 +101,26 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
 
                 PositionIndicator()
-                    .count(cards.count)
+                    .count(Self.cards.count)
                     .position(shown)
                     .indicatorColor(Palette.outline)
                     .currentIndicatorColor(Palette.accent)
 
-                Text("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
-                    + "card \\(shown + 1) of \\(cards.count) · \\(opened) · moved \\(moves)")
+                Text("\\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
+                    + "card \\(shown + 1) of \\(Self.cards.count) · \\(opened) · moved \\(moves)")
             }
             .gridRow(1)
 
             HStack {
-                Button(shapes[shape].1)
-                    .onClicked { shape = (shape + 1) % shapes.count }
+                Button(Self.shapes[shape].1)
+                    .onClicked { shape = (shape + 1) % Self.shapes.count }
 
                 Button("Back")
                     .isEnabled(shown > 0)
                     .onClicked { shown -= 1 }
 
                 Button("Next")
-                    .isEnabled(shown < cards.count - 1)
+                    .isEnabled(shown < Self.cards.count - 1)
                     .onClicked { shown += 1 }
 
                 SwitchRow("Swipeable", $swipes)
@@ -132,7 +132,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
         // The run, shaded or faded as the switch says.
         private var gallery: GalleryView<[Card], String> {
-            let run = GalleryView(cards, id: \\.name) { card in
+            let run = GalleryView(Self.cards, id: \\.name) { card in
                 // A picture and its name. Where the card stands and which way
                 // it faces is the SHAPE's, and this knows nothing about it.
                 face(card)
@@ -214,10 +214,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             .gridRow(1)
 
             HStack {
-                // ONE WIDTH FOR EVERY CAPTION: a wrapping row re-measures a
-                // child on its own schedule, and a caption that changed inside
-                // one is drawn cut short until something else makes it measure
-                // again.
+                // ONE WIDTH FOR EVERY CAPTION: the button keeps its size as
+                // Wheel, Fan and Row take turns, so the row does not shift.
                 Button(Self.shapes[shape].1)
                     .width(88)
                     .margin(horizontal: 4, vertical: 0)
@@ -308,7 +306,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 + "whole of it, while on a desktop - where a pointer scrolls nothing - "
                 + "the cards take a drag of their own. `.position($shown)` is which "
                 + "one, written as the user moves and glided to when it is assigned - "
-                + "which is what Back and Next do. The dots under the cards are an "
+                + "which is what Back and Next do. The dots under the cards are a "
                 + "`PositionIndicator` reading the same `@State`: neither control names the "
                 + "other, and one number joins them.")
                 .fontSize(12)

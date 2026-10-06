@@ -14,40 +14,61 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
     static let summary = "Lay a notice over the window, then open another page."
 
     static let code = """
-        // The window's page declares its own, over every page.
-        struct MainPage: View {
-            @State private var notice = false
+        // A notice: a line with its own way out, at the top unless it says
+        // otherwise.
+        struct WindowNotice: View {
+            let words: String
+            @Binding var shown: Bool
 
             var body: some View {
-                Pages(notice: $notice)
-                    .overlays {
-                        if notice {
-                            WindowNotice(words: "Over every page", shown: $notice)
-                        }
+                HStack {
+                    Text(words)
+                    Button("Dismiss").onClicked { shown = false }
+                }
+                .horizontalAlignment(.center)
+                .verticalAlignment(.start)
+            }
+        }
+
+        // Gallery/MainPage.swift - the window's page declares its own, over
+        // every page.
+        struct MainPage: View {
+            let catalog: Catalog
+            let nav: Navigation
+            let log: WindowLog
+
+            var body: some View {
+                SplitView(nav.$menuOpen) {
+                    MenuPage(catalog: catalog, nav: nav, log: log, listsHiddenRow: nav.listsHiddenRow)
+                } detail: {
+                    HomePage(catalog: catalog, nav: nav)
+                }
+                .overlays {
+                    if nav.windowNotice {
+                        WindowNotice(words: "Over every page", shown: nav.$windowNotice)
                     }
+                }
             }
         }
 
         // A page declares one that goes with it.
-        @Binding var notice: Bool
+        let nav: Navigation
         @State private var onThisPage = false
 
-        var body: some View {
-            VStack {
-                HStack {
-                    Switch($notice)
-                    Text("Over every page")
-                }
-                HStack {
-                    Switch($onThisPage)
-                    Text("Over this page")
-                }
+        VStack {
+            HStack {
+                Switch(nav.$windowNotice)
+                Text("Over every page")
             }
-            .overlays {
-                if onThisPage {
-                    WindowNotice(words: "Over this page", shown: $onThisPage)
-                        .verticalAlignment(.end)
-                }
+            HStack {
+                Switch($onThisPage)
+                Text("Over this page")
+            }
+        }
+        .overlays {
+            if onThisPage {
+                WindowNotice(words: "Over this page", shown: $onThisPage)
+                    .verticalAlignment(.end)
             }
         }
         """

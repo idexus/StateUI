@@ -12,6 +12,8 @@ struct LifecycleSample: SampleContent, ExampleContent {
     static let summary = "Watch the native window lifecycle as state."
 
     static let code = """
+        // The window's log, kept by its gallery window. MainPage notes
+        // "created" in its `.onCreated`.
         final class WindowLog {
             @State var events: [String] = []
             @State private(set) var count = 0
@@ -22,20 +24,29 @@ struct LifecycleSample: SampleContent, ExampleContent {
             }
         }
 
-        struct MainPage: View {
-            @Environment(\\.window) private var window
-            @State private var menuOpen = false
+        // Standing in the menu, which every window shows, it notes each phase.
+        struct WindowPhaseLog: View {
             let log: WindowLog
 
+            @Environment(\\.window) private var window
+
             var body: some View {
-                SplitView($menuOpen) { MenuPage() } detail: { HomePage() }
-                    .onCreated { log.note("created") }
+                ColorBox(Color("#00000000"))
+                    .width(0)
+                    .height(0)
+                    .ignoresInput(true)
                     .onChanged(window.phase) { log.note("\\(window.phase)") }
             }
         }
 
+        let log: WindowLog
+
         VStack {
             DebugInfoLabel()
+
+            if log.events.isEmpty {
+                Text("nothing yet - switch away and back")
+            }
 
             ForEach(log.events) { row in
                 Text(row)

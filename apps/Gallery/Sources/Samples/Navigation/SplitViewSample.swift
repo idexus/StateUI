@@ -11,16 +11,21 @@ struct SplitViewSample: SampleContent, ExampleContent {
     static let summary = "The menu you are looking at is a page, and every row in it is a view."
 
     static let code = """
-        // The arrangement, in Gallery/MainPage.swift - over the gallery's
-        // own `Navigation`, a class of states:
-        SplitView(nav.$menuOpen) {
-            MenuPage(catalog: catalog, nav: nav, log: log,
-                     listsHiddenRow: nav.listsHiddenRow)
-        } detail: {
-            NavigationStack(nav.$path) {
-                root()
-            } destination: { route in
-                page(for: route, path: nav.$path)
+        // Gallery/MainPage.swift - the arrangement, over the gallery's own
+        // `Navigation`, a class of states. Beside the menu stands the page it
+        // chose - in the gallery, a navigation stack.
+        struct MainPage: View {
+            let catalog: Catalog
+            let nav: Navigation
+            let log: WindowLog
+
+            var body: some View {
+                SplitView(nav.$menuOpen) {
+                    MenuPage(catalog: catalog, nav: nav, log: log,
+                             listsHiddenRow: nav.listsHiddenRow)
+                } detail: {
+                    HomePage(catalog: catalog, nav: nav)
+                }
             }
         }
 
@@ -68,12 +73,23 @@ struct SplitViewSample: SampleContent, ExampleContent {
         }
 
         // And on this page, which reads the same states:
-        SwitchRow("Menu open", nav.$menuOpen)
+        let nav: Navigation
 
-        Switch(nav.$listsHiddenRow)
+        VStack {
+            Text("Open the menu: every row in it is a view.")
 
-        Button("Go there anyway")
-            .onClicked { nav.open(.hidden) }
+            SwitchRow("Menu open", nav.$menuOpen)
+
+            HStack {
+                Switch(nav.$listsHiddenRow)
+                Text(nav.listsHiddenRow
+                    ? "The menu lists \\\"Not in the list\\\""
+                    : "The menu does not list it")
+            }
+
+            Button("Go there anyway")
+                .onClicked { nav.open(.hidden) }
+        }
         """
 
     var body: some View {

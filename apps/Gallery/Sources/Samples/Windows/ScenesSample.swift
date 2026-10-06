@@ -57,15 +57,27 @@ struct ScenesSample: SampleContent, ExampleContent {
         }
 
         @Environment(\\.application) private var application
+        @State private var said = "Nothing asked yet."
 
         // A window opens in the scene declaring its kind, which opens with it where it does not stand.
-        Button("New scratchpad").onClicked { try await application.openWindow(.scratchpad) }
-        Button("About").onClicked { try await application.openWindow(.about) }   // alreadyOpen once open
+        Button("New scratchpad").onClicked { await open(.scratchpad, "New scratchpad") }
+        Button("About").onClicked { await open(.about, "About") }   // alreadyOpen once open
 
         VStack {
             DebugInfoLabel()
             Text(said)
             Text("Scenes open: \\(application.scenes.count)")
+        }
+
+        private func open(_ type: WindowType, _ caption: String) async {
+            do {
+                try await application.openWindow(type)
+                said = "\\(caption): opened."
+            } catch WindowError.alreadyOpen {
+                said = "\\(caption): WindowError.alreadyOpen - it is open already."
+            } catch {
+                said = "\\(caption): \\(error)"
+            }
         }
         """
 

@@ -61,7 +61,7 @@ private struct WebBrowserPart: ExampleContent {
                     }
                     .gridRow(0)
 
-                    // The browser takes the STAR row - as tall as the window
+                    // The browser takes the `.fill` row - as tall as the window
                     // leaves - and everything around it keeps its own height.
                     WebView("https://example.com")
                         .aim(browser)
@@ -126,7 +126,7 @@ private struct WebBrowserPart: ExampleContent {
             .spacing(4)
             .gridRow(0)
 
-            // The browser takes the STAR row - as tall as the window leaves -
+            // The browser takes the `.fill` row - as tall as the window leaves -
             // and everything around it keeps its own height.
             WebView("https://example.com")
                 .aim(browser)

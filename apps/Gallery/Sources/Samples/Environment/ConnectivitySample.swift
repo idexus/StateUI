@@ -15,18 +15,21 @@ struct ConnectivitySample: SampleContent, ExampleContent {
             @Environment(\\.device) var device
 
             var body: some View {
-                VStack {
+                // A host may report one entry per ADAPTER, so repeats are
+                // collapsed for display - sorted, as a Set's order changes.
+                let profiles = Set(device.connectivity.connectionProfiles.map { "\\($0)" })
+                    .sorted()
+                    .joined(separator: ", ")
+
+                return VStack {
                     // The connection is read here, so a change to it builds
                     // this closure.
                     DebugInfoLabel()
 
-                    Text(device.connectivity.networkAccess == .internet
-                        ? "online" : "offline · \\(device.connectivity.networkAccess)")
+                    Text(device.connectivity.networkAccess == .internet ? "online" : "offline")
 
-                    // A host may report one entry per ADAPTER, so repeats
-                    // are collapsed for display.
-                    Text("via \\(Set(device.connectivity.connectionProfiles
-                        .map { "\\($0)" }).sorted().joined(separator: ", "))")
+                    Text("access · \\(device.connectivity.networkAccess)")
+                    Text("via · \\(profiles.isEmpty ? "nothing reported" : profiles)")
 
                     Button("Save to the cloud")
                         .isEnabled(device.connectivity.networkAccess == .internet)

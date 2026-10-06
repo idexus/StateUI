@@ -204,7 +204,7 @@ final class ContractRoadsTests: XCTestCase {
             return file
         }
 
-        let outputs = Outputs(count: files.count)
+        let outputs = CompilerOutputs(count: files.count)
         DispatchQueue.concurrentPerform(iterations: files.count) { index in
             outputs.set(index, DocumentationExamplesTests.typecheck(files[index], module: module, sdk: sdk))
         }
@@ -229,27 +229,5 @@ final class ContractRoadsTests: XCTestCase {
             .joined(separator: "\n")
 
         return "import StateUI\n\n\(declarations)\n\nfunc road() async throws {\n\(body)\n}\n"
-    }
-
-    /// What the compiler said about each listing, written from the lanes.
-    private final class Outputs: @unchecked Sendable {
-        private let lock = NSLock()
-        private var items: [String?]
-
-        init(count: Int) {
-            items = Array(repeating: nil, count: count)
-        }
-
-        func set(_ index: Int, _ output: String?) {
-            lock.lock()
-            defer { lock.unlock() }
-            items[index] = output
-        }
-
-        func value(_ index: Int) -> String? {
-            lock.lock()
-            defer { lock.unlock() }
-            return items[index]
-        }
     }
 }

@@ -20,34 +20,45 @@ struct StyleSample: SampleContent, ExampleContent {
             static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
         }
 
-        // Into the application's session as it is made:
-        application.styles = StyleSheet {
-            Style<Button>()
-                .textColor(Palette.onAccent)
-                .background(Palette.accent)
-                .shape(.roundedRectangle(10))
-                .padding(horizontal: 16, vertical: 11)
-                .visualState(.disabled) { $0
-                    .textColor(Palette.disabled)
-                    .background(Palette.outline)
+        // GalleryApp.swift - into the application's session as it is made;
+        // these styles are a part of Styles/AppStyles.swift.
+        struct GalleryApp: Application {
+            @Environment(\\.application) private var application
+
+            init() {
+                application.styles = StyleSheet {
+                    Style<Button>()
+                        .textColor(Palette.onAccent)
+                        .background(Palette.accent)
+                        .shape(.roundedRectangle(10))
+                        .padding(horizontal: 16, vertical: 11)
+                        .visualState(.disabled) { $0
+                            .textColor(Palette.disabled)
+                            .background(Palette.outline)
+                        }
+
+                    Style<Text>("Headline")
+                        .fontSize(32)
+                        .horizontalTextAlignment(.center)
+
+                    // One shape, stated once. The second style is the first plus
+                    // a colour - and inherits everything it does not mention.
+                    Style<Text>("Quote")
+                        .textColor(Palette.subtle)
+                        .fontSize(17)
+                        .fontAttributes(.italic)
+                        .tracking(0.3)
+                        .horizontalTextAlignment(.center)
+
+                    Style<Text>("QuoteLoud")
+                        .basedOn("Quote")
+                        .textColor(Palette.accent)
                 }
+            }
 
-            Style<Text>("Headline")
-                .fontSize(32)
-                .horizontalTextAlignment(.center)
-
-            // One shape, stated once. The second style is the first plus
-            // a colour - and inherits everything it does not mention.
-            Style<Text>("Quote")
-                .textColor(Palette.subtle)
-                .fontSize(17)
-                .fontAttributes(.italic)
-                .tracking(0.3)
-                .horizontalTextAlignment(.center)
-
-            Style<Text>("QuoteLoud")
-                .basedOn("Quote")
-                .textColor(Palette.accent)
+            var body: some Scene {
+                GalleryScene()
+            }
         }
 
         // And in the view, where nothing says how a button looks:

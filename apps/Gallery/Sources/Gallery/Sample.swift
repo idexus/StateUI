@@ -93,7 +93,7 @@ extension SampleContent where Self: ExampleContent {
 /// at most one line saying what to try. Everything else is `notes`.
 protocol ExampleContent: View {
     /// The Swift that produced the example: its own code with the decoration
-    /// taken out, as a reader would write it.
+    /// taken out, as a reader would write it. It compiles (`SampleCodeTests`).
     static var code: String { get }
 
     /// The words about the example - what it shows and why - or `nil` where

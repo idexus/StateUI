@@ -14,68 +14,65 @@ struct NavigationSample: SampleContent, ExampleContent {
     static let summary = "The stack is an array of your own type, and every move is an assignment."
 
     static let code = """
-        enum Route: Hashable {
-            case sample(String)
-            case level(Int)
+        // Gallery/MainPage.swift - the stack, over the gallery's own
+        // `Navigation`, a class of states: the section is the ROOT the stack
+        // stands on, and its path an array of the gallery's own `Route`.
+        // `page(for:path:)` turns a route into a page, looking a sample up in
+        // the catalog - an id it does not know is a page that says so.
+        extension MainPage {
+            @ViewBuilder
+            func detail() -> some View {
+                if case .tabs = nav.section {
+                    tabs()
+                } else {
+                    NavigationStack(nav.$path) {
+                        root()
+                    } destination: { route in
+                        page(for: route, path: nav.$path)
+                    }
+                }
+            }
         }
 
-        // The ROOT the stack stands on, the stack itself and the menu beside
-        // them. Going home is three assignments - the section, the empty path
-        // and the closed menu.
-        @State private var section = "home"
-        @State private var path: [Route] = []
-        @State private var menuOpen = false
+        // And on this page, every move an assignment - `push` appends a
+        // route, `home()` opens the section with an empty path:
+        let nav: Navigation
         @State private var arrivals = 0
 
-        let catalog: Catalog
-        let nav: Navigation
+        VStack {
+            // The stack and the arrivals are read in this closure, so it is
+            // what a push and a pop build again.
+            DebugInfoLabel()
 
-        NavigationStack($path) {
-            HomePage(catalog: catalog, nav: nav)
-        } destination: { route in
-            switch route {
-            case .sample(let id):
-                // Looked up in the catalog - an id it does not know is a page
-                // that says so.
-                guard let sample = catalog.sample(id: id) else {
-                    return MissingPage(id: id, nav: nav, path: $path)
+            Button("Push a page")
+                .onClicked { nav.push(.level(1)) }
+
+            // Where am I? A question Swift answers, with no host in it.
+            Text(here)
+
+            Button("Go home, and count the visit")
+                .onClicked {
+                    nav.home()
+                    arrivals += 1
                 }
 
-                return SamplePage.shown(sample, nav: nav, bar: AppColors.violet)
+            Text("Arrived home \\(arrivals) time(s)")
 
-            case .level(let n):
-                return LevelPage(level: n, nav: nav, path: $path)
-            }
+            Button("Empty the stack")
+                .onClicked { nav.path = [] }
         }
-        .barBackgroundColor(AppColors.violet)
-        .barForegroundColor(Palette.onBrand)
 
-        // Every move there is, from this page. The stack and the arrivals are
-        // read wherever they are printed, so that closure is what a push and
-        // a pop build again.
-        DebugInfoLabel()
-
-        Button("Push a page")
-            .onClicked { path.append(.level(1)) }
-
-        // On LevelPage:
-        Button("Back")
-            .onClicked { path.removeLast() }
-
-        Button("Go home, and count the visit")
-            .onClicked {
-                section = "home"
-                path = []
-                menuOpen = false
-                arrivals += 1
+        var here: String {
+            let place = switch nav.section {
+            case .home: "home"
+            case .hidden: "the unlisted page"
+            case .tabs: "the tabs"
             }
 
-        Button("Empty the stack")
-            .onClicked { path = [] }
-
-        // Where am I? A question Swift answers, with no host in it:
-        Text("\\(path.count) page(s) on top of \\(section)")
-        Text("Arrived home \\(arrivals) time(s)")
+            return nav.path.isEmpty
+                ? "\\(place), nothing pushed"
+                : "\\(place) + \\(nav.path.count): \\(nav.path.map { "\\($0)" }.joined(separator: " › "))"
+        }
         """
 
     var body: some View {

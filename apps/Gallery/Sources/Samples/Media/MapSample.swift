@@ -59,7 +59,8 @@ struct MapSample: SampleContent, ExampleContent {
                 SwitchRow("Show me", $showsMe)
             }
 
-            // Both at once, which is what "locked" means to a user.
+            // Zoom and drag both off at once, which is what "locked" means to
+            // a user.
             SwitchRow("Locked", $locked)
 
             // Where it OPENS is the initializer's - kept until the platform's
@@ -89,11 +90,17 @@ struct MapSample: SampleContent, ExampleContent {
                         .onSelected { said = "pin: Main Market Square" }
                 }
                 .onMapClicked { location in
-                    said = "map: \\(location.latitude), \\(location.longitude)"
+                    said = "map: \\(rounded(location.latitude)), \\(rounded(location.longitude))"
                 }
                 .height(300)
 
             Text(said)
+        }
+
+        /// Four decimal places - about eleven meters - so a tapped point reads as
+        /// a coordinate rather than a river of digits.
+        private func rounded(_ degrees: Double) -> Double {
+            (degrees * 10_000).rounded() / 10_000
         }
         """
 
@@ -181,8 +188,8 @@ struct MapSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("`Map` is drawn by the platform's own map where there is one - "
-                + "`MKMapView` on Apple. Elsewhere the application registers its own map "
-                + "with the host, the pins as its children; the Web has no map element.")
+                + "`MKMapView` on Apple. Elsewhere, the Web included, the application "
+                + "registers its own map with the host, the pins as its children.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

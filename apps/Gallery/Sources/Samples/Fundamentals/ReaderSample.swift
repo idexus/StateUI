@@ -80,6 +80,10 @@ struct ReaderSample: SampleContent, ExampleContent {
                     DebugInfoLabel()                            // climbs
                 }
             }
+
+            private func percent(_ value: Double) -> String {
+                "\\(Int((value * 100).rounded()))%"
+            }
         }
 
         private struct Holding: View {

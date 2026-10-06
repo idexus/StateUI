@@ -91,6 +91,12 @@ private struct AcrossList: ExampleContent {
     ]
 
     static let code = """
+        static let tags = [
+            "State", "Binding", "Journey", "Engine", "Motion", "Placement", "Environment", "Scene", "Window",
+            "Page", "Aim", "Style", "Theme", "Gesture", "Frame", "Conversion", "Sample", "Identity", "Session",
+            "Persistence",
+        ]
+
         VStack {
             DebugInfoLabel()
 
@@ -106,7 +112,7 @@ private struct AcrossList: ExampleContent {
             .height(80)
 
             // Each tag as wide as its word.
-            ItemsView(tags) { tag in
+            ItemsView(Self.tags) { tag in
                 Text(tag)
                     .padding(horizontal: 14, vertical: 0)
                     .verticalTextAlignment(.center)
@@ -161,6 +167,8 @@ private struct GridList: ExampleContent {
     static let code = """
         @State private var opened: Int?
 
+        static let hues: [Color] = [.tomato, .orange, .teal, .steelBlue, .purple, .firebrick]
+
         Grid {
             // Columns at least 100 wide: as many as the width holds.
             ItemsView(0..<120) { number in
@@ -168,7 +176,7 @@ private struct GridList: ExampleContent {
                     .horizontalTextAlignment(.center)
                     .verticalTextAlignment(.center)
                     .height(72)
-                    .background(hues[number % hues.count])
+                    .background(Self.hues[number % Self.hues.count])
             }
             .itemsLayout(.grid(minimumItemWidth: 100, spacing: 8))
             .onItemActivated { opened = $0 }
@@ -237,7 +245,21 @@ private struct GroupedList: ExampleContent {
     ]
 
     static let code = """
+        struct Shelf {
+            let name: String
+            let items: [String]
+        }
+
         @State private var counts = true
+
+        static let shelves = [
+            Shelf(name: "Fruit", items: ["Apple", "Pear", "Plum", "Cherry", "Quince", "Apricot"]),
+            Shelf(name: "Vegetables", items: ["Leek", "Carrot", "Parsnip", "Beetroot", "Celery"]),
+            Shelf(name: "Bakery", items: ["Rye loaf", "Bagel", "Croissant", "Pretzel"]),
+            Shelf(name: "Dairy", items: ["Butter", "Kefir", "Cheddar", "Quark", "Cream", "Yoghurt"]),
+            Shelf(name: "Pantry", items: ["Rice", "Lentils", "Flour", "Oats", "Honey", "Salt"]),
+            Shelf(name: "Drinks", items: ["Water", "Tea", "Coffee", "Juice"]),
+        ]
 
         Grid {
             SwitchRow("Counts", $counts)
@@ -247,7 +269,7 @@ private struct GroupedList: ExampleContent {
                 .gridRow(0)
 
             // A group per shelf, named so two shelves may hold the same item.
-            ItemsView(groups: shelves.map { shelf in
+            ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<[String], String> in
                 let group = Section(shelf.items) { item in
                     Text(item).padding(horizontal: 14, vertical: 10)
                 }
