@@ -87,4 +87,11 @@ extension Registry {
         everyElementRaises(ViewContract.dragLeave)
         everyElementRaises(ViewContract.drop)
     }
+
+    /// Every element's view takes files dropped on it from the system, of the kinds it lists (`DragAndDrop.taken`).
+    /// Design: docs/design/host/runtime.md#files-dropped-on-a-view
+    public func everyElementTakesDroppedFiles() {
+        everyElementRealizes(ViewContract.droppedFileTypes)
+        everyElementRaises(ViewContract.filesDropped)
+    }
 }

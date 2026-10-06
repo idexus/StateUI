@@ -308,6 +308,7 @@ WebView
   automationExcludedWithChildren
   canDrag
   dragText
+  droppedFileTypes
   frame
   gridColumn
   gridColumnSpan
@@ -348,6 +349,7 @@ WebView
   dragOver()
   dragStarting()
   drop()
+  filesDropped()
   frameChanged()
   isFocusedChanged()
   panUpdated()

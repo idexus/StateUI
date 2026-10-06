@@ -68,7 +68,9 @@ plain text: its `dragenter` and `dragleave`, which come again for each child
 the drag crosses, are counted, so it hears the drag come once and go once;
 its `dragover` lets the drop land, and its `drop` hands over the words. A
 drag event stops at the innermost view that answers it. The host layer's
-rule makes over once and no leave after a drop.
+rule makes over once and no leave after a drop. A view taking files takes a
+drag holding `Files`; its drop keeps each `File` as the relay keeps a chosen
+one, under a number of its own.
 
 ## What takes no input
 

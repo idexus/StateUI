@@ -305,6 +305,18 @@ let go and never after a drop, dropped with its words as it is let go. The
 view dragged hears its drag start, and end once wherever it ended. A host
 that realizes it declares `everyElementDragsAndDrops`.
 
+## Files dropped on a view
+
+A view takes files dragged from the system where `droppedFileTypes` is
+written: the kinds it lists, any file where it lists none (`DragAndDrop`).
+A toolkit seldom says a dragged file's name before the drop, so a drag of
+files is taken over any view taking files, and the drop decides
+(`DragAndDrop.taken`): the files of its kinds - by their names' extensions -
+are heard, in order; a drop holding none of them is heard by nobody. A
+dropped file is a `ChosenFile`, read and launched as one opened, its address
+the platform's own. A host that realizes it declares
+`everyElementTakesDroppedFiles`.
+
 ## The environment
 
 What a host reads of the machine it stands on is told to the core the same

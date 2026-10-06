@@ -44,5 +44,6 @@ enum WebRegistrations {
         registry.everyElementMeetsAssistiveTechnology(identifying: true)
         registry.everyElementHearsTheUser()
         registry.everyElementDragsAndDrops()
+        registry.everyElementTakesDroppedFiles()
     }
 }

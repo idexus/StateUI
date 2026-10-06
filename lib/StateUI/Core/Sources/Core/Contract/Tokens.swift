@@ -118,6 +118,7 @@ extension NodeType {
     static let data = PathContract.data.token
     static let date = DatePickerContract.date.token
     static let dragText = ViewContract.dragText.token
+    static let droppedFileTypes = ViewContract.droppedFileTypes.token
     static let drawing = CanvasContract.drawing.token
     static let fill = ShapeContract.fill.token
     static let fillRule = PolygonContract.fillRule.token
@@ -275,6 +276,7 @@ extension NodeType {
     static let dragOver = ViewContract.dragOver.token
     static let dragStarting = ViewContract.dragStarting.token
     static let drop = ViewContract.drop.token
+    static let filesDropped = ViewContract.filesDropped.token
     static let dragEnded = ViewContract.dragEnded.token
     static let frameChanged = ViewContract.frameChanged.token
     static let isFocusedChanged = VisualElementContract.isFocusedChanged.token

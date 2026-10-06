@@ -340,6 +340,7 @@ ZStack
   automationExcludedWithChildren
   canDrag
   dragText
+  droppedFileTypes
   frame
   gridColumn
   gridColumnSpan
@@ -378,6 +379,7 @@ ZStack
   dragOver()
   dragStarting()
   drop()
+  filesDropped()
   frameChanged()
   isFocusedChanged()
   panUpdated()

@@ -33,7 +33,10 @@ that takes drops takes a drag of plain text as it starts. The listener tells
 the host the drag over the view at each of Android's entering and moving,
 its leaving, the drop with the clip's text, and - for the view whose own
 drag it is - its start and, wherever it ended, its end. The host layer's
-rule makes over once and no leave after a drop.
+rule makes over once and no leave after a drop. A view taking files takes a
+drag of another application's documents - anything but plain text - and its
+drop asks the activity for leave to read them, kept while the application
+runs, and hands over each document's address and name.
 
 ## A slider in steps
 

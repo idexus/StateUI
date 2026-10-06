@@ -212,6 +212,13 @@ enum JavaNatives {
             nonisolated(unsafe) let words = words
             MainActor.assumeIsolated { AndroidView.find(number)?.heardDrag(kind: kind, words: words.map { Java.text($0) }) }
         }
+        let filesDragged: @convention(c) (Environment, jclass?, jlong, jobjectArray?, jobjectArray?) -> Void = {
+            _, _, number, addresses, names in
+            nonisolated(unsafe) let (addresses, names) = (addresses, names)
+            MainActor.assumeIsolated {
+                AndroidView.find(number)?.heardDroppedFiles(addresses: Java.texts(addresses), names: Java.texts(names))
+            }
+        }
         let launched: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, ticket, taken in
             MainActor.assumeIsolated { AndroidRenderer.shared?.launched(ticket: ticket, taken: taken != 0) }
         }
@@ -342,6 +349,8 @@ enum JavaNatives {
             ("fileRead", "(J[BLjava/lang/String;)V", unsafeBitCast(fileRead, to: UnsafeMutableRawPointer.self)),
             ("launched", "(JZ)V", unsafeBitCast(launched, to: UnsafeMutableRawPointer.self)),
             ("dragHeard", "(JILjava/lang/String;)V", unsafeBitCast(dragHeard, to: UnsafeMutableRawPointer.self)),
+            ("filesDragged", "(J[Ljava/lang/String;[Ljava/lang/String;)V",
+             unsafeBitCast(filesDragged, to: UnsafeMutableRawPointer.self)),
             ("webNavigating", "(JLjava/lang/String;)V", unsafeBitCast(webNavigating, to: UnsafeMutableRawPointer.self)),
             ("webNavigated", "(JILjava/lang/String;)V", unsafeBitCast(webNavigated, to: UnsafeMutableRawPointer.self)),
             ("webHistory", "(JZZ)V", unsafeBitCast(webHistory, to: UnsafeMutableRawPointer.self)),

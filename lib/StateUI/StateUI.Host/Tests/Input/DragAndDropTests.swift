@@ -25,10 +25,10 @@ final class DragAndDropTests: XCTestCase {
     func testAViewSaysWhatItOffersAndTakes() throws {
         let runtime = running()
 
-        XCTAssertEqual(try element("source", in: runtime).dragAndDrop, DragAndDrop(words: "Alpha", takesDrops: false))
-        XCTAssertEqual(try element("basket", in: runtime).dragAndDrop, DragAndDrop(words: nil, takesDrops: true))
+        XCTAssertEqual(try element("source", in: runtime).dragAndDrop, DragAndDrop(words: "Alpha", takesWords: false))
+        XCTAssertEqual(try element("basket", in: runtime).dragAndDrop, DragAndDrop(words: nil, takesWords: true))
         XCTAssertEqual(try element("still", in: runtime).dragAndDrop, .none)
-        XCTAssertEqual(runtime.tree.root?.takingDrops.map(\.id), [.manual("basket")], "the views a window's drag finds")
+        XCTAssertEqual(runtime.tree.root?.takingDrops.first?.id, .manual("basket"), "the views a window's drag finds")
     }
 
     func testADragOverAViewIsToldAsTheContractSays() throws {
@@ -46,6 +46,29 @@ final class DragAndDropTests: XCTestCase {
         for _ in 0..<5 { runtime.pump.turn() }
 
         XCTAssertEqual(said, ["starting", "over", "left", "over", "drop Alpha", "ended"])
+    }
+
+    func testAViewTakesTheDroppedFilesOfItsKinds() {
+        let files = ["a.txt", "b.png", "c.TXT", "d"].map { ChosenFile(address: "/\($0)", name: $0) }
+        let text = FileType("Text", extensions: ["txt"])
+
+        XCTAssertEqual(DragAndDrop(words: nil, takesWords: false, fileTypes: [text]).taken(files).map(\.name), ["a.txt", "c.TXT"])
+        XCTAssertEqual(DragAndDrop(words: nil, takesWords: false, fileTypes: []).taken(files), files, "any file")
+        XCTAssertEqual(DragAndDrop.none.taken(files), [], "a view taking no files")
+    }
+
+    func testFilesDroppedOnAViewAreHeardByTheirKind() throws {
+        let runtime = running()
+        let shelf = try element("shelf", in: runtime)
+        XCTAssertEqual(shelf.dragAndDrop.fileTypes, [FileType("Text", extensions: ["txt"])])
+
+        shelf.hear(.dragOver, in: runtime)
+        shelf.hear(.filesDropped([ChosenFile(address: "/photo.png", name: "photo.png")]), in: runtime)
+        shelf.hear(.filesDropped(["note.txt", "photo.png"].map { ChosenFile(address: "/\($0)", name: $0) }), in: runtime)
+        for _ in 0..<5 { runtime.pump.turn() }
+
+        XCTAssertEqual(said, ["files note.txt"], "a file of its kind, none of another")
+        XCTAssertEqual(runtime.tree.root?.takingDrops.map(\.id), [.manual("basket"), .manual("shelf")])
     }
 
     private func running() -> HostRuntime {
@@ -78,6 +101,11 @@ private struct BasketPage: View {
                 .onDragLeave { @MainActor in said.append("left") }
                 .id("basket")
             Text("Still").id("still")
+            Text("Shelf")
+                .onDrop(files: [FileType("Text", extensions: ["txt"])]) { @MainActor files in
+                    said.append("files " + files.map(\.name).joined(separator: " "))
+                }
+                .id("shelf")
         }
     }
 }

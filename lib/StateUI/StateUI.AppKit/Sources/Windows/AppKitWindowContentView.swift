@@ -31,15 +31,15 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     /// The window's drags between views, where this view is the window's root.
     /// Design: docs/design/platforms/appkit/input.md#a-drag-between-views
     var drops: AppKitDrops? {
-        didSet { drops == nil ? unregisterDraggedTypes() : registerForDraggedTypes([.string]) }
+        didSet { drops == nil ? unregisterDraggedTypes() : registerForDraggedTypes([.string, .fileURL]) }
     }
 
     override func draggingEntered(_ sender: any NSDraggingInfo) -> NSDragOperation {
-        drops?.entered(at: sender.draggingLocation, carrying: sender.words, in: self) ?? []
+        drops?.entered(at: sender.draggingLocation, carrying: sender.carried, in: self) ?? []
     }
 
     override func draggingUpdated(_ sender: any NSDraggingInfo) -> NSDragOperation {
-        drops?.moved(to: sender.draggingLocation, carrying: sender.words, in: self) ?? []
+        drops?.moved(to: sender.draggingLocation, carrying: sender.carried, in: self) ?? []
     }
 
     override func draggingExited(_ sender: (any NSDraggingInfo)?) {
@@ -47,7 +47,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     }
 
     override func performDragOperation(_ sender: any NSDraggingInfo) -> Bool {
-        drops?.dropped(sender.words) ?? false
+        drops?.dropped(sender.carried) ?? false
     }
 
     /// Whether the desktop shows through the window: its material lies under

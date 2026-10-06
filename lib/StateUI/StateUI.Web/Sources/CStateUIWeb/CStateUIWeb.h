@@ -217,11 +217,13 @@ STATEUI_WEB(file_words) int32_t stateui_web_file_words(void);
 STATEUI_WEB(launch_file) void stateui_web_launch_file(int32_t file, int32_t listener);
 STATEUI_WEB(launch_address) void stateui_web_launch_address(const char *address, int32_t length, int32_t listener);
 
-/// The element's drag between views: it carries the words as plain text where `draggable`, and takes a drag of plain
-/// text where `takes`; `listener` hears event 0 started, 1 ended, 2 over, 3 left, 4 dropped - the words a drop
-/// carried read by `drag_words`, their length, then `copy_read`.
+/// The element's drags: it carries the words as plain text where `draggable`, takes a drag of plain text where `takes`
+/// and of files from the system where `files`; `listener` hears event 0 started, 1 ended, 2 over, 3 left, 4 dropped
+/// words, 5 dropped files - the words, or the files as `file_words` says them, read by `drag_words`, their length,
+/// then `copy_read`.
 STATEUI_WEB(offer_drag) void stateui_web_offer_drag(
-    int32_t element, const char *words, int32_t length, int32_t draggable, int32_t takes, int32_t listener);
+    int32_t element, const char *words, int32_t length, int32_t draggable, int32_t takes, int32_t files,
+    int32_t listener);
 STATEUI_WEB(drag_words) int32_t stateui_web_drag_words(void);
 
 /// The local time of day into `into`: hour, minute, second, millisecond.

@@ -2298,6 +2298,7 @@ enum Listings {
         @State private var words = "Words to keep"
         @State private var saved: ChosenFile?
         @State private var answer = "nothing opened or saved yet"
+        @State private var dropping = false
 
         var body: some View {
             VStack {
@@ -2331,6 +2332,20 @@ enum Listings {
 
                 Button("Launch swift.org")
                     .onClicked { try await Links.launch("https://www.swift.org") }
+
+                // A text file dragged from the system onto it is read into the editor.
+                ZStack {
+                    Text(dropping ? "let go to read it" : "Drop a text file here")
+                }
+                .stroke(dropping ? Palette.accent : Palette.outline)
+                .lineWidth(dropping ? 2 : 1)
+                .onDragOver { dropping = true }
+                .onDragLeave { dropping = false }
+                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
+                    dropping = false
+                    words = String(decoding: try await files[0].read(), as: UTF8.self)
+                    answer = "dropped \(files[0].name)"
+                }
 
                 Text(answer)
             }

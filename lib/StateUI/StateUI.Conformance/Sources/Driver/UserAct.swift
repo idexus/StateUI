@@ -49,6 +49,9 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     /// The element dragged onto the one of the id given, and dropped there - across the one of the other id first,
     /// in over it and out again, where one is given.
     case dragAndDrop(onto: String, across: String? = nil)
+    /// Files of these names in the driver's own folder dropped on the element from the system, as the user drags them
+    /// there.
+    case dropFiles([String])
     /// A scroll view scrolled to an offset.
     case scroll(to: Point)
     /// The keyboard moved to the element.
@@ -97,6 +100,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .pan: "pan"
         case .pinch: "pinch"
         case .dragAndDrop: "dragAndDrop"
+        case .dropFiles: "dropFiles"
         case .scroll: "scroll"
         case .focus: "focus"
         case .goBack: "goBack"

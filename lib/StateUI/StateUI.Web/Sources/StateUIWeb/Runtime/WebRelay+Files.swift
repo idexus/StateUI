@@ -49,7 +49,12 @@ extension WebRelay {
 
     /// The files a dialog being heard answered, each its number and its name; none where the user cancelled.
     static var filesChosen: [(number: Int32, name: String)] {
-        let parts = fileWords.split(separator: "\u{1F}", omittingEmptySubsequences: false).map(String.init)
+        files(in: fileWords)
+    }
+
+    /// The files `words` say, as the relay says chosen files: each its number, then its name.
+    static func files(in words: String) -> [(number: Int32, name: String)] {
+        let parts = words.split(separator: "\u{1F}", omittingEmptySubsequences: false).map(String.init)
         return stride(from: 0, to: parts.count - 1, by: 2).compactMap { index in
             Int32(parts[index]).map { ($0, parts[index + 1]) }
         }

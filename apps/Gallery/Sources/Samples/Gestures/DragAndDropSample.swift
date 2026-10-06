@@ -108,8 +108,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("No host realizes dragging between views, so on every platform the "
-                + "words stay where they are; the code shows what the contract promises.")
+            Text("On a touch screen, hold a word a moment before you drag it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -142,7 +142,7 @@ final class UIKitDriver: HostDriver {
         let act = UserAct.dragAndDrop(onto: target, across: across)
         func interactions(_ id: String) throws -> UIKitDragAndDrop {
             let found = renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? UIKitElement
-            guard let dragAndDrop = found?.dragAndDrop, dragAndDrop.offered.takesDrops else {
+            guard let dragAndDrop = found?.dragAndDrop, dragAndDrop.offered.takesWords else {
                 throw DriverCannot(act, on: element)
             }
             return dragAndDrop
@@ -266,6 +266,13 @@ final class UIKitDriver: HostDriver {
             }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)
+        case (.dropFiles(let names), _):
+            guard let dragAndDrop = (element.native as? UIKitElement)?.dragAndDrop, dragAndDrop.offered.takesFiles else {
+                throw DriverCannot(act, on: element)
+            }
+            let files = names.map { Self.files.appendingPathComponent($0) }
+            for file in files { try Data(file.lastPathComponent.utf8).write(to: file) }
+            dragAndDrop.hearForTesting(.filesDropped(files.map(ChosenFile.init)))
         case (.answerFiles(let names), _):
             guard let dialog = renderer?.fileToolkit.showing, dialog.picker != nil else {
                 throw DriverCannot("answer a file dialog: none shows")

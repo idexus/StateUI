@@ -44,4 +44,6 @@ drag began and, wherever it ended, that it ended. A view that takes drops
 holds a drop interaction that takes a session carrying words: each update
 says the drag is over it, an exit that it went, and a drop loads the words
 and hands them over. The host layer's rule makes over once and no leave
-after a drop.
+after a drop. A view taking files takes a session of items that are no plain
+words; each item's file, which UIKit lends only while it hands it over, is
+copied to a folder of the application's own under the name the user knows.

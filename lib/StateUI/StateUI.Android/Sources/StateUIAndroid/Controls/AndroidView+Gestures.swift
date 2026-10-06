@@ -64,7 +64,7 @@ extension AndroidView {
         Java.frame {
             Java.callStatic(
                 JavaAPI.drags, JavaAPI.offerDrag, .object(reference), .long(number),
-                .object(offered.words.flatMap(Java.string)), .bool(offered.takesDrops))
+                .object(offered.words.flatMap(Java.string)), .bool(offered.takesWords), .bool(offered.takesFiles))
         }
     }
 
@@ -79,6 +79,11 @@ extension AndroidView {
         default: nil
         }
         if let input { onDragHeard?(input) }
+    }
+
+    /// Documents another application dragged here were let go over the view, by their addresses and names.
+    func heardDroppedFiles(addresses: [String], names: [String]) {
+        onDragHeard?(.filesDropped(zip(addresses, names).map { ChosenFile(address: $0, name: $1) }))
     }
 
     /// A press the listener tells - down, moved, let go or taken away, at `point` of the screen: a drag by the host

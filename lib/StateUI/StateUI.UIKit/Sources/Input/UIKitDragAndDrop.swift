@@ -3,12 +3,14 @@
 
 #if os(iOS)
 import UIKit
+import UniformTypeIdentifiers
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// One view's drag between views, as UIKit's own interactions: a drag interaction - turned on, as an iPhone leaves it
-/// off - carrying the view's words as a string, and a drop interaction taking a drag that carries words. Each tells
-/// the host layer what it heard (`HeardInput`), which tells the element by its rules.
+/// One view's drags, as UIKit's own interactions: a drag interaction - turned on, as an iPhone leaves it off - carrying
+/// the view's words as a string, and a drop interaction taking a drag of words, or of files from the system, copied
+/// where the application keeps them. Each tells the host layer what it heard (`HeardInput`), which tells the element
+/// by its rules.
 /// Design: docs/design/platforms/uikit/input.md#a-drag-between-views
 @MainActor
 final class UIKitDragAndDrop: NSObject, UIDragInteractionDelegate, UIDropInteractionDelegate {
@@ -38,11 +40,12 @@ final class UIKitDragAndDrop: NSObject, UIDragInteractionDelegate, UIDropInterac
             view.removeInteraction(interaction)
             drag = nil
         }
-        if offered.takesDrops, drop == nil {
+        let takes = offered.takesWords || offered.takesFiles
+        if takes, drop == nil {
             let interaction = UIDropInteraction(delegate: self)
             view.addInteraction(interaction)
             drop = interaction
-        } else if !offered.takesDrops, let interaction = drop {
+        } else if !takes, let interaction = drop {
             view.removeInteraction(interaction)
             drop = nil
         }
@@ -75,7 +78,14 @@ final class UIKitDragAndDrop: NSObject, UIDragInteractionDelegate, UIDropInterac
     // MARK: - A drag over the view
 
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: any UIDropSession) -> Bool {
-        session.canLoadObjects(ofClass: NSString.self)
+        (offered.takesWords && session.canLoadObjects(ofClass: NSString.self))
+            || (offered.takesFiles && carriesFiles(session))
+    }
+
+    /// Whether the drag carries files - items that are no plain words, or a view taking no words.
+    private func carriesFiles(_ session: any UIDropSession) -> Bool {
+        guard offered.takesWords else { return session.hasItemsConforming(toTypeIdentifiers: [UTType.item.identifier]) }
+        return session.items.contains { !$0.itemProvider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) }
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: any UIDropSession) -> UIDropProposal {
@@ -88,9 +98,43 @@ final class UIKitDragAndDrop: NSObject, UIDragInteractionDelegate, UIDropInterac
     }
 
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: any UIDropSession) {
+        if offered.takesFiles, carriesFiles(session) {
+            let providers = session.items.map(\.itemProvider)
+            Task { @MainActor [weak self] in
+                var files: [ChosenFile] = []
+                for provider in providers {
+                    if let file = await Self.kept(provider) { files.append(file) }
+                }
+                self?.heard(.filesDropped(files))
+            }
+            return
+        }
         _ = session.loadObjects(ofClass: NSString.self) { [weak self] loaded in
             let words = loaded.first.map { String(describing: $0) } ?? ""
             MainActor.assumeIsolated { self?.heard(.dropped(words)) }
+        }
+    }
+
+    /// The file `provider` holds, copied to a folder of the application's own - UIKit's copy lasts only while it
+    /// hands it over - under the name the user knows it by; nil where it holds none.
+    private static func kept(_ provider: NSItemProvider) async -> ChosenFile? {
+        let type = provider.registeredTypeIdentifiers.first ?? UTType.data.identifier
+        let suggested = provider.suggestedName
+        return await withCheckedContinuation { done in
+            _ = provider.loadFileRepresentation(forTypeIdentifier: type) { url, _ in
+                guard let url else { return done.resume(returning: nil) }
+                var name = suggested ?? url.lastPathComponent
+                if (name as NSString).pathExtension.isEmpty, !url.pathExtension.isEmpty { name += "." + url.pathExtension }
+                let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+                let file = folder.appendingPathComponent(name)
+                do {
+                    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+                    try FileManager.default.copyItem(at: url, to: file)
+                    done.resume(returning: ChosenFile(address: file.path, name: name))
+                } catch {
+                    done.resume(returning: nil)
+                }
+            }
         }
     }
 }

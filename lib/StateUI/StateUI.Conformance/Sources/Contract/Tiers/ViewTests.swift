@@ -18,7 +18,7 @@
             [
                 margined(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
-                dragged(element), droppedOn(element),
+                dragged(element), droppedOn(element), filesDroppedOn(element),
             ]
         } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner]
     }
@@ -484,6 +484,32 @@
             try s.perform(.dragAndDrop(onto: "target", across: "crossed"), on: s.element("source"))
             s.settle { heard.values.contains { $0.hasPrefix("drop") } }
             s.expect(heard.values, ["over", "left", "drop words"], "the one crossed heard it come and go")
+        }
+    }
+
+    /// A view that takes files hears those of its kinds the user drops on it from the system, by their names - a drop
+    /// of none of its kinds heard by nobody.
+    static func filesDroppedOn(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).filesDroppedOnItAreHeardByTheirKind", proves: [
+            Covered(ViewContract.droppedFileTypes, on: element), Covered(ViewContract.filesDropped, on: element),
+        ]) { s in
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    Specimens.view(element, [
+                        Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
+                        Write(ViewContract.droppedFileTypes, [FileType("Text", extensions: ["txt"])]),
+                        Hear(ViewContract.filesDropped) { heard.values.append($0.map(\.name).joined(separator: " ")) },
+                    ])
+                }
+                .horizontalAlignment(.start)
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.dropFiles(["photo.png"]), on: view)
+            try s.perform(.dropFiles(["note.txt", "photo.png"]), on: view)
+            s.settle { !heard.values.isEmpty }
+            s.expect(heard.values, ["note.txt"], "the file of its kind, nothing of another")
         }
     }
 

@@ -15,6 +15,8 @@ extension AndroidDriver {
             return "the host's own entry the scrim's tap and the bar's button call"
         case "dragAndDrop":
             return "the views' drag listeners' reports told by the driver, no drag started"
+        case "dropFiles":
+            return "the view's drag listener's report told the driver's documents, no drag started"
         case "answerFiles":
             return "the relay's result path handed the driver's documents, no picker shown"
         default: break

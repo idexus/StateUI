@@ -95,6 +95,9 @@ final class StateUIHost {
     /** A drag between views told the view: `StateUIDrags`'s kind, and the words a drop carried. */
     static native void dragHeard(long view, int kind, String words);
 
+    /** Documents another application dragged here were let go over the view, by their addresses and names. */
+    static native void filesDragged(long view, String[] addresses, String[] names);
+
     /** What was launched under `ticket` was taken by an application, or not. */
     static native void launched(long ticket, boolean taken);
 

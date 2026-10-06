@@ -6,11 +6,12 @@ struct FilesSample: SampleContent, ExampleContent {
     @State private var words = "Words to keep"
     @State private var saved: ChosenFile?
     @State private var answer = "nothing opened or saved yet"
+    @State private var dropping = false
     // listing: end
 
     static let id = "files"
     static let title = "Files"
-    static let summary = "A file opened and read, words saved where the user says, and a file or an address launched."
+    static let summary = "A file opened or dropped and read, words saved, and a file or an address launched."
 
     // listing: FilesSample
     var body: some View {
@@ -46,6 +47,24 @@ struct FilesSample: SampleContent, ExampleContent {
             Button("Launch swift.org")
                 .onClicked { try await Links.launch("https://www.swift.org") }
 
+            // A text file dragged from the system onto it is read into the editor.
+            ZStack {
+                Text(dropping ? "let go to read it" : "Drop a text file here")
+                    .fontSize(15)
+                    .horizontalTextAlignment(.center)
+                    .padding(20)
+            }
+            .stroke(dropping ? Palette.accent : Palette.outline)
+            .lineWidth(dropping ? 2 : 1)
+            .shape(.roundedRectangle(10))
+            .onDragOver { dropping = true }
+            .onDragLeave { dropping = false }
+            .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
+                dropping = false
+                words = String(decoding: try await files[0].read(), as: UTF8.self)
+                answer = "dropped \(files[0].name)"
+            }
+
             Text(answer)
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
@@ -55,7 +74,7 @@ struct FilesSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A file dialog answers a file whose name the application reads; where it stands is the "
+        Text("A dialog or a drop answers a file whose name the application reads; where it stands is the "
             + "platform's own, so the host reads it and launches it.")
             .fontSize(12)
             .textColor(Palette.subtle)

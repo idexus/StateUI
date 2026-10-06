@@ -63,6 +63,7 @@ final class WebDriver: HostDriver {
         "read what was launched": "the relay's own record of what it would open, which a test holds back",
         "answerFiles": "the relay's answer handed the driver's files, no dialog shown",
         "dragAndDrop": "the DOM's drag events dispatched by the driver, no drag the browser began",
+        "dropFiles": "the DOM's drag events dispatched by the driver with its files, no drag the browser began",
     ]
 
     var renderer: WebRenderer?

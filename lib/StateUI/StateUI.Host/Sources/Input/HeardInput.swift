@@ -32,6 +32,9 @@
 
     /// A drag between views was let go over the view, carrying these words.
     case dropped(String)
+
+    /// Files the user dragged from the system were let go over the view - every one of them, of whatever kind.
+    case filesDropped([ChosenFile])
 }
 
 /// What a view listens for of the user's input.

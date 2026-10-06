@@ -116,7 +116,24 @@ ZStack { Text("Drop here") }
 
 The payload is declared before the native drag starts. A start handler may
 react to the drag but cannot asynchronously replace what the current drag
-carries.
+carries. On a touch screen the drag begins once the finger has held the view a
+moment, as the platform's own drags do.
+
+Files dragged from the system - from a file manager, another application, the
+desktop - land on a view through `onDrop(files:)`, as `ChosenFile`s of the
+kinds it lists:
+
+```swift quote
+ZStack { Text("Drop a report here") }
+    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
+        report = String(decoding: try await files[0].read(), as: UTF8.self)
+    }
+```
+
+A view may take words and files both; `onDragOver` and `onDragLeave` serve
+either. Files of other kinds are not taken, and a drop holding none of the
+view's kinds is heard by nobody. A dropped file reads and launches as one the
+user opened ([Files and links](#files-and-links)).
 
 Gesture availability and host tests are tracked in
 [Platform contract](../platform-contract.md).

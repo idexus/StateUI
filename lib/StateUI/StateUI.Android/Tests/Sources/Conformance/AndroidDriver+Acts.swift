@@ -49,6 +49,9 @@ extension AndroidDriver {
             guard answered else { throw DriverCannot("answer by \(caption)") }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)
+        case (.dropFiles(let names), let view?):
+            guard view.offered.takesFiles else { throw DriverCannot(act, on: element) }
+            view.heardDroppedFiles(addresses: names.map { filesFolder + $0 }, names: names)
         case (.answerFiles(let names), _):
             let answered = Java.frame {
                 Java.callStaticBool(
@@ -153,7 +156,7 @@ extension AndroidDriver {
         let act = UserAct.dragAndDrop(onto: target, across: across)
         func taking(_ id: String) throws -> AndroidView {
             let found = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? AndroidElement)?.view
-            guard let found, found.offered.takesDrops else { throw DriverCannot(act, on: element) }
+            guard let found, found.offered.takesWords else { throw DriverCannot(act, on: element) }
             return found
         }
         guard let source = (element.native as? AndroidElement)?.view, let words = source.offered.words else {

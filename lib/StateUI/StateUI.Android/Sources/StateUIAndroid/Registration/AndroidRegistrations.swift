@@ -44,6 +44,7 @@ enum AndroidRegistrations {
         registry.everyElementMeetsAssistiveTechnology()
         registry.everyElementHearsTheUser()
         registry.everyElementDragsAndDrops()
+        registry.everyElementTakesDroppedFiles()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementRealizes(VisualElementContract.opacity)

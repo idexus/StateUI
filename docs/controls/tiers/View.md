@@ -31,7 +31,9 @@ How each of them realizes these members is on its own page.
 | `dragStarting` | event |  | native |
 | `dragText` | property | `String` | native |
 | `onDrop` (`drop`) | event | `String` | native |
+| `droppedFileTypes` | property | `[FileType]` | native |
 | `onDragEnded` (`dragEnded`) | event |  | native |
+| `onDrop` (`filesDropped`) | event | `[ChosenFile]` | native |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |
 | `gridColumn` | property | `Int` | stateUI |
 | `gridColumnSpan` | property | `Int` | stateUI |

@@ -13,7 +13,8 @@ extension WebRelay {
     static func offerDrag(_ element: Int32, _ offered: DragAndDrop, _ listener: Int32) {
         utf8(offered.words ?? "") {
             stateui_web_offer_drag(
-                element, $0, $1, offered.words == nil ? 0 : 1, offered.takesDrops ? 1 : 0, listener)
+                element, $0, $1, offered.words == nil ? 0 : 1, offered.takesWords ? 1 : 0, offered.takesFiles ? 1 : 0,
+                listener)
         }
     }
 
@@ -25,6 +26,9 @@ extension WebRelay {
         case 2: .dragOver
         case 3: .dragLeft
         case 4: .dropped(copyRead(length: stateui_web_drag_words()))
+        case 5: .filesDropped(files(in: copyRead(length: stateui_web_drag_words())).map {
+            ChosenFile(address: String($0.number), name: $0.name)
+        })
         default: nil
         }
     }

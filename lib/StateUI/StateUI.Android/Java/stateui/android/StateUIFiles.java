@@ -147,7 +147,7 @@ final class StateUIFiles {
     }
 
     /** The name the document shows, its extension included. */
-    private static String name(ContentResolver resolver, Uri document) {
+    static String name(ContentResolver resolver, Uri document) {
         try (Cursor cursor = resolver.query(document, new String[] {OpenableColumns.DISPLAY_NAME}, null, null, null)) {
             if (cursor != null && cursor.moveToFirst() && !cursor.isNull(0)) return cursor.getString(0);
         } catch (Exception unnamed) {

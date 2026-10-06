@@ -46,6 +46,10 @@ extension MountedElement {
         case .dropped(let words):
             dropTarget.dropped()
             send(.drop, [.string(words)], in: runtime)
+        case .filesDropped(let files):
+            dropTarget.dropped()
+            let taken = dragAndDrop.taken(files)
+            if !taken.isEmpty { send(.filesDropped, [taken.propValue], in: runtime) }
         }
     }
 

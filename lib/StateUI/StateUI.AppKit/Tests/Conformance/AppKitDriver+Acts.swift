@@ -98,6 +98,8 @@ extension AppKitDriver {
             }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)
+        case (.dropFiles(let names), let view?):
+            try dropFiles(names, on: view, element)
         case (.answerFiles(let names), _):
             guard let dialog = renderer?.fileToolkit.showing else { throw DriverCannot("answer a file dialog: none shows") }
             dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
@@ -265,11 +267,25 @@ extension AppKitDriver {
             }
             return view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil)
         }
+        let carried = AppKitDrops.Carried(words: source.words)
         source.started()
-        _ = drops.entered(at: try middle(across ?? target), carrying: source.words, in: root)
-        if across != nil { _ = drops.moved(to: try middle(target), carrying: source.words, in: root) }
-        _ = drops.dropped(source.words)
+        _ = drops.entered(at: try middle(across ?? target), carrying: carried, in: root)
+        if across != nil { _ = drops.moved(to: try middle(target), carrying: carried, in: root) }
+        _ = drops.dropped(carried)
         source.ended()
+    }
+
+    /// Files of `names`, written in the driver's folder, dragged from the system onto `view` and let go there, as
+    /// AppKit's dragging destination tells the window's root.
+    func dropFiles(_ names: [String], on view: NSView, _ element: MountedElement) throws {
+        guard let root = view.window?.contentView,
+              let drops = (root as? AppKitWindowContentView)?.drops ?? (root as? AppKitHitTestView)?.drops
+        else { throw DriverCannot(.dropFiles(names), on: element) }
+        let files = names.map { Self.files.appendingPathComponent($0) }
+        for file in files { try Data(file.lastPathComponent.utf8).write(to: file) }
+        let carried = AppKitDrops.Carried(files: files)
+        _ = drops.entered(at: view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil), carrying: carried, in: root)
+        _ = drops.dropped(carried)
     }
 }
 

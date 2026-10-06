@@ -20,6 +20,7 @@ extension WebDriver {
         if case .answer(let caption, let typing) = act { return try answer(caption, typing: typing, on: element) }
         if case .answerFiles(let names) = act { return try answerFiles(names, on: element) }
         if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
+        if case .dropFiles(let names) = act { return try dropFiles(names, on: element) }
         // The browser's way back, over the page's own entry: from one it did not put there, the user leaves the site.
         if act == .goBack {
             guard try WebBrowser.truth("history.state?.stateui === true && (history.back(), true)", on: 0) else {
@@ -111,6 +112,20 @@ extension WebDriver {
                 }
             }, 0))
             """, on: 0)
+    }
+
+    /// Files of `names` dragged from the system onto `element` and let go there, by the DOM's drag events carrying
+    /// them, in a turn of the page's own.
+    func dropFiles(_ names: [String], on element: MountedElement) throws {
+        guard let node = (element.native as? WebElement)?.view?.node else { throw DriverCannot(.dropFiles(names), on: element) }
+        let files = names.map { "new File([\(WebBrowser.quoted($0))], \(WebBrowser.quoted($0)))" }.joined(separator: ", ")
+        try WebBrowser.run("""
+            const carried = new DataTransfer();
+            for (const file of [\(files)]) carried.items.add(file);
+            for (const name of ["dragenter", "dragover", "drop"]) {
+                setTimeout(() => e.dispatchEvent(new DragEvent(name, { bubbles: true, cancelable: true, dataTransfer: carried })), 0);
+            }
+            """, on: node)
     }
 
     /// Whether the element `e` stands under a question the page shows over it.
