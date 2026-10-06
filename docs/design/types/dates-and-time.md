@@ -85,6 +85,8 @@ since the variable is read ahead of any detection.
 negative, a `ClockTime` is a time of day, and `Duration` is the standard
 library's own, needing no Foundation. The day decides the answer wherever
 summer time does, so the host reads the day at noon, the one hour no zone
-has ever moved. The zone crosses as text, because an IANA identifier is
+has ever moved. With no day the answer is the offset in effect now - what a
+clock showing that zone's time needs, also in the night hour a switch has
+not yet passed. The zone crosses as text, because an IANA identifier is
 text and names nothing the core knows, and a zone or a day left out crosses
-as `.nothing`, meaning the local zone and today.
+as `.nothing`, meaning the local zone and now.

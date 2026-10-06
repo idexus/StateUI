@@ -108,7 +108,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let saveFile = ElementAct<Self, ([UInt8], String, [FileType]), ChosenFile?>("saveFile")
 
     /// How far a zone is from UTC on a day, in minutes: the zone's identifier,
-    /// the local one where there is none, and the day, today where there is
+    /// the local one where there is none, and the day, now where there is
     /// none.
     ///
     /// See `TimeZoneInfo.utcOffset`.

@@ -215,7 +215,7 @@ final class StateUIEnvironment {
     }
 
     /**
-     * How far `zone` - the local one for null - is from UTC at noon of a day - today where year is 0 - in minutes;
+     * How far `zone` - the local one for null - is from UTC at noon of a day - now where year is 0 - in minutes;
      * Integer.MIN_VALUE for a zone the platform does not know, which TimeZone would read as GMT.
      */
     static int utcOffset(String zone, int year, int month, int day) {

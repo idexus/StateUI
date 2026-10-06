@@ -16,8 +16,8 @@
     /// The name of the local time zone.
     func localZone() -> String
 
-    /// How far `zone` - the local one where nil - is from UTC on `day` - today where nil - in minutes; nil for a zone
-    /// the platform does not know.
+    /// How far `zone` - the local one where nil - is from UTC at `day`'s noon - now where nil - in minutes; nil for a
+    /// zone the platform does not know.
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int?
 
     /// Shows `question` to the user in the window they are looking at, and calls `answered` - whether they

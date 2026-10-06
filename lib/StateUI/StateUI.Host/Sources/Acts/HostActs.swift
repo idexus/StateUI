@@ -31,7 +31,7 @@
         [[Double(hour), Double(minute), Double(second), Double(millisecond)].propValue]
     }
 
-    /// What `utcOffset` asks of: a zone by its name - nil for the local one - on a day - nil for today.
+    /// What `utcOffset` asks of: a zone by its name - nil for the local one - on a day - nil for now.
     public static func utcOffsetQuestion(_ call: HostActCall) -> (zone: String?, day: CalendarDate?) {
         (call.arguments.value(0)?.string, call.arguments.value(1).flatMap { CalendarDate(propValue: $0) })
     }
