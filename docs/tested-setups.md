@@ -63,6 +63,15 @@ suite in Node, and the conformance suite in a headless browser
 | Browser | Safari 26.6.2; Google Chrome 152.0.7977.84, headless, for the conformance suite |
 | Node.js | 26.10.0, for the host's own suite and the conformance run's controller |
 
+### GTK 4, in Docker
+
+The GTK host's own suite and every conformance family, as CI runs them,
+on the Mac (2026-10-06): Docker Desktop 29.8 (linux/arm64), swift.org's
+`swift:6.4.0-noble` with the packages `.github/workflows/gtk.yml` installs -
+GTK 4.14.5, libadwaita 1.5.0, WebKitGTK 2.52.6 (`webkitgtk-6.0`), GLib
+2.80.0 - drawn on Xvfb with a session bus, the build in a volume of its own.
+It stands for CI, not for a desktop: X11, no portals, no GNOME Shell.
+
 ## A Windows machine: WinUI 3
 
 Last verified 2026-10-05.
