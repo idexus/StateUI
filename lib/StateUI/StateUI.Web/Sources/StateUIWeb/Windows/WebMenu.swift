@@ -29,6 +29,7 @@ final class WebMenu {
         popover.attribute("class", "stateui-menu")
         popover.attribute("popover", "auto")
         popover.attribute("role", "menu")
+        popover.attribute("tabindex", "-1")
         for entry in entries { add(entry) }
         popover.listen("closed") { [weak self] in self?.closed() }
     }
@@ -41,6 +42,8 @@ final class WebMenu {
         Self.open[ObjectIdentifier(self)] = self
         WebRelay.insert(popover.node, into: WebRelay.body, at: 0)
         WebRelay.showPopover(popover.node, under: anchor?.node ?? 0, at: point)
+        // The keyboard comes to the menu, where the arrows go through its items.
+        _ = WebRelay.focus(popover.node)
     }
 
     private func add(_ entry: MenuEntry) {

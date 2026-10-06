@@ -23,6 +23,14 @@ native button takes no keyboard of a field: the page's press on a button is
 not let move the focus while a field holds it, so the program taking the
 on-screen keyboard down finds the field still holding it.
 
+The keyboard moves through a strip of tabs and a menu as a platform's own:
+the arrows go from one to the next - across a strip as its words run, right
+to left turning them about - Home and End to the first and the last, and the
+arrow towards a submenu opens it; a menu shown takes the keyboard, and an
+item that cannot be chosen is passed over. Only the chosen tab takes the
+keyboard's Tab (`tabindex` 0, the others -1), and a tab is chosen as the
+keyboard reaches it.
+
 A listener is hung once for each kind the element asks for, and what it hears
 reaches the element only while the element still asks.
 

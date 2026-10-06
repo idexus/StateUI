@@ -68,7 +68,11 @@ final class WebTabView: WebDOMView {
     private func showChosen() {
         let shown = choice.shown(among: tabs.count)
         for (index, tab) in tabs.enumerated() { tab.attribute("data-covered", index == shown ? nil : "") }
-        for (index, name) in names.enumerated() { name.attribute("aria-selected", index == shown ? "true" : "false") }
+        // The keyboard comes to the chosen tab alone; the arrows go on from it to the others.
+        for (index, name) in names.enumerated() {
+            name.attribute("aria-selected", index == shown ? "true" : "false")
+            name.attribute("tabindex", index == shown ? "0" : "-1")
+        }
     }
 
     override func detach() {
