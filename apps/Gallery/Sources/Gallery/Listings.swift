@@ -625,12 +625,13 @@ enum Listings {
             .basedOn("Quote")
             .textColor(Palette.accent)
 
-        // A button the gallery paints itself, asked for by name: every
-        // other button keeps the platform's own look.
-        Style<Button>("Painted")
+        // Every button the gallery shows wears its violet - a style with no
+        // key is every button's. One that asks for "Platform" by name wears
+        // nothing of it: a keyed style replaces this one, and that one
+        // says nothing, so the platform's own button stands.
+        Style<Button>()
             .textColor(Palette.onAccent)
             .background(Palette.accent)
-            .fontAttributes(.bold)
             .lineWidth(0)
             .shape(.roundedRectangle(10))
             .padding(horizontal: 16, vertical: 11)
@@ -638,6 +639,7 @@ enum Listings {
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
             }
+        Style<Button>("Platform")
 
         // Every ColorBox that names no colour of its own wears the violet.
         Style<ColorBox>()
@@ -7939,13 +7941,14 @@ enum Listings {
             VStack {
                 DebugInfoLabel()
 
-                // "Save" asks for the gallery's "Painted" style by name, and takes
-                // its colours, corners and padding from it; "Cancel" asks for none
-                // and keeps the platform's own button.
+                // "Save" says nothing of its look: its colours, corners and padding
+                // come from the gallery's Style<Button>, which every button wears.
+                // "Cancel" asks for the "Platform" style by name, which says
+                // nothing, and keeps the platform's own button.
                 HStack {
                     Button("Save")
-                        .style("Painted")
                     Button("Cancel")
+                        .style("Platform")
                 }
                 .horizontalAlignment(.center)
 
@@ -7953,7 +7956,6 @@ enum Listings {
                 // the control enter one is what .onVisualStateChanged is for, next
                 // door in the Visual states sample.
                 Button(enabled ? "Enabled" : "Disabled")
-                    .style("Painted")
                     .isEnabled(enabled)
                     .horizontalAlignment(.center)
                     .onClicked {}

@@ -17,13 +17,14 @@ struct StyleSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            // "Save" asks for the gallery's "Painted" style by name, and takes
-            // its colours, corners and padding from it; "Cancel" asks for none
-            // and keeps the platform's own button.
+            // "Save" says nothing of its look: its colours, corners and padding
+            // come from the gallery's Style<Button>, which every button wears.
+            // "Cancel" asks for the "Platform" style by name, which says
+            // nothing, and keeps the platform's own button.
             HStack {
                 Button("Save")
-                    .style("Painted")
                 Button("Cancel")
+                    .style("Platform")
             }
             .spacing(12)
             .horizontalAlignment(.center)
@@ -32,7 +33,6 @@ struct StyleSample: SampleContent, ExampleContent {
             // the control enter one is what .onVisualStateChanged is for, next
             // door in the Visual states sample.
             Button(enabled ? "Enabled" : "Disabled")
-                .style("Painted")
                 .isEnabled(enabled)
                 .horizontalAlignment(.center)
                 .onClicked {}
@@ -91,8 +91,9 @@ struct StyleSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("\"Save\" asks for the gallery's `Painted` style by name, and \"Cancel\" "
-                + "for none: a control that names no style keeps the platform's own look.")
+            Text("\"Save\" wears the gallery's `Style<Button>()`, which every button wears; "
+                + "\"Cancel\" asks for `Platform` by name, which says nothing, so it keeps the "
+                + "platform's own look.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

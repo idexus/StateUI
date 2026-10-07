@@ -65,12 +65,13 @@ enum AppStyles {
                 .background(Palette.selected)
 
             // listing: AppStyles.sample keep
-            // A button the gallery paints itself, asked for by name: every
-            // other button keeps the platform's own look.
-            Style<Button>("Painted")
+            // Every button the gallery shows wears its violet - a style with no
+            // key is every button's. One that asks for "Platform" by name wears
+            // nothing of it: a keyed style replaces this one, and that one
+            // says nothing, so the platform's own button stands.
+            Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
-                .fontAttributes(.bold)
                 .lineWidth(0)
                 .shape(.roundedRectangle(10))
                 .padding(horizontal: 16, vertical: 11)
@@ -78,6 +79,7 @@ enum AppStyles {
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
                 }
+            Style<Button>("Platform")
 
             // Every ColorBox that names no colour of its own wears the violet.
             Style<ColorBox>()
