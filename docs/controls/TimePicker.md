@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 11 ✓ · 3 –</td><td><code>TimePickerDialog</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>62 ✅ · 12 ✓</td><td><code>TimePicker</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 23 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
@@ -47,14 +47,14 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerCont
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3, Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3: not realized<br>Web: The browser says nothing as a picker's list or calendar closes.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>format</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✓</td><td align="center">·</td><td align="center">·</td><td align="center"></td></tr>
 <tr><td colspan="9">AppKit: AppKit's date picker writes its day and time in the user's own way: it takes no pattern.<br>UIKit, Web: not realized<br>Android Views: only through the host's own: read format of TimePicker: the pattern the relay writes the field in<br>WinUI 3: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock<br>GTK 4: cannot read format of TimePicker - GTK's clock holds no format: it writes hours and minutes in the user's own clock</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3, Web: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3, Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3: not realized<br>Web: The browser opens a picker's list or calendar only at the user's press, and closes it at the user's hand alone.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3: not realized<br>Web: The browser says nothing as a picker's list or calendar opens.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>time</code></td><td>property</td><td><code>ClockTime</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTimeChanged</code> (<code>timeChanged</code>)</td><td>event</td><td><code>ClockTime</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action<br>GTK 4: only through the host's own: pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each</td></tr></tbody>

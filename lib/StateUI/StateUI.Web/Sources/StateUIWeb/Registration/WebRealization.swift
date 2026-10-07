@@ -103,7 +103,17 @@ enum WebRealization {
         .notPlanned("Window", "width", reason: "A page sizes no browser window: the user does, and the page fills it."),
         .notPlanned("Window", "x", reason: "A page places no browser window: the system does."),
         .notPlanned("Window", "y", reason: "A page places no browser window: the system does."),
-    ]
+    ] + pickerOpening
+
+    /// A picker's list, a day's calendar and a time's clock: the browser's own, opened at the user's press.
+    private static let pickerOpening: [HostRecord] = ["DatePicker", "Picker", "TimePicker"].flatMap { picker in
+        [
+            .notPlanned(picker, "isOpen", reason: "The browser opens a picker's list or calendar only at the user's "
+                + "press, and closes it at the user's hand alone."),
+            .notPlanned(picker, "opened", reason: "The browser says nothing as a picker's list or calendar opens."),
+            .notPlanned(picker, "closed", reason: "The browser says nothing as a picker's list or calendar closes."),
+        ] as [HostRecord]
+    }
 
     /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), a list
     /// scrolled to an item, and a web view's steps and scripts.

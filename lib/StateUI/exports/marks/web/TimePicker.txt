@@ -1,9 +1,9 @@
 # revision 2.1
 TimePicker: ✅
-TimePicker.closed: not realized
+TimePicker.closed: – The browser says nothing as a picker's list or calendar closes.
 TimePicker.format: not realized
 TimePicker.frameChanged: ✅
-TimePicker.isOpen: not realized
-TimePicker.opened: not realized
+TimePicker.isOpen: – The browser opens a picker's list or calendar only at the user's press, and closes it at the user's hand alone.
+TimePicker.opened: – The browser says nothing as a picker's list or calendar opens.
 TimePicker.time: ✅
 TimePicker.timeChanged: ✅

@@ -115,7 +115,10 @@ and turned off - the field shows it while nothing is chosen, the open list
 leaves it out - then an `<option>` for each choice. The choices and the
 choice are written only where the tree changed them (`PickerChoices`), so the
 user's own choice is never argued with; no choice stands as the title
-selected. The choice the user makes is heard on `change`.
+selected. The choice the user makes is heard on `change`. The browser opens
+a picker's list - and a day's calendar, a time's clock - at the user's press,
+closes it at the user's hand and says nothing of either, so a picker's
+opening is not the program's.
 
 ## A day and a time
 

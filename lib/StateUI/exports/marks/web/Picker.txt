@@ -1,9 +1,9 @@
 # revision 1.1
 Picker: ✅
-Picker.closed: not realized
+Picker.closed: – The browser says nothing as a picker's list or calendar closes.
 Picker.frameChanged: ✅
-Picker.isOpen: not realized
-Picker.opened: not realized
+Picker.isOpen: – The browser opens a picker's list or calendar only at the user's press, and closes it at the user's hand alone.
+Picker.opened: – The browser says nothing as a picker's list or calendar opens.
 Picker.options: ✅
 Picker.placeholder: ✅
 Picker.selectedIndex: ✅
