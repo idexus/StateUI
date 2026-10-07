@@ -183,7 +183,7 @@ DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
 DatePicker.isFocusedChanged: ✅
 DatePicker.isVisible: ✅
-DatePicker.layoutDirection: ❌ rightToLeft expected, leftToRight came - the value the tree changed it to
+DatePicker.layoutDirection: – The browser lays a day's and a time's field out left to right in every direction, over any the page gives it.
 DatePicker.maximumHeight: ✅
 DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
@@ -965,7 +965,7 @@ TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
 TimePicker.isFocusedChanged: ✅
 TimePicker.isVisible: ✅
-TimePicker.layoutDirection: ❌ rightToLeft expected, leftToRight came - the value the tree changed it to
+TimePicker.layoutDirection: – The browser lays a day's and a time's field out left to right in every direction, over any the page gives it.
 TimePicker.maximumHeight: ✅
 TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅

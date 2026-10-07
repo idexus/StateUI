@@ -104,7 +104,13 @@ enum WebRealization {
         .notPlanned("Window", "width", reason: "A page sizes no browser window: the user does, and the page fills it."),
         .notPlanned("Window", "x", reason: "A page places no browser window: the system does."),
         .notPlanned("Window", "y", reason: "A page places no browser window: the system does."),
-    ] + pickerOpening
+    ] + pickerOpening + dayFields
+
+    /// A day's and a time's field: left to right, whatever the direction around them.
+    private static let dayFields: [HostRecord] = ["DatePicker", "TimePicker"].map { picker in
+        .notPlanned(picker, "layoutDirection", reason: "The browser lays a day's and a time's field out left to right "
+            + "in every direction, over any the page gives it.")
+    }
 
     /// A picker's list, a day's calendar and a time's clock: the browser's own, opened at the user's press.
     private static let pickerOpening: [HostRecord] = ["DatePicker", "Picker", "TimePicker"].flatMap { picker in
