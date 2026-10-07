@@ -44,8 +44,9 @@ always says what its page says now.
 
 ## Pictures on the bars
 
-A picture on a bar - an action's - stands 24 points tall and a tab's 25,
-UIKit's own icon sizes, each as wide as its shape makes it
+A picture on a bar - an action's - stands 20 points tall, as a symbol stands
+in the glass circle of a bar's button with room around it, and a tab's 25,
+UIKit's own tab icon size, each as wide as its shape makes it
 (`PictureArithmetic.glyph`); on a phone on its side, whose bars stand
 lower, both stand 18 points tall (`landscapeImagePhone`). The picture keeps
 its pixels and is drawn smaller: at its file's size it stands far taller

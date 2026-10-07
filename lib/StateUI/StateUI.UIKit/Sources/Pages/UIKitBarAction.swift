@@ -20,8 +20,9 @@ struct UIKitBarAction {
     /// The element of the item, which keeps the action UIKit was last handed.
     let element: UIKitElement?
 
-    /// How tall a picture stands on a bar - UIKit's icon size - and on a bar made low by a phone on its side.
-    static let glyphHeight = 24.0
+    /// How tall a picture stands on a bar - the size a glass circle holds its symbol at, room around it - and on a
+    /// bar made low by a phone on its side.
+    static let glyphHeight = 20.0
     static let lowGlyphHeight = 18.0
 
     /// Its picture: one of the application's at a bar's icon size, else none.
