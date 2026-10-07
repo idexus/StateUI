@@ -126,10 +126,10 @@ enum AppStyles {
 
             // MARK: Lists
 
-            // A list's rows stand in one rounded group, on the platform's glass;
-            // a row lights up under the pointer.
+            // A list's rows stand in one rounded group, shaded and edged as a
+            // sample's panel is; a row lights up under the pointer.
             Style<VStack>("RowGroup")
-                .background(.glass(.regular))
+                .background(Palette.shade)
                 .stroke(Palette.edge)
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))
@@ -144,9 +144,11 @@ enum AppStyles {
             // MARK: Shapes
 
             // The panel a sample stands in lets the window through, darkened a
-            // breath, as its code does.
+            // breath and edged by a hairline, as its code does.
             Style<ZStack>("Panel")
                 .background(Palette.shade)
+                .stroke(Palette.edge)
+                .lineWidth(1)
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)
 

@@ -108,6 +108,33 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
         (self.bars, self.barColour, self.window, self.sidebar, self.flyout) = (bars, barColour, window, sidebar, flyout)
     }
 
+    /// The light theme's look the gallery opens in: clear bars, and the
+    /// platform's own window and sidebar.
+    static let light = ThemeLook(
+        bars: .clear, barColour: .violet, window: .platform, sidebar: .platform, flyout: .platform)
+
+    /// The dark theme's look the gallery opens in, each platform's best: a
+    /// window of the desktop blurred - in the gallery's violet on a Mac and on
+    /// GNOME, plain under Windows' own bars - and a sidebar letting it through.
+    static var dark: ThemeLook {
+        let violet = { (blur: Blur) in SurfaceLook(material: .tintedBlur, colour: .violet, blur: blur) }
+        #if APPKIT
+        return ThemeLook(
+            bars: .clear, barColour: .violet, window: violet(.thick),
+            sidebar: SurfaceLook(material: .clear, colour: .violet, blur: .thick), flyout: .platform)
+        #elseif WINUI
+        return ThemeLook(
+            bars: .platform, barColour: .violet,
+            window: SurfaceLook(material: .blur, colour: .violet, blur: .ultraThick),
+            sidebar: .platform, flyout: .platform)
+        #elseif GTK
+        return ThemeLook(
+            bars: .clear, barColour: .violet, window: violet(.ultraThick), sidebar: violet(.thick), flyout: .platform)
+        #else
+        return ThemeLook(bars: .clear, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
+        #endif
+    }
+
     /// The look as words: the bars and their colour, then each surface's
     /// material, colour and blur.
     var rawValue: String {

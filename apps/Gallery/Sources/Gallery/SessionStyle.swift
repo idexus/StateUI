@@ -91,17 +91,10 @@ final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""
 
-    /// The gallery's look in the light theme: clear bars, and the platform's
-    /// own window and sidebar - until the Appearance sample chooses another.
-    @State(sceneKey: .lightLook) var lightLook = ThemeLook(
-        bars: .clear, barColour: .violet, window: .platform, sidebar: .platform, flyout: .platform)
-
-    /// The gallery's look in the dark theme: clear bars over a window of a
-    /// lightly tinted blur, the sidebar the platform's own.
-    @State(sceneKey: .darkLook) var darkLook = ThemeLook(
-        bars: .clear, barColour: .violet,
-        window: SurfaceLook(material: .tintedBlur, colour: .violet, blur: .thick),
-        sidebar: .platform, flyout: .platform)
+    /// The gallery's look in each theme - the one that suits the platform best,
+    /// until the Appearance sample chooses another.
+    @State(sceneKey: .lightLook) var lightLook = ThemeLook.light
+    @State(sceneKey: .darkLook) var darkLook = ThemeLook.dark
 
     /// The look the gallery wears in a theme, `dark` or not.
     func look(dark: Bool) -> ThemeLook {

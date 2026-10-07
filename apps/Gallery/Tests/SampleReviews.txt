@@ -8,7 +8,7 @@ AnimatedInputSample.swift 0ee49c71eae4969e
 AnimatedPropertySample.swift baa7e4f5da025247
 AnimationSample.swift 0a6750953955941c
 AppThemeSample.swift e0a396a7923a982b
-AppearanceSample.swift 55b708385438e6b7
+AppearanceSample.swift e2c4bc29b1bede6b
 ApplicationSessionSample.swift ae08f3dbb8db9b0e
 BatterySample.swift ecb52b0b01a7945f
 BindingReaderSample.swift 22bbc364e59f8b8f
@@ -60,7 +60,7 @@ MaterialsSample.swift 8be8f5591201d543
 MenuBarSample.swift 300e8ad297028c06
 ModalSample.swift 9bcd84382f776648
 MotionSample.swift 68062187a8a77d82
-MultiWindowSample.swift 487db0846e197f86
+MultiWindowSample.swift d2858eb04d7dcec2
 NavigationSample.swift 010c8f335d53c593
 OnChangedSample.swift 5fda6eb24ca8c3c2
 OutlineSample.swift 0b5cb8a5e6925246
@@ -93,7 +93,7 @@ StackLayoutSample.swift ada27eaae5510163
 StateClassSample.swift c4ddf2de9588ca14
 StateSample.swift 0d5158de9a5408a0
 StepperSample.swift 1e633e09e89c353a
-StyleSample.swift 97e83b33704456da
+StyleSample.swift 58b544411c32c673
 SwipeSample.swift a87cc3a413e8851c
 SwitchSample.swift ac0d645ed37aa2e9
 TabsSample.swift e98f2cfe5dbc0be7
