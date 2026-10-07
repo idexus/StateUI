@@ -74,6 +74,8 @@ stays unread, with why: a heading's level, where Android marks a heading, a
 typeface's family, which keeps no name, and a stepper's range, which its
 buttons do not hold.
 
+A run of a text's words is its text view's spans over the letters the host
+layer's runs place it at (`RunPlace`), the view's own look where none is.
 A window's title is the activity's. A tab's title is the words on its tab and
 its icon the picture the tab shows, told by its very pixels among the
 pictures the suite shows; the tab chosen is the one marked selected, as

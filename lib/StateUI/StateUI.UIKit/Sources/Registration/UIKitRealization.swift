@@ -86,6 +86,7 @@ enum UIKitRealization {
         .complete("TextSpan", "textCase"),
         .complete("TextSpan", "textColor"),
         .complete("TextSpan", "textDecorations"),
+        .complete("TextSpan", "tracking"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
         .complete("TabView", "selectedTab"),

@@ -144,11 +144,12 @@ behind it.
 
 A label's words are one text, or the runs its spans describe as the host
 layer reads them (`textRuns`), laid down as one spanned text: each run in its
-own colour, size, weight, background and decorations where it has its own.
+own colour, size, family, weight, background and decorations where it has
+its own.
 A run's size is in points the user's font scale applies to, as the label's
 is. The label's letter spacing is in points and Android counts it in the
 text's own size, so it is worked out again whenever the size changes; a
-run's own spacing is not drawn. A line that is
+run's own spacing is not drawn, as no span of Android's spaces letters. A line that is
 cut or truncated is one line and only a truncated one says so; otherwise the
 label wraps, to at most as many lines as it allows. A stated width is the
 width a view is measured at, so wrapped words are as tall as they will stand.

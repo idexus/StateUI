@@ -32,7 +32,7 @@ TextField.fontFamily: does not apply - read a family - Android's typeface keeps 
 TextField.fontSize: ✅
 TextField.isFontAutoScalingEnabled: not realized
 TextSpan.fontAttributes: ✅
-TextSpan.fontFamily: not realized
+TextSpan.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 TextSpan.fontSize: ✅
 TextSpan.isFontAutoScalingEnabled: not realized
 TimePicker.fontAttributes: ✅

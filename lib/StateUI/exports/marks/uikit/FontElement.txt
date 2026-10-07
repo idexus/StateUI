@@ -31,9 +31,9 @@ TextField.fontAttributes: ✅
 TextField.fontFamily: ✅
 TextField.fontSize: ✅
 TextField.isFontAutoScalingEnabled: not realized
-TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - UIKit's driver has no path for it yet
-TextSpan.fontFamily: cannot read fontFamily of TextSpan - UIKit's driver has no path for it yet
-TextSpan.fontSize: cannot read fontSize of TextSpan - UIKit's driver has no path for it yet
+TextSpan.fontAttributes: ✅
+TextSpan.fontFamily: ✅
+TextSpan.fontSize: ✅
 TextSpan.isFontAutoScalingEnabled: not realized
 TimePicker.fontAttributes: not realized
 TimePicker.fontFamily: not realized

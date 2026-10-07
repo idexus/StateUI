@@ -36,9 +36,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td></td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td></td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>7 ✅</td><td><code>TextView</code>; <code>SpannableString</code> spans</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>9 ✅</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>9 ✅</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>7 ✅ · 1 –</td><td><code>TextView</code>; <code>SpannableString</code> spans</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>9 ✅</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>9 ✅</td><td>text element; <code>&lt;span&gt;</code> runs</td></tr></tbody>
@@ -50,8 +50,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextSpanContract.s
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read background of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>background</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
@@ -70,10 +69,8 @@ What every element showing words has: the words, and the case they are drawn in.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read text of TextSpan - AppKit's driver has no path for it yet<br>UIKit: cannot read text of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read text of TextSpan - AppKit's driver has no path for it yet<br>UIKit: cannot read text of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
@@ -82,10 +79,9 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>tracking</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>textColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read textColor of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>tracking</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Android spaces the letters of a whole text: no span spaces a run's own.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>textColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [FontElement](tiers/FontElement.md)
@@ -94,14 +90,12 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read fontAttributes of TextSpan - AppKit's driver has no path for it yet<br>UIKit: cannot read fontAttributes of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit, Android Views: not realized<br>UIKit: cannot read fontFamily of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read fontSize of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read a family - Android's typeface keeps no family's name</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
@@ -120,6 +114,5 @@ The lines drawn through or under text.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>textDecorations</code></td><td>property</td><td><code>TextDecorations</code></td><td>native</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: not realized<br>UIKit: cannot read textDecorations of TextSpan - UIKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>textDecorations</code></td><td>property</td><td><code>TextDecorations</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

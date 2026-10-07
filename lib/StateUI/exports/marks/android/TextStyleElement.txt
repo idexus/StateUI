@@ -16,6 +16,6 @@ TextEditor.tracking: not realized
 TextField.textColor: ✅
 TextField.tracking: not realized
 TextSpan.textColor: ✅
-TextSpan.tracking: not realized
+TextSpan.tracking: – Android spaces the letters of a whole text: no span spaces a run's own.
 TimePicker.textColor: ✅
 TimePicker.tracking: not realized

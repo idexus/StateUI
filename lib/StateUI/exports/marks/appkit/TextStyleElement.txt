@@ -15,7 +15,7 @@ TextEditor.textColor: ✅
 TextEditor.tracking: not realized
 TextField.textColor: ✅
 TextField.tracking: not realized
-TextSpan.textColor: not realized
-TextSpan.tracking: not realized
+TextSpan.textColor: ✅
+TextSpan.tracking: ✅
 TimePicker.textColor: ✅
 TimePicker.tracking: not realized

@@ -89,16 +89,16 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 5 ✅ · 1 ☑️ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – | 8 ✅ · 1 – |
 | [TabView](TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 7 ✅ · 1 ☑️ · 2 – | 10 ✅ | 6 ✅ · 4 – | 8 ✅ · 1 – |
-| [TextSpan](TextSpan.md) | 12 |  |  | 7 ✅ | 9 ✅ | 9 ✅ | 9 ✅ |
+| [TextSpan](TextSpan.md) | 12 | 9 ✅ | 9 ✅ | 7 ✅ · 1 – | 9 ✅ | 9 ✅ | 9 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 5 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – | 8 ✅ |
 | [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ · 9 – | 3 ✅ · 4 ✓ · 13 – | 22 ✅ | 8 ✅ · 6 ✓ · 8 – | 3 ✅ · 4 ✓ · 15 – |
-| ✅ |  | 67 | 70 | 63 | 114 | 76 | 83 |
+| ✅ |  | 76 | 79 | 63 | 114 | 76 | 83 |
 | ✓ |  | 20 | 17 | 15 | 2 | 12 | 9 |
-| – |  | 1 | 18 | 26 | 1 | 28 | 20 |
-| **Met** | 126 | **88** | **105** | **104** | **117** | **116** | **112** |
+| – |  | 1 | 18 | 27 | 1 | 28 | 20 |
+| **Met** | 126 | **97** | **114** | **105** | **117** | **116** | **112** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 

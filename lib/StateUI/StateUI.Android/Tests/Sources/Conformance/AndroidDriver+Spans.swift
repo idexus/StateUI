@@ -9,18 +9,13 @@ import CStateUIAndroid
 @_spi(Host) import StateUIConformance
 
 /// What the Android driver reads of a run of a text's words: the part of its text view's words the run stands
-/// over - where the host layer's runs place it - and the spans Android holds there.
+/// over (`RunPlace`) and the spans Android holds there.
 /// Design: docs/design/platforms/android/conformance.md#what-the-driver-reads
 extension AndroidDriver {
     func spanHolds(_ property: Prop, on span: MountedElement) throws -> HostValue? {
-        var text = span.parent
-        while let each = text, each.type != .text { text = each.parent }
-        guard let text, let view = (text.native as? AndroidElement)?.view as? AndroidTextView, let runs = text.textRuns,
-              let place = text.children.first(where: { $0.type == .textSpans })?.children
-                  .filter({ $0.type == .textSpan }).firstIndex(where: { $0 === span })
+        guard let place = RunPlace(of: span), let view = (place.text.native as? AndroidElement)?.view as? AndroidTextView
         else { throw DriverCannot(reading: property, of: span) }
-        let start = Int32(runs[..<place].reduce(0) { $0 + $1.text.utf16.count })
-        let end = start + Int32(runs[place].text.utf16.count)
+        let (start, end) = (Int32(place.range.lowerBound), Int32(place.range.upperBound))
         let reference = view.reference
         switch property {
         case .text:

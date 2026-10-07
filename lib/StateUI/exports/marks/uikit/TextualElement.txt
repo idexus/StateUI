@@ -11,5 +11,5 @@ TextEditor.text: ✅
 TextEditor.textCase: ✅
 TextField.text: ✅
 TextField.textCase: ✅
-TextSpan.text: cannot read text of TextSpan - UIKit's driver has no path for it yet
-TextSpan.textCase: cannot read text of TextSpan - UIKit's driver has no path for it yet
+TextSpan.text: ✅
+TextSpan.textCase: ✅

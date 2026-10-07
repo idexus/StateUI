@@ -348,6 +348,7 @@ final class UIKitDriver: HostDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .marker { return try markerHolds(property, element) }
+        if element.type == .textSpan { return try spanHolds(property, on: element) }
         if let map = (element.native as? UIKitElement)?.view as? UIKitMapView, let held = mapHolds(property, map) {
             return held
         }

@@ -47,7 +47,8 @@ final class AndroidTextView: AndroidTextualView {
         setLetterSpacing(spacing)
     }
 
-    /// The Java spans that make a run differ from the label.
+    /// The Java spans that make a run differ from the label: its colour, size, family, weight, background and
+    /// lines. Android spaces the letters of a whole text alone.
     private func spans(of run: TextRun, point: Double) -> [JavaObject] {
         let look = run.look
         var spans: [JavaObject] = []
@@ -59,6 +60,10 @@ final class AndroidTextView: AndroidTextualView {
             spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(pixels), .bool(false)))
         }
         let style = look.attributes.rawValue & 3
+        if let family = look.family, let face = Java.callStaticObject(
+            JavaAPI.typeface, JavaAPI.createTypeface, .object(Java.string(family)), .int(style)) {
+            spans.append(Java.new(JavaAPI.typefaceSpan, JavaAPI.newTypefaceSpan, .object(face)))
+        }
         if style != 0 {
             spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(style)))
         }

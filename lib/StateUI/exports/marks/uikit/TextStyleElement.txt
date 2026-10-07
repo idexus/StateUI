@@ -15,7 +15,7 @@ TextEditor.textColor: ✅
 TextEditor.tracking: not realized
 TextField.textColor: ✅
 TextField.tracking: not realized
-TextSpan.textColor: cannot read textColor of TextSpan - UIKit's driver has no path for it yet
-TextSpan.tracking: not realized
+TextSpan.textColor: ✅
+TextSpan.tracking: ✅
 TimePicker.textColor: not realized
 TimePicker.tracking: not realized

@@ -335,6 +335,8 @@ enum JavaAPI {
     static let newSizeSpan = Java.method(sizeSpan, "<init>", "(IZ)V")
     static let styleSpan = Java.findClass("android/text/style/StyleSpan")
     static let newStyleSpan = Java.method(styleSpan, "<init>", "(I)V")
+    static let typefaceSpan = Java.findClass("android/text/style/TypefaceSpan")
+    static let newTypefaceSpan = Java.method(typefaceSpan, "<init>", "(Landroid/graphics/Typeface;)V")
     static let underlineSpan = Java.findClass("android/text/style/UnderlineSpan")
     static let newUnderlineSpan = Java.method(underlineSpan, "<init>", "()V")
     static let strikethroughSpan = Java.findClass("android/text/style/StrikethroughSpan")
