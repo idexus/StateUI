@@ -71,13 +71,9 @@ enum WinUIRealization {
         .unrealized("WebView", "background", why: "WebView2 is no control and takes no Background: what shows "
             + "where its page paints nothing is its DefaultBackgroundColor, which the backend does not set yet."),
         .unrealized("ActivityIndicator", "ignoresInput", why: hitOnlyWherePainted),
-        .unrealized("ColorBox", "ignoresInput", why: hitOnlyWherePainted),
         .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
-        .unrealized("Ellipse", "ignoresInput", why: hitOnlyWherePainted),
-        .unrealized("Image", "ignoresInput", why: hitOnlyWherePainted),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
-        .unrealized("Line", "ignoresInput", why: hitOnlyWherePainted),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
         .complete("MenuBar", "order"),
@@ -91,11 +87,7 @@ enum WinUIRealization {
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
-        .unrealized("Path", "ignoresInput", why: hitOnlyWherePainted),
-        .unrealized("Polygon", "ignoresInput", why: hitOnlyWherePainted),
-        .unrealized("Polyline", "ignoresInput", why: hitOnlyWherePainted),
         .complete("RadioButton", "groupName"),
-        .unrealized("Rectangle", "ignoresInput", why: hitOnlyWherePainted),
         .partial("SearchField", "horizontalTextAlignment", missing: "The placeholder stands at the start: "
             + "AutoSuggestBox's text box template aligns only the words typed."),
         .complete("Scene", "activated"),
@@ -167,8 +159,8 @@ enum WinUIRealization {
     static let figurePaintsNoGround = "A WinUI shape is its figure alone: it paints no ground around it."
 
     /// Why a drawing's press is not let through as the tree says.
-    static let hitOnlyWherePainted = "WinUI hands a figure, a picture, a colour box and the activity ring only the "
-        + "presses on what they paint: an empty one is never pressed, so there is nothing to let through."
+    static let hitOnlyWherePainted = "WinUI hands the activity ring only the presses on its turning arc: the "
+        + "ring's middle, where a press is read, is never pressed, so there is nothing to let through."
 
     /// Why a web view hears none of the user's hand as a view does.
     static let webViewTakesTheHand = "WebView2 gives the user's hand to its page: listened to by WinUI, it ends the "

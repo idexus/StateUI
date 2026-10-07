@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.frameChanged: ✅
 Button.height: ✅
@@ -26,7 +26,7 @@ Map.pivotX: 🧩
 Path.style: ✅
 Path.translationX: ✅
 Picker.automationExcludedWithChildren: ✅
-Polygon.ignoresInput: not realized
+Polygon.ignoresInput: ✅
 Polygon.scale: ✅
 Polyline.accessibilityHint: ✅
 ProgressBar.opacity: ✅

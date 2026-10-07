@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
@@ -40,7 +40,7 @@ Polyline.pivotY: ✅
 ProgressBar.style: ✅
 ProgressBar.translationX: ✅
 RadioButton.automationExcludedWithChildren: ✅
-Rectangle.ignoresInput: not realized
+Rectangle.ignoresInput: ✅
 Rectangle.scale: ✅
 ScrollView.accessibilityHint: ✅
 SearchField.opacity: ✅

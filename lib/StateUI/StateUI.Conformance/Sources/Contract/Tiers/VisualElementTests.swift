@@ -290,7 +290,7 @@
             let ignores = State(wrappedValue: false)
             s.start {
                 VStack {
-                    Specimens.view(element, [
+                    Specimens.view(element, painted(element) + [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
                         Write(VisualElementContract.background, Background.color(.red)),
                         Write(VisualElementContract.ignoresInput, ignores.wrappedValue),
@@ -301,11 +301,33 @@
                 .verticalAlignment(.start)
             }
             let view = try s.element("specimen")
+            try s.settle { try s.reaches(view, at: Point(40, 20)) }
             s.expect(try s.reaches(view, at: Point(40, 20)), true, "a press reaches it")
 
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.reaches(view, at: Point(40, 20)) == false }
             s.expect(try s.reaches(view, at: Point(40, 20)), false, "and goes through it once it ignores input")
+        }
+    }
+
+    /// What `element` paints at the middle of a box of 80 by 40, where a press is read: a host may hand a view
+    /// only the presses on what it paints - a figure filled across it, a line through it, a box's colour, a picture.
+    static func painted(_ element: String) -> [any Worn] {
+        let red = Brush.solidColor(.red)
+        let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
+        let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
+        return switch element {
+        case "Rectangle", "Ellipse": [Write(ShapeContract.fill, red)]
+        case "Line": [
+            Write(LineContract.x1, 0), Write(LineContract.y1, 20), Write(LineContract.x2, 80), Write(LineContract.y2, 20),
+            Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),
+        ]
+        case "Polygon": [Write(PolygonContract.points, figure), Write(ShapeContract.fill, red), atItsSize]
+        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(ShapeContract.fill, red), atItsSize]
+        case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(ShapeContract.fill, red), atItsSize]
+        case "ColorBox": [Write(ColorBoxContract.color, Color.red)]
+        case "Image": [Write(ImageContract.source, ImageSource("test_dot.png"))]
+        default: []
         }
     }
 

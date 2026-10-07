@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.isEnabled: ✓ tap on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.maximumHeight: ✅

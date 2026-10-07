@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.style: ✅
 ActivityIndicator.translationX: ✅
 Button.automationExcludedWithChildren: ✅
@@ -21,7 +21,7 @@ Image.opacity: ✅
 Image.pivotY: ✅
 ItemsView.style: not realized
 ItemsView.translationX: ✅
-Line.ignoresInput: not realized
+Line.ignoresInput: ✅
 Line.scale: ✅
 Map.accessibilityHint: 🧩
 Path.isEnabled: does not apply - read isEnabled of Path - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it

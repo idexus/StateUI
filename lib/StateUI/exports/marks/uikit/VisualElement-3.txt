@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.rotationX: ✓ read rotationX of Button: the host's own transform, checked against the layer it composed itself

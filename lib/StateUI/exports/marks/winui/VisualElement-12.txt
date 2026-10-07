@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.accessibilityLabel: ✅
 Button.isVisible: ✅
 Button.pivotX: ✅
@@ -25,7 +25,7 @@ ItemsView.accessibilityLabel: ✅
 Line.style: ✅
 Line.translationX: ✅
 Map.automationExcludedWithChildren: 🧩
-Path.ignoresInput: not realized
+Path.ignoresInput: ✅
 Path.scale: ✅
 Picker.accessibilityHint: ✅
 Polygon.isEnabled: does not apply - read isEnabled of Polygon - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it

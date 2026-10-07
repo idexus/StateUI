@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Button.frame: ✅
 Button.scaleX: ✅

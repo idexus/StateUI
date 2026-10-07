@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅

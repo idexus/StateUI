@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.accessibilityHeading: ✅
 Button.isEnabled: ✅
 Button.rotation: ✅
@@ -8,7 +8,7 @@ CheckBox.pivotX: ✅
 ColorBox.style: ✅
 ColorBox.translationX: ✅
 DatePicker.automationExcludedWithChildren: ✅
-Ellipse.ignoresInput: not realized
+Ellipse.ignoresInput: ✅
 Ellipse.scale: ✅
 Grid.accessibilityHint: ✅
 HStack.isVisible: ✅

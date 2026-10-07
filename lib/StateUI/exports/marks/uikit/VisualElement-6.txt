@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.ignoresInput: ✅
 Button.isVisible: ✅
 Button.scaleX: ✓ read scaleX of Button: the host's own transform, checked against the layer it composed itself

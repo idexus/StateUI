@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.isEnabled: ✓ tap on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.maximumHeight: ✅

@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.accessibilityHint: ✅
 Button.opacity: ✅
 Button.pivotY: ✅
@@ -19,7 +19,7 @@ Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked ag
 Grid.accessibilityLabel: ✅
 Grid.isEnabled: ✅
 HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Image.ignoresInput: not realized
+Image.ignoresInput: ✅
 Image.scale: ✅
 ItemsView.accessibilityHint: ✅
 Line.translationY: ✅

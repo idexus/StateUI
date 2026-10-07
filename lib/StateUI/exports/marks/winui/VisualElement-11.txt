@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.isEnabled: ✅
 Button.layoutDirection: ✅
@@ -7,7 +7,7 @@ Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it,
 Canvas.scaleY: ✅
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.automationExcludedWithChildren: ✅
-ColorBox.ignoresInput: not realized
+ColorBox.ignoresInput: ✅
 ColorBox.scale: ✅
 DatePicker.accessibilityHint: ✅
 Ellipse.isEnabled: does not apply - read isEnabled of Ellipse - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it

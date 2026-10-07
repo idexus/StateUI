@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Button.ignoresInput: ✅
 Canvas.opacity: ✅

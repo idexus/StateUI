@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.scaleY: ✅
@@ -37,7 +37,7 @@ Path.pivotY: ✅
 Picker.style: ✅
 Picker.translationX: ✅
 Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Polyline.ignoresInput: not realized
+Polyline.ignoresInput: ✅
 Polyline.scale: ✅
 ProgressBar.accessibilityHint: ✅
 RadioButton.opacity: ✅

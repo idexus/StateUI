@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.layoutDirection: ✅
 Canvas.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
