@@ -689,6 +689,11 @@ enum Listings {
             let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
             return VStack {
+                // The theme first: which of the two looks below the gallery wears.
+                SectionTitle("The theme")
+                Picker(themes.map(\.name))
+                    .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
+
                 // A look for each theme: the gallery wears the one of the theme in
                 // force, and changes with it. Side by side where there is room,
                 // one under the other on a phone.
@@ -704,10 +709,6 @@ enum Listings {
                     }
                     .columns(.fill, .fill)
                 }
-
-                SectionTitle("The theme")
-                Picker(themes.map(\.name))
-                    .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
             }
         }
 
@@ -2759,7 +2760,7 @@ enum Listings {
 
             /// The dark theme's look the gallery opens in, each platform's best: a
             /// window of the desktop blurred - in the gallery's violet on a Mac and on
-            /// GNOME, plain under Windows' own bars - and a sidebar letting it through.
+            /// GNOME, plain under Windows' own bars - its sidebar letting it through.
             static var dark: ThemeLook {
                 let violet = { (blur: Blur) in SurfaceLook(material: .tintedBlur, colour: .violet, blur: blur) }
                 #if APPKIT
@@ -2773,7 +2774,8 @@ enum Listings {
                     sidebar: .platform, flyout: .platform)
                 #elseif GTK
                 return ThemeLook(
-                    bars: .clear, barColour: .violet, window: violet(.ultraThick), sidebar: violet(.thick), flyout: .platform)
+                    bars: .clear, barColour: .violet, window: violet(.ultraThick),
+                    sidebar: SurfaceLook(material: .platform, colour: .violet, blur: .ultraThick), flyout: .platform)
                 #else
                 return ThemeLook(bars: .clear, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
                 #endif
@@ -2936,6 +2938,12 @@ enum Listings {
                 // settings store, or in a file of its own where the platform offers an
                 // application none.
                 application.persistentKeys = [.visits, .who, .shade]
+
+                // On GNOME the gallery opens in the dark theme, the look it wears
+                // best there; the Appearance sample turns it back.
+                #if GTK
+                application.colorScheme = .dark
+                #endif
             }
 
             /// The galleries - launch opens a gallery window, and *File ▸ New Window* one more; the scratchpads; and one

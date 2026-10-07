@@ -8,7 +8,7 @@ AnimatedInputSample.swift 0ee49c71eae4969e
 AnimatedPropertySample.swift baa7e4f5da025247
 AnimationSample.swift 0a6750953955941c
 AppThemeSample.swift e0a396a7923a982b
-AppearanceSample.swift e2c4bc29b1bede6b
+AppearanceSample.swift 610dc66ef5a7333b
 ApplicationSessionSample.swift ae08f3dbb8db9b0e
 BatterySample.swift ecb52b0b01a7945f
 BindingReaderSample.swift 22bbc364e59f8b8f
@@ -66,7 +66,7 @@ OnChangedSample.swift 5fda6eb24ca8c3c2
 OutlineSample.swift 0b5cb8a5e6925246
 PacedStateSample.swift 3409ef696fd65ab9
 PanSample.swift 0827c05fb883120b
-PersistentStateSample.swift 324d19acb1551ef5
+PersistentStateSample.swift a0cc4d7a1cb5822e
 PickerSample.swift f480681de24ebc68
 PinchSample.swift 9851233c0b4cd1f6
 PlacedSample.swift b139fe746efa58f5
@@ -80,7 +80,7 @@ ReaderSample.swift d48a82de0aea26f9
 RebuildSample.swift 9ff8c3a63a6c3a7a
 RemovingRowSample.swift 99dc68a29c943571
 SameInputsSample.swift 81df5dd2956f2b56
-ScenesSample.swift f4f8db5a4ec1767c
+ScenesSample.swift b739e352893dadc5
 ScrollViewSample.swift b05713b8ca2c2484
 SearchFieldSample.swift 78f8081ecd423749
 SearchSample.swift 38388654add4726f
@@ -93,7 +93,7 @@ StackLayoutSample.swift ada27eaae5510163
 StateClassSample.swift c4ddf2de9588ca14
 StateSample.swift 0d5158de9a5408a0
 StepperSample.swift 1e633e09e89c353a
-StyleSample.swift ca3b1f1b547a671d
+StyleSample.swift 4b619134fe6b58ea
 SwipeSample.swift a87cc3a413e8851c
 SwitchSample.swift ac0d645ed37aa2e9
 TabsSample.swift e98f2cfe5dbc0be7

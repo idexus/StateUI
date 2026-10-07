@@ -36,6 +36,13 @@ struct AppearanceSample: SampleContent, ExampleContent {
         let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
         return VStack {
+            // The theme first: which of the two looks below the gallery wears.
+            SectionTitle("The theme")
+            Picker(themes.map(\.name))
+                .accessibilityIdentifier("appearance.theme")
+                .accessibilityLabel("Theme")
+                .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
+
             // A look for each theme: the gallery wears the one of the theme in
             // force, and changes with it. Side by side where there is room,
             // one under the other on a phone.
@@ -52,12 +59,6 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .columns(.fill, .fill)
                 .columnSpacing(16)
             }
-
-            SectionTitle("The theme")
-            Picker(themes.map(\.name))
-                .accessibilityIdentifier("appearance.theme")
-                .accessibilityLabel("Theme")
-                .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
         }
         .spacing(10)
     }

@@ -115,7 +115,7 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
 
     /// The dark theme's look the gallery opens in, each platform's best: a
     /// window of the desktop blurred - in the gallery's violet on a Mac and on
-    /// GNOME, plain under Windows' own bars - and a sidebar letting it through.
+    /// GNOME, plain under Windows' own bars - its sidebar letting it through.
     static var dark: ThemeLook {
         let violet = { (blur: Blur) in SurfaceLook(material: .tintedBlur, colour: .violet, blur: blur) }
         #if APPKIT
@@ -129,7 +129,8 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
             sidebar: .platform, flyout: .platform)
         #elseif GTK
         return ThemeLook(
-            bars: .clear, barColour: .violet, window: violet(.ultraThick), sidebar: violet(.thick), flyout: .platform)
+            bars: .clear, barColour: .violet, window: violet(.ultraThick),
+            sidebar: SurfaceLook(material: .platform, colour: .violet, blur: .ultraThick), flyout: .platform)
         #else
         return ThemeLook(bars: .clear, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
         #endif

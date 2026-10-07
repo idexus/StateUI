@@ -54,6 +54,12 @@ struct GalleryApp: Application {
         // settings store, or in a file of its own where the platform offers an
         // application none.
         application.persistentKeys = [.visits, .who, .shade]
+
+        // On GNOME the gallery opens in the dark theme, the look it wears
+        // best there; the Appearance sample turns it back.
+        #if GTK
+        application.colorScheme = .dark
+        #endif
     }
 
     /// The galleries - launch opens a gallery window, and *File ▸ New Window* one more; the scratchpads; and one
