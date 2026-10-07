@@ -105,7 +105,27 @@ enum AndroidRealization {
         .complete("Window", "resumed"),
         .complete("Window", "stopped"),
         .complete("Window", "title"),
-    ]
+        .notPlanned("Window", "floatsOnTop", reason: "Android stacks windows itself: an activity keeps none above the others."),
+        .notPlanned("Window", "hidesWhenInactive",
+                    reason: "Android shows an activity itself: it hides none while another application is in front."),
+        .notPlanned("Window", "isMaximizable", reason: "Any Android window may fill the screen: an activity keeps none from it."),
+        .notPlanned("Window", "isMinimizable", reason: "Any Android window may be put away: an activity keeps none from it."),
+        .notPlanned("Window", "isTranslucent",
+                    reason: "An activity is translucent by the theme it starts in: a window cannot turn it so."),
+    ] + windowRoom
+
+    /// The window's place and size, which Android gives an activity itself.
+    private static let windowRoom: [HostRecord] = {
+        let placed = "Android places an activity's window itself: an activity asks for no place."
+        let sized = "Android sizes an activity's window itself - the user drags its edge: an activity asks for no size."
+        let bounded = "Android bounds an activity's window itself: an activity sets it no bound at run time."
+        return [
+            .notPlanned("Window", "x", reason: placed), .notPlanned("Window", "y", reason: placed),
+            .notPlanned("Window", "width", reason: sized), .notPlanned("Window", "height", reason: sized),
+            .notPlanned("Window", "minimumWidth", reason: bounded), .notPlanned("Window", "minimumHeight", reason: bounded),
+            .notPlanned("Window", "maximumWidth", reason: bounded), .notPlanned("Window", "maximumHeight", reason: bounded),
+        ]
+    }()
 
     /// What Android's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {
