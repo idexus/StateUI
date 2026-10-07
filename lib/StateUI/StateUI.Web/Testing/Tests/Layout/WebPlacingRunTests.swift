@@ -57,4 +57,18 @@ final class WebPlacingRunTests: XCTestCase {
         layout.setPlacement(run(width: 100, height: 140, shade: 0))
         XCTAssertEqual(WebPage.style(of: shade.node, "opacity"), "0", "the front card wears none")
     }
+
+    /// A card the run places stands at the size the run gives it, in a room lower than the card: its slot bounds it
+    /// no more, so a shorter room makes the card smaller by the run's scale and never squashes it.
+    func testACardTheRunPlacesIsNotBoundByItsRoom() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let card = WebLayoutView(arrangement: .single)
+        defer { for view in [layout, card] { view.detach() } }
+        layout.setItems([(card, LayoutValues())])
+        XCTAssertEqual(WebPage.style(of: card.node, "max-height"), "100%", "an unplaced child stays in its room")
+
+        layout.setPlacement(run(width: 176, height: 248))
+        XCTAssertEqual(WebPage.style(of: card.node, "max-height"), "none", "the run's height, whatever the room's")
+        XCTAssertEqual(WebPage.style(of: card.node, "max-width"), "none", "and its width")
+    }
 }

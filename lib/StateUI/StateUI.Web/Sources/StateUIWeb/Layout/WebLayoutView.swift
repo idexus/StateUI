@@ -264,6 +264,9 @@ class WebLayoutView: WebDOMView {
         view.style("top", WebCSS.signedPixels(place.y))
         view.style("width", WebCSS.pixels(place.width))
         view.style("height", WebCSS.pixels(place.height))
+        // The run's size, whatever the room's: a slot's bound would squash a card a short room scales down.
+        view.style("max-width", "none")
+        view.style("max-height", "none")
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
         view.drawInRun(placement.drawing, size: LayoutSize(width: place.width, height: place.height))
         (view as? WebLayoutView)?.setShadeOpacity(placement.drawnShade)

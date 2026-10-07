@@ -70,7 +70,9 @@ resized - sets out from where it no longer is.
 ## A placing run
 
 A ZStack whose children a placing run stands - an engine's - stands each
-where the run says: absolutely, in its rectangle, drawn with the run's
+where the run says: absolutely, in its rectangle, unbounded by its slot - a
+room lower than a card makes the run scale the card, and a slot's
+`max-height` would squash it instead - drawn with the run's
 transform under the child's own (`HostDrawingTransform.under`) and the run's
 opacity. The matrix turns and scales the child about the middle of the place
 the run gives it, so it is written again whenever that place's size changes,
