@@ -346,7 +346,8 @@ painted where the bars stand - on AppKit the band the title bar and toolbar
 cover over the visible content, with the page's title in `barForegroundColor` on it,
 and the window's background, which a Mac shows around a floating sidebar and
 through its glass - while the toolbar's own items keep the system's look. On a
-translucent window the colour tints the window's material instead. Gradients
+translucent window the colour paints the bars alone, and the window's material
+stays the system's around them. Gradients
 remain ordinary view composition where the application owns the surface.
 
 ## Menu bars and context menus

@@ -159,8 +159,9 @@ not ask a host to rasterize an arbitrary brush into page chrome.
 On AppKit a written bar colour paints the band the title bar and toolbar cover
 over the visible content - a split view's detail - and the window's
 background, which shows around a floating sidebar and through its glass. On a
-translucent window the colour tints the window's material instead, which the
-band, the margin around the sidebar and its glass all show. Text on a painted
+translucent window the colour paints the bars alone: the window's material,
+the system's, shows around the sidebar and under the page, and a colour with
+an alpha written under the page tints it. Text on a painted
 band - the page's title, and the application's name and line at the trailing
 edge - is in the declared `barForegroundColor`, else white or black by the
 band's lightness.

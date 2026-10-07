@@ -231,13 +231,13 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(content.materialForTesting)
     }
 
-    /// On a translucent window a written bar colour tints the window's
-    /// material rather than painting a band: the window keeps no background,
-    /// the detail paints none, and the band over the page, the margin around
-    /// the floating sidebar and what its glass shows all wear the tint. An
-    /// opaque window again paints the band and frames the sidebar in the colour.
+    /// On a translucent window a colour written for the bars paints the bars
+    /// alone: the detail's band, over the material, which stays the system's -
+    /// the window keeps no background, so the desktop shows around the
+    /// floating sidebar. An opaque window again frames the sidebar in the
+    /// colour.
     @MainActor
-    func testATranslucentWindowsBarColourTintsItsMaterial() throws {
+    func testATranslucentWindowsBarColourPaintsTheBarsAlone() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -255,10 +255,10 @@ final class AppKitPageTests: XCTestCase {
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let split = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
-        XCTAssertEqual(window.backgroundColor, .clear)
-        XCTAssertNil(split.detailBarColorForTesting, "the tinted material shows through the band")
         let colour = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
-        XCTAssertEqual(content.materialTint, colour)
+        XCTAssertEqual(window.backgroundColor, .clear, "the material shows around the sidebar")
+        XCTAssertEqual(split.detailBarColorForTesting, colour, "the detail's bar wears the colour")
+        XCTAssertNotNil(content.materialForTesting)
 
         renderer.applyForTesting(windowTree(flyout(
             presented: true,
@@ -266,15 +266,14 @@ final class AppKitPageTests: XCTestCase {
             detail: stack), translucent: false))
         XCTAssertEqual(window.backgroundColor, colour)
         XCTAssertEqual(split.detailBarColorForTesting, colour)
-        XCTAssertNil(content.materialTint)
         XCTAssertNil(content.materialForTesting)
     }
 
-    /// On a translucent window the tint lies over the whole material, the band
-    /// the bars cover included, and the window draws no band beneath it - a
-    /// colour with an alpha shows the desktop through all of it.
+    /// On a translucent window the material lies under the whole window,
+    /// untinted, and a window with no split view paints its bars' band over
+    /// it.
     @MainActor
-    func testATranslucentWindowsTintCoversItsWholeMaterial() throws {
+    func testATranslucentWindowsMaterialStaysTheSystems() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -282,7 +281,7 @@ final class AppKitPageTests: XCTestCase {
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackgroundColor] = .color(
-            red: 81, green: 43, blue: 212, alpha: 153)
+            red: 81, green: 43, blue: 212, alpha: 255)
         renderer.applyForTesting(windowTree(stack, translucent: true))
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -290,11 +289,9 @@ final class AppKitPageTests: XCTestCase {
         content.layoutSubtreeIfNeeded()
         let material = try XCTUnwrap(content.materialForTesting)
         XCTAssertEqual(material.frame, content.bounds)
-        let tint = try XCTUnwrap(content.materialTintForTesting, "no tint over the material")
-        XCTAssertFalse(tint.isHidden)
-        XCTAssertEqual(tint.frame, material.bounds, "the tint covers the whole material")
-        XCTAssertEqual(tint.layer?.backgroundColor?.alpha ?? 0, 153.0 / 255.0, accuracy: 0.001)
-        XCTAssertNil(content.barColor, "no band drawn beneath the tint")
+        XCTAssertEqual(material.subviews, [], "nothing lies over the material")
+        XCTAssertEqual(content.barColor, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255, alpha: 1),
+                       "the bars' band is painted over the material")
     }
 
     /// The detail meets a floating sidebar: its page and its band begin at the
