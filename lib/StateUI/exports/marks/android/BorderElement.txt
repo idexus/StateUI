@@ -1,7 +1,8 @@
-# revision 2.1
-Button.lineWidth: cannot read lineWidth of Button - Android's driver has no path for it yet
-Button.shape: cannot read shape of Button - Android's driver has no path for it yet
-Button.stroke: cannot read stroke of Button - Android's driver has no path for it yet
+# revision 3.1
+Button.background: ✅
+Button.lineWidth: ✅
+Button.shape: ✅
+Button.stroke: ✅
 Grid.background: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅

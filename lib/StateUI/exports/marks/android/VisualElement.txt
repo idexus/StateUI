@@ -37,7 +37,7 @@ Button.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
-Button.background: cannot read a background of no one colour - Android's driver has no path for it yet
+Button.background: does not apply - read a background of no one colour - StateUI draws the box in a drawable of its own, which holds no one colour; its drawing proves it
 Button.focus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 Button.frame: ✅
 Button.frameChanged: ✅

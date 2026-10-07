@@ -1,7 +1,8 @@
-# revision 2.1
-Button.lineWidth: ✓ read lineWidth of Button: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
-Button.shape: ✓ read shape of Button: the class of the host's style sheet the widget wears: GTK reads back no shape
-Button.stroke: ✓ read stroke of Button: the class of the host's style sheet the widget wears: GTK reads back no stroke
+# revision 3.1
+Button.background: ☑️ A brush fills the view with its first colour alone.
+Button.lineWidth: ✅
+Button.shape: ✅
+Button.stroke: ✅
 Grid.background: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅

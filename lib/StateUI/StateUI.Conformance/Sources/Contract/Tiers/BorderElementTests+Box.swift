@@ -4,12 +4,18 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A layout's box read off its colours, as StateUI draws it on every host: its fill, its outline in its colour and
-/// width, and the shape the outline follows.
+/// A layout's and a button's box read off its colours on every host: its fill, its outline in its colour and width,
+/// and the shape the outline follows. A button's own face may stand inside an outline, a layout's nothing.
 /// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colours
 extension BorderElementTests {
-    /// The layouts, whose box StateUI draws.
-    static let drawnBoxes: Set<String> = ["Grid", "HStack", "ScrollView", "VStack", "ZStack"]
+    /// The layouts, whose box StateUI draws, and a button.
+    static let drawnBoxes: Set<String> = ["Button", "Grid", "HStack", "ScrollView", "VStack", "ZStack"]
+
+    /// Whether `color`, inside `element`'s outline, is none of the outline: nothing at all in a layout, anything but
+    /// the outline's red where a button's own face stands.
+    static func bare(_ color: Color?, inside element: String) -> Bool {
+        element == "Button" ? color != .red : color == nil
+    }
 
     /// The box cases of a layout.
     static func boxCases(_ element: String) -> [ConformanceCase] {
@@ -38,7 +44,7 @@ extension BorderElementTests {
             let layout = try s.specimen(element)
             try s.settle { try s.shows(.red, on: layout, at: Point(1, 20)) }
             s.expect(try s.color(of: layout, at: Point(1, 20)), shows: .red, "at its edge")
-            s.expect(try s.color(of: layout, at: Point(30, 20)), nil, "nothing inside")
+            s.expect(bare(try s.color(of: layout, at: Point(30, 20)), inside: element), true, "nothing of it inside")
         }
     }
 
@@ -57,7 +63,7 @@ extension BorderElementTests {
             let layout = try s.specimen(element)
             let inward = Point(5, 20)
             try s.settle { try s.shows(.red, on: layout, at: Point(1, 20)) }
-            s.expect(try s.color(of: layout, at: inward), nil, "two wide stops short of it")
+            s.expect(bare(try s.color(of: layout, at: inward), inside: element), true, "two wide stops short of it")
 
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.shows(.red, on: layout, at: inward) }

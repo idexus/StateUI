@@ -47,6 +47,12 @@ final class AndroidDriver: HostDriver {
             none["read padding of \(layout)"] =
                 "Android's view group places its children where StateUI's layout says; their frames prove it"
         }
+        for member in ["stroke", "lineWidth", "shape"] {
+            none["read \(member) of Button"] =
+                "StateUI draws a button's box in a drawable of its own, which holds none of its \(member); its drawing proves it"
+        }
+        none["read a background of no one colour"] =
+            "StateUI draws the box in a drawable of its own, which holds no one colour; its drawing proves it"
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] =
                 "Android's view group places its children where StateUI's layout says; their frames prove it"

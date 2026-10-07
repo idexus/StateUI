@@ -16,8 +16,6 @@ final class AppKitDriver: HostDriver {
     let host = "AppKit"
     let cannot = [
         "read contentMode of Button": "AppKit's button has no covering scale, as the register records: a fill shows fitted",
-        "read shape of a box shorter than its radius":
-            "AppKit's layer holds the radius it draws, at most half the box's shorter side",
     ]
     let platformHasNone = AppKitDriver.none()
 
@@ -27,6 +25,8 @@ final class AppKitDriver: HostDriver {
         var none = [
             "read growsWithText of TextEditor":
                 "an editor's growing is StateUI's measuring, which no property of AppKit's holds; its frames prove it",
+            "read shape of a box shorter than its radius":
+                "AppKit's layer holds the radius it draws, at most half the box's shorter side; the box's drawing proves its shape",
         ]
         for field in ["TextField", "SearchField", "TextEditor"] {
             none["read maximumLength of \(field)"] =
