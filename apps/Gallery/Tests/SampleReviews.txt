@@ -88,7 +88,7 @@ SemanticsSample.swift c349812189127b8e
 ShapesSample.swift 6107589125bcb192
 SizingSample.swift 70709ad782077630
 SliderSample.swift cf5772598d1a84df
-SplitViewSample.swift becf9d63f17c090f
+SplitViewSample.swift 539ff90dec7d90fc
 StackLayoutSample.swift ada27eaae5510163
 StateClassSample.swift c4ddf2de9588ca14
 StateSample.swift 0d5158de9a5408a0

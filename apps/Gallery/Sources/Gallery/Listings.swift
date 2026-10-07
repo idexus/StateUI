@@ -4814,7 +4814,12 @@ enum Listings {
 
             var body: some View {
                 Grid {
+                    // The name over the menu where the platform says it nowhere else:
+                    // Android's drawer has no bar of its own. Everywhere else the
+                    // window's chrome or the sidebar's bar names the gallery already.
+                    #if ANDROID
                     header
+                    #endif
 
                     ScrollView {
                         rows
@@ -4834,8 +4839,8 @@ enum Listings {
                 .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
             }
 
-            /// The mark and the name, on the pane the platform draws: the gradient
-            /// is the home page's alone.
+            /// The mark and the name, on the pane the platform draws - where nothing
+            /// else names the gallery over its menu.
             private var header: some View {
                 HStack {
                     Image(ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png"))
