@@ -266,6 +266,14 @@ class WebLayoutView: WebDOMView {
         view.style("height", WebCSS.pixels(place.height))
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
         view.drawInRun(placement.drawing, size: LayoutSize(width: place.width, height: place.height))
+        (view as? WebLayoutView)?.setShadeOpacity(placement.drawnShade)
+    }
+
+    /// Draws a placed card's shade - its second layer, over its face - as opaque as the run says.
+    /// Design: docs/design/platforms/web/layout.md#a-placing-run
+    func setShadeOpacity(_ opacity: Double) {
+        guard arrangement == .grid, children.count > 1 else { return }
+        children[1].setOpacity(opacity)
     }
 
     /// The grid's tracks: those it defines, then one share for each further one its children reach.

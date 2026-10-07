@@ -82,6 +82,10 @@ places none of. A child placed in its area again, with no run, takes back
 its own opacity: the run's drawn opacity gives way to it, and a placing never
 clears it - a ZStack child at opacity nought, a row's hidden press light,
 would otherwise stand lit each time its row's look changes under the pointer.
+A card the run places - a grid of its face and its shade - wears the run's
+shade on its second layer, as every host does: drawn whole, the shade - a
+black card in its corners - shows at the face's edges, and the more as a
+press shrinks the face.
 
 ## Scrolling
 
