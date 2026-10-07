@@ -20,6 +20,9 @@ final class WebImageView: WebDOMView {
     private var shown: String?
     private var aspect = ContentMode.fit
 
+    /// What its layout wrote of the lengths a filling picture reaches past, as written.
+    private var laid: [String: String?] = [:]
+
     init() {
         super.init(tag: "img")
         attribute("alt", "")
@@ -32,7 +35,9 @@ final class WebImageView: WebDOMView {
     func apply(source: ImageSource?, aspect: ContentMode) {
         style("object-fit", Self.fit(aspect))
         let restretched = (aspect == .stretch) != (self.aspect == .stretch)
+        let refilled = (aspect == .fill) != (self.aspect == .fill)
         self.aspect = aspect
+        if refilled { for name in Self.reached { style(name, laid[name] ?? nil) } }
         guard source?.file != file else { return restretched ? showFile() : () }
         file = source?.file
         attribute("data-source", file)
@@ -61,6 +66,21 @@ final class WebImageView: WebDOMView {
         let unproportioned = aspect == .stretch && shown.hasSuffix(".svg")
         attribute("src", "Images/" + shown + (unproportioned ? "#svgView(preserveAspectRatio(none))" : ""))
     }
+
+    /// A filling picture reaches a pixel past each edge of its room, under its parent's clip: WebKit draws a
+    /// covering picture rounded inward, and what lies over it would show at the seam.
+    /// Design: docs/design/platforms/web/controls.md#pictures
+    override func style(_ name: String, _ value: String?) {
+        guard Self.reached.contains(name) else { return super.style(name, value) }
+        laid[name] = value
+        guard aspect == .fill else { return super.style(name, value) }
+        super.style(name, name.hasPrefix("margin-") ? value.map { "calc(\($0) - 1px)" } ?? "-1px"
+            : value.map { "calc(\($0) + 2px)" })
+    }
+
+    /// The lengths a filling picture reaches past: its margins, and the sizes its room bounds it to.
+    private static let reached = ["inline-start", "block-start", "inline-end", "block-end"].map { "margin-" + $0 }
+        + ["width", "height", "max-width", "max-height"]
 
     private static func fit(_ aspect: ContentMode) -> String {
         switch aspect {
