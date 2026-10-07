@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ModalStack.barBackgroundColor: ✅
 ModalStack.barForegroundColor: cannot read barForegroundColor of ModalStack - AppKit's driver has no path for it yet
 ModalStack.barIcon: cannot read barIcon of ModalStack - AppKit's driver has no path for it yet

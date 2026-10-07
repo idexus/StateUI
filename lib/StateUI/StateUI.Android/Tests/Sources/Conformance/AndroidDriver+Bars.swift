@@ -9,7 +9,7 @@ import CStateUIAndroid
 @_spi(Host) import StateUIConformance
 
 /// What the Android driver reads of the bar an arrangement declares: Android's toolbar over the page it shows - the
-/// line under its title and the colour it is painted.
+/// line under its title, the colour it is painted and the colour its title is drawn in.
 extension AndroidDriver {
     /// `property` of the bar the page `element` shows stands under; nil where no stack gives that page a bar.
     static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {
@@ -21,8 +21,9 @@ extension AndroidDriver {
             return Java.frame {
                 Java.callStaticObject(testBars, barSubtitle, .object(bar.reference)).map { .string(Java.text($0)) }
             }
-        case .barBackgroundColor:
-            let argb = UInt32(bitPattern: Java.callStaticInt(testBars, barBackground, .object(bar.reference)))
+        case .barBackgroundColor, .barForegroundColor:
+            let reading = property == .barBackgroundColor ? barBackground : barForeground
+            let argb = UInt32(bitPattern: Java.callStaticInt(testBars, reading, .object(bar.reference)))
             guard argb != 0 else { return nil }
             return .color(
                 red: UInt8(argb >> 16 & 0xFF), green: UInt8(argb >> 8 & 0xFF), blue: UInt8(argb & 0xFF),
@@ -58,4 +59,5 @@ extension AndroidDriver {
     private static let barSubtitle = Java.staticMethod(
         testBars, "subtitle", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
     private static let barBackground = Java.staticMethod(testBars, "background", "(Landroid/widget/Toolbar;)I")
+    private static let barForeground = Java.staticMethod(testBars, "foreground", "(Landroid/widget/Toolbar;)I")
 }

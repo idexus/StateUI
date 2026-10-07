@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ModalStack.barBackgroundColor: ✅
 ModalStack.barForegroundColor: ✅
 ModalStack.barIcon: – A GNOME header bar is its page's own and shows no application's mark.

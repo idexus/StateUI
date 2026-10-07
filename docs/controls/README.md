@@ -82,23 +82,23 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Menu](Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [MenuBar](MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ | 3 ✅ · 3 – | 6 ✅ |
-| [ModalStack](ModalStack.md) | 6 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ | 4 ✅ · 2 – | 5 ✅ · 1 – |
-| [NavigationStack](NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 6 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – | 7 ✅ · 1 – |
+| [ModalStack](ModalStack.md) | 6 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 1 ☑️ · 2 – | 6 ✅ | 4 ✅ · 2 – | 5 ✅ · 1 – |
+| [NavigationStack](NavigationStack.md) | 9 | 4 ✅ · 1 ✓ | 7 ✅ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 9 ✅ | 5 ✅ · 4 – | 7 ✅ · 1 – |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](Page.md) | 11 | 7 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 8 ✅ · 2 – | 9 ✅ |
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
-| [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 5 ✅ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – | 8 ✅ · 1 – |
-| [TabView](TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 7 ✅ · 2 – | 10 ✅ | 6 ✅ · 4 – | 8 ✅ · 1 – |
+| [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 5 ✅ · 1 ☑️ · 2 ✓ · 2 – | 10 ✅ | 6 ✅ · 4 – | 8 ✅ · 1 – |
+| [TabView](TabView.md) | 10 | 5 ✅ · 1 ✓ | 8 ✅ · 2 – | 7 ✅ · 1 ☑️ · 2 – | 10 ✅ | 6 ✅ · 4 – | 8 ✅ · 1 – |
 | [TextSpan](TextSpan.md) | 12 |  |  | 7 ✅ | 9 ✅ | 9 ✅ | 9 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – | 8 ✅ |
-| [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
+| [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 5 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – | 8 ✅ |
+| [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](Window.md) | 22 | 15 ✅ · 6 ✓ | 3 ✅ · 4 ✓ · 9 – | 3 ✅ · 4 ✓ · 13 – | 22 ✅ | 8 ✅ · 6 ✓ · 8 – | 3 ✅ · 4 ✓ · 15 – |
-| ✅ |  | 67 | 70 | 61 | 114 | 76 | 83 |
+| ✅ |  | 67 | 70 | 63 | 114 | 76 | 83 |
 | ✓ |  | 20 | 17 | 15 | 2 | 12 | 9 |
 | – |  | 1 | 18 | 26 | 1 | 28 | 20 |
-| **Met** | 126 | **88** | **105** | **102** | **117** | **116** | **112** |
+| **Met** | 126 | **88** | **105** | **104** | **117** | **116** | **112** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 

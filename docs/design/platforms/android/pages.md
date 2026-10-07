@@ -29,8 +29,10 @@ where the host layer says the frame moved the window's chrome
 ([one frame](../../host/runtime.md#one-frame)), every bar the window and its
 sheets show is shown again. The bar carries the actions the page's path declares: the ones on the bar
 beside the title, as the host layer composes them - the leading groups
-first, the bar having no leading edge beside its navigation button - the rest
-behind the toolbar's overflow - each an entry of the toolbar's menu, written as
+first, the bar having no leading edge beside its navigation button, each group
+a group of the toolbar's menu, drawn in one row as Android's toolbar draws its
+actions - the rest behind the toolbar's overflow - each an entry of the
+toolbar's menu, written as
 [menus](menus.md) says, and the menus the path declares behind the overflow
 after them. Its navigation button is the way back on a pushed page
 whose back button is not taken away; at the root of a split view's detail,

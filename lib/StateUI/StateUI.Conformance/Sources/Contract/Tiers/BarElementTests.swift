@@ -45,7 +45,8 @@
     }
 
     /// A page where `element` wears `worn` around a bar every host draws - a split view's detail, a tabbed view's
-    /// first tab and a modal stack's root are a stack of one page - `beside` the page's words.
+    /// first tab and a modal stack's root are a stack of one page - `beside` the page's words, its title standing on
+    /// the bar in the bar's colours.
     static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> ModifiedContent {
         // Chosen by name, so held as `any View` and handed on as its node.
         ModifiedContent(node: chosen(element, worn, beside: beside).node)
@@ -57,10 +58,12 @@
         let others: [any View] = beside
         let stack = {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Text("Page")] + others }
+                VStack { [Text("Page")] + others }.title("Page")
             } destination: { _ in Text("Pushed") }
         }
         switch element {
+        case "NavigationStack":
+            return dressing.wear(stack())
         case "SplitView":
             return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
                 Text("Sidebar")

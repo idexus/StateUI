@@ -313,7 +313,7 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// What a page puts on the bar: its actions in their order, the overflow's last, each with its
+    /// What a page puts on the bar: its actions in their order, the overflow's last in a group of their own, each with its
     /// picture and whether it can be chosen - the picture of one that cannot be dimmed - a destructive one in
     /// the theme's error colour; choosing one runs its handler, and one that cannot be chosen runs nothing.
     func testAPagesToolbarItemsAreTheBarsActions() throws {
@@ -336,7 +336,7 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertEqual(navigation.bar.content.actions.map(\.onBar), [true, true, false])
 
             let menu = JavaObject(try XCTUnwrap(Java.callObject(navigation.bar.reference, TestMenus.getMenu)))
-            XCTAssertEqual(TestMenus.describe(menu), "Add (off) (dimmed picture), Save (picture), Delete (red)")
+            XCTAssertEqual(TestMenus.describe(menu), "Add (off) (dimmed picture), Save (picture) | Delete (red)")
             for words in ["Add", "Save", "Delete"] { TestMenus.choose(menu, words) }
             host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["save", "delete"])
