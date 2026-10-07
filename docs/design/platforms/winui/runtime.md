@@ -121,8 +121,10 @@ backdrop of the relay's own over WinUI's `DesktopAcrylicController`, since
 WinUI's ready one holds neither a kind nor an opacity: the two thinnest
 blurs are the thin kind, the rest the base one, and its luminosity hides as
 much of the desktop as the blur's thickness does
-(`Blur.Thickness.opacity`, the share a stand-in colour lets through), its
-tint half as much. Its colour - tint, and the fallback an inactive window
+(`Blur.Thickness.opacity`, the share a stand-in colour lets through), and
+its tint grows from none on the thinnest blur to nine tenths on the
+thickest: the luminosity alone - from 0.45 to 0.95 - barely tells the five
+apart, an ultra-thick window still showing the desktop through. Its colour - tint, and the fallback an inactive window
 shows - is the blur's stand-in colour, the theme's: a controller given any
 one value keeps none of the theme's own (an ultra-thick blur came out
 white in the dark theme), so every colour is written, and the theme

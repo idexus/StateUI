@@ -158,7 +158,7 @@ struct PaneGround: Equatable {
     @MainActor init(_ material: HostMaterial, page: UInt32?) {
         if let thickness = material.blur, let colour = material.painted.flatMap({ HostBrush($0).firstColor })?.argb {
             let acrylic = WinUIWindow.acrylic(thickness)
-            (kind, argb, opacity, tintOpacity) = (2, colour, acrylic.opacity, acrylic.opacity / 2)
+            (kind, argb, opacity, tintOpacity) = (2, colour, acrylic.opacity, acrylic.tintOpacity)
         } else if let colour = material.paint.flatMap({ HostBrush($0).firstColor })?.argb ?? page {
             (kind, argb) = (1, colour)
         }

@@ -84,16 +84,20 @@ final class WinUIWindow {
         // The theme's colour of a blur, which the differ gives again as the theme turns.
         let colour = traits.background.standIn.flatMap { HostBrush($0).firstColor }?.argb ?? 0
         stateui_winui_window_set_backdrop(
-            handle, acrylic != nil, acrylic?.thin ?? false, acrylic?.opacity ?? 0, (acrylic?.opacity ?? 0) / 2, colour)
+            handle, acrylic != nil, acrylic?.thin ?? false, acrylic?.opacity ?? 0, acrylic?.tintOpacity ?? 0, colour)
         let argb = traits.background.paint.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)
         stateui_winui_window_set_background(handle, argb != nil, argb ?? 0)
     }
 
     /// The desktop acrylic a blur `thickness` thick is: the thin kind for the two thinnest, its luminosity hiding
-    /// as much of the desktop as the blur does - its tint half as much, in the theme's colour.
+    /// as much of the desktop as the blur does, and its tint in the theme's colour from none on the thinnest to
+    /// nine tenths on the thickest - the acrylic's luminosity alone barely tells the thicknesses apart.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
-    static func acrylic(_ thickness: Blur.Thickness) -> (thin: Bool, opacity: Float) {
-        (thickness.rawValue <= Blur.Thickness.thin.rawValue, Float(thickness.opacity))
+    static func acrylic(_ thickness: Blur.Thickness) -> (thin: Bool, opacity: Float, tintOpacity: Float) {
+        let opacity = thickness.opacity
+        let thinnest = Blur.Thickness.ultraThin.opacity, thickest = Blur.Thickness.ultraThick.opacity
+        let tint = 0.9 * (opacity - thinnest) / (thickest - thinnest)
+        return (thickness.rawValue <= Blur.Thickness.thin.rawValue, Float(opacity), Float(tint))
     }
 
     /// Shows the window in `theme`, the system's for `.system`.
