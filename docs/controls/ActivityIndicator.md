@@ -33,7 +33,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (70)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>28 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td>spinning <code>NSProgressIndicator</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>28 ✅ · 2 ☑️ · 36 ✓ · 4 –</td><td>spinning <code>NSProgressIndicator</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>30 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UIActivityIndicatorView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>54 ✅ · 2 ☑️ · 10 ✓ · 3 –</td><td>indeterminate <code>ProgressBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>52 ✅ · 13 ✓ · 4 –</td><td><code>ProgressRing</code></td></tr></tbody>
@@ -192,6 +192,6 @@ A control's one accent colour.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>tint</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>tint</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit draws it in the accent colour the user chooses: it takes none of its own.</td></tr></tbody>
 </table>

@@ -158,7 +158,23 @@ enum AppKitRealization {
         .complete("ZStack", "accessibilityIdentifier"),
         .complete("ZStack", "ignoresInput"),
         .complete("ZStack", "padding"),
-    ]
+        .notPlanned("ActivityIndicator", "tint", reason: accentColoured),
+        .notPlanned("ProgressBar", "tint", reason: accentColoured),
+        .notPlanned("Switch", "tint", reason: accentColoured),
+        .notPlanned("Button", "iconSpacing",
+                    reason: "AppKit's button stands its picture at its own gap from the words: it takes no other."),
+    ] + dayPickers
+
+    /// Why a progress indicator and a switch take no colour of their own.
+    private static let accentColoured = "AppKit draws it in the accent colour the user chooses: it takes none of its own."
+
+    /// What a day's and a time's picker holds none of.
+    private static let dayPickers: [HostRecord] = ["DatePicker", "TimePicker"].flatMap { picker -> [HostRecord] in
+        let opens = "AppKit's date picker opens no calendar for the program, nor says when the user opens one."
+        return ["isOpen", "opened", "closed"].map { .notPlanned(picker, $0, reason: opens) } + [
+            .notPlanned(picker, "format", reason: "AppKit's date picker writes its day and time in the user's own way: it takes no pattern."),
+        ]
+    }
 
     /// What AppKit's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {

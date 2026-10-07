@@ -1,8 +1,8 @@
 # revision 1.1
-ActivityIndicator.tint: not realized
+ActivityIndicator.tint: – AppKit draws it in the accent colour the user chooses: it takes none of its own.
 CheckBox.tint: ✅
 Picker.tint: ✅
-ProgressBar.tint: not realized
+ProgressBar.tint: – AppKit draws it in the accent colour the user chooses: it takes none of its own.
 SearchField.tint: not realized
 Slider.tint: ✅
-Switch.tint: not realized
+Switch.tint: – AppKit draws it in the accent colour the user chooses: it takes none of its own.

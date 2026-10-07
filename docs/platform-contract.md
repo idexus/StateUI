@@ -433,12 +433,12 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 28 ✅ · 2 ☑️ · 36 ✓ · 3 – | 30 ✅ · 2 ☑️ · 35 ✓ · 3 – | 54 ✅ · 2 ☑️ · 10 ✓ · 3 – | 52 ✅ · 13 ✓ · 4 – | 43 ✅ · 1 ☑️ · 22 ✓ · 4 – | 46 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| [Button](controls/Button.md) | 88 | 44 ✅ · 2 ☑️ · 37 ✓ · 1 – | 45 ✅ · 1 ☑️ · 37 ✓ · 3 – | 61 ✅ · 2 ☑️ · 10 ✓ · 4 – | 75 ✅ · 12 ✓ | 57 ✅ · 1 ☑️ · 28 ✓ · 1 – | 59 ✅ · 1 ☑️ · 20 ✓ |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 28 ✅ · 2 ☑️ · 36 ✓ · 4 – | 30 ✅ · 2 ☑️ · 35 ✓ · 3 – | 54 ✅ · 2 ☑️ · 10 ✓ · 3 – | 52 ✅ · 13 ✓ · 4 – | 43 ✅ · 1 ☑️ · 22 ✓ · 4 – | 46 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Button](controls/Button.md) | 88 | 44 ✅ · 2 ☑️ · 37 ✓ · 2 – | 45 ✅ · 1 ☑️ · 37 ✓ · 3 – | 61 ✅ · 2 ☑️ · 10 ✓ · 4 – | 75 ✅ · 12 ✓ | 57 ✅ · 1 ☑️ · 28 ✓ · 1 – | 59 ✅ · 1 ☑️ · 20 ✓ |
 | [Canvas](controls/Canvas.md) | 72 | 29 ✅ · 2 ☑️ · 38 ✓ · 3 – | 29 ✅ · 2 ☑️ · 38 ✓ · 3 – | 56 ✅ · 2 ☑️ · 10 ✓ · 3 – | 54 ✅ · 14 ✓ · 3 – | 45 ✅ · 1 ☑️ · 22 ✓ · 4 – | 48 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [CheckBox](controls/CheckBox.md) | 71 | 34 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 36 ✓ · 3 – | 55 ✅ · 2 ☑️ · 10 ✓ · 3 – | 59 ✅ · 12 ✓ | 46 ✅ · 1 ☑️ · 23 ✓ · 1 – | 50 ✅ · 1 ☑️ · 20 ✓ |
 | [ColorBox](controls/ColorBox.md) | 70 | 30 ✅ · 1 ☑️ · 35 ✓ · 3 – | 30 ✅ · 2 ☑️ · 35 ✓ · 3 – | 54 ✅ · 2 ☑️ · 10 ✓ · 3 – | 52 ✅ · 13 ✓ · 4 – | 43 ✅ · 1 ☑️ · 22 ✓ · 4 – | 46 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| [DatePicker](controls/DatePicker.md) | 82 | 38 ✅ · 2 ☑️ · 36 ✓ · 1 – | 32 ✅ · 1 ☑️ · 35 ✓ · 8 – | 60 ✅ · 2 ☑️ · 13 ✓ · 3 – | 67 ✅ · 1 ☑️ · 12 ✓ | 53 ✅ · 2 ☑️ · 24 ✓ · 1 – | 54 ✅ · 1 ☑️ · 20 ✓ |
+| [DatePicker](controls/DatePicker.md) | 82 | 38 ✅ · 2 ☑️ · 36 ✓ · 5 – | 32 ✅ · 1 ☑️ · 35 ✓ · 8 – | 60 ✅ · 2 ☑️ · 13 ✓ · 3 – | 67 ✅ · 1 ☑️ · 12 ✓ | 53 ✅ · 2 ☑️ · 24 ✓ · 1 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [Ellipse](controls/Ellipse.md) | 78 | 36 ✅ · 2 ☑️ · 35 ✓ · 5 – | 38 ✅ · 2 ☑️ · 35 ✓ · 3 – | 60 ✅ · 2 ☑️ · 10 ✓ · 5 – | 60 ✅ · 13 ✓ · 4 – | 49 ✅ · 1 ☑️ · 22 ✓ · 6 – | 54 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Grid](controls/Grid.md) | 79 | 38 ✅ · 1 ☑️ · 35 ✓ · 3 – | 38 ✅ · 1 ☑️ · 35 ✓ · 3 – | 61 ✅ · 2 ☑️ · 10 ✓ · 3 – | 61 ✅ · 13 ✓ · 3 – | 52 ✅ · 1 ☑️ · 21 ✓ · 4 – | 54 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [HStack](controls/HStack.md) | 76 | 35 ✅ · 1 ☑️ · 35 ✓ · 3 – | 35 ✅ · 1 ☑️ · 35 ✓ · 3 – | 58 ✅ · 2 ☑️ · 10 ✓ · 3 – | 58 ✅ · 13 ✓ · 3 – | 49 ✅ · 1 ☑️ · 21 ✓ · 4 – | 51 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -450,25 +450,25 @@ Every control, and every part an application, its windows and its pages are made
 | [Picker](controls/Picker.md) | 84 | 40 ✅ · 2 ☑️ · 36 ✓ · 1 – | 35 ✅ · 2 ☑️ · 38 ✓ · 3 – | 60 ✅ · 2 ☑️ · 11 ✓ · 3 – | 69 ✅ · 12 ✓ | 51 ✅ · 1 ☑️ · 22 ✓ · 7 – | 53 ✅ · 1 ☑️ · 20 ✓ |
 | [Polygon](controls/Polygon.md) | 80 | 40 ✅ · 2 ☑️ · 35 ✓ · 3 – | 40 ✅ · 2 ☑️ · 35 ✓ · 3 – | 64 ✅ · 2 ☑️ · 10 ✓ · 3 – | 62 ✅ · 13 ✓ · 4 – | 53 ✅ · 1 ☑️ · 22 ✓ · 4 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Polyline](controls/Polyline.md) | 80 | 40 ✅ · 2 ☑️ · 35 ✓ · 3 – | 40 ✅ · 2 ☑️ · 35 ✓ · 3 – | 64 ✅ · 2 ☑️ · 10 ✓ · 3 – | 62 ✅ · 13 ✓ · 4 – | 53 ✅ · 1 ☑️ · 22 ✓ · 4 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| [ProgressBar](controls/ProgressBar.md) | 70 | 29 ✅ · 2 ☑️ · 35 ✓ · 3 – | 30 ✅ · 2 ☑️ · 35 ✓ · 3 – | 54 ✅ · 2 ☑️ · 10 ✓ · 3 – | 54 ✅ · 12 ✓ · 4 – | 42 ✅ · 1 ☑️ · 23 ✓ · 4 – | 46 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [ProgressBar](controls/ProgressBar.md) | 70 | 29 ✅ · 2 ☑️ · 35 ✓ · 4 – | 30 ✅ · 2 ☑️ · 35 ✓ · 3 – | 54 ✅ · 2 ☑️ · 10 ✓ · 3 – | 54 ✅ · 12 ✓ · 4 – | 42 ✅ · 1 ☑️ · 23 ✓ · 4 – | 46 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [RadioButton](controls/RadioButton.md) | 83 | 40 ✅ · 2 ☑️ · 35 ✓ · 1 – | 37 ✅ · 2 ☑️ · 36 ✓ · 3 – | 61 ✅ · 2 ☑️ · 10 ✓ · 3 – | 66 ✅ · 12 ✓ | 53 ✅ · 1 ☑️ · 23 ✓ · 1 – | 57 ✅ · 1 ☑️ · 20 ✓ |
 | [Rectangle](controls/Rectangle.md) | 79 | 39 ✅ · 2 ☑️ · 35 ✓ · 3 – | 39 ✅ · 2 ☑️ · 35 ✓ · 3 – | 63 ✅ · 2 ☑️ · 10 ✓ · 3 – | 61 ✅ · 13 ✓ · 4 – | 52 ✅ · 1 ☑️ · 22 ✓ · 4 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ScrollView](controls/ScrollView.md) | 79 | 35 ✅ · 3 ☑️ · 37 ✓ · 3 – | 38 ✅ · 1 ☑️ · 35 ✓ · 3 – | 63 ✅ · 2 ☑️ · 10 ✓ · 3 – | 63 ✅ · 13 ✓ · 3 – | 56 ✅ · 1 ☑️ · 21 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [SearchField](controls/SearchField.md) | 91 | 45 ✅ · 1 ☑️ · 36 ✓ · 3 – | 50 ✅ · 2 ☑️ · 35 ✓ | 72 ✅ · 2 ☑️ · 10 ✓ · 1 – | 68 ✅ · 1 ☑️ · 12 ✓ · 1 – | 61 ✅ · 1 ☑️ · 23 ✓ · 2 – | 64 ✅ · 1 ☑️ · 20 ✓ |
 | [Slider](controls/Slider.md) | 75 | 36 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 37 ✓ · 3 – | 59 ✅ · 2 ☑️ · 10 ✓ · 3 – | 61 ✅ · 12 ✓ | 48 ✅ · 1 ☑️ · 23 ✓ · 3 – | 52 ✅ · 20 ✓ · 1 – |
 | [Stepper](controls/Stepper.md) | 73 | 36 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 35 ✓ · 3 – | 57 ✅ · 2 ☑️ · 10 ✓ · 3 – | 61 ✅ · 12 ✓ | 49 ✅ · 1 ☑️ · 22 ✓ · 1 – | 52 ✅ · 1 ☑️ · 20 ✓ |
-| [Switch](controls/Switch.md) | 71 | 33 ✅ · 2 ☑️ · 35 ✓ | 31 ✅ · 2 ☑️ · 35 ✓ · 3 – | 54 ✅ · 2 ☑️ · 10 ✓ · 3 – | 59 ✅ · 12 ✓ | 46 ✅ · 1 ☑️ · 22 ✓ · 2 – | 50 ✅ · 1 ☑️ · 20 ✓ |
+| [Switch](controls/Switch.md) | 71 | 33 ✅ · 2 ☑️ · 35 ✓ · 1 – | 31 ✅ · 2 ☑️ · 35 ✓ · 3 – | 54 ✅ · 2 ☑️ · 10 ✓ · 3 – | 59 ✅ · 12 ✓ | 46 ✅ · 1 ☑️ · 22 ✓ · 2 – | 50 ✅ · 1 ☑️ · 20 ✓ |
 | [Text](controls/Text.md) | 83 | 41 ✅ · 2 ☑️ · 35 ✓ · 4 – | 42 ✅ · 1 ☑️ · 35 ✓ · 3 – | 65 ✅ · 2 ☑️ · 10 ✓ · 3 – | 67 ✅ · 12 ✓ · 3 – | 54 ✅ · 1 ☑️ · 23 ✓ · 4 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [TextEditor](controls/TextEditor.md) | 89 | 48 ✅ · 2 ☑️ · 36 ✓ · 1 – | 49 ✅ · 2 ☑️ · 35 ✓ | 71 ✅ · 2 ☑️ · 10 ✓ · 1 – | 74 ✅ · 12 ✓ | 60 ✅ · 2 ☑️ · 23 ✓ · 1 – | 65 ✅ · 1 ☑️ · 20 ✓ |
 | [TextField](controls/TextField.md) | 92 | 46 ✅ · 2 ☑️ · 36 ✓ · 3 – | 52 ✅ · 2 ☑️ · 35 ✓ | 73 ✅ · 2 ☑️ · 10 ✓ · 2 – | 73 ✅ · 1 ☑️ · 12 ✓ · 1 – | 62 ✅ · 1 ☑️ · 23 ✓ · 3 – | 67 ✅ · 1 ☑️ · 20 ✓ |
-| [TimePicker](controls/TimePicker.md) | 80 | 36 ✅ · 2 ☑️ · 36 ✓ · 1 – | 33 ✅ · 1 ☑️ · 35 ✓ · 5 – | 60 ✅ · 2 ☑️ · 11 ✓ · 3 – | 62 ✅ · 12 ✓ | 52 ✅ · 1 ☑️ · 23 ✓ · 1 – | 52 ✅ · 1 ☑️ · 20 ✓ |
+| [TimePicker](controls/TimePicker.md) | 80 | 36 ✅ · 2 ☑️ · 36 ✓ · 5 – | 33 ✅ · 1 ☑️ · 35 ✓ · 5 – | 60 ✅ · 2 ☑️ · 11 ✓ · 3 – | 62 ✅ · 12 ✓ | 52 ✅ · 1 ☑️ · 23 ✓ · 1 – | 52 ✅ · 1 ☑️ · 20 ✓ |
 | [VStack](controls/VStack.md) | 76 | 35 ✅ · 1 ☑️ · 35 ✓ · 3 – | 35 ✅ · 1 ☑️ · 35 ✓ · 3 – | 58 ✅ · 2 ☑️ · 10 ✓ · 3 – | 58 ✅ · 13 ✓ · 3 – | 49 ✅ · 1 ☑️ · 21 ✓ · 4 – | 51 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 79 | 41 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 36 ✓ | 63 ✅ · 2 ☑️ · 10 ✓ · 3 – | 46 ✅ · 13 ✓ · 19 – | 55 ✅ · 1 ☑️ · 22 ✓ · 1 – | 52 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 34 ✅ · 1 ☑️ · 35 ✓ · 3 – | 34 ✅ · 1 ☑️ · 35 ✓ · 3 – | 57 ✅ · 2 ☑️ · 10 ✓ · 3 – | 57 ✅ · 13 ✓ · 3 – | 48 ✅ · 1 ☑️ · 21 ✓ · 4 – | 50 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | ✅ |  | 1186 | 1178 | 1880 | 1903 | 1582 | 1666 |
 | ✓ |  | 1140 | 1138 | 316 | 389 | 693 | 621 |
-| – |  | 71 | 91 | 90 | 82 | 95 | 55 |
-| **Met** | 2511 | **2397** | **2407** | **2286** | **2374** | **2370** | **2342** |
+| – |  | 83 | 91 | 90 | 82 | 95 | 55 |
+| **Met** | 2511 | **2409** | **2407** | **2286** | **2374** | **2370** | **2342** |
 | 🧩 |  | 0 | 0 | 76 | 76 | 76 | 76 |
 
 ### Application structure
@@ -543,11 +543,11 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isAnimating` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 7 | 4 ✅ · 2 ✓ | 5 ✅ · 2 ✓ | 4 ✅ | 7 ✅ | 6 ✅ · 1 ✓ | 1 ✅ |
+| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 7 | 4 ✅ · 2 ✓ · 1 – | 5 ✅ · 2 ✓ | 4 ✅ | 7 ✅ | 6 ✅ · 1 ✓ | 1 ✅ |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawing`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ | 4 ✅ |
+| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ | 4 ✅ |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
@@ -578,7 +578,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 2 – | 4 ✅ | 3 ✅ · 1 – | 1 ☑️ · 1 – | 2 ✅ · 2 – | 3 ✅ |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ |
+| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ · 4 – | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 | 1 ✅ · 1 – | 1 ✅ · 1 – | 1 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
