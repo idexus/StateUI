@@ -38,6 +38,8 @@ struct AppearanceSample: SampleContent, ExampleContent {
         let window = windows.firstIndex(of: style.windows) ?? 0
         let barColour = accents.firstIndex(of: style.barColour) ?? 0
         let windowColour = accents.firstIndex(of: style.windowColour) ?? 0
+        let materials = Material.allCases
+        let material = materials.firstIndex(of: style.material) ?? 0
         let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
         return VStack {
@@ -62,6 +64,11 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Window's colour")
                 .isEnabled(style.windows == .tintedMaterial || style.windows == .colour)
                 .selectedIndex(Binding(get: { windowColour }, set: { style.windowColour = accents[$0] }))
+            Picker(["Ultra thin", "Thin", "Regular", "Thick"])
+                .accessibilityIdentifier("appearance.material")
+                .accessibilityLabel("Window's material")
+                .isEnabled(style.windows == .material || style.windows == .tintedMaterial)
+                .selectedIndex(Binding(get: { material }, set: { style.material = materials[$0] }))
 
             SectionTitle("The theme")
             Picker(themes.map(\.name))

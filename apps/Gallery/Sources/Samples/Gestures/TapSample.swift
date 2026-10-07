@@ -28,7 +28,7 @@ struct TapSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .style("Card")
-            .stroke(Palette.accent)
+            .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }

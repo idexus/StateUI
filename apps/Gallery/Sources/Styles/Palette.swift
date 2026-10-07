@@ -18,14 +18,15 @@ import StateUI
 enum Palette {
     // MARK: Identity
 
-    /// The colour a sample marks something with: Orange, deepened in the light
-    /// so white reads on it and lifted in the dark so it does not glare.
+    /// The colour a sample marks something with: the gallery's violet, a light
+    /// lavender in the dark as the glass's own edge is, deep in the light.
     // listing: Palette.sample
-    static let accent = Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrangeLight)
+    static let accent = Color(light: AppColors.violet, dark: AppColors.violetLight)
     // listing: end
 
-    /// Violet - a sample's second colour beside the accent.
-    static let brand = Color(light: AppColors.violet, dark: AppColors.violetLight)
+    /// Swift's orange - a sample's second colour beside the accent, the
+    /// identity's warm half.
+    static let brand = Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrange)
 
     /// Text that reads on `accent`: white in both themes, since a near-black
     /// caption on a filled button reads as disabled.
@@ -72,6 +73,14 @@ enum Palette {
     /// The edge of a panel: a hairline holding it apart where the page behind
     /// is as light as the panel.
     static let edge = Color(light: Color("#14000000"), dark: Color("#0FFFFFFF"))
+
+    /// Behind a sample and its code: the page darkened a breath, all else let
+    /// through.
+    static let shade = Color(light: Color("#0A000000"), dark: Color("#1F000000"))
+
+    /// The ground words are typed on: what lies behind lit a breath, all else
+    /// let through.
+    static let field = Color(light: Color("#0D000000"), dark: Color("#14FFFFFF"))
 
     /// A region set apart within a panel.
     static let well = Color(light: Color("#0A000000"), dark: Color("#0AFFFFFF"))

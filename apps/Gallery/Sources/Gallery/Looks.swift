@@ -45,16 +45,6 @@ enum WindowLook: String, CaseIterable, PersistentValue {
     /// The gallery's colour.
     case colour
 
-    /// What a gallery opens in: on a Mac the window's material in a light
-    /// tint, elsewhere the platform's own.
-    static var opening: WindowLook {
-        #if APPKIT
-        .tintedMaterial
-        #else
-        .platform
-        #endif
-    }
-
     /// What the Appearance sample calls it.
     var name: String {
         switch self {
@@ -66,9 +56,10 @@ enum WindowLook: String, CaseIterable, PersistentValue {
         }
     }
 
-    /// Whether the desktop shows through the window, blurred.
-    var isTranslucent: Bool {
-        self == .material || self == .tintedMaterial
+    /// What the window shows behind everything it draws: the desktop through
+    /// `material`, where the look is a material; nil else.
+    func backdrop(_ material: Material) -> Backdrop? {
+        self == .material || self == .tintedMaterial ? .material(material) : nil
     }
 
     /// What the window shows behind its pages, in `accent` - the system's

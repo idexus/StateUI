@@ -96,7 +96,6 @@ private struct RebuildPanel: View {
         .stroke(Palette.outline)
         .lineWidth(1)
         .shape(.roundedRectangle(10))
-        .background(Palette.raised)
     }
 }
 // listing: end

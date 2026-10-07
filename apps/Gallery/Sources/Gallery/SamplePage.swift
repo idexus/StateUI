@@ -110,7 +110,7 @@ struct SamplePage: View {
     }
 
     /// An example is a view like any other, so it is placed like any other -
-    /// inside a card that marks where it begins.
+    /// inside a panel that marks where it begins.
     ///
     /// An example that FILLS is wrapped in a Grid rather than a VStack: a stack
     /// gives each child the height it asks for, so a list inside one is
@@ -133,6 +133,6 @@ struct SamplePage: View {
                 .padding(16)
             }
         }
-        .style("Card")
+        .style("Panel")
     }
 }

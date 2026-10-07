@@ -35,7 +35,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                             .padding(horizontal: 12, vertical: 8)
                     }
                     .style("Card")
-                    .stroke(Palette.accent)
+                    .stroke(Palette.outline)
                     .lineWidth(1)
                     .shape(.roundedRectangle(8))
                     // What travels is decided before the drag starts: a
@@ -80,7 +80,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             .stroke(over ? Palette.accent : Palette.outline)
             .lineWidth(over ? 2 : 1)
             .shape(.roundedRectangle(10))
-            .background(over ? Palette.selected : Palette.raised)
+            .background(over ? Palette.selected : .transparent)
             .onDragOver { over = true }
             .onDragLeave { over = false }
             // A drop is not a leave, so the light comes down here too.

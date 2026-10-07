@@ -30,7 +30,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .style("Card")
-            .stroke(Palette.accent)
+            .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
             // A recognizer that listens for nothing recognizes nothing, so
@@ -50,7 +50,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .style("Card")
-            .stroke(Palette.accent)
+            .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
             // Narrowed: two of the four ways, and a finger that must travel

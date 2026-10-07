@@ -90,7 +90,7 @@ struct TransformSample: SampleContent, ExampleContent {
 
             // The same square and the same factor three times, so the only
             // thing the row shows is which axis each modifier reaches - and a
-            // WIDER GAP than the violet row, because a scaled box is drawn
+            // WIDER GAP than the orange row, because a scaled box is drawn
             // outside its room and would otherwise touch its neighbours.
             HStack {
                 // Drawing only - the room the layout gave it does not change.
@@ -116,7 +116,7 @@ struct TransformSample: SampleContent, ExampleContent {
             Text("`.transform(_:)` is one transform in the order it is written, about the "
                 + "view's centre: `.rotate(45).translate(28, 0)` moves the turned box a plain "
                 + "28 to the right, while `.translate(28, 0).rotate(45)` swings that move "
-                + "round with the turn. That is the orange row.")
+                + "round with the turn. That is the violet row.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -124,7 +124,7 @@ struct TransformSample: SampleContent, ExampleContent {
                 + "square; `rotationX` and `rotationY` tip it out of that plane, so it becomes "
                 + "a trapezium. All of them pivot about the anchor, the middle until it is "
                 + "moved: 0 is the left edge or the top, 1 the right edge or the bottom. The "
-                + "fourth violet box turns about its top left corner.")
+                + "fourth orange box turns about its top left corner.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -133,7 +133,7 @@ struct TransformSample: SampleContent, ExampleContent {
                 + "`scaleX` and `scaleY` one each; all three multiply the size the layout "
                 + "gave, so 1 is that size and 0.5 half of it. A scaled view overlaps its "
                 + "neighbour without pushing it aside, which is why the amber row is spaced "
-                + "wider than the violet one.")
+                + "wider than the orange one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -1,11 +1,7 @@
 // The gallery's raw colours: Swift's orange against a deep violet - the
 // identity the gradient and the mark carry, and the colours its samples draw
-// with. Everything else the gallery stands on is the platform's own.
-//
-// The interactive orange is DEEPER than Swift's own in the light theme and
-// LIGHTER in the dark: white on #F05138 is 3.5:1, which fails WCAG AA for text,
-// while #CE3F1C is 4.8:1. The brand orange stays exactly Swift's wherever
-// nothing has to be read on top of it.
+// with. Everything else the gallery stands on is the platform's own, its
+// accent the one in force.
 //
 // What the gallery draws with is next door in Palette.swift - these are the raw
 // values, named for what they ARE, and almost everything reaches them through
@@ -22,14 +18,9 @@ enum AppColors {
     /// Swift's own orange, exactly. For where nothing has to be read on it.
     static let swiftOrange = Color("#F05138")
 
-    /// The same hue, deep enough that white text on it passes WCAG AA (4.8:1).
-    /// The interactive colour in the light theme.
+    /// The same hue, deep enough that white text on it passes WCAG AA (4.8:1)
+    /// - the identity gradient's warm end in the light.
     static let swiftOrangeDeep = Color("#CE3F1C")
-
-    /// The same hue lifted for a dark background, where full-strength orange is
-    /// heavy. White text on it measures 2.3:1 - `Palette.onAccent` says why the
-    /// caption stays white regardless.
-    static let swiftOrangeLight = Color("#FF8A6B")
 
     /// A warm yellow - the dark half of the colour the Transforms sample marks
     /// a size with.

@@ -176,31 +176,40 @@ private struct Described: View {
     let leaves: Int
 
     var body: some View {
-        HStack {
+        VStack {
             let began = ContinuousClock.now
 
-            ForEach(Array(0 ..< leaves), id: \.self) { index in
-                ColorBox()
-                    .width(7)
-                    .height(14)
-                    .cornerRadius(2)
-                    .color(Palette.outline)
-                    .margin(1)
-                    .id(index)
+            // The leaves in rows of 25: a stack wraps nothing, so the rows do.
+            ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+                HStack {
+                    ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                        ColorBox()
+                            .width(7)
+                            .height(14)
+                            .cornerRadius(2)
+                            .color(Palette.outline)
+                            .margin(1)
+                            .id(index)
+                    }
+                }
+                .spacing(2)
             }
 
-            Text("Counter \(counter)")
-                .fontSize(13)
-                .fontAttributes(.bold)
-                .margin(horizontal: 6, vertical: 0)
+            HStack {
+                Text("Counter \(counter)")
+                    .fontSize(13)
+                    .fontAttributes(.bold)
+                    .margin(horizontal: 6, vertical: 0)
 
-            Text(took(began, leaves))
-                .fontSize(12)
-                .textColor(Palette.accent)
-                .height(15)
+                Text(took(began, leaves))
+                    .fontSize(12)
+                    .textColor(Palette.accent)
+                    .height(15)
 
-            DebugInfoLabel()   // climbs on every press
-                .height(15)
+                DebugInfoLabel()   // climbs on every press
+                    .height(15)
+            }
+            .spacing(2)
         }
         .spacing(2)
     }
@@ -216,31 +225,40 @@ private struct Channelled: View {
     let leaves: Int
 
     var body: some View {
-        HStack {
+        VStack {
             let began = ContinuousClock.now
 
-            ForEach(Array(0 ..< leaves), id: \.self) { index in
-                ColorBox()
-                    .width(7)
-                    .height(14)
-                    .cornerRadius(2)
-                    .color(Palette.outline)
-                    .margin(1)
-                    .id(index)
+            // The leaves in rows of 25: a stack wraps nothing, so the rows do.
+            ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+                HStack {
+                    ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                        ColorBox()
+                            .width(7)
+                            .height(14)
+                            .cornerRadius(2)
+                            .color(Palette.outline)
+                            .margin(1)
+                            .id(index)
+                    }
+                }
+                .spacing(2)
             }
 
-            Text($counter.convert { "Counter \($0)" })
-                .fontSize(13)
-                .fontAttributes(.bold)
-                .margin(horizontal: 6, vertical: 0)
+            HStack {
+                Text($counter.convert { "Counter \($0)" })
+                    .fontSize(13)
+                    .fontAttributes(.bold)
+                    .margin(horizontal: 6, vertical: 0)
 
-            Text(took(began, leaves))
-                .fontSize(12)
-                .textColor(Palette.accent)
-                .height(15)
+                Text(took(began, leaves))
+                    .fontSize(12)
+                    .textColor(Palette.accent)
+                    .height(15)
 
-            DebugInfoLabel()   // stays at one on +1
-                .height(15)
+                DebugInfoLabel()   // stays at one on +1
+                    .height(15)
+            }
+            .spacing(2)
         }
         .spacing(2)
     }

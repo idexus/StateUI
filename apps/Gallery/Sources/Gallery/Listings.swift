@@ -639,7 +639,7 @@ enum Listings {
                 .background(Palette.outline)
             }
 
-        // Every ColorBox that names no colour of its own is orange.
+        // Every ColorBox that names no colour of its own wears the violet.
         Style<ColorBox>()
             .color(Palette.accent)
         """#,
@@ -691,6 +691,8 @@ enum Listings {
             let window = windows.firstIndex(of: style.windows) ?? 0
             let barColour = accents.firstIndex(of: style.barColour) ?? 0
             let windowColour = accents.firstIndex(of: style.windowColour) ?? 0
+            let materials = Material.allCases
+            let material = materials.firstIndex(of: style.material) ?? 0
             let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
             return VStack {
@@ -707,6 +709,9 @@ enum Listings {
                 Picker(accents.map(\.name))
                     .isEnabled(style.windows == .tintedMaterial || style.windows == .colour)
                     .selectedIndex(Binding(get: { windowColour }, set: { style.windowColour = accents[$0] }))
+                Picker(["Ultra thin", "Thin", "Regular", "Thick"])
+                    .isEnabled(style.windows == .material || style.windows == .tintedMaterial)
+                    .selectedIndex(Binding(get: { material }, set: { style.material = materials[$0] }))
 
                 SectionTitle("The theme")
                 Picker(themes.map(\.name))
@@ -1065,7 +1070,7 @@ enum Listings {
 
         /// The two stops the linear gradients here run between.
         private static let stops = [
-            GradientStop(Palette.accent, 0),
+            GradientStop(Palette.brand, 0),
             GradientStop(.steelBlue, 1),
         ]
 
@@ -1993,7 +1998,7 @@ enum Listings {
                             Text(item)
                         }
                         .style("Card")
-                        .stroke(Palette.accent)
+                        .stroke(Palette.outline)
                         .lineWidth(1)
                         // What travels is decided before the drag starts: a
                         // native drag session needs its payload at once.
@@ -2615,16 +2620,6 @@ enum Listings {
             /// The gallery's colour.
             case colour
 
-            /// What a gallery opens in: on a Mac the window's material in a light
-            /// tint, elsewhere the platform's own.
-            static var opening: WindowLook {
-                #if APPKIT
-                .tintedMaterial
-                #else
-                .platform
-                #endif
-            }
-
             /// What the Appearance sample calls it.
             var name: String {
                 switch self {
@@ -2636,9 +2631,10 @@ enum Listings {
                 }
             }
 
-            /// Whether the desktop shows through the window, blurred.
-            var isTranslucent: Bool {
-                self == .material || self == .tintedMaterial
+            /// What the window shows behind everything it draws: the desktop through
+            /// `material`, where the look is a material; nil else.
+            func backdrop(_ material: Material) -> Backdrop? {
+                self == .material || self == .tintedMaterial ? .material(material) : nil
             }
 
             /// What the window shows behind its pages, in `accent` - the system's
@@ -2753,12 +2749,16 @@ enum Listings {
             /// The colour the bars are tinted or painted in.
             @State(sceneKey: .barColour) var barColour = AccentChoice.violet
 
-            /// What the gallery's windows show behind their pages: on a Mac their
-            /// material, tinted lightly; elsewhere the platform's own.
-            @State(sceneKey: .windows) var windows = WindowLook.opening
+            /// What the gallery's windows show behind their pages: the platform's
+            /// own, until the Appearance sample chooses another look.
+            @State(sceneKey: .windows) var windows = WindowLook.platform
 
             /// The colour the windows are tinted or painted in.
             @State(sceneKey: .windowColour) var windowColour = AccentChoice.violet
+
+            /// The material the desktop shows through the windows in, where their look
+            /// is one: the thickest until the Appearance sample chooses another.
+            @State var material = Material.thick
 
             /// Whether the Fonts and Colours windows hide while another scene is the
             /// one in front.
@@ -3770,24 +3770,31 @@ enum Listings {
             let leaves: Int
 
             var body: some View {
-                HStack {
+                VStack {
                     let began = ContinuousClock.now
 
-                    ForEach(Array(0 ..< leaves), id: \.self) { index in
-                        ColorBox()
-                            .width(7)
-                            .height(14)
-                            .color(Palette.outline)
-                            .id(index)
+                    // The leaves in rows of 25: a stack wraps nothing, so the rows do.
+                    ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+                        HStack {
+                            ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                                ColorBox()
+                                    .width(7)
+                                    .height(14)
+                                    .color(Palette.outline)
+                                    .id(index)
+                            }
+                        }
                     }
 
-                    Text("Counter \(counter)")
+                    HStack {
+                        Text("Counter \(counter)")
 
-                    Text(took(began, leaves))
-                        .height(15)
+                        Text(took(began, leaves))
+                            .height(15)
 
-                    DebugInfoLabel()   // climbs on every press
-                        .height(15)
+                        DebugInfoLabel()   // climbs on every press
+                            .height(15)
+                    }
                 }
             }
         }
@@ -3800,24 +3807,31 @@ enum Listings {
             let leaves: Int
 
             var body: some View {
-                HStack {
+                VStack {
                     let began = ContinuousClock.now
 
-                    ForEach(Array(0 ..< leaves), id: \.self) { index in
-                        ColorBox()
-                            .width(7)
-                            .height(14)
-                            .color(Palette.outline)
-                            .id(index)
+                    // The leaves in rows of 25: a stack wraps nothing, so the rows do.
+                    ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+                        HStack {
+                            ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                                ColorBox()
+                                    .width(7)
+                                    .height(14)
+                                    .color(Palette.outline)
+                                    .id(index)
+                            }
+                        }
                     }
 
-                    Text($counter.convert { "Counter \($0)" })
+                    HStack {
+                        Text($counter.convert { "Counter \($0)" })
 
-                    Text(took(began, leaves))
-                        .height(15)
+                        Text(took(began, leaves))
+                            .height(15)
 
-                    DebugInfoLabel()   // stays at one on +1
-                        .height(15)
+                        DebugInfoLabel()   // stays at one on +1
+                            .height(15)
+                    }
                 }
             }
         }
@@ -4294,6 +4308,7 @@ enum Listings {
         // The Appearance sample changes the look while the window stands.
         .onChanged(style.windows) { dress(window) }
         .onChanged(style.windowColour) { dress(window) }
+        .onChanged(style.material) { dress(window) }
         .onChanged(application.info.accentColor) { dress(window) }
         """#,
         "MainPage.detail": #"""
@@ -5355,7 +5370,7 @@ enum Listings {
         """#,
         "Palette.sample": #"""
         // Sources/Styles/Palette.swift
-        static let accent = Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrangeLight)
+        static let accent = Color(light: AppColors.violet, dark: AppColors.violetLight)
 
         static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
@@ -7580,12 +7595,12 @@ enum Listings {
                         }
                     }
                     .style("Card")
-                    .stroke(Palette.accent)
+                    .stroke(Palette.outline)
                     .lineWidth(1)
                 }
             }
             .style("Card")
-            .stroke(Palette.accent)
+            .stroke(Palette.outline)
             .lineWidth(1)
         }
         """#,
@@ -7707,7 +7722,7 @@ enum Listings {
                     Text("Swipe across this box")
                 }
                 .style("Card")
-                .stroke(Palette.accent)
+                .stroke(Palette.outline)
                 .lineWidth(1)
                 // A recognizer that listens for nothing recognizes nothing, so
                 // `direction` defaults to every way.
@@ -7721,7 +7736,7 @@ enum Listings {
                     Text("Left or right, and a long way")
                 }
                 .style("Card")
-                .stroke(Palette.accent)
+                .stroke(Palette.outline)
                 .lineWidth(1)
                 // Narrowed: two of the four ways, and a finger that must travel
                 // 150 device units before anything fires.
@@ -7795,7 +7810,7 @@ enum Listings {
                     Text("Tap anywhere on this box")
                 }
                 .style("Card")
-                .stroke(Palette.accent)
+                .stroke(Palette.outline)
                 .lineWidth(1)
                 .onTapped { taps += 1 }
 
@@ -8577,7 +8592,7 @@ enum Listings {
 
                 // The same square and the same factor three times, so the only
                 // thing the row shows is which axis each modifier reaches - and a
-                // WIDER GAP than the violet row, because a scaled box is drawn
+                // WIDER GAP than the orange row, because a scaled box is drawn
                 // outside its room and would otherwise touch its neighbours.
                 HStack {
                     // Drawing only - the room the layout gave it does not change.
@@ -9009,7 +9024,7 @@ enum Listings {
 
                 option("Translucent", id: "window.translucent", value: $translucent)
                     .onChanged(translucent) {
-                        window.isTranslucent = translucent
+                        window.backdrop = translucent ? .material(.regular) : nil
                     }
 
                 Text("Sample frame: \(Int(width)) × \(Int(height))")
@@ -9020,7 +9035,7 @@ enum Listings {
             }
             // The switch starts where the window stands - on, where the gallery's
             // window opens translucent.
-            .onCreated { translucent = window.isTranslucent == true }
+            .onCreated { translucent = window.backdrop != nil }
         }
 
         /// An action that writes the surrounding window session.

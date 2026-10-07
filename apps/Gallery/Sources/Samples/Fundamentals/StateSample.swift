@@ -67,7 +67,7 @@ struct StateSample: SampleContent, ExampleContent {
                 }
                 .style("Card")
                 .padding(14)
-                .stroke(Palette.accent)
+                .stroke(Palette.outline)
                 .lineWidth(1)
                 .shape(.roundedRectangle(10))
             }
@@ -75,7 +75,7 @@ struct StateSample: SampleContent, ExampleContent {
         }
         .style("Card")
         .padding(14)
-        .stroke(Palette.accent)
+        .stroke(Palette.outline)
         .lineWidth(1)
         .shape(.roundedRectangle(12))
     }

@@ -105,12 +105,16 @@ final class SessionStyle {
     /// The colour the bars are tinted or painted in.
     @State(sceneKey: .barColour) var barColour = AccentChoice.violet
 
-    /// What the gallery's windows show behind their pages: on a Mac their
-    /// material, tinted lightly; elsewhere the platform's own.
-    @State(sceneKey: .windows) var windows = WindowLook.opening
+    /// What the gallery's windows show behind their pages: the platform's
+    /// own, until the Appearance sample chooses another look.
+    @State(sceneKey: .windows) var windows = WindowLook.platform
 
     /// The colour the windows are tinted or painted in.
     @State(sceneKey: .windowColour) var windowColour = AccentChoice.violet
+
+    /// The material the desktop shows through the windows in, where their look
+    /// is one: the thickest until the Appearance sample chooses another.
+    @State var material = Material.thick
 
     /// Whether the Fonts and Colours windows hide while another scene is the
     /// one in front.

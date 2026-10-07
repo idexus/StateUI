@@ -79,7 +79,7 @@ enum AppStyles {
                     .background(Palette.outline)
                 }
 
-            // Every ColorBox that names no colour of its own is orange.
+            // Every ColorBox that names no colour of its own wears the violet.
             Style<ColorBox>()
                 .color(Palette.accent)
             // listing: end
@@ -94,6 +94,17 @@ enum AppStyles {
                 .visualState(.disabled) { $0
                     .opacity(0.4)
                 }
+
+            // MARK: Fields
+
+            // A field lets the panel behind it through, lit a breath, where
+            // the platform's own ground stands dark on it.
+            Style<TextField>()
+                .background(Palette.field)
+            Style<TextEditor>()
+                .background(Palette.field)
+            Style<SearchField>()
+                .background(Palette.field)
 
             // MARK: The menu's rows
             //
@@ -115,10 +126,10 @@ enum AppStyles {
 
             // MARK: Lists
 
-            // A list's rows stand in one rounded group, its fill set apart
-            // from the page; a row lights up under the pointer.
+            // A list's rows stand in one rounded group, on the platform's glass;
+            // a row lights up under the pointer.
             Style<VStack>("RowGroup")
-                .background(Palette.raised)
+                .backdrop(.glass(.regular))
                 .stroke(Palette.edge)
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))
@@ -132,15 +143,19 @@ enum AppStyles {
 
             // MARK: Shapes
 
-            // A card is a FILL set apart from whatever page the platform draws
-            // behind it. A colour here is one property with the view's own
-            // background, so a panel that sets its own - a colour, or a
-            // gradient like the home page's - replaces this one, the animated
-            // panel included. What a card holds is cut to its corners: a
-            // picture reaches them.
+            // The panel a sample stands in lets the window through, darkened a
+            // breath, as its code does.
+            Style<ZStack>("Panel")
+                .background(Palette.shade)
+                .shape(.roundedRectangle(12))
+                .clipsContent(true)
+
+            // A card within it fills nothing: an outline and its corners mark
+            // it, and a card that sets a background of its own - a colour, or
+            // a gradient like the home page's - shows it. What a card holds is
+            // cut to its corners: a picture reaches them.
             Style<ZStack>("Card")
-                .background(Palette.raised)
-                .stroke(Palette.edge)
+                .stroke(Palette.outline)
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)

@@ -31,9 +31,7 @@ struct CodeBlock: View {
         }
         .orientation(.horizontal)
         .verticalScrollIndicator(.never)
-        .background(Palette.raised)
-        .stroke(Palette.edge)
-        .lineWidth(1)
+        .background(Palette.shade)
         .shape(.roundedRectangle(12))
         // Code reads left to right in every language, from its first column.
         .layoutDirection(.leftToRight)

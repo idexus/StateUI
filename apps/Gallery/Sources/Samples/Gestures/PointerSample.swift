@@ -49,7 +49,7 @@ struct PointerSample: SampleContent, ExampleContent {
         .stroke(hovering ? Palette.accent : Palette.outline)
         .lineWidth(hovering ? 2 : 1)
         .shape(.roundedRectangle(10))
-        .background(pressing ? Palette.selected : Palette.raised)
+        .background(pressing ? Palette.selected : .transparent)
         .onPointerEntered { hovering = true; last = "entered" }
         // The position is in the VIEW's own coordinates, not the window's.
         .onPointerMoved { point in

@@ -149,6 +149,7 @@ struct MainPage: View {
             // The Appearance sample changes the look while the window stands.
             .onChanged(style.windows) { dress(window) }
             .onChanged(style.windowColour) { dress(window) }
+            .onChanged(style.material) { dress(window) }
             .onChanged(application.info.accentColor) { dress(window) }
             // listing: end
         // listing: MainPage.modal
@@ -271,10 +272,10 @@ struct MainPage: View {
 
     // MARK: - The window's own look
 
-    /// Dresses `window` as the gallery's look says: whether the desktop shows
-    /// through it, and what it shows behind its pages.
+    /// Dresses `window` as the gallery's look says: the material the desktop
+    /// shows through it in, and what it shows behind its pages.
     private func dress(_ window: WindowSession) {
-        window.isTranslucent = style.windows.isTranslucent
+        window.backdrop = style.windows.backdrop(style.material)
         window.background = style.windows.background(in: style.windowColour, system: application.info.accentColor)
     }
 }
