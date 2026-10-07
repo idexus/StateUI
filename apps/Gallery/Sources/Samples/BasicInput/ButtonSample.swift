@@ -18,15 +18,10 @@ struct ButtonSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Button("Increment")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
             Text("Clicked \(counter) time(s)")
-                .fontSize(15)
                 .horizontalTextAlignment(.center)
 
             Button("Outlined")
@@ -41,7 +36,6 @@ struct ButtonSample: SampleContent, ExampleContent {
 
             Button("Disabled")
                 .isEnabled(false)
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
         }
         .spacing(12)

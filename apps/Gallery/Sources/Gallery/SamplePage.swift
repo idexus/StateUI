@@ -134,8 +134,5 @@ struct SamplePage: View {
             }
         }
         .style("Card")
-        .stroke(Palette.outline)
-        .lineWidth(1)
-        .shape(.roundedRectangle(10))
     }
 }

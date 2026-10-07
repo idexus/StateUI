@@ -5211,11 +5211,11 @@ enum Listings {
 
         static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
-        static let subtle = Color(light: Color("#993C3C43"), dark: Color("#99EBEBF5"))
+        static let subtle = Color(light: Color("#8C000000"), dark: Color("#8CFFFFFF"))
 
-        static let disabled = Color(light: Color("#4D3C3C43"), dark: Color("#4DEBEBF5"))
+        static let disabled = Color(light: Color("#40000000"), dark: Color("#40FFFFFF"))
 
-        static let outline = Color(light: Color("#4A3C3C43"), dark: Color("#99545458"))
+        static let outline = Color(light: Color("#1F000000"), dark: Color("#1FFFFFFF"))
         """#,
         "PanSample": #"""
         // Sources/Samples/Gestures/PanSample.swift

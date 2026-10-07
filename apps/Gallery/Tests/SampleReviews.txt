@@ -14,13 +14,13 @@ BindingReaderSample.swift 22bbc364e59f8b8f
 BoundPropertiesSample.swift 1d2246423200992b
 BrushSample.swift 5e3921ea2a261515
 BuilderSample.swift 4e5175b72803442d
-ButtonSample.swift f5c3fd20b0e903cf
+ButtonSample.swift 00b23871b3f155eb
 CanvasSample.swift 52db70adead39b9b
 CheckBoxSample.swift a6e9da46d0ccfb97
 ChoosingItemsSample.swift 1573f5816d02501f
 ColorBoxSample.swift 8be208d26c18412f
 ConcurrentAnimationSample.swift efbb746c25635a14
-ConcurrentStateSample.swift c9f3c2b9f5b1b8d6
+ConcurrentStateSample.swift 2a95c6a0946e960d
 ConnectivitySample.swift 97d67e2f258c5f25
 ContextMenuSample.swift ba71fec6f5e723a3
 ConverterSample.swift 93b81bab3c2abc16
@@ -82,7 +82,7 @@ ScenesSample.swift f4f8db5a4ec1767c
 ScrollViewSample.swift b05713b8ca2c2484
 SearchFieldSample.swift 78f8081ecd423749
 SearchSample.swift 38388654add4726f
-SemanticsSample.swift 1cd069a744ad8d8e
+SemanticsSample.swift c349812189127b8e
 ShapesSample.swift 6107589125bcb192
 SizingSample.swift 70709ad782077630
 SliderSample.swift cf5772598d1a84df
@@ -91,7 +91,7 @@ StackLayoutSample.swift ada27eaae5510163
 StateClassSample.swift c4ddf2de9588ca14
 StateSample.swift 08f6c8b42c6e3260
 StepperSample.swift 1e633e09e89c353a
-StyleSample.swift 96142af93140b41a
+StyleSample.swift 4a48ca75379839c9
 SwipeSample.swift 2fb22b96ddd4f81c
 SwitchSample.swift ac0d645ed37aa2e9
 TabsSample.swift 4054904b4f6aced1

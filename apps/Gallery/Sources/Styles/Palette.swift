@@ -8,9 +8,9 @@
 //
 // The gallery stands in each platform's own look: its pages, bars, sidebar and
 // controls are the platform's. What it says for itself is its identity - the
-// gradient and the mark - the colours its samples draw with, and neutrals that
-// are a grey let through, so they stand right on whatever the platform draws
-// behind them, in either theme.
+// gradient and the mark - the colours its samples draw with, and neutrals of
+// no hue of their own: black let through in the light, white in the dark, so
+// they darken or lighten whatever the platform draws behind them.
 
 import StateUI
 
@@ -51,31 +51,34 @@ enum Palette {
 
     /// Text a view has to say the colour of again - drawn words, a clock's
     /// hands. Text that says nothing takes the platform's own.
-    static let text = Color(light: Color("#E0000000"), dark: Color("#FFFFFFFF"))
+    static let text = Color(light: Color("#D9000000"), dark: Color("#D9FFFFFF"))
 
     /// Anything secondary: summaries, captions, the line under a title.
     // listing: Palette.sample
-    static let subtle = Color(light: Color("#993C3C43"), dark: Color("#99EBEBF5"))
+    static let subtle = Color(light: Color("#8C000000"), dark: Color("#8CFFFFFF"))
     // listing: end
 
     /// Text and drawings that are not available.
     // listing: Palette.sample
-    static let disabled = Color(light: Color("#4D3C3C43"), dark: Color("#4DEBEBF5"))
+    static let disabled = Color(light: Color("#40000000"), dark: Color("#40FFFFFF"))
     // listing: end
 
     // MARK: Fills
 
     /// A panel set apart from the page: a card, a code block.
-    static let raised = Color(light: Color("#1F767680"), dark: Color("#3D767680"))
+    static let raised = Color(light: Color("#0D000000"), dark: Color("#0FFFFFFF"))
 
     /// A region set apart within a panel.
-    static let well = Color(light: Color("#14747480"), dark: Color("#2E767680"))
+    static let well = Color(light: Color("#0A000000"), dark: Color("#0AFFFFFF"))
 
     /// Outlines, dividers, the edge of something drawn.
     // listing: Palette.sample
-    static let outline = Color(light: Color("#4A3C3C43"), dark: Color("#99545458"))
+    static let outline = Color(light: Color("#1F000000"), dark: Color("#1FFFFFFF"))
     // listing: end
 
     /// Behind the thing you are on - the sidebar's current row, a pad held down.
-    static let selected = Color(light: Color("#29787880"), dark: Color("#52787880"))
+    static let selected = Color(light: Color("#1A000000"), dark: Color("#1FFFFFFF"))
+
+    /// Behind the row under the pointer.
+    static let hovered = Color(light: Color("#0A000000"), dark: Color("#0FFFFFFF"))
 }

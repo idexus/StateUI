@@ -115,8 +115,6 @@ struct SemanticsSample: SampleContent, ExampleContent {
             // view can hold.
             Button("Announce the count")
                 .accessibilityIdentifier("semantics.announce")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"

@@ -113,6 +113,21 @@ enum AppStyles {
             Style<Text>("MenuRowText")
                 .verticalAlignment(.center)
 
+            // MARK: Lists
+
+            // A list's rows stand in one rounded group, its fill set apart
+            // from the page; a row lights up under the pointer.
+            Style<VStack>("RowGroup")
+                .background(Palette.raised)
+                .shape(.roundedRectangle(12))
+                .clipsContent(true)
+
+            Style<ZStack>("ListRow")
+                .background(.transparent)
+                .visualState(.pointerOver) { $0
+                    .background(Palette.hovered)
+                }
+
             // MARK: Shapes
 
             // A card is a FILL set apart from whatever page the platform draws

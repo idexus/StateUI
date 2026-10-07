@@ -48,12 +48,6 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Button(running ? "Counting…" : "Count from 200 tasks at once")
-                .fontSize(14)
-                .fontAttributes(.bold)
-                .background(running ? Palette.disabled : Palette.accent)
-                .textColor(Palette.onAccent)
-                .shape(.roundedRectangle(10))
-                .padding(horizontal: 22, vertical: 12)
                 .isEnabled(!running)
                 .horizontalAlignment(.center)
                 .onClicked {
