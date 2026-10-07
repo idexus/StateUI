@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 ModalStack.barBackgroundColor: ✅
 ModalStack.barForegroundColor: ✅
 ModalStack.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.

@@ -203,6 +203,8 @@ final class AppKitDriver: HostDriver {
         }
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
         if property == .barBackgroundColor { return try barHolds(element) }
+        if property == .barForegroundColor { return try barWordsColor(element) }
+        if property == .barIcon { return try titleAreaIcon(element) }
         // Whether a page offers the way back: the window's toolbar holds its back item while the page shows.
         if property == .showsBackButton, element.type == .page {
             return (try controller(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.back) != nil).propValue

@@ -93,6 +93,24 @@ extension AppKitDriver {
         return words.isEmpty ? nil : words.propValue
     }
 
+    /// The colour the bar's words of the window `element` stands in are drawn in: its painted title's, which a band
+    /// painted in a bar colour shows; nil on the system's material, where the system draws the title.
+    func barWordsColor(_ element: MountedElement) throws -> HostValue? {
+        let controller = try controller(of: element)
+        guard controller.bandTitle.window != nil else { return nil }
+        return controller.bandTitle.textColor.map { Self.color($0).propValue }
+    }
+
+    /// The picture the title area of the window `element` stands in shows, told by the picture of a name the host
+    /// gave it; nil where it shows none.
+    func titleAreaIcon(_ element: MountedElement) throws -> HostValue? {
+        let controller = try controller(of: element)
+        guard controller.titleAccessoryForTesting != nil, let shown = controller.titleClusterForTesting.imageForTesting
+        else { return nil }
+        let names = ["test_dot.png", "test_wide.png", "photo.png"]
+        return names.first { renderer?.image(named: $0) === shown }.map { .string($0) }
+    }
+
     /// The colour the bar of the window `element` stands in is painted: the window's own background, which the title
     /// bar lets show only while a colour is painted; nil on the system's material.
     func barHolds(_ element: MountedElement) throws -> HostValue? {

@@ -13,7 +13,9 @@
         Specimens.wearing(BarElementContract.self).flatMap { element in
             [
                 holds(BarElementContract.barBackgroundColor, on: element, .steelBlue, then: .firebrick),
-                holds(BarElementContract.barForegroundColor, on: element, .white, then: .black),
+                holds(
+                    BarElementContract.barForegroundColor, on: element, .white, then: .black,
+                    over: [Write(BarElementContract.barBackgroundColor, Color.steelBlue)]),
                 holds(BarElementContract.barTitle, on: element, "Notes", then: "Drafts"),
                 holds(BarElementContract.barSubtitle, on: element, "Inbox", then: "Sent"),
                 holds(BarElementContract.barIcon, on: element, "test_dot.png", then: "test_wide.png"),
@@ -21,16 +23,18 @@
         }
     }
 
-    /// `member`, declared by `element`, holds what the tree gives it and what the tree changes it to.
+    /// `member`, declared by `element` `over` what else it declares, holds what the tree gives it and what the tree
+    /// changes it to.
     static func holds<Value: HostRepresentable & Sendable & Equatable>(
-        _ member: ElementProperty<BarElementContract, Value>, on element: String, _ first: Value, then second: Value
+        _ member: ElementProperty<BarElementContract, Value>, on element: String, _ first: Value, then second: Value,
+        over others: [any Worn] = []
     ) -> ConformanceCase {
         ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", proves: [
             Covered(member, on: element),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
-                declaring(element, [Write(member, value.wrappedValue)], beside: [
+                declaring(element, others + [Write(member, value.wrappedValue)], beside: [
                     Button("Change").onClicked { value.wrappedValue = second }.id("change"),
                 ])
             }

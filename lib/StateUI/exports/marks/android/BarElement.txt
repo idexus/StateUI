@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 ModalStack.barBackgroundColor: ✅
 ModalStack.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the colour itself - on a tab row, the chosen tab's words.
 ModalStack.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
