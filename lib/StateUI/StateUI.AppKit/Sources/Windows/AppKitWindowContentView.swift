@@ -104,7 +104,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
             self.page = page
             if let page {
                 page.translatesAutoresizingMaskIntoConstraints = true
-                addSubview(page, positioned: material == nil ? .below : .above, relativeTo: material)
+                addSubview(page, positioned: .above, relativeTo: band)
             }
         }
 

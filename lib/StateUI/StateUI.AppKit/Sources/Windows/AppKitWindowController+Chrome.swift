@@ -154,14 +154,15 @@ extension AppKitWindowController {
     /// toolbar and the window's background around a floating sidebar are one
     /// surface, so the sidebar stands framed in the bars' colour, its glass
     /// taking a tint of it. With none written the window keeps the system's.
-    /// On a translucent window the colour paints the bars alone: the window
-    /// keeps no background, so its material, the system's, shows around the
-    /// floating sidebar and under the page.
+    /// On a translucent window the colour paints the bars alone: the window's
+    /// band, which the floating sidebar's glass shows, and the detail's. The
+    /// window keeps no background, so its material, the system's, shows around
+    /// the sidebar and under the page.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
         let background = isTranslucent ? NSColor.clear : (color ?? .windowBackgroundColor)
         if window.backgroundColor != background { window.backgroundColor = background }
-        content.barColor = split == nil ? color : nil
+        content.barColor = split == nil || isTranslucent ? color : nil
         split?.setDetailBarColor(color)
     }
 

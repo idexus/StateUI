@@ -40,7 +40,7 @@ final class AppKitWindowContentTests: XCTestCase {
 
         XCTAssertTrue(page.superview === content)
         XCTAssertNil(panel.superview)
-        XCTAssertEqual(content.subviews.count, 1)
+        XCTAssertEqual(content.subviews.filter { !$0.isHidden }, [page], "the page alone stands")
     }
 
     @MainActor

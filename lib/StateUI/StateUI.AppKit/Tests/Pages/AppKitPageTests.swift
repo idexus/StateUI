@@ -232,10 +232,10 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// On a translucent window a colour written for the bars paints the bars
-    /// alone: the detail's band, over the material, which stays the system's -
-    /// the window keeps no background, so the desktop shows around the
-    /// floating sidebar. An opaque window again frames the sidebar in the
-    /// colour.
+    /// alone: the window's band, under the floating sidebar's glass, and the
+    /// detail's - over the material, which stays the system's; the window keeps
+    /// no background, so the desktop shows around the sidebar. An opaque window
+    /// again frames the sidebar in the colour.
     @MainActor
     func testATranslucentWindowsBarColourPaintsTheBarsAlone() throws {
         let renderer = testRenderer(
@@ -258,7 +258,13 @@ final class AppKitPageTests: XCTestCase {
         let colour = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
         XCTAssertEqual(window.backgroundColor, .clear, "the material shows around the sidebar")
         XCTAssertEqual(split.detailBarColorForTesting, colour, "the detail's bar wears the colour")
+        XCTAssertEqual(content.barColor, colour, "the window's band stands under the sidebar's glass")
+        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band beneath it")
         XCTAssertNotNil(content.materialForTesting)
+        content.layoutSubtreeIfNeeded()
+        let order = content.subviews.map { String(describing: type(of: $0)) }
+        XCTAssertEqual(order.prefix(3), ["NSVisualEffectView", "NSView", "AppKitSplitView"],
+                       "the material, the band over it, the split view over both")
 
         renderer.applyForTesting(windowTree(flyout(
             presented: true,
@@ -266,6 +272,8 @@ final class AppKitPageTests: XCTestCase {
             detail: stack), translucent: false))
         XCTAssertEqual(window.backgroundColor, colour)
         XCTAssertEqual(split.detailBarColorForTesting, colour)
+        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the colour behind it")
+        XCTAssertNil(content.barColor, "the window's background is the colour already")
         XCTAssertNil(content.materialForTesting)
     }
 
