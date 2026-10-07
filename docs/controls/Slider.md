@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 2 ☑️ · 10 ✓ · 3 –</td><td><code>SeekBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>61 ✅ · 12 ✓</td><td><code>Slider</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 1 ☑️ · 23 ✓ · 3 –</td><td><code>GtkScale</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 20 ✓ · 1 –</td><td><code>&lt;input type=range&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>54 ✅ · 20 ✓ · 1 –</td><td><code>&lt;input type=range&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SliderContract.swift`.
@@ -48,10 +48,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SliderContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td></td><td>native</td><td align="center">·</td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: cannot drag on Slider - AppKit's driver has no path for it yet<br>UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3, Web: not realized<br>GTK 4: GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPressed</code> (<code>pressed</code>)</td><td>event</td><td></td><td>native</td><td align="center">·</td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: cannot drag on Slider - AppKit's driver has no path for it yet<br>UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3, Web: not realized<br>GTK 4: GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td></td><td>native</td><td align="center">·</td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot drag on Slider - AppKit's driver has no path for it yet<br>UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: not realized<br>GTK 4: GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPressed</code> (<code>pressed</code>)</td><td>event</td><td></td><td>native</td><td align="center">·</td><td align="center">✓</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot drag on Slider - AppKit's driver has no path for it yet<br>UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: not realized<br>GTK 4: GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximum</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>minimum</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>value</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

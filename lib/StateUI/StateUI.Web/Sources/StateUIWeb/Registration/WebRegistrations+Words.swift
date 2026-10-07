@@ -35,6 +35,8 @@ extension WebRegistrations {
         registry.add(ButtonContract.self, create: { reports in
             let button = WebButtonView()
             button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.listenForHolding(
+                pressed: { reports.raise(ButtonContract.pressed) }, released: { reports.raise(ButtonContract.released) })
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyWords(view, values) }
@@ -62,6 +64,8 @@ extension WebRegistrations {
             }
             button.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             button.raises(ButtonContract.clicked)
+            button.raises(ButtonContract.pressed)
+            button.raises(ButtonContract.released)
         })
     }
 

@@ -58,7 +58,9 @@ a `<span>` and its picture in an `<img>` beside them, the two in its middle:
 the icon's position is the row's or column's direction, its spacing their
 gap - 8 points where the tree says none - and a picture with no words fills
 the button as its content mode says. Its words break as a label's do, on one
-line where the tree says nothing.
+line where the tree says nothing. A pointer taking hold of it is its press,
+and its release comes once - lifted, called off, or gone off the button; a
+slider's are heard the same.
 
 ## A field
 

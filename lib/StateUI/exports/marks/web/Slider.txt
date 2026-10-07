@@ -3,8 +3,8 @@ Slider: ✅
 Slider.frameChanged: ✅
 Slider.maximum: ✅
 Slider.minimum: ✅
-Slider.pressed: not realized
-Slider.released: not realized
+Slider.pressed: ✅
+Slider.released: ✅
 Slider.value: ✅
 Slider.valueChanged: ✅
 Text.text: ✅

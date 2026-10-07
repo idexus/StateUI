@@ -112,6 +112,22 @@ class WebDOMView {
         WebRelay.listen(node, event, listener)
     }
 
+    /// Says when a pointer takes hold of the element, and once when it lets go - lifted, called off, or gone off it.
+    func listenForHolding(pressed: @escaping @MainActor () -> Void, released: @escaping @MainActor () -> Void) {
+        var holding = false
+        listen("pointerdown") {
+            holding = true
+            pressed()
+        }
+        for event in ["pointerup", "pointercancel", "pointerleave"] {
+            listen(event) {
+                guard holding else { return }
+                holding = false
+                released()
+            }
+        }
+    }
+
     /// Sets a CSS property, or takes it away for nil; one written over while a place travels waits for it to land.
     func style(_ name: String, _ value: String?) {
         guard styles[name] != value else { return }

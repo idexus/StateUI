@@ -6,6 +6,6 @@ Button.icon: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
 Button.lineBreak: ✅
-Button.pressed: not realized
-Button.released: not realized
+Button.pressed: ✅
+Button.released: ✅
 Text.text: ✅

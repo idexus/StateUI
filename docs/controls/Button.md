@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>65 ✅ · 2 ☑️ · 10 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>75 ✅ · 12 ✓</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 24 ✓ · 1 –</td><td><code>GtkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;button&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>66 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;button&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -55,10 +55,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract
 <tbody><tr></tr><tr><td rowspan="2"><code>iconSpacing</code></td><td>property</td><td><code>Double</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: AppKit's button stands its picture at its own gap from the words: it takes no other.<br>Android Views: cannot read iconSpacing of Button - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineBreak</code></td><td>property</td><td><code>LineBreak</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPressed</code> (<code>pressed</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent<br>Web: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent<br>Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPressed</code> (<code>pressed</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
