@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (9)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>4 ✅ · 1 ✓</td><td>custom <code>NSView</code> stack; title, back and actions in the window's <code>NSToolbar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>5 ✅ · 1 ✓</td><td>custom <code>NSView</code> stack; title, back and actions in the window's <code>NSToolbar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>7 ✅ · 2 –</td><td><code>UINavigationController</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 2 –</td><td>custom <code>ViewGroup</code> stack + <code>Toolbar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅</td><td><code>Frame</code></td></tr></tbody>
@@ -92,6 +92,5 @@ What a page shows about itself where another container presents it as an item - 
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center"></td></tr>
 <tr><td colspan="9">AppKit: cannot read icon of NavigationStack - AppKit's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.<br>Web: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read title of NavigationStack - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

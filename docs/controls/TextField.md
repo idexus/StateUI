@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>46 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>52 ✅ · 2 ☑️ · 35 ✓</td><td><code>UITextField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 2 ☑️ · 10 ✓ · 2 –</td><td><code>EditText</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>73 ✅ · 1 ☑️ · 12 ✓ · 1 –</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
@@ -204,8 +204,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 <tbody><tr></tr><tr><td><code>isReadOnly</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isSpellCheckEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet<br>Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which <code>isTextPredictionEnabled</code> turns off.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>placeholderColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>

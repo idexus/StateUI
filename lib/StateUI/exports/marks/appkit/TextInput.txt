@@ -4,7 +4,7 @@ SearchField.inputPurpose: ✓ read inputPurpose of SearchField: the traits the h
 SearchField.isEnabled: ✅
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet
-SearchField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet
+SearchField.isTextPredictionEnabled: ✅
 SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
 SearchField.placeholderColor: ✅
@@ -28,7 +28,7 @@ TextField.inputPurpose: ✓ read inputPurpose of TextField: the traits the host 
 TextField.isEnabled: ✅
 TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet
-TextField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet
+TextField.isTextPredictionEnabled: ✅
 TextField.maximumLength: ✅
 TextField.placeholder: ✅
 TextField.placeholderColor: ✅

@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (91)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 1 ☑️ · 36 ✓ · 3 –</td><td><code>NSSearchField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 36 ✓ · 3 –</td><td><code>NSSearchField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>50 ✅ · 2 ☑️ · 35 ✓</td><td><code>UISearchBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>72 ✅ · 2 ☑️ · 10 ✓ · 1 –</td><td><code>SearchView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>68 ✅ · 1 ☑️ · 12 ✓ · 1 –</td><td><code>AutoSuggestBox</code></td></tr></tbody>
@@ -201,8 +201,8 @@ What every field a user types into has: the text's limits and caret, the keyboar
 <tbody><tr></tr><tr><td><code>isReadOnly</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isSpellCheckEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet<br>Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which <code>isTextPredictionEnabled</code> turns off.<br>WinUI 3: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">WinUI 3: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>placeholderColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>

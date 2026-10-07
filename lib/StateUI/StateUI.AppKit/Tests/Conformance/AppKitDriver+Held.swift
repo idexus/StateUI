@@ -105,6 +105,15 @@ extension AppKitDriver {
         }
     }
 
+    /// The title of the tab the page or arrangement `element` stands on, as the window's row of tabs shows it.
+    func tabTitle(of element: MountedElement, in tabs: MountedElement) throws -> HostValue? {
+        let control = try controller(of: element).tabRowForTesting.controlForTesting
+        guard let place = tabs.children.firstIndex(where: { $0 === element }), place < control.segmentCount else {
+            throw DriverCannot(reading: .title, of: element)
+        }
+        return control.label(forSegment: place)?.propValue
+    }
+
     /// What a menu's entry or a toolbar's item holds, as its NSMenuItem or NSToolbarItem holds it.
     func itemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         if element.type == .menuItem, let item = (element.native as? AppKitElement)?.platformMenuItem {
@@ -112,8 +121,20 @@ extension AppKitDriver {
             case .text: return item.title.propValue
             case .isEnabled: return item.isEnabled.propValue
             case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
+            case .isDestructive:
+                let words = item.attributedTitle
+                let red = words.flatMap { $0.length > 0 ? $0.attribute(.foregroundColor, at: 0, effectiveRange: nil) : nil }
+                return ((red as? NSColor) == .systemRed).propValue
             default: break
             }
+        }
+        if element.type == .toolbarItem, property == .placement {
+            let toolbar = try controller(of: element).toolbarForTesting
+            let identifier = NSToolbarItem.Identifier("StateUI.action.\(element.mount)")
+            if toolbar.overflowForTesting.contains(where: { $0.identifier == identifier }) {
+                return ToolbarItemPlacement.overflow.propValue
+            }
+            if toolbar.identifiersForTesting.contains(identifier) { return ToolbarItemPlacement.bar.propValue }
         }
         if element.type == .toolbarItem,
            let item = try controller(of: element).toolbarForTesting

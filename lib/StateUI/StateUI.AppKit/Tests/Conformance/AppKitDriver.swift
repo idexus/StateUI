@@ -194,6 +194,7 @@ final class AppKitDriver: HostDriver {
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
         if element.type == .marker { return try markerHolds(property, element) }
         if element.type == .textSpan { return try spanHolds(property, on: element) }
+        if property == .title, let tabs = element.parent, tabs.type == .tabView { return try tabTitle(of: element, in: tabs) }
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held
         }

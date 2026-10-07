@@ -117,6 +117,7 @@ extension AppKitDriver {
             guard let placeholder = field.placeholderAttributedString, placeholder.length > 0 else { return nil }
             return (placeholder.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor).map { color($0).propValue }
         case .isPassword: return (field is NSSecureTextField).propValue
+        case .isTextPredictionEnabled: return field.isAutomaticTextCompletionEnabled.propValue
         case .horizontalTextAlignment: return alignment(field).propValue
         default: return nil
         }

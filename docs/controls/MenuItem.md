@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (6)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>4 ✅ · 1 ☑️</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅</td><td><code>UIMenu</code> / <code>UIAction</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>4 ✅ · 2 –</td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
@@ -70,8 +70,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 <tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read icon of MenuItem - AppKit's driver has no path for it yet<br>Android Views: Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.<br>GTK 4: GNOME's menus show words alone, no picture beside them.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isDestructive</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet<br>GTK 4: GNOME's menus mark no entry as destroying something.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isDestructive</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: GNOME's menus mark no entry as destroying something.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
