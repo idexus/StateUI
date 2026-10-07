@@ -116,8 +116,6 @@ enum AppStyles {
             // value wins over its style, per property.
 
             Style<HStack>("MenuRow")
-                .spacing(10)
-                .padding(horizontal: 10, vertical: 8)
                 .shape(.roundedRectangle(8))
                 .background(.transparent)
 

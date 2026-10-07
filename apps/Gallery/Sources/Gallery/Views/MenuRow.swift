@@ -30,6 +30,9 @@ struct MenuRow: View {
     /// Whether this is the section showing now.
     private var isChosen = false
 
+    /// Which kind of device this is: a touch screen's rows stand taller.
+    @Environment(\.device) private var device
+
     /// - Parameters:
     ///   - title: What the row says.
     ///   - action: What tapping it does.
@@ -62,6 +65,9 @@ struct MenuRow: View {
         // then waits for the next event to arrive.
         let action = self.action
         let chosen = self.isChosen
+        // A finger takes the taller row a phone's own menus have; a pointer, a
+        // desktop sidebar's.
+        let touch = device.info.formFactor != .desktop
 
         return HStack {
             // Hidden rather than absent where a row has no picture: an
@@ -81,6 +87,8 @@ struct MenuRow: View {
         // one is. A control's own value wins over its style, per property,
         // which is what lets one style serve both.
         .style("MenuRow")
+        .spacing(touch ? 14 : 10)
+        .padding(horizontal: touch ? 18 : 10, vertical: touch ? 13 : 8)
         .background(chosen ? Palette.selected : .transparent)
         // A row of the menu is a stack with a tap on it, which no platform
         // reads as a control: the picture and the caption are two views, and
