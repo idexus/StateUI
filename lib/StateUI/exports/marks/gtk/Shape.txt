@@ -1,61 +1,61 @@
-# revision 1.1
+# revision 2.1
 Ellipse.contentMode: ✅
-Ellipse.dash: does not apply - read dash of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
-Ellipse.dashPhase: does not apply - read dashPhase of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
+Ellipse.dash: ✅
+Ellipse.dashPhase: ✅
 Ellipse.fill: ✅
 Ellipse.geometryTransform: ✅
-Ellipse.lineCap: does not apply - read lineCap of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its lineCap; its drawing proves it
-Ellipse.lineJoin: does not apply - read lineJoin of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its lineJoin; its drawing proves it
+Ellipse.lineCap: ✅
+Ellipse.lineJoin: – an ellipse has no corner its outline joins at
 Ellipse.lineWidth: ✅
-Ellipse.miterLimit: does not apply - read miterLimit of Ellipse - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
+Ellipse.miterLimit: – an ellipse has no corner its outline joins at
 Ellipse.stroke: ✅
 Line.contentMode: ✅
-Line.dash: does not apply - read dash of Line - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
-Line.dashPhase: does not apply - read dashPhase of Line - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
+Line.dash: ✅
+Line.dashPhase: ✅
 Line.fill: ✅
 Line.geometryTransform: ✅
-Line.lineCap: does not apply - read lineCap of Line - StateUI draws a shape on GTK's snapshot, which holds none of its lineCap; its drawing proves it
-Line.lineJoin: does not apply - read lineJoin of Line - StateUI draws a shape on GTK's snapshot, which holds none of its lineJoin; its drawing proves it
+Line.lineCap: ✅
+Line.lineJoin: – a line has no corner its outline joins at
 Line.lineWidth: ✅
-Line.miterLimit: does not apply - read miterLimit of Line - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
+Line.miterLimit: – a line has no corner its outline joins at
 Line.stroke: ✅
 Path.contentMode: ✅
-Path.dash: does not apply - read dash of Path - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
-Path.dashPhase: does not apply - read dashPhase of Path - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
+Path.dash: ✅
+Path.dashPhase: ✅
 Path.fill: ✅
 Path.geometryTransform: ✅
-Path.lineCap: does not apply - read lineCap of Path - StateUI draws a shape on GTK's snapshot, which holds none of its lineCap; its drawing proves it
-Path.lineJoin: does not apply - read lineJoin of Path - StateUI draws a shape on GTK's snapshot, which holds none of its lineJoin; its drawing proves it
+Path.lineCap: ✅
+Path.lineJoin: ✅
 Path.lineWidth: ✅
-Path.miterLimit: does not apply - read miterLimit of Path - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
+Path.miterLimit: ✅
 Path.stroke: ✅
 Polygon.contentMode: ✅
-Polygon.dash: does not apply - read dash of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
-Polygon.dashPhase: does not apply - read dashPhase of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
+Polygon.dash: ✅
+Polygon.dashPhase: ✅
 Polygon.fill: ✅
 Polygon.geometryTransform: ✅
-Polygon.lineCap: does not apply - read lineCap of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its lineCap; its drawing proves it
-Polygon.lineJoin: does not apply - read lineJoin of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its lineJoin; its drawing proves it
+Polygon.lineCap: ✅
+Polygon.lineJoin: ✅
 Polygon.lineWidth: ✅
-Polygon.miterLimit: does not apply - read miterLimit of Polygon - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
+Polygon.miterLimit: ✅
 Polygon.stroke: ✅
 Polyline.contentMode: ✅
-Polyline.dash: does not apply - read dash of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
-Polyline.dashPhase: does not apply - read dashPhase of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
+Polyline.dash: ✅
+Polyline.dashPhase: ✅
 Polyline.fill: ✅
 Polyline.geometryTransform: ✅
-Polyline.lineCap: does not apply - read lineCap of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its lineCap; its drawing proves it
-Polyline.lineJoin: does not apply - read lineJoin of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its lineJoin; its drawing proves it
+Polyline.lineCap: ✅
+Polyline.lineJoin: ✅
 Polyline.lineWidth: ✅
-Polyline.miterLimit: does not apply - read miterLimit of Polyline - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
+Polyline.miterLimit: ✅
 Polyline.stroke: ✅
 Rectangle.contentMode: ✅
-Rectangle.dash: does not apply - read dash of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its dash; its drawing proves it
-Rectangle.dashPhase: does not apply - read dashPhase of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its dashPhase; its drawing proves it
+Rectangle.dash: ✅
+Rectangle.dashPhase: ✅
 Rectangle.fill: ✅
 Rectangle.geometryTransform: ✅
-Rectangle.lineCap: does not apply - read lineCap of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its lineCap; its drawing proves it
-Rectangle.lineJoin: does not apply - read lineJoin of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its lineJoin; its drawing proves it
+Rectangle.lineCap: ✅
+Rectangle.lineJoin: ✅
 Rectangle.lineWidth: ✅
-Rectangle.miterLimit: does not apply - read miterLimit of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its miterLimit; its drawing proves it
+Rectangle.miterLimit: ✅
 Rectangle.stroke: ✅

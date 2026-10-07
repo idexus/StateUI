@@ -101,8 +101,11 @@ measured larger, so a figure a lean or a cap takes past its room would be
 cut there: the figure measures its `Path` with no bound, which tells how far
 it reaches, and puts it in a place from the room's corner as far as that -
 the frame StateUI reports stays the room. Dashes, gaps and their offset are outline widths in WinUI
-as in StateUI; a mitred corner's limit WinUI measures against half the
-outline's width and StateUI against the whole, so it is doubled.
+as in StateUI. A mitred corner's limit WinUI measures from the corner's
+point against half the outline's width - StateUI's own ratio - and past it
+cuts the mitre short where the other hosts bevel it; a square corner of a
+rectangle adds no segment of its own, as one of no length would leave the
+joins beside it no direction.
 
 
 ## A canvas

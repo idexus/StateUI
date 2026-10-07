@@ -1,31 +1,49 @@
-# revision 1.1
+# revision 2.1
 Ellipse.contentMode: ✅
+Ellipse.dash: ✅
 Ellipse.dashPhase: ✅
 Ellipse.fill: ✅
+Ellipse.lineCap: ✅
 Ellipse.lineJoin: ✅
 Ellipse.lineWidth: ✅
-Line.contentMode: ✅
+Ellipse.miterLimit: – an ellipse has no corner its outline joins at
+Line.dash: ✅
 Line.dashPhase: ✅
-Line.fill: ✅
-Line.lineJoin: ✅
+Line.geometryTransform: ✅
+Line.lineCap: ✅
+Line.lineJoin: – a line has no corner its outline joins at
 Line.lineWidth: ✅
+Line.miterLimit: ✅
+Line.stroke: ✅
 Path.contentMode: ✅
+Path.dash: ✅
 Path.dashPhase: ✅
 Path.fill: ✅
+Path.lineCap: ✅
 Path.lineJoin: ✅
 Path.lineWidth: ✅
-Polygon.contentMode: ✅
+Path.miterLimit: ✅
+Polygon.dash: ✅
 Polygon.dashPhase: ✅
-Polygon.fill: ✅
+Polygon.geometryTransform: ✅
+Polygon.lineCap: ✅
 Polygon.lineJoin: ✅
 Polygon.lineWidth: ✅
+Polygon.miterLimit: ✅
+Polygon.stroke: ✅
 Polyline.contentMode: ✅
+Polyline.dash: ✅
 Polyline.dashPhase: ✅
 Polyline.fill: ✅
+Polyline.lineCap: ✅
 Polyline.lineJoin: ✅
 Polyline.lineWidth: ✅
-Rectangle.contentMode: ✅
+Polyline.miterLimit: ✅
+Rectangle.dash: ✅
 Rectangle.dashPhase: ✅
-Rectangle.fill: ✅
+Rectangle.geometryTransform: ✅
+Rectangle.lineCap: ✅
 Rectangle.lineJoin: ✅
 Rectangle.lineWidth: ✅
+Rectangle.miterLimit: ✅
+Rectangle.stroke: ✅

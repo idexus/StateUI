@@ -261,7 +261,7 @@ extension WinUIDriver {
             let cap = Int(try read(view, "cap")) ?? 0
             return (cap == 2 ? LineCap.round : cap == 1 ? .square : .flat).propValue
         case "lineJoin": return LineJoin(rawValue: Int32(try read(view, "join")) ?? 0)?.propValue
-        case "miterLimit": return ((Double(try read(view, "miter")) ?? 0) / 2).propValue
+        case "miterLimit": return (Double(try read(view, "miter")) ?? 0).propValue
         default: return nil
         }
     }

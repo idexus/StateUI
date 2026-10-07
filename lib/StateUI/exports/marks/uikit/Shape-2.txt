@@ -1,31 +1,41 @@
-# revision 1.1
-Ellipse.dash: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+# revision 2.1
+Ellipse.dash: ✅
 Ellipse.fill: ✅
 Ellipse.geometryTransform: does not apply - read geometryTransform of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
-Ellipse.lineJoin: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Ellipse.lineCap: ✅
+Ellipse.lineJoin: ✅
 Ellipse.lineWidth: ✅
 Ellipse.stroke: ✅
-Line.contentMode: ✅
-Line.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Line.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Line.stroke: ✅
-Path.contentMode: does not apply - read contentMode of Path - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
-Path.fill: ✅
-Path.geometryTransform: ✅
-Path.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Path.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Polygon.dash: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Line.contentMode: does not apply - read contentMode of Line - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Line.dashPhase: ✅
+Line.fill: ✅
+Line.geometryTransform: ✅
+Line.lineCap: ✅
+Line.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Line.miterLimit: – a line has no corner its outline joins at
+Path.contentMode: ✅
+Path.dash: ✅
+Path.dashPhase: ✅
+Path.lineJoin: ✅
+Path.miterLimit: ✅
+Path.stroke: ✅
+Polygon.dash: ✅
 Polygon.fill: ✅
 Polygon.geometryTransform: does not apply - read geometryTransform of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
-Polygon.lineJoin: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polygon.lineCap: ✅
+Polygon.lineJoin: ✅
 Polygon.lineWidth: ✅
 Polygon.stroke: ✅
-Polyline.contentMode: ✅
-Polyline.dashPhase: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Polyline.miterLimit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Polyline.stroke: ✅
-Rectangle.contentMode: does not apply - read contentMode of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
-Rectangle.fill: ✅
-Rectangle.geometryTransform: ✅
-Rectangle.lineCap: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
-Rectangle.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polyline.contentMode: does not apply - read contentMode of Polyline - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Polyline.dashPhase: ✅
+Polyline.fill: ✅
+Polyline.geometryTransform: ✅
+Polyline.lineCap: ✅
+Polyline.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polyline.miterLimit: ✅
+Rectangle.contentMode: ✅
+Rectangle.dash: ✅
+Rectangle.dashPhase: ✅
+Rectangle.lineJoin: ✅
+Rectangle.miterLimit: ✅
+Rectangle.stroke: ✅

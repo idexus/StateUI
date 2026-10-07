@@ -116,6 +116,19 @@ the host's package rather than in it, and everything there links the host's
 one dynamic library. The driver reads the host's own views, so it is built
 where the host is built for testing: a debug build, `swift test`.
 
+## A drawing read by its colours
+
+What StateUI draws itself - a shape's outline, a canvas, a box's fill - holds
+no native value a driver could read, so its cases read the colours it shows:
+a dashed outline has gaps along a run of points where a solid one has none,
+dashes shifted by their phase stand where the gaps stood, squared ends cover
+more of a run of short dashes than flat ones, and a mitred corner reaches a
+point just inside its outer side that a bevel, or a mitre past its limit,
+leaves bare. A figure's points stand set in from its room, so a corner's
+outer side is drawn inside it; a rectangle and an ellipse are set in by half
+their outline on every host. A line and an ellipse have no corner: their
+joins are never had there.
+
 ## A session
 
 A case reaches its host only through its session: the page it starts, the
