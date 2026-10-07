@@ -67,15 +67,16 @@ final class WebImageView: WebDOMView {
         attribute("src", "Images/" + shown + (unproportioned ? "#svgView(preserveAspectRatio(none))" : ""))
     }
 
-    /// A filling picture reaches a pixel past each edge of its room, under its parent's clip: WebKit draws a
-    /// covering picture rounded inward, and what lies over it would show at the seam.
+    /// A filling picture reaches two pixels past each edge of its room, under its parent's clip: WebKit draws a
+    /// covering picture rounded inward - by more than a pixel on a turned card - and what lies over it would show
+    /// at the seam.
     /// Design: docs/design/platforms/web/controls.md#pictures
     override func style(_ name: String, _ value: String?) {
         guard Self.reached.contains(name) else { return super.style(name, value) }
         laid[name] = value
         guard aspect == .fill else { return super.style(name, value) }
-        super.style(name, name.hasPrefix("margin-") ? value.map { "calc(\($0) - 1px)" } ?? "-1px"
-            : value.map { "calc(\($0) + 2px)" })
+        super.style(name, name.hasPrefix("margin-") ? value.map { "calc(\($0) - 2px)" } ?? "-2px"
+            : value.map { "calc(\($0) + 4px)" })
     }
 
     /// The lengths a filling picture reaches past: its margins, and the sizes its room bounds it to.

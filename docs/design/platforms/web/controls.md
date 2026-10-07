@@ -205,10 +205,10 @@ alone (`contain: size`), the picture's own given as it loads
 as it is, where the browser's own would stand as tall as its proportions
 make it. The trap: an SVG picture keeps its own proportions under
 `object-fit: fill`, as the file's `preserveAspectRatio` says - stretched, it
-stands fitted. A picture filling its room (`object-fit: cover`) reaches a
-pixel past each edge - margins a pixel less, its bounds two more - under its
-parent's clip: WebKit draws a covering picture rounded inward at a
-fractional edge, so a band laid over its bottom - a card's caption in seventy
+stands fitted. A picture filling its room (`object-fit: cover`) reaches two
+pixels past each edge - margins two pixels less, its bounds four more - under
+its parent's clip: WebKit draws a covering picture rounded inward at a
+fractional edge, by more than a pixel on a card turned and drawn small, so a band laid over its bottom - a card's caption in seventy
 per cent black - would paint the last row over the page, a black hairline.
 A transform cannot do it: a transformed picture is drawn over its later
 siblings.
