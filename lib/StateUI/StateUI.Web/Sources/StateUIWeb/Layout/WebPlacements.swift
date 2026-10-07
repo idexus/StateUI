@@ -38,7 +38,7 @@ final class WebPlacements {
             layout.children.filter { $0.travelling == nil && !$0.isReleased }.map { (layout, $0) }
         }
         let read = WebRelay.places(standing.map { ($0.0.node, $0.1.node) })
-        for ((_, child), place) in zip(standing, read) { child.slot = place }
+        for ((_, child), place) in zip(standing, read) { child.slot = child.frame(laidOut: place) }
     }
 
     /// `layout` arranged its children in this call.
@@ -78,7 +78,7 @@ final class WebPlacements {
             let room = read.removeFirst()
             layout.places.begin(width: room?.width ?? 0)
             for (index, child) in layout.children.enumerated() {
-                child.slot = read.removeFirst()
+                child.slot = child.frame(laidOut: read.removeFirst())
                 moved[ObjectIdentifier(child)] = child
                 guard let slot = child.slot else {
                     child.travelling = nil

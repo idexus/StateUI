@@ -79,6 +79,8 @@ final class WebImageView: WebDOMView {
             : value.map { "calc(\($0) + 4px)" })
     }
 
+    override var reach: Double { aspect == .fill ? 2 : 0 }
+
     /// The lengths a filling picture reaches past: its margins, and the sizes its room bounds it to.
     private static let reached = ["inline-start", "block-start", "inline-end", "block-end"].map { "margin-" + $0 }
         + ["width", "height", "max-width", "max-height"]

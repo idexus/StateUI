@@ -34,6 +34,16 @@ class WebDOMView {
     /// Where the browser lays the view out in its layout, as last read; nil before, or where it lays it out nowhere.
     var slot: Rect?
 
+    /// How far past its frame the view's element reaches on each side - the box the browser lays out being the
+    /// frame and this much more; nothing but for a picture filling its room.
+    var reach: Double { 0 }
+
+    /// The view's frame in the box the browser laid its element out in.
+    func frame(laidOut box: Rect?) -> Rect? {
+        guard let box, reach != 0 else { return box }
+        return Rect(x: box.x + reach, y: box.y + reach, width: box.width - 2 * reach, height: box.height - 2 * reach)
+    }
+
     /// Where the view is drawn while its place travels; nil at its slot.
     var travelling: Rect?
 

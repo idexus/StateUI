@@ -55,7 +55,8 @@ extension WebDriver {
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         guard let view = (element.native as? WebElement)?.view else { throw DriverCannot("read the colour of \(element.type.name)") }
         let box = try box(of: view.node)
-        let at = Point(x: box.x + point.x, y: box.y + point.y)
+        // The point of the view's frame, which a picture filling its room reaches past.
+        let at = Point(x: box.x + view.reach + point.x, y: box.y + view.reach + point.y)
         let shown = try pixel(at)
         try WebBrowser.run("e.dataset.stateuiSeen = e.style.visibility; e.style.visibility = 'hidden'", on: view.node)
         let behind = try pixel(at)

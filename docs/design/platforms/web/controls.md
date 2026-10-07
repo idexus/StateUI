@@ -211,4 +211,7 @@ its parent's clip: WebKit draws a covering picture rounded inward at a
 fractional edge, by more than a pixel on a card turned and drawn small, so a band laid over its bottom - a card's caption in seventy
 per cent black - would paint the last row over the page, a black hairline.
 A transform cannot do it: a transformed picture is drawn over its later
-siblings.
+siblings. Its frame is its room still: the box the browser lays out reaches
+past it (`WebDOMView.reach`), and the place read back, as everything measured
+of the picture, is that box less its reach - read whole, the picture stood two
+pixels up and left of its room, its own top left corner clipped away.
