@@ -74,12 +74,12 @@ private final class LastFrame: @unchecked Sendable {
 ///     }
 ///
 /// The closure runs again whenever the frame settles somewhere new; before the
-/// first layout it is given a zero rectangle. Several views stack on top of
+/// first layout it does not run, and the reader holds nothing. Several views stack on top of
 /// each other, as in a `Grid`. To report a frame rather than build from it,
 /// write `.onFrameChanged` on the view.
 public struct GeometryReader: View {
-    /// The last frame the layout settled on - zero until the first report.
-    @State private var frame = Rect(0, 0, 0, 0)
+    /// The last frame the layout settled on; nil until the first report.
+    @State private var frame: Rect?
 
     /// Which coordinates the closure is handed.
     private let space: CoordinateSpace
@@ -113,7 +113,7 @@ public struct GeometryReader: View {
     /// The content, in a Grid that fills the offered space and writes its own
     /// frame into the state this body reads.
     public var body: some View {
-        Grid { BuiltViews(nodes: build(frame)) }
+        Grid { BuiltViews(nodes: frame.map(build) ?? []) }
             .onFrameChanged(in: space) { frame = $0 }
     }
 }

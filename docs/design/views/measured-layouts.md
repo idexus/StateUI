@@ -56,7 +56,10 @@ last frame in a `@State` of its own, in a `Grid` that fills the offered space
 and reports its own frame, so the closure runs again whenever the frame
 settles somewhere new; the measurement arrives through the same channel as
 every other report, and nothing about it exists in the host. Before the first
-layout the closure is given a zero rectangle.
+report the closure does not run and the reader holds nothing: content built
+for a zero rectangle stood at no size and grew when the frame came - every
+page sized by its reader grew from nothing, and WebKit kept the height of a
+caption it had measured at no width, a list standing short under it.
 
 ## A frame feed
 

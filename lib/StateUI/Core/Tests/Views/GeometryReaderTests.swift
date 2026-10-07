@@ -153,9 +153,10 @@ final class GeometryReaderTests: XCTestCase {
 
     // MARK: - The container
 
-    /// A GeometryReader's content is built FROM the measurement: zero before the
-    /// first report, the measured frame after - the closure running again
-    /// because the report wrote the reader's own `@State`.
+    /// A GeometryReader's content is built FROM the measurement: nothing before
+    /// the first report - no content laid out at no size, to grow when the
+    /// frame arrives - the measured frame after, the closure running because
+    /// the report wrote the reader's own `@State`.
     func testAReadersContentIsBuiltFromTheMeasurement() {
         let renders = Renders()
 
@@ -171,9 +172,9 @@ final class GeometryReaderTests: XCTestCase {
 
         let first = renders.render(tree())
 
-        // Before any report the closure was handed a zero rectangle.
+        // Before any report the reader holds nothing.
         let grid = first.children.first?.children.first
-        XCTAssertEqual(grid?.children.first?.props["text"], .string("0 wide"))
+        XCTAssertEqual(grid?.children.count, 0, "content built before its frame was known")
 
         Renderer.shared.clearInvalidation()
         renders.fire(grid?.events?["frameChanged"] ?? -1, with: payload)
