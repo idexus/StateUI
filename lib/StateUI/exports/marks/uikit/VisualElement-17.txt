@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Button.accessibilityLabel: ✅
 Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
@@ -39,5 +39,5 @@ TextField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: eve
 TimePicker.frame: ✅
 VStack.isEnabled: ✅
 VStack.translationX: ✓ read translationX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.automationExcludedWithChildren: ✅
+WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.isAccessibilityHidden: ✅

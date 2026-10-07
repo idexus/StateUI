@@ -49,7 +49,7 @@ extension WebElement {
         if changed.contains(.showsSidebar) {
             split.present(element.value(.showsSidebar)?.bool == true, moves: wasDescribed)
         }
-        if changed.contains(.sidebarBackground) || changed.contains(.flyoutBackground) {
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
             split.ground(beside: element.sidebarMaterial(over: false), over: element.sidebarMaterial(over: true))
         }
     }

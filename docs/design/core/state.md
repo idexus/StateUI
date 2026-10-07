@@ -173,12 +173,26 @@ the exception: its animator is an engine on this side.
 
 ## Themed colours on a carried state
 
-A colour pair (`Color(light:dark:)`) written into a carried state keeps the
+A colour pair (`Color(light:dark:)`) - or any value wearing the theme, a
+material holding one - written into a carried state keeps the
 pair on the storage, and the image holds the half in force: lanes are one
 colour. Every driven modifier that hands the state on reads the theme as it
 does, which makes that element the theme's reader; a theme change builds it
 again, and the host animates the colour to the other half. The pair is let go
 when the host moves the value somewhere else.
+
+## A material on a carried state
+
+A `Material` lies as lanes of its own width (`LaneKind.material`): its kind -
+none, a colour, a gradient, a blur, glass - then what that kind is made of,
+every colour four lanes as it stands. A pair lies as its half in force, a
+half that is none as nothing; a blur and glass lay the stand-in colour of the
+theme in force too, so a theme turning changes the bytes and the host shows
+the other half. A material, a colour pair and the accent are each a value
+wearing the theme (`ThemeWearing`): the storage keeps it whole and the
+element handing it on reads the theme, as for a colour pair above. A material
+is shown as it stands, never walked: `.background($material)` is a plain
+channel, while `.background($colour)` stays a journey the host animates.
 
 ## A write that lands
 

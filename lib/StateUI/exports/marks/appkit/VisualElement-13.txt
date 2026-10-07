@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.accessibilityHint: ✅
 Button.focus: ✅
 Button.isFocusedChanged: ✅
@@ -43,5 +43,5 @@ TextField.frame: ✅
 TimePicker.isEnabled: ✅
 TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.rotationY: ✓ read rotationY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.automationExcludedWithChildren: ✅
-ZStack.accessibilityLabel: ✅
+WebView.isAccessibilityHidden: ✅
+ZStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.

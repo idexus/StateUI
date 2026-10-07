@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Button.frame: ✅
 Button.scaleX: ✅
@@ -56,7 +56,7 @@ TimePicker.isFocusedChanged: ✅
 TimePicker.scaleY: ✅
 TimePicker.unfocus: ✅
 VStack.automationExcludedWithChildren: ✅
-WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
-WebView.rotation: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.isEnabled: ✅
+WebView.opacity: ✅
+WebView.pivotY: ✅
+ZStack.translationY: ✅
+ZStack.zIndex: ✅

@@ -148,9 +148,13 @@ let panel = VStack { Text("Saved") }
 
 A platform with no glass draws the blur as clear as the glass; one that blurs
 nothing, a colour of the theme let through as the blur is, the tint over it.
-A colour's channel still writes a background: `.background($color)` walks the
-colour as the state moves. A window's background is a material too
-(`window.background`, in *Application and sessions*).
+A state holding a material is a channel: `.background($material)` -
+`.pageBackground($material)`, a split view's `.sidebarBackground($material)`
+and `.flyoutBackground($material)` alike - shows each material written into
+the state as it stands, and no body is built again for it; a pair in it
+follows the theme. A colour's channel walks the colour instead:
+`.background($color)` animates it as the state moves. A window's background
+is a material too (`window.background`, in *Application and sessions*).
 
 ## Visual states
 

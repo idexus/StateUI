@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.isEnabled: ✅
 Button.layoutDirection: ✅
@@ -53,8 +53,6 @@ TimePicker.isVisible: ✅
 TimePicker.pivotX: ✅
 VStack.style: ✅
 VStack.translationX: ✅
-WebView.accessibilityHeading: ✅
-ZStack.frameChanged: ✅
-ZStack.height: ✅
-ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element
-ZStack.width: ✅
+WebView.accessibilityHint: ✅
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ZStack.rotation: ✅

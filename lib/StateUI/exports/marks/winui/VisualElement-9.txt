@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.style: ✅
 ActivityIndicator.translationX: ✅
 Button.automationExcludedWithChildren: ✅
@@ -63,6 +63,6 @@ TextField.translationX: ✅
 TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 VStack.frame: ✅
 VStack.scaleX: ✅
-WebView.accessibilityLabel: ✅
-ZStack.opacity: ✅
-ZStack.pivotY: ✅
+WebView.accessibilityHeading: ✅
+ZStack.isVisible: ✅
+ZStack.pivotX: ✅

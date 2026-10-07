@@ -100,6 +100,9 @@ final class UIKitElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
+            (controller as? UIKitSplitViewController)?.showPageBackgrounds()
+        }
         // A tab bar takes the bars' colours itself; the window's controller shows the rest of the chrome again.
         if !changed.isDisjoint(with: Self.barColors) {
             let colors = element.barColors

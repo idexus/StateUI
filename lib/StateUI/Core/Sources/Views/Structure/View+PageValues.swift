@@ -40,6 +40,12 @@ extension View {
         pageSays { $0.journey(PageContract.background.token, by: state) }
     }
 
+    /// The page's background from a material state, `$x`: the host shows each
+    /// new material as it stands.
+    public func pageBackground(_ state: Binding<Material>) -> Modified {
+        pageSays { $0.plain(PageContract.background, by: state) }
+    }
+
     /// Whether the navigation bar shows while the page is on top of its stack.
     public func showsNavigationBar(_ value: Bool) -> Modified {
         pageSays { $0.setValue(PageContract.showsNavigationBar, value) }

@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.translationY: ✅
 ActivityIndicator.zIndex: ✅
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
@@ -61,6 +61,6 @@ VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothin
 VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.scaleY: ✅
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.accessibilityHint: ✅
-ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-ZStack.rotation: ✅
+WebView.accessibilityLabel: ✅
+ZStack.opacity: ✅
+ZStack.pivotY: ✅

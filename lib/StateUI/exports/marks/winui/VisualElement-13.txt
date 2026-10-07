@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.accessibilityHint: ✅
 Button.opacity: ✅
 Button.pivotY: ✅
@@ -69,6 +69,10 @@ TimePicker.isEnabled: ✅
 TimePicker.rotation: ✅
 VStack.accessibilityHeading: ✅
 VStack.isEnabled: ✅
-WebView.automationExcludedWithChildren: ✅
-ZStack.ignoresInput: ✅
-ZStack.scale: ✅
+WebView.isAccessibilityHidden: ✅
+ZStack.frameChanged: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element

@@ -15,4 +15,7 @@ public enum LaneKind: Sendable {
 
     /// A colour: red, green, blue and alpha, each from nought to one.
     case color
+
+    /// A material: its kind, then what it is made of, as `Material` lays it.
+    case material
 }

@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.frame: ✅
 Button.opacity: ✅
 Button.scaleY: ✓ read scaleY of Button: the host's own transform, checked against the layer it composed itself
@@ -47,6 +47,10 @@ TextField.isVisible: ✅
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.background: ✅
-WebView.zIndex: ✅
-ZStack.ignoresInput: ✅
-ZStack.isEnabled: ✅
+WebView.style: ✅
+ZStack.frameChanged: ✅
+ZStack.isEnabled: ✓ tap on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅

@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.pivotX: ✅
 Button.focus: ✅
@@ -63,9 +63,7 @@ TextField.pivotX: ✅
 TimePicker.style: ✅
 TimePicker.translationX: ✅
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-WebView.frameChanged: ✅
-WebView.height: ✅
-WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
-WebView.width: ✅
-ZStack.accessibilityLabel: ✅
+WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
+WebView.rotation: ✅
+ZStack.accessibilityHeading: ✅
 ZStack.isEnabled: ✅

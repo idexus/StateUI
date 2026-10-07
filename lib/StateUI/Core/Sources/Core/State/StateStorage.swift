@@ -62,15 +62,14 @@ extension State {
         /// hook.
         var noted: ((Value) -> Void)?
 
-        /// The colour pair last written into a carried state; the image holds its half
-        /// in force.
+        /// The value wearing the theme last written into a carried state - a colour
+        /// pair, the accent, a material holding either; the image holds its half in force.
         /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
-        nonisolated(unsafe) var pair: Value?
+        nonisolated(unsafe) var themed: Value?
 
-        /// Whether a value is a colour with a half for each theme, or the accent in force.
-        static func isPair(_ value: Value) -> Bool {
-            guard let color = value as? Color else { return false }
-            return color.dark != nil || color.isAccent
+        /// Whether a value turns with the theme or the accent (`ThemeWearing`).
+        static func wearsTheTheme(_ value: Value) -> Bool {
+            (value as? any ThemeWearing)?.wearsTheTheme == true
         }
 
         /// Whether the image is a journey's rather than the value's own lanes.
@@ -81,7 +80,7 @@ extension State {
         /// plain value, a write.
         func snap(_ newValue: Value) {
             if let hostSnap {
-                pair = Self.isPair(newValue) ? newValue : nil
+                themed = Self.wearsTheTheme(newValue) ? newValue : nil
                 hostSnap(newValue)
             } else {
                 value = newValue
@@ -160,13 +159,13 @@ extension State {
         /// The value, read or written whole under the lock.
         var value: Value {
             get {
-                if let hostRead { return pair ?? hostRead() }
+                if let hostRead { return themed ?? hostRead() }
 
                 return guarded.withLock { settled() }
             }
             set {
                 if let hostWrite {
-                    pair = Self.isPair(newValue) ? newValue : nil
+                    themed = Self.wearsTheTheme(newValue) ? newValue : nil
                     hostWrite(newValue)
                     return
                 }
@@ -191,7 +190,7 @@ extension State {
         func write(_ newValue: Value) {
             if let hostWrite {
                 // The board's hold serializes a carried write; the record comes after it.
-                pair = Self.isPair(newValue) ? newValue : nil
+                themed = Self.wearsTheTheme(newValue) ? newValue : nil
                 hostWrite(newValue)
                 keep?(newValue)
                 return
@@ -210,9 +209,9 @@ extension State {
         func update(_ transform: (Value) -> Value) {
             if let hostRead, let hostWrite {
                 // A read and then a write: the host rewrites the image on its own frames.
-                let settled = transform(pair ?? hostRead())
+                let settled = transform(themed ?? hostRead())
 
-                pair = Self.isPair(settled) ? settled : nil
+                themed = Self.wearsTheTheme(settled) ? settled : nil
                 hostWrite(settled)
                 keep?(settled)
                 return
@@ -248,7 +247,7 @@ extension State.Storage where Value: Walked {
             let initial = image.map { Self.lifted(from: $0) } ?? settled()
             let start = JourneyLanes(initial, motion: law)
 
-            pair = Self.isPair(initial) ? initial : nil
+            themed = Self.wearsTheTheme(initial) ? initial : nil
             let made: HostStorage
 
             if let image {
@@ -302,7 +301,7 @@ extension State.Storage where Value: Walked {
                     // The destination moved - a drag, a press: every reader is asked, and a
                     // kept state keeps where it is going.
                     known.destination = now.destination
-                    self?.pair = nil
+                    self?.themed = nil
                     self?.askForRender()
                     self?.keep?(now.destination)
                 } else if mask & (JourneyLanes<Value>.mask(of: .value) | JourneyLanes<Value>.mask(of: .velocity)) != 0 {
@@ -400,7 +399,7 @@ extension State.Storage where Value: StateValue {
             let bytes = StateImage.bytes(of: initial.carried)
             let made = HostStorage(bytes)
 
-            pair = Self.isPair(initial) ? initial : nil
+            themed = Self.wearsTheTheme(initial) ? initial : nil
 
             made.origin = origin
             Renderer.shared.board(of: made).hold(made)
@@ -427,7 +426,7 @@ extension State.Storage where Value: StateValue {
                 guard now != known.bytes else { return }
 
                 known.bytes = now
-                self?.pair = nil
+                self?.themed = nil
                 self?.askForRender()
                 self?.keep?(value)
             }
@@ -452,19 +451,19 @@ extension State.Storage where Value: StateValue {
         init(_ bytes: [UInt8]) { self.bytes = bytes }
     }
 
-    /// Lays a colour pair's half in force and makes the element being built the
+    /// Lays the half in force of a value wearing the theme and makes the element being built the
     /// theme's reader.
     /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
     func wearThemedPair() {
-        guard let pair, let hostRead, let hostWrite else { return }
+        guard let themed, let hostRead, let hostWrite else { return }
 
         // The reads that make this element the theme's reader, and the accent's.
         _ = StandardEnvironment.application.info.colorScheme
         _ = StandardEnvironment.application.info.accentColor
 
-        guard StateImage.bytes(of: pair.carried) != StateImage.bytes(of: hostRead().carried) else { return }
+        guard StateImage.bytes(of: themed.carried) != StateImage.bytes(of: hostRead().carried) else { return }
 
-        hostWrite(pair)
+        hostWrite(themed)
     }
 
     /// The value as the lanes stand, or `nothing` where they stand for none.

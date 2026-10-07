@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 SplitView: ✅
 SplitView.flyoutBackground: ☑️ WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness.
 SplitView.showsSidebar: ✅

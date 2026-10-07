@@ -586,6 +586,8 @@
             return .enumeration(Int32(lanes[0].rounded()))
         case .color:
             return Color(carried: .lanes(lanes))?.propValue
+        case .material:
+            return Material.propValue(lanes: lanes)
         }
     }
 }

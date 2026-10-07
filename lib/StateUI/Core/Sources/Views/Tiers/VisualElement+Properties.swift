@@ -164,6 +164,12 @@ extension VisualElement {
         journey(VisualElementContract.background.token, by: state)
     }
 
+    /// `background` from a material state, `$x`: the host shows each new
+    /// material as it stands, and no view is rebuilt for it.
+    public func background(_ state: Binding<Material>) -> Modified {
+        plain(VisualElementContract.background, by: state)
+    }
+
     /// `layoutDirection` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func layoutDirection(_ state: Binding<LayoutDirection>) -> Modified {

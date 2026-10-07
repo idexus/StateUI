@@ -34,7 +34,7 @@ final class StateLanesTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(met, [.number, .boolean, .choice, .color], "the lane kinds the library's members are of")
+        XCTAssertEqual(met, [.number, .boolean, .choice, .color, .material], "the lane kinds the library's members are of")
     }
 
     /// Whether some value of `type` was read back from its lanes, each as it crosses stated.

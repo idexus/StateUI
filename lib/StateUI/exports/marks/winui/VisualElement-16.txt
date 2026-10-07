@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.automationExcludedWithChildren: ✅
 Button.frameChanged: ✅
 Button.maximumHeight: ✅
@@ -68,7 +68,9 @@ TextField.automationExcludedWithChildren: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.scale: ✅
 VStack.accessibilityHeading: ✅
-WebView.isVisible: ✅
-WebView.pivotX: ✅
-ZStack.style: ✅
-ZStack.translationX: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.scaleY: ✅
+ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

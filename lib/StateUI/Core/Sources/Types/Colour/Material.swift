@@ -84,6 +84,8 @@ public struct Material: Equatable, Sendable, HostRepresentable {
                 .enumeration(5), glass.clarity.propValue, glass.tint?.propValue ?? .nothing,
                 .bool(glass.isInteractive), glass.fallback.propValue, glass.fallback.standIn.propValue,
             ])
+        case .pair(nil, nil):
+            .nothing
         case .pair(let light, let dark):
             .themed(light: light?.propValue ?? .nothing, dark: dark?.propValue ?? .nothing)
         }

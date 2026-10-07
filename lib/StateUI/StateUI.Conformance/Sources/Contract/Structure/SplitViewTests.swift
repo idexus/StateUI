@@ -80,7 +80,39 @@
             standsOn(SplitViewContract.flyoutBackground, "theSidebarStandsOnItsFlyoutsMaterialOverTheDetail") {
                 $0.flyoutBackground($1)
             },
+            follows(SplitViewContract.sidebarBackground, "theSidebarFollowsAMaterialStateBesideTheDetail") {
+                $0.sidebarBackground($1)
+            },
+            follows(SplitViewContract.flyoutBackground, "theSidebarFollowsAMaterialStateOverTheDetail") {
+                $0.flyoutBackground($1)
+            },
         ]
+    }
+
+    /// The sidebar stands on the material `member` says from a state handed on as `$x` - the colour the state holds,
+    /// then the one written into it: a material's channel.
+    private static func follows(
+        _ member: ElementProperty<SplitViewContract, Material>, _ name: String,
+        _ write: @escaping @Sendable (SplitView, Binding<Material>) -> SplitView.Modified
+    ) -> ConformanceCase {
+        ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ButtonContract.clicked)]) { s in
+            let (first, changed) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let value = State(wrappedValue: first)
+            s.start {
+                write(SplitView(State(wrappedValue: true).projectedValue) {
+                    Text("Sidebar")
+                } detail: {
+                    WideDetail(VStack { Button("Change").onClicked { value.wrappedValue = changed }.id("change") })
+                }, value.projectedValue)
+            }
+            let split = try s.element(ofType: SplitViewContract.nodeType)
+            try s.settle { try s.held(member, on: split) == first }
+            s.expect(try s.held(member, on: split), first, "the material the state holds")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(member, on: split) == changed }
+            s.expect(try s.held(member, on: split), changed, "the material written into it")
+        }
     }
 
     /// The sidebar stands on the material `member` says - the colour it starts with, then the one the tree changes

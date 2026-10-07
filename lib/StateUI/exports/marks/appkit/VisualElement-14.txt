@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Button.style: ✅
 Canvas.frameChanged: ✅
@@ -49,5 +49,5 @@ TimePicker.height: ✅
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform, checked against the layer it composed itself
 TimePicker.width: ✅
 VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
-WebView.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-ZStack.accessibilityHint: ✅
+WebView.automationExcludedWithChildren: ✅
+ZStack.accessibilityLabel: ✅

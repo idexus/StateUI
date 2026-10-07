@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.accessibilityLabel: ✅
 Button.isVisible: ✅
 Button.pivotX: ✅
@@ -59,10 +59,8 @@ TimePicker.opacity: ✅
 TimePicker.pivotY: ✅
 VStack.translationY: ✅
 VStack.zIndex: ✅
-WebView.isAccessibilityHidden: ✅
+WebView.accessibilityHeading: ✅
 ZStack.frameChanged: ✅
-ZStack.maximumHeight: ✅
-ZStack.maximumWidth: ✅
-ZStack.minimumHeight: ✅
-ZStack.minimumWidth: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
+ZStack.height: ✅
+ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element
+ZStack.width: ✅

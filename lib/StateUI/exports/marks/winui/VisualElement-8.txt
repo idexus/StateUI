@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.scaleY: ✅
@@ -61,6 +61,6 @@ TextField.unfocus: ✅
 TimePicker.automationExcludedWithChildren: ✅
 VStack.ignoresInput: ✅
 VStack.scale: ✅
-WebView.accessibilityHeading: ✅
-ZStack.isVisible: ✅
-ZStack.pivotX: ✅
+WebView.translationY: ✅
+WebView.zIndex: ✅
+ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned

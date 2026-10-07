@@ -77,6 +77,7 @@
             pushedFollows(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
             pushedFollows(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
             pushedFollowsColour(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
+            followsAMaterial,
         ]
     }
 
@@ -140,6 +141,24 @@
                 }
             }
             try held(member, .color(first), then: .color(second), s)
+        }
+    }
+
+    /// A pushed page's background follows the material state its view says it from - a material's channel.
+    static var followsAMaterial: ConformanceCase {
+        ConformanceCase("Page.background.followsAMaterialState", proves: [
+            Covered(PageContract.background),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let (first, second) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let value = State(wrappedValue: first)
+            s.start {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    changing(value, to: second).pageBackground(value.projectedValue)
+                }
+            }
+            try held(PageContract.background, first, then: second, s)
         }
     }
 

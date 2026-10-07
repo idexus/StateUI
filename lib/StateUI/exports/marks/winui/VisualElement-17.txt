@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
 Button.ignoresInput: ✅
 Button.scale: ✅
@@ -54,7 +54,7 @@ TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or gl
 TimePicker.frame: ✅
 TimePicker.scaleX: ✅
 VStack.isAccessibilityHidden: ✅
-WebView.opacity: ✅
-WebView.pivotY: ✅
-ZStack.translationY: ✅
-ZStack.zIndex: ✅
+WebView.isVisible: ✅
+WebView.pivotX: ✅
+ZStack.style: ✅
+ZStack.translationX: ✅

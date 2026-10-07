@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
@@ -39,6 +39,6 @@ TextField.opacity: ✅
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.layoutDirection: ✅
-WebView.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-ZStack.background: ✅
-ZStack.frame: ✅
+WebView.zIndex: ✅
+ZStack.ignoresInput: ✅
+ZStack.isEnabled: ✅

@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.scale: ✅
 Button.accessibilityHint: ✅
@@ -65,6 +65,8 @@ VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
 VStack.width: ✅
-WebView.style: ✅
-WebView.translationX: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.scaleY: ✅
+WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.automationExcludedWithChildren: ✅

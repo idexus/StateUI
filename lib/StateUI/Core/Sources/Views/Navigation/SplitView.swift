@@ -116,4 +116,16 @@ extension SplitView {
     public func flyoutBackground(_ value: Material) -> Modified {
         setValue(SplitViewContract.flyoutBackground, value)
     }
+
+    /// `sidebarBackground` from a state, `$x`: the host shows each new material
+    /// as it stands, and no view is rebuilt for it.
+    public func sidebarBackground(_ state: Binding<Material>) -> Modified {
+        plain(SplitViewContract.sidebarBackground, by: state)
+    }
+
+    /// `flyoutBackground` from a state, `$x`: the host shows each new material
+    /// as it stands, and no view is rebuilt for it.
+    public func flyoutBackground(_ state: Binding<Material>) -> Modified {
+        plain(SplitViewContract.flyoutBackground, by: state)
+    }
 }

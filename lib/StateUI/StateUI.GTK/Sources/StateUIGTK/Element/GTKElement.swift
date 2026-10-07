@@ -65,6 +65,7 @@ final class GTKElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
     }
 
     func leave() {

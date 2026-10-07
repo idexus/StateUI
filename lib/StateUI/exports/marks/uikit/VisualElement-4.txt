@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
@@ -43,6 +43,6 @@ TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform, chec
 TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.layoutDirection: ✅
 VStack.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-WebView.frame: ✅
-ZStack.isEnabled: ✅
-ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself
+WebView.ignoresInput: ✅
+ZStack.opacity: ✅
+ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform, checked against the layer it composed itself

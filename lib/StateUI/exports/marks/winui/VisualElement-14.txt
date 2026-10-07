@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.accessibilityHeading: ✅
 Button.isEnabled: ✅
 Button.rotation: ✅
@@ -55,6 +55,6 @@ TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, chec
 TimePicker.width: ✅
 VStack.accessibilityLabel: ✅
 VStack.isEnabled: ✅
-WebView.background: not realized
-ZStack.frame: ✅
-ZStack.scaleX: ✅
+WebView.automationExcludedWithChildren: ✅
+ZStack.ignoresInput: ✅
+ZStack.scale: ✅

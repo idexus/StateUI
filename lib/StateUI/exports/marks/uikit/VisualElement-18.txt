@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.layoutDirection: ✅
 Button.accessibilityHint: ✅
 Canvas.style: ✅
@@ -51,5 +51,5 @@ VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
 VStack.width: ✅
-WebView.rotation: ✓ read rotation of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.background: ✅
+WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.automationExcludedWithChildren: ✅

@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.accessibilityLabel: ✅
 Button.frame: ✅
 Canvas.isEnabled: ✅
@@ -39,5 +39,5 @@ TextField.ignoresInput: ✅
 TimePicker.opacity: ✅
 TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.rotationX: ✓ read rotationX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.isAccessibilityHidden: ✅
-ZStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+WebView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+ZStack.zIndex: ✅

@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.automationExcludedWithChildren: ✅
 Button.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Canvas.frame: ✅
@@ -39,5 +39,5 @@ TextField.zIndex: ✅
 TimePicker.ignoresInput: ✅
 VStack.opacity: ✅
 VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.isAccessibilityHidden: ✅
+WebView.layoutDirection: ✅
+ZStack.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level

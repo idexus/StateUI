@@ -40,6 +40,7 @@
                 + (answeringByGestures.contains(element) ? [answering(element)] : [])
                 + (layouts.contains(element) ? [disablingItsBranch(element)] : [])
                 + (boxes.contains(element) ? [blurredOrGlass(element)] : [])
+                + (element == "VStack" ? [followsAMaterial] : [])
         }
     }
 
@@ -75,6 +76,29 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try shows(changed) }
             s.expect(try shows(changed), true, "the glass the tree changed it to, or the blur standing in for it")
+        }
+    }
+
+    /// A box's background follows the material state handed to it as `$x` - a material's channel.
+    static var followsAMaterial: ConformanceCase {
+        ConformanceCase("VStack.background.followsAMaterialState", proves: [
+            Covered(VisualElementContract.background, on: "VStack"),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let (first, second) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let value = State(wrappedValue: first)
+            s.start {
+                VStack {
+                    Button("Change").onClicked { value.wrappedValue = second }.id("change")
+                    VStack { Text("Box") }.background(value.projectedValue).id("specimen")
+                }
+            }
+            let specimen = try s.element("specimen")
+            try s.settle { try s.held(VisualElementContract.background, on: specimen) == first }
+            s.expect(try s.held(VisualElementContract.background, on: specimen), first, "the material the state holds")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(VisualElementContract.background, on: specimen) == second }
+            s.expect(try s.held(VisualElementContract.background, on: specimen), second, "the material written into it")
         }
     }
 

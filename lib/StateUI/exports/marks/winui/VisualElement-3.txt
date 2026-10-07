@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.rotation: ✅
 Button.translationY: ✅
@@ -61,6 +61,11 @@ TextField.rotation: ✅
 TimePicker.accessibilityHeading: ✅
 VStack.isVisible: ✅
 VStack.pivotX: ✅
-WebView.ignoresInput: ✅
-WebView.scale: ✅
-ZStack.accessibilityHeading: ✅
+WebView.frameChanged: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+WebView.rotationY: ✓ read rotationY of WebView: the host's own tip, checked against the projection it laid on the element
+ZStack.accessibilityHint: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
