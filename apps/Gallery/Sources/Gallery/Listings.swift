@@ -3360,15 +3360,15 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
 
-                SectionTitle("Fit or fill")
+                SectionTitle("Fit, fill or stretch")
 
                 // The same square picture in the same wide box, so the only
-                // difference between the two is the content mode.
+                // difference between the three is the content mode.
                 HStack {
                     VStack {
                         Image(light: "nav_media.png", dark: "nav_media_dark.png")
                             .contentMode(.fit)
-                            .width(120)
+                            .width(96)
                             .height(60)
 
                         Text(".contentMode(.fit)")
@@ -3377,10 +3377,19 @@ enum Listings {
                     VStack {
                         Image(light: "nav_media.png", dark: "nav_media_dark.png")
                             .contentMode(.fill)
-                            .width(120)
+                            .width(96)
                             .height(60)
 
                         Text(".contentMode(.fill)")
+                    }
+
+                    VStack {
+                        Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                            .contentMode(.stretch)
+                            .width(96)
+                            .height(60)
+
+                        Text(".contentMode(.stretch)")
                     }
                 }
                 .horizontalAlignment(.center)

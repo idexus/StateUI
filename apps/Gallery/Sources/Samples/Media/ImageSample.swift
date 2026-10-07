@@ -29,15 +29,15 @@ struct ImageSample: SampleContent, ExampleContent {
             .spacing(16)
             .horizontalAlignment(.center)
 
-            SectionTitle("Fit or fill")
+            SectionTitle("Fit, fill or stretch")
 
             // The same square picture in the same wide box, so the only
-            // difference between the two is the content mode.
+            // difference between the three is the content mode.
             HStack {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
                         .contentMode(.fit)
-                        .width(120)
+                        .width(96)
                         .height(60)
                         .background(Palette.surface)
 
@@ -51,11 +51,25 @@ struct ImageSample: SampleContent, ExampleContent {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
                         .contentMode(.fill)
-                        .width(120)
+                        .width(96)
                         .height(60)
                         .background(Palette.surface)
 
                     Text(".contentMode(.fill)")
+                        .fontSize(11)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+                }
+                .spacing(4)
+
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .contentMode(.stretch)
+                        .width(96)
+                        .height(60)
+                        .background(Palette.surface)
+
+                    Text(".contentMode(.stretch)")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -107,7 +121,8 @@ struct ImageSample: SampleContent, ExampleContent {
 
             Text("`.contentMode` is the choice between showing all of the picture and filling "
                 + "every corner: `.fit` keeps the whole picture and leaves room on "
-                + "two sides, `.fill` covers the box and crops what will not fit.")
+                + "two sides, `.fill` covers the box and crops what will not fit, `.stretch` "
+                + "covers it whole and gives up the picture's proportions.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

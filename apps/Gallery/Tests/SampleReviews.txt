@@ -42,7 +42,7 @@ GridSample.swift 1d69d1724bef8435
 HostTimeSample.swift 6cfb3dde2ee4c7b3
 IconButtonSample.swift b39f01b1d84873cd
 IdentitySample.swift 89c516687c4035aa
-ImageSample.swift 70065de66b9c3bed
+ImageSample.swift f7e05201dadb8bfc
 InteropActsSample.swift dd7261622ebea1de
 InteropControlSample.swift 24dd159d5b25cf2d
 InteropEventsSample.swift 0e19dce0d1ff2d2b
