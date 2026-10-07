@@ -8888,7 +8888,8 @@ enum Listings {
                 width = frame.width
                 height = frame.height
             }
-            // The switch starts where the window stands.
+            // The switch starts where the window stands - on, where the gallery's
+            // window opens translucent.
             .onCreated { translucent = window.isTranslucent == true }
         }
 
