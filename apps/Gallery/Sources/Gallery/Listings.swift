@@ -2579,6 +2579,19 @@ enum Listings {
                 case .graphite: return Color("#374151")
                 }
             }
+
+            /// The colour with three fifths let through - what a window the desktop
+            /// shows through is tinted with, thin enough for the desktop to show; nil
+            /// for the platform's own.
+            var translucentColor: Color? {
+                switch self {
+                case .platform: return nil
+                case .violet: return Color("#66512BD4")
+                case .teal: return Color("#660F766E")
+                case .coral: return Color("#66C2410C")
+                case .graphite: return Color("#66374151")
+                }
+            }
         }
 
         /// What the galleries look like, and how their tool windows stand - stepping
@@ -4110,6 +4123,11 @@ enum Listings {
             window.title = "StateUI Gallery"
             window.width = 1100
             window.height = 800
+            #if APPKIT
+            // The AppKit window shows the desktop through its material from
+            // the start.
+            window.isTranslucent = true
+            #endif
             window.minimumWidth = 700
             window.minimumHeight = 500
             window.maximumWidth = 1600

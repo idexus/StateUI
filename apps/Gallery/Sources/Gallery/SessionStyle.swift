@@ -60,6 +60,19 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         case .graphite: return Color("#374151")
         }
     }
+
+    /// The colour with three fifths let through - what a window the desktop
+    /// shows through is tinted with, thin enough for the desktop to show; nil
+    /// for the platform's own.
+    var translucentColor: Color? {
+        switch self {
+        case .platform: return nil
+        case .violet: return Color("#66512BD4")
+        case .teal: return Color("#660F766E")
+        case .coral: return Color("#66C2410C")
+        case .graphite: return Color("#66374151")
+        }
+    }
 }
 // listing: end
 

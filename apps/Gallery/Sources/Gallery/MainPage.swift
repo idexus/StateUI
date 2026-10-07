@@ -106,7 +106,7 @@ struct MainPage: View {
             // listing: end
             // The bars of both panes: the platform's own, or painted in the
             // accent the Colours window chose.
-            .paintedBars(style.accent.color)
+            .paintedBars(barColour)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
@@ -127,6 +127,11 @@ struct MainPage: View {
                 window.title = "StateUI Gallery"
                 window.width = 1100
                 window.height = 800
+                #if APPKIT
+                // The AppKit window shows the desktop through its material from
+                // the start.
+                window.isTranslucent = true
+                #endif
                 window.minimumWidth = 700
                 window.minimumHeight = 500
                 window.maximumWidth = 1600
@@ -216,7 +221,7 @@ struct MainPage: View {
 
         case .sample(let id):
             if let sample = catalog.sample(id: id) {
-                SamplePage.shown(sample, nav: nav, bar: style.accent.color)
+                SamplePage.shown(sample, nav: nav, bar: barColour)
             } else {
                 MissingPage(id: id, nav: nav, path: path)
             }
@@ -260,4 +265,13 @@ struct MainPage: View {
         .selection(nav.$tab)
     }
     // listing: end
+
+    // MARK: - The window's own chrome
+
+    /// What the bars are painted in: nothing, or the accent the Colours window
+    /// chose - with three fifths let through while the desktop shows through
+    /// the window.
+    private var barColour: Color? {
+        window.isTranslucent == true ? style.accent.translucentColor : style.accent.color
+    }
 }
