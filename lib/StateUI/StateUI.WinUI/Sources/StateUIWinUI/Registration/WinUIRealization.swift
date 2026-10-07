@@ -53,6 +53,8 @@ enum WinUIRealization {
 
         // MARK: Entries - a control's or a part's own
         .notPlanned("Page", "backButtonTitle", reason: "WinUI's way back is an arrow, with no words."),
+        .notPlanned("SearchField", "cursorPosition", reason: searchCaret),
+        .notPlanned("SearchField", "selectionLength", reason: searchCaret),
         .notPlanned("SearchField", "submitLabel", reason: "WinUI gives a text box no word for the return key of the keyboard on the screen."),
         .notPlanned("TextField", "submitLabel", reason: "WinUI gives a text box no word for the return key of the keyboard on the screen."),
         .notPlanned("ActivityIndicator", "background", reason: "WinUI's progress ring paints its Background as its "
@@ -161,6 +163,10 @@ enum WinUIRealization {
     /// Why a drawing's press is not let through as the tree says.
     static let hitOnlyWherePainted = "WinUI hands the activity ring only the presses on its turning arc: the "
         + "ring's middle, where a press is read, is never pressed, so there is nothing to let through."
+
+    /// Why a search box's caret is not the program's.
+    static let searchCaret = "WinUI's search box keeps its caret in the text box of its template, and offers no "
+        + "caret or selection of its own."
 
     /// Why a web view hears none of the user's hand as a view does.
     static let webViewTakesTheHand = "WebView2 gives the user's hand to its page: listened to by WinUI, it ends the "

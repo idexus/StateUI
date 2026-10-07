@@ -277,8 +277,8 @@ extension WinUIDriver {
         }
         var facts = [Int32](repeating: 0, count: 9)
         stateui_winui_field_facts(view.handle, &facts)
-        // A search box's own text box takes no more than whether it is read only.
-        if view is WinUISearchFieldView { return name == "isReadOnly" ? (facts[0] != 0).propValue : nil }
+        // A search box keeps its caret in its template's text box, which offers none of its own.
+        if view is WinUISearchFieldView, name == "cursorPosition" || name == "selectionLength" { return nil }
         switch name {
         case "isReadOnly": return (facts[0] != 0).propValue
         case "isSpellCheckEnabled": return (facts[1] != 0).propValue

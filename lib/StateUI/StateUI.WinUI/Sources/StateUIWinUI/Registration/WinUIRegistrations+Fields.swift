@@ -43,6 +43,10 @@ extension WinUIRegistrations {
                 view.setAlignment(alignment ?? .start)
             }
             search.property(TextInputContract.placeholderColor) { view, color in view.setPlaceholderColor(color?.propValue) }
+            search.applies([
+                TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
+                TextInputContract.inputPurpose,
+            ]) { view, values in view.setTraits(InputTraits(values)) }
             search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })

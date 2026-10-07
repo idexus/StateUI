@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 36 ✓ · 3 –</td><td><code>NSSearchField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>50 ✅ · 2 ☑️ · 35 ✓</td><td><code>UISearchBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>72 ✅ · 2 ☑️ · 10 ✓ · 1 –</td><td><code>SearchView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>68 ✅ · 1 ☑️ · 12 ✓ · 1 –</td><td><code>AutoSuggestBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>71 ✅ · 1 ☑️ · 12 ✓ · 3 –</td><td><code>AutoSuggestBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 23 ✓ · 2 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
 </table>
@@ -194,21 +194,20 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>cursorPosition</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>inputPurpose</code></td><td>property</td><td><code>InputPurpose</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks<br>WinUI 3: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>cursorPosition</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>inputPurpose</code></td><td>property</td><td><code>InputPurpose</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isReadOnly</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isSpellCheckEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet<br>Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which <code>isTextPredictionEnabled</code> turns off.<br>WinUI 3: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">WinUI 3: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isSpellCheckEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet<br>Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which <code>isTextPredictionEnabled</code> turns off.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>placeholderColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">GTK 4: only through the host's own: read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>selectionLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read selectionLength of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>selectionLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read selectionLength of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onTextChanged</code> (<code>textChanged</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

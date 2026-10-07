@@ -1,14 +1,14 @@
 # revision 2.1
-SearchField.cursorPosition: not realized
-SearchField.inputPurpose: not realized
+SearchField.cursorPosition: – WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.
+SearchField.inputPurpose: ✅
 SearchField.isEnabled: ✅
 SearchField.isReadOnly: ✅
-SearchField.isSpellCheckEnabled: not realized
-SearchField.isTextPredictionEnabled: not realized
+SearchField.isSpellCheckEnabled: ✅
+SearchField.isTextPredictionEnabled: ✅
 SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
 SearchField.placeholderColor: ✅
-SearchField.selectionLength: not realized
+SearchField.selectionLength: – WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.
 SearchField.text: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: ✅

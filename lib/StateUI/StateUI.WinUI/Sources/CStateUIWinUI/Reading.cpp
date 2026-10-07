@@ -319,10 +319,11 @@ namespace {
         return own ? colour(own) : std::string();
     }
 
-    /// A text box's input scope, as the relay numbers them (`WinUIInputScope`): its first name, found in the
-    /// relay's own table of them.
+    /// A text box's input scope - a search box's, its template's - as the relay numbers them (`WinUIInputScope`):
+    /// its first name, found in the relay's own table of them.
     std::optional<std::string> scope(IInspectable const &object) {
         auto box = object.try_as<controls::TextBox>();
+        if (auto search = object.try_as<controls::AutoSuggestBox>()) box = first<controls::TextBox>(search);
         if (!box) return std::nullopt;
         auto given = box.InputScope();
         if (!given || given.Names().Size() == 0) return "0";

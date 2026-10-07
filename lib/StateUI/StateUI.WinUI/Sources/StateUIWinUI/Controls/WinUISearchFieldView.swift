@@ -13,6 +13,7 @@ final class WinUISearchFieldView: WinUITextInputView {
     private var readOnly = false
     private var textCase = TextCase.none
     private var alignment = TextAlignment.start
+    private var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
 
     init() {
         super.init { number in stateui_winui_search_make(number) }
@@ -36,12 +37,20 @@ final class WinUISearchFieldView: WinUITextInputView {
     }
 
     /// The placeholder's colour; nil for the theme's.
+    /// How typing is checked, predicted and keyed.
+    func setTraits(_ traits: InputTraits) {
+        self.traits = traits
+        styleTheBox()
+    }
+
     func setPlaceholderColor(_ color: HostValue?) {
         let argb = color?.argb
         stateui_winui_search_set_placeholder_color(handle, argb ?? 0, argb != nil)
     }
 
     private func styleTheBox() {
-        stateui_winui_search_set_box(handle, readOnly, textCase.rawValue, alignment.rawValue)
+        stateui_winui_search_set_box(
+            handle, readOnly, textCase.rawValue, alignment.rawValue, traits.checksSpelling, traits.predicts,
+            WinUIInputScope(traits).rawValue)
     }
 }

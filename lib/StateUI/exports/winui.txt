@@ -196,7 +196,10 @@ SearchField
   fontFamily
   fontSize
   horizontalTextAlignment
+  inputPurpose
   isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
   maximumLength
   placeholder
   placeholderColor

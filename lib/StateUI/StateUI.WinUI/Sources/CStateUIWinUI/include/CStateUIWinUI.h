@@ -617,7 +617,8 @@ void stateui_winui_field_set_casing(StateUIObjectRef field, int32_t textCase);
 
 /// How a search box takes words: read only, the case its typing takes (StateUI's `TextCase`), and the words typed
 /// across it as `stateui_winui_field_set_look` has them.
-void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase, int32_t alignment);
+void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase, int32_t alignment,
+                                  bool spellChecked, bool predicted, int32_t scope);
 
 /// A search box's placeholder in `argb` where `colored`, else the theme's.
 void stateui_winui_search_set_placeholder_color(StateUIObjectRef search, uint32_t argb, bool colored);
