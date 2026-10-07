@@ -206,11 +206,16 @@ final class AndroidRenderer {
         return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
+    /// The colour the activity's window was last painted in behind its pages; nil while it keeps its own.
+    private var paintedBackground: Int32?
+
     /// Names the activity after the first window: the title its chrome shows, the visible page's that names it first.
-    /// Paints the activity's window behind its pages as the window's element says; the theme's own where it says
-    /// none.
+    /// Paints the activity's window behind its pages as the window's element says, and gives it the theme's own back
+    /// once it says none - a window never painted keeps whatever it shows.
     private func showBackground(_ background: HostValue?) {
         let argb = background.flatMap { HostBrush($0).firstColor }.flatMap(AndroidView.argb)
+        guard argb != paintedBackground else { return }
+        paintedBackground = argb
         Java.frame {
             Java.callStatic(
                 JavaAPI.environment, JavaAPI.setWindowBackground, .object(context.reference), .int(argb ?? 0),
