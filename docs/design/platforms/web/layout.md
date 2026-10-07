@@ -16,7 +16,8 @@ they need, as the host layer's stack does.
 
 ## A child's place
 
-A layout writes each child's place as the child's own CSS: its margin, its
+A layout writes each child's place as the child's own CSS: its margin - below
+nothing too, which shifts the child as it does on every host - its
 width and height, their least and most, and its alignment across its slot -
 in a grid's cell along both axes. Start, centre and end are CSS's start,
 center and end; a filling child stretches, unless a stated or a most size

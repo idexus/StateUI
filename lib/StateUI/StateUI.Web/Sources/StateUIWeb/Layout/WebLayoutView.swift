@@ -183,7 +183,7 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#a-childs-place
     func place(_ view: WebDOMView, _ values: LayoutValues) {
         view.drawInRun(nil, size: nil)
-        for (side, length) in WebCSS.sides(values.margin) { view.style("margin-\(side)", length) }
+        for (side, length) in WebCSS.sides(values.margin, signed: true) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
         // A child is no larger than its slot - across a stack, in a cell, an area or a room it does not scroll in.
