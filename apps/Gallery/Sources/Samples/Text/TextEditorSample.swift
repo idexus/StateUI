@@ -57,8 +57,6 @@ struct TextEditorSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Button("Clear")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .isEnabled(!draft.isEmpty)
                 .onClicked { draft = "" }

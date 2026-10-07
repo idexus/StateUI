@@ -39,10 +39,6 @@ struct ConnectivitySample: SampleContent, ExampleContent {
 
             Button("Save to the cloud")
                 .isEnabled(device.connectivity.networkAccess == .internet)
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
         }
         .spacing(10)

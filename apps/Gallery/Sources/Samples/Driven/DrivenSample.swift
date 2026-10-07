@@ -56,7 +56,7 @@ struct DrivenSample: SampleContent, ExampleContent {
             }
             .style("Card")
             .padding(16)
-            .background(Palette.surface)
+            .background(Palette.well)
             .stroke(.transparent)
             .shape(.roundedRectangle(12))
             .horizontalAlignment(.center)
@@ -151,8 +151,6 @@ struct DrivenSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
     // listing: end

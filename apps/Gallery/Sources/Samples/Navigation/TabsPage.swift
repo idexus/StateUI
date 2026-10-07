@@ -30,10 +30,6 @@ struct TabsPage: View {
                     .textColor(Palette.subtle)
 
                 Button("Push a page onto this tab")
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { path.append(.level(1)) }
 
@@ -49,7 +45,6 @@ struct TabsPage: View {
                 // and the group is pushed onto it, so the back button leads
                 // home from there.
                 Button("Back to the Navigation samples")
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }
             }

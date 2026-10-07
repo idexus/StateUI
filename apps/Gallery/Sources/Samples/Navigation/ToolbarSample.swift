@@ -65,11 +65,10 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .id("save")
                 .onClicked { saved += 1 }
 
-            // A picture alone, unless it asks for its words beside it. The
-            // white one reads on the accent bar in both themes.
+            // A picture alone, unless it asks for its words beside it.
             ToolbarItem("Add")
                 .id("add")
-                .icon("menu_duplicate_dark.png")
+                .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
                 .showsText(addWords)
                 .onClicked {
                     added += 1

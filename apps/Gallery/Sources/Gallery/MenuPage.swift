@@ -32,9 +32,6 @@ struct MenuPage: View {
     /// Surprise me draws from, and the line at the bottom.
     @Environment(\.device) private var device
 
-    /// The window the menu stands in - whether the desktop shows through it.
-    @Environment(\.window) private var window
-
     var body: some View {
         Grid {
             header
@@ -61,17 +58,7 @@ struct MenuPage: View {
         .title("StateUI")
         // The picture on the button that opens the menu, where the host draws
         // that button from this page.
-        .icon("nav_menu_dark.png")
-        // A window the desktop shows through shows it through the menu as well.
-        .pageBackground(surface)
-    }
-
-    /// What the menu is drawn on: the sidebar's own tone - and, where the
-    /// window shows the desktop, the sidebar's glass, bare in the light theme
-    /// and under a thin layer of that tone in the dark; the glass shows the
-    /// desktop in the tint the window's bars lay over it.
-    private var surface: Color {
-        window.isTranslucent == true ? Palette.sidebarOverGlass : Palette.sidebar
+        .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
     }
 
     /// The mark, the name and what this is - on the gradient the home page opens
@@ -139,6 +126,8 @@ struct MenuPage: View {
             MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
                 .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
         }
+        // Clear of the pane's edges, so the chosen row's fill stands inside it.
+        .padding(horizontal: 10, vertical: 8)
     }
 
     /// What is underneath: the platform compiled in, the formFactor the host

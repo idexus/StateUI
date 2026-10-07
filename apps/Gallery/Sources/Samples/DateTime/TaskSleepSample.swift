@@ -40,8 +40,6 @@ struct TaskSleepSample: SampleContent, ExampleContent {
 
             HStack {
                 Button(running ? "Stop" : "Start")
-                    .fontSize(13)
-                    .padding(horizontal: 20, vertical: 6)
                     .onClicked {
                         if running {
                             running = false
@@ -70,8 +68,6 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                     }
 
                 Button("Reset")
-                    .fontSize(13)
-                    .padding(horizontal: 20, vertical: 6)
                     .onClicked {
                         running = false
                         remaining = total
@@ -83,8 +79,6 @@ struct TaskSleepSample: SampleContent, ExampleContent {
             HStack {
                 ForEach([10, 30, 60]) { length in
                     Button("\(length)s")
-                        .fontSize(12)
-                        .padding(horizontal: 14, vertical: 4)
                         .onClicked {
                             running = false
                             total = length

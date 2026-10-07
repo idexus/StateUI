@@ -18,19 +18,11 @@ struct FontsPage: View {
     var body: some View {
         VStack {
             Text("The font this gallery's preview is set in.")
-                .fontSize(13)
                 .textColor(Palette.subtle)
 
             ForEach(FontsPage.families) { family in
-                let chosen = style.font == family
-                let button = Button(family.isEmpty ? "The platform's own" : family)
-                    .fontSize(15)
-                    .textColor(chosen ? .white : Palette.text)
-                    .background(chosen ? style.accent.color : .transparent)
-                    .stroke(Palette.subtle)
-                    .lineWidth(chosen ? 0 : 1)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 14, vertical: 8)
+                let name = family.isEmpty ? "The platform's own" : family
+                let button = Button(style.font == family ? "✓  \(name)" : name)
                     .onClicked { style.font = family }
 
                 return family.isEmpty ? button : button.fontFamily(family)
@@ -38,8 +30,6 @@ struct FontsPage: View {
 
             // The window closes itself, through its own session.
             Button("Done")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.end)
                 .onClicked { try await window.close() }
         }

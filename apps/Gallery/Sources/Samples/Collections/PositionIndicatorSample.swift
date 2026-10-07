@@ -43,14 +43,10 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Back")
-                    .fontSize(13)
-                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(step > 0)
                     .onClicked { step -= 1 }
 
                 Button("Next")
-                    .fontSize(13)
-                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(step < Self.steps.count - 1)
                     .onClicked { step += 1 }
             }

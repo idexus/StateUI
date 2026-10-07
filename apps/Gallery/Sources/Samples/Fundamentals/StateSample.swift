@@ -36,18 +36,9 @@ struct StateSample: SampleContent, ExampleContent {
 
                 HStack {
                     Button("Increment")
-                        .background(Palette.accent)
-                        .shape(.roundedRectangle(8))
-                        .padding(horizontal: 20, vertical: 10)
                         .onClicked { counter += 1 }
 
                     Button("Reset")
-                        .stroke(Palette.outline)
-                        .lineWidth(1)
-                        .background(.transparent)
-                        .textColor(Palette.subtle)
-                        .shape(.roundedRectangle(8))
-                        .padding(horizontal: 20, vertical: 10)
                         .isEnabled(counter != 0)
                         .onClicked { counter = 0 }
                 }

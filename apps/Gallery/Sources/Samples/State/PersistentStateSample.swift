@@ -83,18 +83,9 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Press")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { visits += 1 }
 
                 Button("Start over")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .isEnabled(visits != 0)
                     .onClicked { visits = 0 }
             }
@@ -117,19 +108,13 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
 
                 Button(shade == .quiet ? "quiet" : "bold")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { shade = shade == .quiet ? .bold : .quiet }
             }
             .spacing(12)
 
             ColorBox()
                 .height(48)
-                .color(shade == .bold ? Palette.accent : Palette.surface)
+                .color(shade == .bold ? Palette.accent : Palette.well)
                 .cornerRadius(8)
         }
         .spacing(14)

@@ -29,7 +29,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
 
             // THE JOURNEY. This closure reads where the value IS, and the host
             // writes that lane every frame - so it is built again on every one
@@ -42,7 +42,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
 
             // A READING, ten times a second, into an ordinary state. Same
             // number, at most ten builds a second.
@@ -54,7 +54,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
             .samples($fade, into: $shown, .every(100))
 
             ColorBox()
@@ -67,23 +67,11 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 Button("Fade")
                     .accessibilityIdentifier("paced.fade")
                     .accessibilityLabel("Fade the box out")
-                    .fontSize(13)
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                 Button("Back")
                     .accessibilityIdentifier("paced.back")
                     .accessibilityLabel("Bring the box back")
-                    .fontSize(13)
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
             }
             .spacing(12)

@@ -22,17 +22,12 @@ struct SecondTabPage: View {
                     .fontAttributes(.bold)
 
                 Button("Show the first tab")
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { nav.tab = .stack }
 
                 TabsControls(nav: nav, thisTab: .second)
 
                 Button("Back to the Navigation samples")
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }
             }

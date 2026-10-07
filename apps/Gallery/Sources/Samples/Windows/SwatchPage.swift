@@ -27,13 +27,9 @@ struct SwatchPage: View {
 
             HStack {
                 Button("Next")
-                    .fontSize(13)
-                    .padding(horizontal: 14, vertical: 6)
                     .onClicked { number += 1 }
 
                 Button("Done")
-                    .fontSize(13)
-                    .padding(horizontal: 14, vertical: 6)
                     .onClicked { try await window.close() }
             }
             .spacing(10)
@@ -53,10 +49,10 @@ struct SwatchPage: View {
         .onChanged(number) { window.title = "Swatch \(number)" }
     }
 
-    /// The colour of a swatch - the gallery's accents, in turn.
+    /// The colour of a swatch - the gallery's painted accents, in turn.
     static func colour(of number: Int) -> Color {
-        let accents = AccentChoice.allCases
-        let index = ((number - 1) % accents.count + accents.count) % accents.count
-        return accents[index].color
+        let colours = AccentChoice.allCases.compactMap(\.color)
+        let index = ((number - 1) % colours.count + colours.count) % colours.count
+        return colours[index]
     }
 }

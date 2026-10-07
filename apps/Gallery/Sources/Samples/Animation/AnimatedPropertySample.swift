@@ -111,8 +111,6 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
     // listing: end

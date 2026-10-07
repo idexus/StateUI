@@ -190,8 +190,6 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     /// One of the buttons, both of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
     // listing: end

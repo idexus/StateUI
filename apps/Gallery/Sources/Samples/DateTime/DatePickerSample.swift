@@ -43,8 +43,6 @@ struct DatePickerSample: SampleContent, ExampleContent {
             // A day written from the TREE is not a pick: the field moves and
             // the count stays where it is.
             Button("Push it to New Year")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { due = CalendarDate(year: 2027, month: 1, day: 1) }
         }

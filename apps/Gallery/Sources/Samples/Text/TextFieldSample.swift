@@ -66,8 +66,6 @@ struct TextFieldSample: SampleContent, ExampleContent {
             // given: a value the patch leaves out means unchanged, so a press
             // that asks for the selection the field already has says nothing.
             Button(selectAll ? "Clear the selection" : "Select the lot")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { selectAll.toggle() }
 

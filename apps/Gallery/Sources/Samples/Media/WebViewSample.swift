@@ -41,16 +41,13 @@ private struct WebBrowserPart: ExampleContent {
                 HStack {
                     Button("Back")
                         .isEnabled(hasBack)
-                        .padding(horizontal: 14, vertical: 8)
                         .onClicked { try await browser.goBack() }
 
                     Button("Forward")
                         .isEnabled(hasForward)
-                        .padding(horizontal: 14, vertical: 8)
                         .onClicked { try await browser.goForward() }
 
                     Button("Reload")
-                        .padding(horizontal: 14, vertical: 8)
                         .onClicked { try await browser.reload() }
                 }
                 .spacing(8)
@@ -88,7 +85,6 @@ private struct WebBrowserPart: ExampleContent {
                 .gridRow(2)
 
             Button("Title?")
-                .padding(horizontal: 14, vertical: 8)
                 .horizontalAlignment(.center)
                 .onClicked {
                     answer = try await browser.evaluateJavaScript("document.title")

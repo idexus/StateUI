@@ -62,7 +62,6 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                 .textColor(Palette.accent)
 
             Button("Start again")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.start)
                 .onClicked {
                     items = ["Alpha", "Beta", "Gamma"]

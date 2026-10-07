@@ -33,11 +33,6 @@ private struct LayerRows: ExampleContent {
             DebugInfoLabel()
 
             Button("+1")
-                .fontSize(14)
-                .background(Palette.accent)
-                .textColor(Palette.onAccent)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 22, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
@@ -121,22 +116,10 @@ private struct LayerCost: ExampleContent {
             // that took.
             HStack {
                 Button("+1")
-                    .fontSize(13)
-                    .background(Palette.accent)
-                    .textColor(Palette.onAccent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 18, vertical: 8)
                     .onClicked { counter += 1 }
 
                 // A choice of more than two, so a button that cycles them.
                 Button("Views: \(leaves)")
-                    .fontSize(13)
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 18, vertical: 8)
                     .onClicked { leaves = leaves == 25 ? 100 : leaves == 100 ? 400 : 25 }
             }
             .spacing(10)

@@ -20,10 +20,6 @@ struct TabsSample: SampleContent, ExampleContent {
     var body: some View {
         VStack {
             Button("Open the tabs")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.open(.tabs) }
         }

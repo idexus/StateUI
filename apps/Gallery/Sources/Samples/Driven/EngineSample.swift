@@ -56,7 +56,7 @@ struct EngineSample: SampleContent, ExampleContent {
             }
             .style("Card")
             .padding(horizontal: 24, vertical: 16)
-            .background(Palette.surface)
+            .background(Palette.well)
             .stroke(.transparent)
             .shape(.roundedRectangle(12))
             .horizontalAlignment(.center)
@@ -70,8 +70,6 @@ struct EngineSample: SampleContent, ExampleContent {
             HStack {
                 Button()
                     .text($caption)
-                    .fontSize(13)
-                    .padding(horizontal: 14, vertical: 6)
                     .onClicked {
                         running.toggle()
                         caption = running ? "Stop" : "Start"
@@ -154,8 +152,6 @@ struct EngineSample: SampleContent, ExampleContent {
     /// The buttons whose caption is their own rather than a driven state's.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
     // listing: end

@@ -35,8 +35,6 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                             .gridColumn(0)
 
                         Button("Delete")
-                            .fontSize(12)
-                            .padding(horizontal: 10, vertical: 4)
                             .gridColumn(1)
                             .onClicked { remove(row) }
                     }

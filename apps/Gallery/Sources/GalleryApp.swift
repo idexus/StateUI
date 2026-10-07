@@ -36,24 +36,14 @@ import StateUI
 /// it keeps between launches. The galleries are one scene, its windows as many
 /// as the user opens: see Gallery/GalleryScene.swift.
 struct GalleryApp: Application {
-    /// Which kind of device this is, from the standard environment - answered
-    /// by the host before the application is made, so the styles below already
-    /// know whether the SearchField wants a touch floor. An application stands
-    /// outside every view, so its `@Environment` is answered by the library's
-    /// own provider.
-    @Environment(\.device) var device
-
     /// The application as it runs - where its styles and its kept keys go.
     @Environment(\.application) private var application
 
     /// What every gallery shares, written as the application is made.
     init() {
-        // The styles every control in the gallery is given. The formFactor goes
-        // in because one style reads it: the SearchField's touch floor is a
-        // touch screen's, not the desktop's - and the application is made at
-        // its first need, after the host says the device. A colour in a style
-        // follows the theme by itself. See Styles/AppStyles.swift.
-        application.styles = AppStyles.sheet(on: device.info.formFactor)
+        // The styles a control of the gallery asks for by name. A colour in a
+        // style follows the theme by itself. See Styles/AppStyles.swift.
+        application.styles = AppStyles.sheet
 
         // What the gallery KEEPS between launches - `PersistentStateSample`'s
         // three settings, and nothing else. Listed because a settings store

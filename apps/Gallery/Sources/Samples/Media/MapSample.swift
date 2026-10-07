@@ -29,14 +29,12 @@ struct MapSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Old Town")
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await map.moveToRegion(
                             latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                     }
 
                 Button("Poland")
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await map.moveToRegion(
                             latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
@@ -44,7 +42,6 @@ struct MapSample: SampleContent, ExampleContent {
 
                 // What it DRAWS, cycled so all three can be seen.
                 Button(kind == .standard ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         kind =
                             kind == .standard

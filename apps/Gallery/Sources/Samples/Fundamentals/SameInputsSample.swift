@@ -21,7 +21,6 @@ struct SameInputsSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Button("Count \(counter)")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 

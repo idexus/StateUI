@@ -6,53 +6,39 @@
 // has to know which theme is on, and neither does anything using it - which is
 // why every name below is one name rather than two.
 //
-// These are for what a colour is FOR. What it IS is in AppColors beside this,
-// and almost everything reaches it through here; the colours that must not
-// follow the theme, and a sample showing a colour of its own, read it directly.
+// The gallery stands in each platform's own look: its pages, bars, sidebar and
+// controls are the platform's. What it says for itself is its identity - the
+// gradient and the mark - the colours its samples draw with, and neutrals that
+// are a grey let through, so they stand right on whatever the platform draws
+// behind them, in either theme.
 
 import StateUI
 
 /// What the gallery draws with: one name per job, each right on both themes.
-///
-/// The styles in `AppStyles` set most of these once, for every control of a
-/// type. These are for the places a view says something for itself - a caption
-/// that has to be quieter than the text beside it, the fill of a card.
 enum Palette {
-    // MARK: Brand
+    // MARK: Identity
 
-    /// The interactive colour: Orange, deepened in the light so white
-    /// reads on it and lifted in the dark so it does not glare.
-    ///
-    /// Complementary to the violet, so an accented thing separates from the
-    /// page without also being bigger or bolder than what is around it.
+    /// The colour a sample marks something with: Orange, deepened in the light
+    /// so white reads on it and lifted in the dark so it does not glare.
     // listing: Palette.sample
     static let accent = Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrangeLight)
     // listing: end
 
-    /// Violet - a sample's second colour beside the accent. Not an
-    /// alternative accent - one interface, one accent.
+    /// Violet - a sample's second colour beside the accent.
     static let brand = Color(light: AppColors.violet, dark: AppColors.violetLight)
 
-    /// Text that reads on `accent`. White in BOTH themes, deliberately: a
-    /// near-black caption on a filled button reads as DISABLED, and an
-    /// affordance the user misreads costs more than the contrast buys. The
-    /// trap is that white on the accent's dark half measures 2.3:1 - a deeper
-    /// dark-theme accent is what raises that without darkening the text.
+    /// Text that reads on `accent`: white in both themes, since a near-black
+    /// caption on a filled button reads as disabled.
     // listing: Palette.sample
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
     // listing: end
 
-    /// Text that reads on `brand`, and on the bar. White in both, which is what
-    /// lets one toolbar icon be right on both - see the bars `MainPage` paints.
+    /// Text that reads on `brand` and on the gradient: white in both.
     static let onBrand = AppColors.white
 
     /// Violet into orange: the two halves of what this library is, in one
     /// mark. The gallery's signature, and deliberately RARE - the sidebar header
-    /// and the home page's title, and nothing else. A gradient on every surface
-    /// is a gradient that says nothing.
-    ///
-    /// Every stop carries both themes, so the whole brush follows the system the
-    /// way a single colour does.
+    /// and the home page's title, and nothing else.
     static let identity = Brush.linearGradient(
         [
             GradientStop(Color(light: AppColors.violet, dark: AppColors.violetDeep), 0),
@@ -63,49 +49,33 @@ enum Palette {
 
     // MARK: Text
 
-    /// Ordinary text. The implicit Text style sets this; it is here for the
-    /// places that need to say it again - over a filled panel, say.
-    static let text = Color(light: AppColors.ink, dark: AppColors.inkDark)
+    /// Text a view has to say the colour of again - drawn words, a clock's
+    /// hands. Text that says nothing takes the platform's own.
+    static let text = Color(light: Color("#E0000000"), dark: Color("#FFFFFFFF"))
 
     /// Anything secondary: summaries, captions, the line under a title.
     // listing: Palette.sample
-    static let subtle = Color(light: AppColors.inkMuted, dark: AppColors.inkMutedDark)
+    static let subtle = Color(light: Color("#993C3C43"), dark: Color("#99EBEBF5"))
     // listing: end
 
-    /// Text and controls that are not available.
+    /// Text and drawings that are not available.
     // listing: Palette.sample
-    static let disabled = Color(light: AppColors.muted, dark: AppColors.mutedDark)
+    static let disabled = Color(light: Color("#4D3C3C43"), dark: Color("#4DEBEBF5"))
     // listing: end
 
-    // MARK: Surfaces
+    // MARK: Fills
 
-    /// The page behind everything. Tinted, not white - which is what lets a
-    /// card lift off it with a fill rather than a shadow.
-    static let surface = Color(light: AppColors.surface, dark: AppColors.surfaceDark)
+    /// A panel set apart from the page: a card, a code block.
+    static let raised = Color(light: Color("#1F767680"), dark: Color("#3D767680"))
 
-    /// One step up from the page: a card, a code block, a panel.
-    static let raised = Color(light: AppColors.raised, dark: AppColors.raisedDark)
+    /// A region set apart within a panel.
+    static let well = Color(light: Color("#14747480"), dark: Color("#2E767680"))
 
-    /// Behind the sidebar's rows: white in the light, a step up from the page
-    /// in the dark, so the menu and the page it leads to stand apart.
-    static let sidebar = Color(light: AppColors.raised, dark: AppColors.sidebarDark)
-
-    /// Over the sidebar's glass where the window shows the desktop: nothing in
-    /// the light, a thin layer of the sidebar's tone in the dark.
-    static let sidebarOverGlass = Color(light: .transparent, dark: AppColors.sidebarGlassDark)
-
-    /// Behind the words of a field: white in the light, sunk below the card in
-    /// the dark.
-    static let field = Color(light: AppColors.raised, dark: AppColors.fieldDark)
-
-    /// Outlines, dividers, the edge of a card.
+    /// Outlines, dividers, the edge of something drawn.
     // listing: Palette.sample
-    static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
+    static let outline = Color(light: Color("#4A3C3C43"), dark: Color("#99545458"))
     // listing: end
 
-    /// Behind the thing you are on - the sidebar's current row. A violet wash,
-    /// deliberately well clear of both the page and a card: "which page is
-    /// this" has to be answerable at a glance, and a step of two or three
-    /// points reads as nothing on a dark screen at low brightness.
-    static let selected = Color(light: AppColors.selected, dark: AppColors.selectedDark)
+    /// Behind the thing you are on - the sidebar's current row, a pad held down.
+    static let selected = Color(light: Color("#29787880"), dark: Color("#52787880"))
 }

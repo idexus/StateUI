@@ -169,8 +169,6 @@ struct ShapesSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             Button("fillRule: .\(rule)")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
         }

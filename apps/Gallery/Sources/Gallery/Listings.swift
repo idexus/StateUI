@@ -128,8 +128,6 @@ enum Listings {
                         }
 
                     Button("Let go")
-                        .stroke(Palette.outline)
-                        .lineWidth(1)
                         .onClicked {
                             try await field.unfocus()
                             says = "let go of \(field)"
@@ -606,7 +604,6 @@ enum Listings {
         // A page's own name for itself. Tight tracking, because a large
         // size at the default spacing reads loose.
         Style<Text>("Headline")
-            .textColor(Palette.text)
             .fontSize(32)
             .fontAttributes(.bold)
             .tracking(-0.5)
@@ -628,20 +625,23 @@ enum Listings {
             .basedOn("Quote")
             .textColor(Palette.accent)
 
-        Style<Button>()
+        // A button the gallery paints itself, asked for by name: every
+        // other button keeps the platform's own look.
+        Style<Button>("Painted")
             .textColor(Palette.onAccent)
             .background(Palette.accent)
-            .fontSize(14)
             .fontAttributes(.bold)
             .lineWidth(0)
             .shape(.roundedRectangle(10))
             .padding(horizontal: 16, vertical: 11)
-            .minimumHeight(44)
-            .minimumWidth(44)
             .visualState(.disabled) { $0
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
             }
+
+        // Every ColorBox that names no colour of its own is orange.
+        Style<ColorBox>()
+            .color(Palette.accent)
         """#,
         "AppThemeSample": #"""
         // Sources/Samples/Styles/AppThemeSample.swift
@@ -848,8 +848,6 @@ enum Listings {
                             .onClicked { level = 1 }
 
                         Button("Empty")
-                            .stroke(Palette.outline)
-                            .lineWidth(1)
                             .onClicked { level = 0 }
                     }
                 }
@@ -2052,8 +2050,6 @@ enum Listings {
                     // Stopping leaves the value where it stands, and the
                     // destination is mirrored onto it - so both readings agree again.
                     Button("Stop")
-                        .stroke(Palette.outline)
-                        .lineWidth(1)
                         .onClicked { $width.journey.stop() }
                 }
             }
@@ -2552,8 +2548,10 @@ enum Listings {
             static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
         }
 
-        /// An accent a gallery can wear - the colour its bars are painted in.
+        /// An accent a gallery can wear: the platform's own, its bars as the platform
+        /// draws them, or a colour its bars are painted in.
         enum AccentChoice: String, CaseIterable, PersistentValue {
+            case platform
             case violet
             case teal
             case coral
@@ -2562,6 +2560,7 @@ enum Listings {
             /// What the Colours window calls it.
             var name: String {
                 switch self {
+                case .platform: return "The platform's own"
                 case .violet: return "Violet"
                 case .teal: return "Teal"
                 case .coral: return "Coral"
@@ -2570,24 +2569,14 @@ enum Listings {
             }
 
             /// The colour - one in both themes, since everything on the bars it
-            /// paints is white either way.
-            var color: Color {
+            /// paints is white either way; nil for the platform's own.
+            var color: Color? {
                 switch self {
+                case .platform: return nil
                 case .violet: return AppColors.violet
                 case .teal: return Color("#0F766E")
                 case .coral: return Color("#C2410C")
                 case .graphite: return Color("#374151")
-                }
-            }
-
-            /// The colour with three fifths let through - what a window the desktop
-            /// shows through is tinted with, thin enough for the desktop to show.
-            var translucentColor: Color {
-                switch self {
-                case .violet: return Color("#66512BD4")
-                case .teal: return Color("#660F766E")
-                case .coral: return Color("#66C2410C")
-                case .graphite: return Color("#66374151")
                 }
             }
         }
@@ -2602,8 +2591,9 @@ enum Listings {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
 
-            /// The accent the gallery's bars are painted in.
-            @State(sceneKey: .accent) var accent = AccentChoice.violet
+            /// The gallery's accent: the platform's own until the Colours window
+            /// chooses another.
+            @State(sceneKey: .accent) var accent = AccentChoice.platform
 
             /// Whether the Fonts and Colours windows hide while another scene is the
             /// one in front.
@@ -2622,24 +2612,14 @@ enum Listings {
         /// it keeps between launches. The galleries are one scene, its windows as many
         /// as the user opens: see Gallery/GalleryScene.swift.
         struct GalleryApp: Application {
-            /// Which kind of device this is, from the standard environment - answered
-            /// by the host before the application is made, so the styles below already
-            /// know whether the SearchField wants a touch floor. An application stands
-            /// outside every view, so its `@Environment` is answered by the library's
-            /// own provider.
-            @Environment(\.device) var device
-
             /// The application as it runs - where its styles and its kept keys go.
             @Environment(\.application) private var application
 
             /// What every gallery shares, written as the application is made.
             init() {
-                // The styles every control in the gallery is given. The formFactor goes
-                // in because one style reads it: the SearchField's touch floor is a
-                // touch screen's, not the desktop's - and the application is made at
-                // its first need, after the host says the device. A colour in a style
-                // follows the theme by itself. See Styles/AppStyles.swift.
-                application.styles = AppStyles.sheet(on: device.info.formFactor)
+                // The styles a control of the gallery asks for by name. A colour in a
+                // style follows the theme by itself. See Styles/AppStyles.swift.
+                application.styles = AppStyles.sheet
 
                 // What the gallery KEEPS between launches - `PersistentStateSample`'s
                 // three settings, and nothing else. Listed because a settings store
@@ -3601,8 +3581,6 @@ enum Listings {
 
                     // A choice of more than two, so a button that cycles them.
                     Button("Views: \(leaves)")
-                        .stroke(Palette.outline)
-                        .lineWidth(1)
                         .onClicked { leaves = leaves == 25 ? 100 : leaves == 100 ? 400 : 25 }
                 }
                 .horizontalAlignment(.center)
@@ -4100,7 +4078,7 @@ enum Listings {
         .toolbar(id: "gallery") {
             ToolbarItem.inspector(window)
                 .text("Inspector")
-                .icon("nav_inspect_dark.png")
+                .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
             if !nav.showing(.home) {
                 ToolbarItem.home(nav)
@@ -4108,7 +4086,7 @@ enum Listings {
 
             if bar.showsSurprise {
                 ToolbarItem("Surprise me")
-                    .icon("nav_surprise_chrome.png")
+                    .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
                     .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
             }
         }
@@ -4132,11 +4110,6 @@ enum Listings {
             window.title = "StateUI Gallery"
             window.width = 1100
             window.height = 800
-            #if APPKIT
-            // The AppKit window shows the desktop through it from the start, in
-            // the accent's tint.
-            window.isTranslucent = true
-            #endif
             window.minimumWidth = 700
             window.minimumHeight = 500
             window.maximumWidth = 1600
@@ -4427,9 +4400,6 @@ enum Listings {
             /// Surprise me draws from, and the line at the bottom.
             @Environment(\.device) private var device
 
-            /// The window the menu stands in - whether the desktop shows through it.
-            @Environment(\.window) private var window
-
             var body: some View {
                 Grid {
                     header
@@ -4456,17 +4426,7 @@ enum Listings {
                 .title("StateUI")
                 // The picture on the button that opens the menu, where the host draws
                 // that button from this page.
-                .icon("nav_menu_dark.png")
-                // A window the desktop shows through shows it through the menu as well.
-                .pageBackground(surface)
-            }
-
-            /// What the menu is drawn on: the sidebar's own tone - and, where the
-            /// window shows the desktop, the sidebar's glass, bare in the light theme
-            /// and under a thin layer of that tone in the dark; the glass shows the
-            /// desktop in the tint the window's bars lay over it.
-            private var surface: Color {
-                window.isTranslucent == true ? Palette.sidebarOverGlass : Palette.sidebar
+                .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
             }
 
             /// The mark, the name and what this is - on the gradient the home page opens
@@ -4527,6 +4487,7 @@ enum Listings {
                     MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
                         .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
                 }
+                // Clear of the pane's edges, so the chosen row's fill stands inside it.
             }
 
             /// What is underneath: the platform compiled in, the formFactor the host
@@ -4741,8 +4702,8 @@ enum Listings {
 
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
-            let line = Text("The quick brown fox jumps over the lazy dog.")
-                .textColor(style.accent.color)
+            var line = Text("The quick brown fox jumps over the lazy dog.")
+            if let colour = style.accent.color { line = line.textColor(colour) }
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }
@@ -5238,8 +5199,6 @@ enum Listings {
                         .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                     Button("Back")
-                        .stroke(Palette.outline)
-                        .lineWidth(1)
                         .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
                 }
                 .horizontalAlignment(.center)
@@ -5252,11 +5211,11 @@ enum Listings {
 
         static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
-        static let subtle = Color(light: AppColors.inkMuted, dark: AppColors.inkMutedDark)
+        static let subtle = Color(light: Color("#993C3C43"), dark: Color("#99EBEBF5"))
 
-        static let disabled = Color(light: AppColors.muted, dark: AppColors.mutedDark)
+        static let disabled = Color(light: Color("#4D3C3C43"), dark: Color("#4DEBEBF5"))
 
-        static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
+        static let outline = Color(light: Color("#4A3C3C43"), dark: Color("#99545458"))
         """#,
         "PanSample": #"""
         // Sources/Samples/Gestures/PanSample.swift
@@ -5392,8 +5351,6 @@ enum Listings {
                         .onClicked { visits += 1 }
 
                     Button("Start over")
-                        .stroke(Palette.outline)
-                        .lineWidth(1)
                         .isEnabled(visits != 0)
                         .onClicked { visits = 0 }
                 }
@@ -5411,14 +5368,12 @@ enum Listings {
                         .verticalAlignment(.center)
 
                     Button(shade == .quiet ? "quiet" : "bold")
-                        .stroke(Palette.outline)
-                        .lineWidth(1)
                         .onClicked { shade = shade == .quiet ? .bold : .quiet }
                 }
 
                 ColorBox()
                     .height(48)
-                    .color(shade == .bold ? Palette.accent : Palette.surface)
+                    .color(shade == .bold ? Palette.accent : Palette.well)
             }
         }
         """#,
@@ -7418,8 +7373,6 @@ enum Listings {
                         .onClicked { basket.items.append("Item \(basket.items.count + 1)") }
 
                     Button("Remove")
-                        .stroke(Palette.outline)
-                        .lineWidth(1)
                         .isEnabled(!basket.items.isEmpty)
                         .onClicked { basket.items.removeLast() }
                 }
@@ -7428,8 +7381,6 @@ enum Listings {
                 NoteRow(basket: $basket)
 
                 Button("Tap a plain property (\(basket.plainTaps))")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
                     .onClicked { basket.plainTaps += 1 }
 
             }
@@ -7462,8 +7413,6 @@ enum Listings {
                             .onClicked { counter += 1 }
 
                         Button("Reset")
-                            .stroke(Palette.outline)
-                            .lineWidth(1)
                             .isEnabled(counter != 0)
                             .onClicked { counter = 0 }
                     }
@@ -7530,11 +7479,12 @@ enum Listings {
             VStack {
                 DebugInfoLabel()
 
-                // Neither of these says anything about its own appearance. The
-                // orange, the corners, the padding and the 44pt minimum all come
-                // from Style<Button> in AppStyles.swift.
+                // "Save" asks for the gallery's "Painted" style by name, and takes
+                // its colours, corners and padding from it; "Cancel" asks for none
+                // and keeps the platform's own button.
                 HStack {
                     Button("Save")
+                        .style("Painted")
                     Button("Cancel")
                 }
                 .horizontalAlignment(.center)
@@ -7543,6 +7493,7 @@ enum Listings {
                 // the control enter one is what .onVisualStateChanged is for, next
                 // door in the Visual states sample.
                 Button(enabled ? "Enabled" : "Disabled")
+                    .style("Painted")
                     .isEnabled(enabled)
                     .horizontalAlignment(.center)
                     .onClicked {}
@@ -7555,11 +7506,27 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
 
+                SectionTitle("A style for every control of a type")
+
+                // None of these names a colour: a style with no key is implicit,
+                // and every ColorBox wears the one `Style<ColorBox>()` gives.
+                HStack {
+                    ColorBox()
+                        .width(40)
+                        .height(40)
+                    ColorBox()
+                        .width(40)
+                        .height(40)
+                    ColorBox()
+                        .width(40)
+                        .height(40)
+                }
+                .horizontalAlignment(.center)
+
                 SectionTitle("A style asked for by name")
 
-                // The others are implicit - they have no key, so every control of
-                // the type gets them. This one has one, and is asked for; a keyed
-                // style REPLACES the implicit one, so it says everything it needs.
+                // A keyed style is asked for; a keyed style REPLACES the implicit
+                // one, so it says everything it needs.
                 Text("Headline")
                     .style("Headline")
 
@@ -8233,11 +8200,10 @@ enum Listings {
                     .id("save")
                     .onClicked { saved += 1 }
 
-                // A picture alone, unless it asks for its words beside it. The
-                // white one reads on the accent bar in both themes.
+                // A picture alone, unless it asks for its words beside it.
                 ToolbarItem("Add")
                     .id("add")
-                    .icon("menu_duplicate_dark.png")
+                    .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
                     .showsText(addWords)
                     .onClicked {
                         added += 1
@@ -8904,8 +8870,7 @@ enum Listings {
                 width = frame.width
                 height = frame.height
             }
-            // The switch starts where the window stands - on, where the gallery's
-            // window opens translucent.
+            // The switch starts where the window stands.
             .onCreated { translucent = window.isTranslucent == true }
         }
 

@@ -17,11 +17,12 @@ struct StyleSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            // Neither of these says anything about its own appearance. The
-            // orange, the corners, the padding and the 44pt minimum all come
-            // from Style<Button> in AppStyles.swift.
+            // "Save" asks for the gallery's "Painted" style by name, and takes
+            // its colours, corners and padding from it; "Cancel" asks for none
+            // and keeps the platform's own button.
             HStack {
                 Button("Save")
+                    .style("Painted")
                 Button("Cancel")
             }
             .spacing(12)
@@ -31,13 +32,13 @@ struct StyleSample: SampleContent, ExampleContent {
             // the control enter one is what .onVisualStateChanged is for, next
             // door in the Visual states sample.
             Button(enabled ? "Enabled" : "Disabled")
+                .style("Painted")
                 .isEnabled(enabled)
                 .horizontalAlignment(.center)
                 .onClicked {}
 
             HStack {
                 Text("Enabled")
-                    .fontSize(14)
                     .verticalAlignment(.center)
 
                 Switch($enabled)
@@ -47,11 +48,28 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
+            SectionTitle("A style for every control of a type")
+
+            // None of these names a colour: a style with no key is implicit,
+            // and every ColorBox wears the one `Style<ColorBox>()` gives.
+            HStack {
+                ColorBox()
+                    .width(40)
+                    .height(40)
+                ColorBox()
+                    .width(40)
+                    .height(40)
+                ColorBox()
+                    .width(40)
+                    .height(40)
+            }
+            .spacing(12)
+            .horizontalAlignment(.center)
+
             SectionTitle("A style asked for by name")
 
-            // The others are implicit - they have no key, so every control of
-            // the type gets them. This one has one, and is asked for; a keyed
-            // style REPLACES the implicit one, so it says everything it needs.
+            // A keyed style is asked for; a keyed style REPLACES the implicit
+            // one, so it says everything it needs.
             Text("Headline")
                 .style("Headline")
 
@@ -73,14 +91,15 @@ struct StyleSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("No button in the example sets a colour, a size or a corner: every "
-                + "button takes all of it from the gallery's one `Style<Button>`.")
+            Text("\"Save\" asks for the gallery's `Painted` style by name, and \"Cancel\" "
+                + "for none: a control that names no style keeps the platform's own look.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A style with no key is implicit: every control of its type wears it. "
-                + "`Headline` has a key and is asked for by name, and a keyed style "
-                + "REPLACES the implicit one, so it says everything it needs.")
+            Text("A style with no key is implicit: every control of its type wears it, "
+                + "as every ColorBox here wears `Style<ColorBox>()`. `Headline` has a key "
+                + "and is asked for by name, and a keyed style REPLACES the implicit one, "
+                + "so it says everything it needs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

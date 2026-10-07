@@ -619,13 +619,6 @@ private struct Steps: View {
     /// One arrow: where it goes, and whether there is anything there.
     private func step(_ caption: String, to: Int) -> some View {
         Button(caption)
-            .fontSize(18)
-            .textColor(Palette.subtle)
-            .background(.transparent)
-            .stroke(Palette.outline)
-            .lineWidth(1)
-            .shape(.roundedRectangle(8))
-            .padding(horizontal: 18, vertical: 2)
             .isEnabled(to >= 0 && to < count)
             .onClicked { position = to }
     }

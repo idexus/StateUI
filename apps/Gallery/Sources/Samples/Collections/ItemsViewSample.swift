@@ -79,7 +79,7 @@ private struct AcrossList: ExampleContent {
                     .horizontalTextAlignment(.center)
                     .verticalTextAlignment(.center)
                     .width(120)
-                    .background(Palette.surface)
+                    .background(Palette.well)
             }
             .itemsLayout(.row(spacing: 8))
             .height(80)

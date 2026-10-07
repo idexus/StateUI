@@ -14,7 +14,7 @@ private func tileStrip() -> ScrollView {
                     .verticalAlignment(.center)
                     .width(140)
                     .height(100)
-                    .background(Palette.surface)
+                    .background(Palette.well)
             }
         }
         .spacing(20)
@@ -231,13 +231,9 @@ private struct OffsetStrips: ExampleContent {
 
             HStack {
                 Button("Top")
-                    .fontSize(13)
-                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { try await move(to: 0) }
 
                 Button("Line 9")
-                    .fontSize(13)
-                    .padding(horizontal: 16, vertical: 6)
                     .onClicked { try await move(to: 240) }
             }
             .spacing(16)

@@ -25,15 +25,10 @@ struct ModalPage: View {
                 .horizontalTextAlignment(.center)
 
             Button("Close")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.dismiss() }
 
             Button("Present another")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.present(.page) }
 

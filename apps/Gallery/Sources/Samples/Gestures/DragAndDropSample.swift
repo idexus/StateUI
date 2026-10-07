@@ -90,8 +90,6 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             }
 
             Button("Empty it")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .isEnabled(!basket.isEmpty)
                 .onClicked { basket = [] }

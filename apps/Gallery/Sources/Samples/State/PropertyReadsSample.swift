@@ -31,11 +31,6 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             VStack {
                 Button("Another visit")
                     .accessibilityIdentifier("propertyReads.visit")
-                    .fontSize(13)
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { profile.visits += 1 }
             }
@@ -48,7 +43,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
 
             VStack {
                 TextField(profile.$name)
@@ -66,7 +61,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
         }
         .spacing(14)
     }

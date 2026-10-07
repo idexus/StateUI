@@ -70,10 +70,6 @@ struct EnvironmentSample: SampleContent, ExampleContent {
                 VisitBadge()
 
                 Button("Visit again")
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { session.visits += 1 }
 

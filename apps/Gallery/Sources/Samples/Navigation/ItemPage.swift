@@ -33,7 +33,6 @@ struct ItemPage: View {
                     .horizontalTextAlignment(.center)
 
                 Button("Back")
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { path.removeLast() }
             }
@@ -42,7 +41,7 @@ struct ItemPage: View {
         .style("Card")
         .padding(24)
         .margin(24)
-        .background(Palette.surface)
+        .background(Palette.well)
         .stroke(.transparent)
         .shape(.roundedRectangle(12))
         .verticalAlignment(.center)

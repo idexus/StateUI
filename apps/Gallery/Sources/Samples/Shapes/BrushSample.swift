@@ -41,8 +41,6 @@ struct BrushSample: SampleContent, ExampleContent {
                 .height(80)
 
             Button("endPoint: \(Self.ends[end].name)")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { end = (end + 1) % Self.ends.count }
 

@@ -89,16 +89,13 @@ struct WindowSample: SampleContent, ExampleContent {
             width = frame.width
             height = frame.height
         }
-        // The switch starts where the window stands - on, where the gallery's
-        // window opens translucent.
+        // The switch starts where the window stands.
         .onCreated { translucent = window.isTranslucent == true }
     }
 
     /// An action that writes the surrounding window session.
     private func action(_ title: String, _ write: @escaping () -> Void) -> some View {
         Button(title)
-            .fontSize(13)
-            .padding(horizontal: 16, vertical: 6)
             .onClicked { write() }
     }
 

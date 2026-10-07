@@ -13,23 +13,14 @@ struct ColoursPage: View {
     var body: some View {
         VStack {
             Text("The accent this gallery's bars are painted in.")
-                .fontSize(13)
                 .textColor(Palette.subtle)
 
             ForEach(AccentChoice.allCases) { accent in
-                Button(style.accent == accent ? "✓  \(accent.name)" : accent.name)
-                    .fontSize(15)
-                    .textColor(.white)
-                    .background(accent.color)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 14, vertical: 8)
-                    .onClicked { style.accent = accent }
+                choice(accent)
             }
 
             // The window closes itself, through its own session.
             Button("Done")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.end)
                 .onClicked { try await window.close() }
         }
@@ -39,9 +30,18 @@ struct ColoursPage: View {
         .onCreated {
             window.title = "Colours"
             window.width = 320
-            window.height = 340
+            window.height = 380
             window.minimumWidth = 260
             window.minimumHeight = 240
         }
+    }
+
+    /// The button choosing `accent`, drawn in it where it is a colour.
+    private func choice(_ accent: AccentChoice) -> Button {
+        let style = self.style
+        let button = Button(style.accent == accent ? "✓  \(accent.name)" : accent.name)
+            .onClicked { style.accent = accent }
+        guard let colour = accent.color else { return button }
+        return button.textColor(.white).background(colour).shape(.roundedRectangle(8))
     }
 }

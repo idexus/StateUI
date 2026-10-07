@@ -37,7 +37,6 @@ struct SplitViewSample: SampleContent, ExampleContent {
             .spacing(10)
 
             Button("Go there anyway")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.open(.hidden) }
         }

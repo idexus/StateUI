@@ -26,17 +26,11 @@ struct ScenesSample: SampleContent, ExampleContent {
     var body: some View {
         VStack {
             Button("New scratchpad")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.scratchpad")
                 .onClicked { await open(.scratchpad, "New scratchpad") }
 
             Button("About")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.about")
                 .onClicked { await open(.about, "About") }

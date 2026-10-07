@@ -32,14 +32,10 @@ struct ScratchpadPage: View {
 
             HStack {
                 Button("Close this window")
-                    .fontSize(13)
-                    .padding(horizontal: 14, vertical: 6)
                     .accessibilityIdentifier("scratchpad.close")
                     .onClicked { try await window.close() }
 
                 Button("Close every scratchpad")
-                    .fontSize(13)
-                    .padding(horizontal: 14, vertical: 6)
                     .accessibilityIdentifier("scratchpad.closeScene")
                     .onClicked { try await scene.close() }
             }

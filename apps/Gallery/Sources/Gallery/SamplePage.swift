@@ -19,11 +19,12 @@ struct SamplePage: View {
 
     /// The page a sample is shown on: this scrolling page, or - for a sample
     /// whose examples hold the page still - its tabs, which a window shows as
-    /// its own, on a bar in `bar`, the colour of the stack they are pushed onto.
+    /// its own, on a bar painted `bar` as the stack they are pushed onto is; nil
+    /// for the platform's own.
     /// The tabs carry the sample's name, which names the window while they are
     /// the stack's last place; their pages name the tabs alone.
     @ViewBuilder
-    static func shown(_ sample: Sample, nav: Navigation, bar: Color) -> some View {
+    static func shown(_ sample: Sample, nav: Navigation, bar: Color?) -> some View {
         if sample.scrolls {
             SamplePage(sample: sample, nav: nav)
         } else {
@@ -31,7 +32,7 @@ struct SamplePage: View {
                 SampleTabPage(sample: sample, tab: tab, nav: nav)
             }
             .title(sample.title)
-            .barBackgroundColor(bar)
+            .paintedBars(bar)
         }
     }
 

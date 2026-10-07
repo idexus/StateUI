@@ -23,10 +23,6 @@ struct NavigationSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Button("Push a page")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.push(.level(1)) }
 
@@ -39,7 +35,6 @@ struct NavigationSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Button("Go home, and count the visit")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked {
                     nav.home()
@@ -51,7 +46,6 @@ struct NavigationSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Button("Empty the stack")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.path = [] }
         }

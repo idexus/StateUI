@@ -51,8 +51,6 @@ struct HostTimeSample: SampleContent, ExampleContent {
             }
 
             Button("Read again")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { try await read() }
         }

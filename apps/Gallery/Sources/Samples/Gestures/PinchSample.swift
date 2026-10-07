@@ -62,8 +62,6 @@ struct PinchSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Button("Back to life size")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked {
                     pinch = 1

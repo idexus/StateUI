@@ -72,8 +72,6 @@ struct BuilderSample: SampleContent, ExampleContent {
                         .textColor(Palette.accent)
                 } else {
                     Button("turn \(turn)")
-                        .fontSize(13)
-                        .padding(horizontal: 16, vertical: 6)
                         .horizontalAlignment(.start)
                         .onClicked { chosen = turn }
                 }

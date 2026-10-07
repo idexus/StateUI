@@ -24,8 +24,6 @@ struct AboutPage: View {
                 .horizontalTextAlignment(.center)
 
             Button("Close")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("about.close")
                 .onClicked { try await window.close() }

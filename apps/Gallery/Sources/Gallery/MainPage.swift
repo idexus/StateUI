@@ -32,8 +32,8 @@ struct MainPage: View {
     /// the tabs.
     let nav: Navigation
 
-    /// What the gallery looks like - its bars are painted in its accent, which
-    /// the Colours window chooses.
+    /// What the gallery looks like - its bars are the platform's own, or
+    /// painted in the accent the Colours window chooses.
     let style: SessionStyle
 
     /// The log of this window's lifecycle - kept by `GalleryWindow`.
@@ -85,7 +85,7 @@ struct MainPage: View {
             .toolbar(id: "gallery") {
                 ToolbarItem.inspector(window)
                     .text("Inspector")
-                    .icon("nav_inspect_dark.png")
+                    .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
                 if !nav.showing(.home) {
                     ToolbarItem.home(nav)
@@ -93,7 +93,7 @@ struct MainPage: View {
 
                 if bar.showsSurprise {
                     ToolbarItem("Surprise me")
-                        .icon("nav_surprise_chrome.png")
+                        .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
                         .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
                 }
             }
@@ -104,10 +104,9 @@ struct MainPage: View {
             .barSubtitle(bar.subtitle)
             .barIcon("stateui_mark.png")
             // listing: end
-            // The bars of both panes, in the gallery's accent; their foreground
-            // stays white against it in both themes.
-            .barBackgroundColor(barColour)
-            .barForegroundColor(Palette.onBrand)
+            // The bars of both panes: the platform's own, or painted in the
+            // accent the Colours window chose.
+            .paintedBars(style.accent.color)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
@@ -128,11 +127,6 @@ struct MainPage: View {
                 window.title = "StateUI Gallery"
                 window.width = 1100
                 window.height = 800
-                #if APPKIT
-                // The AppKit window shows the desktop through it from the start, in
-                // the accent's tint.
-                window.isTranslucent = true
-                #endif
                 window.minimumWidth = 700
                 window.minimumHeight = 500
                 window.maximumWidth = 1600
@@ -222,7 +216,7 @@ struct MainPage: View {
 
         case .sample(let id):
             if let sample = catalog.sample(id: id) {
-                SamplePage.shown(sample, nav: nav, bar: barColour)
+                SamplePage.shown(sample, nav: nav, bar: style.accent.color)
             } else {
                 MissingPage(id: id, nav: nav, path: path)
             }
@@ -266,12 +260,4 @@ struct MainPage: View {
         .selection(nav.$tab)
     }
     // listing: end
-
-    // MARK: - The window's own chrome
-
-    /// What the bars are painted in: the gallery's accent, with three fifths
-    /// let through while the desktop shows through the window.
-    private var barColour: Color {
-        window.isTranslucent == true ? style.accent.translucentColor : style.accent.color
-    }
 }

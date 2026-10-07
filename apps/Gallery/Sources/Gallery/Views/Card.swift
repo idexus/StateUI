@@ -9,9 +9,9 @@ import StateUI
 /// And because a tapped ZStack shows nothing where a Button would, the card
 /// says the press back itself: a quick dip in scale before the action runs.
 ///
-/// A FILL and a hairline, which is what makes it read as raised on the tinted
-/// page behind it - see `Palette.surface`. Both come from the "Card" style,
-/// so nothing here says what a card looks like.
+/// A FILL set apart from whatever page the platform draws behind it - see
+/// `Palette.raised`. It comes from the "Card" style, so nothing here says what
+/// a card looks like.
 ///
 /// It is shaped the way every control in the library is, and that shape is the
 /// rule for a composed view of your own: WHAT IT IS goes in the initializer -

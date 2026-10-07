@@ -10,8 +10,6 @@ private struct LoadingList: ExampleContent {
         Grid {
             HStack {
                 Button("Start over")
-                    .fontSize(13)
-                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(count > 30)
                     .onClicked { count = 30 }
 

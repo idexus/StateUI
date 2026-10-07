@@ -50,30 +50,18 @@ struct AimSample: SampleContent, ExampleContent {
                 // in the HANDLER, because the walk fills it after the body
                 // that describes the view was built.
                 Button("Focus the first")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await field.focus()
                         says = "focused \(field)"
                     }
 
                 Button("Focus the second")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await note.focus()
                         says = "focused \(note)"
                     }
 
                 Button("Let go")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await field.unfocus()
                         says = "let go of \(field)"

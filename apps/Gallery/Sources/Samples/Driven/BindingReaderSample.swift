@@ -78,18 +78,9 @@ private struct Knob: View {
 
             HStack {
                 Button("Full")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { level = 1 }
 
                 Button("Empty")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { level = 0 }
             }
             .spacing(10)

@@ -20,11 +20,8 @@ extension ToolbarItem {
     /// at the edge, where it stays from page to page while a page's actions
     /// come in from the title's side.
     ///
-    /// The picture is the WHITE house in both themes, which is the one that
-    /// reads on the accent bar `MainPage` paints: a ToolbarItem's icon has no
-    /// tint, so it is chosen instead. The file is named for the theme it was
-    /// drawn for; what decides here is the colour behind it, and that colour
-    /// does not change.
+    /// The picture is a pair, one for each theme, as the bar it stands on is
+    /// the platform's own.
     ///
     /// **One assignment.** `nav.home()` sets the section and empties the path,
     /// and there is no other stack anywhere to go stale - the page the user
@@ -37,7 +34,7 @@ extension ToolbarItem {
             // a script reaches for most. `.id` is the DIFFER's identity and
             // never leaves this side; this is the platform's own.
             .accessibilityIdentifier("chrome.home")
-            .icon("nav_home_dark.png")
+            .icon(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png"))
             .onClicked { nav.home() }
     }
 

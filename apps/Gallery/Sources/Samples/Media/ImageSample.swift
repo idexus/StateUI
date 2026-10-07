@@ -39,7 +39,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .contentMode(.fit)
                         .width(96)
                         .height(60)
-                        .background(Palette.surface)
+                        .background(Palette.well)
 
                     Text(".contentMode(.fit)")
                         .fontSize(11)
@@ -53,7 +53,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .contentMode(.fill)
                         .width(96)
                         .height(60)
-                        .background(Palette.surface)
+                        .background(Palette.well)
 
                     Text(".contentMode(.fill)")
                         .fontSize(11)
@@ -67,7 +67,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .contentMode(.stretch)
                         .width(96)
                         .height(60)
-                        .background(Palette.surface)
+                        .background(Palette.well)
 
                     Text(".contentMode(.stretch)")
                         .fontSize(11)

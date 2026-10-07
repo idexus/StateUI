@@ -29,8 +29,10 @@ extension SceneKey {
 // listing: end
 
 // listing: Gallery.SessionStyle
-/// An accent a gallery can wear - the colour its bars are painted in.
+/// An accent a gallery can wear: the platform's own, its bars as the platform
+/// draws them, or a colour its bars are painted in.
 enum AccentChoice: String, CaseIterable, PersistentValue {
+    case platform
     case violet
     case teal
     case coral
@@ -39,6 +41,7 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
     /// What the Colours window calls it.
     var name: String {
         switch self {
+        case .platform: return "The platform's own"
         case .violet: return "Violet"
         case .teal: return "Teal"
         case .coral: return "Coral"
@@ -47,24 +50,14 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
     }
 
     /// The colour - one in both themes, since everything on the bars it
-    /// paints is white either way.
-    var color: Color {
+    /// paints is white either way; nil for the platform's own.
+    var color: Color? {
         switch self {
+        case .platform: return nil
         case .violet: return AppColors.violet
         case .teal: return Color("#0F766E")
         case .coral: return Color("#C2410C")
         case .graphite: return Color("#374151")
-        }
-    }
-
-    /// The colour with three fifths let through - what a window the desktop
-    /// shows through is tinted with, thin enough for the desktop to show.
-    var translucentColor: Color {
-        switch self {
-        case .violet: return Color("#66512BD4")
-        case .teal: return Color("#660F766E")
-        case .coral: return Color("#66C2410C")
-        case .graphite: return Color("#66374151")
         }
     }
 }
@@ -81,8 +74,9 @@ final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""
 
-    /// The accent the gallery's bars are painted in.
-    @State(sceneKey: .accent) var accent = AccentChoice.violet
+    /// The gallery's accent: the platform's own until the Colours window
+    /// chooses another.
+    @State(sceneKey: .accent) var accent = AccentChoice.platform
 
     /// Whether the Fonts and Colours windows hide while another scene is the
     /// one in front.

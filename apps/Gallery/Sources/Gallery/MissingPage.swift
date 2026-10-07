@@ -39,7 +39,6 @@ struct MissingPage: View {
                 .horizontalTextAlignment(.center)
 
             Button("Back")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { path.removeLast() }
         }

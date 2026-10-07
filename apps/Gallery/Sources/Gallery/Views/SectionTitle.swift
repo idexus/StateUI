@@ -27,8 +27,8 @@ struct SectionTitle: View {
 }
 
 /// The heading over one example among several - "Example 2" - and over the
-/// notes and code that belong to it: larger than a section's heading and in
-/// the accent colour, so each example's group reads as one.
+/// notes and code that belong to it: larger than a section's heading, so
+/// each example's group reads as one.
 struct ExampleTitle: View {
     private let text: String
 
@@ -42,7 +42,6 @@ struct ExampleTitle: View {
             .accessibilityHeading(.h2)
             .fontSize(17)
             .fontAttributes(.bold)
-            .textColor(Palette.accent)
             .verticalAlignment(.center)
     }
 }

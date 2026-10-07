@@ -1,15 +1,6 @@
-// The gallery's raw colours: the StateUI ramp - Swift's orange against a deep
-// violet, so the gallery looks like this library rather than like a template.
-//
-// Two decisions carry the whole look, and neither is decoration:
-//
-//   - THE NEUTRALS ARE TINTED VIOLET, not grey. A #808080 is what an interface
-//     has when nobody chose; a neutral carrying a trace of the brand hue reads
-//     as one designed thing. It is a few points of blue in every step of the
-//     ramp, and it is the difference between the two.
-//   - THE ACCENT IS SWIFT'S ORANGE, against a violet ground. Near-complementary,
-//     so anything accented separates from what is around it without being made
-//     bigger or bolder.
+// The gallery's raw colours: Swift's orange against a deep violet - the
+// identity the gradient and the mark carry, and the colours its samples draw
+// with. Everything else the gallery stands on is the platform's own.
 //
 // The interactive orange is DEEPER than Swift's own in the light theme and
 // LIGHTER in the dark: white on #F05138 is 3.5:1, which fails WCAG AA for text,
@@ -40,16 +31,8 @@ enum AppColors {
     /// caption stays white regardless.
     static let swiftOrangeLight = Color("#FF8A6B")
 
-    /// The yellow the WINDOW ITSELF is painted with - read off a running
-    /// window's minimise button on macOS, which is exactly this. The chrome's
-    /// accent, so what can be pressed up there is the colour of the other
-    /// things up there that can be pressed.
-    ///
-    /// It also measures better than the orange: 5.0:1 against `violet`,
-    /// where `swiftOrangeLight` is 3.4:1 and fails AA for text.
-    ///
-    /// ONE SVG CARRIES THIS HEX BY HAND - `nav_surprise_chrome.svg` - because
-    /// artwork cannot read a palette. Change it here and change it there.
+    /// A warm yellow - the dark half of the colour the Transforms sample marks
+    /// a size with.
     static let windowYellow = Color("#FAC800")
 
     /// A warm amber - the light half of the colour the Transforms sample marks
@@ -58,7 +41,8 @@ enum AppColors {
 
     // MARK: Violet
 
-    /// The brand violet - the bars, and the ground the accent stands on.
+    /// The brand violet - the start of the identity gradient, and a bar the
+    /// Colours window paints violet.
     static let violet = Color("#512BD4")
 
     /// The cool end of the identity gradient.
@@ -67,75 +51,16 @@ enum AppColors {
     /// The violet lifted for a dark background.
     static let violetLight = Color("#A78BFA")
 
-    // MARK: Neutrals, light theme
-    //
-    // Every one of these carries the brand hue. On their own they read as
-    // greys; beside a true grey they do not.
+    // MARK: Sample colours
 
-    /// Body text: near-black, violet-tinted.
+    /// A near-black ink, violet-tinted - what the animated caption starts in.
     static let ink = Color("#14121C")
 
-    /// Anything secondary. 6.3:1 on the page behind it.
-    static let inkMuted = Color("#5D5872")
-
-    /// Outlines and dividers.
-    static let line = Color("#E5E1F0")
-
-    /// The page. Tinted rather than white, which is what lets a white card LIFT
-    /// off it without a shadow.
-    static let surface = Color("#F7F5FC")
-
-    /// A card, a code block - anything sitting on the page.
-    static let raised = Color("#FFFFFF")
-
-    /// Text and controls that are not available.
-    static let muted = Color("#B4AEC6")
-
-    /// The row you are on: a violet wash, well clear of both the page and a
-    /// card, because "which page is this" has to be answerable at a glance.
-    static let selected = Color("#EBE6F9")
-
-    // MARK: Neutrals, dark theme
-
-    /// Body text in the dark.
-    static let inkDark = Color("#F4F2FA")
-
-    /// Anything secondary, in the dark. 7.2:1 on the page behind it.
-    static let inkMutedDark = Color("#A09AB4")
-
-    /// Outlines and dividers, in the dark.
+    /// A deep violet-grey - what the animated panel starts in.
     static let lineDark = Color("#352F55")
-
-    /// The page in the dark: violet-black rather than grey-black.
-    static let surfaceDark = Color("#0C0A19")
-
-    /// The sidebar in the dark: a step up from the page, as a desktop's glass
-    /// sidebar stands lighter than what it leads to.
-    static let sidebarDark = Color("#1A1531")
-
-    /// The sidebar's tone over glass the desktop shows through, in the dark:
-    /// enough to darken the glass, thin enough to leave it glass.
-    static let sidebarGlassDark = Color("#4D1A1531")
-
-    /// A field in the dark: sunk below the card it stands on, in the chrome's
-    /// violet rather than the platform's grey.
-    static let fieldDark = Color("#17132B")
-
-    /// A card in the dark, one step up from the page.
-    static let raisedDark = Color("#1D1935")
-
-    /// Not available, in the dark.
-    static let mutedDark = Color("#4A4459")
-
-    /// The row you are on, in the dark. Lifted well past a card - a step of two
-    /// or three points reads as nothing on a screen at low brightness.
-    static let selectedDark = Color("#342B5C")
 
     // MARK: Absolutes
 
-    /// White, for text on the bar and on the accent.
+    /// White, for text on a painted bar, the gradient and the accent.
     static let white = Color("#FFFFFF")
-
-    /// Black, for the few places that mean it.
-    static let black = Color("#000000")
 }

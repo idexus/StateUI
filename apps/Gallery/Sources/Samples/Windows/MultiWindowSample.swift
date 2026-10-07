@@ -84,25 +84,17 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             Button("Close swatch 2")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { await closeSwatch(2) }
 
             SectionTitle("More gallery windows")
 
             Button("New gallery window")
-                .background(style.accent.color)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.open")
                 .onClicked { await openAnother() }
 
             Button("Close every gallery window")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.close")
                 .onClicked { await closeThis() }
@@ -123,10 +115,10 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     // listing: MultiWindowSample
     /// A line in the scene's font and accent - what its two windows change.
     private var preview: some View {
-        let line = Text("The quick brown fox jumps over the lazy dog.")
+        var line = Text("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
-            .textColor(style.accent.color)   // listing: keep
             .horizontalTextAlignment(.center)
+        if let colour = style.accent.color { line = line.textColor(colour) }
 
         return style.font.isEmpty ? line : line.fontFamily(style.font)
     }
@@ -134,10 +126,6 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// The button that opens one of the scene's windows.
     private func opens(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
-            .background(style.accent.color)
-            .textColor(.white)
-            .shape(.roundedRectangle(8))
-            .padding(horizontal: 20, vertical: 8)
             .accessibilityIdentifier(handle("window.open", caption))
             .onClicked { await open(type, caption) }
     }
@@ -145,8 +133,6 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// The button that closes it.
     private func closes(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .accessibilityIdentifier(handle("window.close", caption))
             .onClicked { await close(type, caption) }
     }
@@ -191,7 +177,6 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .background(SwatchPage.colour(of: number))
             .textColor(.white)
             .shape(.roundedRectangle(8))
-            .padding(horizontal: 16, vertical: 8)
             .accessibilityIdentifier("window.open.swatch.\(number)")
             .onClicked { await openSwatch(number) }
     }
