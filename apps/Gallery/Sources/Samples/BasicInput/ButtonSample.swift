@@ -34,7 +34,7 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .textColor(Palette.accent)
                 .stroke(Palette.accent)
                 .lineWidth(1)
-                .shape(.roundedRectangle(8))
+                .shape(.ellipse)
                 .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }

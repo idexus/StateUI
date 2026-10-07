@@ -14,7 +14,7 @@ BindingReaderSample.swift 2f843cf9c1babddb
 BoundPropertiesSample.swift 676647cad4a15d35
 BrushSample.swift 46db250f8a5d81dd
 BuilderSample.swift f9a7d51dc03fa1f5
-ButtonSample.swift 4bbb5487217a12fa
+ButtonSample.swift f5c3fd20b0e903cf
 CanvasSample.swift 4b6b668cc11a10e3
 CheckBoxSample.swift a6e9da46d0ccfb97
 ChoosingItemsSample.swift 9a72b4db0bd1e44f
