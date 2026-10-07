@@ -77,7 +77,7 @@ struct WindowSample: SampleContent, ExampleContent {
 
             option("Translucent", id: "window.translucent", value: $translucent)
                 .onChanged(translucent) {
-                    window.backdrop = translucent ? .material(.regular) : nil
+                    window.background = translucent ? .blur(.regular) : nil
                 }
 
             Text("Sample frame: \(Int(width)) × \(Int(height))")
@@ -91,7 +91,7 @@ struct WindowSample: SampleContent, ExampleContent {
         }
         // The switch starts where the window stands - on, where the gallery's
         // window opens translucent.
-        .onCreated { translucent = window.backdrop != nil }
+        .onCreated { translucent = window.background == .blur(.regular) }
     }
 
     /// An action that writes the surrounding window session.

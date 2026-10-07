@@ -167,13 +167,15 @@ final class Catalog {
                 title: "Styles",
                 summary: "How a control looks - one style worn by every control of a "
                     + "type, how it looks held down or disabled, the theme it "
-                    + "answers light and dark, and the look the gallery wears.",
+                    + "answers light and dark, what a surface is made of, and the "
+                    + "look the gallery wears.",
                 icon: ImageSource(light: "nav_styles.png", dark: "nav_styles_dark.png"),
                 card: ImageSource("cat_styles.png"),
                 samples: [
                     Sample(StyleSample()),
                     Sample(VisualStateSample()),
                     Sample(AppThemeSample()),
+                    Sample(MaterialsSample()),
                     Sample(AppearanceSample(style: style)),
                 ]),
 

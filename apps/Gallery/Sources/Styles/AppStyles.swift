@@ -129,7 +129,7 @@ enum AppStyles {
             // A list's rows stand in one rounded group, on the platform's glass;
             // a row lights up under the pointer.
             Style<VStack>("RowGroup")
-                .backdrop(.glass(.regular))
+                .background(.glass(.regular))
                 .stroke(Palette.edge)
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))

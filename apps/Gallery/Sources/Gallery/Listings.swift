@@ -712,7 +712,7 @@ enum Listings {
         }
 
         /// One theme's look: its bars and its window, each in a colour of its own,
-        /// and the window's material - written where `keys` say.
+        /// and the window's blur - written where `keys` say.
         private struct LookColumn: View {
             let title: String
             let style: SessionStyle
@@ -726,11 +726,11 @@ enum Listings {
                 let look = ThemeLook(
                     bars: style[keyPath: keys.bars], barColour: style[keyPath: keys.barColour],
                     windows: style[keyPath: keys.windows], windowColour: style[keyPath: keys.windowColour],
-                    material: style[keyPath: keys.material])
+                    blur: style[keyPath: keys.blur])
                 let bars = BarLook.allCases
                 let windows = WindowLook.allCases
                 let accents = AccentChoice.allCases
-                let materials = Material.allCases
+                let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
                 let name = title.lowercased()
 
                 return VStack {
@@ -756,11 +756,11 @@ enum Listings {
                         .selectedIndex(Binding(
                             get: { accents.firstIndex(of: look.windowColour) ?? 0 },
                             set: { style[keyPath: keys.windowColour] = accents[$0] }))
-                    Picker(["Ultra thin", "Thin", "Regular", "Thick"])
-                        .isEnabled(look.windows.showsMaterial)
+                    Picker(["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"])
+                        .isEnabled(look.windows.showsBlur)
                         .selectedIndex(Binding(
-                            get: { materials.firstIndex(of: look.material) ?? 0 },
-                            set: { style[keyPath: keys.material] = materials[$0] }))
+                            get: { blurs.firstIndex(of: look.blur) ?? 0 },
+                            set: { style[keyPath: keys.blur] = blurs[$0] }))
                 }
             }
         }
@@ -2643,7 +2643,7 @@ enum Listings {
                 switch self {
                 case .platform: return "The platform's own"
                 case .clear: return "Clear"
-                case .tinted: return "Material, tinted"
+                case .tinted: return "Tinted"
                 case .colour: return "Colour"
                 }
             }
@@ -2657,11 +2657,11 @@ enum Listings {
             /// A window that paints nothing: the desktop shows through it, sharp.
             case clear
 
-            /// The window's material: the desktop shows through it, blurred.
-            case material
+            /// A blur: the desktop shows through the window, blurred.
+            case blur
 
-            /// The window's material, in a light tint of the gallery's colour.
-            case tintedMaterial
+            /// A blur in a light tint of the gallery's colour.
+            case tintedBlur
 
             /// The gallery's colour.
             case colour
@@ -2671,36 +2671,32 @@ enum Listings {
                 switch self {
                 case .platform: return "The platform's own"
                 case .clear: return "Clear"
-                case .material: return "Material"
-                case .tintedMaterial: return "Material, tinted"
+                case .blur: return "Blur"
+                case .tintedBlur: return "Blur, tinted"
                 case .colour: return "Colour"
                 }
             }
 
-            /// Whether the look shows a material.
-            var showsMaterial: Bool {
-                self == .material || self == .tintedMaterial
+            /// Whether the look shows a blur.
+            var showsBlur: Bool {
+                self == .blur || self == .tintedBlur
             }
 
             /// Whether the look shows a colour.
             var showsColour: Bool {
-                self == .tintedMaterial || self == .colour
+                self == .tintedBlur || self == .colour
             }
 
-            /// What the window shows behind everything it draws: the desktop through
-            /// `material`, where the look is a material; nil else.
-            func backdrop(_ material: Material) -> Backdrop? {
-                self == .material || self == .tintedMaterial ? .material(material) : nil
-            }
-
-            /// What the window shows behind its pages, in `accent` - the system's
-            /// accent being `system`; nil for the platform's own.
-            func background(in accent: AccentChoice, system: Color) -> Color? {
+            /// What the window is made of: `blur` where the look is a blur, tinted in
+            /// `accent` - the system's accent being `system` - where it is tinted, the
+            /// colour where it is one; nil for the platform's own.
+            func material(_ blur: Blur, in accent: AccentChoice, system: Color) -> Material? {
                 switch self {
-                case .platform, .material: return nil
-                case .clear: return .transparent
-                case .tintedMaterial: return accent.tint(system: system)
-                case .colour: return accent.color(system: system)
+                case .platform: return nil
+                case .clear: return .color(.transparent)
+                case .blur: return .blur(blur)
+                case .tintedBlur: return .blur(blur.tint(accent.tint(system: system)))
+                case .colour: return .color(accent.color(system: system))
                 }
             }
         }
@@ -2712,7 +2708,7 @@ enum Listings {
             var barColour: AccentChoice
             var windows: WindowLook
             var windowColour: AccentChoice
-            var material: Material
+            var blur: Blur
         }
 
         /// Where a theme's look stands in the session's style - one column of the
@@ -2722,20 +2718,20 @@ enum Listings {
             let barColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
             let windows: ReferenceWritableKeyPath<SessionStyle, WindowLook>
             let windowColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
-            let material: ReferenceWritableKeyPath<SessionStyle, Material>
+            let blur: ReferenceWritableKeyPath<SessionStyle, Blur>
 
             /// The light theme's look.
             static var light: LookKeys {
                 LookKeys(
                     bars: \.lightBars, barColour: \.lightBarColour, windows: \.lightWindows,
-                    windowColour: \.lightWindowColour, material: \.lightMaterial)
+                    windowColour: \.lightWindowColour, blur: \.lightBlur)
             }
 
             /// The dark theme's look.
             static var dark: LookKeys {
                 LookKeys(
                     bars: \.darkBars, barColour: \.darkBarColour, windows: \.darkWindows,
-                    windowColour: \.darkWindowColour, material: \.darkMaterial)
+                    windowColour: \.darkWindowColour, blur: \.darkBlur)
             }
         }
         """#,
@@ -2820,8 +2816,8 @@ enum Listings {
                 color(system: system).opacity(0.4)
             }
 
-            /// The colour let through all but a seventh - a window's material tinted
-            /// lightly, the material showing through it.
+            /// The colour let through all but a seventh - a window's blur tinted
+            /// lightly, the blur showing through it.
             func tint(system: Color) -> Color {
                 color(system: system).opacity(0.15)
             }
@@ -2847,20 +2843,20 @@ enum Listings {
             @State(sceneKey: .lightBarColour) var lightBarColour = AccentChoice.violet
             @State(sceneKey: .darkBarColour) var darkBarColour = AccentChoice.violet
 
-            /// What the gallery's windows show behind their pages: the platform's own
-            /// in the light theme, the window's material in a light tint in the dark.
+            /// What the gallery's windows are made of: the platform's own in the light
+            /// theme, a blur in a light tint in the dark.
             @State(sceneKey: .lightWindows) var lightWindows = WindowLook.platform
-            @State(sceneKey: .darkWindows) var darkWindows = WindowLook.tintedMaterial
+            @State(sceneKey: .darkWindows) var darkWindows = WindowLook.tintedBlur
 
             /// The colour the windows are tinted or painted in, in each theme.
             @State(sceneKey: .lightWindowColour) var lightWindowColour = AccentChoice.violet
             @State(sceneKey: .darkWindowColour) var darkWindowColour = AccentChoice.violet
 
-            /// The material the desktop shows through the windows in, in each theme,
-            /// where their look is one: the thickest until the Appearance sample
-            /// chooses another.
-            @State var lightMaterial = Material.thick
-            @State var darkMaterial = Material.thick
+            /// The blur the desktop shows through the windows in, in each theme, where
+            /// their look is one: a thick one until the Appearance sample chooses
+            /// another.
+            @State var lightBlur = Blur.thick
+            @State var darkBlur = Blur.thick
 
             /// The look the gallery wears in a theme, `dark` or not.
             func look(dark: Bool) -> ThemeLook {
@@ -2868,7 +2864,7 @@ enum Listings {
                 return ThemeLook(
                     bars: self[keyPath: keys.bars], barColour: self[keyPath: keys.barColour],
                     windows: self[keyPath: keys.windows], windowColour: self[keyPath: keys.windowColour],
-                    material: self[keyPath: keys.material])
+                    blur: self[keyPath: keys.blur])
             }
 
             /// Whether the Fonts and Colours windows hide while another scene is the
@@ -4417,7 +4413,8 @@ enum Listings {
             log.note("created")
         }
         // The Appearance sample changes the look while the window stands.
-        .onChanged(look) { dress(window) }
+        .onChanged(style.look(dark: false)) { dress(window) }
+        .onChanged(style.look(dark: true)) { dress(window) }
         .onChanged(application.info.accentColor) { dress(window) }
         """#,
         "MainPage.detail": #"""
@@ -4601,6 +4598,89 @@ enum Listings {
         /// a coordinate rather than a river of digits.
         private func rounded(_ degrees: Double) -> Double {
             (degrees * 10_000).rounded() / 10_000
+        }
+        """#,
+        "MaterialsSample": #"""
+        // Sources/Samples/Styles/MaterialsSample.swift
+        /// Which of the blurs the blurred panel wears.
+        @State private var thickness = 2
+
+        /// Whether the blur wears the gallery's colour as a tint.
+        @State private var tinted = false
+
+        /// Whether the glass is the clearer kind.
+        @State private var clear = false
+
+        /// Whether the glass answers the touch and the pointer.
+        @State private var interactive = false
+
+        /// The colour the last panel walks to and back - a colour's channel.
+        @State private var wash = Palette.accent
+
+        /// The blurs on offer, thinnest first.
+        private static let blurs: [(name: String, blur: Blur)] = [
+            ("Ultra thin", .ultraThin), ("Thin", .thin), ("Regular", .regular), ("Thick", .thick),
+            ("Ultra thick", .ultraThick),
+        ]
+
+        var body: some View {
+            let chosen = Self.blurs[thickness].blur
+            let blur = tinted ? chosen.tint(Palette.accent.opacity(0.25)) : chosen
+            let glass = (clear ? Glass.clear : .regular).isInteractive(interactive)
+
+            return VStack {
+                ZStack {
+                    // Stripes of colour behind the panels: what each lets through shows on them.
+                    Grid {
+                        Rectangle().fill(.tomato).gridColumn(0)
+                        Rectangle().fill(.gold).gridColumn(1)
+                        Rectangle().fill(.steelBlue).gridColumn(2)
+                        Rectangle().fill(.white).gridColumn(3)
+                        Rectangle().fill(Palette.accent).gridColumn(4)
+                    }
+                    .columns(.fill, .fill, .fill, .fill, .fill)
+
+                    Grid {
+                        panel("Colour", .color(Palette.accent)).gridRow(0).gridColumn(0)
+                        panel("Gradient", .gradient(Palette.identity)).gridRow(0).gridColumn(1)
+                        panel("Blur", .blur(blur)).gridRow(1).gridColumn(0)
+                        panel("Glass", .glass(glass)).gridRow(1).gridColumn(1)
+                        // A blur in the dark theme, and nearly white in the light one.
+                        panel("Light and dark", Material(light: .color(Color.white.opacity(0.85)), dark: .blur(.regular)))
+                            .gridRow(2).gridColumn(0)
+                        // A colour's channel: the host walks the colour, and no view is built again.
+                        words("A colour's channel")
+                            .height(76)
+                            .gridRow(2).gridColumn(1)
+                    }
+                    .columns(.fill, .fill)
+                }
+                .clipsContent(true)
+
+                Picker(Self.blurs.map(\.name))
+                    .selectedIndex($thickness)
+                SwitchRow("Tinted blur", $tinted)
+                SwitchRow("Clear glass", $clear)
+                SwitchRow("Glass answers the touch", $interactive)
+                Button("Change the colour")
+                    .horizontalAlignment(.center)
+                    .onClicked { wash = wash == Palette.accent ? Palette.brand : Palette.accent }
+            }
+        }
+
+        /// A panel of `material`, named.
+        private func panel(_ name: String, _ material: Material) -> ZStack {
+            words(name)
+                .height(76)
+        }
+
+        /// A panel's name, in its middle.
+        private func words(_ name: String) -> ZStack {
+            ZStack {
+                Text(name)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
+            }
         }
         """#,
         "MenuBarSample": #"""
@@ -9133,7 +9213,7 @@ enum Listings {
 
                 option("Translucent", id: "window.translucent", value: $translucent)
                     .onChanged(translucent) {
-                        window.backdrop = translucent ? .material(.regular) : nil
+                        window.background = translucent ? .blur(.regular) : nil
                     }
 
                 Text("Sample frame: \(Int(width)) × \(Int(height))")
@@ -9144,7 +9224,7 @@ enum Listings {
             }
             // The switch starts where the window stands - on, where the gallery's
             // window opens translucent.
-            .onCreated { translucent = window.backdrop != nil }
+            .onCreated { translucent = window.background == .blur(.regular) }
         }
 
         /// An action that writes the surrounding window session.

@@ -74,7 +74,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Clear lets the desktop through the window sharp, the material blurred - "
+            Text("Clear lets the desktop through the window sharp, a blur blurred - "
                 + "where the platform can show it. The theme is the whole application's.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -90,7 +90,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
 // listing: AppearanceSample
 /// One theme's look: its bars and its window, each in a colour of its own,
-/// and the window's material - written where `keys` say.
+/// and the window's blur - written where `keys` say.
 private struct LookColumn: View {
     let title: String
     let style: SessionStyle
@@ -104,11 +104,11 @@ private struct LookColumn: View {
         let look = ThemeLook(
             bars: style[keyPath: keys.bars], barColour: style[keyPath: keys.barColour],
             windows: style[keyPath: keys.windows], windowColour: style[keyPath: keys.windowColour],
-            material: style[keyPath: keys.material])
+            blur: style[keyPath: keys.blur])
         let bars = BarLook.allCases
         let windows = WindowLook.allCases
         let accents = AccentChoice.allCases
-        let materials = Material.allCases
+        let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
         let name = title.lowercased()
 
         return VStack {
@@ -146,13 +146,13 @@ private struct LookColumn: View {
                 .selectedIndex(Binding(
                     get: { accents.firstIndex(of: look.windowColour) ?? 0 },
                     set: { style[keyPath: keys.windowColour] = accents[$0] }))
-            Picker(["Ultra thin", "Thin", "Regular", "Thick"])
-                .accessibilityIdentifier("appearance.\(name).material")
-                .accessibilityLabel("Window's material, \(name)")
-                .isEnabled(look.windows.showsMaterial)
+            Picker(["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"])
+                .accessibilityIdentifier("appearance.\(name).blur")
+                .accessibilityLabel("Window's blur, \(name)")
+                .isEnabled(look.windows.showsBlur)
                 .selectedIndex(Binding(
-                    get: { materials.firstIndex(of: look.material) ?? 0 },
-                    set: { style[keyPath: keys.material] = materials[$0] }))
+                    get: { blurs.firstIndex(of: look.blur) ?? 0 },
+                    set: { style[keyPath: keys.blur] = blurs[$0] }))
         }
         .spacing(10)
     }

@@ -147,7 +147,8 @@ struct MainPage: View {
                 log.note("created")
             }
             // The Appearance sample changes the look while the window stands.
-            .onChanged(look) { dress(window) }
+            .onChanged(style.look(dark: false)) { dress(window) }
+            .onChanged(style.look(dark: true)) { dress(window) }
             .onChanged(application.info.accentColor) { dress(window) }
             // listing: end
         // listing: MainPage.modal
@@ -276,12 +277,13 @@ struct MainPage: View {
         style.look(dark: application.info.colorScheme == .dark)
     }
 
-    /// Dresses `window` as the gallery's look says in the theme in force: the
-    /// material the desktop shows through it in, and what it shows behind its
-    /// pages.
+    /// Dresses `window` as the gallery's looks say, one for each theme: what it
+    /// is made of behind its pages - the platform's own where a look leaves it.
     private func dress(_ window: WindowSession) {
-        let look = self.look
-        window.backdrop = look.windows.backdrop(look.material)
-        window.background = look.windows.background(in: look.windowColour, system: application.info.accentColor)
+        let system = application.info.accentColor
+        let light = style.look(dark: false), dark = style.look(dark: true)
+        let day = light.windows.material(light.blur, in: light.windowColour, system: system)
+        let night = dark.windows.material(dark.blur, in: dark.windowColour, system: system)
+        window.background = day == nil && night == nil ? nil : Material(light: day, dark: night)
     }
 }

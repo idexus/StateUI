@@ -22,7 +22,7 @@ enum BarLook: String, CaseIterable, PersistentValue {
         switch self {
         case .platform: return "The platform's own"
         case .clear: return "Clear"
-        case .tinted: return "Material, tinted"
+        case .tinted: return "Tinted"
         case .colour: return "Colour"
         }
     }
@@ -36,11 +36,11 @@ enum WindowLook: String, CaseIterable, PersistentValue {
     /// A window that paints nothing: the desktop shows through it, sharp.
     case clear
 
-    /// The window's material: the desktop shows through it, blurred.
-    case material
+    /// A blur: the desktop shows through the window, blurred.
+    case blur
 
-    /// The window's material, in a light tint of the gallery's colour.
-    case tintedMaterial
+    /// A blur in a light tint of the gallery's colour.
+    case tintedBlur
 
     /// The gallery's colour.
     case colour
@@ -50,36 +50,32 @@ enum WindowLook: String, CaseIterable, PersistentValue {
         switch self {
         case .platform: return "The platform's own"
         case .clear: return "Clear"
-        case .material: return "Material"
-        case .tintedMaterial: return "Material, tinted"
+        case .blur: return "Blur"
+        case .tintedBlur: return "Blur, tinted"
         case .colour: return "Colour"
         }
     }
 
-    /// Whether the look shows a material.
-    var showsMaterial: Bool {
-        self == .material || self == .tintedMaterial
+    /// Whether the look shows a blur.
+    var showsBlur: Bool {
+        self == .blur || self == .tintedBlur
     }
 
     /// Whether the look shows a colour.
     var showsColour: Bool {
-        self == .tintedMaterial || self == .colour
+        self == .tintedBlur || self == .colour
     }
 
-    /// What the window shows behind everything it draws: the desktop through
-    /// `material`, where the look is a material; nil else.
-    func backdrop(_ material: Material) -> Backdrop? {
-        self == .material || self == .tintedMaterial ? .material(material) : nil
-    }
-
-    /// What the window shows behind its pages, in `accent` - the system's
-    /// accent being `system`; nil for the platform's own.
-    func background(in accent: AccentChoice, system: Color) -> Color? {
+    /// What the window is made of: `blur` where the look is a blur, tinted in
+    /// `accent` - the system's accent being `system` - where it is tinted, the
+    /// colour where it is one; nil for the platform's own.
+    func material(_ blur: Blur, in accent: AccentChoice, system: Color) -> Material? {
         switch self {
-        case .platform, .material: return nil
-        case .clear: return .transparent
-        case .tintedMaterial: return accent.tint(system: system)
-        case .colour: return accent.color(system: system)
+        case .platform: return nil
+        case .clear: return .color(.transparent)
+        case .blur: return .blur(blur)
+        case .tintedBlur: return .blur(blur.tint(accent.tint(system: system)))
+        case .colour: return .color(accent.color(system: system))
         }
     }
 }
@@ -91,7 +87,7 @@ struct ThemeLook: Equatable {
     var barColour: AccentChoice
     var windows: WindowLook
     var windowColour: AccentChoice
-    var material: Material
+    var blur: Blur
 }
 
 /// Where a theme's look stands in the session's style - one column of the
@@ -101,20 +97,20 @@ struct LookKeys {
     let barColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
     let windows: ReferenceWritableKeyPath<SessionStyle, WindowLook>
     let windowColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
-    let material: ReferenceWritableKeyPath<SessionStyle, Material>
+    let blur: ReferenceWritableKeyPath<SessionStyle, Blur>
 
     /// The light theme's look.
     static var light: LookKeys {
         LookKeys(
             bars: \.lightBars, barColour: \.lightBarColour, windows: \.lightWindows,
-            windowColour: \.lightWindowColour, material: \.lightMaterial)
+            windowColour: \.lightWindowColour, blur: \.lightBlur)
     }
 
     /// The dark theme's look.
     static var dark: LookKeys {
         LookKeys(
             bars: \.darkBars, barColour: \.darkBarColour, windows: \.darkWindows,
-            windowColour: \.darkWindowColour, material: \.darkMaterial)
+            windowColour: \.darkWindowColour, blur: \.darkBlur)
     }
 }
 // listing: end

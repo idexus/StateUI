@@ -84,8 +84,8 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         color(system: system).opacity(0.4)
     }
 
-    /// The colour let through all but a seventh - a window's material tinted
-    /// lightly, the material showing through it.
+    /// The colour let through all but a seventh - a window's blur tinted
+    /// lightly, the blur showing through it.
     func tint(system: Color) -> Color {
         color(system: system).opacity(0.15)
     }
@@ -113,20 +113,20 @@ final class SessionStyle {
     @State(sceneKey: .lightBarColour) var lightBarColour = AccentChoice.violet
     @State(sceneKey: .darkBarColour) var darkBarColour = AccentChoice.violet
 
-    /// What the gallery's windows show behind their pages: the platform's own
-    /// in the light theme, the window's material in a light tint in the dark.
+    /// What the gallery's windows are made of: the platform's own in the light
+    /// theme, a blur in a light tint in the dark.
     @State(sceneKey: .lightWindows) var lightWindows = WindowLook.platform
-    @State(sceneKey: .darkWindows) var darkWindows = WindowLook.tintedMaterial
+    @State(sceneKey: .darkWindows) var darkWindows = WindowLook.tintedBlur
 
     /// The colour the windows are tinted or painted in, in each theme.
     @State(sceneKey: .lightWindowColour) var lightWindowColour = AccentChoice.violet
     @State(sceneKey: .darkWindowColour) var darkWindowColour = AccentChoice.violet
 
-    /// The material the desktop shows through the windows in, in each theme,
-    /// where their look is one: the thickest until the Appearance sample
-    /// chooses another.
-    @State var lightMaterial = Material.thick
-    @State var darkMaterial = Material.thick
+    /// The blur the desktop shows through the windows in, in each theme, where
+    /// their look is one: a thick one until the Appearance sample chooses
+    /// another.
+    @State var lightBlur = Blur.thick
+    @State var darkBlur = Blur.thick
 
     /// The look the gallery wears in a theme, `dark` or not.
     func look(dark: Bool) -> ThemeLook {
@@ -134,7 +134,7 @@ final class SessionStyle {
         return ThemeLook(
             bars: self[keyPath: keys.bars], barColour: self[keyPath: keys.barColour],
             windows: self[keyPath: keys.windows], windowColour: self[keyPath: keys.windowColour],
-            material: self[keyPath: keys.material])
+            blur: self[keyPath: keys.blur])
     }
 
     /// Whether the Fonts and Colours windows hide while another scene is the

@@ -68,7 +68,7 @@ enum Palette {
     // MARK: Fills
 
     /// A panel set apart from the page: a card, a code block. Let through
-    /// enough that a window's material and its tint carry into the panel.
+    /// enough that a window's blur and its tint carry into the panel.
     static let raised = Color(light: Color("#80FFFFFF"), dark: Color("#66383838"))
 
     /// The edge of a panel: a hairline holding it apart where the page behind
