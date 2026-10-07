@@ -138,9 +138,9 @@ final class AppKitSharedMemberTests: XCTestCase {
         let layer: (NSView) -> [CGFloat]? = { channels($0.layer?.backgroundColor) }
         var fills: [(NodeType, (NSView) -> [CGFloat]?)] = layered.map { ($0, layer) }
         fills.append((NodeType.colorBox, { channels(($0 as? AppKitColorBoxView)?.backgroundColor) }))
-        fills.append((NodeType.textField, { channels(($0 as? AppKitTextFieldView)?.textField.backgroundColor) }))
+        fills.append((NodeType.textField, { channels(($0 as? AppKitTextFieldView)?.fill) }))
         fills.append((NodeType.textEditor, { channels(($0 as? AppKitTextEditorView)?.textView.backgroundColor) }))
-        fills.append((NodeType.searchField, layer))
+        fills.append((NodeType.searchField, { channels(($0 as? AppKitSearchFieldView)?.fill) }))
 
         for (type, fill) in fills {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
@@ -150,11 +150,7 @@ final class AppKitSharedMemberTests: XCTestCase {
             renderer.applyForTesting(tree(view))
 
             let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("view")), type.name)
-            if type == .searchField {
-                XCTAssertNil(fill(native), "no square under the rounded field")
-            } else {
-                assertChannels(fill(native), [0.2, 0.4, 0.6, 1], type.name)
-            }
+            assertChannels(fill(native), [0.2, 0.4, 0.6, 1], type.name)
         }
     }
 

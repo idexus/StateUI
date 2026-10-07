@@ -94,10 +94,10 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         XCTAssertEqual(submits, 1)
     }
 
-    /// A field whose own registration takes its background keeps AppKit's drawing of it: nothing paints a square
-    /// under the search field's rounded field, or around a text field's own.
+    /// A field given a colour stands in its bezel's shape filled with it - the search field's capsule, the text
+    /// field's rounded box - with no bezel to draw its own ground over the colour, and no square under it.
     @MainActor
-    func testAFieldsBackgroundIsNoSquareUnderIt() throws {
+    func testAFieldsBackgroundFillsItsShape() throws {
         let renderer = AppKitRenderer.running {
             VStack {
                 SearchField("Ada").background(.red)
@@ -108,10 +108,16 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
         let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
 
-        XCTAssertNil(search.layer?.backgroundColor, "the search field's rounded field stands alone")
-        XCTAssertNil(field.layer?.backgroundColor, "the text field draws its own")
-        XCTAssertEqual(field.textField.backgroundColor, NSColor(red: 1, green: 0, blue: 0, alpha: 1))
+        search.layoutSubtreeIfNeeded()
+        field.layoutSubtreeIfNeeded()
+        let red = NSColor(red: 1, green: 0, blue: 0, alpha: 1)
+        XCTAssertEqual(search.fill, red)
+        XCTAssertEqual(search.layer?.cornerRadius, search.bounds.height / 2, "the search field's capsule")
+        XCTAssertFalse(search.isBezeled, "AppKit's bezel would draw its own ground over the colour")
+        XCTAssertEqual(field.fill, red)
+        XCTAssertEqual(field.layer?.cornerRadius, AppKitTextEditorView.cornerRadius, "the text field's rounded box")
         XCTAssertFalse(field.textField.isBezeled, "AppKit's bezel would draw its own ground over the colour")
+        XCTAssertGreaterThan(field.textField.frame.minX, 0, "its words set in from the box's edge")
     }
 
     /// A search field's font family reaches its native field.

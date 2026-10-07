@@ -27,7 +27,7 @@ RadioButton.frame: ✅
 Rectangle.isEnabled: ✅
 Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.background: – AppKit draws its own rounded search field, which takes no fill colour.
+SearchField.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 Slider.accessibilityHint: ✅
 Stepper.style: ✅
 Switch.frameChanged: ✅
