@@ -70,16 +70,21 @@ public struct Blur: Equatable, Sendable {
 }
 
 extension Blur.Thickness: HostRepresentable {
-    /// What a platform that blurs nothing draws in its place: a colour of the
-    /// theme, let through as much as the blur lets.
-    var standIn: Color {
-        let alpha: Double = switch self {
+    /// How much of what lies behind a blur this thick hides, from 0 to 1 - what
+    /// a platform that sets a blur's opacity itself gives it.
+    @_spi(Host) public var opacity: Double {
+        switch self {
         case .ultraThin: 0.45
         case .thin: 0.6
         case .regular: 0.75
         case .thick: 0.88
         case .ultraThick: 0.95
         }
-        return Color(light: .white, dark: Color("#1C1C1E")).opacity(alpha)
+    }
+
+    /// What a platform that blurs nothing draws in its place: a colour of the
+    /// theme, let through as much as the blur lets.
+    var standIn: Color {
+        Color(light: .white, dark: Color("#1C1C1E")).opacity(opacity)
     }
 }

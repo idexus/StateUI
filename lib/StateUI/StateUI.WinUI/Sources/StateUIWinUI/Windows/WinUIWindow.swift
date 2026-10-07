@@ -75,17 +75,22 @@ final class WinUIWindow {
         stateui_winui_window_set_limits(handle, limits.map { $0 ?? 0 })
     }
 
-    /// The blur the desktop shows through the window, as its element last said; nil for Mica, WinUI's own.
-    private(set) var backdrop: Blur.Thickness?
-
     /// Makes the window what `traits` says: a button it leaves unsaid is WinUI's own, which lets the user press it;
-    /// a blur or glass is the desktop acrylic, its tint the window's colour over it; none Mica.
+    /// a blur or glass is the desktop acrylic at its thickness, its tint the window's colour over it; none Mica.
     func apply(_ traits: WindowTraits) {
-        backdrop = traits.background.blur
         stateui_winui_window_set_traits(
-            handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, backdrop != nil, traits.floatsOnTop)
+            handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.floatsOnTop)
+        let acrylic = traits.background.blur.map(Self.acrylic)
+        stateui_winui_window_set_backdrop(handle, acrylic != nil, acrylic?.thin ?? false, acrylic?.opacity ?? 0)
         let argb = traits.background.paint.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)
         stateui_winui_window_set_background(handle, argb != nil, argb ?? 0)
+    }
+
+    /// The desktop acrylic a blur `thickness` thick is: the thin kind for the two thinnest, its luminosity hiding
+    /// as much of the desktop as the blur does.
+    /// Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
+    static func acrylic(_ thickness: Blur.Thickness) -> (thin: Bool, opacity: Float) {
+        (thickness.rawValue <= Blur.Thickness.thin.rawValue, Float(thickness.opacity))
     }
 
     /// Shows the window in `theme`, the system's for `.system`.

@@ -1,7 +1,7 @@
 # revision 6.1
 Window: ✅
 Window.activated: ✅
-Window.background: ☑️ A window shows the one desktop acrylic WinUI's backdrop draws, whatever the blur's thickness; glass is drawn as the acrylic.
+Window.background: ☑️ WinUI has no glass: a window of glass shows the desktop acrylic at the glass's fallback thickness.
 Window.created: ✅
 Window.deactivated: ✅
 Window.destroying: ✅

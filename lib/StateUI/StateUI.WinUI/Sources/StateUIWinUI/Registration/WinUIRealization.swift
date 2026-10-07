@@ -135,8 +135,8 @@ enum WinUIRealization {
         .notPlanned("WebView", "tapCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "tapped", reason: webViewTakesTheHand),
         .complete("Window", "activated"),
-        .partial("Window", "background", missing: "A window shows the one desktop acrylic WinUI's backdrop draws, "
-            + "whatever the blur's thickness; glass is drawn as the acrylic."),
+        .partial("Window", "background", missing: "WinUI has no glass: a window of glass shows the desktop acrylic "
+            + "at the glass's fallback thickness."),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),

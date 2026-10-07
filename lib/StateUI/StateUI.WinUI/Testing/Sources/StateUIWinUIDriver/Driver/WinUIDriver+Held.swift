@@ -59,16 +59,19 @@ extension WinUIDriver {
             return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
         }
         if name == "background" {
-            // The desktop acrylic WinUI shows, at the thickness the window was given, its colour the tint; else the
-            // window's colour.
-            var values = [Double](repeating: 0, count: 13)
-            stateui_winui_window_frame(window.handle, &values)
+            // The desktop acrylic WinUI shows, at the thickness its kind and opacity are, its colour the tint; else
+            // the window's colour.
+            var (thin, opacity): (Bool, Float) = (false, 0)
+            let acrylic = stateui_winui_window_acrylic(window.handle, &thin, &opacity)
             var argb: UInt32 = 0
             let painted = stateui_winui_window_background(window.handle, &argb)
                 ? Color(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
                         alpha: Int(argb >> 24 & 255))
                 : nil
-            if values[10] == 1, let thickness = window.backdrop {
+            if acrylic {
+                guard let thickness = Blur.Thickness.allCases.first(where: {
+                    WinUIWindow.acrylic($0).thin == thin && abs(WinUIWindow.acrylic($0).opacity - opacity) < 0.005
+                }) else { return .string("an acrylic of no blur's thickness: \(thin ? "thin" : "base"), \(opacity)") }
                 let blur = Blur(thickness)
                 return Material.blur(painted.map(blur.tint) ?? blur).propValue
             }
@@ -82,7 +85,7 @@ extension WinUIDriver {
         }
         let names = [
             "x", "y", "width", "height", "minimumWidth", "minimumHeight", "maximumWidth", "maximumHeight",
-            "isMaximizable", "isMinimizable", "isTranslucent", "floatsOnTop", "isVisible",
+            "isMaximizable", "isMinimizable", "isAcrylic", "floatsOnTop", "isVisible",
         ]
         guard let place = names.firstIndex(of: name) else { return nil }
         var values = [Double](repeating: 0, count: names.count)

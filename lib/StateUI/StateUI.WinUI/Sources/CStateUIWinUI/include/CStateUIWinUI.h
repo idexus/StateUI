@@ -266,10 +266,17 @@ void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, do
 /// greatest height, 0 for none.
 void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limits);
 
-/// What the window is: whether the user may maximize and minimize it, whether its backdrop is translucent (acrylic)
-/// or of the desktop's tint (Mica), and whether it floats over the application's other windows.
-void stateui_winui_window_set_traits(StateUIObjectRef window, bool maximizable, bool minimizable, bool translucent,
-                                     bool floats);
+/// What the window is: whether the user may maximize and minimize it, and whether it floats over the application's
+/// other windows.
+void stateui_winui_window_set_traits(StateUIObjectRef window, bool maximizable, bool minimizable, bool floats);
+
+/// Shows the desktop through the window in the desktop acrylic where `blurred` - of the thin kind or the base one,
+/// its luminosity hiding `opacity` of the desktop - else in Mica, the desktop's tint.
+void stateui_winui_window_set_backdrop(StateUIObjectRef window, bool blurred, bool thin, float opacity);
+
+/// Whether the window shows the desktop acrylic, of the kind and at the luminosity's opacity it reads into `thin` and
+/// `opacity`; false where it shows Mica.
+bool stateui_winui_window_acrylic(StateUIObjectRef window, bool *thin, float *opacity);
 
 /// Paints the window behind its pages in `argb` - the backdrop through it where the colour lets it - or leaves it
 /// WinUI's own where `written` is false.
@@ -285,7 +292,7 @@ void stateui_winui_window_set_theme(StateUIObjectRef window, int32_t scheme);
 int32_t stateui_winui_window_actual_theme(StateUIObjectRef window);
 
 /// What a test reads of a window, into 13 values: x, y, width, height, the four limits in the order they are set,
-/// maximizable, minimizable, translucent, floating and shown as 1 or 0.
+/// maximizable, minimizable, acrylic, floating and shown as 1 or 0.
 void stateui_winui_window_frame(StateUIObjectRef window, double *values);
 
 /// The window's name the system shows - the taskbar's, Alt+Tab's - in UTF-8, as far as `capacity` goes; answers its

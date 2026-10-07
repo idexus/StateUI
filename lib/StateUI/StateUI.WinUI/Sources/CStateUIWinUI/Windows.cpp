@@ -14,6 +14,8 @@
 #include <cstring>
 
 #include <winrt/Windows.System.h>
+#include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Microsoft.UI.Composition.SystemBackdrops.h>
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Microsoft.UI.Xaml.Input.h>
@@ -24,8 +26,45 @@ using winrt::Windows::System::VirtualKey;
 using winrt::Windows::System::VirtualKeyModifiers;
 
 namespace windowing = winrt::Microsoft::UI::Windowing;
+namespace backdrops = winrt::Microsoft::UI::Composition::SystemBackdrops;
+using winrt::Microsoft::UI::Composition::ICompositionSupportsSystemBackdrop;
 
 namespace {
+    /// The desktop acrylic of the thin kind or the base one, its luminosity hiding `opacity` of the desktop; XAML's
+    /// own configuration has it follow the window's activation and theme.
+    /// Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
+    struct StateUIAcrylic : xaml::Media::SystemBackdropT<StateUIAcrylic> {
+        StateUIAcrylic(bool thin, float opacity) : thin(thin), opacity(opacity) {}
+
+        void OnTargetConnected(ICompositionSupportsSystemBackdrop const &target, xaml::XamlRoot const &root) {
+            SystemBackdropT::OnTargetConnected(target, root);
+            controller = backdrops::DesktopAcrylicController();
+            controller.Kind(thin ? backdrops::DesktopAcrylicKind::Thin : backdrops::DesktopAcrylicKind::Base);
+            controller.LuminosityOpacity(opacity);
+            controller.SetSystemBackdropConfiguration(GetDefaultSystemBackdropConfiguration(target, root));
+            controller.AddSystemBackdropTarget(target);
+        }
+
+        void OnTargetDisconnected(ICompositionSupportsSystemBackdrop const &target) {
+            SystemBackdropT::OnTargetDisconnected(target);
+            if (!controller) return;
+            controller.RemoveSystemBackdropTarget(target);
+            controller.Close();
+            controller = nullptr;
+        }
+
+        bool const thin;
+        float const opacity;
+        backdrops::DesktopAcrylicController controller{nullptr};
+    };
+
+    /// The window's acrylic; nil where it shows Mica.
+    StateUIAcrylic *acrylic(xaml::Window const &window) {
+        auto backdrop = window.SystemBackdrop();
+        if (!backdrop || backdrop.try_as<xaml::Media::MicaBackdrop>()) return nullptr;
+        return winrt::get_self<StateUIAcrylic>(backdrop.as<xaml::Media::ISystemBackdropOverrides>());
+    }
+
     controls::Grid root(xaml::Window const &window) {
         return window.Content().as<controls::Grid>();
     }
@@ -288,7 +327,7 @@ extern "C" void stateui_winui_window_set_limits(StateUIObjectRef handle, double 
 }
 
 extern "C" void stateui_winui_window_set_traits(
-    StateUIObjectRef handle, bool maximizable, bool minimizable, bool translucent, bool floats
+    StateUIObjectRef handle, bool maximizable, bool minimizable, bool floats
 ) {
     try {
         auto window = borrow<xaml::Window>(handle);
@@ -297,13 +336,39 @@ extern "C" void stateui_winui_window_set_traits(
             presenter.IsMinimizable(minimizable);
             presenter.IsAlwaysOnTop(floats);
         }
-        // The backdrop is made again only where it turns.
-        auto acrylic = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>();
-        if (translucent == static_cast<bool>(acrylic)) return;
-        if (translucent) window.SystemBackdrop(xaml::Media::DesktopAcrylicBackdrop());
-        else window.SystemBackdrop(xaml::Media::MicaBackdrop());
     } catch (...) {
         report("setting what a window is");
+    }
+}
+
+extern "C" void stateui_winui_window_set_backdrop(StateUIObjectRef handle, bool blurred, bool thin, float opacity) {
+    try {
+        auto window = borrow<xaml::Window>(handle);
+        // The backdrop is made again only where it turns.
+        auto shown = acrylic(window);
+        if (!blurred) {
+            if (shown || !window.SystemBackdrop()) window.SystemBackdrop(xaml::Media::MicaBackdrop());
+            return;
+        }
+        if (shown && shown->thin == thin && shown->opacity == opacity) return;
+        window.SystemBackdrop(winrt::make<StateUIAcrylic>(thin, opacity));
+    } catch (...) {
+        report("setting a window's backdrop");
+    }
+}
+
+extern "C" bool stateui_winui_window_acrylic(StateUIObjectRef handle, bool *thin, float *opacity) {
+    try {
+        auto shown = acrylic(borrow<xaml::Window>(handle));
+        if (!shown) return false;
+        // What the desktop acrylic holds, once the window stands; what it was made for until then.
+        auto &controller = shown->controller;
+        *thin = controller ? controller.Kind() == backdrops::DesktopAcrylicKind::Thin : shown->thin;
+        *opacity = controller ? controller.LuminosityOpacity() : shown->opacity;
+        return true;
+    } catch (...) {
+        report("reading a window's acrylic");
+        return false;
     }
 }
 
@@ -376,7 +441,7 @@ extern "C" void stateui_winui_window_frame(StateUIObjectRef handle, double *valu
         values[7] = presenter ? dips(presenter.PreferredMaximumHeight()) : 0;
         values[8] = presenter && presenter.IsMaximizable() ? 1 : 0;
         values[9] = presenter && presenter.IsMinimizable() ? 1 : 0;
-        values[10] = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>() ? 1 : 0;
+        values[10] = acrylic(window) ? 1 : 0;
         values[11] = presenter && presenter.IsAlwaysOnTop() ? 1 : 0;
         values[12] = app.IsVisible() ? 1 : 0;
     } catch (...) {
