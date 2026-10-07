@@ -206,9 +206,9 @@ final class AndroidRenderer {
         return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
-    /// Names the activity after the first window.
+    /// Names the activity after the first window: the title its chrome shows, the visible page's that names it first.
     private func showTitle(of window: MountedElement) {
-        let title = window.value(.title)?.string
+        let title = WindowChrome(window: window, arrangement: presentation.arrangement).title
         guard windowTitle != .some(title) else { return }
 
         windowTitle = .some(title)
@@ -225,9 +225,8 @@ final class AndroidRenderer {
     /// Design: docs/design/platforms/android/pages.md#the-windows-overlays
     private func showWindow() {
         guard let window = runtime.tree.root?.first(type: .window) else { return }
-        showTitle(of: window)
-
         let changes = presentation.show(window, in: runtime.lifecycle)
+        showTitle(of: window)
         if let (_, arrangement) = changes.arrangement {
             Java.call(root.reference, JavaAPI.removeAllViews)
             shownOverlays = []

@@ -18,6 +18,10 @@ extension AndroidDriver {
         if element.type == .page, property == .showsBackButton || property == .showsNavigationBar {
             return Self.pageBarHolds(property, of: element)
         }
+        if property == .title || property == .icon, let tabs = element.parent, tabs.type == .tabView {
+            return try tabHolds(property, of: element, in: tabs)
+        }
+        if element.type == .window, property == .title { return Self.activityTitle() }
         let view = (element.native as? AndroidElement)?.view
         if let field = view as? AndroidDateFieldView, let held = try Self.dateFieldHolds(property, field) { return held }
         if let web = view as? AndroidWebView, let held = try Self.webHolds(property, web) { return held }
@@ -27,6 +31,17 @@ extension AndroidDriver {
         case (.minimum, let slider as AndroidSliderView): return slider.minimum.propValue
         case (.maximum, let slider as AndroidSliderView): return slider.maximum.propValue
         case (.value, let stepper as AndroidStepperView): return stepper.value.propValue
+        case (.minimum, is AndroidStepperView), (.maximum, is AndroidStepperView), (.step, is AndroidStepperView):
+            throw DriverCannot(
+                "read a stepper's range", because: "Android's stepper is two buttons, which hold none: an end turns one off")
+        case (.scrollOffset, let scroll as AndroidScrollView):
+            var offset = Point(x: 0, y: 0)
+            for (scroller, across) in zip(scroll.scrollers, Self.ways(of: scroll)) {
+                if across { offset.x = Double(Java.callInt(scroller.reference, JavaAPI.getScrollX)) / 2 }
+                else { offset.y = Double(Java.callInt(scroller.reference, JavaAPI.getScrollY)) / 2 }
+            }
+            return offset.propValue
+        case (.selectedTab, let tabs as AndroidTabView): return Self.selectedTab(of: tabs)?.propValue
         case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
         case (.showsSidebar, let split as AndroidSplitView): return split.isPresented.propValue
         case (.selectedItems, let items as AndroidItemsView): return .strings(items.selectedForTesting)
@@ -120,6 +135,15 @@ extension AndroidDriver {
     }
 
 
+    /// The activity's title, as the system's recent tasks show it.
+    static func activityTitle() -> HostValue? {
+        Java.frame {
+            Java.callObject(TestContext.window.reference, getTitle).flatMap { Java.callObject($0, JavaAPI.toString) }
+                .map { .string(Java.text($0)) }
+        }
+    }
+
+    static let getTitle = Java.method(Java.findClass("android/app/Activity"), "getTitle", "()Ljava/lang/CharSequence;")
     static let isShown = Java.method(JavaAPI.view, "isShown", "()Z")
     static let getLayoutDirection = Java.method(JavaAPI.view, "getLayoutDirection", "()I")
     static let onCheckIsTextEditor = Java.method(JavaAPI.view, "onCheckIsTextEditor", "()Z")

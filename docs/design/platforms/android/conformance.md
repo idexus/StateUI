@@ -16,6 +16,13 @@ lifecycle is told as the activity tells it: onResume as a window comes to the
 front, onPause as another application does, onPause and onStop as the user
 leaves it, and its finishing as it closes.
 
+A slider moves as TalkBack's user moves it: its own action setting its
+progress, which it reports as the user's. A stepper's step is a tap on its
+button, which a button turned off at an end does not take; the stepper is two
+buttons with no field, so words typed into it do not apply. A scroller is
+moved by Android's own `scrollTo`, outside a write of the program's, which the
+host hears as the user's movement. A tab is tapped on the row of tabs.
+
 A finger's and a mouse's input are motion events dispatched to the view, in
 its pixels, as the window hands them on: a tap put down and lifted in the
 view's middle, a run of taps each soon after the last; a pan put down in the
@@ -63,8 +70,14 @@ window as the user sees it, the render thread's clips and outlines included
 (`PixelCopy`, once the window has drawn): a software drawing of the view
 leaves an outline's cut out. The test window stands on a colour of its own,
 which reads as nothing. What Android does not hold
-stays unread, with why: a heading's level, where Android marks a heading, and
-a typeface's family, which keeps no name.
+stays unread, with why: a heading's level, where Android marks a heading, a
+typeface's family, which keeps no name, and a stepper's range, which its
+buttons do not hold.
+
+A window's title is the activity's. A tab's title is the words on its tab and
+its icon the picture the tab shows, told by its very pixels among the
+pictures the suite shows; the tab chosen is the one marked selected, as
+TalkBack tells it. A scroller's offset is where Android's scrollers stand.
 
 The rest a view holds is read through one reader, `TestRead`, by the name of
 what is asked, in the units Android keeps it in: a text view's lines,

@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 <thead><tr><th>Host</th><th>Created</th><th>Members (75)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 35 ✓</td><td><code>NSSlider</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 2 ☑️ · 37 ✓ · 3 –</td><td><code>UISlider</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>57 ✅ · 2 ☑️ · 10 ✓ · 3 –</td><td><code>SeekBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 2 ☑️ · 10 ✓ · 3 –</td><td><code>SeekBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>61 ✅ · 12 ✓</td><td><code>Slider</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 1 ☑️ · 23 ✓ · 3 –</td><td><code>GtkScale</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 20 ✓ · 1 –</td><td><code>&lt;input type=range&gt;</code></td></tr></tbody>
@@ -54,10 +54,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SliderContract
 <tr><td colspan="9">AppKit: cannot drag on Slider - AppKit's driver has no path for it yet<br>UIKit: only through the host's own: pressDown on Slider: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3, Web: not realized<br>GTK 4: GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximum</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>minimum</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>value</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: cannot slide on Slider - Android's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onValueChanged</code> (<code>valueChanged</code>)</td><td>event</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: cannot slide on Slider - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>value</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onValueChanged</code> (<code>valueChanged</code>)</td><td>event</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

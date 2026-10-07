@@ -246,6 +246,8 @@ final class UIKitDriver: HostDriver {
             guard stepped != stepper.value else { return }
             stepper.value = stepped
             stepper.sendActions(for: .valueChanged)
+        case (.enterWords, is UIKitStepperView):
+            throw DriverCannot("type words into a Stepper", because: "iOS's stepper is two buttons, with no field")
         case (.scroll(let target), let scroll as UIKitScrollView):
             // A finger takes the scroller, moves it there, and lets go without a throw.
             scroll.scrollViewWillBeginDragging(scroll.scroller)

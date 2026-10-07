@@ -146,7 +146,7 @@ ColorBox.dragText: ✓ dragAndDrop on ColorBox: the views' drag listeners' repor
 ColorBox.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 ColorBox.droppedFileTypes: ✓ dropFiles on ColorBox: the view's drag listener's report told the driver's documents, no drag started
 ColorBox.filesDropped: ✓ dropFiles on ColorBox: the view's drag listener's report told the driver's documents, no drag started
-ColorBox.frameChanged: ◐ cannot scroll on ScrollView - Android's driver has no path for it yet
+ColorBox.frameChanged: ✅
 ColorBox.gridColumn: ✅
 ColorBox.gridColumnSpan: ✅
 ColorBox.gridRow: ✅

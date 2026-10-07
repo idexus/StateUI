@@ -1,5 +1,5 @@
 # revision 1.1
 TabView: ✅
-TabView.selectedTab: cannot choose on TabView - Android's driver has no path for it yet
-TabView.selectedTabChanged: cannot choose on TabView - Android's driver has no path for it yet
+TabView.selectedTab: ✅
+TabView.selectedTabChanged: ✅
 Text.frameChanged: ✅

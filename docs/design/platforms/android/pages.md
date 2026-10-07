@@ -74,8 +74,8 @@ room](../../host/pages.md#a-sidebar-on-the-first-room)).
 A tabbed view shows the chosen tab's page over a row of tabs along the
 bottom, one for each tab with its picture over its title. On a bar colour
 the tree writes, the words are white where the colour is dark and the
-text's own where it is light, the chosen tab full and the others dimmed. A
-tab the user chooses shows its page, and is reported into the selection; a
+text's own where it is light, the chosen tab full and the others dimmed; the
+chosen one is selected, so TalkBack says which it is. A tab the user chooses shows its page, and is reported into the selection; a
 value the tree writes chooses the tab, by the host layer's rule
 ([tabs](../../host/pages.md#tabs)); the row stands at the bottom edge
 (`RowEdge`).

@@ -2,9 +2,9 @@
 ScrollView: ✅
 ScrollView.frameChanged: ✅
 ScrollView.horizontalScrollIndicator: ✅
-ScrollView.orientation: ◐ cannot scroll on ScrollView - Android's driver has no path for it yet
-ScrollView.scrollOffset: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet
-ScrollView.scrollStopped: cannot scroll on ScrollView - Android's driver has no path for it yet
-ScrollView.scrollXChanged: cannot scroll on ScrollView - Android's driver has no path for it yet
-ScrollView.scrollYChanged: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet
+ScrollView.orientation: ✅
+ScrollView.scrollOffset: ✅
+ScrollView.scrollStopped: ✅
+ScrollView.scrollXChanged: ✅
+ScrollView.scrollYChanged: ✅
 ScrollView.verticalScrollIndicator: ✅
