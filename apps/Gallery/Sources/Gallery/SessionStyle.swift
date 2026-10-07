@@ -23,22 +23,10 @@ extension SceneKey {
     /// The font the gallery's preview is set in.
     static let font = SceneKey("gallery.font", of: String.self)
 
-    /// What the gallery's bars are, in the light theme and in the dark.
-    static let lightBars = SceneKey("gallery.light.bars", of: BarLook.self)
-    static let darkBars = SceneKey("gallery.dark.bars", of: BarLook.self)
-
-    /// The colour of the gallery's bars, in each theme.
-    static let lightBarColour = SceneKey("gallery.light.barColour", of: AccentChoice.self)
-    static let darkBarColour = SceneKey("gallery.dark.barColour", of: AccentChoice.self)
-
-    /// What the gallery's windows show behind their pages, in each theme.
-    static let lightWindows = SceneKey("gallery.light.windows", of: WindowLook.self)
-    static let darkWindows = SceneKey("gallery.dark.windows", of: WindowLook.self)
-
-    /// The colour of what the gallery's windows show behind their pages, in
-    /// each theme.
-    static let lightWindowColour = SceneKey("gallery.light.windowColour", of: AccentChoice.self)
-    static let darkWindowColour = SceneKey("gallery.dark.windowColour", of: AccentChoice.self)
+    /// The gallery's look in the light theme and in the dark: its bars, and
+    /// what its window and its sidebar are made of.
+    static let lightLook = SceneKey("gallery.light.look", of: ThemeLook.self)
+    static let darkLook = SceneKey("gallery.dark.look", of: ThemeLook.self)
 }
 // listing: end
 
@@ -103,38 +91,21 @@ final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""
 
-    /// What the gallery's bars are in the light theme, and in the dark: clear,
-    /// what stands behind them showing, until the Appearance sample chooses
-    /// another look.
-    @State(sceneKey: .lightBars) var lightBars = BarLook.clear
-    @State(sceneKey: .darkBars) var darkBars = BarLook.clear
+    /// The gallery's look in the light theme: clear bars, and the platform's
+    /// own window and sidebar - until the Appearance sample chooses another.
+    @State(sceneKey: .lightLook) var lightLook = ThemeLook(
+        bars: .clear, barColour: .violet, window: .platform, sidebar: .platform, flyout: .platform)
 
-    /// The colour the bars are tinted or painted in, in each theme.
-    @State(sceneKey: .lightBarColour) var lightBarColour = AccentChoice.violet
-    @State(sceneKey: .darkBarColour) var darkBarColour = AccentChoice.violet
-
-    /// What the gallery's windows are made of: the platform's own in the light
-    /// theme, a blur in a light tint in the dark.
-    @State(sceneKey: .lightWindows) var lightWindows = WindowLook.platform
-    @State(sceneKey: .darkWindows) var darkWindows = WindowLook.tintedBlur
-
-    /// The colour the windows are tinted or painted in, in each theme.
-    @State(sceneKey: .lightWindowColour) var lightWindowColour = AccentChoice.violet
-    @State(sceneKey: .darkWindowColour) var darkWindowColour = AccentChoice.violet
-
-    /// The blur the desktop shows through the windows in, in each theme, where
-    /// their look is one: a thick one until the Appearance sample chooses
-    /// another.
-    @State var lightBlur = Blur.thick
-    @State var darkBlur = Blur.thick
+    /// The gallery's look in the dark theme: clear bars over a window of a
+    /// lightly tinted blur, the sidebar the platform's own.
+    @State(sceneKey: .darkLook) var darkLook = ThemeLook(
+        bars: .clear, barColour: .violet,
+        window: SurfaceLook(material: .tintedBlur, colour: .violet, blur: .thick),
+        sidebar: .platform, flyout: .platform)
 
     /// The look the gallery wears in a theme, `dark` or not.
     func look(dark: Bool) -> ThemeLook {
-        let keys = dark ? LookKeys.dark : LookKeys.light
-        return ThemeLook(
-            bars: self[keyPath: keys.bars], barColour: self[keyPath: keys.barColour],
-            windows: self[keyPath: keys.windows], windowColour: self[keyPath: keys.windowColour],
-            blur: self[keyPath: keys.blur])
+        dark ? darkLook : lightLook
     }
 
     /// Whether the Fonts and Colours windows hide while another scene is the

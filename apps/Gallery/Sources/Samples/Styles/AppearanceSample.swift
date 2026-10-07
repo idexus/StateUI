@@ -1,7 +1,7 @@
 import StateUI
 
-/// The look the gallery wears, all of it in one place: its bars and what its
-/// windows show behind their pages, each in a colour of its own, and its
+/// The look the gallery wears, all of it in one place: its bars, what its
+/// window and its sidebar are made of, each in a colour of its own, and its
 /// theme.
 struct AppearanceSample: SampleContent, ExampleContent {
     // listing: AppearanceSample
@@ -17,7 +17,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
     static let id = "appearance"
     static let title = "Appearance"
-    static let summary = "The bars, the window behind the pages, their colours and the theme: "
+    static let summary = "What the bars, the window and the sidebar are made of, and the theme: "
         + "the platform's own, or yours."
 
     static var code: String { Listings.joined("AppearanceSample", "Gallery.Looks") }
@@ -40,13 +40,13 @@ struct AppearanceSample: SampleContent, ExampleContent {
             // force, and changes with it. Side by side where there is room,
             // one under the other on a phone.
             if device.info.formFactor == .phone {
-                LookColumn(title: "Light", style: style, keys: .light)
-                LookColumn(title: "Dark", style: style, keys: .dark)
+                LookColumn(title: "Light", style: style, look: \.lightLook)
+                LookColumn(title: "Dark", style: style, look: \.darkLook)
             } else {
                 Grid {
-                    LookColumn(title: "Light", style: style, keys: .light)
+                    LookColumn(title: "Light", style: style, look: \.lightLook)
                         .gridColumn(0)
-                    LookColumn(title: "Dark", style: style, keys: .dark)
+                    LookColumn(title: "Dark", style: style, look: \.darkLook)
                         .gridColumn(1)
                 }
                 .columns(.fill, .fill)
@@ -70,7 +70,8 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 + "or the one the application holds. \"The platform's own\" leaves a choice "
                 + "unwritten: each platform draws its own, in the user's accent, material "
                 + "and theme. A colour paints the bars alone; what the window shows behind "
-                + "the pages is its background.")
+                + "the pages is its background. The sidebar stands on one material beside "
+                + "the page and on another as it slides over it - a phone's drawer.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -89,27 +90,26 @@ struct AppearanceSample: SampleContent, ExampleContent {
 }
 
 // listing: AppearanceSample
-/// One theme's look: its bars and its window, each in a colour of its own,
-/// and the window's blur - written where `keys` say.
+/// One theme's look: its bars, and what its window, its sidebar and its
+/// sidebar over the page are made of - written where `look` says.
 private struct LookColumn: View {
     let title: String
     let style: SessionStyle
-    let keys: LookKeys
+    let look: ReferenceWritableKeyPath<SessionStyle, ThemeLook>
 
     var body: some View {
         // Read here, so a choice made anywhere builds each picker again at its
         // new place.
         let style = self.style
-        let keys = self.keys
-        let look = ThemeLook(
-            bars: style[keyPath: keys.bars], barColour: style[keyPath: keys.barColour],
-            windows: style[keyPath: keys.windows], windowColour: style[keyPath: keys.windowColour],
-            blur: style[keyPath: keys.blur])
+        let key = self.look
+        let look = style[keyPath: key]
         let bars = BarLook.allCases
-        let windows = WindowLook.allCases
         let accents = AccentChoice.allCases
-        let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
         let name = title.lowercased()
+        // Each surface's choices write that part of the theme's look.
+        let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in
+            Binding(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
+        }
 
         return VStack {
             SectionTitle(title)
@@ -121,38 +121,63 @@ private struct LookColumn: View {
                 .accessibilityIdentifier("appearance.\(name).bars")
                 .accessibilityLabel("Bars, \(name)")
                 .selectedIndex(Binding(
-                    get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: keys.bars] = bars[$0] }))
+                    get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: key].bars = bars[$0] }))
             Picker(accents.map(\.name))
                 .accessibilityIdentifier("appearance.\(name).barColour")
                 .accessibilityLabel("Bars' colour, \(name)")
                 .isEnabled(look.bars == .tinted || look.bars == .colour)
                 .selectedIndex(Binding(
                     get: { accents.firstIndex(of: look.barColour) ?? 0 },
-                    set: { style[keyPath: keys.barColour] = accents[$0] }))
+                    set: { style[keyPath: key].barColour = accents[$0] }))
 
-            Text("The window")
+            SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
+            SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
+            SurfacePickers(title: "The sidebar over the page", label: "Flyout", theme: name, surface: surface(\.flyout))
+        }
+        .spacing(10)
+    }
+}
+
+/// One surface's choices: what it is made of, in which colour, and how thick
+/// a blur.
+private struct SurfacePickers: View {
+    let title: String
+    let label: String
+    let theme: String
+    let surface: Binding<SurfaceLook>
+
+    var body: some View {
+        let surface = self.surface
+        let look = surface.wrappedValue
+        let materials = SurfaceMaterial.allCases
+        let accents = AccentChoice.allCases
+        let blurs = SurfaceLook.blurs
+        let id = "appearance.\(theme).\(label.lowercased())"
+
+        return VStack {
+            Text(title)
                 .fontSize(12)
                 .textColor(Palette.subtle)
-            Picker(windows.map(\.name))
-                .accessibilityIdentifier("appearance.\(name).window")
-                .accessibilityLabel("Window, \(name)")
+            Picker(materials.map(\.name))
+                .accessibilityIdentifier(id)
+                .accessibilityLabel("\(label), \(theme)")
                 .selectedIndex(Binding(
-                    get: { windows.firstIndex(of: look.windows) ?? 0 },
-                    set: { style[keyPath: keys.windows] = windows[$0] }))
+                    get: { materials.firstIndex(of: look.material) ?? 0 },
+                    set: { surface.wrappedValue.material = materials[$0] }))
             Picker(accents.map(\.name))
-                .accessibilityIdentifier("appearance.\(name).windowColour")
-                .accessibilityLabel("Window's colour, \(name)")
-                .isEnabled(look.windows.showsColour)
+                .accessibilityIdentifier("\(id)Colour")
+                .accessibilityLabel("\(label)'s colour, \(theme)")
+                .isEnabled(look.material.showsColour)
                 .selectedIndex(Binding(
-                    get: { accents.firstIndex(of: look.windowColour) ?? 0 },
-                    set: { style[keyPath: keys.windowColour] = accents[$0] }))
+                    get: { accents.firstIndex(of: look.colour) ?? 0 },
+                    set: { surface.wrappedValue.colour = accents[$0] }))
             Picker(["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"])
-                .accessibilityIdentifier("appearance.\(name).blur")
-                .accessibilityLabel("Window's blur, \(name)")
-                .isEnabled(look.windows.showsBlur)
+                .accessibilityIdentifier("\(id)Blur")
+                .accessibilityLabel("\(label)'s blur, \(theme)")
+                .isEnabled(look.material.showsBlur)
                 .selectedIndex(Binding(
                     get: { blurs.firstIndex(of: look.blur) ?? 0 },
-                    set: { style[keyPath: keys.blur] = blurs[$0] }))
+                    set: { surface.wrappedValue.blur = blurs[$0] }))
         }
         .spacing(10)
     }

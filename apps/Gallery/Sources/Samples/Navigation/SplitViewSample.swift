@@ -56,6 +56,12 @@ struct SplitViewSample: SampleContent, ExampleContent {
                 + "when it keeps both sides visible, the binding settles on `true`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+
+            Text("What the pane stands on beside the page, and while it slides over it, "
+                + "is the split view's: `.sidebarBackground` and `.flyoutBackground`, "
+                + "which the Appearance sample chooses.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(8)
     }

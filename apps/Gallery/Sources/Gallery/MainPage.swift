@@ -80,6 +80,10 @@ struct MainPage: View {
             } detail: {
                 detail()
             }
+            // What the sidebar stands on beside the page and sliding over it,
+            // in each theme, as the gallery's looks say.
+            .sidebarBackground(surface(\.sidebar))
+            .flyoutBackground(surface(\.flyout))
             // listing: end
             // listing: MainPage.bar
             // The gallery's own actions, declared once around every page: a page's
@@ -277,13 +281,20 @@ struct MainPage: View {
         style.look(dark: application.info.colorScheme == .dark)
     }
 
-    /// Dresses `window` as the gallery's looks say, one for each theme: what it
-    /// is made of behind its pages - the platform's own where a look leaves it.
-    private func dress(_ window: WindowSession) {
+    /// What a surface of the gallery is made of, a material for each theme as
+    /// its looks say - the platform's own in a theme whose look leaves it.
+    private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>) -> Material {
         let system = application.info.accentColor
-        let light = style.look(dark: false), dark = style.look(dark: true)
-        let day = light.windows.material(light.blur, in: light.windowColour, system: system)
-        let night = dark.windows.material(dark.blur, in: dark.windowColour, system: system)
-        window.background = day == nil && night == nil ? nil : Material(light: day, dark: night)
+        return Material(
+            light: style.look(dark: false)[keyPath: part].material(system: system),
+            dark: style.look(dark: true)[keyPath: part].material(system: system))
+    }
+
+    /// Dresses `window` as the gallery's looks say, one for each theme: what it
+    /// is made of behind its pages - the platform's own where both leave it.
+    private func dress(_ window: WindowSession) {
+        let unsaid = style.look(dark: false).window.material == .platform
+            && style.look(dark: true).window.material == .platform
+        window.background = unsaid ? nil : surface(\.window)
     }
 }

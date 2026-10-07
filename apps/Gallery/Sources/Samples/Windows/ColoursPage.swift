@@ -39,8 +39,8 @@ struct ColoursPage: View {
         }
     }
 
-    /// The button choosing `accent` for the bars and the windows in both
-    /// themes, drawn in it - marked where the theme in force wears it.
+    /// The button choosing `accent` for the bars, the window and the sidebar
+    /// in both themes, drawn in it - marked where the theme in force wears it.
     private func choice(_ accent: AccentChoice) -> Button {
         let style = self.style
         let worn = style.look(dark: application.info.colorScheme == .dark).barColour
@@ -49,9 +49,11 @@ struct ColoursPage: View {
             .background(accent.color(system: application.info.accentColor))
             .shape(.roundedRectangle(8))
             .onClicked {
-                for keys in [LookKeys.light, .dark] {
-                    style[keyPath: keys.barColour] = accent
-                    style[keyPath: keys.windowColour] = accent
+                for look in [\SessionStyle.lightLook, \.darkLook] {
+                    style[keyPath: look].barColour = accent
+                    style[keyPath: look].window.colour = accent
+                    style[keyPath: look].sidebar.colour = accent
+                    style[keyPath: look].flyout.colour = accent
                 }
             }
     }

@@ -1,4 +1,4 @@
-// What a gallery's bars and windows can be.
+// What a gallery's bars, window and sidebar can be.
 
 import StateUI
 
@@ -28,15 +28,16 @@ enum BarLook: String, CaseIterable, PersistentValue {
     }
 }
 
-/// What a gallery's windows show behind their pages.
-enum WindowLook: String, CaseIterable, PersistentValue {
-    /// The platform's own window.
+/// What one surface of the gallery is made of - its window, its sidebar, its
+/// sidebar sliding over the page.
+enum SurfaceMaterial: String, CaseIterable, PersistentValue {
+    /// The platform's own.
     case platform
 
-    /// A window that paints nothing: the desktop shows through it, sharp.
+    /// Nothing: what stands behind shows through, sharp.
     case clear
 
-    /// A blur: the desktop shows through the window, blurred.
+    /// A blur: what stands behind shows through, blurred.
     case blur
 
     /// A blur in a light tint of the gallery's colour.
@@ -56,61 +57,80 @@ enum WindowLook: String, CaseIterable, PersistentValue {
         }
     }
 
-    /// Whether the look shows a blur.
+    /// Whether the surface shows a blur.
     var showsBlur: Bool {
         self == .blur || self == .tintedBlur
     }
 
-    /// Whether the look shows a colour.
+    /// Whether the surface shows a colour.
     var showsColour: Bool {
         self == .tintedBlur || self == .colour
     }
+}
 
-    /// What the window is made of: `blur` where the look is a blur, tinted in
-    /// `accent` - the system's accent being `system` - where it is tinted, the
+/// One surface's look: what it is made of, in which colour, how thick a blur.
+struct SurfaceLook: Equatable {
+    var material: SurfaceMaterial
+    var colour: AccentChoice
+    var blur: Blur
+
+    /// The blurs offered, thinnest first.
+    static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
+
+    /// The platform's own surface - a thick violet blur, once one is chosen.
+    static let platform = SurfaceLook(material: .platform, colour: .violet, blur: .thick)
+
+    /// The material the surface is: its blur where it is one, tinted in its
+    /// colour - the system's accent being `system` - where it is tinted, the
     /// colour where it is one; nil for the platform's own.
-    func material(_ blur: Blur, in accent: AccentChoice, system: Color) -> Material? {
-        switch self {
+    func material(system: Color) -> Material? {
+        switch material {
         case .platform: return nil
         case .clear: return .color(.transparent)
         case .blur: return .blur(blur)
-        case .tintedBlur: return .blur(blur.tint(accent.tint(system: system)))
-        case .colour: return .color(accent.color(system: system))
+        case .tintedBlur: return .blur(blur.tint(colour.tint(system: system)))
+        case .colour: return .color(colour.color(system: system))
         }
     }
 }
 
-/// The look the gallery wears in one theme: its bars and what its windows
-/// show behind their pages, each in a colour of its own.
-struct ThemeLook: Equatable {
+/// The look the gallery wears in one theme: its bars, and what its window, its
+/// sidebar and its sidebar sliding over the page are made of. Kept as one line
+/// of words, so a scene keeps a theme's whole look under one key.
+struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
     var bars: BarLook
     var barColour: AccentChoice
-    var windows: WindowLook
-    var windowColour: AccentChoice
-    var blur: Blur
-}
+    var window: SurfaceLook
+    var sidebar: SurfaceLook
+    var flyout: SurfaceLook
 
-/// Where a theme's look stands in the session's style - one column of the
-/// Appearance sample.
-struct LookKeys {
-    let bars: ReferenceWritableKeyPath<SessionStyle, BarLook>
-    let barColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
-    let windows: ReferenceWritableKeyPath<SessionStyle, WindowLook>
-    let windowColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
-    let blur: ReferenceWritableKeyPath<SessionStyle, Blur>
-
-    /// The light theme's look.
-    static var light: LookKeys {
-        LookKeys(
-            bars: \.lightBars, barColour: \.lightBarColour, windows: \.lightWindows,
-            windowColour: \.lightWindowColour, blur: \.lightBlur)
+    init(bars: BarLook, barColour: AccentChoice, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
+        (self.bars, self.barColour, self.window, self.sidebar, self.flyout) = (bars, barColour, window, sidebar, flyout)
     }
 
-    /// The dark theme's look.
-    static var dark: LookKeys {
-        LookKeys(
-            bars: \.darkBars, barColour: \.darkBarColour, windows: \.darkWindows,
-            windowColour: \.darkWindowColour, blur: \.darkBlur)
+    /// The look as words: the bars and their colour, then each surface's
+    /// material, colour and blur.
+    var rawValue: String {
+        ([bars.rawValue, barColour.rawValue] + [window, sidebar, flyout].flatMap { surface in
+            [surface.material.rawValue, surface.colour.rawValue,
+             String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
+        }).joined(separator: " ")
+    }
+
+    /// The look its words say; nil for words another version wrote.
+    init?(rawValue: String) {
+        let words = rawValue.split(separator: " ").map(String.init)
+        guard words.count == 11, let bars = BarLook(rawValue: words[0]),
+              let barColour = AccentChoice(rawValue: words[1])
+        else { return nil }
+        var surfaces: [SurfaceLook] = []
+        for at in stride(from: 2, to: 11, by: 3) {
+            guard let material = SurfaceMaterial(rawValue: words[at]), let colour = AccentChoice(rawValue: words[at + 1]),
+                  let blur = Int(words[at + 2]), SurfaceLook.blurs.indices.contains(blur)
+            else { return nil }
+            surfaces.append(SurfaceLook(material: material, colour: colour, blur: SurfaceLook.blurs[blur]))
+        }
+        self.init(bars: bars, barColour: barColour, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
     }
 }
 // listing: end

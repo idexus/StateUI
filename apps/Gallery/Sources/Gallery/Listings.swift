@@ -693,13 +693,13 @@ enum Listings {
                 // force, and changes with it. Side by side where there is room,
                 // one under the other on a phone.
                 if device.info.formFactor == .phone {
-                    LookColumn(title: "Light", style: style, keys: .light)
-                    LookColumn(title: "Dark", style: style, keys: .dark)
+                    LookColumn(title: "Light", style: style, look: \.lightLook)
+                    LookColumn(title: "Dark", style: style, look: \.darkLook)
                 } else {
                     Grid {
-                        LookColumn(title: "Light", style: style, keys: .light)
+                        LookColumn(title: "Light", style: style, look: \.lightLook)
                             .gridColumn(0)
-                        LookColumn(title: "Dark", style: style, keys: .dark)
+                        LookColumn(title: "Dark", style: style, look: \.darkLook)
                             .gridColumn(1)
                     }
                     .columns(.fill, .fill)
@@ -711,27 +711,26 @@ enum Listings {
             }
         }
 
-        /// One theme's look: its bars and its window, each in a colour of its own,
-        /// and the window's blur - written where `keys` say.
+        /// One theme's look: its bars, and what its window, its sidebar and its
+        /// sidebar over the page are made of - written where `look` says.
         private struct LookColumn: View {
             let title: String
             let style: SessionStyle
-            let keys: LookKeys
+            let look: ReferenceWritableKeyPath<SessionStyle, ThemeLook>
 
             var body: some View {
                 // Read here, so a choice made anywhere builds each picker again at its
                 // new place.
                 let style = self.style
-                let keys = self.keys
-                let look = ThemeLook(
-                    bars: style[keyPath: keys.bars], barColour: style[keyPath: keys.barColour],
-                    windows: style[keyPath: keys.windows], windowColour: style[keyPath: keys.windowColour],
-                    blur: style[keyPath: keys.blur])
+                let key = self.look
+                let look = style[keyPath: key]
                 let bars = BarLook.allCases
-                let windows = WindowLook.allCases
                 let accents = AccentChoice.allCases
-                let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
                 let name = title.lowercased()
+                // Each surface's choices write that part of the theme's look.
+                let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in
+                    Binding(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
+                }
 
                 return VStack {
                     SectionTitle(title)
@@ -739,28 +738,52 @@ enum Listings {
                     Text("The bars")
                     Picker(bars.map(\.name))
                         .selectedIndex(Binding(
-                            get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: keys.bars] = bars[$0] }))
+                            get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: key].bars = bars[$0] }))
                     Picker(accents.map(\.name))
                         .isEnabled(look.bars == .tinted || look.bars == .colour)
                         .selectedIndex(Binding(
                             get: { accents.firstIndex(of: look.barColour) ?? 0 },
-                            set: { style[keyPath: keys.barColour] = accents[$0] }))
+                            set: { style[keyPath: key].barColour = accents[$0] }))
 
-                    Text("The window")
-                    Picker(windows.map(\.name))
+                    SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
+                    SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
+                    SurfacePickers(title: "The sidebar over the page", label: "Flyout", theme: name, surface: surface(\.flyout))
+                }
+            }
+        }
+
+        /// One surface's choices: what it is made of, in which colour, and how thick
+        /// a blur.
+        private struct SurfacePickers: View {
+            let title: String
+            let label: String
+            let theme: String
+            let surface: Binding<SurfaceLook>
+
+            var body: some View {
+                let surface = self.surface
+                let look = surface.wrappedValue
+                let materials = SurfaceMaterial.allCases
+                let accents = AccentChoice.allCases
+                let blurs = SurfaceLook.blurs
+                let id = "appearance.\(theme).\(label.lowercased())"
+
+                return VStack {
+                    Text(title)
+                    Picker(materials.map(\.name))
                         .selectedIndex(Binding(
-                            get: { windows.firstIndex(of: look.windows) ?? 0 },
-                            set: { style[keyPath: keys.windows] = windows[$0] }))
+                            get: { materials.firstIndex(of: look.material) ?? 0 },
+                            set: { surface.wrappedValue.material = materials[$0] }))
                     Picker(accents.map(\.name))
-                        .isEnabled(look.windows.showsColour)
+                        .isEnabled(look.material.showsColour)
                         .selectedIndex(Binding(
-                            get: { accents.firstIndex(of: look.windowColour) ?? 0 },
-                            set: { style[keyPath: keys.windowColour] = accents[$0] }))
+                            get: { accents.firstIndex(of: look.colour) ?? 0 },
+                            set: { surface.wrappedValue.colour = accents[$0] }))
                     Picker(["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"])
-                        .isEnabled(look.windows.showsBlur)
+                        .isEnabled(look.material.showsBlur)
                         .selectedIndex(Binding(
                             get: { blurs.firstIndex(of: look.blur) ?? 0 },
-                            set: { style[keyPath: keys.blur] = blurs[$0] }))
+                            set: { surface.wrappedValue.blur = blurs[$0] }))
                 }
             }
         }
@@ -2649,15 +2672,16 @@ enum Listings {
             }
         }
 
-        /// What a gallery's windows show behind their pages.
-        enum WindowLook: String, CaseIterable, PersistentValue {
-            /// The platform's own window.
+        /// What one surface of the gallery is made of - its window, its sidebar, its
+        /// sidebar sliding over the page.
+        enum SurfaceMaterial: String, CaseIterable, PersistentValue {
+            /// The platform's own.
             case platform
 
-            /// A window that paints nothing: the desktop shows through it, sharp.
+            /// Nothing: what stands behind shows through, sharp.
             case clear
 
-            /// A blur: the desktop shows through the window, blurred.
+            /// A blur: what stands behind shows through, blurred.
             case blur
 
             /// A blur in a light tint of the gallery's colour.
@@ -2677,61 +2701,80 @@ enum Listings {
                 }
             }
 
-            /// Whether the look shows a blur.
+            /// Whether the surface shows a blur.
             var showsBlur: Bool {
                 self == .blur || self == .tintedBlur
             }
 
-            /// Whether the look shows a colour.
+            /// Whether the surface shows a colour.
             var showsColour: Bool {
                 self == .tintedBlur || self == .colour
             }
+        }
 
-            /// What the window is made of: `blur` where the look is a blur, tinted in
-            /// `accent` - the system's accent being `system` - where it is tinted, the
+        /// One surface's look: what it is made of, in which colour, how thick a blur.
+        struct SurfaceLook: Equatable {
+            var material: SurfaceMaterial
+            var colour: AccentChoice
+            var blur: Blur
+
+            /// The blurs offered, thinnest first.
+            static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
+
+            /// The platform's own surface - a thick violet blur, once one is chosen.
+            static let platform = SurfaceLook(material: .platform, colour: .violet, blur: .thick)
+
+            /// The material the surface is: its blur where it is one, tinted in its
+            /// colour - the system's accent being `system` - where it is tinted, the
             /// colour where it is one; nil for the platform's own.
-            func material(_ blur: Blur, in accent: AccentChoice, system: Color) -> Material? {
-                switch self {
+            func material(system: Color) -> Material? {
+                switch material {
                 case .platform: return nil
                 case .clear: return .color(.transparent)
                 case .blur: return .blur(blur)
-                case .tintedBlur: return .blur(blur.tint(accent.tint(system: system)))
-                case .colour: return .color(accent.color(system: system))
+                case .tintedBlur: return .blur(blur.tint(colour.tint(system: system)))
+                case .colour: return .color(colour.color(system: system))
                 }
             }
         }
 
-        /// The look the gallery wears in one theme: its bars and what its windows
-        /// show behind their pages, each in a colour of its own.
-        struct ThemeLook: Equatable {
+        /// The look the gallery wears in one theme: its bars, and what its window, its
+        /// sidebar and its sidebar sliding over the page are made of. Kept as one line
+        /// of words, so a scene keeps a theme's whole look under one key.
+        struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
             var bars: BarLook
             var barColour: AccentChoice
-            var windows: WindowLook
-            var windowColour: AccentChoice
-            var blur: Blur
-        }
+            var window: SurfaceLook
+            var sidebar: SurfaceLook
+            var flyout: SurfaceLook
 
-        /// Where a theme's look stands in the session's style - one column of the
-        /// Appearance sample.
-        struct LookKeys {
-            let bars: ReferenceWritableKeyPath<SessionStyle, BarLook>
-            let barColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
-            let windows: ReferenceWritableKeyPath<SessionStyle, WindowLook>
-            let windowColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
-            let blur: ReferenceWritableKeyPath<SessionStyle, Blur>
-
-            /// The light theme's look.
-            static var light: LookKeys {
-                LookKeys(
-                    bars: \.lightBars, barColour: \.lightBarColour, windows: \.lightWindows,
-                    windowColour: \.lightWindowColour, blur: \.lightBlur)
+            init(bars: BarLook, barColour: AccentChoice, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
+                (self.bars, self.barColour, self.window, self.sidebar, self.flyout) = (bars, barColour, window, sidebar, flyout)
             }
 
-            /// The dark theme's look.
-            static var dark: LookKeys {
-                LookKeys(
-                    bars: \.darkBars, barColour: \.darkBarColour, windows: \.darkWindows,
-                    windowColour: \.darkWindowColour, blur: \.darkBlur)
+            /// The look as words: the bars and their colour, then each surface's
+            /// material, colour and blur.
+            var rawValue: String {
+                ([bars.rawValue, barColour.rawValue] + [window, sidebar, flyout].flatMap { surface in
+                    [surface.material.rawValue, surface.colour.rawValue,
+                     String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
+                }).joined(separator: " ")
+            }
+
+            /// The look its words say; nil for words another version wrote.
+            init?(rawValue: String) {
+                let words = rawValue.split(separator: " ").map(String.init)
+                guard words.count == 11, let bars = BarLook(rawValue: words[0]),
+                      let barColour = AccentChoice(rawValue: words[1])
+                else { return nil }
+                var surfaces: [SurfaceLook] = []
+                for at in stride(from: 2, to: 11, by: 3) {
+                    guard let material = SurfaceMaterial(rawValue: words[at]), let colour = AccentChoice(rawValue: words[at + 1]),
+                          let blur = Int(words[at + 2]), SurfaceLook.blurs.indices.contains(blur)
+                    else { return nil }
+                    surfaces.append(SurfaceLook(material: material, colour: colour, blur: SurfaceLook.blurs[blur]))
+                }
+                self.init(bars: bars, barColour: barColour, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
             }
         }
         """#,
@@ -2757,22 +2800,10 @@ enum Listings {
             /// The font the gallery's preview is set in.
             static let font = SceneKey("gallery.font", of: String.self)
 
-            /// What the gallery's bars are, in the light theme and in the dark.
-            static let lightBars = SceneKey("gallery.light.bars", of: BarLook.self)
-            static let darkBars = SceneKey("gallery.dark.bars", of: BarLook.self)
-
-            /// The colour of the gallery's bars, in each theme.
-            static let lightBarColour = SceneKey("gallery.light.barColour", of: AccentChoice.self)
-            static let darkBarColour = SceneKey("gallery.dark.barColour", of: AccentChoice.self)
-
-            /// What the gallery's windows show behind their pages, in each theme.
-            static let lightWindows = SceneKey("gallery.light.windows", of: WindowLook.self)
-            static let darkWindows = SceneKey("gallery.dark.windows", of: WindowLook.self)
-
-            /// The colour of what the gallery's windows show behind their pages, in
-            /// each theme.
-            static let lightWindowColour = SceneKey("gallery.light.windowColour", of: AccentChoice.self)
-            static let darkWindowColour = SceneKey("gallery.dark.windowColour", of: AccentChoice.self)
+            /// The gallery's look in the light theme and in the dark: its bars, and
+            /// what its window and its sidebar are made of.
+            static let lightLook = SceneKey("gallery.light.look", of: ThemeLook.self)
+            static let darkLook = SceneKey("gallery.dark.look", of: ThemeLook.self)
         }
 
         /// A colour a gallery wears - on its bars, or behind its pages, where its look
@@ -2833,38 +2864,21 @@ enum Listings {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
 
-            /// What the gallery's bars are in the light theme, and in the dark: clear,
-            /// what stands behind them showing, until the Appearance sample chooses
-            /// another look.
-            @State(sceneKey: .lightBars) var lightBars = BarLook.clear
-            @State(sceneKey: .darkBars) var darkBars = BarLook.clear
+            /// The gallery's look in the light theme: clear bars, and the platform's
+            /// own window and sidebar - until the Appearance sample chooses another.
+            @State(sceneKey: .lightLook) var lightLook = ThemeLook(
+                bars: .clear, barColour: .violet, window: .platform, sidebar: .platform, flyout: .platform)
 
-            /// The colour the bars are tinted or painted in, in each theme.
-            @State(sceneKey: .lightBarColour) var lightBarColour = AccentChoice.violet
-            @State(sceneKey: .darkBarColour) var darkBarColour = AccentChoice.violet
-
-            /// What the gallery's windows are made of: the platform's own in the light
-            /// theme, a blur in a light tint in the dark.
-            @State(sceneKey: .lightWindows) var lightWindows = WindowLook.platform
-            @State(sceneKey: .darkWindows) var darkWindows = WindowLook.tintedBlur
-
-            /// The colour the windows are tinted or painted in, in each theme.
-            @State(sceneKey: .lightWindowColour) var lightWindowColour = AccentChoice.violet
-            @State(sceneKey: .darkWindowColour) var darkWindowColour = AccentChoice.violet
-
-            /// The blur the desktop shows through the windows in, in each theme, where
-            /// their look is one: a thick one until the Appearance sample chooses
-            /// another.
-            @State var lightBlur = Blur.thick
-            @State var darkBlur = Blur.thick
+            /// The gallery's look in the dark theme: clear bars over a window of a
+            /// lightly tinted blur, the sidebar the platform's own.
+            @State(sceneKey: .darkLook) var darkLook = ThemeLook(
+                bars: .clear, barColour: .violet,
+                window: SurfaceLook(material: .tintedBlur, colour: .violet, blur: .thick),
+                sidebar: .platform, flyout: .platform)
 
             /// The look the gallery wears in a theme, `dark` or not.
             func look(dark: Bool) -> ThemeLook {
-                let keys = dark ? LookKeys.dark : LookKeys.light
-                return ThemeLook(
-                    bars: self[keyPath: keys.bars], barColour: self[keyPath: keys.barColour],
-                    windows: self[keyPath: keys.windows], windowColour: self[keyPath: keys.windowColour],
-                    blur: self[keyPath: keys.blur])
+                dark ? darkLook : lightLook
             }
 
             /// Whether the Fonts and Colours windows hide while another scene is the
@@ -4475,6 +4489,10 @@ enum Listings {
         } detail: {
             detail()
         }
+        // What the sidebar stands on beside the page and sliding over it,
+        // in each theme, as the gallery's looks say.
+        .sidebarBackground(surface(\.sidebar))
+        .flyoutBackground(surface(\.flyout))
         """#,
         "MainPage.tabs": #"""
         // Sources/Gallery/MainPage.swift
