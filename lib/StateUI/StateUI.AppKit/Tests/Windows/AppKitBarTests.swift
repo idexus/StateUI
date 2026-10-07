@@ -78,7 +78,7 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(content.barColor, NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertEqual(controller.titleClusterForTesting.titleColorForTesting, NSColor(
             srgbRed: 246 / 255, green: 244 / 255, blue: 1, alpha: 1))
-        XCTAssertEqual(window.backgroundColor, NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' colour paints the bars alone")
     }
 
     /// The title area follows what the arrangement declares, in the same toolbar and accessory.

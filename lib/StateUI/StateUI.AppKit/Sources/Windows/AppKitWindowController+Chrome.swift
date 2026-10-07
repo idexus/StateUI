@@ -150,17 +150,17 @@ extension AppKitWindowController {
     /// visible content's, a split view's detail - and the title bar lets it
     /// show. With none written, the band is the system's material.
     ///
-    /// The window's background is the one written for it, else the bars'
-    /// colour: on a Mac the title bar, the toolbar and the window's background
-    /// around a floating sidebar are one surface, so the sidebar stands framed
-    /// in it, its glass taking a tint of it. With neither written the window
-    /// keeps the system's. On a translucent window the window keeps none: its
-    /// material, the system's, shows around the sidebar and under the page,
-    /// tinted by the background written for the window.
+    /// The window's background is the one written for the window alone - the
+    /// bars' colour paints the bars - else the system's. On a translucent
+    /// window the window keeps none: its material, the system's, shows around
+    /// the sidebar and under the page, tinted by the background written for
+    /// the window.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
         let written = traits?.background.flatMap(nsColor)
-        let background = isTranslucent ? NSColor.clear : (written ?? color ?? .windowBackgroundColor)
+        let background = isTranslucent ? NSColor.clear : (written ?? .windowBackgroundColor)
+        // A background that lets the desktop through - clear, or a colour with an alpha - asks a window that is not opaque.
+        window.isOpaque = !isTranslucent && background.alphaComponent >= 1
         if window.backgroundColor != background { window.backgroundColor = background }
         content.materialTint = isTranslucent ? written : nil
         content.barColor = color

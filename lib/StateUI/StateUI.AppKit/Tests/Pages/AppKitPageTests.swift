@@ -96,8 +96,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertGreaterThan(content.barBand.height, 0)
         XCTAssertEqual(content.barBand, NSRect(
             x: 0, y: 0, width: content.bounds.width, height: content.safeAreaRect.minY))
-        XCTAssertEqual(window.backgroundColor, NSColor(
-            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' colour paints the bars alone")
 
         // On the band the page's title is the bar's: white on a dark band
         // when no foreground is written. The window keeps its name.
@@ -171,12 +170,11 @@ final class AppKitPageTests: XCTestCase {
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1), "the window's band, under the sidebar")
     }
 
-    /// A written bar colour is the window's background too: on a Mac the title
-    /// bar, the toolbar and the window's background around a floating sidebar
-    /// are one surface, so the sidebar stands framed in the bars' colour - and
-    /// the window takes the system's background back when the colour goes.
+    /// A written bar colour paints the bars alone: the window around a
+    /// floating sidebar keeps the system's background, with the colour written
+    /// and once it goes.
     @MainActor
-    func testAWrittenBarColourIsTheWindowsBackgroundToo() throws {
+    func testAWrittenBarColourLeavesTheWindowsBackground() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -191,8 +189,7 @@ final class AppKitPageTests: XCTestCase {
             detail: stack)))
 
         let painted = try XCTUnwrap(renderer.windowsForTesting.first?.window)
-        XCTAssertEqual(painted.backgroundColor, NSColor(
-            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertEqual(painted.backgroundColor, .windowBackgroundColor)
 
         stack.properties[.barBackgroundColor] = .nothing
         renderer.applyForTesting(tree(flyout(
@@ -237,7 +234,7 @@ final class AppKitPageTests: XCTestCase {
     /// alone: the window's band, under the floating sidebar's glass, and the
     /// detail's - over the material, which stays the system's; the window keeps
     /// no background, so the desktop shows around the sidebar. An opaque window
-    /// again frames the sidebar in the colour.
+    /// keeps the system's background.
     @MainActor
     func testATranslucentWindowsBarColourPaintsTheBarsAlone() throws {
         let renderer = testRenderer(
@@ -272,9 +269,9 @@ final class AppKitPageTests: XCTestCase {
             presented: true,
             menu: page("menu", title: "Menu"),
             detail: stack), translucent: false))
-        XCTAssertEqual(window.backgroundColor, colour)
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor)
         XCTAssertEqual(split.detailBarColorForTesting, colour)
-        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the colour behind it")
+        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band behind it")
         XCTAssertEqual(content.barColor, colour)
         XCTAssertNil(content.materialForTesting)
     }
@@ -306,7 +303,8 @@ final class AppKitPageTests: XCTestCase {
 
     /// A background written for a translucent window tints its whole material
     /// - under the pages and around the floating sidebar - and lets it show;
-    /// an opaque window wears it as its own background, over the bars' colour.
+    /// another window wears it as its own background, and one that lets the
+    /// desktop through is no longer opaque.
     @MainActor
     func testAWindowsBackgroundTintsItsMaterial() throws {
         let renderer = testRenderer(
@@ -338,6 +336,7 @@ final class AppKitPageTests: XCTestCase {
             detail: stack), translucent: false, background: tint))
         XCTAssertEqual(window.backgroundColor, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255,
                                                        alpha: 38 / 255), "the window's own background")
+        XCTAssertFalse(window.isOpaque, "the desktop shows through the colour's alpha")
         XCTAssertNil(content.materialForTesting)
     }
 

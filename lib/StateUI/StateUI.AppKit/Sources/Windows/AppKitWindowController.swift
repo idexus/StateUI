@@ -263,7 +263,6 @@ final class AppKitWindowController: NSWindowController {
         }
         window.standardWindowButton(.miniaturizeButton)?.isEnabled = allowsMinimizing
         isTranslucent = traits.isTranslucent
-        window.isOpaque = !isTranslucent
         content.isTranslucent = isTranslucent
         window.level = traits.floatsOnTop ? .floating : .normal
     }
