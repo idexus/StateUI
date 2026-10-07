@@ -190,6 +190,14 @@ extension AppKitDriver {
         return hit === view || hit.isDescendant(of: view)
     }
 
+    /// A heading is what assistive technology meets with AppKit's heading role.
+    func isHeading(_ element: MountedElement) throws -> Bool {
+        guard let native = element.native as? AppKitElement, let view = native.view else {
+            throw DriverCannot("read whether \(element.type.name) is a heading")
+        }
+        return native.accessibilityTarget(of: view).accessibilityRole()?.rawValue == "AXHeading"
+    }
+
     /// The layout's children by where each one's view stands among its view's subviews, the last drawn last.
     func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
         let cannot = DriverCannot("read the drawing order of \(layout.type.name)")

@@ -1,62 +1,66 @@
-# revision 3.1
-ActivityIndicator.accessibilityHeading: ✅
-Button.isEnabled: ✅
-Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
-Canvas.accessibilityHint: ✅
-CheckBox.isEnabled: ✅
-CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked against the projection it laid on the element
-ColorBox.accessibilityHint: ✅
-DatePicker.opacity: ✅
-DatePicker.rotation: ✅
-Ellipse.accessibilityLabel: ✅
-Grid.isVisible: ✅
-Grid.pivotY: ✅
-HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.translationX: ✅
-HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-Image.automationExcludedWithChildren: ✅
-ItemsView.frameChanged: ✅
-ItemsView.maximumHeight: ✅
-ItemsView.maximumWidth: ✅
-ItemsView.minimumHeight: ✅
-ItemsView.minimumWidth: ✅
-ItemsView.scale: ✅
-Line.frameChanged: ✅
-Line.height: ✅
-Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
-Line.width: ✅
-Map.accessibilityHint: 🧩
-Path.isEnabled: does not apply - read isEnabled of Path - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Path.rotationX: ✓ read rotationX of Path: the host's own tip, checked against the projection it laid on the element
-Picker.accessibilityLabel: ✅
-Polygon.opacity: ✅
-Polygon.rotation: ✅
+# revision 4.1
+ActivityIndicator.accessibilityHint: ✅
+Button.opacity: ✅
+Button.pivotY: ✅
+Canvas.translationY: ✅
+Canvas.zIndex: ✅
+CheckBox.layoutDirection: ✅
+ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.scaleY: ✅
+ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+DatePicker.isAccessibilityHidden: ✅
+Ellipse.frameChanged: ✅
+Ellipse.maximumHeight: ✅
+Ellipse.maximumWidth: ✅
+Ellipse.minimumHeight: ✅
+Ellipse.minimumWidth: ✅
+Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
+Grid.accessibilityLabel: ✅
+Grid.isEnabled: ✅
+HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Image.ignoresInput: not realized
+Image.scale: ✅
+ItemsView.accessibilityHint: ✅
+Line.translationY: ✅
+Line.zIndex: ✅
+Map.background: 🧩
+Path.frame: ✅
+Path.scaleX: ✅
+Picker.accessibilityHeading: ✅
+Polygon.frameChanged: ✅
+Polygon.height: ✅
+Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
+Polygon.width: ✅
+Polyline.accessibilityHeading: ✅
 Polyline.isEnabled: ✅
-Polyline.zIndex: ✅
-ProgressBar.pivotX: ✅
-RadioButton.focus: ✅
-RadioButton.isFocusedChanged: ✅
-RadioButton.translationX: ✅
-RadioButton.unfocus: ✅
-Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ScrollView.frame: ✅
-ScrollView.scaleY: ✅
-SearchField.automationExcludedWithChildren: ✅
-Slider.ignoresInput: ✅
-Slider.scaleX: ✅
-Stepper.automationExcludedWithChildren: ✅
-Switch.ignoresInput: ✅
-Switch.scaleX: ✅
-Text.isAccessibilityHidden: ✅
-TextEditor.automationExcludedWithChildren: ✅
-TextField.ignoresInput: ✅
-TextField.scaleX: ✅
-TimePicker.automationExcludedWithChildren: ✅
-VStack.ignoresInput: ✅
-VStack.scaleX: ✅
-WebView.accessibilityHeading: ✅
-ZStack.frameChanged: ✅
-ZStack.height: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
-ZStack.width: ✅
+ProgressBar.layoutDirection: ✅
+RadioButton.frame: ✅
+RadioButton.scaleX: ✅
+Rectangle.isAccessibilityHidden: ✅
+ScrollView.frameChanged: ✅
+ScrollView.height: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
+ScrollView.width: ✅
+SearchField.accessibilityHeading: ✅
+Slider.isVisible: ✅
+Slider.pivotX: ✅
+Stepper.style: ✅
+Stepper.translationX: ✅
+Switch.background: ✅
+Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Text.rotation: ✅
+TextEditor.frame: ✅
+TextEditor.scaleX: ✅
+TextField.isAccessibilityHidden: ✅
+TimePicker.frameChanged: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.accessibilityHint: ✅
+WebView.isVisible: ✅
+WebView.pivotX: ✅
+ZStack.style: ✅
+ZStack.translationX: ✅

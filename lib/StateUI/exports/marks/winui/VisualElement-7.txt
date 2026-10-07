@@ -1,62 +1,66 @@
-# revision 3.1
+# revision 4.1
 ActivityIndicator.frame: ✅
-ActivityIndicator.scaleY: ✅
-Button.automationExcludedWithChildren: ✅
-Canvas.ignoresInput: ✅
-Canvas.scaleX: ✅
-CheckBox.automationExcludedWithChildren: ✅
-ColorBox.ignoresInput: not realized
-ColorBox.scaleX: ✅
-DatePicker.isAccessibilityHidden: ✅
-Ellipse.frameChanged: ✅
-Ellipse.maximumHeight: ✅
-Ellipse.maximumWidth: ✅
-Ellipse.minimumHeight: ✅
-Ellipse.minimumWidth: ✅
-Ellipse.scale: ✅
-Grid.accessibilityHeading: ✅
-HStack.opacity: ✅
-HStack.rotation: ✅
-Image.style: ✅
-Image.translationY: ✅
-ItemsView.layoutDirection: ✅
-Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Map.ignoresInput: 🧩
-Map.scaleX: 🧩
-Path.automationExcludedWithChildren: ✅
-Picker.frameChanged: ✅
-Picker.maximumHeight: ✅
-Picker.maximumWidth: ✅
-Picker.minimumHeight: ✅
-Picker.minimumWidth: ✅
-Picker.scale: ✅
-Polygon.isAccessibilityHidden: ✅
+ActivityIndicator.scaleX: ✅
+Button.accessibilityHeading: ✅
+Canvas.frameChanged: ✅
+Canvas.height: ✅
+Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
+Canvas.width: ✅
+CheckBox.accessibilityLabel: ✅
+ColorBox.opacity: ✅
+ColorBox.pivotY: ✅
+DatePicker.style: ✅
+DatePicker.translationX: ✅
+Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Grid.ignoresInput: ✅
+Grid.scale: ✅
+HStack.accessibilityLabel: ✅
+HStack.isEnabled: ✅
+Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ItemsView.frame: ✅
+ItemsView.scaleX: ✅
+Line.frameChanged: ✅
+Line.height: ✅
+Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
+Line.width: ✅
+Map.accessibilityHeading: 🧩
+Path.isVisible: ✅
+Path.pivotX: ✅
+Picker.focus: ✅
+Picker.isFocusedChanged: ✅
+Picker.scaleY: ✅
+Picker.unfocus: ✅
+Polygon.automationExcludedWithChildren: ✅
 Polyline.frameChanged: ✅
-Polyline.height: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
 Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
-Polyline.width: ✅
-ProgressBar.accessibilityHint: ✅
-RadioButton.opacity: ✅
-RadioButton.rotation: ✅
-Rectangle.accessibilityLabel: ✅
-ScrollView.isVisible: ✅
-ScrollView.pivotY: ✅
-SearchField.style: ✅
-SearchField.translationY: ✅
-Slider.pivotX: ✅
-Stepper.style: ✅
-Stepper.translationY: ✅
-Switch.pivotX: ✅
-Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.translationX: ✅
-Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-TextEditor.style: ✅
-TextEditor.translationY: ✅
-TextField.pivotX: ✅
-TimePicker.style: ✅
-TimePicker.translationY: ✅
-VStack.pivotX: ✅
-WebView.frame: ✅
-WebView.scaleY: ✅
-ZStack.background: ✅
+ProgressBar.accessibilityLabel: ✅
+RadioButton.isVisible: ✅
+RadioButton.pivotX: ✅
+Rectangle.style: ✅
+Rectangle.translationX: ✅
+ScrollView.automationExcludedWithChildren: ✅
+SearchField.frameChanged: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
+SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
+Slider.accessibilityHint: ✅
+Stepper.isEnabled: ✅
+Stepper.rotation: ✅
+Switch.accessibilityHeading: ✅
+Text.isAccessibilityHidden: ✅
+TextEditor.isVisible: ✅
+TextEditor.pivotX: ✅
+TextField.style: ✅
+TextField.translationX: ✅
+TimePicker.background: ✅
+VStack.frame: ✅
+VStack.scaleX: ✅
+WebView.accessibilityHint: ✅
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ZStack.rotation: ✅

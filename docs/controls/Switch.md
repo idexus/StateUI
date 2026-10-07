@@ -33,11 +33,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (71)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 35 ✓</td><td><code>NSSwitch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>30 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td><code>UISwitch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 10 ✓ · 3 –</td><td><code>Switch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>33 ✅ · 2 ☑️ · 35 ✓</td><td><code>NSSwitch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>30 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UISwitch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>54 ✅ · 2 ☑️ · 10 ✓ · 3 –</td><td><code>Switch</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>59 ✅ · 12 ✓</td><td><code>ToggleSwitch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>47 ✅ · 22 ✓ · 2 –</td><td><code>GtkSwitch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 22 ✓ · 2 –</td><td><code>GtkSwitch</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>47 ✅ · 20 ✓</td><td>checkbox <code>&lt;input&gt;</code> with <code>role=switch</code></td></tr></tbody>
 </table>
 
@@ -67,8 +67,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityHeading</code></td><td>property</td><td><code>AccessibilityHeadingLevel</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read a heading's level - AppKit marks a heading, not its level<br>UIKit: cannot read a heading's level - UIKit marks a heading, not its level<br>Android Views: cannot read a heading's level - Android marks a heading, not its level</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityHeading</code></td><td>property</td><td><code>AccessibilityHeadingLevel</code></td><td>native</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit marks a heading, not its level: every level is a heading.<br>UIKit: UIKit marks a heading, not its level: every level is a heading.<br>Android Views: Android marks a heading, not its level: every level is a heading.<br>GTK 4: GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>automationExcludedWithChildren</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

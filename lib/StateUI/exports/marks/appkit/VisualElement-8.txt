@@ -1,48 +1,57 @@
-# revision 3.1
+# revision 4.1
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
-Button.frameChanged: ✅
-Button.height: ✅
-Button.width: ✅
-Canvas.isVisible: ✅
-Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform, checked against the layer it composed itself
-CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform, checked against the layer it composed itself
-ColorBox.pivotY: ✓ read pivotY of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.automationExcludedWithChildren: ✅
-Ellipse.accessibilityHint: ✅
-Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.isEnabled: ✅
-HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
-Image.rotationY: ✓ read rotationY of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.pivotX: ✓ read pivotX of ItemsView: the host's own transform, checked against the layer it composed itself
-Line.accessibilityLabel: ✅
-Map.frame: ✅
-Path.frameChanged: ✅
-Path.height: ✅
-Path.isEnabled: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
-Path.width: ✅
-Picker.scaleX: ✓ read scaleX of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.layoutDirection: ✅
-ProgressBar.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-RadioButton.style: ✅
-Rectangle.ignoresInput: ✅
-ScrollView.opacity: ✅
-ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transform, checked against the layer it composed itself
+Button.isEnabled: ✅
+Button.translationX: ✓ read translationX of Button: the host's own transform, checked against the layer it composed itself
+Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself
+CheckBox.pivotX: ✓ read pivotX of CheckBox: the host's own transform, checked against the layer it composed itself
+ColorBox.isAccessibilityHidden: ✅
+DatePicker.zIndex: ✅
+Ellipse.ignoresInput: ✅
+Grid.isVisible: ✅
+Grid.scaleX: ✓ read scaleX of Grid: the host's own transform, checked against the layer it composed itself
+HStack.pivotX: ✓ read pivotX of HStack: the host's own transform, checked against the layer it composed itself
+Image.accessibilityHint: ✅
+ItemsView.focus: ✅
+ItemsView.isFocusedChanged: ✅
+ItemsView.unfocus: ✅
+Line.rotationY: ✓ read rotationY of Line: the host's own transform, checked against the layer it composed itself
+Map.layoutDirection: ✅
+Path.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Picker.style: ✅
+Polygon.frameChanged: ✅
+Polygon.isEnabled: ✓ tap on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.maximumHeight: ✅
+Polygon.maximumWidth: ✅
+Polygon.minimumHeight: ✅
+Polygon.minimumWidth: ✅
+Polyline.scale: ✓ read scale of Polyline: the host's own transform, checked against the layer it composed itself
+ProgressBar.pivotX: ✓ read pivotX of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Rectangle.zIndex: ✅
+ScrollView.frameChanged: ✅
+ScrollView.isEnabled: ✅
+ScrollView.maximumHeight: ✅
+ScrollView.maximumWidth: ✅
+ScrollView.minimumHeight: ✅
+ScrollView.minimumWidth: ✅
+SearchField.scale: ✓ read scale of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.pivotY: ✓ read pivotY of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Switch.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Text.automationExcludedWithChildren: ✅
-TextEditor.zIndex: ✅
-TextField.frame: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.width: ✅
-VStack.isVisible: ✅
-VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.rotation: ✓ read rotation of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.layoutDirection: ✅
+Stepper.automationExcludedWithChildren: ✅
+Switch.accessibilityLabel: ✅
+Text.frameChanged: ✅
+Text.height: ✅
+Text.translationY: ✓ read translationY of Text: the host's own transform, checked against the layer it composed itself
+Text.width: ✅
+TextEditor.focus: ✅
+TextEditor.isFocusedChanged: ✅
+TextEditor.unfocus: ✅
+TextField.frameChanged: ✅
+TextField.height: ✅
+TextField.translationY: ✓ read translationY of TextField: the host's own transform, checked against the layer it composed itself
+TextField.width: ✅
+TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.pivotY: ✓ read pivotY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+ZStack.zIndex: ✅

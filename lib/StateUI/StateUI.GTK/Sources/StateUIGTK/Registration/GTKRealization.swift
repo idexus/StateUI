@@ -54,6 +54,8 @@ enum GTKRealization {
         .complete("PageElement", "title"),
         .notPlanned("PropertyContainer", "accessibilityIdentifier", reason: "GTK 4 gives an accessible the identifier "
             + "a GtkBuilder file names alone: none is set on a widget made in code."),
+        .partial("VisualElement", "accessibilityHeading", missing: "GTK fixes a widget's role once it is shown: a view "
+            + "becomes a heading, or stops being one, only as it is made; its level changes."),
         .partial("VisualElement", "background", missing: "A brush fills the view with its first colour alone."),
         .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),

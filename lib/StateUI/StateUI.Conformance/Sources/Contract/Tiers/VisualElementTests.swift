@@ -17,6 +17,7 @@
             [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element),
                 reachable(element), framed(element), focused(element), styled(element), layered(element),
+                headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
@@ -114,6 +115,23 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { abs((try s.held(VisualElementContract.opacity, on: view) ?? 0) - 0.25) < 0.01 }
             s.expect(try s.held(VisualElementContract.opacity, on: view), 0.25, within: 0.01)
+        }
+    }
+
+    /// A view is a heading to assistive technology where the tree makes it one, whatever level it says, and is none
+    /// where the tree says none.
+    static func headed(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).isAHeadingWhereTheTreeSays", proves: [
+            Covered(VisualElementContract.accessibilityHeading, on: element),
+        ]) { s in
+            s.start {
+                VStack {
+                    Specimens.view(element, [Write(VisualElementContract.accessibilityHeading, .h2)], id: "heading")
+                    Specimens.view(element, [Write(VisualElementContract.accessibilityHeading, .none)], id: "plain")
+                }
+            }
+            s.expect(try s.isHeading(s.element("heading")), true, "made a heading")
+            s.expect(try s.isHeading(s.element("plain")), false, "made plain")
         }
     }
 

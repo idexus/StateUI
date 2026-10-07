@@ -154,6 +154,14 @@
         try driver.reaches(element, at: point)
     }
 
+    /// Whether assistive technology meets `element` as a heading, whatever its level.
+    public func isHeading(_ element: MountedElement) throws -> Bool {
+        note(
+            "read whether \(element.type.name) is a heading", element: element.type.name,
+            member: VisualElementContract.accessibilityHeading.name)
+        return try driver.isHeading(element)
+    }
+
     /// The ids of the children of `layout`, in the order its toolkit draws them, back to front.
     public func drawingOrder(of layout: MountedElement) throws -> [ElementID] {
         note("read the drawing order of \(layout.type.name)")

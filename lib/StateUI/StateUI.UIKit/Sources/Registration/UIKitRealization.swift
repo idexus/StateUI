@@ -35,6 +35,7 @@ enum UIKitRealization {
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
+        .partial("VisualElement", "accessibilityHeading", missing: "UIKit marks a heading, not its level: every level is a heading."),
         .partial("VisualElement", "background", missing: "UIKit paints a colour on this view; a brush is drawn only by a layout."),
         .complete("VisualElement", "ignoresInput"),
         .complete("VisualElement", "layoutDirection"),

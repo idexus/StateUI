@@ -83,6 +83,9 @@
     /// The children of `layout` in the order its toolkit draws them, back to front, as its native view holds them.
     func drawingOrder(of layout: MountedElement) throws -> [MountedElement]
 
+    /// Whether assistive technology meets `element`'s view as a heading, whatever level it says.
+    func isHeading(_ element: MountedElement) throws -> Bool
+
     /// The question the window of `element` shows now; nil where it shows none.
     func question(over element: MountedElement) throws -> Question?
 
@@ -156,6 +159,11 @@ extension HostDriver {
 
     public func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
         throw DriverCannot("read the drawing order of \(layout.type.name)")
+    }
+
+    /// A heading is a view whose level the toolkit holds above none.
+    public func isHeading(_ element: MountedElement) throws -> Bool {
+        (try held(.accessibilityHeading, on: element)?.enumeration ?? 0) > 0
     }
 
     public func question(over element: MountedElement) throws -> Question? {

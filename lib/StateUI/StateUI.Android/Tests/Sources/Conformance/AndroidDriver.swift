@@ -196,6 +196,14 @@ final class AndroidDriver: HostDriver {
         return Self.color(argb | 0xFF00_0000)
     }
 
+    /// A heading is a view TalkBack meets as one (`isAccessibilityHeading`).
+    func isHeading(_ element: MountedElement) throws -> Bool {
+        guard let view = (element.native as? AndroidElement)?.view else {
+            throw DriverCannot("read whether \(element.type.name) is a heading")
+        }
+        return Java.callBool(view.reference, Self.isAccessibilityHeading)
+    }
+
     /// The layout's children by where each one's view stands in the order its group draws them
     /// (`TestDrawing.drawingOrder`), the last drawn last.
     func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
@@ -251,6 +259,7 @@ final class AndroidDriver: HostDriver {
         files, "answerForTesting", "(Landroid/content/Context;[Ljava/lang/String;)Z")
     static let launchedForTesting = Java.staticMethod(files, "launchedForTesting", "()[Ljava/lang/String;")
     static let testFiles = Java.findClass("stateui/android/test/TestFiles")
+    static let isAccessibilityHeading = Java.method(JavaAPI.view, "isAccessibilityHeading", "()Z")
     static let testDrawing = Java.findClass("stateui/android/test/TestDrawing")
     static let drawingOrderOf = Java.staticMethod(testDrawing, "drawingOrder", "(Landroid/view/ViewGroup;)[I")
     static let isWithin = Java.staticMethod(

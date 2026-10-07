@@ -1,5 +1,5 @@
-# revision 3.1
-ActivityIndicator.accessibilityHeading: ✅
+# revision 4.1
+ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
@@ -33,7 +33,7 @@ ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the 
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: ✅
-Button.accessibilityHeading: ✅
+Button.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
@@ -67,7 +67,7 @@ Button.translationY: ✓ read translationY of Button: the host's own transform: 
 Button.unfocus: ✅
 Button.width: ✅
 Button.zIndex: ✅
-Canvas.accessibilityHeading: ✅
+Canvas.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
@@ -101,7 +101,7 @@ Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: 
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
 Canvas.zIndex: ✅
-CheckBox.accessibilityHeading: ✅
+CheckBox.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
@@ -135,7 +135,7 @@ CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transfo
 CheckBox.unfocus: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
-ColorBox.accessibilityHeading: ✅
+ColorBox.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
@@ -169,7 +169,7 @@ ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transfo
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
 ColorBox.zIndex: ✅
-DatePicker.accessibilityHeading: ✅
+DatePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
@@ -203,7 +203,7 @@ DatePicker.translationY: ✓ read translationY of DatePicker: the host's own tra
 DatePicker.unfocus: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
-Ellipse.accessibilityHeading: ✅
+Ellipse.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
@@ -237,7 +237,7 @@ Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
-Grid.accessibilityHeading: ✅
+Grid.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
@@ -271,7 +271,7 @@ Grid.translationY: ✓ read translationY of Grid: the host's own transform: GTK 
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
 Grid.zIndex: ✅
-HStack.accessibilityHeading: ✅
+HStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
@@ -305,7 +305,7 @@ HStack.translationY: ✓ read translationY of HStack: the host's own transform: 
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
 HStack.zIndex: ✅
-Image.accessibilityHeading: ✅
+Image.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
@@ -339,7 +339,7 @@ Image.translationY: ✓ read translationY of Image: the host's own transform: GT
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
 Image.zIndex: ✅
-ItemsView.accessibilityHeading: ✅
+ItemsView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
@@ -373,7 +373,7 @@ ItemsView.translationY: ✓ read translationY of ItemsView: the host's own trans
 ItemsView.unfocus: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
-Line.accessibilityHeading: ✅
+Line.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
@@ -441,7 +441,7 @@ Map.translationY: 🧩
 Map.unfocus: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
-Path.accessibilityHeading: ✅
+Path.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
@@ -475,7 +475,7 @@ Path.translationY: ✓ read translationY of Path: the host's own transform: GTK 
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
 Path.zIndex: ✅
-Picker.accessibilityHeading: ✅
+Picker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
@@ -509,7 +509,7 @@ Picker.translationY: ✓ read translationY of Picker: the host's own transform: 
 Picker.unfocus: ✅
 Picker.width: ✅
 Picker.zIndex: ✅
-Polygon.accessibilityHeading: ✅
+Polygon.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
@@ -543,7 +543,7 @@ Polygon.translationY: ✓ read translationY of Polygon: the host's own transform
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
 Polygon.zIndex: ✅
-Polyline.accessibilityHeading: ✅
+Polyline.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
@@ -577,7 +577,7 @@ Polyline.translationY: ✓ read translationY of Polyline: the host's own transfo
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
 Polyline.zIndex: ✅
-ProgressBar.accessibilityHeading: ✅
+ProgressBar.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
@@ -611,7 +611,7 @@ ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own t
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
-RadioButton.accessibilityHeading: ✅
+RadioButton.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
@@ -645,7 +645,7 @@ RadioButton.translationY: ✓ read translationY of RadioButton: the host's own t
 RadioButton.unfocus: ✅
 RadioButton.width: ✅
 RadioButton.zIndex: ✅
-Rectangle.accessibilityHeading: ✅
+Rectangle.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
@@ -679,7 +679,7 @@ Rectangle.translationY: ✓ read translationY of Rectangle: the host's own trans
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
 Rectangle.zIndex: ✅
-ScrollView.accessibilityHeading: ✅
+ScrollView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
@@ -713,7 +713,7 @@ ScrollView.translationY: ✓ read translationY of ScrollView: the host's own tra
 ScrollView.unfocus: ✅
 ScrollView.width: ✅
 ScrollView.zIndex: ✅
-SearchField.accessibilityHeading: ✅
+SearchField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
@@ -747,7 +747,7 @@ SearchField.translationY: ✓ read translationY of SearchField: the host's own t
 SearchField.unfocus: ✅
 SearchField.width: ✅
 SearchField.zIndex: ✅
-Slider.accessibilityHeading: ✅
+Slider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
@@ -781,7 +781,7 @@ Slider.translationY: ✓ read translationY of Slider: the host's own transform: 
 Slider.unfocus: ✅
 Slider.width: ✅
 Slider.zIndex: ✅
-Stepper.accessibilityHeading: ✅
+Stepper.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
@@ -815,7 +815,7 @@ Stepper.translationY: ✓ read translationY of Stepper: the host's own transform
 Stepper.unfocus: ✅
 Stepper.width: ✅
 Stepper.zIndex: ✅
-Switch.accessibilityHeading: ✅
+Switch.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
@@ -849,7 +849,7 @@ Switch.translationY: ✓ read translationY of Switch: the host's own transform: 
 Switch.unfocus: ✅
 Switch.width: ✅
 Switch.zIndex: ✅
-Text.accessibilityHeading: ✅
+Text.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
@@ -883,7 +883,7 @@ Text.translationY: ✓ read translationY of Text: the host's own transform: GTK 
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.width: ✅
 Text.zIndex: ✅
-TextEditor.accessibilityHeading: ✅
+TextEditor.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
@@ -917,7 +917,7 @@ TextEditor.translationY: ✓ read translationY of TextEditor: the host's own tra
 TextEditor.unfocus: ✅
 TextEditor.width: ✅
 TextEditor.zIndex: ✅
-TextField.accessibilityHeading: ✅
+TextField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
@@ -951,7 +951,7 @@ TextField.translationY: ✓ read translationY of TextField: the host's own trans
 TextField.unfocus: ✅
 TextField.width: ✅
 TextField.zIndex: ✅
-TimePicker.accessibilityHeading: ✅
+TimePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
@@ -985,7 +985,7 @@ TimePicker.translationY: ✓ read translationY of TimePicker: the host's own tra
 TimePicker.unfocus: ✅
 TimePicker.width: ✅
 TimePicker.zIndex: ✅
-VStack.accessibilityHeading: ✅
+VStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
@@ -1019,7 +1019,7 @@ VStack.translationY: ✓ read translationY of VStack: the host's own transform: 
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 VStack.zIndex: ✅
-WebView.accessibilityHeading: ✅
+WebView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
@@ -1053,7 +1053,7 @@ WebView.translationY: ✓ read translationY of WebView: the host's own transform
 WebView.unfocus: ✅
 WebView.width: ✅
 WebView.zIndex: ✅
-ZStack.accessibilityHeading: ✅
+ZStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅

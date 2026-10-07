@@ -1,76 +1,66 @@
-# revision 3.1
+# revision 4.1
 ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.scaleX: ✅
-Button.isAccessibilityHidden: ✅
-Canvas.frameChanged: ✅
-Canvas.maximumHeight: ✅
-Canvas.maximumWidth: ✅
-Canvas.minimumHeight: ✅
-Canvas.minimumWidth: ✅
-Canvas.scale: ✅
-CheckBox.isAccessibilityHidden: ✅
-ColorBox.frameChanged: ✅
-ColorBox.maximumHeight: ✅
-ColorBox.maximumWidth: ✅
-ColorBox.minimumHeight: ✅
-ColorBox.minimumWidth: ✅
-ColorBox.scale: ✅
-DatePicker.accessibilityHeading: ✅
-Ellipse.frameChanged: ✅
-Ellipse.height: ✅
-Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
-Ellipse.width: ✅
-Grid.accessibilityHint: ✅
-HStack.isVisible: ✅
-HStack.pivotY: ✅
-Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-Image.translationX: ✅
-Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-ItemsView.background: ✅
-Line.automationExcludedWithChildren: ✅
-Map.frameChanged: 🧩
-Map.maximumHeight: 🧩
-Map.maximumWidth: 🧩
-Map.minimumHeight: 🧩
-Map.minimumWidth: 🧩
-Map.scale: 🧩
-Path.isAccessibilityHidden: ✅
-Picker.frameChanged: ✅
-Picker.height: ✅
-Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
-Picker.width: ✅
-Polygon.accessibilityHeading: ✅
-Polyline.isEnabled: does not apply - read isEnabled of Polyline - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ActivityIndicator.scale: ✅
+Button.accessibilityHint: ✅
+Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Canvas.rotation: ✅
+CheckBox.accessibilityHeading: ✅
+ColorBox.isVisible: ✅
+ColorBox.pivotX: ✅
+DatePicker.focus: ✅
+DatePicker.isFocusedChanged: ✅
+DatePicker.scaleY: ✅
+DatePicker.unfocus: ✅
+Ellipse.automationExcludedWithChildren: ✅
+Grid.frameChanged: ✅
+Grid.maximumHeight: ✅
+Grid.maximumWidth: ✅
+Grid.minimumHeight: ✅
+Grid.minimumWidth: ✅
+Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
+HStack.accessibilityHeading: ✅
+HStack.isEnabled: ✅
+Image.background: – WinUI's picture paints the picture alone, no ground around it.
+ItemsView.ignoresInput: ✅
+ItemsView.scale: ✅
+Line.isEnabled: does not apply - read isEnabled of Line - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Line.rotation: ✅
+Map.translationY: 🧩
+Map.zIndex: 🧩
+Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Picker.frame: ✅
+Picker.scaleX: ✅
+Polygon.isAccessibilityHidden: ✅
+Polyline.frameChanged: ✅
+Polyline.height: ✅
 Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
-ProgressBar.accessibilityLabel: ✅
-RadioButton.isVisible: ✅
-RadioButton.pivotY: ✅
-Rectangle.isEnabled: ✅
-Rectangle.zIndex: ✅
-ScrollView.pivotX: ✅
-SearchField.focus: ✅
-SearchField.isFocusedChanged: ✅
-SearchField.translationX: ✅
-SearchField.unfocus: ✅
-Slider.layoutDirection: ✅
-Stepper.focus: ✅
-Stepper.isFocusedChanged: ✅
-Stepper.translationX: ✅
-Stepper.unfocus: ✅
-Switch.layoutDirection: ✅
-Text.frame: ✅
-Text.scaleY: ✅
-TextEditor.focus: ✅
-TextEditor.isFocusedChanged: ✅
-TextEditor.translationX: ✅
-TextEditor.unfocus: ✅
-TextField.layoutDirection: ✅
-TimePicker.focus: ✅
-TimePicker.isFocusedChanged: ✅
-TimePicker.translationX: ✅
-TimePicker.unfocus: ✅
-VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-WebView.ignoresInput: ✅
-WebView.scaleX: ✅
-ZStack.automationExcludedWithChildren: ✅
+Polyline.width: ✅
+ProgressBar.accessibilityHeading: ✅
+ProgressBar.isEnabled: ✅
+RadioButton.layoutDirection: ✅
+Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+Rectangle.scaleY: ✅
+Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isAccessibilityHidden: ✅
+SearchField.frameChanged: ✅
+SearchField.height: ✅
+SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
+SearchField.width: ✅
+Slider.accessibilityLabel: ✅
+Stepper.opacity: ✅
+Stepper.pivotY: ✅
+Switch.translationY: ✅
+Switch.zIndex: ✅
+Text.accessibilityHeading: ✅
+TextEditor.layoutDirection: ✅
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.scaleY: ✅
+TextField.unfocus: ✅
+TimePicker.automationExcludedWithChildren: ✅
+VStack.ignoresInput: ✅
+VStack.scale: ✅
+WebView.accessibilityLabel: ✅
+ZStack.opacity: ✅
+ZStack.pivotY: ✅

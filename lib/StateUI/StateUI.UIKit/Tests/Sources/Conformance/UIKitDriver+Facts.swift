@@ -132,6 +132,14 @@ extension UIKitDriver {
         return hit === view || hit.isDescendant(of: view)
     }
 
+    /// A heading is a view VoiceOver meets with the header trait.
+    func isHeading(_ element: MountedElement) throws -> Bool {
+        guard let view = (element.native as? UIKitElement)?.view else {
+            throw DriverCannot("read whether \(element.type.name) is a heading")
+        }
+        return view.accessibilityTraits.contains(.header)
+    }
+
     /// The layout's children by where each one's view stands among its view's subviews - a higher layer's
     /// `zPosition` drawn later still - the last drawn last.
     func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
