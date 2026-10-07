@@ -84,6 +84,21 @@ enum WebCSS {
          ("color", color(look.color))]
     }
 
+    /// How words break across lines and where they stop - at most `lines` of them, nil for any - as CSS says it.
+    static func lines(_ lineBreak: LineBreak, most lines: Int?) -> [(String, String?)] {
+        let clamped = lineBreak.wraps && lines != nil
+        return [
+            ("white-space", lineBreak.wraps ? "pre-wrap" : "pre"),
+            ("overflow-wrap", lineBreak.wraps ? "break-word" : nil),
+            ("word-break", lineBreak == .characterWrap ? "break-all" : nil),
+            ("text-overflow", lineBreak.truncates ? "ellipsis" : nil),
+            ("overflow", lineBreak.wraps && !clamped ? nil : "hidden"),
+            ("display", clamped ? "-webkit-box" : nil),
+            ("-webkit-box-orient", clamped ? "vertical" : nil),
+            ("-webkit-line-clamp", clamped ? String(lines!) : nil),
+        ]
+    }
+
     /// The room between letters, in points, as CSS's `letter-spacing`; nil for none.
     static func letterSpacing(_ points: Double) -> String? {
         points == 0 ? nil : signedPixels(points)

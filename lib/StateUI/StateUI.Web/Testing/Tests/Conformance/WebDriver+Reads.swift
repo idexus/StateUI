@@ -62,6 +62,9 @@ extension WebDriver {
         case (.placeholder, is WebPickerView): return .some(try WebBrowser.evaluate("e.options[0].text || null", on: e)?.propValue)
         case (.source, let image as WebImageView): return .some(try source(of: image))
         case (.contentMode, is WebImageView): return try contentMode(of: e)
+        case (.icon, is WebButtonView), (.iconPosition, is WebButtonView), (.iconSpacing, is WebButtonView),
+             (.contentMode, is WebButtonView), (.lineBreak, is WebButtonView):
+            return try buttonHolds(property, e)
         case (.showsSidebar, is WebSplitView): return try WebBrowser.truth("e.dataset.sidebar === 'shown'", on: e).propValue
         case (.selectedTab, is WebTabView):
             let chosen = try WebBrowser.number(
@@ -304,6 +307,34 @@ extension WebDriver {
             return lengths.map { width > 0 ? $0 / width : 0 }.propValue
         case .dashPhase: return ((Double(try attribute("stroke-dashoffset") ?? "") ?? 0) / max(width, .leastNonzeroMagnitude)).propValue
         default: return nil
+        }
+    }
+
+    // MARK: - A button's picture and words
+
+    /// What a button holds of its picture and words: the picture's name and where it stands beside the words, how
+    /// far from them, how it fills the button alone, and how the words break.
+    private func buttonHolds(_ property: Prop, _ e: Int32) throws -> HostValue?? {
+        func part(_ tag: String) throws -> Int32? {
+            try WebBrowser.number("((p) => p ? stateui.numberOf(p) : null)(e.querySelector(':scope > \(tag)'))", on: e)
+                .map { Int32($0) }
+        }
+        switch property {
+        case .icon:
+            return .some(try WebBrowser.evaluate("e.querySelector(':scope > img')?.dataset.source ?? null", on: e)
+                .map { .string($0) })
+        case .iconPosition:
+            let positions: [String: IconPosition] = [
+                "row": .leading, "row-reverse": .trailing, "column": .top, "column-reverse": .bottom,
+            ]
+            return .some(positions[try WebBrowser.evaluate("getComputedStyle(e).flexDirection", on: e) ?? ""]?.propValue)
+        case .iconSpacing: return .some(try WebBrowser.number("parseFloat(getComputedStyle(e).gap) || 0", on: e)?.propValue)
+        case .contentMode:
+            guard let picture = try part("img") else { return .some(nil) }
+            return try contentMode(of: picture)
+        default:
+            guard let words = try part("span") else { return .some(nil) }
+            return try wordsHolds(property, words)
         }
     }
 

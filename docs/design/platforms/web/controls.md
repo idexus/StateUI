@@ -53,7 +53,12 @@ wrap (`LineBreak.lines`).
 
 A Button is a `<button>`. With no fill, outline or shape of its own it is the
 browser's button; with one, its box is the application's - its background,
-its border, its corners - and the browser's look goes.
+its border, its corners - and the browser's look goes. It holds its words in
+a `<span>` and its picture in an `<img>` beside them, the two in its middle:
+the icon's position is the row's or column's direction, its spacing their
+gap - 8 points where the tree says none - and a picture with no words fills
+the button as its content mode says. Its words break as a label's do, on one
+line where the tree says nothing.
 
 ## A field
 
