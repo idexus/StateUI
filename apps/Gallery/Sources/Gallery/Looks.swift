@@ -71,14 +71,14 @@ enum WindowLook: String, CaseIterable, PersistentValue {
         self == .material || self == .tintedMaterial
     }
 
-    /// What the window shows behind its pages, in `accent`; nil for the
-    /// platform's own.
-    func background(in accent: AccentChoice) -> Color? {
+    /// What the window shows behind its pages, in `accent` - the system's
+    /// accent being `system`; nil for the platform's own.
+    func background(in accent: AccentChoice, system: Color) -> Color? {
         switch self {
         case .platform, .material: return nil
         case .clear: return .transparent
-        case .tintedMaterial: return accent.tint
-        case .colour: return accent.color
+        case .tintedMaterial: return accent.tint(system: system)
+        case .colour: return accent.color(system: system)
         }
     }
 }

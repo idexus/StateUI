@@ -85,6 +85,11 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 + "where the platform can show it. The theme is the whole application's.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+
+            Text("\"The system's accent\" is the one the user chose, as `app.info.accentColor` "
+                + "reports it - a change in the system's settings repaints the gallery.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(8)
     }

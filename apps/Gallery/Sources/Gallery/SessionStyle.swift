@@ -41,14 +41,19 @@ extension SceneKey {
 /// A colour a gallery wears - on its bars, or behind its pages, where its look
 /// asks for one.
 enum AccentChoice: String, CaseIterable, PersistentValue {
+    case system
     case violet
     case teal
     case coral
     case graphite
 
+    /// The gallery's own colours, without the system's accent.
+    static let own: [AccentChoice] = [.violet, .teal, .coral, .graphite]
+
     /// What the Colours window calls it.
     var name: String {
         switch self {
+        case .system: return "The system's accent"
         case .violet: return "Violet"
         case .teal: return "Teal"
         case .coral: return "Coral"
@@ -56,10 +61,11 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         }
     }
 
-    /// The colour - one in both themes, since everything on the bars it
-    /// paints is white either way.
-    var color: Color {
+    /// The colour, the system's accent being `system` - one in both themes,
+    /// since everything on the bars it paints is white either way.
+    func color(system: Color) -> Color {
         switch self {
+        case .system: return system
         case .violet: return AppColors.violet
         case .teal: return Color("#0F766E")
         case .coral: return Color("#C2410C")
@@ -69,24 +75,14 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
 
     /// The colour with three fifths let through - a bar tinted over the
     /// platform's material.
-    var translucentColor: Color {
-        switch self {
-        case .violet: return Color("#66512BD4")
-        case .teal: return Color("#660F766E")
-        case .coral: return Color("#66C2410C")
-        case .graphite: return Color("#66374151")
-        }
+    func translucentColor(system: Color) -> Color {
+        color(system: system).opacity(0.4)
     }
 
     /// The colour let through all but a seventh - a window's material tinted
     /// lightly, the material showing through it.
-    var tint: Color {
-        switch self {
-        case .violet: return Color("#26512BD4")
-        case .teal: return Color("#260F766E")
-        case .coral: return Color("#26C2410C")
-        case .graphite: return Color("#26374151")
-        }
+    func tint(system: Color) -> Color {
+        color(system: system).opacity(0.15)
     }
 }
 // listing: end

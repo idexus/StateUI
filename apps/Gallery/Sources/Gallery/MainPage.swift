@@ -50,6 +50,10 @@ struct MainPage: View {
     /// window is sure to be built.
     @Environment(\.window) private var window
 
+    /// The application - the accent the user chose for the system, which the
+    /// gallery's look may wear.
+    @Environment(\.application) private var application
+
     // MARK: - What the user is looking at
 
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
@@ -105,7 +109,7 @@ struct MainPage: View {
             .barIcon("stateui_mark.png")
             // listing: end
             // The bars of both panes, as the gallery's look says.
-            .bars(style.bars, in: style.barColour)
+            .bars(style.bars, in: style.barColour, system: application.info.accentColor)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
@@ -145,6 +149,7 @@ struct MainPage: View {
             // The Appearance sample changes the look while the window stands.
             .onChanged(style.windows) { dress(window) }
             .onChanged(style.windowColour) { dress(window) }
+            .onChanged(application.info.accentColor) { dress(window) }
             // listing: end
         // listing: MainPage.modal
         } destination: { _ in
@@ -219,7 +224,7 @@ struct MainPage: View {
 
         case .sample(let id):
             if let sample = catalog.sample(id: id) {
-                SamplePage.shown(sample, nav: nav, style: style)
+                SamplePage.shown(sample, nav: nav, style: style, system: application.info.accentColor)
             } else {
                 MissingPage(id: id, nav: nav, path: path)
             }
@@ -270,6 +275,6 @@ struct MainPage: View {
     /// through it, and what it shows behind its pages.
     private func dress(_ window: WindowSession) {
         window.isTranslucent = style.windows.isTranslucent
-        window.background = style.windows.background(in: style.windowColour)
+        window.background = style.windows.background(in: style.windowColour, system: application.info.accentColor)
     }
 }

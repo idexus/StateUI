@@ -2641,14 +2641,14 @@ enum Listings {
                 self == .material || self == .tintedMaterial
             }
 
-            /// What the window shows behind its pages, in `accent`; nil for the
-            /// platform's own.
-            func background(in accent: AccentChoice) -> Color? {
+            /// What the window shows behind its pages, in `accent` - the system's
+            /// accent being `system`; nil for the platform's own.
+            func background(in accent: AccentChoice, system: Color) -> Color? {
                 switch self {
                 case .platform, .material: return nil
                 case .clear: return .transparent
-                case .tintedMaterial: return accent.tint
-                case .colour: return accent.color
+                case .tintedMaterial: return accent.tint(system: system)
+                case .colour: return accent.color(system: system)
                 }
             }
         }
@@ -2691,14 +2691,19 @@ enum Listings {
         /// A colour a gallery wears - on its bars, or behind its pages, where its look
         /// asks for one.
         enum AccentChoice: String, CaseIterable, PersistentValue {
+            case system
             case violet
             case teal
             case coral
             case graphite
 
+            /// The gallery's own colours, without the system's accent.
+            static let own: [AccentChoice] = [.violet, .teal, .coral, .graphite]
+
             /// What the Colours window calls it.
             var name: String {
                 switch self {
+                case .system: return "The system's accent"
                 case .violet: return "Violet"
                 case .teal: return "Teal"
                 case .coral: return "Coral"
@@ -2706,10 +2711,11 @@ enum Listings {
                 }
             }
 
-            /// The colour - one in both themes, since everything on the bars it
-            /// paints is white either way.
-            var color: Color {
+            /// The colour, the system's accent being `system` - one in both themes,
+            /// since everything on the bars it paints is white either way.
+            func color(system: Color) -> Color {
                 switch self {
+                case .system: return system
                 case .violet: return AppColors.violet
                 case .teal: return Color("#0F766E")
                 case .coral: return Color("#C2410C")
@@ -2719,24 +2725,14 @@ enum Listings {
 
             /// The colour with three fifths let through - a bar tinted over the
             /// platform's material.
-            var translucentColor: Color {
-                switch self {
-                case .violet: return Color("#66512BD4")
-                case .teal: return Color("#660F766E")
-                case .coral: return Color("#66C2410C")
-                case .graphite: return Color("#66374151")
-                }
+            func translucentColor(system: Color) -> Color {
+                color(system: system).opacity(0.4)
             }
 
             /// The colour let through all but a seventh - a window's material tinted
             /// lightly, the material showing through it.
-            var tint: Color {
-                switch self {
-                case .violet: return Color("#26512BD4")
-                case .teal: return Color("#260F766E")
-                case .coral: return Color("#26C2410C")
-                case .graphite: return Color("#26374151")
-                }
+            func tint(system: Color) -> Color {
+                color(system: system).opacity(0.15)
             }
         }
 
@@ -4298,6 +4294,7 @@ enum Listings {
         // The Appearance sample changes the look while the window stands.
         .onChanged(style.windows) { dress(window) }
         .onChanged(style.windowColour) { dress(window) }
+        .onChanged(application.info.accentColor) { dress(window) }
         """#,
         "MainPage.detail": #"""
         // Sources/Gallery/MainPage.swift
@@ -4854,7 +4851,7 @@ enum Listings {
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
             let line = Text("The quick brown fox jumps over the lazy dog.")
-                .textColor(style.barColour.color)
+                .textColor(style.barColour.color(system: application.info.accentColor))
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }

@@ -10,6 +10,9 @@ struct ColoursPage: View {
     /// The window this is the page of - what it is called, and how big.
     @Environment(\.window) private var window
 
+    /// The application - the accent the user chose for the system.
+    @Environment(\.application) private var application
+
     var body: some View {
         VStack {
             Text("The colour this gallery wears.")
@@ -41,7 +44,7 @@ struct ColoursPage: View {
         let style = self.style
         return Button(style.barColour == accent ? "✓  \(accent.name)" : accent.name)
             .textColor(.white)
-            .background(accent.color)
+            .background(accent.color(system: application.info.accentColor))
             .shape(.roundedRectangle(8))
             .onClicked {
                 style.barColour = accent

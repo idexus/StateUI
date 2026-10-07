@@ -51,7 +51,7 @@ struct SwatchPage: View {
 
     /// The colour of a swatch - the gallery's painted accents, in turn.
     static func colour(of number: Int) -> Color {
-        let colours = AccentChoice.allCases.map(\.color)
+        let colours = AccentChoice.own.map { $0.color(system: .gray) }
         let index = ((number - 1) % colours.count + colours.count) % colours.count
         return colours[index]
     }
