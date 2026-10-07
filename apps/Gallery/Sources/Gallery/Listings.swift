@@ -2780,7 +2780,7 @@ enum Listings {
                 return ThemeLook(
                     bars: .clear, barColour: .violet, window: violet(.ultraThick),
                     sidebar: SurfaceLook(material: .platform, colour: .violet, blur: .ultraThick), flyout: .platform)
-                #elseif UIKIT
+                #elseif UIKIT || WEB
                 return ThemeLook(
                     bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .galleryOwn, flyout: .galleryOwn)
                 #else
