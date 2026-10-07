@@ -8,7 +8,7 @@ AnimatedInputSample.swift 0ee49c71eae4969e
 AnimatedPropertySample.swift baa7e4f5da025247
 AnimationSample.swift 0a6750953955941c
 AppThemeSample.swift e0a396a7923a982b
-AppearanceSample.swift 31e08a677a7103c6
+AppearanceSample.swift 0e2c2cee129a4cb5
 ApplicationSessionSample.swift ae08f3dbb8db9b0e
 BatterySample.swift ecb52b0b01a7945f
 BindingReaderSample.swift 22bbc364e59f8b8f

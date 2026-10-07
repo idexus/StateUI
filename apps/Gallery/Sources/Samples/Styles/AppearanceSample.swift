@@ -10,6 +10,9 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
     /// The application, whose theme is held here.
     @Environment(\.application) private var application
+
+    /// The device - a phone stands the two looks one under the other.
+    @Environment(\.device) private var device
     // listing: end
 
     static let id = "appearance"
@@ -33,16 +36,22 @@ struct AppearanceSample: SampleContent, ExampleContent {
         let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
         return VStack {
-            // A look for each theme, side by side: the gallery wears the one
-            // of the theme in force, and changes with it.
-            Grid {
+            // A look for each theme: the gallery wears the one of the theme in
+            // force, and changes with it. Side by side where there is room,
+            // one under the other on a phone.
+            if device.info.formFactor == .phone {
                 LookColumn(title: "Light", style: style, keys: .light)
-                    .gridColumn(0)
                 LookColumn(title: "Dark", style: style, keys: .dark)
-                    .gridColumn(1)
+            } else {
+                Grid {
+                    LookColumn(title: "Light", style: style, keys: .light)
+                        .gridColumn(0)
+                    LookColumn(title: "Dark", style: style, keys: .dark)
+                        .gridColumn(1)
+                }
+                .columns(.fill, .fill)
+                .columnSpacing(16)
             }
-            .columns(.fill, .fill)
-            .columnSpacing(16)
 
             SectionTitle("The theme")
             Picker(themes.map(\.name))
