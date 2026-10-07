@@ -17,7 +17,7 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 @MainActor
 final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
-    private let textField = NSTextField(labelWithString: "")
+    private let textField: NSTextField = AppKitLabel(labelWithString: "")
     let measurements = MeasurementCache()
 
     private(set) var padding = NSEdgeInsets()
@@ -166,4 +166,11 @@ final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 
 }
 
+/// The label a Text draws in, drawn whole the first time it shows rather than strip by strip as a scroller uncovers
+/// it: AppKit lays the whole text out again for every strip it draws.
+/// Design: docs/design/platforms/appkit/views.md#a-long-text
+@MainActor
+final class AppKitLabel: NSTextField {
+    override var visibleRect: NSRect { bounds }
+}
 #endif

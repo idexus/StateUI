@@ -80,6 +80,27 @@ final class AppKitTextViewTests: XCTestCase {
                 + "(\(ink[2]) against \(ink[1]))")
     }
 
+    /// A long text a scroller shows part of stands, to AppKit, wholly shown: its label is drawn whole the first time
+    /// it shows, as AppKit would otherwise draw it strip by strip as the scroller uncovers it, laying the whole text
+    /// out again for each strip.
+    @MainActor
+    func testALongTextPartlyScrolledIsDrawnWhole() throws {
+        let renderer = AppKitRenderer.running {
+            ScrollView {
+                Text(String(repeating: "The same words, line after line. ", count: 300))
+            }
+            .height(120)
+        }
+        defer { renderer.closeForTesting() }
+        let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
+        content.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        content.layoutSubtreeIfNeeded()
+
+        let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first?.subviews.first)
+        XCTAssertGreaterThan(label.bounds.height, 400, "the text stands taller than the scroller shows")
+        XCTAssertEqual(label.visibleRect, label.bounds, "AppKit draws the whole label, not the strip shown")
+    }
+
     /// Where a label's words sit DOWN the height it was given. This one moves
     /// the native field's frame rather than the text inside it, so it answers a
     /// different question from the alignment across the width - and it is
