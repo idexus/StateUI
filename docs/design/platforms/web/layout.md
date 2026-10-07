@@ -80,8 +80,8 @@ a point wide - leaves nothing of itself behind once the next one sizes it. A ZSt
 z-index from it - so a child the run places never rises over a later one it
 places none of. A child placed in its area again, with no run, takes back
 its own opacity: the run's drawn opacity gives way to it, and a placing never
-clears it - a row's hidden press light, a ZStack child at opacity nought,
-stood fully lit after its row's look changed under the pointer.
+clears it - a ZStack child at opacity nought, a row's hidden press light,
+would otherwise stand lit each time its row's look changes under the pointer.
 
 ## Scrolling
 
