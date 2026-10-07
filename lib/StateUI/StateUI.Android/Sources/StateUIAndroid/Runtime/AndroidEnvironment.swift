@@ -36,6 +36,10 @@ enum AndroidEnvironment {
                 name: application[0], packageName: application[1],
                 versionString: application[2], buildString: application[3]))
             core.setColorScheme(display[6] == 1 ? .dark : .light)
+            let accent = UInt32(bitPattern: Java.callStaticInt(JavaAPI.environment, JavaAPI.accent, .object(activity)))
+            core.setAccentColor(Color(
+                red: Int(accent >> 16 & 255), green: Int(accent >> 8 & 255), blue: Int(accent & 255),
+                alpha: Int(accent >> 24 & 255)))
         }
     }
 

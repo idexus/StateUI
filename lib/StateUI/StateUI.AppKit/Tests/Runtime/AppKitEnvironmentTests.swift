@@ -12,6 +12,26 @@ import XCTest
 final class AppKitEnvironmentTests: XCTestCase {
     /// The locale report is the user's locale, its zone and its language's direction.
     @MainActor
+    /// The accent reported is the one the user chose for the system, as the application's appearance draws it.
+    func testTheAccentReportedIsTheUsers() {
+        let info = StandardEnvironment.application.info
+        let before = info.accentColor
+        defer { HostBoundary.setAccentColor(before) }
+        HostBoundary.setAccentColor(Color("#00000000"))
+
+        AppKitEnvironment(core: CoreLink()).reportAccent()
+
+        var accent = NSColor.systemBlue
+        NSApplication.shared.effectiveAppearance.performAsCurrentDrawingAppearance {
+            accent = NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? .systemBlue
+        }
+        func channel(_ value: CGFloat) -> Int { Int((value * 255).rounded()) }
+        XCTAssertEqual(info.accentColor, Color(
+            red: channel(accent.redComponent), green: channel(accent.greenComponent),
+            blue: channel(accent.blueComponent), alpha: channel(accent.alphaComponent)))
+    }
+
+    @MainActor
     func testTheLocaleReportedIsTheUsers() {
         let locale = StandardEnvironment.locale
         let before = HostLocaleInfo(

@@ -111,4 +111,13 @@ final class ColorTests: XCTestCase {
                 ])]))
         }
     }
+
+    /// A colour let through keeps its channels and scales its alpha, in both
+    /// halves of a pair, held to the range a fraction has.
+    func testAColourLetThroughScalesItsAlpha() {
+        XCTAssertEqual(Color("#512BD4").opacity(0.15), Color("#26512BD4"))
+        XCTAssertEqual(Color("#80FFFFFF").opacity(0.5), Color("#40FFFFFF"))
+        XCTAssertEqual(Color(light: .white, dark: .black).opacity(0), Color(light: Color("#00FFFFFF"), dark: Color("#00000000")))
+        XCTAssertEqual(Color("#512BD4").opacity(2), Color("#512BD4"))
+    }
 }

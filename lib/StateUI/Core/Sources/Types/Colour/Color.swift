@@ -84,6 +84,19 @@ public struct Color: Equatable, Sendable, HostRepresentable {
             alpha: Color.channel(alpha)))
     }
 
+    /// The colour let through: its alpha scaled by `fraction`, from 0,
+    /// invisible, to 1, as it is - in both halves of a pair.
+    ///
+    ///     accent.opacity(0.15)   // a light wash of it
+    public func opacity(_ fraction: Double) -> Color {
+        let kept = fraction < 0 ? 0 : (fraction > 1 ? 1 : fraction)
+        func scaled(_ channels: Rgba) -> Rgba {
+            Rgba(red: channels.red, green: channels.green, blue: channels.blue,
+                 alpha: UInt8((Double(channels.alpha) * kept).rounded()))
+        }
+        return Color(scaled(light), dark: dark.map(scaled))
+    }
+
     /// Four bytes under the colour kind, or both halves as a themed pair.
     public var propValue: PropValue {
         guard let dark else { return Color.tagged(light) }

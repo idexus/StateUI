@@ -384,6 +384,9 @@ enum WebRelay {
 
     static var prefersDark: Bool { stateui_web_prefers_dark() != 0 }
 
+    /// The accent the browser draws its own controls in, as ARGB.
+    static var accentColor: UInt32 { UInt32(bitPattern: stateui_web_accent_color()) }
+
     /// Shows the page in `theme`: the root's colour scheme, which the browser's controls and the host's colours
     /// follow; none for the system's.
     static func useColorScheme(_ theme: ColorScheme) {

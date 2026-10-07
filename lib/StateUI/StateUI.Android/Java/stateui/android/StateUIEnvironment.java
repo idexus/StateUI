@@ -230,6 +230,13 @@ final class StateUIEnvironment {
         return timeZone.getOffset(noon.getTimeInMillis()) / 60000;
     }
 
+    /** The theme's accent, as ARGB: from Android 12 the colour the system draws from the wallpaper. */
+    static int accent(Context context) {
+        TypedValue value = new TypedValue();
+        if (!context.getTheme().resolveAttribute(android.R.attr.colorAccent, value, true)) return 0xFF0A84FF;
+        return value.resourceId != 0 ? context.getColor(value.resourceId) : value.data;
+    }
+
     /** Whether the application's night mode was given back to the system as this process began. */
     private static boolean followsSystem;
 
