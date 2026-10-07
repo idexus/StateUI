@@ -79,6 +79,14 @@ Every element takes the enablement `presented(_:)` gives it: a control the
 disabled branch disabled with it; the host layer hears nothing of the hand in
 any element there.
 
+## The keyboard's focus
+
+An element hears the keyboard coming into it, or into anything in it, and
+leaving it all: `focusin` says it came, and `focusout` that it left unless
+the focus went on to something inside it (`relatedTarget`) - told once a
+change. The program's `focus` and `unfocus` are the element's own `focus()`
+and `blur()`.
+
 ## What takes no input
 
 An element that ignores input takes no pointer events, nor does anything in

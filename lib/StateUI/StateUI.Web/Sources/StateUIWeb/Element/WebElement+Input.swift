@@ -30,6 +30,10 @@ extension WebElement {
                 view.listen(event) { [weak self] in self?.heard(.pointer, .pointer(said, WebRelay.eventPoint)) }
             }
         }
+        if element.handler(.isFocusedChanged) != nil, !listensForFocus {
+            listensForFocus = true
+            view.listen("focus") { [weak self] in self?.send(.isFocusedChanged, [.bool(WebRelay.eventDetail != 0)]) }
+        }
         view.isTapped = hearing.contains(.taps) && !view.isControl
         view.offerDrag(element.dragAndDrop) { [weak self] heard in
             guard let self, let host else { return }

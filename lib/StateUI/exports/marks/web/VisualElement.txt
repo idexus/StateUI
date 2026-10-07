@@ -4,14 +4,14 @@ ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: not realized
-ActivityIndicator.focus: waits on ActivityIndicator.isFocusedChanged
+ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: ✅
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: ✅
-ActivityIndicator.isFocusedChanged: not realized
+ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.layoutDirection: ✅
 ActivityIndicator.maximumHeight: ✅
@@ -30,7 +30,7 @@ ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own t
 ActivityIndicator.style: ✅
 ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.unfocus: waits on ActivityIndicator.isFocusedChanged
+ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: ✅
 Button.accessibilityHeading: ✅
@@ -38,14 +38,14 @@ Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
 Button.background: ✅
-Button.focus: waits on Button.isFocusedChanged
+Button.focus: ✅
 Button.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.ignoresInput: ✅
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
-Button.isFocusedChanged: not realized
+Button.isFocusedChanged: ✅
 Button.isVisible: ✅
 Button.layoutDirection: ✅
 Button.maximumHeight: ✅
@@ -64,7 +64,7 @@ Button.scaleY: ✓ read scaleY of Button: the host's own transform: the page hol
 Button.style: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.translationY: ✓ read translationY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Button.unfocus: waits on Button.isFocusedChanged
+Button.unfocus: ✅
 Button.width: ✅
 Button.zIndex: ✅
 Canvas.accessibilityHeading: ✅
@@ -72,14 +72,14 @@ Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
 Canvas.background: not realized
-Canvas.focus: waits on Canvas.isFocusedChanged
+Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: ✅
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
-Canvas.isFocusedChanged: not realized
+Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
 Canvas.maximumHeight: ✅
@@ -98,7 +98,7 @@ Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform: the page hol
 Canvas.style: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Canvas.unfocus: waits on Canvas.isFocusedChanged
+Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
 Canvas.zIndex: ✅
 CheckBox.accessibilityHeading: ✅
@@ -106,14 +106,14 @@ CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: not realized
-CheckBox.focus: waits on CheckBox.isFocusedChanged
+CheckBox.focus: ✅
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: ✅
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
-CheckBox.isFocusedChanged: not realized
+CheckBox.isFocusedChanged: ✅
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: ✅
 CheckBox.maximumHeight: ✅
@@ -132,7 +132,7 @@ CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform: the page
 CheckBox.style: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-CheckBox.unfocus: waits on CheckBox.isFocusedChanged
+CheckBox.unfocus: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
 ColorBox.accessibilityHeading: ✅
@@ -140,14 +140,14 @@ ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
 ColorBox.background: not realized
-ColorBox.focus: waits on ColorBox.isFocusedChanged
+ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
 ColorBox.ignoresInput: ✅
 ColorBox.isAccessibilityHidden: ✅
 ColorBox.isEnabled: ✅
-ColorBox.isFocusedChanged: not realized
+ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.isVisible: ✅
 ColorBox.layoutDirection: ✅
 ColorBox.maximumHeight: ✅
@@ -166,7 +166,7 @@ ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform: the page
 ColorBox.style: ✅
 ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.unfocus: waits on ColorBox.isFocusedChanged
+ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
 ColorBox.zIndex: ✅
 DatePicker.accessibilityHeading: ✅
@@ -174,14 +174,14 @@ DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: not realized
-DatePicker.focus: waits on DatePicker.isFocusedChanged
+DatePicker.focus: ✅
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
-DatePicker.isFocusedChanged: not realized
+DatePicker.isFocusedChanged: ✅
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: ❌ rightToLeft expected, leftToRight came - the value the tree changed it to
 DatePicker.maximumHeight: ✅
@@ -200,7 +200,7 @@ DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform: the 
 DatePicker.style: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-DatePicker.unfocus: waits on DatePicker.isFocusedChanged
+DatePicker.unfocus: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
 Ellipse.accessibilityHeading: ✅
@@ -208,14 +208,14 @@ Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: not realized
-Ellipse.focus: waits on Ellipse.isFocusedChanged
+Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
-Ellipse.isFocusedChanged: not realized
+Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
 Ellipse.maximumHeight: ✅
@@ -234,7 +234,7 @@ Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform: the page h
 Ellipse.style: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Ellipse.unfocus: waits on Ellipse.isFocusedChanged
+Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
 Grid.accessibilityHeading: ✅
@@ -242,14 +242,14 @@ Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
 Grid.background: ✅
-Grid.focus: waits on Grid.isFocusedChanged
+Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frame: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
-Grid.isFocusedChanged: not realized
+Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
 Grid.maximumHeight: ✅
@@ -268,7 +268,7 @@ Grid.scaleY: ✓ read scaleY of Grid: the host's own transform: the page holds o
 Grid.style: ✅
 Grid.translationX: ✓ read translationX of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Grid.unfocus: waits on Grid.isFocusedChanged
+Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
 Grid.zIndex: ✅
 HStack.accessibilityHeading: ✅
@@ -276,14 +276,14 @@ HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
 HStack.background: ✅
-HStack.focus: waits on HStack.isFocusedChanged
+HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frame: ✅
 HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
-HStack.isFocusedChanged: not realized
+HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
 HStack.maximumHeight: ✅
@@ -302,7 +302,7 @@ HStack.scaleY: ✓ read scaleY of HStack: the host's own transform: the page hol
 HStack.style: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-HStack.unfocus: waits on HStack.isFocusedChanged
+HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
 HStack.zIndex: ✅
 Image.accessibilityHeading: ✅
@@ -310,14 +310,14 @@ Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
 Image.background: not realized
-Image.focus: waits on Image.isFocusedChanged
+Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: ✅
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
-Image.isFocusedChanged: not realized
+Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.isVisible: ✅
 Image.layoutDirection: ✅
 Image.maximumHeight: ✅
@@ -336,7 +336,7 @@ Image.scaleY: ✓ read scaleY of Image: the host's own transform: the page holds
 Image.style: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.translationY: ✓ read translationY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Image.unfocus: waits on Image.isFocusedChanged
+Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
 Image.zIndex: ✅
 ItemsView.accessibilityHeading: ✅
@@ -344,14 +344,14 @@ ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
 ItemsView.background: not realized
-ItemsView.focus: waits on ItemsView.isFocusedChanged
+ItemsView.focus: ✅
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: ✅
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
-ItemsView.isFocusedChanged: not realized
+ItemsView.isFocusedChanged: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
 ItemsView.maximumHeight: ✅
@@ -370,7 +370,7 @@ ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform: the pa
 ItemsView.style: not realized
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ItemsView.unfocus: waits on ItemsView.isFocusedChanged
+ItemsView.unfocus: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
 Line.accessibilityHeading: ✅
@@ -378,14 +378,14 @@ Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
 Line.background: not realized
-Line.focus: waits on Line.isFocusedChanged
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: ✅
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
-Line.isFocusedChanged: not realized
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.isVisible: ✅
 Line.layoutDirection: ✅
 Line.maximumHeight: ✅
@@ -404,7 +404,7 @@ Line.scaleY: ✓ read scaleY of Line: the host's own transform: the page holds o
 Line.style: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.translationY: ✓ read translationY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Line.unfocus: waits on Line.isFocusedChanged
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.width: ✅
 Line.zIndex: ✅
 Map.accessibilityHeading: 🧩
@@ -446,14 +446,14 @@ Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
 Path.background: not realized
-Path.focus: waits on Path.isFocusedChanged
+Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: ✅
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
-Path.isFocusedChanged: not realized
+Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.isVisible: ✅
 Path.layoutDirection: ✅
 Path.maximumHeight: ✅
@@ -472,7 +472,7 @@ Path.scaleY: ✓ read scaleY of Path: the host's own transform: the page holds o
 Path.style: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.translationY: ✓ read translationY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Path.unfocus: waits on Path.isFocusedChanged
+Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
 Path.zIndex: ✅
 Picker.accessibilityHeading: ✅
@@ -480,14 +480,14 @@ Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
 Picker.background: not realized
-Picker.focus: waits on Picker.isFocusedChanged
+Picker.focus: ✅
 Picker.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.ignoresInput: ✅
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
-Picker.isFocusedChanged: not realized
+Picker.isFocusedChanged: ✅
 Picker.isVisible: ✅
 Picker.layoutDirection: ✅
 Picker.maximumHeight: ✅
@@ -506,7 +506,7 @@ Picker.scaleY: ✓ read scaleY of Picker: the host's own transform: the page hol
 Picker.style: ✅
 Picker.translationX: ✓ read translationX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Picker.unfocus: waits on Picker.isFocusedChanged
+Picker.unfocus: ✅
 Picker.width: ✅
 Picker.zIndex: ✅
 Polygon.accessibilityHeading: ✅
@@ -514,14 +514,14 @@ Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
 Polygon.background: not realized
-Polygon.focus: waits on Polygon.isFocusedChanged
+Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: ✅
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
-Polygon.isFocusedChanged: not realized
+Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
 Polygon.maximumHeight: ✅
@@ -540,7 +540,7 @@ Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform: the page h
 Polygon.style: ✅
 Polygon.translationX: ✓ read translationX of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Polygon.unfocus: waits on Polygon.isFocusedChanged
+Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
 Polygon.zIndex: ✅
 Polyline.accessibilityHeading: ✅
@@ -548,14 +548,14 @@ Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
 Polyline.background: not realized
-Polyline.focus: waits on Polyline.isFocusedChanged
+Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: ✅
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
-Polyline.isFocusedChanged: not realized
+Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
 Polyline.maximumHeight: ✅
@@ -574,7 +574,7 @@ Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform: the page
 Polyline.style: ✅
 Polyline.translationX: ✓ read translationX of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Polyline.unfocus: waits on Polyline.isFocusedChanged
+Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
 Polyline.zIndex: ✅
 ProgressBar.accessibilityHeading: ✅
@@ -582,14 +582,14 @@ ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: not realized
-ProgressBar.focus: waits on ProgressBar.isFocusedChanged
+ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: ✅
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
-ProgressBar.isFocusedChanged: not realized
+ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
 ProgressBar.maximumHeight: ✅
@@ -608,7 +608,7 @@ ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform: th
 ProgressBar.style: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ProgressBar.unfocus: waits on ProgressBar.isFocusedChanged
+ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
 RadioButton.accessibilityHeading: ✅
@@ -616,14 +616,14 @@ RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
 RadioButton.background: not realized
-RadioButton.focus: waits on RadioButton.isFocusedChanged
+RadioButton.focus: ✅
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.ignoresInput: ✅
 RadioButton.isAccessibilityHidden: ✅
 RadioButton.isEnabled: ✅
-RadioButton.isFocusedChanged: not realized
+RadioButton.isFocusedChanged: ✅
 RadioButton.isVisible: ✅
 RadioButton.layoutDirection: ✅
 RadioButton.maximumHeight: ✅
@@ -642,7 +642,7 @@ RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform: th
 RadioButton.style: ✅
 RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.unfocus: waits on RadioButton.isFocusedChanged
+RadioButton.unfocus: ✅
 RadioButton.width: ✅
 RadioButton.zIndex: ✅
 Rectangle.accessibilityHeading: ✅
@@ -650,14 +650,14 @@ Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: not realized
-Rectangle.focus: waits on Rectangle.isFocusedChanged
+Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: ✅
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
-Rectangle.isFocusedChanged: not realized
+Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
 Rectangle.maximumHeight: ✅
@@ -676,7 +676,7 @@ Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: the pa
 Rectangle.style: ✅
 Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Rectangle.unfocus: waits on Rectangle.isFocusedChanged
+Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
 Rectangle.zIndex: ✅
 ScrollView.accessibilityHeading: ✅
@@ -684,14 +684,14 @@ ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
 ScrollView.background: ✅
-ScrollView.focus: waits on ScrollView.isFocusedChanged
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
-ScrollView.isFocusedChanged: not realized
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
 ScrollView.maximumHeight: ✅
@@ -710,7 +710,7 @@ ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform: the 
 ScrollView.style: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ScrollView.unfocus: waits on ScrollView.isFocusedChanged
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.width: ✅
 ScrollView.zIndex: ✅
 SearchField.accessibilityHeading: ✅
@@ -718,14 +718,14 @@ SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
 SearchField.background: not realized
-SearchField.focus: waits on SearchField.isFocusedChanged
+SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: ✅
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
-SearchField.isFocusedChanged: not realized
+SearchField.isFocusedChanged: ✅
 SearchField.isVisible: ✅
 SearchField.layoutDirection: ✅
 SearchField.maximumHeight: ✅
@@ -744,7 +744,7 @@ SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform: th
 SearchField.style: ✅
 SearchField.translationX: ✓ read translationX of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-SearchField.unfocus: waits on SearchField.isFocusedChanged
+SearchField.unfocus: ✅
 SearchField.width: ✅
 SearchField.zIndex: ✅
 Slider.accessibilityHeading: ✅
@@ -752,14 +752,14 @@ Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
 Slider.background: not realized
-Slider.focus: waits on Slider.isFocusedChanged
+Slider.focus: ✅
 Slider.frame: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.ignoresInput: ✅
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
-Slider.isFocusedChanged: not realized
+Slider.isFocusedChanged: ✅
 Slider.isVisible: ✅
 Slider.layoutDirection: ✅
 Slider.maximumHeight: ✅
@@ -778,7 +778,7 @@ Slider.scaleY: ✓ read scaleY of Slider: the host's own transform: the page hol
 Slider.style: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Slider.unfocus: waits on Slider.isFocusedChanged
+Slider.unfocus: ✅
 Slider.width: ✅
 Slider.zIndex: ✅
 Stepper.accessibilityHeading: ✅
@@ -786,14 +786,14 @@ Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
 Stepper.background: not realized
-Stepper.focus: waits on Stepper.isFocusedChanged
+Stepper.focus: ✅
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: ✅
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
-Stepper.isFocusedChanged: not realized
+Stepper.isFocusedChanged: ✅
 Stepper.isVisible: ✅
 Stepper.layoutDirection: ✅
 Stepper.maximumHeight: ✅
@@ -812,7 +812,7 @@ Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform: the page h
 Stepper.style: ✅
 Stepper.translationX: ✓ read translationX of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Stepper.unfocus: waits on Stepper.isFocusedChanged
+Stepper.unfocus: ✅
 Stepper.width: ✅
 Stepper.zIndex: ✅
 Switch.accessibilityHeading: ✅
@@ -820,14 +820,14 @@ Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
 Switch.background: not realized
-Switch.focus: waits on Switch.isFocusedChanged
+Switch.focus: ✅
 Switch.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.ignoresInput: ✅
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
-Switch.isFocusedChanged: not realized
+Switch.isFocusedChanged: ✅
 Switch.isVisible: ✅
 Switch.layoutDirection: ✅
 Switch.maximumHeight: ✅
@@ -846,7 +846,7 @@ Switch.scaleY: ✓ read scaleY of Switch: the host's own transform: the page hol
 Switch.style: ✅
 Switch.translationX: ✓ read translationX of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Switch.unfocus: waits on Switch.isFocusedChanged
+Switch.unfocus: ✅
 Switch.width: ✅
 Switch.zIndex: ✅
 Text.accessibilityHeading: ✅
@@ -854,14 +854,14 @@ Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
 Text.background: ✅
-Text.focus: waits on Text.isFocusedChanged
+Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.frame: ✅
 Text.frameChanged: ✅
 Text.height: ✅
 Text.ignoresInput: ✅
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
-Text.isFocusedChanged: not realized
+Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.isVisible: ✅
 Text.layoutDirection: ✅
 Text.maximumHeight: ✅
@@ -880,7 +880,7 @@ Text.scaleY: ✓ read scaleY of Text: the host's own transform: the page holds o
 Text.style: ✅
 Text.translationX: ✓ read translationX of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.translationY: ✓ read translationY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Text.unfocus: waits on Text.isFocusedChanged
+Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.width: ✅
 Text.zIndex: ✅
 TextEditor.accessibilityHeading: ✅
@@ -888,14 +888,14 @@ TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
 TextEditor.background: not realized
-TextEditor.focus: waits on TextEditor.isFocusedChanged
+TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: ✅
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
-TextEditor.isFocusedChanged: not realized
+TextEditor.isFocusedChanged: ✅
 TextEditor.isVisible: ✅
 TextEditor.layoutDirection: ✅
 TextEditor.maximumHeight: ✅
@@ -914,7 +914,7 @@ TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform: the 
 TextEditor.style: ✅
 TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-TextEditor.unfocus: waits on TextEditor.isFocusedChanged
+TextEditor.unfocus: ✅
 TextEditor.width: ✅
 TextEditor.zIndex: ✅
 TextField.accessibilityHeading: ✅
@@ -922,14 +922,14 @@ TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
 TextField.background: not realized
-TextField.focus: waits on TextField.isFocusedChanged
+TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅
 TextField.ignoresInput: ✅
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
-TextField.isFocusedChanged: not realized
+TextField.isFocusedChanged: ✅
 TextField.isVisible: ✅
 TextField.layoutDirection: ✅
 TextField.maximumHeight: ✅
@@ -948,7 +948,7 @@ TextField.scaleY: ✓ read scaleY of TextField: the host's own transform: the pa
 TextField.style: ✅
 TextField.translationX: ✓ read translationX of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-TextField.unfocus: waits on TextField.isFocusedChanged
+TextField.unfocus: ✅
 TextField.width: ✅
 TextField.zIndex: ✅
 TimePicker.accessibilityHeading: ✅
@@ -956,14 +956,14 @@ TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: not realized
-TimePicker.focus: waits on TimePicker.isFocusedChanged
+TimePicker.focus: ✅
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
-TimePicker.isFocusedChanged: not realized
+TimePicker.isFocusedChanged: ✅
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: ❌ rightToLeft expected, leftToRight came - the value the tree changed it to
 TimePicker.maximumHeight: ✅
@@ -982,7 +982,7 @@ TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform: the 
 TimePicker.style: ✅
 TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-TimePicker.unfocus: waits on TimePicker.isFocusedChanged
+TimePicker.unfocus: ✅
 TimePicker.width: ✅
 TimePicker.zIndex: ✅
 VStack.accessibilityHeading: ✅
@@ -990,14 +990,14 @@ VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
 VStack.background: ✅
-VStack.focus: waits on VStack.isFocusedChanged
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
-VStack.isFocusedChanged: not realized
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
 VStack.maximumHeight: ✅
@@ -1016,7 +1016,7 @@ VStack.scaleY: ✓ read scaleY of VStack: the host's own transform: the page hol
 VStack.style: ✅
 VStack.translationX: ✓ read translationX of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-VStack.unfocus: waits on VStack.isFocusedChanged
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 VStack.zIndex: ✅
 WebView.accessibilityHeading: ✅
@@ -1024,14 +1024,14 @@ WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
 WebView.background: not realized
-WebView.focus: waits on WebView.isFocusedChanged
+WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.frame: ✅
 WebView.frameChanged: ✅
 WebView.height: ✅
 WebView.ignoresInput: ✅
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
-WebView.isFocusedChanged: not realized
+WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
 WebView.maximumHeight: ✅
@@ -1050,7 +1050,7 @@ WebView.scaleY: ✓ read scaleY of WebView: the host's own transform: the page h
 WebView.style: ✅
 WebView.translationX: ✓ read translationX of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-WebView.unfocus: waits on WebView.isFocusedChanged
+WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.width: ✅
 WebView.zIndex: ✅
 ZStack.accessibilityHeading: ✅
@@ -1058,14 +1058,14 @@ ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
 ZStack.background: ✅
-ZStack.focus: waits on ZStack.isFocusedChanged
+ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅
-ZStack.isFocusedChanged: not realized
+ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅
 ZStack.maximumHeight: ✅
@@ -1084,6 +1084,6 @@ ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform: the page hol
 ZStack.style: ✅
 ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ZStack.unfocus: waits on ZStack.isFocusedChanged
+ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.width: ✅
 ZStack.zIndex: ✅
