@@ -42,9 +42,9 @@ enum Palette {
     /// nothing else.
     static let identity = Brush.linearGradient(
         [
-            GradientStop(Color(light: AppColors.violet, dark: AppColors.violetDeep), 0),
-            GradientStop(Color(light: Color("#7C4DFF"), dark: Color("#5B3FD6")), 0.55),
-            GradientStop(Color(light: Color("#C2569B"), dark: Color("#A2457F")), 1),
+            GradientStop(Color(light: Color("#6A4BE6"), dark: Color("#5537CC")), 0),
+            GradientStop(Color(light: Color("#8B6BFF"), dark: Color("#7556EC")), 0.55),
+            GradientStop(Color(light: Color("#CB61A0"), dark: Color("#B0548C")), 1),
         ],
         startPoint: Point(0, 0),
         endPoint: Point(1, 1))

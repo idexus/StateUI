@@ -10,12 +10,13 @@
        its path is the one stateui_mark.svg carries. -->
   <defs>
     <linearGradient id="identity" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#512BD4"/>
-      <stop offset="1" stop-color="#F05138"/>
+      <stop offset="0" stop-color="#6A4BE6"/>
+      <stop offset="0.55" stop-color="#8B6BFF"/>
+      <stop offset="1" stop-color="#CB61A0"/>
     </linearGradient>
     <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#361C8E"/>
-      <stop offset="1" stop-color="#A83926"/>
+      <stop offset="0" stop-color="#4632A0"/>
+      <stop offset="1" stop-color="#8E436F"/>
     </linearGradient>
   </defs>
   <rect x="16" y="16" width="96" height="96" rx="12" fill="url(#base)"/>
