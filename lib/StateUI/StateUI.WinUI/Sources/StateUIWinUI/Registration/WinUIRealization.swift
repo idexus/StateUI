@@ -52,6 +52,9 @@ enum WinUIRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .notPlanned("Page", "backButtonTitle", reason: "WinUI's way back is an arrow, with no words."),
+        .notPlanned("SearchField", "submitLabel", reason: "WinUI gives a text box no word for the return key of the keyboard on the screen."),
+        .notPlanned("TextField", "submitLabel", reason: "WinUI gives a text box no word for the return key of the keyboard on the screen."),
         .notPlanned("ActivityIndicator", "background", reason: "WinUI's progress ring paints its Background as its "
             + "track, no ground under its frame."),
         .partial("Canvas", "background", missing: "A brush fills the canvas with its first colour alone."),
@@ -83,6 +86,7 @@ enum WinUIRealization {
         .complete("Page", "appearing"),
         .complete("Page", "background"),
         .complete("Page", "disappearing"),
+        .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),

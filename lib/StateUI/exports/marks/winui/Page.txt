@@ -1,11 +1,11 @@
 # revision 2.1
 Page: ✅
 Page.appearing: ✅
-Page.backButtonTitle: not realized
+Page.backButtonTitle: – WinUI's way back is an arrow, with no words.
 Page.background: ✅
 Page.disappearing: ✅
 Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
-Page.showsBackButton: not realized
+Page.showsBackButton: ✅
 Page.showsNavigationBar: ✅

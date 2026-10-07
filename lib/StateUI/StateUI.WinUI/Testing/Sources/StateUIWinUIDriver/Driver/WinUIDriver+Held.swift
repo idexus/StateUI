@@ -350,6 +350,8 @@ extension WinUIDriver {
             let back = try read(bar, "back") == "1"
             let actions = try read(bar, "actions") != "||"
             return (back || actions).propValue
+        // The window's title bar offers the way back of the page it shows.
+        case ("showsBackButton", _): return (try read(window().titleBar, "back") == "1").propValue
         case ("barBackgroundColor", _): return try Self.color(read(window().titleBar, "background")).map { $0.propValue }
         case ("barForegroundColor", _): return try Self.color(read(window().titleBar, "foreground")).map { $0.propValue }
         // The title area its path declares stands in the title's place.

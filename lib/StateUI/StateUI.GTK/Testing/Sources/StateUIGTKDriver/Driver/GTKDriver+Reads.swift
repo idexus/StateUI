@@ -31,6 +31,8 @@ extension GTKDriver {
         case let tabs as GTKTabView where property == .selectedTab: return Self.shownTab(of: tabs).map(\.propValue)
         case _ where property == .showsNavigationBar && element.type == .page:
             return (try? frame(of: element)).map { (adw_toolbar_view_get_reveal_top_bars($0.widget.opaque) != 0).propValue }
+        case _ where property == .showsBackButton && element.type == .page:
+            return (try? frame(of: element)).map { (adw_header_bar_get_show_back_button($0.header.opaque) != 0).propValue }
         case let layout as GTKLayoutView: return layoutHolds(property, layout)
         default: return nil
         }

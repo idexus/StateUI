@@ -61,6 +61,10 @@ enum GTKRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .notPlanned("Page", "backButtonTitle", reason: "GNOME's way back in the bar is an arrow, with no words."),
+        .notPlanned("SearchField", "submitLabel", reason: "GTK gives an entry no word for the return key of a keyboard on the screen."),
+        .notPlanned("TextField", "showsClearButton", reason: "GTK's entry has no button of its own that empties it."),
+        .notPlanned("TextField", "submitLabel", reason: "GTK gives an entry no word for the return key of a keyboard on the screen."),
         .complete("Grid", "background"),
         .complete("HStack", "background"),
         .complete("ScrollView", "background"),
@@ -82,6 +86,7 @@ enum GTKRealization {
         .complete("Page", "appearing"),
         .complete("Page", "background"),
         .complete("Page", "disappearing"),
+        .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
