@@ -94,8 +94,11 @@ class WebLayoutView: WebDOMView {
     }
 
     /// The layout's own box: what fills it, its outline inside its edge, its shape, and whether it cuts what it holds.
-    func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool) {
-        setBox(WebBox(fill: fill, stroke: stroke, lineWidth: lineWidth, shape: shape))
+    func setBox(
+        backdrop: HostValue? = nil, fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?,
+        clips: Bool
+    ) {
+        setBox(WebBox(fill: fill, stroke: stroke, lineWidth: lineWidth, shape: shape, backdrop: HostBackdrop(backdrop)))
         style("overflow", clips ? "hidden" : nil)
     }
 

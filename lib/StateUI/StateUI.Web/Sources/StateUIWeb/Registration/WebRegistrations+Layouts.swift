@@ -77,13 +77,14 @@ extension WebRegistrations {
 
     /// What every layout takes of its own box: what fills it, its outline, its shape and its cut.
     private static let boxMembers: [any ContractMember] = [
-        VisualElementContract.background,
+        BorderElementContract.backdrop, VisualElementContract.background,
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
         LayoutContract.clipsContent,
     ]
 
     private static func applyBox<Realized: ElementContract>(_ view: WebLayoutView, _ values: ElementValues<Realized>) {
         view.setBox(
+            backdrop: values[BorderElementContract.backdrop]?.propValue,
             fill: values[VisualElementContract.background]?.propValue,
             stroke: values[BorderElementContract.stroke]?.propValue,
             lineWidth: values[BorderElementContract.lineWidth],

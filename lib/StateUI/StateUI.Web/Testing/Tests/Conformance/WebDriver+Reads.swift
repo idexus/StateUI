@@ -367,6 +367,11 @@ extension WebDriver {
             if try WebBrowser.truth("\(style).borderTopLeftRadius.endsWith('%')", on: e) { return ContainerShape.ellipse.propValue }
             let radius = try WebBrowser.number("parseFloat(\(style).borderTopLeftRadius) || 0", on: e) ?? 0
             return (radius == 0 ? ContainerShape.rectangle : .roundedRectangle(radius)).propValue
+        case .backdrop:
+            // A page has no glass: the blur says the material drawn.
+            let blur = try WebBrowser.number(
+                "parseFloat((\(style).backdropFilter.match(/blur\\(([\\d.]+)px\\)/) || [])[1]) || 0", on: e) ?? 0
+            return .some(Material.allCases.first { WebBox.blur($0) == blur }.map { Backdrop.material($0).propValue })
         default: return nil
         }
     }

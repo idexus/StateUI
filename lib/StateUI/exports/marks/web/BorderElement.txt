@@ -4,12 +4,12 @@ Button.background: ☑️ A brush fills the view with its first colour alone.
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.backdrop: not realized
+Grid.backdrop: ☑️ A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.
 Grid.background: ☑️ A brush fills the view with its first colour alone.
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.backdrop: not realized
+HStack.backdrop: ☑️ A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.
 HStack.background: ☑️ A brush fills the view with its first colour alone.
 HStack.lineWidth: ✅
 HStack.shape: ✅
@@ -23,12 +23,12 @@ ScrollView.background: ☑️ A brush fills the view with its first colour alone
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
-VStack.backdrop: not realized
+VStack.backdrop: ☑️ A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.
 VStack.background: ☑️ A brush fills the view with its first colour alone.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.backdrop: not realized
+ZStack.backdrop: ☑️ A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.
 ZStack.background: ☑️ A brush fills the view with its first colour alone.
 ZStack.lineWidth: ✅
 ZStack.shape: ✅
