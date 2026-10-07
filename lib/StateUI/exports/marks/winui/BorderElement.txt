@@ -1,22 +1,27 @@
-# revision 1.1
+# revision 2.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
+Grid.background: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
+HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
+ScrollView.background: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
+VStack.background: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
+ZStack.background: ✅
 ZStack.lineWidth: ✅
 ZStack.shape: ✅
 ZStack.stroke: ✅

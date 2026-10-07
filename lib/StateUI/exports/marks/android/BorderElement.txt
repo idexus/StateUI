@@ -1,22 +1,27 @@
-# revision 1.1
+# revision 2.1
 Button.lineWidth: cannot read lineWidth of Button - Android's driver has no path for it yet
 Button.shape: cannot read shape of Button - Android's driver has no path for it yet
 Button.stroke: cannot read stroke of Button - Android's driver has no path for it yet
-Grid.lineWidth: does not apply - read lineWidth of Grid - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-Grid.shape: does not apply - read shape of Grid - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-Grid.stroke: does not apply - read stroke of Grid - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
-HStack.lineWidth: does not apply - read lineWidth of HStack - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-HStack.shape: does not apply - read shape of HStack - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-HStack.stroke: does not apply - read stroke of HStack - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
+Grid.background: ✅
+Grid.lineWidth: ✅
+Grid.shape: ✅
+Grid.stroke: ✅
+HStack.background: ✅
+HStack.lineWidth: ✅
+HStack.shape: ✅
+HStack.stroke: ✅
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
-ScrollView.lineWidth: does not apply - read lineWidth of ScrollView - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-ScrollView.shape: does not apply - read shape of ScrollView - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-ScrollView.stroke: does not apply - read stroke of ScrollView - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
-VStack.lineWidth: does not apply - read lineWidth of VStack - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-VStack.shape: does not apply - read shape of VStack - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-VStack.stroke: does not apply - read stroke of VStack - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
-ZStack.lineWidth: does not apply - read lineWidth of ZStack - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-ZStack.shape: does not apply - read shape of ZStack - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-ZStack.stroke: does not apply - read stroke of ZStack - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
+ScrollView.background: ✅
+ScrollView.lineWidth: ✅
+ScrollView.shape: ✅
+ScrollView.stroke: ✅
+VStack.background: ✅
+VStack.lineWidth: ✅
+VStack.shape: ✅
+VStack.stroke: ✅
+ZStack.background: ✅
+ZStack.lineWidth: ✅
+ZStack.shape: ✅
+ZStack.stroke: ✅

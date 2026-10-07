@@ -37,3 +37,4 @@ PageElement 2
 View 4
 VisualElement 4
 Shape 2
+BorderElement 2

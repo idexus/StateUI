@@ -1,22 +1,27 @@
-# revision 1.1
+# revision 2.1
 Button.lineWidth: ✓ read lineWidth of Button: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
 Button.shape: ✓ read shape of Button: the class of the host's style sheet the widget wears: GTK reads back no shape
 Button.stroke: ✓ read stroke of Button: the class of the host's style sheet the widget wears: GTK reads back no stroke
-Grid.lineWidth: does not apply - read lineWidth of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
-Grid.shape: does not apply - read shape of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
-Grid.stroke: does not apply - read stroke of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
-HStack.lineWidth: does not apply - read lineWidth of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
-HStack.shape: does not apply - read shape of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
-HStack.stroke: does not apply - read stroke of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
+Grid.background: ✅
+Grid.lineWidth: ✅
+Grid.shape: ✅
+Grid.stroke: ✅
+HStack.background: ✅
+HStack.lineWidth: ✅
+HStack.shape: ✅
+HStack.stroke: ✅
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
-ScrollView.lineWidth: does not apply - read lineWidth of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
-ScrollView.shape: does not apply - read shape of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
-ScrollView.stroke: does not apply - read stroke of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
-VStack.lineWidth: does not apply - read lineWidth of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
-VStack.shape: does not apply - read shape of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
-VStack.stroke: does not apply - read stroke of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
-ZStack.lineWidth: does not apply - read lineWidth of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its lineWidth; its drawing proves it
-ZStack.shape: does not apply - read shape of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
-ZStack.stroke: does not apply - read stroke of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
+ScrollView.background: ✅
+ScrollView.lineWidth: ✅
+ScrollView.shape: ✅
+ScrollView.stroke: ✅
+VStack.background: ✅
+VStack.lineWidth: ✅
+VStack.shape: ✅
+VStack.stroke: ✅
+ZStack.background: ✅
+ZStack.lineWidth: ✅
+ZStack.shape: ✅
+ZStack.stroke: ✅
