@@ -94,6 +94,15 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class of a split view whose sidebar stands beside the page: the sidebar's pane lets the window through -
+    /// shaded a breath as GNOME shades where `shaded`, the platform's own; clear under a material of the tree's.
+    static func sidebarBeside(shaded: Bool) -> String {
+        let name = shaded ? "stateui-sidebar-shaded" : "stateui-sidebar-clear"
+        let ground = shaded ? "alpha(@shade_color, 0.6)" : "transparent"
+        write(name, "", states: ".\(name) > .sidebar-pane { background-color: \(ground); }\n")
+        return name
+    }
+
     /// The class drawing an editor's box as an entry's: faintly filled in its words' colour, its corners rounded,
     /// ringed in the accent while it holds the focus, the text view on it clear.
     static var editor: String {

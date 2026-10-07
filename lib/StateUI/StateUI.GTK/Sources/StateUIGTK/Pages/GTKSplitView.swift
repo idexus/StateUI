@@ -35,8 +35,9 @@ final class GTKSplitView: GTKLayoutView {
         didSet { ground() }
     }
 
-    /// The fill class the sidebar's widget wears.
+    /// The fill class the sidebar's widget wears, and the class the split wears for its sidebar's pane.
     private var groundClass: String?
+    private var paneClass: String?
 
     private let split = GTKWidgetView { adw_overlay_split_view_new() }
     private var panes: [GTKView] = []
@@ -84,6 +85,9 @@ final class GTKSplitView: GTKLayoutView {
     /// beside it otherwise - or on libadwaita's own sidebar.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     private func ground() {
+        // Beside the page the pane lets the window through, as a desktop sidebar does; over it, libadwaita's own.
+        swapClass(&paneClass, to: isCollapsed ? nil : GTKStyleSheet.sidebarBeside(shaded: grounds.beside == nil),
+                  on: split.widget)
         guard let sidebar = adw_overlay_split_view_get_sidebar(native) else { return }
         let colour = isCollapsed ? grounds.over : grounds.beside
         swapClass(&groundClass, to: colour.map(GTKStyleSheet.fill), on: sidebar)
@@ -94,6 +98,9 @@ final class GTKSplitView: GTKLayoutView {
         guard let sidebar = adw_overlay_split_view_get_sidebar(native) else { return }
         swapClass(&groundClass, to: nil, on: sidebar)
     }
+
+    /// The split's own widget, which wears its sidebar's pane.
+    var splitWidgetForTesting: GTKWidget { split.widget }
 
     /// The sidebar's widget, which wears its ground.
     var sidebarWidgetForTesting: GTKWidget? { adw_overlay_split_view_get_sidebar(native) }

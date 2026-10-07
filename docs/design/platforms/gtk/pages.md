@@ -100,9 +100,14 @@ stays libadwaita's own.
 The sidebar stands on the split view's material for its place ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)) - over the detail where
 the split is collapsed, beside it otherwise - as a fill class of the host's
-style sheet on the sidebar's widget, moved as the split's `collapsed` turns;
-none leaves libadwaita's own sidebar, which over the detail is a pane of its
-own. GTK blurs nothing inside a window, so a blur stands as its colour.
+style sheet on the sidebar's widget, moved as the split's `collapsed` turns.
+Beside the detail libadwaita's opaque sidebar pane gives way: with no
+material it lets the window through shaded a breath (`alpha(@shade_color,
+0.6)`, GNOME's own shade, as the Web's sidebar is), and under a material it
+is clear, so the material lies on the window; the class is the split's, over
+its `.sidebar-pane` node. Over the detail the pane stays libadwaita's own -
+never the window. GTK blurs nothing inside a window, so a blur stands as its
+colour.
 
 ## Tabs
 
