@@ -34,15 +34,12 @@ enum Palette {
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
     // listing: end
 
-    /// Text that reads on `brand`, on `hero` and on the gradient: white in both.
+    /// Text that reads on `brand` and on the gradient: white in both.
     static let onBrand = AppColors.white
 
-    /// The home page's title: the violet the gallery's windows wear, lit a
-    /// little - one colour, on which white reads.
-    static let hero = Color(light: Color("#6A4BE6"), dark: Color("#5537CC"))
-
-    /// Violet warming into rose: the gallery's gradient, which the Materials
-    /// sample shows.
+    /// Violet warming into rose: the gallery's signature, kin to the violet
+    /// its windows wear, and deliberately RARE - the home page's title, and
+    /// nothing else.
     static let identity = Brush.linearGradient(
         [
             GradientStop(Color(light: Color("#6A4BE6"), dark: Color("#5537CC")), 0),

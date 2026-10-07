@@ -125,11 +125,12 @@ struct HomePage: View {
         return Grid {
             VStack {
 
-                // The mark, the name and what it is, on the gallery's violet -
+                // The mark, the name and what it is, on the identity gradient -
                 // the one place in the app that says all three at once.
                 //
                 // The panel paints its own background and its own edge: the
-                // Card style draws a hairline, which would show on the violet.
+                // Card style fills a card and draws a hairline, and both would
+                // show through the gradient.
                 ZStack {
                     VStack {
                         Image("stateui_mark.png")
@@ -152,7 +153,7 @@ struct HomePage: View {
                     .padding(22)
                 }
                 .style("Card")
-                .background(Palette.hero)
+                .background(Palette.identity)
                 .stroke(.transparent)
                 .lineWidth(0)
                 .shape(.roundedRectangle(18))
