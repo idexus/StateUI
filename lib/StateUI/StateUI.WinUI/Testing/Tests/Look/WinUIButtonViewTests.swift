@@ -121,6 +121,20 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
+    /// An oval button is a capsule at its size: its corners round by half its shorter side, however wide it is.
+    func testAnOvalButtonRoundsItsCornersByHalfItsShorterSide() {
+        onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button().shape(.ellipse).width(60).height(40).horizontalAlignment(.start)
+                }
+            }
+            let button = host.views(WinUIButtonView.self)[0]
+            host.settle { Self.read(button, "cornerRadius").hasPrefix("20") }
+            XCTAssertTrue(Self.read(button, "cornerRadius").hasPrefix("20"), Self.read(button, "cornerRadius"))
+        }
+    }
+
     @MainActor private static func read(_ view: WinUIView, _ what: String) -> String {
         WinUIStrings.read { stateui_winui_read(view.handle, what, $0, $1) }
     }
