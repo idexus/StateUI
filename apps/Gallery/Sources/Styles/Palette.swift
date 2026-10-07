@@ -37,14 +37,13 @@ enum Palette {
     /// Text that reads on `brand` and on the gradient: white in both.
     static let onBrand = AppColors.white
 
-    /// Violet warming into rose: the gallery's signature, kin to the violet
-    /// its windows wear, and deliberately RARE - the home page's title, and
-    /// nothing else.
+    /// Violet into orange: the two halves of what this library is, in one
+    /// mark. The gallery's signature, and deliberately RARE - the home page's
+    /// title, and nothing else.
     static let identity = Brush.linearGradient(
         [
-            GradientStop(Color(light: Color("#6A4BE6"), dark: Color("#5537CC")), 0),
-            GradientStop(Color(light: Color("#8B6BFF"), dark: Color("#7556EC")), 0.55),
-            GradientStop(Color(light: Color("#CB61A0"), dark: Color("#B0548C")), 1),
+            GradientStop(Color(light: AppColors.violet, dark: AppColors.violetDeep), 0),
+            GradientStop(Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrange), 1),
         ],
         startPoint: Point(0, 0),
         endPoint: Point(1, 1))
