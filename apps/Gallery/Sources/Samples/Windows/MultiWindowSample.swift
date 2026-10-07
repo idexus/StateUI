@@ -115,10 +115,10 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     // listing: MultiWindowSample
     /// A line in the scene's font and accent - what its two windows change.
     private var preview: some View {
-        var line = Text("The quick brown fox jumps over the lazy dog.")
+        let line = Text("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
+            .textColor(style.barColour.color)   // listing: keep
             .horizontalTextAlignment(.center)
-        if let colour = style.accent.color { line = line.textColor(colour) }
 
         return style.font.isEmpty ? line : line.fontFamily(style.font)
     }

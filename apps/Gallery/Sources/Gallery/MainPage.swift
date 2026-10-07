@@ -104,9 +104,8 @@ struct MainPage: View {
             .barSubtitle(bar.subtitle)
             .barIcon("stateui_mark.png")
             // listing: end
-            // The bars of both panes: painted in the gallery's accent, or the
-            // platform's own.
-            .paintedBars(style.accent.color)
+            // The bars of both panes, as the gallery's look says.
+            .bars(style.bars, in: style.barColour)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
@@ -127,14 +126,7 @@ struct MainPage: View {
                 window.title = "StateUI Gallery"
                 window.width = 1100
                 window.height = 800
-                #if APPKIT
-                // The AppKit window shows the desktop through its material from
-                // the start.
-                window.isTranslucent = true
-                #endif
-                // What the window shows behind its pages: a light wash of the
-                // gallery's accent, which its material shows through.
-                window.background = style.tint
+                dress(window)
                 window.minimumWidth = 700
                 window.minimumHeight = 500
                 window.maximumWidth = 1600
@@ -150,8 +142,9 @@ struct MainPage: View {
 
                 log.note("created")
             }
-            // The Appearance sample changes the tint while the window stands.
-            .onChanged(style.tint) { window.background = style.tint }
+            // The Appearance sample changes the look while the window stands.
+            .onChanged(style.windows) { dress(window) }
+            .onChanged(style.windowColour) { dress(window) }
             // listing: end
         // listing: MainPage.modal
         } destination: { _ in
@@ -226,7 +219,7 @@ struct MainPage: View {
 
         case .sample(let id):
             if let sample = catalog.sample(id: id) {
-                SamplePage.shown(sample, nav: nav, bar: style.accent.color)
+                SamplePage.shown(sample, nav: nav, style: style)
             } else {
                 MissingPage(id: id, nav: nav, path: path)
             }
@@ -270,4 +263,13 @@ struct MainPage: View {
         .selection(nav.$tab)
     }
     // listing: end
+
+    // MARK: - The window's own look
+
+    /// Dresses `window` as the gallery's look says: whether the desktop shows
+    /// through it, and what it shows behind its pages.
+    private func dress(_ window: WindowSession) {
+        window.isTranslucent = style.windows.isTranslucent
+        window.background = style.windows.background(in: style.windowColour)
+    }
 }

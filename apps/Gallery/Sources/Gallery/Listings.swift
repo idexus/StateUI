@@ -670,34 +670,48 @@ enum Listings {
         /// The gallery's look, which every gallery window wears.
         let style: SessionStyle
 
-        /// The window this page stands in.
-        @Environment(\.window) private var window
+        /// The application, whose theme is held here.
+        @Environment(\.application) private var application
 
-        /// Whether the desktop shows through the window, as the switch last said.
-        @State private var translucent = false
+        /// The themes the application may hold, in the order they are offered.
+        private static let themes: [(name: String, scheme: ColorScheme)] = [
+            ("The system's", .system), ("Light", .light), ("Dark", .dark),
+        ]
 
         var body: some View {
             // Read here, so a choice made anywhere - this page, the Colours
-            // window - builds the picker again at its new place.
-            let accents = AccentChoice.allCases
-            let chosen = accents.firstIndex(of: style.accent) ?? 0
+            // window - builds each picker again at its new place.
             let style = self.style
+            let application = self.application
+            let bars = BarLook.allCases
+            let windows = WindowLook.allCases
+            let accents = AccentChoice.allCases
+            let themes = Self.themes
+            let bar = bars.firstIndex(of: style.bars) ?? 0
+            let window = windows.firstIndex(of: style.windows) ?? 0
+            let barColour = accents.firstIndex(of: style.barColour) ?? 0
+            let windowColour = accents.firstIndex(of: style.windowColour) ?? 0
+            let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
             return VStack {
                 SectionTitle("The bars")
-
+                Picker(bars.map(\.name))
+                    .selectedIndex(Binding(get: { bar }, set: { style.bars = bars[$0] }))
                 Picker(accents.map(\.name))
-                    .selectedIndex(Binding(get: { chosen }, set: { style.accent = accents[$0] }))
-
-                SwitchRow("Tint the window lightly", style.$tintsWindows)
-                    .isEnabled(style.accent != .platform)
+                    .isEnabled(style.bars == .tinted || style.bars == .colour)
+                    .selectedIndex(Binding(get: { barColour }, set: { style.barColour = accents[$0] }))
 
                 SectionTitle("The window")
+                Picker(windows.map(\.name))
+                    .selectedIndex(Binding(get: { window }, set: { style.windows = windows[$0] }))
+                Picker(accents.map(\.name))
+                    .isEnabled(style.windows == .tintedMaterial || style.windows == .colour)
+                    .selectedIndex(Binding(get: { windowColour }, set: { style.windowColour = accents[$0] }))
 
-                SwitchRow("Show the desktop through it", $translucent)
-                    .onChanged(translucent) { window.isTranslucent = translucent }
+                SectionTitle("The theme")
+                Picker(themes.map(\.name))
+                    .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
             }
-            .onCreated { translucent = window.isTranslucent == true }
         }
         """#,
         "ApplicationSessionSample": #"""
@@ -2557,6 +2571,88 @@ enum Listings {
             return "GMT\(sign)\(pad(h)):\(pad(m))"
         }
         """#,
+        "Gallery.Looks": #"""
+        // Sources/Gallery/Looks.swift
+        /// What a gallery's bars are.
+        enum BarLook: String, CaseIterable, PersistentValue {
+            /// The platform's own bars, in its material and the user's accent.
+            case platform
+
+            /// Bars that paint nothing: what stands behind them shows.
+            case clear
+
+            /// The gallery's colour let through over the platform's material.
+            case tinted
+
+            /// The gallery's colour.
+            case colour
+
+            /// What the Appearance sample calls it.
+            var name: String {
+                switch self {
+                case .platform: return "The platform's own"
+                case .clear: return "Clear"
+                case .tinted: return "Material, tinted"
+                case .colour: return "Colour"
+                }
+            }
+        }
+
+        /// What a gallery's windows show behind their pages.
+        enum WindowLook: String, CaseIterable, PersistentValue {
+            /// The platform's own window.
+            case platform
+
+            /// A window that paints nothing: the desktop shows through it, sharp.
+            case clear
+
+            /// The window's material: the desktop shows through it, blurred.
+            case material
+
+            /// The window's material, in a light tint of the gallery's colour.
+            case tintedMaterial
+
+            /// The gallery's colour.
+            case colour
+
+            /// What a gallery opens in: on a Mac the window's material in a light
+            /// tint, elsewhere the platform's own.
+            static var opening: WindowLook {
+                #if APPKIT
+                .tintedMaterial
+                #else
+                .platform
+                #endif
+            }
+
+            /// What the Appearance sample calls it.
+            var name: String {
+                switch self {
+                case .platform: return "The platform's own"
+                case .clear: return "Clear"
+                case .material: return "Material"
+                case .tintedMaterial: return "Material, tinted"
+                case .colour: return "Colour"
+                }
+            }
+
+            /// Whether the desktop shows through the window, blurred.
+            var isTranslucent: Bool {
+                self == .material || self == .tintedMaterial
+            }
+
+            /// What the window shows behind its pages, in `accent`; nil for the
+            /// platform's own.
+            func background(in accent: AccentChoice) -> Color? {
+                switch self {
+                case .platform, .material: return nil
+                case .clear: return .transparent
+                case .tintedMaterial: return accent.tint
+                case .colour: return accent.color
+                }
+            }
+        }
+        """#,
         "Gallery.SessionStyle": #"""
         // Sources/Gallery/SessionStyle.swift
         /// The kinds of window the galleries' scene opens beside its gallery windows -
@@ -2579,17 +2675,22 @@ enum Listings {
             /// The font the gallery's preview is set in.
             static let font = SceneKey("gallery.font", of: String.self)
 
-            /// The gallery's accent.
-            static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
+            /// The colour of the gallery's bars.
+            static let barColour = SceneKey("gallery.barColour", of: AccentChoice.self)
 
-            /// Whether the gallery's windows stand in a light tint of its accent.
-            static let tint = SceneKey("gallery.tint", of: Bool.self)
+            /// The colour of what the gallery's windows show behind their pages.
+            static let windowColour = SceneKey("gallery.windowColour", of: AccentChoice.self)
+
+            /// What the gallery's bars are.
+            static let bars = SceneKey("gallery.bars", of: BarLook.self)
+
+            /// What the gallery's windows show behind their pages.
+            static let windows = SceneKey("gallery.windows", of: WindowLook.self)
         }
 
-        /// An accent a gallery can wear: the platform's own, its bars as the platform
-        /// draws them, or a colour its bars are painted in.
+        /// A colour a gallery wears - on its bars, or behind its pages, where its look
+        /// asks for one.
         enum AccentChoice: String, CaseIterable, PersistentValue {
-            case platform
             case violet
             case teal
             case coral
@@ -2598,7 +2699,6 @@ enum Listings {
             /// What the Colours window calls it.
             var name: String {
                 switch self {
-                case .platform: return "The platform's own"
                 case .violet: return "Violet"
                 case .teal: return "Teal"
                 case .coral: return "Coral"
@@ -2607,10 +2707,9 @@ enum Listings {
             }
 
             /// The colour - one in both themes, since everything on the bars it
-            /// paints is white either way; nil for the platform's own.
-            var color: Color? {
+            /// paints is white either way.
+            var color: Color {
                 switch self {
-                case .platform: return nil
                 case .violet: return AppColors.violet
                 case .teal: return Color("#0F766E")
                 case .coral: return Color("#C2410C")
@@ -2618,12 +2717,21 @@ enum Listings {
                 }
             }
 
-            /// The colour let through all but a seventh - what the gallery's windows
-            /// show behind their pages, light enough for a window's material to show
-            /// through it; nil for the platform's own.
-            var tint: Color? {
+            /// The colour with three fifths let through - a bar tinted over the
+            /// platform's material.
+            var translucentColor: Color {
                 switch self {
-                case .platform: return nil
+                case .violet: return Color("#66512BD4")
+                case .teal: return Color("#660F766E")
+                case .coral: return Color("#66C2410C")
+                case .graphite: return Color("#66374151")
+                }
+            }
+
+            /// The colour let through all but a seventh - a window's material tinted
+            /// lightly, the material showing through it.
+            var tint: Color {
+                switch self {
                 case .violet: return Color("#26512BD4")
                 case .teal: return Color("#260F766E")
                 case .coral: return Color("#26C2410C")
@@ -2642,18 +2750,19 @@ enum Listings {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
 
-            /// The gallery's accent: violet until the Appearance sample or the Colours
-            /// window chooses another.
-            @State(sceneKey: .accent) var accent = AccentChoice.violet
+            /// What the gallery's bars are: clear, what stands behind them showing,
+            /// until the Appearance sample chooses another look.
+            @State(sceneKey: .bars) var bars = BarLook.clear
 
-            /// Whether the gallery's windows stand in a light tint of its accent.
-            @State(sceneKey: .tint) var tintsWindows = true
+            /// The colour the bars are tinted or painted in.
+            @State(sceneKey: .barColour) var barColour = AccentChoice.violet
 
-            /// What the gallery's windows show behind their pages: the accent's tint,
-            /// where they are tinted and the accent is a colour.
-            var tint: Color? {
-                tintsWindows ? accent.tint : nil
-            }
+            /// What the gallery's windows show behind their pages: on a Mac their
+            /// material, tinted lightly; elsewhere the platform's own.
+            @State(sceneKey: .windows) var windows = WindowLook.opening
+
+            /// The colour the windows are tinted or painted in.
+            @State(sceneKey: .windowColour) var windowColour = AccentChoice.violet
 
             /// Whether the Fonts and Colours windows hide while another scene is the
             /// one in front.
@@ -4170,14 +4279,7 @@ enum Listings {
             window.title = "StateUI Gallery"
             window.width = 1100
             window.height = 800
-            #if APPKIT
-            // The AppKit window shows the desktop through its material from
-            // the start.
-            window.isTranslucent = true
-            #endif
-            // What the window shows behind its pages: a light wash of the
-            // gallery's accent, which its material shows through.
-            window.background = style.tint
+            dress(window)
             window.minimumWidth = 700
             window.minimumHeight = 500
             window.maximumWidth = 1600
@@ -4193,8 +4295,9 @@ enum Listings {
 
             log.note("created")
         }
-        // The Appearance sample changes the tint while the window stands.
-        .onChanged(style.tint) { window.background = style.tint }
+        // The Appearance sample changes the look while the window stands.
+        .onChanged(style.windows) { dress(window) }
+        .onChanged(style.windowColour) { dress(window) }
         """#,
         "MainPage.detail": #"""
         // Sources/Gallery/MainPage.swift
@@ -4750,8 +4853,8 @@ enum Listings {
 
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
-            var line = Text("The quick brown fox jumps over the lazy dog.")
-            if let colour = style.accent.color { line = line.textColor(colour) }
+            let line = Text("The quick brown fox jumps over the lazy dog.")
+                .textColor(style.barColour.color)
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }
