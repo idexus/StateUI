@@ -1,6 +1,6 @@
 # revision 4.1
 SplitView: ✅
-SplitView.flyoutBackground: ❌ Material(kind: StateUI.Material.Kind.color(StateUI.Color(light: StateUI.Color.Rgba(red: 81, green: 43, blue: 212, alpha: 255), dark: nil, isAccent: false))) expected, Material(kind: StateUI.Material.Kind.color(StateUI.Color(light: StateUI.Color.Rgba(red: 15, green: 118, blue: 110, alpha: 255), dark: nil, isAccent: false))) came - the material written into it
+SplitView.flyoutBackground: ☑️ UIKit paints a sidebar page's view in a colour: a blur or glass shows its colour.
 SplitView.showsSidebar: ✅
 SplitView.showsSidebarChanged: ✅
 SplitView.sidebarBackground: ✓ read sidebarBackground of SplitView: the split view's material for a sidebar beside the detail, which an iPhone's room never shows
