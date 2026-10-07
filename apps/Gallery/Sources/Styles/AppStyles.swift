@@ -119,6 +119,8 @@ enum AppStyles {
             // from the page; a row lights up under the pointer.
             Style<VStack>("RowGroup")
                 .background(Palette.raised)
+                .stroke(Palette.edge)
+                .lineWidth(1)
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)
 
@@ -138,7 +140,8 @@ enum AppStyles {
             // picture reaches them.
             Style<ZStack>("Card")
                 .background(Palette.raised)
-                .lineWidth(0)
+                .stroke(Palette.edge)
+                .lineWidth(1)
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)
         }

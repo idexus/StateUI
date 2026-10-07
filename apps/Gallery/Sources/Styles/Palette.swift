@@ -65,8 +65,14 @@ enum Palette {
 
     // MARK: Fills
 
-    /// A panel set apart from the page: a card, a code block.
-    static let raised = Color(light: Color("#0D000000"), dark: Color("#0FFFFFFF"))
+    /// A panel set apart from the page: a card, a code block. Nearly opaque,
+    /// so a window the desktop shows through shows it around the panel, not
+    /// through it.
+    static let raised = Color(light: Color("#D9FFFFFF"), dark: Color("#D9333333"))
+
+    /// The edge of a panel: a hairline holding it apart where the page behind
+    /// is as light as the panel.
+    static let edge = Color(light: Color("#14000000"), dark: Color("#0FFFFFFF"))
 
     /// A region set apart within a panel.
     static let well = Color(light: Color("#0A000000"), dark: Color("#0AFFFFFF"))
