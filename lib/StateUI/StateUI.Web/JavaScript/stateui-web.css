@@ -16,7 +16,7 @@
   --stateui-muted: light-dark(#5d6270, #9aa0ad);
   --stateui-line: light-dark(rgb(15 23 42 / 0.09), rgb(255 255 255 / 0.08));
   --stateui-line-strong: light-dark(rgb(15 23 42 / 0.18), rgb(255 255 255 / 0.16));
-  /* The hairline under the bar and beside the sidebar: a separator, plain against any page. */
+  /* The hairline under the bar: a separator, plain against any page, one device pixel thin. */
   --stateui-separator: light-dark(rgb(60 60 67 / 0.29), rgb(84 84 88 / 0.6));
   --stateui-shade: light-dark(rgb(15 23 42 / 0.36), rgb(0 0 0 / 0.55));
   --stateui-radius: 10px;
@@ -104,7 +104,7 @@ body {
   padding: 0 12px;
   background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
   color: var(--stateui-bar-foreground, var(--stateui-text));
-  border-bottom: 1px solid var(--stateui-separator);
+  border-bottom: 0.5px solid var(--stateui-separator);
   backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
 }
@@ -341,7 +341,6 @@ body {
   background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
   backdrop-filter: var(--stateui-sidebar-filter, none);
   -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
-  border-inline-end: 1px solid var(--stateui-separator);
 }
 .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(-100%); visibility: hidden; }
 [dir="rtl"] .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(100%); }
