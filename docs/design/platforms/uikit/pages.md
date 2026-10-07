@@ -51,6 +51,18 @@ lower, both stand 18 points tall (`landscapeImagePhone`). The picture keeps
 its pixels and is drawn smaller: at its file's size it stands far taller
 than the system's own pictures beside it.
 
+## A page's background
+
+A page paints its background behind the whole screen it stands on, the bars
+and the notch included. A page that says none paints the window's - what the
+window is made of under a page that paints nothing of its own, which a
+UIKit window shows only through its pages: each controller's view is opaque
+by convention - and with neither the system's background. The window's
+background is the window's `backgroundColor`, so a page reads it as it
+appears, and the window has every page under it paint again when its
+background changes. A blur or glass behind a window shows its colour
+(`HostMaterial.painted`): iPadOS draws an application's window opaque.
+
 ## A navigation stack
 
 A NavigationStack is UIKit's navigation controller over its pages, the top

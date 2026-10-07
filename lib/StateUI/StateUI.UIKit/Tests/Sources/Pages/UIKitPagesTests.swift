@@ -225,6 +225,20 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [247, 245, 252])
     }
 
+    /// A page that paints no background of its own shows its window's: a UIKit window shows only through its
+    /// pages, each controller's view opaque.
+    @MainActor
+    func testAPageWithNoBackgroundShowsItsWindows() throws {
+        let host = UIKitRenderer.running { WindowPaintedPage() }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        host.settle { controller.view.backgroundColor != .systemBackground }
+        var (red, green, blue): (CGFloat, CGFloat, CGFloat) = (0, 0, 0)
+        controller.view.backgroundColor?.getRed(&red, green: &green, blue: &blue, alpha: nil)
+        XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [81, 43, 212], "the window's colour")
+    }
+
     /// The first tabbed view in `element`'s tree.
     @MainActor
     private static func tabView(in element: MountedElement) -> MountedElement? {
@@ -251,5 +265,13 @@ private struct TitledPage: View {
 private struct PaintedPage: View {
     var body: some View {
         Text("Painted").pageBackground(Color("#F7F5FC"))
+    }
+}
+
+private struct WindowPaintedPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        Text("Plain").onCreated { window.background = .color(Color("#512BD4")) }
     }
 }

@@ -49,11 +49,18 @@ final class UIKitPageController: UIViewController {
         return over
     }
 
-    /// The page's background behind the whole screen it stands on, the bars and the notch included; the system's
-    /// where the page says none.
+    /// The page's background behind the whole screen it stands on, the bars and the notch included; where the page
+    /// says none, the window's - what the window is made of under a page that paints nothing of its own - else the
+    /// system's.
+    /// Design: docs/design/platforms/uikit/pages.md#a-pages-background
     func showBackground() {
         let background = HostMaterial(page?.element.value(.background)).painted.flatMap { HostBrush($0).firstColor }
-        view.backgroundColor = background.flatMap(UIColor.init(stateUI:)) ?? .systemBackground
+        view.backgroundColor = background.flatMap(UIColor.init(stateUI:)) ?? view.window?.backgroundColor ?? .systemBackground
+    }
+
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        showBackground()
     }
 
     /// The safe area the page's content stands in: clear of the screen's bars, the notch, and the window's own
