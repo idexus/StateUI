@@ -411,14 +411,18 @@ body {
 
 /* A tabbed view: the strip of its tabs' names over the one cell its pages share, the chosen one shown. */
 .stateui-tabs { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
+/* The strip scrolls across alone: its line is drawn inside it, so nothing stands below to scroll down to. */
 .stateui-tabs > .stateui-tab-strip {
   display: flex;
   gap: 4px;
   padding: 0 16px;
   overflow-x: auto;
+  overflow-y: hidden;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
   background: var(--stateui-surface);
-  border-bottom: 1px solid var(--stateui-line);
+  box-shadow: inset 0 -1px 0 var(--stateui-line);
 }
 .stateui-room .stateui-tab-strip > button {
   min-height: 44px;
@@ -426,7 +430,6 @@ body {
   border: 0;
   border-bottom: 2px solid transparent;
   border-radius: 0;
-  margin-bottom: -1px;
   background: transparent;
   color: var(--stateui-muted);
   font-weight: 550;

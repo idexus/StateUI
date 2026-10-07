@@ -145,7 +145,8 @@ itself (`data-moves`). Where the user asks for less motion nothing moves.
 ## Tabs
 
 A tabbed view is a `<section>`: a strip of its tabs over one cell its pages
-share. Each tab is a button with the role of a tab - its page's picture, where
+share. The strip scrolls across alone, never down - its line drawn inside it,
+so no tab's underline reaches past it for a finger to drag it by. Each tab is a button with the role of a tab - its page's picture, where
 it has one, beside its name - the chosen one selected; the chosen page shows and the others stand beside it covered, kept
 as they stood, scrolled where the user left them. A covered page is laid out
 unseen - it takes no touch, no keyboard and no assistive technology - so a
