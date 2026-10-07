@@ -80,6 +80,13 @@ extension AndroidDriver {
             let held = Java.callStaticLong(Self.testPixels, Self.background, .object(view.reference))
             guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
             return Background.color(Self.color(UInt32(truncatingIfNeeded: held))).propValue
+        case (.backdrop, let view?):
+            // A colour stands in for the material: the material whose colour the view paints.
+            let held = Java.callStaticLong(Self.testPixels, Self.background, .object(view.reference))
+            guard held >> 32 == 1 else { return nil }
+            let painted = Self.color(UInt32(truncatingIfNeeded: held)).propValue
+            return Material.allCases.first { HostBackdrop(Backdrop.material($0).propValue)?.standIn == painted }
+                .map { Backdrop.material($0).propValue }
         case (.fontSize, let picker as AndroidPickerView), (.fontAttributes, let picker as AndroidPickerView),
              (.textColor, let picker as AndroidPickerView), (.horizontalTextAlignment, let picker as AndroidPickerView):
             return try Self.fieldHolds(property, of: picker)

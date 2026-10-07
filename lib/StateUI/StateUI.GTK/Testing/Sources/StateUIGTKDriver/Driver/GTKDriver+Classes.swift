@@ -28,6 +28,12 @@ extension GTKDriver {
                   sides.count == 4
             else { return .some(nil) }
             return Insets(left: sides[3], top: sides[0], right: sides[1], bottom: sides[2]).propValue
+        case (.backdrop, let layout as GTKLayoutView):
+            // A colour stands in for the material: the material whose colour the layout's box paints.
+            let painted = layout.box.fill
+            return .some(Material.allCases.first { material in
+                HostBackdrop(Backdrop.material(material).propValue).map { GTKBrush($0.standIn) } == painted
+            }.map { Backdrop.material($0).propValue })
         case (.background, is GTKTextualView):
             return .some(named("stateui-fill-").flatMap(Self.color).map { Background.color($0).propValue })
         case (.background, is GTKButtonView), (.stroke, is GTKButtonView), (.lineWidth, is GTKButtonView),

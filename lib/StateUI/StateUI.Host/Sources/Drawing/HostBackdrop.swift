@@ -52,6 +52,29 @@
         }
     }
 
+    /// What a host with no materials paints for the box: `fill` laid over the stand-in - its colour, or each of
+    /// its gradient's colours, laid over it - and the stand-in alone where nothing fills the box.
+    public func painted(under fill: HostValue?) -> HostValue {
+        guard let fill else { return standIn }
+        if fill.color != nil { return Self.over(fill, standIn) }
+        guard let parts = fill.values else { return standIn }
+        return .values(parts.map { $0.color != nil ? Self.over($0, standIn) : $0 })
+    }
+
+    /// `top` laid over `bottom`, as a colour with an alpha lies over another: what shows through it is tinted by
+    /// it in its share.
+    static func over(_ top: HostValue, _ bottom: HostValue) -> HostValue {
+        guard case .color(let r, let g, let b, let a) = top, case .color(let br, let bg, let bb, let ba) = bottom
+        else { return top }
+        let alpha = Double(a) / 255, under = Double(ba) / 255 * (1 - alpha)
+        let out = alpha + under
+        guard out > 0 else { return .color(red: 0, green: 0, blue: 0, alpha: 0) }
+        func channel(_ top: UInt8, _ bottom: UInt8) -> UInt8 {
+            UInt8(((Double(top) * alpha + Double(bottom) * under) / out).rounded())
+        }
+        return .color(red: channel(r, br), green: channel(g, bg), blue: channel(b, bb), alpha: UInt8((out * 255).rounded()))
+    }
+
     /// `value` as one colour: itself, or the half of a pair the theme in force wears; nil for no colour.
     @MainActor private static func colour(_ value: HostValue) -> HostValue? {
         if value.color != nil { return value }

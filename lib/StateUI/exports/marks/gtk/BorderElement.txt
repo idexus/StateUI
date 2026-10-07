@@ -4,12 +4,12 @@ Button.background: ☑️ A brush fills the view with its first colour alone.
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.backdrop: not realized
+Grid.backdrop: ✓ read backdrop of Grid: the brush the host draws the box with: GTK reads back no drawing
 Grid.background: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.backdrop: not realized
+HStack.backdrop: ✓ read backdrop of HStack: the brush the host draws the box with: GTK reads back no drawing
 HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
@@ -23,12 +23,12 @@ ScrollView.background: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
-VStack.backdrop: not realized
+VStack.backdrop: ✓ read backdrop of VStack: the brush the host draws the box with: GTK reads back no drawing
 VStack.background: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.backdrop: not realized
+ZStack.backdrop: ✓ read backdrop of ZStack: the brush the host draws the box with: GTK reads back no drawing
 ZStack.background: ✅
 ZStack.lineWidth: ✅
 ZStack.shape: ✅

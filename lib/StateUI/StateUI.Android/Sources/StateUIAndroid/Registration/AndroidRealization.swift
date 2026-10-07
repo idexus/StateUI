@@ -115,6 +115,10 @@ enum AndroidRealization {
                     reason: "Android shows an activity itself: it hides none while another application is in front."),
         .notPlanned("Window", "isMaximizable", reason: "Any Android window may fill the screen: an activity keeps none from it."),
         .notPlanned("Window", "isMinimizable", reason: "Any Android window may be put away: an activity keeps none from it."),
+        .partial("Grid", "backdrop", missing: "Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill."),
+        .partial("HStack", "backdrop", missing: "Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill."),
+        .partial("VStack", "backdrop", missing: "Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill."),
+        .partial("ZStack", "backdrop", missing: "Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill."),
         .notPlanned("Window", "backdrop",
                     reason: "An activity is translucent by the theme it starts in: a window cannot turn it so."),
     ] + windowRoom

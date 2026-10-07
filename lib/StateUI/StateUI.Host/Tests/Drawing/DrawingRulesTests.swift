@@ -42,6 +42,22 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertNil(HostBackdrop(nil))
     }
 
+    /// A host with no materials paints the fill laid over the stand-in: a colour with an alpha tints it, an
+    /// opaque one covers it, a gradient's every colour lies over it, and nothing leaves the stand-in alone.
+    @MainActor
+    func testAFillLiesOverTheStandIn() throws {
+        let white = PropValue.color(red: 255, green: 255, blue: 255, alpha: 128)
+        let backdrop = try XCTUnwrap(HostBackdrop(.values([.enumeration(1), Material.thin.propValue, white])))
+        XCTAssertEqual(backdrop.painted(under: nil), white)
+        XCTAssertEqual(backdrop.painted(under: red), red, "an opaque fill covers the stand-in")
+        XCTAssertEqual(
+            backdrop.painted(under: .color(red: 255, green: 0, blue: 0, alpha: 128)),
+            .color(red: 255, green: 85, blue: 85, alpha: 192), "half red over half white")
+        let gradient = PropValue.values([.enumeration(2), .numbers([]), .number(0), red, .number(1), blue])
+        XCTAssertEqual(
+            backdrop.painted(under: gradient), gradient, "a gradient of opaque colours covers it, stop by stop")
+    }
+
     /// A backdrop read through its member comes encoded again, its colour a pair: the half of the theme in force
     /// stands in.
     @MainActor
