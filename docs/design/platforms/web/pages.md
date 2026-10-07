@@ -125,7 +125,9 @@ variable for each - `--stateui-sidebar-ground` and `-filter` beside the
 detail, `--stateui-flyout-ground` and `-filter` over it - which the style
 sheet reads in that place, so a page turning narrow moves the sidebar to the
 other with no word from the host. A blur is a backdrop filter under its
-colour; none leaves the page's raised surface.
+colour. None is the page's own: beside the detail the window shows through,
+a breath darker - lighter in the light theme - as a desktop sidebar lets it
+through; over the detail the page's raised surface, never the window.
 
 Beside the detail the sidebar moves in and out: its column opens or closes
 while the sidebar slides with the column's edge, both on one timing, and the

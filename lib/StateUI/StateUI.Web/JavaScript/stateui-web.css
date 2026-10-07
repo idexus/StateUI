@@ -10,6 +10,8 @@
   --stateui-accent: light-dark(#4f46e5, #8b85ff);
   --stateui-surface: light-dark(#ffffff, #111216);
   --stateui-raised: light-dark(#f6f7f9, #191b21);
+  /* A sidebar beside the page lets the window through, a breath lighter or darker, as a desktop's does. */
+  --stateui-sidebar-own: light-dark(rgb(255 255 255 / 0.45), rgb(0 0 0 / 0.22));
   --stateui-text: light-dark(#17181c, #eceef2);
   --stateui-muted: light-dark(#5d6270, #9aa0ad);
   --stateui-line: light-dark(rgb(15 23 42 / 0.09), rgb(255 255 255 / 0.08));
@@ -328,7 +330,7 @@ body {
   min-height: 0;
   min-width: 0;
   overflow: hidden;
-  background: var(--stateui-sidebar-ground, var(--stateui-raised));
+  background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
   backdrop-filter: var(--stateui-sidebar-filter, none);
   -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
   border-inline-end: 1px solid var(--stateui-line);
