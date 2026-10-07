@@ -17,14 +17,12 @@ struct StyleSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            // "Save" says nothing of its look: its colours, corners and padding
-            // come from the gallery's Style<Button>, which every button wears.
-            // "Cancel" asks for the "Platform" style by name, which says
-            // nothing, and keeps the platform's own button.
+            // Neither of these says anything of its own look: the violet, the
+            // corners and the padding come from Style<Button> in AppStyles.swift,
+            // which every button wears.
             HStack {
                 Button("Save")
                 Button("Cancel")
-                    .style("Platform")
             }
             .spacing(12)
             .horizontalAlignment(.center)
@@ -91,9 +89,8 @@ struct StyleSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("\"Save\" wears the gallery's `Style<Button>()`, which every button wears; "
-                + "\"Cancel\" asks for `Platform` by name, which says nothing, so it keeps the "
-                + "platform's own look.")
+            Text("\"Save\" and \"Cancel\" say nothing of their look: both wear the gallery's "
+                + "`Style<Button>()`, which every button wears.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

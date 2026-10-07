@@ -1,9 +1,9 @@
 // The gallery's styles: what a control asked for by name looks like.
 //
-// The gallery's controls wear each platform's own look, so it writes no style
-// for every control of a type that has a look of its own - a button, a field, a
-// switch. A style with no key applies to every control of its type; the gallery
-// keeps one, for the ColorBox, which has no look of its own to lose.
+// A style with no key applies to every control of its type: every button the
+// gallery shows wears its violet, every field lets the panel behind it through,
+// and a ColorBox naming no colour wears the accent. Every other control keeps
+// its platform's own look.
 //
 // Every colour comes through `Palette`, one name per job.
 //
@@ -66,9 +66,7 @@ enum AppStyles {
 
             // listing: AppStyles.sample keep
             // Every button the gallery shows wears its violet - a style with no
-            // key is every button's. One that asks for "Platform" by name wears
-            // nothing of it: a keyed style replaces this one, and that one
-            // says nothing, so the platform's own button stands.
+            // key is every button's.
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
@@ -79,7 +77,6 @@ enum AppStyles {
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
                 }
-            Style<Button>("Platform")
 
             // Every ColorBox that names no colour of its own wears the violet.
             Style<ColorBox>()

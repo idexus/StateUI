@@ -626,9 +626,7 @@ enum Listings {
             .textColor(Palette.accent)
 
         // Every button the gallery shows wears its violet - a style with no
-        // key is every button's. One that asks for "Platform" by name wears
-        // nothing of it: a keyed style replaces this one, and that one
-        // says nothing, so the platform's own button stands.
+        // key is every button's.
         Style<Button>()
             .textColor(Palette.onAccent)
             .background(Palette.accent)
@@ -639,7 +637,6 @@ enum Listings {
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
             }
-        Style<Button>("Platform")
 
         // Every ColorBox that names no colour of its own wears the violet.
         Style<ColorBox>()
@@ -7941,14 +7938,12 @@ enum Listings {
             VStack {
                 DebugInfoLabel()
 
-                // "Save" says nothing of its look: its colours, corners and padding
-                // come from the gallery's Style<Button>, which every button wears.
-                // "Cancel" asks for the "Platform" style by name, which says
-                // nothing, and keeps the platform's own button.
+                // Neither of these says anything of its own look: the violet, the
+                // corners and the padding come from Style<Button> in AppStyles.swift,
+                // which every button wears.
                 HStack {
                     Button("Save")
                     Button("Cancel")
-                        .style("Platform")
                 }
                 .horizontalAlignment(.center)
 
