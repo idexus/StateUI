@@ -73,7 +73,6 @@ struct MainPage: View {
                     nav: nav,
                     log: log,
                     listsHiddenRow: nav.listsHiddenRow)
-                .pageTint(style.tint)
             } detail: {
                 detail()
             }
@@ -133,6 +132,9 @@ struct MainPage: View {
                 // the start.
                 window.isTranslucent = true
                 #endif
+                // What the window shows behind its pages: a light wash of the
+                // gallery's accent, which its material shows through.
+                window.background = style.tint
                 window.minimumWidth = 700
                 window.minimumHeight = 500
                 window.maximumWidth = 1600
@@ -148,6 +150,8 @@ struct MainPage: View {
 
                 log.note("created")
             }
+            // The Appearance sample changes the tint while the window stands.
+            .onChanged(style.tint) { window.background = style.tint }
             // listing: end
         // listing: MainPage.modal
         } destination: { _ in
@@ -170,13 +174,10 @@ struct MainPage: View {
         if case .tabs = nav.section {
             tabs()
         } else {
-            // Every page in the gallery's tint, where its look asks for one.
             NavigationStack(nav.$path) {
                 root()
-                    .pageTint(style.tint)
             } destination: { route in
                 page(for: route, path: nav.$path)
-                    .pageTint(style.tint)
             }
         }
     }

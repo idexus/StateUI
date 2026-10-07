@@ -25,15 +25,4 @@ extension View {
     func galleryPage(_ title: String) -> some View {
         self.title(title)
     }
-
-    /// Stands the page this view is on in `tint` - a light wash a window's
-    /// material shows through; nil leaves the platform's own page.
-    @ViewBuilder
-    func pageTint(_ tint: Color?) -> some View {
-        if let tint {
-            pageBackground(tint)
-        } else {
-            self
-        }
-    }
 }

@@ -689,7 +689,7 @@ enum Listings {
                 Picker(accents.map(\.name))
                     .selectedIndex(Binding(get: { chosen }, set: { style.accent = accents[$0] }))
 
-                SwitchRow("Tint the pages lightly", style.$tintsPages)
+                SwitchRow("Tint the window lightly", style.$tintsWindows)
                     .isEnabled(style.accent != .platform)
 
                 SectionTitle("The window")
@@ -2582,7 +2582,7 @@ enum Listings {
             /// The gallery's accent.
             static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
 
-            /// Whether the gallery's pages stand in a light tint of its accent.
+            /// Whether the gallery's windows stand in a light tint of its accent.
             static let tint = SceneKey("gallery.tint", of: Bool.self)
         }
 
@@ -2618,9 +2618,9 @@ enum Listings {
                 }
             }
 
-            /// The colour let through all but a seventh - what the gallery's pages
-            /// stand in, light enough for a window's material to show through it; nil
-            /// for the platform's own.
+            /// The colour let through all but a seventh - what the gallery's windows
+            /// show behind their pages, light enough for a window's material to show
+            /// through it; nil for the platform's own.
             var tint: Color? {
                 switch self {
                 case .platform: return nil
@@ -2646,13 +2646,13 @@ enum Listings {
             /// window chooses another.
             @State(sceneKey: .accent) var accent = AccentChoice.violet
 
-            /// Whether the gallery's pages stand in a light tint of its accent.
-            @State(sceneKey: .tint) var tintsPages = true
+            /// Whether the gallery's windows stand in a light tint of its accent.
+            @State(sceneKey: .tint) var tintsWindows = true
 
-            /// What the gallery's pages stand in: the accent's tint, where they are
-            /// tinted and the accent is a colour.
+            /// What the gallery's windows show behind their pages: the accent's tint,
+            /// where they are tinted and the accent is a colour.
             var tint: Color? {
-                tintsPages ? accent.tint : nil
+                tintsWindows ? accent.tint : nil
             }
 
             /// Whether the Fonts and Colours windows hide while another scene is the
@@ -4175,6 +4175,9 @@ enum Listings {
             // the start.
             window.isTranslucent = true
             #endif
+            // What the window shows behind its pages: a light wash of the
+            // gallery's accent, which its material shows through.
+            window.background = style.tint
             window.minimumWidth = 700
             window.minimumHeight = 500
             window.maximumWidth = 1600
@@ -4190,6 +4193,8 @@ enum Listings {
 
             log.note("created")
         }
+        // The Appearance sample changes the tint while the window stands.
+        .onChanged(style.tint) { window.background = style.tint }
         """#,
         "MainPage.detail": #"""
         // Sources/Gallery/MainPage.swift
@@ -4206,13 +4211,10 @@ enum Listings {
             if case .tabs = nav.section {
                 tabs()
             } else {
-                // Every page in the gallery's tint, where its look asks for one.
                 NavigationStack(nav.$path) {
                     root()
-                        .pageTint(style.tint)
                 } destination: { route in
                     page(for: route, path: nav.$path)
-                        .pageTint(style.tint)
                 }
             }
         }
@@ -4249,7 +4251,6 @@ enum Listings {
                 nav: nav,
                 log: log,
                 listsHiddenRow: nav.listsHiddenRow)
-            .pageTint(style.tint)
         } detail: {
             detail()
         }

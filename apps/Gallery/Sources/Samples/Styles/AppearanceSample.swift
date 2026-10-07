@@ -1,7 +1,7 @@
 import StateUI
 
-/// The look the gallery wears, all of it in one place: its bars, the tint its
-/// pages stand in, and its window's material.
+/// The look the gallery wears, all of it in one place: its bars, the tint
+/// behind its pages, and its window's material.
 struct AppearanceSample: SampleContent, ExampleContent {
     // listing: AppearanceSample
     /// The gallery's look, which every gallery window wears.
@@ -16,7 +16,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
     static let id = "appearance"
     static let title = "Appearance"
-    static let summary = "The bars, a tint under the pages and the window's material: "
+    static let summary = "The bars, a tint behind the pages and the window's material: "
         + "the platform's own, or the gallery's."
 
     // listing: AppearanceSample
@@ -35,7 +35,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Bars")
                 .selectedIndex(Binding(get: { chosen }, set: { style.accent = accents[$0] }))
 
-            SwitchRow("Tint the pages lightly", style.$tintsPages)
+            SwitchRow("Tint the window lightly", style.$tintsWindows)
                 .isEnabled(style.accent != .platform)
 
             SectionTitle("The window")
@@ -52,7 +52,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
         VStack {
             Text("\"The platform's own\" leaves the bars unwritten: each platform draws its "
                 + "own, in the user's accent and material. A colour paints the bars alone, "
-                + "and the tint lays a light wash of it under every page.")
+                + "and the tint is the window's background: a light wash of it behind the pages.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

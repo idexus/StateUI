@@ -26,7 +26,7 @@ extension SceneKey {
     /// The gallery's accent.
     static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
 
-    /// Whether the gallery's pages stand in a light tint of its accent.
+    /// Whether the gallery's windows stand in a light tint of its accent.
     static let tint = SceneKey("gallery.tint", of: Bool.self)
 }
 // listing: end
@@ -64,9 +64,9 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         }
     }
 
-    /// The colour let through all but a seventh - what the gallery's pages
-    /// stand in, light enough for a window's material to show through it; nil
-    /// for the platform's own.
+    /// The colour let through all but a seventh - what the gallery's windows
+    /// show behind their pages, light enough for a window's material to show
+    /// through it; nil for the platform's own.
     var tint: Color? {
         switch self {
         case .platform: return nil
@@ -94,13 +94,13 @@ final class SessionStyle {
     /// window chooses another.
     @State(sceneKey: .accent) var accent = AccentChoice.violet
 
-    /// Whether the gallery's pages stand in a light tint of its accent.
-    @State(sceneKey: .tint) var tintsPages = true
+    /// Whether the gallery's windows stand in a light tint of its accent.
+    @State(sceneKey: .tint) var tintsWindows = true
 
-    /// What the gallery's pages stand in: the accent's tint, where they are
-    /// tinted and the accent is a colour.
+    /// What the gallery's windows show behind their pages: the accent's tint,
+    /// where they are tinted and the accent is a colour.
     var tint: Color? {
-        tintsPages ? accent.tint : nil
+        tintsWindows ? accent.tint : nil
     }
 
     /// Whether the Fonts and Colours windows hide while another scene is the
