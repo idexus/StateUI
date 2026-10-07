@@ -105,7 +105,7 @@ class WebLayoutView: WebDOMView {
     }
 
     /// What fills the layout's box.
-    func setBackground(_ value: HostValue?) {
+    override func setBackground(_ value: HostValue?) {
         var box = paintedBox
         box.fill = value
         setBox(box)

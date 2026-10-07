@@ -124,6 +124,13 @@ class WebDOMView {
         styles[name]
     }
 
+    /// What the element is drawn over, under its whole box: a colour, or a brush's first colour; nil for the
+    /// browser's own. A field's box is its field.
+    /// Design: docs/design/platforms/web/look.md#a-views-background
+    func setBackground(_ value: HostValue?) {
+        style("background", WebCSS.fill(value))
+    }
+
     /// Sets an attribute, or takes it away for nil.
     func attribute(_ name: String, _ value: String?) {
         WebRelay.setAttribute(node, name, value)

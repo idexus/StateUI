@@ -74,10 +74,6 @@ final class WebTextView: WebDOMView, WebWordsView {
         for (name, value) in WebCSS.spacing(look) { style(name, value) }
     }
 
-    func setBackground(_ value: HostValue?) {
-        style("background", WebCSS.fill(value))
-    }
-
     override func detach() {
         for span in runs ?? [] { span.detach() }
         super.detach()

@@ -22,6 +22,17 @@ where the keyboard's focus is; a checkbox, a radio button, a slider and a
 progress bar take the accent colour. Scroll bars are thin. A control the host
 makes no element for yet is named in red, in a dashed box, where it belongs.
 
+## A view's background
+
+A view's background is the CSS background of its element, under its whole
+box: a colour, or a brush's first colour. A field, a picker's `<select>`, a
+date or a time is filled where the user writes, as the browser draws a field
+the page colours. A ColorBox's colour is a swatch filling its box, so its
+background shows where rounded corners leave the box bare; a web view's
+background shows where the page it shows paints none, and stands white where
+the application gives none. The browser draws its slider over the slider's
+whole box and paints no background under it, so a slider has none.
+
 ## Motion
 
 The drawer slides, a pushed page rises into place, and the shade fades in -

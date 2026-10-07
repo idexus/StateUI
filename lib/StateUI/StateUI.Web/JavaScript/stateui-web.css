@@ -398,8 +398,9 @@ body {
 .stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) 16%, transparent); }
 
 /* A web view: the browser's own frame over the room its layout gives it, the box taking no room of its own. */
-.stateui-frame { position: relative; min-width: 0; min-height: 0; }
-.stateui-frame > iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; background: white; }
+.stateui-frame { position: relative; min-width: 0; min-height: 0; background: white; }
+.stateui-frame > iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; }
+.stateui-color-box { display: grid; }
 
 /* A canvas: its drawing on a surface filling the room its layout gives it, the surface taking no room of its own. */
 .stateui-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }

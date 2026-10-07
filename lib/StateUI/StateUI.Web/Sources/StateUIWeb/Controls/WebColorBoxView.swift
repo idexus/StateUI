@@ -4,16 +4,20 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A ColorBox: a `<div>` of one colour, its corners rounded as it says.
+/// A ColorBox: a swatch of one colour filling a `<div>`, its corners rounded as it says, over the box's background.
 @MainActor
 final class WebColorBoxView: WebDOMView {
+    private let swatch = WebDOMView(tag: "span")
+
     init() {
         super.init(tag: "div")
+        attribute("class", "stateui-color-box")
+        WebRelay.insert(swatch.node, into: node, at: 0)
     }
 
     func apply(color: HostValue?, corners: CornerRadius?) {
-        style("background", WebCSS.color(color))
+        swatch.style("background", WebCSS.color(color))
         let radii = BoxArithmetic.clockwise(corners)
-        style("border-radius", radii.allSatisfy({ $0 == 0 }) ? nil : radii.map { WebCSS.pixels($0)! }.joined(separator: " "))
+        swatch.style("border-radius", radii.allSatisfy({ $0 == 0 }) ? nil : radii.map { WebCSS.pixels($0)! }.joined(separator: " "))
     }
 }

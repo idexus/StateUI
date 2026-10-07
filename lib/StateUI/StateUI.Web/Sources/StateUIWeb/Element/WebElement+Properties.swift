@@ -55,7 +55,7 @@ extension WebElement {
             case .opacity: view.setOpacity(element.value(.opacity)?.number ?? 1)
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             case .isVisible: view.setShown(element.standsShown)
-            case .background: (view as? WebLayoutView)?.setBackground(element.value(.background))
+            case .background: view.setBackground(element.value(.background))
             case .ignoresInput: view.style("pointer-events", element.value(.ignoresInput)?.bool == true ? "none" : nil)
             default: break
             }

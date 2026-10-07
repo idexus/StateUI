@@ -3,7 +3,7 @@ ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
-ActivityIndicator.background: not realized
+ActivityIndicator.background: ☑️ A brush fills the view with its first colour alone.
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
@@ -37,7 +37,7 @@ Button.accessibilityHeading: ✅
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
-Button.background: ✅
+Button.background: ☑️ A brush fills the view with its first colour alone.
 Button.focus: ✅
 Button.frame: ✅
 Button.frameChanged: ✅
@@ -71,7 +71,7 @@ Canvas.accessibilityHeading: ✅
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
-Canvas.background: not realized
+Canvas.background: ☑️ A brush fills the view with its first colour alone.
 Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
@@ -105,7 +105,7 @@ CheckBox.accessibilityHeading: ✅
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
-CheckBox.background: not realized
+CheckBox.background: ☑️ A brush fills the view with its first colour alone.
 CheckBox.focus: ✅
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
@@ -139,7 +139,7 @@ ColorBox.accessibilityHeading: ✅
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: not realized
+ColorBox.background: ☑️ A brush fills the view with its first colour alone.
 ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
@@ -173,7 +173,7 @@ DatePicker.accessibilityHeading: ✅
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
-DatePicker.background: not realized
+DatePicker.background: ☑️ A brush fills the view with its first colour alone.
 DatePicker.focus: ✅
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
@@ -207,7 +207,7 @@ Ellipse.accessibilityHeading: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
-Ellipse.background: not realized
+Ellipse.background: ☑️ A brush fills the view with its first colour alone.
 Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
@@ -241,7 +241,7 @@ Grid.accessibilityHeading: ✅
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
-Grid.background: ✅
+Grid.background: ☑️ A brush fills the view with its first colour alone.
 Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frame: ✅
 Grid.frameChanged: ✅
@@ -275,7 +275,7 @@ HStack.accessibilityHeading: ✅
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
-HStack.background: ✅
+HStack.background: ☑️ A brush fills the view with its first colour alone.
 HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frame: ✅
 HStack.frameChanged: ✅
@@ -309,7 +309,7 @@ Image.accessibilityHeading: ✅
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
-Image.background: not realized
+Image.background: ☑️ A brush fills the view with its first colour alone.
 Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.frame: ✅
 Image.frameChanged: ✅
@@ -343,7 +343,7 @@ ItemsView.accessibilityHeading: ✅
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
-ItemsView.background: not realized
+ItemsView.background: ☑️ A brush fills the view with its first colour alone.
 ItemsView.focus: ✅
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
@@ -377,7 +377,7 @@ Line.accessibilityHeading: ✅
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
-Line.background: not realized
+Line.background: ☑️ A brush fills the view with its first colour alone.
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.frame: ✅
 Line.frameChanged: ✅
@@ -445,7 +445,7 @@ Path.accessibilityHeading: ✅
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
-Path.background: not realized
+Path.background: ☑️ A brush fills the view with its first colour alone.
 Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.frame: ✅
 Path.frameChanged: ✅
@@ -479,7 +479,7 @@ Picker.accessibilityHeading: ✅
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
-Picker.background: not realized
+Picker.background: ☑️ A brush fills the view with its first colour alone.
 Picker.focus: ✅
 Picker.frame: ✅
 Picker.frameChanged: ✅
@@ -513,7 +513,7 @@ Polygon.accessibilityHeading: ✅
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
-Polygon.background: not realized
+Polygon.background: ☑️ A brush fills the view with its first colour alone.
 Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
@@ -547,7 +547,7 @@ Polyline.accessibilityHeading: ✅
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
-Polyline.background: not realized
+Polyline.background: ☑️ A brush fills the view with its first colour alone.
 Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
@@ -581,7 +581,7 @@ ProgressBar.accessibilityHeading: ✅
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.background: not realized
+ProgressBar.background: ☑️ A brush fills the view with its first colour alone.
 ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
@@ -615,7 +615,7 @@ RadioButton.accessibilityHeading: ✅
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: not realized
+RadioButton.background: ☑️ A brush fills the view with its first colour alone.
 RadioButton.focus: ✅
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
@@ -649,7 +649,7 @@ Rectangle.accessibilityHeading: ✅
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
-Rectangle.background: not realized
+Rectangle.background: ☑️ A brush fills the view with its first colour alone.
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
@@ -683,7 +683,7 @@ ScrollView.accessibilityHeading: ✅
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: ✅
+ScrollView.background: ☑️ A brush fills the view with its first colour alone.
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
@@ -717,7 +717,7 @@ SearchField.accessibilityHeading: ✅
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
-SearchField.background: not realized
+SearchField.background: ☑️ A brush fills the view with its first colour alone.
 SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
@@ -751,7 +751,7 @@ Slider.accessibilityHeading: ✅
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
-Slider.background: not realized
+Slider.background: – The browser draws its slider over the whole box and paints no background under it.
 Slider.focus: ✅
 Slider.frame: ✅
 Slider.frameChanged: ✅
@@ -785,7 +785,7 @@ Stepper.accessibilityHeading: ✅
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
-Stepper.background: not realized
+Stepper.background: ☑️ A brush fills the view with its first colour alone.
 Stepper.focus: ✅
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
@@ -819,7 +819,7 @@ Switch.accessibilityHeading: ✅
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
-Switch.background: not realized
+Switch.background: ☑️ A brush fills the view with its first colour alone.
 Switch.focus: ✅
 Switch.frame: ✅
 Switch.frameChanged: ✅
@@ -853,7 +853,7 @@ Text.accessibilityHeading: ✅
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
-Text.background: ✅
+Text.background: ☑️ A brush fills the view with its first colour alone.
 Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.frame: ✅
 Text.frameChanged: ✅
@@ -887,7 +887,7 @@ TextEditor.accessibilityHeading: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
-TextEditor.background: not realized
+TextEditor.background: ☑️ A brush fills the view with its first colour alone.
 TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
@@ -921,7 +921,7 @@ TextField.accessibilityHeading: ✅
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
-TextField.background: not realized
+TextField.background: ☑️ A brush fills the view with its first colour alone.
 TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
@@ -955,7 +955,7 @@ TimePicker.accessibilityHeading: ✅
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
-TimePicker.background: not realized
+TimePicker.background: ☑️ A brush fills the view with its first colour alone.
 TimePicker.focus: ✅
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
@@ -989,7 +989,7 @@ VStack.accessibilityHeading: ✅
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
-VStack.background: ✅
+VStack.background: ☑️ A brush fills the view with its first colour alone.
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frame: ✅
 VStack.frameChanged: ✅
@@ -1023,7 +1023,7 @@ WebView.accessibilityHeading: ✅
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
-WebView.background: not realized
+WebView.background: ☑️ A brush fills the view with its first colour alone.
 WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.frame: ✅
 WebView.frameChanged: ✅
@@ -1057,7 +1057,7 @@ ZStack.accessibilityHeading: ✅
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
-ZStack.background: ✅
+ZStack.background: ☑️ A brush fills the view with its first colour alone.
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frame: ✅
 ZStack.frameChanged: ✅

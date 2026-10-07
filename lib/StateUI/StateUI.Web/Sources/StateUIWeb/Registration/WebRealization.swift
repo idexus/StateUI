@@ -39,6 +39,7 @@ enum WebRealization {
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "title"),
         .complete("VisualElement", "style"),
+        .partial("VisualElement", "background", missing: "A brush fills the view with its first colour alone."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
 
@@ -56,6 +57,8 @@ enum WebRealization {
         .complete("Page", "showsNavigationBar"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .notPlanned("Slider", "background", reason: "The browser draws its slider over the whole box and paints no "
+            + "background under it."),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .complete("TextSpan", "background"),
