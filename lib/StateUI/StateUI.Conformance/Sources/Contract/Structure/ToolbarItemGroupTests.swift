@@ -89,7 +89,7 @@
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         DeclaringPage(group: "window") {
-                            [ToolbarItem("Help").id("help"), ToolbarItem("Save here").isEnabled(false).id("save")]
+                            [ToolbarItem("Help").id("help"), ToolbarItem("Save").isEnabled(false).id("save")]
                         }
                     } destination: { _ in Text("Pushed") }
                     .toolbar(id: "window") {
