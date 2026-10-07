@@ -2763,8 +2763,8 @@ enum Listings {
                 bars: .clear, barColour: .gallery, window: .platform, sidebar: .platform, flyout: .platform)
 
             /// The dark theme's look the gallery opens in, each platform's best: a
-            /// window of the desktop blurred - in the gallery's violet on a Mac and on
-            /// GNOME, plain under Windows' own bars - its sidebar letting it through.
+            /// window of the desktop blurred in the gallery's violet, its sidebar
+            /// letting it through.
             static var dark: ThemeLook {
                 let violet = { (blur: Blur) in SurfaceLook(material: .tintedBlur, colour: .violet, blur: blur) }
                 #if APPKIT
@@ -2773,9 +2773,7 @@ enum Listings {
                     sidebar: SurfaceLook(material: .clear, colour: .violet, blur: .thick), flyout: .platform)
                 #elseif WINUI
                 return ThemeLook(
-                    bars: .platform, barColour: .violet,
-                    window: SurfaceLook(material: .blur, colour: .violet, blur: .ultraThick),
-                    sidebar: .platform, flyout: .platform)
+                    bars: .platform, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
                 #elseif GTK
                 return ThemeLook(
                     bars: .clear, barColour: .violet, window: violet(.ultraThick),
