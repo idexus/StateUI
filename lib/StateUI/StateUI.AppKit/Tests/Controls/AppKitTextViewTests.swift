@@ -80,11 +80,10 @@ final class AppKitTextViewTests: XCTestCase {
                 + "(\(ink[2]) against \(ink[1]))")
     }
 
-    /// A long text a scroller shows part of stands, to AppKit, wholly shown: its label is drawn whole the first time
-    /// it shows, as AppKit would otherwise draw it strip by strip as the scroller uncovers it, laying the whole text
-    /// out again for each strip.
+    /// A long text a scroller shows part of draws strip by strip from one layout of its words: uncovering more of
+    /// it lays nothing out again, where a label of its own lays the whole text out for every strip.
     @MainActor
-    func testALongTextPartlyScrolledIsDrawnWhole() throws {
+    func testALongTextDrawsEachStripFromOneLayout() throws {
         let renderer = AppKitRenderer.running {
             ScrollView {
                 Text(String(repeating: "The same words, line after line. ", count: 300))
@@ -96,9 +95,15 @@ final class AppKitTextViewTests: XCTestCase {
         content.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
         content.layoutSubtreeIfNeeded()
 
-        let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first?.subviews.first)
+        let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first?.subviews.first as? AppKitLabel)
         XCTAssertGreaterThan(label.bounds.height, 400, "the text stands taller than the scroller shows")
-        XCTAssertEqual(label.visibleRect, label.bounds, "AppKit draws the whole label, not the strip shown")
+        XCTAssertTrue(label.cell?.wraps == true && label.maximumNumberOfLines == 0, "a label that wraps, every line shown")
+        for top in stride(from: 0.0, to: 400, by: 40) {
+            let strip = NSRect(x: 0, y: top, width: label.bounds.width, height: 40)
+            let drawn = try XCTUnwrap(label.bitmapImageRepForCachingDisplay(in: strip))
+            label.cacheDisplay(in: strip, to: drawn)
+        }
+        XCTAssertEqual(label.layoutsForTesting, 1, "ten strips drawn from one layout")
     }
 
     /// Where a label's words sit DOWN the height it was given. This one moves

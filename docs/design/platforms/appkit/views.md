@@ -71,14 +71,16 @@ AppleShowScrollBars Always`, and delete that key afterwards.
 
 ## A long text
 
-A Text draws in a label AppKit sees as wholly shown, so its layer is drawn
-whole the first time it shows. AppKit draws a layer-backed view only where it
-is visible, and a scroller uncovering a label a few points at a time draws it
-strip by strip - and a label lays its whole text out again for every strip:
-a listing of 1275 characters cost 6.4 ms a strip, a note of 4077 characters
-57 ms, each frame of the first pass over the page, and nothing once the label
-had been uncovered whole. Drawn whole, the label costs one such draw when it
-first shows, and the memory a page holds once scrolled through.
+AppKit draws a layer-backed view only where it is visible, so a scroller
+uncovering a label a few points at a time draws it strip by strip - and an
+`NSTextField` label lays its whole text out again for every strip: a listing
+of 1275 characters cost 6.4 ms a strip, the Appearance sample's 756 by 3424
+point listing 200 ms, each frame of the first pass and every time the label
+drew again (a theme turned, the window resized). A label that wraps and shows
+every line therefore draws from a layout of its words it keeps in TextKit
+(`NSLayoutManager`), laid out again only when its words or its width change,
+drawing only the lines the strip shows; its lines stand where the cell's do,
+2 points in from each side. A truncated label draws as its cell does.
 
 ## A button's icon beside its words
 
