@@ -536,24 +536,30 @@ final class CarriedStateTests: XCTestCase {
         let across = State(wrappedValue: Point.zero)
         let renders = Renders()
 
-        let patch = renders.render(
+        func tree() -> Node {
             ScrollReader(across: 540) { Text("under") }
                 .scrollOffset(across.projectedValue)
                 .onScrollStopped {}
                 .id("reader")
-                .node)
+                .node
+        }
 
-        func scroller(_ patch: HostPatch) -> HostPatch? {
-            if patch.type == .scrollView { return patch }
+        func find(_ patch: HostPatch, _ match: (HostPatch) -> Bool) -> HostPatch? {
+            if match(patch) { return patch }
 
             for child in patch.children {
-                if let found = scroller(child) { return found }
+                if let found = find(child, match) { return found }
             }
 
             return nil
         }
 
-        let found = scroller(patch)
+        // The scroller stands once the reader knows its room.
+        let first = renders.render(tree())
+        let room = find(first) { $0.events?[.frameChanged] != nil }?.events?[.frameChanged] ?? -1
+        renders.fire(room, with: [.numbers([0, 0, 300, 200, 0, 0, 0, 0])])
+        let patch = renders.renderFromScratch(tree())
+        let found = find(patch) { $0.type == .scrollView }
 
         XCTAssertEqual(
             found?.driven?[.scrollOffset],
