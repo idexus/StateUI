@@ -81,8 +81,10 @@ final class WinUIWindow {
         stateui_winui_window_set_traits(
             handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.floatsOnTop)
         let acrylic = traits.background.blur.map(Self.acrylic)
-        // The theme's colour of a blur, which the differ gives again as the theme turns.
-        let colour = traits.background.standIn.flatMap { HostBrush($0).firstColor }?.argb ?? 0
+        // The acrylic's colour: the blur's tint over the theme's, so the tint colours the acrylic itself - the
+        // differ gives it again as the theme turns.
+        let painted = traits.background.painted ?? traits.background.standIn
+        let colour = painted.flatMap { HostBrush($0).firstColor }?.argb ?? 0
         stateui_winui_window_set_backdrop(
             handle, acrylic != nil, acrylic?.thin ?? false, acrylic?.opacity ?? 0, acrylic?.tintOpacity ?? 0, colour)
         let argb = traits.background.paint.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)

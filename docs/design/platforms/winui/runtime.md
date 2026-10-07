@@ -130,8 +130,10 @@ one value keeps none of the theme's own (an ultra-thick blur came out
 white in the dark theme), so every colour is written, and the theme
 turning gives the window its traits again. XAML's default configuration has
 the acrylic follow the window's activation. The backdrop is made
-again only where it turns. A tint, and the colour a window is painted, lie
-over it on the window's root. Glass is the acrylic at its fallback
+again only where it turns. A tint colours the acrylic itself - its colour is
+the tint laid over the theme's, which the acrylic's tint then carries as far
+as the thickness says - and lies over it on the window's root as well, as
+the colour a window is painted does. Glass is the acrylic at its fallback
 thickness: WinUI has no glass.
 
 ## The application's phase
