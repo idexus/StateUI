@@ -1,9 +1,9 @@
 # revision 2.1
-NavigationStack.icon: not realized
+NavigationStack.icon: ✅
 NavigationStack.title: ✅
-Page.icon: not realized
+Page.icon: ✅
 Page.title: ✅
-SplitView.icon: not realized
+SplitView.icon: ✅
 SplitView.title: ✅
-TabView.icon: not realized
+TabView.icon: ✅
 TabView.title: ✅

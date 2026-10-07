@@ -15,13 +15,14 @@ final class WebTabViewTests: XCTestCase {
         tabs.onSelection = { told.append(($0, $1)) }
 
         tabs.setTabs([first, second])
-        tabs.show(["Example", "In Code"], requested: 0)
+        tabs.show(["Example", "In Code"], icons: [], requested: 0)
         XCTAssertNil(WebPage.attribute(of: first.node, "data-covered"))
         XCTAssertEqual(WebPage.attribute(of: second.node, "data-covered"), "")
 
         let strip = WebPage.children(of: tabs.node)[0]
         let names = WebPage.children(of: strip)
-        XCTAssertEqual(names.map(WebPage.text), ["Example", "In Code"])
+        // Each tab holds its picture, then its words.
+        XCTAssertEqual(names.map { WebPage.text(of: WebPage.children(of: $0)[1]) }, ["Example", "In Code"])
         WebPage.tap(names[1])
 
         XCTAssertEqual(told.map(\.0), [0])

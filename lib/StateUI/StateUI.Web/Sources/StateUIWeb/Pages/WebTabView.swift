@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A TabView: a strip of its tabs' names over its pages, which stand in one cell, the chosen one shown - the others
-/// kept as they stood.
+/// A TabView: a strip of its tabs - each its picture beside its name - over its pages, which stand in one cell, the
+/// chosen one shown - the others kept as they stood.
 /// Design: docs/design/platforms/web/pages.md#tabs
 @MainActor
 final class WebTabView: WebDOMView {
@@ -19,6 +19,8 @@ final class WebTabView: WebDOMView {
     let pages = WebLayoutView(arrangement: .layers)
     private var tabs: [WebDOMView] = []
     private var names: [WebDOMView] = []
+    private var pictures: [WebImageView] = []
+    private var words: [WebDOMView] = []
 
     init() {
         super.init(tag: "section")
@@ -37,23 +39,36 @@ final class WebTabView: WebDOMView {
         showChosen()
     }
 
-    /// Names the tabs, and shows the one the tree asks for where the user has not chosen another since.
-    func show(_ titles: [String], requested: Int?) {
+    /// Names the tabs and gives them their pictures - none for an empty name - and shows the one the tree asks for
+    /// where the user has not chosen another since.
+    func show(_ titles: [String], icons: [String], requested: Int?) {
         while names.count < titles.count { names.append(name(at: names.count)) }
-        while names.count > titles.count { names.removeLast().detach() }
+        while names.count > titles.count {
+            names.removeLast().detach()
+            pictures.removeLast().detach()
+            words.removeLast().detach()
+        }
         for (index, title) in titles.enumerated() {
-            WebRelay.setText(names[index].node, title)
+            let icon = index < icons.count ? icons[index] : ""
+            pictures[index].apply(source: icon.isEmpty ? nil : ImageSource(icon), aspect: .fit)
+            pictures[index].setShown(!icon.isEmpty)
+            WebRelay.setText(words[index].node, title)
             WebRelay.insert(names[index].node, into: strip.node, at: index)
         }
         _ = choice.request(requested)
         showChosen()
     }
 
-    /// A button naming the tab at `index`, which chooses it.
+    /// A button naming the tab at `index` - its picture, then its words - which chooses it.
     private func name(at index: Int) -> WebDOMView {
         let button = WebDOMView(tag: "button")
         button.attribute("type", "button")
         button.attribute("role", "tab")
+        let (picture, said) = (WebImageView(), WebDOMView(tag: "span"))
+        WebRelay.insert(picture.node, into: button.node, at: 0)
+        WebRelay.insert(said.node, into: button.node, at: 1)
+        pictures.append(picture)
+        words.append(said)
         button.listen("click") { [weak self] in self?.userChose(index) }
         return button
     }
@@ -76,6 +91,8 @@ final class WebTabView: WebDOMView {
     }
 
     override func detach() {
+        for picture in pictures { picture.detach() }
+        for said in words { said.detach() }
         for name in names { name.detach() }
         strip.detach()
         pages.detach()

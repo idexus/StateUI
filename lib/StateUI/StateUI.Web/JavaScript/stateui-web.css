@@ -430,6 +430,8 @@ body {
   white-space: nowrap;
   filter: none;
 }
+.stateui-room .stateui-tab-strip > button { display: inline-flex; align-items: center; gap: 6px; }
+.stateui-room .stateui-tab-strip > button > img { width: 18px; height: 18px; contain: none; }
 .stateui-room .stateui-tab-strip > button:hover { color: var(--stateui-text); }
 .stateui-room .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
 /* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */

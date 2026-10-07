@@ -105,6 +105,12 @@ extension WebDriver {
             guard let (tabs, place) = tab(of: element), let view = (tabs.native as? WebElement)?.view else { return nil }
             let strip = ":scope > .stateui-tab-strip > [role=tab]"
             return .some(try WebBrowser.evaluate("e.querySelectorAll('\(strip)')[\(place)]?.textContent ?? null", on: view.node)?.propValue)
+        case (_, .icon) where tab(of: element) != nil:
+            guard let (tabs, place) = tab(of: element), let view = (tabs.native as? WebElement)?.view else { return nil }
+            let picture = ":scope > .stateui-tab-strip > [role=tab]"
+            return .some(try WebBrowser.evaluate(
+                "((t) => t && !t.querySelector('img').hidden ? t.querySelector('img').dataset.source : null)(e.querySelectorAll('\(picture)')[\(place)])",
+                on: view.node).map { .string($0) })
         default: return nil
         }
     }

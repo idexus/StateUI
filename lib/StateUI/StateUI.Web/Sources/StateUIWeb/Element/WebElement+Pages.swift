@@ -40,6 +40,7 @@ extension WebElement {
     func followPages(changed: Set<Prop>, wasDescribed: Bool) {
         if let tabs = view as? WebTabView {
             tabs.show(element.children.map { $0.value(.title)?.string ?? "" },
+                      icons: element.children.map { $0.value(.icon)?.string ?? "" },
                       requested: element.value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         }

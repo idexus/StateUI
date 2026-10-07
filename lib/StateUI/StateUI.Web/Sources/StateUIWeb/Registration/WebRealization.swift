@@ -37,6 +37,7 @@ enum WebRealization {
         .complete("MenuItemElement", "isDestructive"),
         .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
+        .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
         .complete("VisualElement", "style"),
         .partial("VisualElement", "background", missing: "A brush fills the view with its first colour alone."),
