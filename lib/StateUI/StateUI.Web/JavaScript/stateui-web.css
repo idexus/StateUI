@@ -16,8 +16,8 @@
   --stateui-muted: light-dark(#5d6270, #9aa0ad);
   --stateui-line: light-dark(rgb(15 23 42 / 0.09), rgb(255 255 255 / 0.08));
   --stateui-line-strong: light-dark(rgb(15 23 42 / 0.18), rgb(255 255 255 / 0.16));
-  /* The hairline under the bar: a separator, plain against any page, one device pixel thin. */
-  --stateui-separator: light-dark(rgb(60 60 67 / 0.22), rgb(84 84 88 / 0.42));
+  /* The hairline under the bar: a divider let through to the page under it, one device pixel thin. */
+  --stateui-separator: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.08));
   --stateui-shade: light-dark(rgb(15 23 42 / 0.36), rgb(0 0 0 / 0.55));
   --stateui-radius: 10px;
   --stateui-bar-height: 56px;
