@@ -16,6 +16,10 @@ final class WebImageView: WebDOMView {
     /// The picture's name as last given.
     private var file: String?
 
+    /// The file shown now, and how it fills its room.
+    private var shown: String?
+    private var aspect = ContentMode.fit
+
     init() {
         super.init(tag: "img")
         attribute("alt", "")
@@ -27,7 +31,9 @@ final class WebImageView: WebDOMView {
     /// Shows the picture `source` names, fitted as `aspect` says; the same name again changes nothing.
     func apply(source: ImageSource?, aspect: ContentMode) {
         style("object-fit", Self.fit(aspect))
-        guard source?.file != file else { return }
+        let restretched = (aspect == .stretch) != (self.aspect == .stretch)
+        self.aspect = aspect
+        guard source?.file != file else { return restretched ? showFile() : () }
         file = source?.file
         attribute("data-source", file)
         candidates = source.map { PictureArithmetic.files(for: $0.file) } ?? []
@@ -43,8 +49,17 @@ final class WebImageView: WebDOMView {
 
     /// Shows the next file the name may stand for: a PNG not found gives way to its SVG.
     private func tryNext() {
-        guard !candidates.isEmpty else { return attribute("src", nil) }
-        attribute("src", "Images/" + candidates.removeFirst())
+        shown = candidates.isEmpty ? nil : candidates.removeFirst()
+        showFile()
+    }
+
+    /// Shows the file: a drawing stretched across its room is told to give up its own proportions, which it keeps
+    /// inside any room it is given.
+    /// Design: docs/design/platforms/web/controls.md#pictures
+    private func showFile() {
+        guard let shown else { return attribute("src", nil) }
+        let unproportioned = aspect == .stretch && shown.hasSuffix(".svg")
+        attribute("src", "Images/" + shown + (unproportioned ? "#svgView(preserveAspectRatio(none))" : ""))
     }
 
     private static func fit(_ aspect: ContentMode) -> String {

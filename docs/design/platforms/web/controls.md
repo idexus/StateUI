@@ -196,7 +196,9 @@ An Image is an `<img>` showing one of the application's pictures, which
 `run-app.sh` lays beside the page in `Images/`. A name stands for its files in
 the host layer's order - a PNG, then the SVG of the same name - and the
 element shows the next when one is not found. Its content mode is
-`object-fit`. Its own size is the picture's, as every host's picture view
+`object-fit`. An SVG keeps its own proportions inside any room it is given,
+so stretched it is shown through its view `#svgView(preserveAspectRatio(none))`
+and fills its room as a bitmap does. Its own size is the picture's, as every host's picture view
 has it, its proportions binding neither length: the element holds its size
 alone (`contain: size`), the picture's own given as it loads
 (`contain-intrinsic-size`) - a picture across a stack's width stands as tall

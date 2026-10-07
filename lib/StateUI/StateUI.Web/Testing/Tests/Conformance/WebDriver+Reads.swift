@@ -415,7 +415,8 @@ extension WebDriver {
             on: e) ?? ""
         let parts = said.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
         guard let address = parts.first, address.hasPrefix("Images/") else { return nil }
-        let shown = String(address.dropFirst("Images/".count))
+        // A drawing's view after `#` is how it fills its room, not its name.
+        let shown = String(address.dropFirst("Images/".count).prefix { $0 != "#" })
         let given = parts.count > 1 ? parts[1] : ""
         let name = !given.isEmpty && PictureArithmetic.files(for: given).contains(shown) ? given : shown
         return ImageSource(name).propValue
