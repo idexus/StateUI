@@ -45,6 +45,8 @@ extension AppKitDriver {
         case (.slide(let value), let slider as AppKitSliderView):
             slider.doubleValue = value
             slider.sendAction(slider.action, to: slider.target)
+        case (.enterWords, is AppKitStepperView):
+            throw DriverCannot("type words into a Stepper", because: "the Mac's stepper is two arrows, with no field")
         case (.step(let up), let stepper as AppKitStepperView):
             // What a click on either arrow does: the value one increment on, within the range, then the action.
             let stepped = stepper.doubleValue + (up ? stepper.increment : -stepper.increment)
