@@ -944,9 +944,10 @@ final class CatalogTests: XCTestCase {
     /// The gallery is a menu over a stack, and both halves are pages.
     ///
     /// Every structural claim the rest of this app rests on: the flyout holds
-    /// two children wearing the identity of their halves, its bars the
-    /// platform's own until the Colours window paints them, the pane has a
-    /// native title, and the detail is a stack that opens on its root alone.
+    /// two children wearing the identity of their halves, its bars in the
+    /// gallery's violet until the Appearance sample chooses otherwise, the pane
+    /// has a native title, and the detail is a stack that opens on its root
+    /// alone.
     func testTheWindowIsAMenuOverAStack() throws {
         let gallery = try XCTUnwrap(GalleryScene().declaredWindows.opening)
         let window = Node.window(showing: { gallery.page(nil, nil) }, kind: gallery.kind, session: WindowSession()).built
@@ -959,8 +960,9 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(flyout.type, "SplitView")
         XCTAssertEqual(flyout.props["showsSidebar"], .bool(false))
-        XCTAssertNil(flyout.props["barBackgroundColor"], "both panes' bars are left to the platform")
-        XCTAssertNil(flyout.props["barForegroundColor"])
+        XCTAssertEqual(flyout.props["barBackgroundColor"], AppColors.violet.propValue,
+                       "both panes' bars wear the gallery's violet")
+        XCTAssertEqual(flyout.props["barForegroundColor"], AppColors.white.propValue)
         XCTAssertNotNil(flyout.events["showsSidebarChanged"],
                         "a native presentation change would not reach the binding")
 

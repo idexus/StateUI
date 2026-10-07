@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- The StateUI mark of stateui_mark.svg, drawn in the dark theme's violet for a surface
+       of the platform's own, where no gradient stands behind it. Edit all three. -->
+  <g transform="translate(10.67, 10.67) scale(0.6667)">
+    <path fill="#A78BFA" fill-rule="evenodd"
+          d="M16,6 H32 A10,10 0 0 1 42,16 V32 A10,10 0 0 1 32,42 H16 A10,10 0 0 1 6,32 V16 A10,10 0 0 1 16,6 Z
+             M32,22 H48 A10,10 0 0 1 58,32 V48 A10,10 0 0 1 48,58 H32 A10,10 0 0 1 22,48 V32 A10,10 0 0 1 32,22 Z"/>
+  </g>
+</svg>

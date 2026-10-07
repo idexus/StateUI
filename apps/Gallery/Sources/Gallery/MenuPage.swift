@@ -5,7 +5,7 @@ import StateUI
 // listing: MenuPage
 /// The gallery's sidebar - and it is an ordinary page.
 ///
-/// That is the whole point of it. A view with a gradient at the top,
+/// That is the whole point of it. A view with the mark at the top,
 /// some rows in the middle and a line at the bottom - and a row is a view with
 /// a tap on it that writes state. There is no menu vocabulary to learn: what
 /// can go in the pane is whatever can go on a page, and what a row does is
@@ -28,8 +28,8 @@ struct MenuPage: View {
     /// writes it, and here it is an `if` around the row.
     let listsHiddenRow: Bool
 
-    /// The device's facts: whether the header shows the mark, which samples
-    /// Surprise me draws from, and the line at the bottom.
+    /// The device's facts: which samples Surprise me draws from, and the line
+    /// at the bottom.
     @Environment(\.device) private var device
 
     var body: some View {
@@ -47,51 +47,30 @@ struct MenuPage: View {
         }
         // Three rows: the header and the footer keep their height, and the
         // rows take what is left and scroll between them.
-        //
-        // The header is outside the scroller so its background owns the page's
-        // top edge while only the rows participate in scrolling.
         .rows(.auto, .fill, .auto)
-        // EDGE TO EDGE, so the gradient runs behind the status bar the way the
-        // navigation bar beside it does. A layout stays clear of the bars
-        // unless it says otherwise, so the header says it too.
-        .avoidsSafeArea(.none)
         .title("StateUI")
         // The picture on the button that opens the menu, where the host draws
         // that button from this page.
         .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
     }
 
-    /// The mark, the name and what this is - on the gradient the home page opens
-    /// with, so the menu and the page behind it are plainly one application. A
-    /// phone leaves the mark out: its rows need the room to scroll.
+    /// The mark and the name, on the pane the platform draws: the gradient
+    /// is the home page's alone.
     private var header: some View {
-        VStack {
-            if device.info.formFactor != .phone {
-                Image("stateui_mark.png")
-                    .width(51)
-                    .height(51)
-                    .horizontalAlignment(.start)
-            }
+        HStack {
+            Image(ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png"))
+                .width(28)
+                .height(28)
+                .verticalAlignment(.center)
 
             Text("StateUI")
-                .fontSize(24)
+                .fontSize(20)
                 .fontAttributes(.bold)
-                .tracking(-0.5)
-                .textColor(Palette.onBrand)
-
-            Text("Native interfaces, written in Swift")
-                .fontSize(12)
-                .textColor(Palette.onBrand)
-                .opacity(0.85)
+                .tracking(-0.3)
+                .verticalAlignment(.center)
         }
-        .spacing(6)
-        // Edge to edge, so the gradient runs behind the status bar. A layout
-        // that stays clear of the bars is inset by them, and a header meant to
-        // reach the top edge says `.none`: its frame then fits its content, and
-        // its top padding keeps the words below the status bar.
-        .avoidsSafeArea(.none)
-        .padding(left: 20, top: 40, right: 20, bottom: 22)   // listing: keep
-        .background(Palette.identity)
+        .spacing(10)
+        .padding(left: 20, top: 12, right: 20, bottom: 8)   // listing: keep
     }
 
     /// Home, one row per group, the row that is not always listed, and the one
@@ -137,12 +116,7 @@ struct MenuPage: View {
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)
-            // Its bottom padding leaves room for the home indicator, the content
-            // being edge to edge: a phone or a tablet with no home button draws
-            // a bar across the bottom of the screen, and these lines would
-            // otherwise sit under it. A desktop has none: the margins are even
-            // there.
-            .padding(left: 16, top: 12, right: 16, bottom: device.info.formFactor == .desktop ? 12 : 30)   // listing: keep
+            .padding(12)   // listing: keep
             // The footer's own row, written on the footer.
             .gridRow(2)
     }

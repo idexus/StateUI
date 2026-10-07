@@ -37,8 +37,8 @@ enum Palette {
     static let onBrand = AppColors.white
 
     /// Violet into orange: the two halves of what this library is, in one
-    /// mark. The gallery's signature, and deliberately RARE - the sidebar header
-    /// and the home page's title, and nothing else.
+    /// mark. The gallery's signature, and deliberately RARE - the home page's
+    /// title, and nothing else.
     static let identity = Brush.linearGradient(
         [
             GradientStop(Color(light: AppColors.violet, dark: AppColors.violetDeep), 0),

@@ -166,14 +166,15 @@ final class Catalog {
                 route: "styles",
                 title: "Styles",
                 summary: "How a control looks - one style worn by every control of a "
-                    + "type, how it looks held down or disabled, and the theme it "
-                    + "answers light and dark.",
+                    + "type, how it looks held down or disabled, the theme it "
+                    + "answers light and dark, and the look the gallery wears.",
                 icon: ImageSource(light: "nav_styles.png", dark: "nav_styles_dark.png"),
                 card: ImageSource("cat_styles.png"),
                 samples: [
                     Sample(StyleSample()),
                     Sample(VisualStateSample()),
                     Sample(AppThemeSample()),
+                    Sample(AppearanceSample(style: style)),
                 ]),
 
             SampleGroup(

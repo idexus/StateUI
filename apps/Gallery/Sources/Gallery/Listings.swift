@@ -665,6 +665,41 @@ enum Listings {
             }
         }
         """#,
+        "AppearanceSample": #"""
+        // Sources/Samples/Styles/AppearanceSample.swift
+        /// The gallery's look, which every gallery window wears.
+        let style: SessionStyle
+
+        /// The window this page stands in.
+        @Environment(\.window) private var window
+
+        /// Whether the desktop shows through the window, as the switch last said.
+        @State private var translucent = false
+
+        var body: some View {
+            // Read here, so a choice made anywhere - this page, the Colours
+            // window - builds the picker again at its new place.
+            let accents = AccentChoice.allCases
+            let chosen = accents.firstIndex(of: style.accent) ?? 0
+            let style = self.style
+
+            return VStack {
+                SectionTitle("The bars")
+
+                Picker(accents.map(\.name))
+                    .selectedIndex(Binding(get: { chosen }, set: { style.accent = accents[$0] }))
+
+                SwitchRow("Tint the pages lightly", style.$tintsPages)
+                    .isEnabled(style.accent != .platform)
+
+                SectionTitle("The window")
+
+                SwitchRow("Show the desktop through it", $translucent)
+                    .onChanged(translucent) { window.isTranslucent = translucent }
+            }
+            .onCreated { translucent = window.isTranslucent == true }
+        }
+        """#,
         "ApplicationSessionSample": #"""
         // Sources/Samples/Environment/ApplicationSessionSample.swift
         /// The application as it runs - one for the whole process.
@@ -2546,6 +2581,9 @@ enum Listings {
 
             /// The gallery's accent.
             static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
+
+            /// Whether the gallery's pages stand in a light tint of its accent.
+            static let tint = SceneKey("gallery.tint", of: Bool.self)
         }
 
         /// An accent a gallery can wear: the platform's own, its bars as the platform
@@ -2580,16 +2618,16 @@ enum Listings {
                 }
             }
 
-            /// The colour with three fifths let through - what a window the desktop
-            /// shows through is tinted with, thin enough for the desktop to show; nil
+            /// The colour let through all but a seventh - what the gallery's pages
+            /// stand in, light enough for a window's material to show through it; nil
             /// for the platform's own.
-            var translucentColor: Color? {
+            var tint: Color? {
                 switch self {
                 case .platform: return nil
-                case .violet: return Color("#66512BD4")
-                case .teal: return Color("#660F766E")
-                case .coral: return Color("#66C2410C")
-                case .graphite: return Color("#66374151")
+                case .violet: return Color("#26512BD4")
+                case .teal: return Color("#260F766E")
+                case .coral: return Color("#26C2410C")
+                case .graphite: return Color("#26374151")
                 }
             }
         }
@@ -2604,9 +2642,18 @@ enum Listings {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
 
-            /// The gallery's accent: the platform's own until the Colours window
-            /// chooses another.
-            @State(sceneKey: .accent) var accent = AccentChoice.platform
+            /// The gallery's accent: violet until the Appearance sample or the Colours
+            /// window chooses another.
+            @State(sceneKey: .accent) var accent = AccentChoice.violet
+
+            /// Whether the gallery's pages stand in a light tint of its accent.
+            @State(sceneKey: .tint) var tintsPages = true
+
+            /// What the gallery's pages stand in: the accent's tint, where they are
+            /// tinted and the accent is a colour.
+            var tint: Color? {
+                tintsPages ? accent.tint : nil
+            }
 
             /// Whether the Fonts and Colours windows hide while another scene is the
             /// one in front.
@@ -4159,10 +4206,13 @@ enum Listings {
             if case .tabs = nav.section {
                 tabs()
             } else {
+                // Every page in the gallery's tint, where its look asks for one.
                 NavigationStack(nav.$path) {
                     root()
+                        .pageTint(style.tint)
                 } destination: { route in
                     page(for: route, path: nav.$path)
+                        .pageTint(style.tint)
                 }
             }
         }
@@ -4199,6 +4249,7 @@ enum Listings {
                 nav: nav,
                 log: log,
                 listsHiddenRow: nav.listsHiddenRow)
+            .pageTint(style.tint)
         } detail: {
             detail()
         }
@@ -4391,7 +4442,7 @@ enum Listings {
         // Sources/Gallery/MenuPage.swift
         /// The gallery's sidebar - and it is an ordinary page.
         ///
-        /// That is the whole point of it. A view with a gradient at the top,
+        /// That is the whole point of it. A view with the mark at the top,
         /// some rows in the middle and a line at the bottom - and a row is a view with
         /// a tap on it that writes state. There is no menu vocabulary to learn: what
         /// can go in the pane is whatever can go on a page, and what a row does is
@@ -4414,8 +4465,8 @@ enum Listings {
             /// writes it, and here it is an `if` around the row.
             let listsHiddenRow: Bool
 
-            /// The device's facts: whether the header shows the mark, which samples
-            /// Surprise me draws from, and the line at the bottom.
+            /// The device's facts: which samples Surprise me draws from, and the line
+            /// at the bottom.
             @Environment(\.device) private var device
 
             var body: some View {
@@ -4433,44 +4484,27 @@ enum Listings {
                 }
                 // Three rows: the header and the footer keep their height, and the
                 // rows take what is left and scroll between them.
-                //
-                // The header is outside the scroller so its background owns the page's
-                // top edge while only the rows participate in scrolling.
                 .rows(.auto, .fill, .auto)
-                // EDGE TO EDGE, so the gradient runs behind the status bar the way the
-                // navigation bar beside it does. A layout stays clear of the bars
-                // unless it says otherwise, so the header says it too.
-                .avoidsSafeArea(.none)
                 .title("StateUI")
                 // The picture on the button that opens the menu, where the host draws
                 // that button from this page.
                 .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
             }
 
-            /// The mark, the name and what this is - on the gradient the home page opens
-            /// with, so the menu and the page behind it are plainly one application. A
-            /// phone leaves the mark out: its rows need the room to scroll.
+            /// The mark and the name, on the pane the platform draws: the gradient
+            /// is the home page's alone.
             private var header: some View {
-                VStack {
-                    if device.info.formFactor != .phone {
-                        Image("stateui_mark.png")
-                            .width(51)
-                            .height(51)
-                            .horizontalAlignment(.start)
-                    }
+                HStack {
+                    Image(ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png"))
+                        .width(28)
+                        .height(28)
+                        .verticalAlignment(.center)
 
                     Text("StateUI")
-                        .tracking(-0.5)
-
-                    Text("Native interfaces, written in Swift")
-                        .opacity(0.85)
+                        .tracking(-0.3)
+                        .verticalAlignment(.center)
                 }
-                // Edge to edge, so the gradient runs behind the status bar. A layout
-                // that stays clear of the bars is inset by them, and a header meant to
-                // reach the top edge says `.none`: its frame then fits its content, and
-                // its top padding keeps the words below the status bar.
-                .avoidsSafeArea(.none)
-                .padding(left: 20, top: 40, right: 20, bottom: 22)
+                .padding(left: 20, top: 12, right: 20, bottom: 8)
             }
 
             /// Home, one row per group, the row that is not always listed, and the one
@@ -4512,12 +4546,7 @@ enum Listings {
             /// answered before the first render, and the StateUI release it is built on.
             private var footer: some View {
                 Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
-                    // Its bottom padding leaves room for the home indicator, the content
-                    // being edge to edge: a phone or a tablet with no home button draws
-                    // a bar across the bottom of the screen, and these lines would
-                    // otherwise sit under it. A desktop has none: the margins are even
-                    // there.
-                    .padding(left: 16, top: 12, right: 16, bottom: device.info.formFactor == .desktop ? 12 : 30)
+                    .padding(12)
                     // The footer's own row, written on the footer.
                     .gridRow(2)
             }

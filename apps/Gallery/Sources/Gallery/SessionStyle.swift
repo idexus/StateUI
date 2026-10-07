@@ -25,6 +25,9 @@ extension SceneKey {
 
     /// The gallery's accent.
     static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
+
+    /// Whether the gallery's pages stand in a light tint of its accent.
+    static let tint = SceneKey("gallery.tint", of: Bool.self)
 }
 // listing: end
 
@@ -61,16 +64,16 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         }
     }
 
-    /// The colour with three fifths let through - what a window the desktop
-    /// shows through is tinted with, thin enough for the desktop to show; nil
+    /// The colour let through all but a seventh - what the gallery's pages
+    /// stand in, light enough for a window's material to show through it; nil
     /// for the platform's own.
-    var translucentColor: Color? {
+    var tint: Color? {
         switch self {
         case .platform: return nil
-        case .violet: return Color("#66512BD4")
-        case .teal: return Color("#660F766E")
-        case .coral: return Color("#66C2410C")
-        case .graphite: return Color("#66374151")
+        case .violet: return Color("#26512BD4")
+        case .teal: return Color("#260F766E")
+        case .coral: return Color("#26C2410C")
+        case .graphite: return Color("#26374151")
         }
     }
 }
@@ -87,9 +90,18 @@ final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""
 
-    /// The gallery's accent: the platform's own until the Colours window
-    /// chooses another.
-    @State(sceneKey: .accent) var accent = AccentChoice.platform
+    /// The gallery's accent: violet until the Appearance sample or the Colours
+    /// window chooses another.
+    @State(sceneKey: .accent) var accent = AccentChoice.violet
+
+    /// Whether the gallery's pages stand in a light tint of its accent.
+    @State(sceneKey: .tint) var tintsPages = true
+
+    /// What the gallery's pages stand in: the accent's tint, where they are
+    /// tinted and the accent is a colour.
+    var tint: Color? {
+        tintsPages ? accent.tint : nil
+    }
 
     /// Whether the Fonts and Colours windows hide while another scene is the
     /// one in front.

@@ -73,6 +73,7 @@ struct MainPage: View {
                     nav: nav,
                     log: log,
                     listsHiddenRow: nav.listsHiddenRow)
+                .pageTint(style.tint)
             } detail: {
                 detail()
             }
@@ -104,9 +105,9 @@ struct MainPage: View {
             .barSubtitle(bar.subtitle)
             .barIcon("stateui_mark.png")
             // listing: end
-            // The bars of both panes: the platform's own, or painted in the
-            // accent the Colours window chose.
-            .paintedBars(barColour)
+            // The bars of both panes: painted in the gallery's accent, or the
+            // platform's own.
+            .paintedBars(style.accent.color)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
@@ -169,10 +170,13 @@ struct MainPage: View {
         if case .tabs = nav.section {
             tabs()
         } else {
+            // Every page in the gallery's tint, where its look asks for one.
             NavigationStack(nav.$path) {
                 root()
+                    .pageTint(style.tint)
             } destination: { route in
                 page(for: route, path: nav.$path)
+                    .pageTint(style.tint)
             }
         }
     }
@@ -221,7 +225,7 @@ struct MainPage: View {
 
         case .sample(let id):
             if let sample = catalog.sample(id: id) {
-                SamplePage.shown(sample, nav: nav, bar: barColour)
+                SamplePage.shown(sample, nav: nav, bar: style.accent.color)
             } else {
                 MissingPage(id: id, nav: nav, path: path)
             }
@@ -265,13 +269,4 @@ struct MainPage: View {
         .selection(nav.$tab)
     }
     // listing: end
-
-    // MARK: - The window's own chrome
-
-    /// What the bars are painted in: nothing, or the accent the Colours window
-    /// chose - with three fifths let through while the desktop shows through
-    /// the window.
-    private var barColour: Color? {
-        window.isTranslucent == true ? style.accent.translucentColor : style.accent.color
-    }
 }
