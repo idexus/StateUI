@@ -284,6 +284,11 @@ bool stateui_winui_window_acrylic(StateUIObjectRef window, bool *thin, float *op
 /// WinUI's own where `written` is false.
 void stateui_winui_window_set_background(StateUIObjectRef window, bool written, uint32_t argb);
 
+/// Clears the card a navigation view lays over its detail in the window where `clear` is true, so the detail shows the
+/// window's background as the sidebar does, the card's edge the theme's divider; leaves WinUI's own card where it is
+/// false.
+void stateui_winui_window_clear_detail(StateUIObjectRef window, bool clear);
+
 /// The colour the window shows behind its pages, as ARGB; false where it shows WinUI's own.
 bool stateui_winui_window_background(StateUIObjectRef window, uint32_t *argb);
 

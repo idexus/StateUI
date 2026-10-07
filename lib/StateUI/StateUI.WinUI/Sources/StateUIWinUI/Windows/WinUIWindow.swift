@@ -76,7 +76,8 @@ final class WinUIWindow {
     }
 
     /// Makes the window what `traits` says: a button it leaves unsaid is WinUI's own, which lets the user press it;
-    /// a blur or glass is the desktop acrylic at its thickness, its tint the window's colour over it; none Mica.
+    /// a blur or glass is the desktop acrylic at its thickness, its tint the window's colour over it; none Mica. A
+    /// background written shows behind the detail too.
     func apply(_ traits: WindowTraits) {
         stateui_winui_window_set_traits(
             handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.floatsOnTop)
@@ -89,6 +90,7 @@ final class WinUIWindow {
             handle, acrylic != nil, acrylic?.thin ?? false, acrylic?.opacity ?? 0, acrylic?.tintOpacity ?? 0, colour)
         let argb = traits.background.paint.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)
         stateui_winui_window_set_background(handle, argb != nil, argb ?? 0)
+        stateui_winui_window_clear_detail(handle, !traits.background.isEmpty)
     }
 
     /// The desktop acrylic a blur `thickness` thick is: the thin kind for the two thinnest, its luminosity hiding

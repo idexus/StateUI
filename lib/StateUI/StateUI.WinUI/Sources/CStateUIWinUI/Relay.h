@@ -63,6 +63,9 @@ namespace stateui {
     void writeResources(xaml::FrameworkElement const &control,
                         std::vector<std::pair<std::wstring, xaml::Media::Brush>> const &brushes);
 
+    /// Reads the control's theme again, so its template takes the resources written into it and its parents.
+    void readThemeAgain(xaml::FrameworkElement const &control);
+
     /// The brush `resources` itself holds under `name`; null for none. `HasKey` and `Lookup` look on into the
     /// application's theme, whose brushes every control shares: only a walk of the dictionary finds its own.
     xaml::Media::Brush ownBrush(xaml::ResourceDictionary const &resources, std::wstring const &name);

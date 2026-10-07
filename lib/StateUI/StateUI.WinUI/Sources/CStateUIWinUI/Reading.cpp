@@ -388,6 +388,25 @@ namespace {
             auto own = ownBrush(bar.Resources(), L"MenuBarItemForeground");
             return own ? colour(own) : std::string();
         }
+        // The card over a navigation view's detail - its fill, its edge - as the window's root writes it in the theme
+        // the root shows; empty for WinUI's own. The theme's divider, as the application's theme gives it.
+        if (auto window = object.try_as<xaml::Window>(); window && (what == "detailCard" || what == "detailEdge")) {
+            auto root = window.Content().try_as<xaml::FrameworkElement>();
+            if (!root) return std::string();
+            auto theme = root.ActualTheme() == xaml::ElementTheme::Light ? L"Light" : L"Dark";
+            auto name = what == "detailCard" ? L"NavigationViewContentBackground" : L"NavigationViewContentGridBorderBrush";
+            for (auto const &merged : root.Resources().MergedDictionaries()) {
+                auto themed = merged.ThemeDictionaries().TryLookup(winrt::box_value(theme));
+                auto dictionary = themed ? themed.try_as<xaml::ResourceDictionary>() : nullptr;
+                if (auto own = dictionary ? ownBrush(dictionary, name) : nullptr) return colour(own);
+            }
+            return std::string();
+        }
+        if (auto window = object.try_as<xaml::Window>(); window && what == "divider") {
+            auto divider = xaml::Application::Current().Resources().Lookup(
+                winrt::box_value(L"DividerStrokeColorDefaultBrush"));
+            return colour(divider.as<media::Brush>());
+        }
         // A pane's ground beside the detail and over it: a colour, or "acrylic" with its colour and luminosity.
         if (auto split = object.try_as<controls::NavigationView>();
             split && (what == "paneBackground" || what == "overlayPaneBackground")) {

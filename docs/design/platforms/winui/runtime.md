@@ -136,6 +136,15 @@ as the thickness says - and lies over it on the window's root as well, as
 the colour a window is painted does. Glass is the acrylic at its fallback
 thickness: WinUI has no glass.
 
+A background the application writes shows behind the detail as it does
+beside the sidebar and under the bars: the card a navigation view lays over
+its detail - WinUI's layer fill, which turns a written colour grey - is
+clear (`NavigationViewContentBackground`, written into the window root's
+resources, which every navigation view in the window reads on its way up),
+and its edge - the line under the bar and beside the sidebar - is the
+theme's divider (`DividerStrokeColorDefault`), in a dictionary for each
+theme so it follows the theme by itself. A window left to the platform keeps WinUI's card.
+
 ## The application's phase
 
 Each window's activation and its minimizing settle into the phases of the

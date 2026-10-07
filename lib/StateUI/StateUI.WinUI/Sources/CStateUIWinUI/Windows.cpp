@@ -19,6 +19,7 @@
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Microsoft.UI.Xaml.Input.h>
+#include <winrt/Microsoft.UI.Xaml.Markup.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 
 using namespace stateui;
@@ -393,6 +394,50 @@ extern "C" void stateui_winui_window_set_background(StateUIObjectRef handle, boo
             static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)}));
     } catch (...) {
         report("painting a window's background");
+    }
+}
+
+namespace {
+    /// The card a navigation view lays over its detail, cleared: no fill, its edge the theme's divider - one
+    /// dictionary for each theme, so the edge follows the theme by itself.
+    xaml::ResourceDictionary clearedCard() {
+        std::wstring brushes = L"<SolidColorBrush x:Key=\"NavigationViewContentBackground\" Color=\"#00000000\"/>"
+                               L"<SolidColorBrush x:Key=\"NavigationViewContentGridBorderBrush\""
+                               L" Color=\"{ThemeResource DividerStrokeColorDefault}\"/>";
+        std::wstring written = L"<ResourceDictionary"
+                               L" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\""
+                               L" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">"
+                               L"<ResourceDictionary.ThemeDictionaries>";
+        for (auto theme : {L"Light", L"Dark"})
+            written += std::wstring(L"<ResourceDictionary x:Key=\"") + theme + L"\">" + brushes + L"</ResourceDictionary>";
+        written += L"</ResourceDictionary.ThemeDictionaries></ResourceDictionary>";
+        return xaml::Markup::XamlReader::Load(written).as<xaml::ResourceDictionary>();
+    }
+
+    /// Whether `merged` is the cleared card.
+    bool isClearedCard(xaml::ResourceDictionary const &merged) {
+        auto dark = merged.ThemeDictionaries().TryLookup(winrt::box_value(L"Dark")).try_as<xaml::ResourceDictionary>();
+        return dark && ownBrush(dark, L"NavigationViewContentBackground");
+    }
+}
+
+extern "C" void stateui_winui_window_clear_detail(StateUIObjectRef handle, bool clear) {
+    try {
+        // Written into the window's root, which every navigation view in the window reads on its way up.
+        // Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
+        auto grid = root(borrow<xaml::Window>(handle));
+        auto merged = grid.Resources().MergedDictionaries();
+        for (uint32_t at = 0; at < merged.Size(); ++at) {
+            if (!isClearedCard(merged.GetAt(at))) continue;
+            if (clear) return;
+            merged.RemoveAt(at);
+            return readThemeAgain(grid);
+        }
+        if (!clear) return;
+        merged.Append(clearedCard());
+        readThemeAgain(grid);
+    } catch (...) {
+        report("clearing the card over a window's detail");
     }
 }
 

@@ -71,15 +71,14 @@ extern "C" void stateui_winui_set_tint(
 
 namespace {
     int32_t themesReadAgain = 0;
+}
 
-    /// Reads the control's theme again, so its template takes the resources written into the control.
-    void readThemeAgain(xaml::FrameworkElement const &control) {
-        ++themesReadAgain;
-        auto requested = control.RequestedTheme();
-        control.RequestedTheme(control.ActualTheme() == xaml::ElementTheme::Dark ? xaml::ElementTheme::Light
-                                                                               : xaml::ElementTheme::Dark);
-        control.RequestedTheme(requested);
-    }
+void stateui::readThemeAgain(xaml::FrameworkElement const &control) {
+    ++themesReadAgain;
+    auto requested = control.RequestedTheme();
+    control.RequestedTheme(control.ActualTheme() == xaml::ElementTheme::Dark ? xaml::ElementTheme::Light
+                                                                           : xaml::ElementTheme::Dark);
+    control.RequestedTheme(requested);
 }
 
 xaml::Media::Brush stateui::ownBrush(xaml::ResourceDictionary const &resources, std::wstring const &name) {
