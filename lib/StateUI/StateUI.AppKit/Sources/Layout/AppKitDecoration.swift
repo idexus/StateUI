@@ -7,9 +7,9 @@ import QuartzCore
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a layout draws of its own box: its backdrop, its background over it and its outline on its shape, and -
-/// where it clips - the cut of what it holds to that shape. A plain colour on a plain box is the layer's own, with
-/// nothing drawn.
+/// What a layout draws of its own box: its background - a colour or a gradient, or a blur or glass with its tint -
+/// and its outline on its shape, and - where it clips - the cut of what it holds to that shape. A plain colour on a
+/// plain box is the layer's own, with nothing drawn.
 /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
 @MainActor
 final class AppKitDecoration {
@@ -18,13 +18,13 @@ final class AppKitDecoration {
     private var lineWidth: CGFloat = 0
     private var shape = ContainerShape.rectangle
     private var clips = false
-    private var backdrop: HostBackdrop?
+    private var material = HostMaterial(nil)
 
-    /// The material or glass the box shows behind what it holds, where it has a backdrop.
+    /// The blur or glass the box shows behind what it holds, where its background is one.
     private(set) var surface: (any AppKitBoxSurface)?
 
-    /// Whether the view draws the box: an outline, a shape or a gradient with no backdrop; otherwise the layer
-    /// paints its colour, or the backdrop's surface the box.
+    /// Whether the view draws the box: an outline, a shape or a gradient with no blur or glass; otherwise the layer
+    /// paints its colour, or the blur's or glass's surface the box.
     var draws: Bool {
         surface == nil && (lineWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.isGradient)
     }
@@ -34,42 +34,41 @@ final class AppKitDecoration {
         draws || surface != nil ? nil : fill.color?.cgColor
     }
 
-    /// Takes the element's values - its backdrop, its background a colour or a brush, its outline by the host
-    /// layer's rule (`BoxArithmetic`); the view draws again.
+    /// Takes the element's values - its background by the host layer's reading of it (`HostMaterial`), its outline
+    /// by the host layer's rule (`BoxArithmetic`); the view draws again.
     func apply(
-        backdrop: HostValue?, background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?,
-        clips: Bool, to view: NSView
+        background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool,
+        to view: NSView
     ) {
-        self.backdrop = HostBackdrop(backdrop)
-        fill = AppKitBrush(background)
+        material = HostMaterial(background)
+        fill = AppKitBrush(material.paint)
         self.stroke = AppKitBrush(stroke)
         self.lineWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth))
         self.shape = BoxArithmetic.outline(shape)
         self.clips = clips
         clip(view)
         view.layer?.backgroundColor = layerColor
-        showBackdrop(in: view)
+        showSurface(in: view)
         view.needsDisplay = true
     }
 
-    /// Lays the backdrop's glass or material under what the view holds, its background over it, cut to its shape
-    /// and edged with its outline - which the view's own drawing, under it, could not show; takes it away where
-    /// there is none.
-    private func showBackdrop(in view: NSView) {
-        guard let backdrop else {
+    /// Lays the background's glass - in its tint - or its blur - its tint over it - under what the view holds,
+    /// cut to its shape and edged with its outline, which the view's own drawing, under it, could not show; takes
+    /// it away where the background is neither.
+    private func showSurface(in view: NSView) {
+        if let glass = material.glass {
+            let shown = surface as? AppKitGlassView ?? place(AppKitGlassView(), in: view)
+            shown.show(glass, tint: material.paint.flatMap(nsColor))
+            shown.wash.fill = AppKitBrush()
+        } else if let thickness = material.blur {
+            let shown = surface as? AppKitMaterialView ?? place(AppKitMaterialView(thickness, behindWindow: false), in: view)
+            shown.material = AppKitMaterialView.role(thickness)
+            shown.wash.fill = fill
+        } else {
             surface?.removeFromSuperview()
             surface = nil
             return
         }
-        if let glass = backdrop.glass {
-            let shown = surface as? AppKitGlassView ?? place(AppKitGlassView(), in: view)
-            shown.show(glass)
-        } else {
-            let shown = surface as? AppKitMaterialView
-                ?? place(AppKitMaterialView(backdrop.material, behindWindow: false), in: view)
-            shown.material = AppKitMaterialView.role(backdrop.material)
-        }
-        surface?.wash.fill = fill
         shapeSurface(in: view)
     }
 

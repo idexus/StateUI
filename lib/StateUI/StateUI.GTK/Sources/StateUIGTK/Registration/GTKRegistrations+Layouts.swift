@@ -62,7 +62,7 @@ extension GTKRegistrations {
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 // A scroller cuts what it shows to its bounds; a shape cuts it to the shape.
-                view.setBackground(values[VisualElementContract.background]?.propValue)
+                view.setBackground(HostMaterial(values[VisualElementContract.background]?.propValue).painted)
                 view.setOutline(
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     width: values[BorderElementContract.lineWidth],
@@ -75,19 +75,16 @@ extension GTKRegistrations {
         }
     }
 
-    /// What every layout takes of its own box: what lets what lies behind through, what fills it, its outline, its
-    /// shape and its cut.
+    /// What every layout takes of its own box: what fills it, its outline, its shape and its cut.
     private static let boxMembers: [any ContractMember] = [
-        BorderElementContract.backdrop, VisualElementContract.background,
+        VisualElementContract.background,
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
         LayoutContract.clipsContent,
     ]
 
     private static func applyBox<Realized: ElementContract>(_ view: GTKLayoutView, _ values: ElementValues<Realized>) {
         // GTK blurs nothing behind a widget: the material's colour stands in, under the fill.
-        let fill = values[VisualElementContract.background]?.propValue
-        let backdrop = HostBackdrop(values[BorderElementContract.backdrop]?.propValue)
-        view.setBackground(backdrop.map { $0.painted(under: fill) } ?? fill)
+        view.setBackground(HostMaterial(values[VisualElementContract.background]?.propValue).painted)
         view.setOutline(
             stroke: values[BorderElementContract.stroke]?.propValue,
             width: values[BorderElementContract.lineWidth],

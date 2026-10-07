@@ -6,25 +6,26 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A layout's backdrop: the platform's glass or material behind what it holds - no child of it, kept beneath its
-/// children - its background laid over it, in its content.
-/// Design: docs/design/platforms/uikit/drawing.md#a-layouts-backdrop
+/// A layout's blur or glass behind what it holds - no child of it, kept beneath its children - a blur's tint laid
+/// over it, in its content.
+/// Design: docs/design/platforms/uikit/drawing.md#a-layouts-blur-or-glass
 @MainActor
 final class UIKitBackdropView: UIVisualEffectView {
     /// What it shows, as the host layer read it.
-    private(set) var shown: HostBackdrop?
+    private(set) var shown: HostMaterial?
 
     /// The background laid over the backdrop, and the outline over both.
     private var wash: CALayer?
     private var line: CAShapeLayer?
 
-    /// UIKit's material for a thickness: its own four.
-    static func style(_ material: Material) -> UIBlurEffect.Style {
-        switch material {
+    /// UIKit's material for a blur's thickness: its own five.
+    static func style(_ thickness: Blur.Thickness) -> UIBlurEffect.Style {
+        switch thickness {
         case .ultraThin: .systemUltraThinMaterial
         case .thin: .systemThinMaterial
         case .regular: .systemMaterial
         case .thick: .systemThickMaterial
+        case .ultraThick: .systemChromeMaterial
         }
     }
 
@@ -39,20 +40,20 @@ final class UIKitBackdropView: UIVisualEffectView {
         fatalError("UIKitBackdropView is made in code")
     }
 
-    /// Shows `backdrop` - glass where it asks for glass, else its material - where it changed.
-    func show(_ backdrop: HostBackdrop) {
-        guard backdrop != shown else { return }
-        shown = backdrop
-        if let glass = backdrop.glass {
+    /// Shows `material` - glass, in its tint, where it asks for glass, else its blur - where it changed.
+    func show(_ material: HostMaterial) {
+        guard material != shown, let thickness = material.blur else { return }
+        shown = material
+        if let glass = material.glass {
             let effect = UIGlassEffect(style: glass.isClear ? .clear : .regular)
-            effect.tintColor = glass.tint.flatMap(UIColor.init(stateUI:))
+            effect.tintColor = material.paint.flatMap(UIColor.init(stateUI:))
             effect.isInteractive = glass.isInteractive
             self.effect = effect
         } else {
-            effect = UIBlurEffect(style: Self.style(backdrop.material))
+            effect = UIBlurEffect(style: Self.style(thickness))
         }
         // Interactive glass answers the touch, which rises to the layout.
-        isUserInteractionEnabled = backdrop.glass?.isInteractive == true
+        isUserInteractionEnabled = material.glass?.isInteractive == true
     }
 
     /// Lays `fill` over the backdrop across `bounds` and `stroke`'s outline `width` wide over both, cut to `outline`

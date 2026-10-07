@@ -30,6 +30,7 @@ enum AndroidRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .partial("VisualElement", "background", missing: "Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it."),
         .complete("BarElement", "barBackgroundColor"),
         .partial("BarElement", "barForegroundColor", missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the colour itself - on a tab row, the chosen tab's words."),
         .notPlanned("BarElement", "barIcon",
@@ -103,7 +104,6 @@ enum AndroidRealization {
         .partial("Application", "useColorScheme", missing: "Before Android 12 an application holds no night mode "
             + "of its own: it shows the system's."),
         .complete("Window", "activated"),
-        .complete("Window", "background"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),
@@ -115,12 +115,7 @@ enum AndroidRealization {
                     reason: "Android shows an activity itself: it hides none while another application is in front."),
         .notPlanned("Window", "isMaximizable", reason: "Any Android window may fill the screen: an activity keeps none from it."),
         .notPlanned("Window", "isMinimizable", reason: "Any Android window may be put away: an activity keeps none from it."),
-        .partial("Grid", "backdrop", missing: "Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill."),
-        .partial("HStack", "backdrop", missing: "Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill."),
-        .partial("VStack", "backdrop", missing: "Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill."),
-        .partial("ZStack", "backdrop", missing: "Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill."),
-        .notPlanned("Window", "backdrop",
-                    reason: "An activity is translucent by the theme it starts in: a window cannot turn it so."),
+        .partial("Window", "background", missing: "An activity is opaque by the theme it starts in: a blur or glass shows its colour."),
     ] + windowRoom
 
     /// The window's place and size, which Android gives an activity itself.

@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Button.frame: ✅
 Button.scaleX: ✅
@@ -14,56 +14,49 @@ DatePicker.opacity: ✅
 DatePicker.pivotY: ✅
 Ellipse.translationY: ✅
 Ellipse.zIndex: ✅
-Grid.background: ✅
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 HStack.frameChanged: ✅
-HStack.maximumHeight: ✅
-HStack.maximumWidth: ✅
-HStack.minimumHeight: ✅
-HStack.minimumWidth: ✅
-HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked against the projection it laid on the element
-Image.accessibilityHeading: ✅
-Image.isEnabled: ✅
-ItemsView.layoutDirection: ✅
-Line.isAccessibilityHidden: ✅
-Map.frameChanged: 🧩
-Map.height: 🧩
-Map.rotationX: 🧩
-Map.width: 🧩
-Path.accessibilityLabel: ✅
-Picker.isVisible: ✅
-Picker.pivotX: ✅
-Polygon.style: ✅
-Polygon.translationX: ✅
-Polyline.automationExcludedWithChildren: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.maximumHeight: ✅
-ProgressBar.maximumWidth: ✅
-ProgressBar.minimumHeight: ✅
-ProgressBar.minimumWidth: ✅
-ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
-RadioButton.accessibilityLabel: ✅
-Rectangle.opacity: ✅
-Rectangle.pivotY: ✅
-ScrollView.style: ✅
-ScrollView.translationX: ✅
-SearchField.automationExcludedWithChildren: ✅
-Slider.ignoresInput: ✅
-Slider.scale: ✅
-Stepper.accessibilityHeading: ✅
-Switch.frameChanged: ✅
-Switch.height: ✅
-Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
-Switch.width: ✅
-Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.scaleY: ✅
-Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-TextEditor.accessibilityLabel: ✅
-TextField.opacity: ✅
-TextField.pivotY: ✅
-TimePicker.translationY: ✅
-TimePicker.zIndex: ✅
-VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-WebView.ignoresInput: ✅
-WebView.scale: ✅
+HStack.height: ✅
+HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
+HStack.width: ✅
+Image.style: ✅
+Image.translationX: ✅
+ItemsView.automationExcludedWithChildren: ✅
+Line.accessibilityHint: ✅
+Map.opacity: 🧩
+Map.pivotY: 🧩
+Path.translationY: ✅
+Path.zIndex: ✅
+Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Polygon.frame: ✅
+Polygon.scaleX: ✅
+Polyline.accessibilityHeading: ✅
+ProgressBar.isEnabled: ✅
+ProgressBar.rotation: ✅
+RadioButton.translationY: ✅
+RadioButton.zIndex: ✅
+Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ScrollView.frame: ✅
+ScrollView.scaleX: ✅
+SearchField.accessibilityHeading: ✅
+Slider.frameChanged: ✅
+Slider.height: ✅
+Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
+Slider.width: ✅
+Stepper.accessibilityLabel: ✅
+Switch.opacity: ✅
+Switch.pivotY: ✅
+Text.ignoresInput: ✅
+Text.scale: ✅
+TextEditor.translationY: ✅
+TextEditor.zIndex: ✅
+TextField.layoutDirection: ✅
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.scaleY: ✅
+TimePicker.unfocus: ✅
+VStack.automationExcludedWithChildren: ✅
+WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
+WebView.rotation: ✅
 ZStack.accessibilityHeading: ✅
+ZStack.isEnabled: ✅

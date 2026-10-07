@@ -59,7 +59,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     /// The material the desktop shows through the window in: it lies under the page and the bars' band,
     /// wherever they leave it uncovered or paint a colour it shows through; nil for an opaque window.
-    var backdrop: Material? {
+    var backdrop: Blur.Thickness? {
         didSet {
             guard backdrop != oldValue else { return }
             if let backdrop {

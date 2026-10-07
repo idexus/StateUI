@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.pivotX: ✅
 Button.focus: ✅
@@ -14,49 +14,58 @@ DatePicker.rotation: ✅
 Ellipse.accessibilityHeading: ✅
 Ellipse.isEnabled: ✅
 Grid.layoutDirection: ✓ read layoutDirection of Grid: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-HStack.ignoresInput: ✅
-HStack.scale: ✅
-Image.accessibilityLabel: ✅
-ItemsView.isVisible: ✅
-ItemsView.pivotX: ✅
-Line.automationExcludedWithChildren: ✅
-Map.frameChanged: 🧩
-Map.maximumHeight: 🧩
-Map.maximumWidth: 🧩
-Map.minimumHeight: 🧩
-Map.minimumWidth: 🧩
-Map.rotationY: 🧩
-Path.accessibilityHint: ✅
-Picker.opacity: ✅
-Picker.pivotY: ✅
-Polygon.translationY: ✅
-Polygon.zIndex: ✅
-Polyline.background: – A WinUI shape is its figure alone: it paints no ground around it.
-ProgressBar.ignoresInput: ✅
-ProgressBar.scale: ✅
-RadioButton.accessibilityHint: ✅
-Rectangle.isEnabled: does not apply - read isEnabled of Rectangle - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Rectangle.rotation: ✅
-ScrollView.translationY: ✅
-ScrollView.zIndex: ✅
-SearchField.background: ✅
-Slider.frame: ✅
-Slider.scaleX: ✅
-Stepper.isAccessibilityHidden: ✅
-Switch.frameChanged: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
-Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
-Text.style: ✅
-Text.translationX: ✅
-TextEditor.accessibilityHint: ✅
-TextField.isEnabled: ✅
-TextField.rotation: ✅
-TimePicker.accessibilityHeading: ✅
-VStack.isVisible: ✅
-VStack.pivotX: ✅
-WebView.frame: ✅
-WebView.scaleX: ✅
-ZStack.isAccessibilityHidden: ✅
+HStack.frameChanged: ✅
+HStack.maximumHeight: ✅
+HStack.maximumWidth: ✅
+HStack.minimumHeight: ✅
+HStack.minimumWidth: ✅
+HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked against the projection it laid on the element
+Image.translationY: ✅
+Image.zIndex: ✅
+ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Line.accessibilityHeading: ✅
+Map.isEnabled: 🧩
+Map.rotation: 🧩
+Path.accessibilityHeading: ✅
+Path.isEnabled: ✅
+Picker.layoutDirection: ✅
+Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polygon.scaleY: ✅
+Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.isAccessibilityHidden: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.height: ✅
+ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
+ProgressBar.width: ✅
+RadioButton.accessibilityHeading: ✅
+Rectangle.isVisible: ✅
+Rectangle.pivotX: ✅
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.scaleY: ✅
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+SearchField.isAccessibilityHidden: ✅
+Slider.frameChanged: ✅
+Slider.maximumHeight: ✅
+Slider.maximumWidth: ✅
+Slider.minimumHeight: ✅
+Slider.minimumWidth: ✅
+Slider.rotationY: ✓ read rotationY of Slider: the host's own tip, checked against the projection it laid on the element
+Stepper.accessibilityHint: ✅
+Switch.isEnabled: ✅
+Switch.rotation: ✅
+Text.frame: ✅
+Text.scaleX: ✅
+TextEditor.accessibilityHeading: ✅
+TextField.isVisible: ✅
+TextField.pivotX: ✅
+TimePicker.style: ✅
+TimePicker.translationX: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
+WebView.width: ✅
+ZStack.accessibilityLabel: ✅
+ZStack.isEnabled: ✅

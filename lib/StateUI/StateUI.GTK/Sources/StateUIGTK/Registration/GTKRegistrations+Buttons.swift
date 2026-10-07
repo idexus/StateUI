@@ -23,7 +23,7 @@ extension GTKRegistrations {
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 view.setBox(
-                    fill: values[VisualElementContract.background]?.propValue,
+                    fill: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)

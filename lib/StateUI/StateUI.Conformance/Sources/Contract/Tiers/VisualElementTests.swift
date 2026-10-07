@@ -39,6 +39,7 @@
             ]
                 + (answeringByGestures.contains(element) ? [answering(element)] : [])
                 + (layouts.contains(element) ? [disablingItsBranch(element)] : [])
+                + (boxes.contains(element) ? [blurredOrGlass(element)] : [])
         }
     }
 
@@ -48,6 +49,34 @@
         "ActivityIndicator", "ColorBox", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
         "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
     ]
+
+    /// The layouts drawing their own box, whose background may be a blur or glass.
+    static let boxes: Set<String> = ["Grid", "HStack", "VStack", "ZStack"]
+
+    /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
+    /// the glass, the blur as clear as it is, whose colour a host that blurs nothing paints.
+    static func blurredOrGlass(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).background.showsABlurOrGlassOrWhatStandsInForIt", proves: [
+            Covered(VisualElementContract.background, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let value = State(wrappedValue: Material.blur(.thin))
+            let changed = Material.glass(.clear)
+            s.start {
+                Specimens.page(element, Words.on(element) + [Write(VisualElementContract.background, value.wrappedValue)],
+                               beside: [Button("Change").onClicked { value.wrappedValue = changed }.id("change")])
+            }
+            let specimen = try s.specimen(element)
+            @MainActor func shows(_ wanted: Material) throws -> Bool {
+                let held = try s.held(VisualElementContract.background, on: specimen)
+                return held == wanted || held == wanted.withoutGlass
+            }
+            s.expect(try shows(.blur(.thin)), true, "the blur the tree gave")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try shows(changed) }
+            s.expect(try shows(changed), true, "the glass the tree changed it to, or the blur standing in for it")
+        }
+    }
 
     /// The views holding others, whose `isEnabled` is their branch's.
     static let layouts: Set<String> = ["Grid", "HStack", "ScrollView", "VStack", "ZStack"]
@@ -292,7 +321,7 @@
                 VStack {
                     Specimens.view(element, painted(element) + [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(VisualElementContract.background, Background.color(.red)),
+                        Write(VisualElementContract.background, Material.color(.red)),
                         Write(VisualElementContract.ignoresInput, ignores.wrappedValue),
                     ])
                     Button("Ignore").onClicked { ignores.wrappedValue = true }.id("change")

@@ -89,12 +89,10 @@ class UIKitLayoutView: UIView {
         laidOut?()
     }
 
-    /// The box's backdrop, its fill, its outline's stroke, its shape, and whether it cuts what the layout shows to
-    /// that shape.
-    func setBox(
-        backdrop: HostValue? = nil, fill: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool
-    ) {
-        box.set(backdrop: backdrop, fill: fill, stroke: stroke, width: width, shape: shape, clips: clips)
+    /// The box's background, its outline's stroke, its shape, and whether it cuts what the layout shows to that
+    /// shape.
+    func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
+        box.set(background: background, stroke: stroke, width: width, shape: shape, clips: clips)
         box.paint(on: self)
     }
 

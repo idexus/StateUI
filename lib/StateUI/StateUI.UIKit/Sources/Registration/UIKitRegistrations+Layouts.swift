@@ -68,7 +68,7 @@ extension UIKitRegistrations {
             ]) { view, values in
                 // A scroller cuts what it shows to its bounds; a shape cuts it to the shape.
                 view.setBox(
-                    fill: values[VisualElementContract.background]?.propValue,
+                    background: values[VisualElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     width: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue,
@@ -82,15 +82,14 @@ extension UIKitRegistrations {
 
     /// What every layout takes of its own box: what fills it, its outline, its shape and its cut.
     private static let boxMembers: [any ContractMember] = [
-        BorderElementContract.backdrop, VisualElementContract.background,
+        VisualElementContract.background,
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
         LayoutContract.clipsContent,
     ]
 
     private static func applyBox<Realized: ElementContract>(_ view: UIKitLayoutView, _ values: ElementValues<Realized>) {
         view.setBox(
-            backdrop: values[BorderElementContract.backdrop]?.propValue,
-            fill: values[VisualElementContract.background]?.propValue,
+            background: values[VisualElementContract.background]?.propValue,
             stroke: values[BorderElementContract.stroke]?.propValue,
             width: values[BorderElementContract.lineWidth],
             shape: values[BorderElementContract.shape]?.propValue,

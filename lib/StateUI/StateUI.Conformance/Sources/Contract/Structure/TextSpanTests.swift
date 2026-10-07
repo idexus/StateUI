@@ -46,7 +46,7 @@
                 try s.settle { try s.held(TextualElementContract.text, on: label) == "let y" }
                 s.expect(try s.held(TextualElementContract.text, on: label), "let y")
             },
-            Aspects.holds(TextSpanContract.background, on: "TextSpan", .yellow, then: .cyan),
+            Aspects.holds(TextSpanContract.background, on: "TextSpan", .color(.yellow), then: .color(.cyan)),
         ]
     }
 }

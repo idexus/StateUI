@@ -75,7 +75,7 @@ extension WinUIElement {
             // Ignored, the view and all in it are passed over: a click goes to what is under it.
             case .ignoresInput: view.setIgnoresInput(element.bool(.ignoresInput) == true)
             case .background:
-                view.setBackground(value(.background))
+                view.setBackground(HostMaterial(value(.background)).painted)
                 (parent?.view as? WinUISplitView)?.paintPane()
             default: break
             }

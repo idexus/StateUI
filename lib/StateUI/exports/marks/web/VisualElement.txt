@@ -1,9 +1,9 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
-ActivityIndicator.background: ☑️ A brush fills the view with its first colour alone.
+ActivityIndicator.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
@@ -37,7 +37,7 @@ Button.accessibilityHeading: ✅
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
-Button.background: ☑️ A brush fills the view with its first colour alone.
+Button.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Button.focus: ✅
 Button.frame: ✅
 Button.frameChanged: ✅
@@ -71,7 +71,7 @@ Canvas.accessibilityHeading: ✅
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
-Canvas.background: ☑️ A brush fills the view with its first colour alone.
+Canvas.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
@@ -105,7 +105,7 @@ CheckBox.accessibilityHeading: ✅
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
-CheckBox.background: ☑️ A brush fills the view with its first colour alone.
+CheckBox.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 CheckBox.focus: ✅
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
@@ -139,7 +139,7 @@ ColorBox.accessibilityHeading: ✅
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: ☑️ A brush fills the view with its first colour alone.
+ColorBox.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
@@ -173,7 +173,7 @@ DatePicker.accessibilityHeading: ✅
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
-DatePicker.background: ☑️ A brush fills the view with its first colour alone.
+DatePicker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 DatePicker.focus: ✅
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
@@ -207,7 +207,7 @@ Ellipse.accessibilityHeading: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
-Ellipse.background: ☑️ A brush fills the view with its first colour alone.
+Ellipse.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
@@ -241,7 +241,7 @@ Grid.accessibilityHeading: ✅
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
-Grid.background: ☑️ A brush fills the view with its first colour alone.
+Grid.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frame: ✅
 Grid.frameChanged: ✅
@@ -275,7 +275,7 @@ HStack.accessibilityHeading: ✅
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
-HStack.background: ☑️ A brush fills the view with its first colour alone.
+HStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frame: ✅
 HStack.frameChanged: ✅
@@ -309,7 +309,7 @@ Image.accessibilityHeading: ✅
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
-Image.background: ☑️ A brush fills the view with its first colour alone.
+Image.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.frame: ✅
 Image.frameChanged: ✅
@@ -343,7 +343,7 @@ ItemsView.accessibilityHeading: ✅
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
-ItemsView.background: ☑️ A brush fills the view with its first colour alone.
+ItemsView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ItemsView.focus: ✅
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
@@ -377,7 +377,7 @@ Line.accessibilityHeading: ✅
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
-Line.background: ☑️ A brush fills the view with its first colour alone.
+Line.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.frame: ✅
 Line.frameChanged: ✅
@@ -445,7 +445,7 @@ Path.accessibilityHeading: ✅
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
-Path.background: ☑️ A brush fills the view with its first colour alone.
+Path.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.frame: ✅
 Path.frameChanged: ✅
@@ -479,7 +479,7 @@ Picker.accessibilityHeading: ✅
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
-Picker.background: ☑️ A brush fills the view with its first colour alone.
+Picker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Picker.focus: ✅
 Picker.frame: ✅
 Picker.frameChanged: ✅
@@ -513,7 +513,7 @@ Polygon.accessibilityHeading: ✅
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
-Polygon.background: ☑️ A brush fills the view with its first colour alone.
+Polygon.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
@@ -547,7 +547,7 @@ Polyline.accessibilityHeading: ✅
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
-Polyline.background: ☑️ A brush fills the view with its first colour alone.
+Polyline.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
@@ -581,7 +581,7 @@ ProgressBar.accessibilityHeading: ✅
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.background: ☑️ A brush fills the view with its first colour alone.
+ProgressBar.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
@@ -615,7 +615,7 @@ RadioButton.accessibilityHeading: ✅
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: ☑️ A brush fills the view with its first colour alone.
+RadioButton.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 RadioButton.focus: ✅
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
@@ -649,7 +649,7 @@ Rectangle.accessibilityHeading: ✅
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
-Rectangle.background: ☑️ A brush fills the view with its first colour alone.
+Rectangle.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
@@ -683,7 +683,7 @@ ScrollView.accessibilityHeading: ✅
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: ☑️ A brush fills the view with its first colour alone.
+ScrollView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
@@ -717,7 +717,7 @@ SearchField.accessibilityHeading: ✅
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
-SearchField.background: ☑️ A brush fills the view with its first colour alone.
+SearchField.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
@@ -785,7 +785,7 @@ Stepper.accessibilityHeading: ✅
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
-Stepper.background: ☑️ A brush fills the view with its first colour alone.
+Stepper.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Stepper.focus: ✅
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
@@ -819,7 +819,7 @@ Switch.accessibilityHeading: ✅
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
-Switch.background: ☑️ A brush fills the view with its first colour alone.
+Switch.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Switch.focus: ✅
 Switch.frame: ✅
 Switch.frameChanged: ✅
@@ -853,7 +853,7 @@ Text.accessibilityHeading: ✅
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
-Text.background: ☑️ A brush fills the view with its first colour alone.
+Text.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.frame: ✅
 Text.frameChanged: ✅
@@ -887,7 +887,7 @@ TextEditor.accessibilityHeading: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
-TextEditor.background: ☑️ A brush fills the view with its first colour alone.
+TextEditor.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
@@ -921,7 +921,7 @@ TextField.accessibilityHeading: ✅
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
-TextField.background: ☑️ A brush fills the view with its first colour alone.
+TextField.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
@@ -955,7 +955,7 @@ TimePicker.accessibilityHeading: ✅
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
-TimePicker.background: ☑️ A brush fills the view with its first colour alone.
+TimePicker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 TimePicker.focus: ✅
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
@@ -989,7 +989,7 @@ VStack.accessibilityHeading: ✅
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
-VStack.background: ☑️ A brush fills the view with its first colour alone.
+VStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frame: ✅
 VStack.frameChanged: ✅
@@ -1023,7 +1023,7 @@ WebView.accessibilityHeading: ✅
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
-WebView.background: ☑️ A brush fills the view with its first colour alone.
+WebView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.frame: ✅
 WebView.frameChanged: ✅
@@ -1057,7 +1057,7 @@ ZStack.accessibilityHeading: ✅
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
-ZStack.background: ☑️ A brush fills the view with its first colour alone.
+ZStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frame: ✅
 ZStack.frameChanged: ✅

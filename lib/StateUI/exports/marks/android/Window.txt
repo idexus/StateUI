@@ -1,8 +1,7 @@
-# revision 5.1
+# revision 6.1
 Window: ✅
 Window.activated: ✅
-Window.backdrop: – An activity is translucent by the theme it starts in: a window cannot turn it so.
-Window.background: ✅
+Window.background: ☑️ An activity is opaque by the theme it starts in: a blur or glass shows its colour.
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the host told the activity's phase, no activity moved
 Window.destroying: ✓ close on Window: the host told the activity's phase, no activity moved

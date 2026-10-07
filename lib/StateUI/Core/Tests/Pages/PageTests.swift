@@ -90,8 +90,7 @@ private func everyPropertyWindow() -> Node {
     session.maximumHeight = 1200
     session.isMaximizable = false
     session.isMinimizable = true
-    session.backdrop = .material(.thin)
-    session.background = Color("#26512BD4")
+    session.background = .blur(.thin.tint(Color("#26512BD4")))
 
     return Node.window(showing: { Node.page(EveryPropertyPage()) }, kind: "EveryPropertyPage", session: session).built
 }
@@ -609,7 +608,7 @@ final class PageTests: XCTestCase {
         let window = Renders().settled(everyPropertyWindow())
 
         XCTAssertEqual(window.props, [
-            "backdrop": Backdrop.material(.thin).propValue.resolvingTheme(), "background": Color("#26512BD4").propValue,
+            "background": Material.blur(.thin.tint(Color("#26512BD4"))).propValue.resolvingTheme(),
             "height": .number(800), "isMaximizable": .bool(false), "isMinimizable": .bool(true),
             "maximumHeight": .number(1200), "maximumWidth": .number(1600),
             "minimumHeight": .number(400), "minimumWidth": .number(600), "title": .string("Everything"),

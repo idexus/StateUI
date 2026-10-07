@@ -23,7 +23,7 @@ extension WinUIRegistrations {
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 view.setLook(
-                    background: values[VisualElementContract.background]?.propValue,
+                    background: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)

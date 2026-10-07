@@ -26,10 +26,6 @@ class AndroidLayoutView: AndroidView {
         var width: Double?
         var shape: HostValue?
         var clips = false
-
-        /// What lets what lies behind show through: Android blurs nothing behind a view, so its colour stands in,
-        /// under the fill.
-        var backdrop: HostBackdrop?
     }
 
     /// The direction the children are laid out in, the element's; a turn lays them out again, their sizes kept.
@@ -116,7 +112,7 @@ class AndroidLayoutView: AndroidView {
     }
 
     private func paintBox() {
-        let painted = outline.backdrop.map { $0.painted(under: fill) } ?? fill
+        let painted = fill
         guard outline.stroke != nil || outline.shape != nil || outline.clips else {
             if box != nil { Java.call(reference, JavaAPI.setClipToOutline, .bool(false)) }
             box = nil

@@ -59,7 +59,8 @@ extension AndroidElement {
                 switch property {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
-                case .background: view.setBackground(value(.background))
+                // Android blurs nothing behind a view: a blur's or glass's colour stands in, its tint over it.
+                case .background: view.setBackground(HostMaterial(value(.background)).painted)
                 case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
                 default: break
                 }

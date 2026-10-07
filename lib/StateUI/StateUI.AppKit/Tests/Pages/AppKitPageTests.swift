@@ -1215,9 +1215,10 @@ private extension AppKitPageTests {
     /// to let the desktop show through it.
     func windowTree(_ content: HostPatch, translucent: Bool?, background: HostValue? = nil) -> HostPatch {
         var window = HostPatch(id: .manual("window"), type: .window)
-        // A translucent window shows the desktop through the thickest material.
-        window.properties[.backdrop] = translucent == true ? Backdrop.material(.thick).propValue.resolvingTheme() : .nothing
-        window.properties[.background] = background ?? .nothing
+        // A translucent window shows the desktop through a thick blur, the background its tint.
+        let tint = background.flatMap(Color.init(propValue:))
+        let blur = Material.blur(tint.map { Blur.thick.tint($0) } ?? .thick).propValue.resolvingTheme()
+        window.properties[.background] = translucent == true ? blur : (background ?? .nothing)
         window.children = .arranged([content])
 
         var scene = HostPatch(id: .manual("scene"), type: .scene)

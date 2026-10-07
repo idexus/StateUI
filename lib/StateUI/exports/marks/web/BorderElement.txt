@@ -1,35 +1,28 @@
-# revision 4.1
-Button.backdrop: not realized
-Button.background: ☑️ A brush fills the view with its first colour alone.
+# revision 5.1
+Button.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.backdrop: ☑️ A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.
-Grid.background: ☑️ A brush fills the view with its first colour alone.
+Grid.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.backdrop: ☑️ A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.
-HStack.background: ☑️ A brush fills the view with its first colour alone.
+HStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-RadioButton.backdrop: not realized
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
-ScrollView.backdrop: not realized
-ScrollView.background: ☑️ A brush fills the view with its first colour alone.
+ScrollView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
-VStack.backdrop: ☑️ A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.
-VStack.background: ☑️ A brush fills the view with its first colour alone.
+VStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.backdrop: ☑️ A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.
-ZStack.background: ☑️ A brush fills the view with its first colour alone.
+ZStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 ZStack.lineWidth: ✅
 ZStack.shape: ✅
 ZStack.stroke: ✅

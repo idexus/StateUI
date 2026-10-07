@@ -61,7 +61,7 @@ extension UIKitElement {
                 // Ignored, the view and all in it are passed over: a touch goes to what is under it.
                 case .ignoresInput: view.isUserInteractionEnabled = element.bool(.ignoresInput) != true
                 case .background:
-                    view.backgroundColor = value(.background).flatMap(UIColor.init(stateUI:))
+                    view.backgroundColor = HostMaterial(value(.background)).painted.flatMap(UIColor.init(stateUI:))
                     (controller as? UIKitPageController)?.showBackground()
                 case .avoidsSafeArea:
                     // A page's content standing against the safe area otherwise: its page stands again.

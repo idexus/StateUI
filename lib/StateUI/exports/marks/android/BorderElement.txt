@@ -1,35 +1,28 @@
-# revision 4.1
-Button.backdrop: not realized
-Button.background: ✅
+# revision 5.1
+Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.backdrop: ☑️ Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill.
-Grid.background: ✅
+Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.backdrop: ☑️ Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill.
-HStack.background: ✅
+HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-RadioButton.backdrop: not realized
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
-ScrollView.backdrop: not realized
-ScrollView.background: ✅
+ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
-VStack.backdrop: ☑️ Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill.
-VStack.background: ✅
+VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.backdrop: ☑️ Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill.
-ZStack.background: ✅
+ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ZStack.lineWidth: ✅
 ZStack.shape: ✅
 ZStack.stroke: ✅

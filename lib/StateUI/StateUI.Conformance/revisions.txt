@@ -21,7 +21,7 @@ ToolbarItem 3
 ToolbarItemGroup 2
 TitleView 2
 MenuBar 2
-Window 5
+Window 6
 Scene 2
 ModalStack 2
 Overlay 2
@@ -32,11 +32,12 @@ android WebView 3
 winui WebView 2
 DatePicker 2
 TimePicker 2
-Page 2
+Page 3
 PageElement 2
 View 4
-VisualElement 5
+VisualElement 6
 Shape 3
-BorderElement 4
+BorderElement 5
 TextInput 2
 Application 2
+TextSpan 2

@@ -85,35 +85,46 @@ pair is, so one name reaches the host and the element showing it builds
 again when the theme changes. A tint would not do: it paints a picture in
 one colour, while a second file keeps artwork of any colours as it was drawn.
 
-## A background is a colour or a brush
-
-`Background` is one colour or one brush, and they stay apart in the patch: a
-colour crosses as a colour and a brush as its kind and parts, so a host paints
-a plain colour as the plain colour it is.
-
-## A backdrop
-
-A backdrop lets what lies behind a box or a window show through: a material
-or glass. It is a property apart from the background, which lies over it, so
-a colour with an alpha tints it. It crosses as its kind, what the kind takes,
-and last what stands in for it, decided once in the core: glass carries the
-material as clear as the glass is, and a material the colour of the theme let
-through as the material is, which the differ resolves as any pair. The host
-layer reads it (`HostBackdrop`), and each host draws the first its toolkit
-has - the glass, the material, the colour. A registration reading the member
-as its type encodes it again, its colour a pair once more; the host layer
-takes the half of the theme in force (`HostThemes.current`). A host with no
-materials paints the box's fill laid over that colour as a colour with an
-alpha lies over another (`HostBackdrop.painted(under:)`), the colour alone
-where nothing fills the box. A box's backdrop is cut to its
-shape; a window's lies under everything the window draws, the desktop showing
-through it, and a host whose windows cannot show what is behind them keeps
-them opaque.
-
 ## A material
 
-Four thicknesses, a platform's own four where it has them; a platform whose
-materials are by role draws the role whose translucency stands in that place,
+`Material` is what a surface is made of, and every background takes one - a
+view's, a page's, a run of words', a window's: a colour, a gradient, a blur
+of what lies behind it, or the platform's glass, each kind with only its own
+modifiers so the type decides what applies. A constructor per kind keeps one
+spelling: a brush of one colour is that colour, a pair of colours is the
+colour pair.
+
+It crosses as the colour itself for a colour and as its brush for a
+gradient, so a colour's channel - `.background($color)`, which the host walks
+- writes a material as it is: the channel stays the colour's, and a test
+holds the two encodings equal. A blur and glass cross as their kind (4 and 5,
+after the brush's three), what the kind takes, and last what stands in for
+them, decided once in the core: glass carries the blur as clear as the glass
+is, a blur the colour of the theme let through as the blur is, which the
+differ resolves as any pair. A tint lies over a blur; glass takes the
+platform's own tint.
+
+A pair - `Material(light:dark:)` - crosses as the theme's pair of its two
+halves, a nil half as nothing, which leaves the host its own: a window's and a
+bar's native look, or no background. The differ resolves it as it builds the
+element, which so reads the theme. A material with no pair is the same choice
+in both themes; a blur and glass still follow the theme as the platform draws
+them.
+
+The host layer reads it (`HostMaterial`): the paint - the colour, the
+gradient, or the tint over a blur or glass - the blur behind, the glass, and
+the stand-in, taking a pair a typed member encoded again as the half of the
+theme in force (`HostThemes.current`). Each host draws the first its toolkit
+has - glass, the blur, the colour - and one that blurs nothing paints the
+paint laid over the stand-in as a colour with an alpha lies over another
+(`painted`). A view's background is cut to its shape; a window's lies under
+everything it draws, the desktop showing through it where the host can show
+it.
+
+## A blur
+
+Five thicknesses, a platform's own five where it has them; a platform whose
+blurs are by role draws the role whose translucency stands in that place,
 measured.
 
 ## Glass

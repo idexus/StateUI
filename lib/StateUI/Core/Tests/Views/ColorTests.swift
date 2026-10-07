@@ -121,23 +121,32 @@ final class ColorTests: XCTestCase {
         XCTAssertEqual(Color("#512BD4").opacity(2), Color("#512BD4"))
     }
 
-    /// A backdrop crosses as itself and comes back so - a material with the colour a host with no materials
-    /// draws, glass with the material a host with no glass draws, as clear as the glass, and that material's
-    /// colour.
-    func testABackdropCrossesWithWhatStandsInForIt() throws {
-        let material = Backdrop.material(.thin).propValue
-        XCTAssertEqual(Backdrop(propValue: material), .material(.thin))
-        let parts = try XCTUnwrap(material.values)
-        XCTAssertEqual(parts, [.enumeration(1), Material.thin.propValue, Material.thin.standIn.propValue])
-        XCTAssertTrue(parts[2].isThemed, "the stand-in follows the theme")
+    /// A material crosses as itself and comes back so: a colour as the colour - so a colour's channel writes a
+    /// material - a gradient as its brush, a blur and glass with what stands in for them, a pair as its halves.
+    func testAMaterialCrossesAsItselfWithWhatStandsInForIt() throws {
+        XCTAssertEqual(Material.color(.tomato).propValue, Color.tomato.propValue, "a colour's channel is a material's")
+        XCTAssertEqual(Material.gradient(.solidColor(.tomato)), .color(.tomato), "a brush of one colour is the colour")
 
-        let glass = Glass.clear.tint(Color("#512BD4")).isInteractive(true)
-        XCTAssertEqual(Backdrop(propValue: Backdrop.glass(glass).propValue), .glass(glass))
-        XCTAssertEqual(Backdrop(propValue: Backdrop.glass(.regular).propValue), .glass(.regular))
-        let glassParts = try XCTUnwrap(Backdrop.glass(glass).propValue.values)
-        XCTAssertEqual(glassParts[4], Material.ultraThin.propValue, "clear glass stands in as the thinnest material")
-        XCTAssertEqual(try XCTUnwrap(Backdrop.glass(.regular).propValue.values)[4], Material.regular.propValue)
-        XCTAssertNil(Backdrop(propValue: Color("#512BD4").propValue))
+        let blur = Material.blur(.thin.tint(.indigo))
+        XCTAssertEqual(Material(propValue: blur.propValue), blur)
+        let parts = try XCTUnwrap(blur.propValue.values)
+        XCTAssertEqual(parts.first, .enumeration(4))
+        XCTAssertEqual(parts[3], Blur.Thickness.thin.standIn.propValue)
+        XCTAssertTrue(parts[3].isThemed, "the stand-in follows the theme")
+
+        let glass = Material.glass(.clear.tint(Color("#512BD4")).isInteractive(true))
+        XCTAssertEqual(Material(propValue: glass.propValue), glass)
+        let glassParts = try XCTUnwrap(glass.propValue.values)
+        XCTAssertEqual(glassParts[4], Blur.Thickness.ultraThin.propValue, "clear glass stands in as the thinnest blur")
+        XCTAssertEqual(try XCTUnwrap(Material.glass(.regular).propValue.values)[4], Blur.Thickness.regular.propValue)
+
+        let night = Material(light: nil, dark: .blur(.thick))
+        XCTAssertEqual(night.propValue, .themed(light: .nothing, dark: Material.blur(.thick).propValue))
+        XCTAssertEqual(Material(propValue: night.propValue), night)
+        XCTAssertEqual(
+            Material(light: .color(.white), dark: .color(.black)), .color(Color(light: .white, dark: .black)),
+            "a pair of colours is the colour pair")
+        XCTAssertNil(Material(propValue: .nothing))
     }
 
     /// The accent crosses as the system's colour, let through as it was asked, and the differ resolves it to the

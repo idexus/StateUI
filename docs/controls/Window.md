@@ -43,13 +43,13 @@ Inherits nothing: every member below is its own.
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (23)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>16 ✅ · 6 ✓</td><td><code>NSWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>4 ✅ · 4 ✓ · 9 –</td><td><code>UIWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>4 ✅ · 4 ✓ · 13 –</td><td><code>Activity</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>22 ✅ · 1 ☑️</td><td><code>Window</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 7 ✓ · 8 –</td><td><code>GtkApplicationWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>4 ✅ · 4 ✓ · 15 –</td><td>browser <code>window</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (22)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>14 ✅ · 1 ☑️ · 6 ✓</td><td><code>NSWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>21 ✅ · 1 ☑️</td><td><code>Window</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 7 ✓ · 7 –</td><td><code>GtkApplicationWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 14 –</td><td>browser <code>window</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContract.swift`.
@@ -59,10 +59,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContrac
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>backdrop</code></td><td>property</td><td><code>Backdrop</code></td><td>adaptive</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">☑️</td><td align="center">–</td><td align="center">–</td></tr>
-<tr><td colspan="9">UIKit: iPadOS draws an application's window opaque: no material shows through one.<br>Android Views: An activity is translucent by the theme it starts in: a window cannot turn it so.<br>WinUI 3: A window shows the one desktop acrylic WinUI's backdrop draws, whatever the thickness.<br>GTK 4: GNOME draws its windows opaque: no material shows through one.<br>Web: A page draws its window opaque: no material of the system shows through it.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
-<tr><td colspan="9">GTK 4: only through the host's own: read background of Window: the class of the host's style sheet the widget wears: GTK reads back no background</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">AppKit: A window's glass is drawn as the blur as clear as it is.<br>UIKit: iPadOS draws an application's window opaque: a blur or glass shows its colour.<br>Android Views: An activity is opaque by the theme it starts in: a blur or glass shows its colour.<br>WinUI 3: A window shows the one desktop acrylic WinUI's backdrop draws, whatever the blur's thickness; glass is drawn as the acrylic.<br>GTK 4: only through the host's own: read background of Window: the class of the host's style sheet the widget wears: GTK reads back no background<br>Web: A page draws its window opaque: a blur or glass shows its colour.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>created</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: switchAway on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: switchAway on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows<br>Web: only through the host's own: switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window</td></tr></tbody>

@@ -58,7 +58,8 @@ extension GTKElement {
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             case .ignoresInput: view.setIgnoresInput(value(.ignoresInput)?.bool ?? false)
             case .isVisible: view.setShown(isShown)
-            case .background: view.setBackground(value(.background))
+            // GTK blurs nothing behind a widget: a blur's or glass's colour stands in, its tint over it.
+            case .background: view.setBackground(HostMaterial(value(.background)).painted)
             default: break
             }
         }

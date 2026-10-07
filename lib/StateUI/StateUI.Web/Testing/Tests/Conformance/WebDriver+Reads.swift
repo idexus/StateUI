@@ -93,7 +93,8 @@ extension WebDriver {
         case (.window, .title): return try WebBrowser.evaluate("document.title", on: 0)?.propValue
         case (.window, .background):
             guard let frame = renderer?.roster.controllers.first?.window.frame else { return nil }
-            return .some(try color("getComputedStyle(e).backgroundColor", on: frame.node, unlessClear: true)?.propValue)
+            return .some(try color("getComputedStyle(e).backgroundColor", on: frame.node, unlessClear: true)
+                .map { StandIns.material(painted: $0).propValue })
         case (_, .barTitle): return .some(try barWords(".stateui-bar-name"))
         case (_, .barSubtitle): return .some(try barWords(".stateui-bar-subtitle"))
         case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background"))
@@ -357,7 +358,13 @@ extension WebDriver {
         case .clipsContent: return try WebBrowser.truth("\(style).overflow === 'hidden'", on: e).propValue
         case .letsInputThrough: return try WebBrowser.truth("e.hasAttribute('data-lets-through')", on: e).propValue
         case .background:
-            return .some(try color("\(style).backgroundColor", on: e, unlessClear: true).map { Background.color($0).propValue })
+            // A page has no glass: the filter's blur says the blur drawn; else the box's colour.
+            let blur = try WebBrowser.number(
+                "parseFloat((\(style).backdropFilter.match(/blur\\(([\\d.]+)px\\)/) || [])[1]) || 0", on: e) ?? 0
+            if let thickness = Blur.Thickness.allCases.first(where: { WebBox.blur($0) == blur }) {
+                return .some(Material.blur(Blur(thickness)).propValue)
+            }
+            return .some(try color("\(style).backgroundColor", on: e, unlessClear: true).map { Material.color($0).propValue })
         case .stroke:
             let drawn = try WebBrowser.truth("\(style).borderTopStyle !== 'none' && parseFloat(\(style).borderTopWidth) > 0", on: e)
             return .some(drawn ? try color("\(style).borderTopColor", on: e, unlessClear: true).map { Brush.solidColor($0).propValue } : nil)
@@ -367,11 +374,6 @@ extension WebDriver {
             if try WebBrowser.truth("\(style).borderTopLeftRadius.endsWith('%')", on: e) { return ContainerShape.ellipse.propValue }
             let radius = try WebBrowser.number("parseFloat(\(style).borderTopLeftRadius) || 0", on: e) ?? 0
             return (radius == 0 ? ContainerShape.rectangle : .roundedRectangle(radius)).propValue
-        case .backdrop:
-            // A page has no glass: the blur says the material drawn.
-            let blur = try WebBrowser.number(
-                "parseFloat((\(style).backdropFilter.match(/blur\\(([\\d.]+)px\\)/) || [])[1]) || 0", on: e) ?? 0
-            return .some(Material.allCases.first { WebBox.blur($0) == blur }.map { Backdrop.material($0).propValue })
         default: return nil
         }
     }

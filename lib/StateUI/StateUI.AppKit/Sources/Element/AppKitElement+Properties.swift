@@ -93,9 +93,9 @@ extension AppKitElement {
 
         applyVisibility()
         if let scroll = view as? AppKitScrollView {
-            scroll.boxBackground = color(.background)
+            scroll.boxBackground = paintedColor(value(.background))
         } else if !(view is AppKitTravellingLayout), !AppKitRegistrations.drawOwnBackground.contains(type) {
-            let background = color(.background)
+            let background = paintedColor(value(.background))
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
         }
@@ -127,7 +127,7 @@ extension AppKitElement {
                 ? .noImage
                 : (button.title.isEmpty ? .imageOnly : .imageLeading)
 
-            let background = color(.background)
+            let background = paintedColor(value(.background))
             button.isBordered = background == nil
             button.wantsLayer = background != nil
             button.layer?.backgroundColor = background?.cgColor
@@ -147,7 +147,7 @@ extension AppKitElement {
 
         if let layout = view as? AppKitTravellingLayout {
             layout.decoration.apply(
-                backdrop: value(.backdrop), background: value(.background), stroke: value(.stroke),
+                background: value(.background), stroke: value(.stroke),
                 lineWidth: value(.lineWidth)?.number, shape: value(.shape),
                 clips: value(.clipsContent)?.bool ?? false, to: layout)
         }

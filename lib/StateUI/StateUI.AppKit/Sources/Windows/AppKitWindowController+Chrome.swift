@@ -151,13 +151,12 @@ extension AppKitWindowController {
     /// show. With none written, the band is the system's material.
     ///
     /// The window's background is the one written for the window alone - the
-    /// bars' colour paints the bars - else the system's. On a translucent
-    /// window the window keeps none: its material, the system's, shows around
-    /// the sidebar and under the page, tinted by the background written for
-    /// the window.
+    /// bars' colour paints the bars - else the system's. Where it is a blur,
+    /// the window keeps no colour: its material, the system's, shows around the
+    /// sidebar and under the page, tinted by the blur's tint.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
-        let written = traits?.background.flatMap(nsColor)
+        let written = traits?.background.paint.flatMap(nsColor)
         let background = backdrop != nil ? NSColor.clear : (written ?? .windowBackgroundColor)
         // A background that lets the desktop through - clear, or a colour with an alpha - asks a window that is not opaque.
         window.isOpaque = backdrop == nil && background.alphaComponent >= 1

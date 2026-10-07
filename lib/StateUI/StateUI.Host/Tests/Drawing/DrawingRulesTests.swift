@@ -22,52 +22,53 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(gradient.firstColor, red)
     }
 
-    /// A backdrop is read with what stands in for it: glass, where the tree asks for glass, the material a host
-    /// with no glass draws, and the colour a host with no materials draws; anything else is no backdrop.
+    /// A material is read as what paints it, the blur behind it, its glass and the colour standing in for the
+    /// blur: a colour is its paint alone, a blur its tint over its thickness, glass the blur as clear as it is.
     @MainActor
-    func testABackdropIsReadWithWhatStandsInForIt() throws {
-        let thin = try XCTUnwrap(HostBackdrop(Backdrop.material(.thin).propValue.resolvingTheme()))
+    func testAMaterialIsReadWithWhatStandsInForIt() throws {
+        XCTAssertEqual(HostMaterial(red).paint, red)
+        XCTAssertNil(HostMaterial(red).blur)
+        XCTAssertTrue(HostMaterial(nil).isEmpty)
+        XCTAssertTrue(HostMaterial(.nothing).isEmpty)
+
+        let thin = HostMaterial(Material.blur(.thin.tint(Color(red: 0, green: 0, blue: 255))).propValue.resolvingTheme())
+        XCTAssertEqual(thin.blur, .thin)
+        XCTAssertEqual(thin.paint, blue)
         XCTAssertNil(thin.glass)
-        XCTAssertEqual(thin.material, .thin)
-        XCTAssertEqual(thin.standIn, Material.thin.standIn.propValue.resolvingTheme())
+        XCTAssertEqual(thin.standIn, Blur.Thickness.thin.standIn.propValue.resolvingTheme())
 
-        let glass = Backdrop.glass(Glass.clear.tint(Color(red: 255, green: 0, blue: 0)).isInteractive(true))
-        let clear = try XCTUnwrap(HostBackdrop(glass.propValue.resolvingTheme()))
-        XCTAssertEqual(clear.glass, HostBackdrop.Glass(isClear: true, tint: red, isInteractive: true))
-        XCTAssertEqual(clear.material, .ultraThin)
-        XCTAssertEqual(clear.standIn, Material.ultraThin.standIn.propValue.resolvingTheme())
-        XCTAssertEqual(HostBackdrop(Backdrop.glass(.regular).propValue.resolvingTheme())?.glass?.tint, nil)
-
-        XCTAssertNil(HostBackdrop(red))
-        XCTAssertNil(HostBackdrop(nil))
+        let clear = HostMaterial(Material.glass(.clear.isInteractive(true)).propValue.resolvingTheme())
+        XCTAssertEqual(clear.glass, HostMaterial.Glass(isClear: true, isInteractive: true))
+        XCTAssertEqual(clear.blur, .ultraThin, "clear glass stands in as the thinnest blur")
+        XCTAssertNil(clear.paint)
     }
 
-    /// A host with no materials paints the fill laid over the stand-in: a colour with an alpha tints it, an
-    /// opaque one covers it, a gradient's every colour lies over it, and nothing leaves the stand-in alone.
+    /// A host that blurs nothing paints the paint laid over the stand-in: a colour with an alpha tints it, an
+    /// opaque one covers it, and no paint leaves the stand-in alone.
     @MainActor
-    func testAFillLiesOverTheStandIn() throws {
+    func testThePaintLiesOverTheStandIn() throws {
         let white = PropValue.color(red: 255, green: 255, blue: 255, alpha: 128)
-        let backdrop = try XCTUnwrap(HostBackdrop(.values([.enumeration(1), Material.thin.propValue, white])))
-        XCTAssertEqual(backdrop.painted(under: nil), white)
-        XCTAssertEqual(backdrop.painted(under: red), red, "an opaque fill covers the stand-in")
+        let tinted = { (tint: PropValue) in
+            HostMaterial(.values([.enumeration(4), Blur.Thickness.thin.propValue, tint, white])).painted
+        }
+        XCTAssertEqual(tinted(.nothing), white)
+        XCTAssertEqual(tinted(red), red, "an opaque tint covers the stand-in")
         XCTAssertEqual(
-            backdrop.painted(under: .color(red: 255, green: 0, blue: 0, alpha: 128)),
-            .color(red: 255, green: 85, blue: 85, alpha: 192), "half red over half white")
-        let gradient = PropValue.values([.enumeration(2), .numbers([]), .number(0), red, .number(1), blue])
-        XCTAssertEqual(
-            backdrop.painted(under: gradient), gradient, "a gradient of opaque colours covers it, stop by stop")
+            tinted(.color(red: 255, green: 0, blue: 0, alpha: 128)), .color(red: 255, green: 85, blue: 85, alpha: 192),
+            "half red over half white")
+        XCTAssertEqual(HostMaterial(red).painted, red, "a colour paints itself")
     }
 
-    /// A backdrop read through its member comes encoded again, its colour a pair: the half of the theme in force
-    /// stands in.
+    /// A material read through its member comes encoded again, its pairs with it: the half of the theme in force
+    /// is read - the stand-in's, the material's own.
     @MainActor
-    func testABackdropsPairIsTheHalfOfTheThemeInForce() throws {
-        guard case .themed(let light, let dark) = Material.thin.standIn.propValue else {
-            return XCTFail("a material's stand-in is a pair")
+    func testAPairIsTheHalfOfTheThemeInForce() throws {
+        guard case .themed(let light, let dark) = Blur.Thickness.thin.standIn.propValue else {
+            return XCTFail("a blur's stand-in is a pair")
         }
-        let read = try XCTUnwrap(HostBackdrop(Backdrop.material(.thin).propValue))
-        XCTAssertEqual(read.standIn, HostThemes.current == .dark ? dark : light)
-        XCTAssertNotNil(HostBackdrop(Backdrop.glass(.clear.tint(Color(light: .white, dark: .black))).propValue)?.glass?.tint)
+        XCTAssertEqual(HostMaterial(Material.blur(.thin).propValue).standIn, HostThemes.current == .dark ? dark : light)
+        let night = HostMaterial(Material(light: nil, dark: .blur(.thick)).propValue)
+        XCTAssertEqual(night.isEmpty, HostThemes.current != .dark, "a nil half is the platform's own")
     }
 
     /// A gradient of one stop paints its one colour; of none, nothing - on every host, whatever its toolkit makes of

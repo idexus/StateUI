@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.frameChanged: ✅
 Button.height: ✅
@@ -9,52 +9,56 @@ CheckBox.opacity: ✅
 CheckBox.pivotY: ✅
 ColorBox.translationY: ✅
 ColorBox.zIndex: ✅
-DatePicker.background: ✅
+DatePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Ellipse.frame: ✅
 Ellipse.scaleX: ✅
 Grid.accessibilityHeading: ✅
-HStack.opacity: ✅
-HStack.pivotY: ✅
-Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-Image.scaleY: ✅
-Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-ItemsView.isAccessibilityHidden: ✅
-Line.accessibilityLabel: ✅
-Map.isVisible: 🧩
-Map.pivotX: 🧩
-Path.style: ✅
-Path.translationX: ✅
-Picker.automationExcludedWithChildren: ✅
-Polygon.ignoresInput: ✅
-Polygon.scale: ✅
-Polyline.accessibilityHint: ✅
-ProgressBar.opacity: ✅
-ProgressBar.pivotY: ✅
-RadioButton.style: ✅
-RadioButton.translationX: ✅
-Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
-ScrollView.ignoresInput: ✅
-ScrollView.scale: ✅
-SearchField.accessibilityHint: ✅
-Slider.isEnabled: ✅
-Slider.rotation: ✅
-Stepper.accessibilityHeading: ✅
-Switch.isVisible: ✅
-Switch.pivotX: ✅
-Text.frameChanged: ✅
-Text.maximumHeight: ✅
-Text.maximumWidth: ✅
-Text.minimumHeight: ✅
-Text.minimumWidth: ✅
-Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
-TextEditor.style: ✅
-TextEditor.translationX: ✅
-TextField.background: ✅
-TimePicker.frame: ✅
-TimePicker.scaleX: ✅
-VStack.isAccessibilityHidden: ✅
-WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
-WebView.rotation: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.isEnabled: ✅
+HStack.isVisible: ✅
+HStack.pivotX: ✅
+Image.ignoresInput: ✅
+Image.scale: ✅
+ItemsView.accessibilityHint: ✅
+Line.translationY: ✅
+Line.zIndex: ✅
+Map.background: 🧩
+Path.frame: ✅
+Path.scaleX: ✅
+Picker.accessibilityHeading: ✅
+Polygon.frameChanged: ✅
+Polygon.height: ✅
+Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
+Polygon.width: ✅
+Polyline.accessibilityHeading: ✅
+Polyline.isEnabled: ✅
+ProgressBar.layoutDirection: ✅
+RadioButton.frame: ✅
+RadioButton.scaleX: ✅
+Rectangle.isAccessibilityHidden: ✅
+ScrollView.frameChanged: ✅
+ScrollView.height: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
+ScrollView.width: ✅
+SearchField.accessibilityHeading: ✅
+Slider.isVisible: ✅
+Slider.pivotX: ✅
+Stepper.style: ✅
+Stepper.translationX: ✅
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Text.rotation: ✅
+TextEditor.frame: ✅
+TextEditor.scaleX: ✅
+TextField.isAccessibilityHidden: ✅
+TimePicker.frameChanged: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.accessibilityHint: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.scaleY: ✅
+ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

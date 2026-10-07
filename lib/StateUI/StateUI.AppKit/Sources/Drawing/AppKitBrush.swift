@@ -87,6 +87,13 @@ struct AppKitBrush {
     }
 }
 
+/// The colour a view that blurs nothing paints its background in: a colour, or a blur's or glass's tint over the
+/// colour standing in for it (`HostMaterial.painted`); nil for a gradient or nothing.
+@MainActor
+func paintedColor(_ material: HostValue?) -> NSColor? {
+    HostMaterial(material).painted.flatMap(nsColor)
+}
+
 /// A StateUI colour is four sRGB channels, drawn in sRGB exactly.
 func nsColor(_ value: HostValue) -> NSColor? {
     guard let color = value.color else { return nil }

@@ -18,7 +18,7 @@ extension UIKitDriver {
         }
         switch property {
         case .title: return (window.windowScene?.title ?? "").propValue
-        case .background: return window.backgroundColor.map { Self.color($0).propValue }
+        case .background: return window.backgroundColor.map { StandIns.material(painted: Self.color($0)).propValue }
         default: throw DriverCannot(reading: property, of: element)
         }
     }

@@ -37,7 +37,7 @@
             Specimens.wearing(tier).contains(element) ? worn : []
         }
         let visual: [any Worn] = [
-            Write(VisualElementContract.background, Background.color(.red)), Write(VisualElementContract.opacity, 0.9),
+            Write(VisualElementContract.background, Material.color(.red)), Write(VisualElementContract.opacity, 0.9),
         ]
         let gestures: [any Worn] = [
             HearDone(ViewContract.tapped) {}, HearDone(ViewContract.pointerEntered) {},

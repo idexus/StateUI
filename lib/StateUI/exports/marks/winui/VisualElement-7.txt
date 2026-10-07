@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.frame: ✅
 ActivityIndicator.scaleX: ✅
 Button.accessibilityHeading: ✅
@@ -14,53 +14,49 @@ DatePicker.translationX: ✅
 Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Grid.ignoresInput: ✅
 Grid.scale: ✅
-HStack.accessibilityLabel: ✅
+HStack.accessibilityHeading: ✅
 HStack.isEnabled: ✅
-Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ItemsView.frame: ✅
-ItemsView.scaleX: ✅
-Line.frameChanged: ✅
-Line.height: ✅
-Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
-Line.width: ✅
-Map.accessibilityHeading: 🧩
-Path.isVisible: ✅
-Path.pivotX: ✅
-Picker.focus: ✅
-Picker.isFocusedChanged: ✅
-Picker.scaleY: ✅
-Picker.unfocus: ✅
-Polygon.automationExcludedWithChildren: ✅
-Polyline.frameChanged: ✅
-Polyline.maximumHeight: ✅
-Polyline.maximumWidth: ✅
-Polyline.minimumHeight: ✅
-Polyline.minimumWidth: ✅
-Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
-ProgressBar.accessibilityLabel: ✅
-RadioButton.isVisible: ✅
-RadioButton.pivotX: ✅
-Rectangle.style: ✅
-Rectangle.translationX: ✅
-ScrollView.automationExcludedWithChildren: ✅
-SearchField.frameChanged: ✅
-SearchField.maximumHeight: ✅
-SearchField.maximumWidth: ✅
-SearchField.minimumHeight: ✅
-SearchField.minimumWidth: ✅
-SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
-Slider.accessibilityHint: ✅
-Stepper.isEnabled: ✅
-Stepper.rotation: ✅
-Switch.accessibilityHeading: ✅
-Text.isAccessibilityHidden: ✅
-TextEditor.isVisible: ✅
-TextEditor.pivotX: ✅
-TextField.style: ✅
-TextField.translationX: ✅
-TimePicker.background: ✅
-VStack.frame: ✅
-VStack.scaleX: ✅
-WebView.accessibilityHint: ✅
-ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-ZStack.rotation: ✅
+Image.automationExcludedWithChildren: ✅
+ItemsView.frameChanged: ✅
+ItemsView.maximumHeight: ✅
+ItemsView.maximumWidth: ✅
+ItemsView.minimumHeight: ✅
+ItemsView.minimumWidth: ✅
+ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own tip, checked against the projection it laid on the element
+Line.opacity: ✅
+Line.pivotY: ✅
+Map.style: 🧩
+Map.translationX: 🧩
+Path.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Picker.ignoresInput: ✅
+Picker.scale: ✅
+Polygon.accessibilityHeading: ✅
+Polyline.isEnabled: does not apply - read isEnabled of Polyline - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Polyline.rotation: ✅
+ProgressBar.translationY: ✅
+ProgressBar.zIndex: ✅
+RadioButton.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Rectangle.frame: ✅
+Rectangle.scaleX: ✅
+ScrollView.accessibilityHeading: ✅
+SearchField.isEnabled: ✅
+SearchField.rotation: ✅
+Slider.accessibilityHeading: ✅
+Stepper.isVisible: ✅
+Stepper.pivotX: ✅
+Switch.style: ✅
+Switch.translationX: ✅
+Text.accessibilityHint: ✅
+TextEditor.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TextField.frame: ✅
+TextField.scaleX: ✅
+TimePicker.isAccessibilityHidden: ✅
+VStack.frameChanged: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+VStack.rotationY: ✓ read rotationY of VStack: the host's own tip, checked against the projection it laid on the element
+WebView.translationY: ✅
+WebView.zIndex: ✅
+ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned

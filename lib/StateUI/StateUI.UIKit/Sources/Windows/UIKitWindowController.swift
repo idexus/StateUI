@@ -92,7 +92,7 @@ final class UIKitWindowController {
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         let changes = presentation.show(element, in: runtime.lifecycle)
         if let traits = changes.traits {
-            background = traits.background.flatMap(UIColor.init(stateUI:))
+            background = traits.background.painted.flatMap(UIColor.init(stateUI:))
             window?.backgroundColor = background
         }
         if let (_, arrangement) = changes.arrangement {

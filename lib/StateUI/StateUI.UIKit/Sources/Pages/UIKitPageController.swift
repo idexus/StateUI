@@ -52,7 +52,7 @@ final class UIKitPageController: UIViewController {
     /// The page's background behind the whole screen it stands on, the bars and the notch included; the system's
     /// where the page says none.
     func showBackground() {
-        let background = page?.element.value(.background).flatMap { HostBrush($0).firstColor }
+        let background = HostMaterial(page?.element.value(.background)).painted.flatMap { HostBrush($0).firstColor }
         view.backgroundColor = background.flatMap(UIColor.init(stateUI:)) ?? .systemBackground
     }
 

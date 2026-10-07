@@ -50,7 +50,7 @@ extension WinUIDriver {
         throw cannot
     }
 
-    /// A window's: the name the system shows, its place and size, their bounds, its buttons, its backdrop, whether it
+    /// A window's: the name the system shows, its place and size, their bounds, its buttons, its material, whether it
     /// floats and stands shown, and the kind and value the host keeps it by for the next start.
     private func windowHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
         let window = try window(of: element)
@@ -58,18 +58,21 @@ extension WinUIDriver {
             let kept = try keptWindow(element)
             return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
         }
-        if name == "backdrop" {
-            // The desktop acrylic WinUI shows, at the thickness the window was given.
+        if name == "background" {
+            // The desktop acrylic WinUI shows, at the thickness the window was given, its colour the tint; else the
+            // window's colour.
             var values = [Double](repeating: 0, count: 13)
             stateui_winui_window_frame(window.handle, &values)
-            guard values[10] == 1, let material = window.backdrop else { return nil }
-            return Backdrop.material(material).propValue
-        }
-        if name == "background" {
             var argb: UInt32 = 0
-            guard stateui_winui_window_background(window.handle, &argb) else { return nil }
-            return Color(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
-                         alpha: Int(argb >> 24 & 255)).propValue
+            let painted = stateui_winui_window_background(window.handle, &argb)
+                ? Color(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
+                        alpha: Int(argb >> 24 & 255))
+                : nil
+            if values[10] == 1, let thickness = window.backdrop {
+                let blur = Blur(thickness)
+                return Material.blur(painted.map(blur.tint) ?? blur).propValue
+            }
+            return painted.map { Material.color($0).propValue }
         }
         if name == "title" {
             let length = stateui_winui_window_system_title(window.handle, nil, 0)
@@ -232,12 +235,8 @@ extension WinUIDriver {
     private func boxHolds(_ name: String, _ view: WinUIView) throws -> HostValue? {
         if view is WinUILayoutView {
             switch name {
-            case "background": return try Self.color(read(view, "box.fill")).map { Background.color($0).propValue }
-            case "backdrop":
-                // A colour stands in for the material: the material whose colour the box paints.
-                guard let painted = try Self.color(read(view, "box.fill"))?.propValue else { return nil }
-                return Material.allCases.first { HostBackdrop(Backdrop.material($0).propValue)?.standIn == painted }
-                    .map { Backdrop.material($0).propValue }
+            // A colour stands in for a blur: the blur whose colour the box paints, else the colour.
+            case "background": return try Self.color(read(view, "box.fill")).map { StandIns.material(painted: $0).propValue }
             case "stroke": return try Self.color(read(view, "box.stroke")).map { Brush.solidColor($0).propValue }
             case "lineWidth": return Double(try read(view, "box.strokeThickness"))?.propValue
             case "shape":
@@ -251,8 +250,8 @@ extension WinUIDriver {
         switch name {
         case "background" where view is WinUICanvasView:
             let ground = stateui_winui_canvas_ground(view.handle)
-            return ground == 0 ? nil : Background.color(Self.color(ground)).propValue
-        case "background": return try Self.color(read(view, "background")).map { Background.color($0).propValue }
+            return ground == 0 ? nil : Material.color(Self.color(ground)).propValue
+        case "background": return try Self.color(read(view, "background")).map { StandIns.material(painted: $0).propValue }
         case "stroke" where view is WinUIButtonView:
             return try Self.color(read(view, "borderBrush")).map { Brush.solidColor($0).propValue }
         case "lineWidth" where view is WinUIButtonView:

@@ -352,7 +352,7 @@ private struct PangoRun {
             if first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue) { attributes.insert(.italic) }
             return first(PANGO_ATTR_WEIGHT) == nil && first(PANGO_ATTR_STYLE) == nil ? nil : attributes.propValue
         case .textColor: return color(PANGO_ATTR_FOREGROUND, PANGO_ATTR_FOREGROUND_ALPHA)?.propValue
-        case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Background.color($0).propValue }
+        case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Material.color($0).propValue }
         case .tracking:
             return first(PANGO_ATTR_LETTER_SPACING).map { (Double(Self.number($0)) / Double(PANGO_SCALE)).propValue }
         case .lineHeight:

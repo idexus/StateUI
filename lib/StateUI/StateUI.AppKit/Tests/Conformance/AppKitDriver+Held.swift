@@ -29,29 +29,32 @@ extension AppKitDriver {
         case .fontSize, .fontAttributes, .fontFamily, .textColor:
             return try words(property, view)
         case .background:
-            // A field and an editor fill their own; every other view is its layer's colour.
+            // A layout's blur or glass is a view of its own; a field and an editor fill their own; every other view
+            // is its layer's colour.
+            if let surface = (view as? AppKitTravellingLayout)?.decoration.surface { return material(surface)?.propValue }
             let fill: NSColor? = switch view {
             case let field as AppKitTextFieldView: field.fill
             case let editor as AppKitTextEditorView: editor.textView.backgroundColor
             default: view.layer?.backgroundColor.flatMap { NSColor(cgColor: $0) }
             }
-            return fill.map { Background.color(color($0)).propValue }
-        case .backdrop:
-            return (view as? AppKitTravellingLayout)?.decoration.surface.flatMap(backdrop)?.propValue
+            return fill.map { Material.color(color($0)).propValue }
         default:
             return try controlHolds(property, view)
         }
     }
 
-    /// The backdrop a layout's box shows: its glass - how clear, its tint, whether it answers the user - or its
-    /// material, by the role standing for its thickness.
-    private static func backdrop(_ surface: any AppKitBoxSurface) -> Backdrop? {
+    /// The material a layout's box shows: its glass - how clear, its tint, whether it answers the user - or its
+    /// blur, by the role standing for its thickness, in the colour laid over it.
+    private static func material(_ surface: any AppKitBoxSurface) -> Material? {
         if let glass = surface as? AppKitGlassView {
             var shown: Glass = glass.style == .clear ? .clear : .regular
             if let tint = glass.tintColor { shown = shown.tint(color(tint)) }
             return .glass(shown.isInteractive(glass.isInteractiveForTesting))
         }
-        return (surface as? AppKitMaterialView).flatMap { AppKitMaterialView.thickness($0.material) }.map(Backdrop.material)
+        guard let view = surface as? AppKitMaterialView, let thickness = AppKitMaterialView.thickness(view.material)
+        else { return nil }
+        let blur = Blur(thickness)
+        return .blur(view.wash.fill.color.map { blur.tint(color($0)) } ?? blur)
     }
 
     private static func transform(_ property: Prop, _ drawn: HostDrawingTransform) -> HostValue? {

@@ -47,8 +47,7 @@ extension AppKitRegistrations {
                     values[ImageElementContract.contentMode] ?? .fit)
                 let textColor: NSColor = values[TextStyleElementContract.textColor]
                     .flatMap { nsColor($0.propValue) } ?? .controlTextColor
-                let background: NSColor? = values[VisualElementContract.background]
-                    .flatMap { nsColor($0.propValue) }
+                let background = paintedColor(values[VisualElementContract.background]?.propValue)
                 let stroke = values[BorderElementContract.stroke]?.propValue
                 let lineWidth = BoxArithmetic.outlineWidth(
                     stroke: stroke, width: values[BorderElementContract.lineWidth])

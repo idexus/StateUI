@@ -28,9 +28,10 @@ public enum VisualElementContract: Contract {
     public static let automationExcludedWithChildren = ElementProperty<Self, Bool>(
         "automationExcludedWithChildren", layer: .native)
 
-    /// What is drawn behind the element: a colour, or a brush.
-    public static let background = ElementProperty<Self, Background>(
-        "background", layer: .native)
+    /// What the element's surface is made of: a colour, a gradient, a blur of
+    /// what lies behind it, or the platform's glass.
+    public static let background = ElementProperty<Self, Material>(
+        "background", layer: .adaptive)
 
     /// Gives the element the keyboard focus, answering whether it took it.
     public static let focus = ElementAct<Self, Void, Bool>("focus")

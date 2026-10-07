@@ -1,9 +1,9 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
-ActivityIndicator.background: ✅
+ActivityIndicator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
@@ -71,7 +71,7 @@ Canvas.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
-Canvas.background: ✅
+Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
@@ -105,7 +105,7 @@ CheckBox.accessibilityHeading: ☑️ Android marks a heading, not its level: ev
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
-CheckBox.background: ✅
+CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 CheckBox.focus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
@@ -139,7 +139,7 @@ ColorBox.accessibilityHeading: ☑️ Android marks a heading, not its level: ev
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: ✅
+ColorBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
@@ -173,7 +173,7 @@ DatePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: 
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
-DatePicker.background: ✅
+DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 DatePicker.focus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
@@ -207,7 +207,7 @@ Ellipse.accessibilityHeading: ☑️ Android marks a heading, not its level: eve
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
-Ellipse.background: ✅
+Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
@@ -241,7 +241,7 @@ Grid.accessibilityHeading: ☑️ Android marks a heading, not its level: every 
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
-Grid.background: ✅
+Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frame: ✅
 Grid.frameChanged: ✅
@@ -275,7 +275,7 @@ HStack.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
-HStack.background: ✅
+HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frame: ✅
 HStack.frameChanged: ✅
@@ -309,7 +309,7 @@ Image.accessibilityHeading: ☑️ Android marks a heading, not its level: every
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
-Image.background: ✅
+Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.frame: ✅
 Image.frameChanged: ✅
@@ -343,7 +343,7 @@ ItemsView.accessibilityHeading: ☑️ Android marks a heading, not its level: e
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
-ItemsView.background: ✅
+ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ItemsView.focus: ✅
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
@@ -377,7 +377,7 @@ Line.accessibilityHeading: ☑️ Android marks a heading, not its level: every 
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
-Line.background: ✅
+Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.frame: ✅
 Line.frameChanged: ✅
@@ -445,7 +445,7 @@ Path.accessibilityHeading: ☑️ Android marks a heading, not its level: every 
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
-Path.background: ✅
+Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.frame: ✅
 Path.frameChanged: ✅
@@ -479,7 +479,7 @@ Picker.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
-Picker.background: ✅
+Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Picker.focus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.frame: ✅
 Picker.frameChanged: ✅
@@ -513,7 +513,7 @@ Polygon.accessibilityHeading: ☑️ Android marks a heading, not its level: eve
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
-Polygon.background: ✅
+Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
@@ -547,7 +547,7 @@ Polyline.accessibilityHeading: ☑️ Android marks a heading, not its level: ev
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
-Polyline.background: ✅
+Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
@@ -581,7 +581,7 @@ ProgressBar.accessibilityHeading: ☑️ Android marks a heading, not its level:
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.background: ✅
+ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
@@ -615,7 +615,7 @@ RadioButton.accessibilityHeading: ☑️ Android marks a heading, not its level:
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: ✅
+RadioButton.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 RadioButton.focus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
@@ -649,7 +649,7 @@ Rectangle.accessibilityHeading: ☑️ Android marks a heading, not its level: e
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
-Rectangle.background: ✅
+Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
@@ -683,7 +683,7 @@ ScrollView.accessibilityHeading: ☑️ Android marks a heading, not its level: 
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: ✅
+ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
@@ -717,7 +717,7 @@ SearchField.accessibilityHeading: ☑️ Android marks a heading, not its level:
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
-SearchField.background: ✅
+SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
@@ -751,7 +751,7 @@ Slider.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
-Slider.background: ✅
+Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Slider.focus: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
 Slider.frame: ✅
 Slider.frameChanged: ✅
@@ -785,7 +785,7 @@ Stepper.accessibilityHeading: ☑️ Android marks a heading, not its level: eve
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
-Stepper.background: ✅
+Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Stepper.focus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
@@ -819,7 +819,7 @@ Switch.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
-Switch.background: ✅
+Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Switch.focus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
 Switch.frame: ✅
 Switch.frameChanged: ✅
@@ -853,7 +853,7 @@ Text.accessibilityHeading: ☑️ Android marks a heading, not its level: every 
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
-Text.background: ✅
+Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.frame: ✅
 Text.frameChanged: ✅
@@ -887,7 +887,7 @@ TextEditor.accessibilityHeading: ☑️ Android marks a heading, not its level: 
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
-TextEditor.background: ✅
+TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
@@ -921,7 +921,7 @@ TextField.accessibilityHeading: ☑️ Android marks a heading, not its level: e
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
-TextField.background: ✅
+TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
@@ -955,7 +955,7 @@ TimePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: 
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
-TimePicker.background: ✅
+TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TimePicker.focus: – TimePicker takes no keyboard focus here: it refuses it, and nothing is heard
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
@@ -989,7 +989,7 @@ VStack.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
-VStack.background: ✅
+VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frame: ✅
 VStack.frameChanged: ✅
@@ -1023,7 +1023,7 @@ WebView.accessibilityHeading: ☑️ Android marks a heading, not its level: eve
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
-WebView.background: ✅
+WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.frame: ✅
 WebView.frameChanged: ✅
@@ -1057,7 +1057,7 @@ ZStack.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
-ZStack.background: ✅
+ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frame: ✅
 ZStack.frameChanged: ✅

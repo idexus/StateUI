@@ -1,7 +1,7 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.translationY: ✅
 ActivityIndicator.zIndex: ✅
-Button.background: ✅
+Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Canvas.frame: ✅
 Canvas.scaleX: ✅
 CheckBox.isAccessibilityHidden: ✅
@@ -16,51 +16,51 @@ Ellipse.opacity: ✅
 Ellipse.pivotY: ✅
 Grid.style: ✅
 Grid.translationX: ✅
-HStack.isAccessibilityHidden: ✅
-Image.isEnabled: does not apply - read isEnabled of Image - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Image.rotation: ✅
-ItemsView.translationY: ✅
-ItemsView.zIndex: ✅
-Line.frame: ✅
-Line.scaleX: ✅
-Map.accessibilityHeading: 🧩
-Path.frameChanged: ✅
-Path.height: ✅
-Path.rotationX: ✓ read rotationX of Path: the host's own tip, checked against the projection it laid on the element
-Path.width: ✅
-Picker.accessibilityHeading: ✅
-Polygon.isVisible: ✅
-Polygon.pivotX: ✅
-Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.scaleY: ✅
-Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.isAccessibilityHidden: ✅
-RadioButton.frameChanged: ✅
-RadioButton.height: ✅
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own tip, checked against the projection it laid on the element
-RadioButton.width: ✅
-Rectangle.accessibilityLabel: ✅
-ScrollView.isVisible: ✅
-ScrollView.pivotX: ✅
-SearchField.focus: ✅
-SearchField.isFocusedChanged: ✅
-SearchField.scaleY: ✅
-SearchField.unfocus: ✅
-Slider.automationExcludedWithChildren: ✅
-Stepper.ignoresInput: ✅
-Stepper.scale: ✅
-Switch.accessibilityHeading: ✅
-Text.layoutDirection: ✅
-TextEditor.frameChanged: ✅
-TextEditor.height: ✅
-TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextEditor.width: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.opacity: ✅
-TimePicker.pivotY: ✅
-VStack.translationY: ✅
-VStack.zIndex: ✅
-WebView.automationExcludedWithChildren: ✅
-ZStack.ignoresInput: ✅
-ZStack.scale: ✅
+HStack.accessibilityHeading: ✅
+Image.isVisible: ✅
+Image.pivotX: ✅
+ItemsView.focus: ✅
+ItemsView.isFocusedChanged: ✅
+ItemsView.scaleY: ✅
+ItemsView.unfocus: ✅
+Line.frameChanged: ✅
+Line.maximumHeight: ✅
+Line.maximumWidth: ✅
+Line.minimumHeight: ✅
+Line.minimumWidth: ✅
+Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
+Map.accessibilityLabel: 🧩
+Path.opacity: ✅
+Path.pivotY: ✅
+Picker.style: ✅
+Picker.translationX: ✅
+Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Polyline.ignoresInput: ✅
+Polyline.scale: ✅
+ProgressBar.accessibilityHint: ✅
+RadioButton.opacity: ✅
+RadioButton.pivotY: ✅
+Rectangle.translationY: ✅
+Rectangle.zIndex: ✅
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+SearchField.ignoresInput: ✅
+SearchField.scale: ✅
+Slider.accessibilityHeading: ✅
+Stepper.frameChanged: ✅
+Stepper.height: ✅
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
+Stepper.width: ✅
+Switch.accessibilityLabel: ✅
+Text.automationExcludedWithChildren: ✅
+TextEditor.opacity: ✅
+TextEditor.pivotY: ✅
+TextField.translationY: ✅
+TextField.zIndex: ✅
+TimePicker.layoutDirection: ✅
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.scaleY: ✅
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.accessibilityHint: ✅
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ZStack.rotation: ✅

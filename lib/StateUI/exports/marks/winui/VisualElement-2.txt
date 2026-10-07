@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.opacity: ✅
 ActivityIndicator.pivotY: ✅
 Button.style: ✅
@@ -14,49 +14,56 @@ DatePicker.width: ✅
 Ellipse.accessibilityLabel: ✅
 Grid.isVisible: ✅
 Grid.pivotX: ✅
-HStack.frame: ✅
-HStack.scaleX: ✅
-Image.accessibilityHint: ✅
-ItemsView.opacity: ✅
-ItemsView.pivotY: ✅
-Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Map.ignoresInput: 🧩
-Map.scale: 🧩
-Path.accessibilityHeading: ✅
-Picker.isEnabled: ✅
-Picker.rotation: ✅
-Polygon.accessibilityHeading: ✅
-Polygon.isEnabled: ✅
-Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ProgressBar.frame: ✅
-ProgressBar.scaleX: ✅
-RadioButton.accessibilityHeading: ✅
-Rectangle.frameChanged: ✅
-Rectangle.height: ✅
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
-Rectangle.width: ✅
-ScrollView.accessibilityHeading: ✅
-ScrollView.isEnabled: ✅
-SearchField.layoutDirection: ✅
-Slider.focus: ✅
-Slider.isFocusedChanged: ✅
-Slider.scaleY: ✅
-Slider.unfocus: ✅
-Stepper.automationExcludedWithChildren: ✅
-Switch.ignoresInput: ✅
-Switch.scale: ✅
-Text.translationY: ✅
-Text.zIndex: ✅
-TextEditor.accessibilityHeading: ✅
-TextField.frameChanged: ✅
-TextField.height: ✅
-TextField.rotationX: ✓ read rotationX of TextField: the host's own tip, checked against the projection it laid on the element
-TextField.width: ✅
-TimePicker.accessibilityLabel: ✅
-VStack.opacity: ✅
-VStack.pivotY: ✅
-WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.scaleY: ✅
-WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.automationExcludedWithChildren: ✅
+HStack.ignoresInput: ✅
+HStack.scale: ✅
+Image.accessibilityHeading: ✅
+Image.isEnabled: ✅
+ItemsView.layoutDirection: ✅
+Line.isAccessibilityHidden: ✅
+Map.frameChanged: 🧩
+Map.height: 🧩
+Map.rotationX: 🧩
+Map.width: 🧩
+Path.accessibilityLabel: ✅
+Picker.isVisible: ✅
+Picker.pivotX: ✅
+Polygon.style: ✅
+Polygon.translationX: ✅
+Polyline.automationExcludedWithChildren: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.maximumHeight: ✅
+ProgressBar.maximumWidth: ✅
+ProgressBar.minimumHeight: ✅
+ProgressBar.minimumWidth: ✅
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
+RadioButton.accessibilityLabel: ✅
+Rectangle.opacity: ✅
+Rectangle.pivotY: ✅
+ScrollView.style: ✅
+ScrollView.translationX: ✅
+SearchField.automationExcludedWithChildren: ✅
+Slider.ignoresInput: ✅
+Slider.scale: ✅
+Stepper.accessibilityHeading: ✅
+Switch.frameChanged: ✅
+Switch.height: ✅
+Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
+Switch.width: ✅
+Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+Text.scaleY: ✅
+Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
+TextEditor.accessibilityLabel: ✅
+TextField.opacity: ✅
+TextField.pivotY: ✅
+TimePicker.translationY: ✅
+TimePicker.zIndex: ✅
+VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+WebView.frameChanged: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+WebView.rotationY: ✓ read rotationY of WebView: the host's own tip, checked against the projection it laid on the element
+ZStack.accessibilityHint: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.

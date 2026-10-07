@@ -56,15 +56,15 @@ its own and no outline loses the browser's border, so a button drawn by the
 application carries no frame of the browser's.
 
 
-## A backdrop
+## A blur
 
-A page has no materials and no glass of its own: a box's backdrop is a
-`backdrop-filter` blur of what lies behind it - 12, 18, 24 or 32 pixels from
-ultra thin to thick, saturated as the platforms' materials are - under the
-material's own colour, the theme's stand-in, with the box's fill laid over
-both as a second background layer. Glass is drawn as the material as clear as
-it is, which the register records as missing (☑️). The driver reads the blur
-back to its material.
+A page has no blur and no glass of its own: a box's blur is a
+`backdrop-filter` of what lies behind it - 12, 18, 24, 32 or 40 pixels from
+ultra thin to ultra thick, saturated as the platforms' blurs are - under the
+blur's own colour, the theme's stand-in, with its tint laid over both as a
+second background layer. Glass is drawn as the blur as clear as it is, which
+the register records as missing (☑️). The driver reads the filter back to its
+blur.
 
 ## A canvas
 

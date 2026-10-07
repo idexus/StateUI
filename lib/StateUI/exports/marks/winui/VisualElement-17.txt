@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
 Button.ignoresInput: ✅
 Button.scale: ✅
@@ -13,57 +13,48 @@ DatePicker.pivotX: ✅
 Ellipse.style: ✅
 Ellipse.translationX: ✅
 Grid.automationExcludedWithChildren: ✅
-HStack.frameChanged: ✅
-HStack.height: ✅
-HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
-HStack.width: ✅
-Image.translationY: ✅
-Image.zIndex: ✅
-ItemsView.background: ✅
-Line.accessibilityHeading: ✅
-Map.isEnabled: 🧩
-Map.rotation: 🧩
-Path.accessibilityHeading: ✅
-Path.isEnabled: ✅
-Picker.layoutDirection: ✅
-Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polygon.scaleY: ✅
-Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.isAccessibilityHidden: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.height: ✅
-ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
-ProgressBar.width: ✅
-RadioButton.accessibilityHeading: ✅
-Rectangle.isVisible: ✅
-Rectangle.pivotX: ✅
-ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.scaleY: ✅
-ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-SearchField.isAccessibilityHidden: ✅
-Slider.frameChanged: ✅
-Slider.maximumHeight: ✅
-Slider.maximumWidth: ✅
-Slider.minimumHeight: ✅
-Slider.minimumWidth: ✅
-Slider.rotationY: ✓ read rotationY of Slider: the host's own tip, checked against the projection it laid on the element
-Stepper.accessibilityHint: ✅
-Switch.isEnabled: ✅
-Switch.rotation: ✅
-Text.frame: ✅
-Text.scaleX: ✅
-TextEditor.accessibilityHeading: ✅
-TextField.isVisible: ✅
-TextField.pivotX: ✅
-TimePicker.style: ✅
-TimePicker.translationX: ✅
-VStack.background: ✅
-WebView.frameChanged: ✅
-WebView.maximumHeight: ✅
-WebView.maximumWidth: ✅
-WebView.minimumHeight: ✅
-WebView.minimumWidth: ✅
-WebView.rotationY: ✓ read rotationY of WebView: the host's own tip, checked against the projection it laid on the element
-ZStack.accessibilityHint: ✅
+HStack.isEnabled: does not apply - read isEnabled of HStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+HStack.rotation: ✅
+Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+Image.scaleY: ✅
+Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.isAccessibilityHidden: ✅
+Line.accessibilityLabel: ✅
+Map.isVisible: 🧩
+Map.pivotX: 🧩
+Path.style: ✅
+Path.translationX: ✅
+Picker.automationExcludedWithChildren: ✅
+Polygon.ignoresInput: ✅
+Polygon.scale: ✅
+Polyline.accessibilityHint: ✅
+ProgressBar.opacity: ✅
+ProgressBar.pivotY: ✅
+RadioButton.style: ✅
+RadioButton.translationX: ✅
+Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
+ScrollView.ignoresInput: ✅
+ScrollView.scale: ✅
+SearchField.accessibilityHint: ✅
+Slider.isEnabled: ✅
+Slider.rotation: ✅
+Stepper.accessibilityHeading: ✅
+Switch.isVisible: ✅
+Switch.pivotX: ✅
+Text.frameChanged: ✅
+Text.maximumHeight: ✅
+Text.maximumWidth: ✅
+Text.minimumHeight: ✅
+Text.minimumWidth: ✅
+Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
+TextEditor.style: ✅
+TextEditor.translationX: ✅
+TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TimePicker.frame: ✅
+TimePicker.scaleX: ✅
+VStack.isAccessibilityHidden: ✅
+WebView.opacity: ✅
+WebView.pivotY: ✅
+ZStack.translationY: ✅
+ZStack.zIndex: ✅

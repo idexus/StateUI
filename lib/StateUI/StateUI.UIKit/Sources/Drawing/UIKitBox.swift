@@ -6,9 +6,10 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A layout's box: its backdrop, its fill within its outline, the outline's stroke inside its edge, all behind the
-/// children - by their depth, whatever their order - and the cut of what the layout shows to the outline, each a
-/// layer made only while there is something to paint. Over a backdrop the fill and the stroke are the backdrop's.
+/// A layout's box: its background within its outline - a colour or a gradient, or a blur or glass with its tint - the
+/// outline's stroke inside its edge, all behind the children - by their depth, whatever their order - and the cut
+/// of what the layout shows to the outline, each made only while there is something to paint. Over a blur or glass
+/// the stroke is the effect's.
 /// Design: docs/design/platforms/uikit/drawing.md#a-layouts-box
 @MainActor
 struct UIKitBox {
@@ -17,7 +18,7 @@ struct UIKitBox {
     private var width = 0.0
     private var outline = ContainerShape.rectangle
     private var clips = false
-    private var backdrop: HostBackdrop?
+    private var material = HostMaterial(nil)
 
     private var fillLayer: CALayer?
     private(set) var backdropView: UIKitBackdropView?
@@ -26,11 +27,9 @@ struct UIKitBox {
     private var generation = 0
 
     /// Takes what the tree says of the box, by the host layer's reading of it (`BoxArithmetic`).
-    mutating func set(
-        backdrop: HostValue?, fill: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool
-    ) {
-        self.backdrop = HostBackdrop(backdrop)
-        self.fill = UIKitBrush(fill)
+    mutating func set(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
+        material = HostMaterial(background)
+        fill = UIKitBrush(material.paint)
         self.stroke = UIKitBrush(stroke)
         self.width = BoxArithmetic.outlineWidth(stroke: stroke, width: width)
         outline = BoxArithmetic.outline(shape)
@@ -50,17 +49,17 @@ struct UIKitBox {
 
         let bounds = view.bounds
         let path = outline.path(in: bounds)
-        if let backdrop {
+        let own = material.blur == nil
+        if !own {
             let shown = backdropView ?? UIKitBackdropView()
             if backdropView == nil { view.insertSubview(shown, at: 0) }
             backdropView = shown
-            shown.show(backdrop)
-            shown.lay(fill, stroke: stroke, width: width, over: bounds, cut: outline)
+            shown.show(material)
+            shown.lay(material.glass == nil ? fill : UIKitBrush(), stroke: stroke, width: width, over: bounds, cut: outline)
         } else {
             backdropView?.removeFromSuperview()
             backdropView = nil
         }
-        let own = backdrop == nil
         let filled = own ? fill.layer(over: bounds, reusing: fillLayer) : nil
         if filled !== fillLayer {
             fillLayer?.removeFromSuperlayer()

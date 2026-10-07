@@ -34,13 +34,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 1 ☑️ · 36 ✓ · 3 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>58 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>58 ✅ · 1 ☑️ · 13 ✓ · 3 –</td><td><code>StackPanel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>49 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td><code>GtkBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>51 ✅ · 2 ☑️ · 20 ✓ · 3 –</td><td>flexbox</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (76)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>35 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>57 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>57 ✅ · 1 ☑️ · 13 ✓ · 3 –</td><td><code>StackPanel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>49 ✅ · 1 ☑️ · 21 ✓ · 4 –</td><td><code>GtkBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td>flexbox</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/VStackContract.swift`.
@@ -70,8 +70,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>automationExcludedWithChildren</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Background</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">Web: A brush fills the view with its first colour alone.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">Android Views: Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.<br>WinUI 3: An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.<br>Web: A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td></tr>
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: VStack takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
@@ -217,12 +217,10 @@ The space kept inside an element, around what it holds.
 
 ## From [BorderElement](tiers/BorderElement.md)
 
-What an element draws of its own box: what lets what lies behind it show through, the shape its backdrop, its background, its outline and its cut follow, and the outline.
+What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>backdrop</code></td><td>property</td><td><code>Backdrop</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✓</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">UIKit: only through the host's own: read backdrop of VStack: the effect the host gave the view, which UIKit reads no style of<br>Android Views: Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill.<br>WinUI 3: The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill.<br>GTK 4: only through the host's own: read backdrop of VStack: the brush the host draws the box with: GTK reads back no drawing<br>Web: A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

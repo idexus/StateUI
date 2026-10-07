@@ -76,27 +76,17 @@ public final class WindowSession {
     /// ways of doing so, where the platform lets an application say.
     @State public var isMinimizable: Bool? = nil
 
-    /// What the window shows behind everything it draws: the desktop, through
-    /// a material - under whatever its pages leave uncovered or paint in a
-    /// colour that lets it through, such as the margin around a floating
-    /// sidebar.
+    /// What the window is made of behind its pages - around a floating
+    /// sidebar, under a page that paints no background of its own: a colour,
+    /// or a blur or glass the desktop shows through.
     ///
-    ///     window.backdrop = .material(.regular)
+    ///     window.background = .blur(.regular)
+    ///     window.background = Material(light: nil, dark: .blur(.thick.tint(Color("#26512BD4"))))
     ///
-    /// A desktop host lays its windows' own material under the pages; a host
-    /// whose windows cannot show what is behind them keeps them opaque, and
-    /// the application's colours read as they are written. `nil` keeps the
+    /// A host whose windows cannot show what is behind them draws a blur's
+    /// colour in its place. `nil` - and a nil half of a pair - keeps the
     /// platform's own window.
-    @State public var backdrop: Backdrop? = nil
-
-    /// What the window shows behind its pages - around a floating sidebar,
-    /// under a page that paints no background of its own.
-    ///
-    ///     window.background = Color("#26512BD4")
-    ///
-    /// Over a backdrop, a colour with an alpha tints the material and lets it
-    /// show. `nil` keeps the platform's own.
-    @State public var background: Color? = nil
+    @State public var background: Material? = nil
     /// The key the tree knows the window by in its scene.
     let key: String
 
@@ -143,7 +133,6 @@ public final class WindowSession {
         props.describe(WindowContract.height, height)
         props.describe(WindowContract.isMaximizable, isMaximizable)
         props.describe(WindowContract.isMinimizable, isMinimizable)
-        props.describe(WindowContract.backdrop, backdrop)
         props.describe(WindowContract.background, background)
         props.describe(WindowContract.minimumWidth, minimumWidth)
         props.describe(WindowContract.minimumHeight, minimumHeight)

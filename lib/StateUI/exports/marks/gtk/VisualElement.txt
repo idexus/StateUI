@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -241,7 +241,7 @@ Grid.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a 
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
-Grid.background: does not apply - read background of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Grid.background: ✓ read background of Grid: the class of the host's style sheet the widget wears: GTK reads back no background
 Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frame: ✅
 Grid.frameChanged: ✅
@@ -275,7 +275,7 @@ HStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: 
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
-HStack.background: does not apply - read background of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+HStack.background: ✓ read background of HStack: the class of the host's style sheet the widget wears: GTK reads back no background
 HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frame: ✅
 HStack.frameChanged: ✅
@@ -989,7 +989,7 @@ VStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: 
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
-VStack.background: does not apply - read background of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+VStack.background: ✓ read background of VStack: the class of the host's style sheet the widget wears: GTK reads back no background
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frame: ✅
 VStack.frameChanged: ✅
@@ -1057,7 +1057,7 @@ ZStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: 
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
-ZStack.background: does not apply - read background of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+ZStack.background: ✓ read background of ZStack: the class of the host's style sheet the widget wears: GTK reads back no background
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frame: ✅
 ZStack.frameChanged: ✅

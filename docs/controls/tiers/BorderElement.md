@@ -2,7 +2,7 @@
 
 # BorderElement
 
-What an element draws of its own box: what lets what lies behind it show through, the shape its backdrop, its background, its outline and its cut follow, and the outline.
+What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
 
 ```swift
 VStack {
@@ -25,7 +25,6 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `backdrop` | property | `Backdrop` | adaptive |
 | `shape` | property | `ContainerShape` | stateUI |
 | `stroke` | property | `Brush` | stateUI |
 | `lineWidth` | property | `Double` | stateUI |

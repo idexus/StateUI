@@ -94,11 +94,11 @@ class WebLayoutView: WebDOMView {
     }
 
     /// The layout's own box: what fills it, its outline inside its edge, its shape, and whether it cuts what it holds.
-    func setBox(
-        backdrop: HostValue? = nil, fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?,
-        clips: Bool
-    ) {
-        setBox(WebBox(fill: fill, stroke: stroke, lineWidth: lineWidth, shape: shape, backdrop: HostBackdrop(backdrop)))
+    func setBox(background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool) {
+        let material = HostMaterial(background)
+        setBox(WebBox(
+            fill: material.paint, stroke: stroke, lineWidth: lineWidth, shape: shape,
+            material: material.blur == nil ? nil : material))
         style("overflow", clips ? "hidden" : nil)
     }
 
@@ -109,8 +109,10 @@ class WebLayoutView: WebDOMView {
 
     /// What fills the layout's box.
     override func setBackground(_ value: HostValue?) {
+        let material = HostMaterial(value)
         var box = paintedBox
-        box.fill = value
+        box.fill = material.paint
+        box.material = material.blur == nil ? nil : material
         setBox(box)
     }
 

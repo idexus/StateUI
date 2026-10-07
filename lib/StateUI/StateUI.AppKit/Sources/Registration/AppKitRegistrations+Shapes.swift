@@ -64,7 +64,7 @@ extension AppKitRegistrations {
                 ColorBoxContract.color, ColorBoxContract.cornerRadius, VisualElementContract.background,
             ]) { view, values in
                 view.apply(
-                    background: values[VisualElementContract.background].flatMap { nsColor($0.propValue) },
+                    background: paintedColor(values[VisualElementContract.background]?.propValue),
                     fill: values[ColorBoxContract.color].flatMap { nsColor($0.propValue) },
                     corners: values[ColorBoxContract.cornerRadius])
             }

@@ -75,17 +75,16 @@ final class WinUIWindow {
         stateui_winui_window_set_limits(handle, limits.map { $0 ?? 0 })
     }
 
-    /// The material the desktop shows through the window in, as its element last said; nil for Mica, WinUI's own.
-    private(set) var backdrop: Material?
+    /// The blur the desktop shows through the window, as its element last said; nil for Mica, WinUI's own.
+    private(set) var backdrop: Blur.Thickness?
 
     /// Makes the window what `traits` says: a button it leaves unsaid is WinUI's own, which lets the user press it;
-    /// a backdrop is the desktop acrylic, none Mica.
+    /// a blur or glass is the desktop acrylic, its tint the window's colour over it; none Mica.
     func apply(_ traits: WindowTraits) {
-        backdrop = traits.backdrop?.material
+        backdrop = traits.background.blur
         stateui_winui_window_set_traits(
-            handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.backdrop != nil,
-            traits.floatsOnTop)
-        let argb = traits.background.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)
+            handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, backdrop != nil, traits.floatsOnTop)
+        let argb = traits.background.paint.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)
         stateui_winui_window_set_background(handle, argb != nil, argb ?? 0)
     }
 

@@ -370,8 +370,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 | `minimumWidth`, `minimumHeight` | optional lower content-size bounds |
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
-| `backdrop` | what the window shows behind everything it draws: the desktop through a material, where the platform can show it |
-| `background` | what the window shows behind its pages, over its backdrop |
+| `background` | what the window is made of behind its pages: a colour, or a blur or glass the desktop shows through, where the platform can show it |
 | `close()` | closes this exact window; its scene ends with its last |
 
 Position and size are four independent optional requests:
@@ -416,29 +415,26 @@ the appearance of one button. A host blocks equivalent native commands while
 the corresponding value is `false`. `nil` preserves the platform's existing
 capability.
 
-`backdrop` asks for a window the desktop shows through a material - from
-`.ultraThin`, which lets the most through, to `.thick` - under whatever its
-pages leave uncovered or paint in a colour with an alpha: on AppKit the
-window's own material lies under the page, and the margin around a floating
-sidebar shows it; on WinUI the desktop acrylic. It is a desktop semantic: a
-host whose windows cannot show what is behind them keeps them opaque, and the
-application's colours read as written. Text belongs on a surface of its own
-rather than straight over the desktop. `nil` keeps the platform's own window.
-
-```swift quote
-.onCreated { window.backdrop = .material(.regular) }
-```
-
-`background` is what the window shows behind its pages - around a floating
-sidebar, under a page that paints no background of its own. Over a backdrop a
-colour with an alpha tints the material and lets the desktop show through it,
-a light wash under everything; a clear one lets the desktop through sharp;
-without a backdrop it is the window's own colour. `nil` keeps the platform's.
+`background` is what the window is made of behind its pages - around a
+floating sidebar, under a page that paints no background of its own: a
+colour, or a blur the desktop shows through, from `.ultraThin`, which lets the
+most through, to `.ultraThick`, its tint lying over it. On AppKit the window's
+own blur lies under the page, and the margin around a floating sidebar shows
+it; on WinUI the desktop acrylic. It is a desktop semantic: a host whose
+windows cannot show what is behind them paints the blur's colour instead.
+Text belongs on a surface of its own rather than straight over the desktop.
+`nil` keeps the platform's own window, and so does a nil half of a pair:
 
 ```swift quote
 .onCreated {
-    window.backdrop = .material(.thick)
-    window.background = Color("#26512BD4")
+    window.background = .blur(.thick.tint(Color("#26512BD4")))
+}
+```
+
+```swift quote
+.onCreated {
+    // The platform's own window in the light theme, a tinted blur in the dark.
+    window.background = Material(light: nil, dark: .blur(.thick.tint(Color("#26512BD4"))))
 }
 ```
 

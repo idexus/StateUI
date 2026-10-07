@@ -75,8 +75,8 @@ extension AndroidRegistrations {
 
     /// What every layout takes of its own box: its outline, its shape and its cut.
     private static let boxMembers: [any ContractMember] = [
-        BorderElementContract.backdrop, BorderElementContract.stroke, BorderElementContract.lineWidth,
-        BorderElementContract.shape, LayoutContract.clipsContent,
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
+        LayoutContract.clipsContent,
     ]
 
     private static func applyBox<Realized: ElementContract>(_ view: AndroidLayoutView, _ values: ElementValues<Realized>) {
@@ -84,8 +84,7 @@ extension AndroidRegistrations {
             stroke: values[BorderElementContract.stroke]?.propValue,
             width: values[BorderElementContract.lineWidth],
             shape: values[BorderElementContract.shape]?.propValue,
-            clips: values[LayoutContract.clipsContent] ?? false,
-            backdrop: HostBackdrop(values[BorderElementContract.backdrop]?.propValue)))
+            clips: values[LayoutContract.clipsContent] ?? false))
     }
 
     /// What both stacks take: the space between their children, and the space inside their own edge.

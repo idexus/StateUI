@@ -21,7 +21,7 @@ public enum PageContract: ElementContract {
     public static let backButtonTitle = ElementProperty<Self, String>("backButtonTitle", layer: .adaptive)
 
     /// What is drawn behind the page.
-    public static let background = ElementProperty<Self, Color>("background", layer: .native)
+    public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
 
     /// The page is leaving the screen.
     public static let disappearing = ElementEvent<Self, Void>("disappearing", layer: .adaptive)

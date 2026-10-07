@@ -74,8 +74,10 @@
             holds(WindowContract.maximumHeight, 900, then: 800) { $0.maximumHeight = $1 },
             holds(WindowContract.isMaximizable, false, then: true) { $0.isMaximizable = $1 },
             holds(WindowContract.isMinimizable, false, then: true) { $0.isMinimizable = $1 },
-            holds(WindowContract.backdrop, .material(.thick), then: .material(.ultraThin)) { $0.backdrop = $1 },
-            holds(WindowContract.background, Color("#26512BD4"), then: Color("#0F766E")) { $0.background = $1 },
+            holds(WindowContract.background, .color(Color("#26512BD4")), then: .color(Color("#0F766E"))) {
+                $0.background = $1
+            },
+            blurred,
             ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
                 Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
             ]) { s in
@@ -144,6 +146,28 @@
                 s.expect(try s.held(VisualElementContract.isVisible, on: note), true, "its scene in front again")
             },
         ]
+    }
+
+    /// The window is made of the blur its session writes and then of the one the tree changes it to - or of the
+    /// colour a host whose windows show nothing behind them paints for each.
+    static var blurred: ConformanceCase {
+        ConformanceCase("Window.background.showsABlurOrWhatStandsInForIt", proves: [
+            Covered(WindowContract.background),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let value = State(wrappedValue: Material.blur(.thick))
+            let changed = Material.blur(.ultraThin)
+            s.start {
+                WindowSessionPage(beside: [Button("Change").onClicked { value.wrappedValue = changed }.id("change")],
+                                  key: "\(value.wrappedValue)") { window in window.background = value.wrappedValue }
+            }
+            let window = try s.element(ofType: WindowContract.nodeType)
+            try s.settle { try s.held(WindowContract.background, on: window) == .blur(.thick) }
+            s.expect(try s.held(WindowContract.background, on: window), .blur(.thick), "the blur its session wrote")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(WindowContract.background, on: window) == changed }
+            s.expect(try s.held(WindowContract.background, on: window), changed, "the blur the tree changed it to")
+        }
     }
 
     /// `member` of the window holds what its session writes, and what the tree changes it to.

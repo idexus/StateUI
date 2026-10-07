@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.rotation: ✅
 Button.translationY: ✅
@@ -18,55 +18,49 @@ DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own tip, chec
 Ellipse.accessibilityHint: ✅
 Grid.opacity: ✅
 Grid.pivotY: ✅
-HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.scaleY: ✅
-HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-Image.accessibilityHeading: ✅
-ItemsView.isEnabled: ✅
-ItemsView.rotation: ✅
-Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Map.frame: 🧩
-Map.scaleX: 🧩
-Path.isAccessibilityHidden: ✅
-Picker.frameChanged: ✅
-Picker.height: ✅
-Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
-Picker.width: ✅
-Polygon.accessibilityLabel: ✅
-Polyline.isVisible: ✅
-Polyline.pivotX: ✅
-ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.scaleY: ✅
-ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.isAccessibilityHidden: ✅
-Rectangle.frameChanged: ✅
-Rectangle.maximumHeight: ✅
-Rectangle.maximumWidth: ✅
-Rectangle.minimumHeight: ✅
-Rectangle.minimumWidth: ✅
-Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
-ScrollView.accessibilityLabel: ✅
-SearchField.isVisible: ✅
-SearchField.pivotX: ✅
-Slider.style: ✅
-Slider.translationX: ✅
-Stepper.background: ✅
-Switch.frame: ✅
-Switch.scaleX: ✅
-Text.accessibilityHeading: ✅
-Text.isEnabled: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextField.frameChanged: ✅
-TextField.maximumHeight: ✅
-TextField.maximumWidth: ✅
-TextField.minimumHeight: ✅
-TextField.minimumWidth: ✅
-TextField.rotationY: ✓ read rotationY of TextField: the host's own tip, checked against the projection it laid on the element
-TimePicker.accessibilityHint: ✅
-VStack.isEnabled: does not apply - read isEnabled of VStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-VStack.rotation: ✅
-WebView.style: ✅
-WebView.translationX: ✅
-ZStack.background: ✅
+HStack.frame: ✅
+HStack.scaleX: ✅
+Image.accessibilityLabel: ✅
+ItemsView.isVisible: ✅
+ItemsView.pivotX: ✅
+Line.automationExcludedWithChildren: ✅
+Map.frameChanged: 🧩
+Map.maximumHeight: 🧩
+Map.maximumWidth: 🧩
+Map.minimumHeight: 🧩
+Map.minimumWidth: 🧩
+Map.rotationY: 🧩
+Path.accessibilityHint: ✅
+Picker.opacity: ✅
+Picker.pivotY: ✅
+Polygon.translationY: ✅
+Polygon.zIndex: ✅
+Polyline.background: – A WinUI shape is its figure alone: it paints no ground around it.
+ProgressBar.ignoresInput: ✅
+ProgressBar.scale: ✅
+RadioButton.accessibilityHint: ✅
+Rectangle.isEnabled: does not apply - read isEnabled of Rectangle - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Rectangle.rotation: ✅
+ScrollView.translationY: ✅
+ScrollView.zIndex: ✅
+SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Slider.frame: ✅
+Slider.scaleX: ✅
+Stepper.isAccessibilityHidden: ✅
+Switch.frameChanged: ✅
+Switch.maximumHeight: ✅
+Switch.maximumWidth: ✅
+Switch.minimumHeight: ✅
+Switch.minimumWidth: ✅
+Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
+Text.style: ✅
+Text.translationX: ✅
+TextEditor.accessibilityHint: ✅
+TextField.isEnabled: ✅
+TextField.rotation: ✅
+TimePicker.accessibilityHeading: ✅
+VStack.isVisible: ✅
+VStack.pivotX: ✅
+WebView.ignoresInput: ✅
+WebView.scale: ✅
+ZStack.accessibilityHeading: ✅

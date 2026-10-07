@@ -1,8 +1,7 @@
-# revision 5.1
+# revision 6.1
 Window: ✅
 Window.activated: ✅
-Window.backdrop: – iPadOS draws an application's window opaque: no material shows through one.
-Window.background: ✅
+Window.background: ☑️ iPadOS draws an application's window opaque: a blur or glass shows its colour.
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the host told the scene's phase, no scene moved
 Window.destroying: ✓ close on Window: the host told the scene's phase, no scene moved

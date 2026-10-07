@@ -243,7 +243,7 @@ final class AndroidRenderer {
         guard let window = runtime.tree.root?.first(type: .window) else { return }
         let changes = presentation.show(window, in: runtime.lifecycle)
         showTitle(of: window)
-        if let traits = changes.traits { showBackground(traits.background) }
+        if let traits = changes.traits { showBackground(traits.background.painted) }
         if let (_, arrangement) = changes.arrangement {
             Java.call(root.reference, JavaAPI.removeAllViews)
             shownOverlays = []

@@ -127,10 +127,10 @@ final class ContractTests: XCTestCase {
 
         let brush = Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)])
 
-        XCTAssertEqual(Background.color(.tomato).propValue, Color.tomato.propValue)
-        XCTAssertEqual(Background.brush(brush).propValue, brush.propValue)
-        XCTAssertEqual(Background(propValue: Color.tomato.propValue), .color(.tomato))
-        XCTAssertEqual(Background(propValue: brush.propValue), .brush(brush))
+        XCTAssertEqual(Material.color(.tomato).propValue, Color.tomato.propValue)
+        XCTAssertEqual(Material.gradient(brush).propValue, brush.propValue)
+        XCTAssertEqual(Material(propValue: Color.tomato.propValue), .color(.tomato))
+        XCTAssertEqual(Material(propValue: brush.propValue), .gradient(brush))
 
         XCTAssertEqual(SafeAreaEdges.uniform(.none).propValue, .enumeration(0))
         XCTAssertEqual(
@@ -156,7 +156,9 @@ final class ContractTests: XCTestCase {
             Brush.solidColor(.gold),
             Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]),
             Brush.radialGradient([GradientStop(.white, 0), GradientStop(.steelBlue, 1)], radius: 0.8),
-            Background.color(.tomato), Background.brush(.linearGradient([GradientStop(.gold, 0)])),
+            Material.color(.tomato), Material.gradient(.linearGradient([GradientStop(.gold, 0)])),
+            Material.blur(.thin.tint(.indigo)), Material.glass(.clear.tint(.indigo).isInteractive(true)),
+            Material(light: nil, dark: .blur(.thick)), Blur.Thickness.ultraThick, Glass.Clarity.clear,
             Insets(left: 1, top: 2, right: 3, bottom: 4), Rect(1, 2, 3, 4), Point(5, 6),
             [Point(1, 2), Point(3, 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
             ImageSource("logo.png"), ImageSource(light: "logo.png", dark: "logo_dark.png"),

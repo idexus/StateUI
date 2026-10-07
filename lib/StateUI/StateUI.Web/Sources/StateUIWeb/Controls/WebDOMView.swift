@@ -147,7 +147,7 @@ class WebDOMView {
     /// browser's own. A field's box is its field.
     /// Design: docs/design/platforms/web/look.md#a-views-background
     func setBackground(_ value: HostValue?) {
-        style("background", WebCSS.fill(value))
+        style("background", WebCSS.fill(HostMaterial(value).painted))
     }
 
     /// Sets an attribute, or takes it away for nil.

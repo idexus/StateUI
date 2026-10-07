@@ -33,14 +33,14 @@ radius as a quarter of an ellipse; it takes the room its layout gives it and
 asks for none.
 
 
-## A layout's backdrop
+## A layout's blur or glass
 
-A layout's backdrop is a `UIVisualEffectView` of its own, the first of its
+A layout's blur or glass is a `UIVisualEffectView` of its own, the first of its
 subviews, beneath the children: `UIGlassEffect` - regular or clear, its tint,
 interactive where asked - or `UIBlurEffect` of UIKit's own four materials
-(`systemUltraThinMaterial` to `systemThickMaterial`). Over it the box's fill
-and outline move into the effect's content, so the background lies over the
-material, and the effect is cut to the box's shape (continuous corners, an
+(`systemUltraThinMaterial` to `systemThickMaterial`, and `systemChromeMaterial` for the thickest). Over it a blur's tint
+and the box's outline move into the effect's content, so the tint lies over
+the blur, and the effect is cut to the box's shape (continuous corners, an
 oval by a mask). It takes no touch unless its glass is interactive. UIKit
 reads no material's style back, so the driver reads the effect the host gave
 (✓).

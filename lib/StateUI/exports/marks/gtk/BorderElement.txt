@@ -1,34 +1,27 @@
-# revision 4.1
-Button.backdrop: not realized
-Button.background: ☑️ A brush fills the view with its first colour alone.
+# revision 5.1
+Button.background: ☑️ A brush fills the view with its first colour alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's colour standing in, its tint over it.
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.backdrop: ✓ read backdrop of Grid: the brush the host draws the box with: GTK reads back no drawing
 Grid.background: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.backdrop: ✓ read backdrop of HStack: the brush the host draws the box with: GTK reads back no drawing
 HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-RadioButton.backdrop: not realized
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
-ScrollView.backdrop: not realized
 ScrollView.background: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
-VStack.backdrop: ✓ read backdrop of VStack: the brush the host draws the box with: GTK reads back no drawing
 VStack.background: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.backdrop: ✓ read backdrop of ZStack: the brush the host draws the box with: GTK reads back no drawing
 ZStack.background: ✅
 ZStack.lineWidth: ✅
 ZStack.shape: ✅

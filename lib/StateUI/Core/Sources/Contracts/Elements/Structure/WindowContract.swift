@@ -18,12 +18,9 @@ public enum WindowContract: ElementContract {
     /// The window is showing behind another.
     public static let deactivated = ElementEvent<Self, Void>("deactivated", layer: .adaptive)
 
-    /// What the window shows behind its pages, over its backdrop.
-    public static let background = ElementProperty<Self, Color>("background", layer: .native)
-
-    /// What the window shows behind everything it draws: the desktop, through
-    /// a material.
-    public static let backdrop = ElementProperty<Self, Backdrop>("backdrop", layer: .adaptive)
+    /// What the window is made of behind its pages: a colour, or a blur or
+    /// glass the desktop shows through.
+    public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
 
     /// The window is going.
     public static let destroying = ElementEvent<Self, Void>("destroying", layer: .adaptive)
@@ -90,7 +87,7 @@ public enum WindowContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        activated, backdrop, background, created, deactivated, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable,
+        activated, background, created, deactivated, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable,
         isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, resumed, stopped, title, width, windowType, windowValue, x, y,
     ]
 }

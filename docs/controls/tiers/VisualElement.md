@@ -28,7 +28,7 @@ How each of them realizes these members is on its own page.
 | `accessibilityHint` | property | `String` | native |
 | `accessibilityLabel` | property | `String` | native |
 | `automationExcludedWithChildren` | property | `Bool` | native |
-| `background` | property | `Background` | native |
+| `background` | property | `Material` | adaptive |
 | `focus` | act | `() -> Bool` |  |
 | `frame` | property | `Rect` | structure |
 | `height` | property | `Double` | native |

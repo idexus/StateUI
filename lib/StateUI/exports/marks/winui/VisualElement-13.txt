@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.accessibilityHint: ✅
 Button.opacity: ✅
 Button.pivotY: ✅
@@ -18,49 +18,57 @@ Ellipse.minimumWidth: ✅
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
 Grid.accessibilityLabel: ✅
 Grid.isEnabled: ✅
-HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Image.ignoresInput: ✅
-Image.scale: ✅
-ItemsView.accessibilityHint: ✅
-Line.translationY: ✅
-Line.zIndex: ✅
-Map.background: 🧩
-Path.frame: ✅
-Path.scaleX: ✅
-Picker.accessibilityHeading: ✅
-Polygon.frameChanged: ✅
-Polygon.height: ✅
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
-Polygon.width: ✅
-Polyline.accessibilityHeading: ✅
-Polyline.isEnabled: ✅
-ProgressBar.layoutDirection: ✅
-RadioButton.frame: ✅
-RadioButton.scaleX: ✅
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.frameChanged: ✅
-ScrollView.height: ✅
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
-ScrollView.width: ✅
-SearchField.accessibilityHeading: ✅
-Slider.isVisible: ✅
-Slider.pivotX: ✅
-Stepper.style: ✅
-Stepper.translationX: ✅
-Switch.background: ✅
-Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Text.rotation: ✅
-TextEditor.frame: ✅
-TextEditor.scaleX: ✅
-TextField.isAccessibilityHidden: ✅
-TimePicker.frameChanged: ✅
-TimePicker.maximumHeight: ✅
-TimePicker.maximumWidth: ✅
-TimePicker.minimumHeight: ✅
-TimePicker.minimumWidth: ✅
-TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
-VStack.accessibilityHint: ✅
-WebView.isVisible: ✅
-WebView.pivotX: ✅
-ZStack.style: ✅
-ZStack.translationX: ✅
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Image.frameChanged: ✅
+Image.height: ✅
+Image.rotationX: ✓ read rotationX of Image: the host's own tip, checked against the projection it laid on the element
+Image.width: ✅
+ItemsView.accessibilityHeading: ✅
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.scaleY: ✅
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Map.isAccessibilityHidden: 🧩
+Path.frameChanged: ✅
+Path.maximumHeight: ✅
+Path.maximumWidth: ✅
+Path.minimumHeight: ✅
+Path.minimumWidth: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
+Picker.accessibilityLabel: ✅
+Polygon.opacity: ✅
+Polygon.pivotY: ✅
+Polyline.style: ✅
+Polyline.translationX: ✅
+ProgressBar.automationExcludedWithChildren: ✅
+RadioButton.frameChanged: ✅
+RadioButton.maximumHeight: ✅
+RadioButton.maximumWidth: ✅
+RadioButton.minimumHeight: ✅
+RadioButton.minimumWidth: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
+Rectangle.accessibilityHint: ✅
+ScrollView.opacity: ✅
+ScrollView.pivotY: ✅
+SearchField.style: ✅
+SearchField.translationX: ✅
+Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Stepper.frame: ✅
+Stepper.scaleX: ✅
+Switch.isAccessibilityHidden: ✅
+Text.isVisible: ✅
+Text.pivotX: ✅
+TextEditor.frameChanged: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.accessibilityHint: ✅
+TimePicker.isEnabled: ✅
+TimePicker.rotation: ✅
+VStack.accessibilityHeading: ✅
+VStack.isEnabled: ✅
+WebView.automationExcludedWithChildren: ✅
+ZStack.ignoresInput: ✅
+ZStack.scale: ✅

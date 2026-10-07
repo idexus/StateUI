@@ -40,16 +40,17 @@ side of the shape's edge, in a colour alone (AppKit's brush strokes no
 gradient). With `clipsContent` the layer cuts what the layout holds: to its
 bounds, its rounded corners, or an oval mask; without it nothing is cut.
 
-A backdrop is a view of its own under what the layout holds - an
-`NSGlassEffectView`, or an `NSVisualEffectView` within the window of the role
-whose translucency stands in that thickness (`fullScreenUI`, `popover`,
-`menu`, `underWindowBackground`, measured) - cut to the box's shape and edged
-with its outline on its own layer, as the layout's own drawing lies under it.
-The background lies over it in a view of its own (`AppKitBoxWash`), the
-glass's content or the material's top view, hidden while it paints nothing.
-Laying out the children keeps the backdrop beneath them. Glass that answers
-the user takes the press, which rises to the layout; any other surface takes
-none. A window's material carries the same wash for the window's background.
+A blur or glass background is a view of its own under what the layout
+holds - an `NSGlassEffectView` in the glass's tint, or an
+`NSVisualEffectView` within the window of the role whose translucency stands
+in that thickness (`fullScreenUI`, `popover`, `menu`,
+`underWindowBackground`, measured, and `windowBackground` for the thickest) -
+cut to the box's shape and edged with its outline on its own layer, as the
+layout's own drawing lies under it. A blur's tint lies over it in a view of
+its own (`AppKitBoxWash`), the material's top view, hidden while it paints
+nothing. Laying out the children keeps the surface beneath them. Glass that
+answers the user takes the press, which rises to the layout; any other
+surface takes none. A window's blur carries the same wash for its tint.
 
 A scroller's box is its layer's alone: a colour behind what it shows, a
 colour's outline on a rectangle or a rounded one, and the cut of what it shows

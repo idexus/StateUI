@@ -33,7 +33,7 @@ final class GTKWindowController {
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
         let changes = presentation.show(element, in: runtime.lifecycle)
-        if let traits = changes.traits { window.setBackground(traits.background) }
+        if let traits = changes.traits { window.setBackground(traits.background.painted) }
         if let frame = changes.frame { window.request(frame) }
         if let bounds = changes.bounds { window.bound(bounds) }
         if let hidden = changes.hidden { window.setHidden(hidden) }

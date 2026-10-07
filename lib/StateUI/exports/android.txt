@@ -58,7 +58,6 @@ Ellipse
   miterLimit
   stroke
 Grid
-  backdrop
   clipsContent
   columnSpacing
   columns
@@ -70,7 +69,6 @@ Grid
   shape
   stroke
 HStack
-  backdrop
   clipsContent
   ignoresInput
   lineWidth
@@ -296,7 +294,6 @@ TimePicker
   opened()
   timeChanged()
 VStack
-  backdrop
   clipsContent
   ignoresInput
   lineWidth
@@ -313,7 +310,6 @@ WebView
   navigating()
   processTerminated()
 ZStack
-  backdrop
   clipsContent
   ignoresInput
   lineWidth

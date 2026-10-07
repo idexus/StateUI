@@ -1,7 +1,6 @@
-# revision 5.1
+# revision 6.1
 Window: ✅
 Window.activated: ✅
-Window.backdrop: – GNOME draws its windows opaque: no material shows through one.
 Window.background: ✓ read background of Window: the class of the host's style sheet the widget wears: GTK reads back no background
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
