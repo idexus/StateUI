@@ -326,6 +326,37 @@ private final class Renders {
         return result.patch
     }
 
+    /// A tree as it stands on screen: rendered, every view reading its frame
+    /// told it stands in a room, and described whole again - until no reader
+    /// is left untold, as a reader builds its content only once it is told.
+    func laid(_ tree: () -> Node, width: Double = 390, height: Double = 800) -> RenderedNode {
+        var told: Set<Int32> = []
+        var patch = render(tree())
+
+        for _ in 0..<3 {
+            var untold: [Int32] = []
+
+            func walk(_ node: HostPatch) {
+                if let id = node.events?[.frameChanged], !told.contains(id) { untold.append(id) }
+                node.children.forEach(walk)
+            }
+
+            walk(patch)
+            guard !untold.isEmpty else { break }
+
+            for id in untold {
+                fire(id, with: [.numbers([0, 0, width, height, 0, 0, 0, 0])])
+                told.insert(id)
+            }
+
+            let result = differ.reconcile(rendered, with: tree(), describeAll: true)
+            rendered = result.node
+            patch = result.patch
+        }
+
+        return rendered!
+    }
+
     /// The walk a write takes when every cause named the state it wrote -
     /// nothing is built afresh, and only the views whose reads moved are
     /// described again. What the renderer takes for an ordinary write.
@@ -1414,13 +1445,14 @@ final class CatalogTests: XCTestCase {
     /// run's height, and the entrance is a number too - so even coming in
     /// costs no render.
     func testTheHomePageIsSizedByTheCycleRatherThanByARender() throws {
-        let page = HomePage(catalog: catalog(), nav: Place().nav).node.built
+        let (shown, nav) = (catalog(), Place().nav)
+        let page = Renders().laid { HomePage(catalog: shown, nav: nav).node }
         var heights: [String] = []
         var rooms: [String] = []
         var fades: [String] = []
         var engines = 0
 
-        func walk(_ node: Node) {
+        func walk(_ node: RenderedNode) {
             if node.driven[.height] != nil { heights.append(node.type.name) }
             if node.driven[.frame] != nil { rooms.append(node.type.name) }
             if node.driven[.opacity] != nil { fades.append(node.type.name) }
@@ -1457,11 +1489,12 @@ final class CatalogTests: XCTestCase {
     /// handler however many groups there are - inside the scroller lying over
     /// the cards, which is the only thing here a finger can reach.
     func testTheHomePagesGalleryAnswersATap() throws {
-        let page = HomePage(catalog: catalog(), nav: Place().nav).node.built
+        let (shown, nav) = (catalog(), Place().nav)
+        let page = Renders().laid { HomePage(catalog: shown, nav: nav).node }
         var carriers: [String] = []
 
-        func walk(_ node: Node) {
-            if node.events["tapped"] != nil { carriers.append(node.type.name) }
+        func walk(_ node: RenderedNode) {
+            if node.events[.tapped] != nil { carriers.append(node.type.name) }
             node.children.forEach(walk)
         }
 
