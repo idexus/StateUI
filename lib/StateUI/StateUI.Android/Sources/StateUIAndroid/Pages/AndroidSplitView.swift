@@ -102,6 +102,8 @@ final class AndroidSplitView: AndroidLayoutView {
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func showDrawer(animated: Bool) {
         let duration = animated ? Self.slide : 0
+        // Over the detail the drawer stands on the window's own surface; beside it, on nothing of its own.
+        Java.callStatic(JavaAPI.views, JavaAPI.groundOnWindow, .object(drawer.reference), .bool(overlays))
         let visibility = isPresented ? ViewConstants.visible : overlays ? ViewConstants.invisible : ViewConstants.gone
         slide(
             drawer, to: overlays && !isPresented ? -drawerWidth : 0, alpha: 1, visibility: visibility,

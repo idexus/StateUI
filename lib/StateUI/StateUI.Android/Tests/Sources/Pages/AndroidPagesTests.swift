@@ -19,6 +19,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
             ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
+            ("testADrawerOverTheDetailStandsOnTheWindowsColour", testADrawerOverTheDetailStandsOnTheWindowsColour),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
@@ -244,6 +245,34 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertEqual(navigation.bar.content.navigation, .sidebar(nil))
             let glyph = Java.frame { Java.callObject(navigation.bar.reference, TestJava.getNavigationIcon) != nil }
             XCTAssertTrue(glyph, "the bar shows a button to open the sidebar")
+        }
+    }
+
+    /// A drawer over the detail stands on the window's own surface - here the colour the window was painted in - so
+    /// the detail does not show through a sidebar page that paints nothing of its own.
+    func testADrawerOverTheDetailStandsOnTheWindowsColour() throws {
+        try onMainActor {
+            stateUIUseApp(OneWindowApplication {
+                WindowPainted(colour: Color("#512BD4")) {
+                    drawerOverStack(sidebar: TitledPage(title: "Menu", icon: "test_dot.png"))
+                }
+            })
+            // In the activity's window, which the window's colour paints; its theme's back comes back after.
+            let host = AndroidRenderer.start(context: TestContext.window, root: TestJava.root(), density: 2)
+            defer {
+                Java.callStatic(
+                    JavaAPI.environment, JavaAPI.setWindowBackground, .object(TestContext.window.reference), .int(0),
+                    .bool(false))
+            }
+            host.layOut()
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let drawer = try XCTUnwrap(split.heldViews().last)
+            try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar.clicked()
+
+            let colour = Java.frame {
+                Java.callObject(drawer.reference, TestJava.getBackground).map { Java.callInt($0, TestJava.getColor) }
+            }
+            XCTAssertEqual(colour.map { UInt32(bitPattern: $0) }, 0xFF51_2BD4, "the drawer stands on the window's colour")
         }
     }
 
@@ -703,6 +732,18 @@ private func drawerOverStack(sidebar: some View) -> some View {
         } destination: { _ in
             TitledPage(title: "Deeper")
         }
+    }
+}
+
+/// `content` in a window painted `colour`.
+private struct WindowPainted<Content: View>: View {
+    @Environment(\.window) private var window
+    let colour: Color
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        let (window, colour) = (self.window, self.colour)
+        return content().onCreated { window.background = .color(colour) }
     }
 }
 

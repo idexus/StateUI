@@ -195,6 +195,26 @@ final class StateUIViews {
         return took;
     }
 
+    /**
+     * Grounds `view` in what its activity's window shows behind its pages - the theme's background, or the colour
+     * the window was painted in - where `grounded`, else in nothing: a drawer over the page stands on the window's
+     * own surface, as a sheet does.
+     */
+    static void groundOnWindow(View view, boolean grounded) {
+        if (!grounded) {
+            view.setBackground(null);
+            return;
+        }
+        Context context = view.getContext();
+        while (context instanceof android.content.ContextWrapper && !(context instanceof android.app.Activity)) {
+            context = ((android.content.ContextWrapper) context).getBaseContext();
+        }
+        android.graphics.drawable.Drawable ground = context instanceof android.app.Activity
+                ? ((android.app.Activity) context).getWindow().getDecorView().getBackground() : null;
+        android.graphics.drawable.Drawable.ConstantState state = ground != null ? ground.getConstantState() : null;
+        view.setBackground(state != null ? state.newDrawable().mutate() : null);
+    }
+
     /** A holder for a page presented over the window's page: filling it, on the theme's window background. */
     static FrameLayout sheet(Context context, View page) {
         FrameLayout holder = new FrameLayout(context);
