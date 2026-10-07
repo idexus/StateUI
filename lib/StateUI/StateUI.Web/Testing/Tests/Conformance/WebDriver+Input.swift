@@ -51,7 +51,8 @@ extension WebDriver {
             press("Enter")
         case (.focus, _): try WebBrowser.run("(e.matches('input, select, textarea, button') ? e : e.querySelector('input, select, textarea, button') ?? e).focus()", on: e)
         case (.choose(let place), is WebPickerView):
-            try WebBrowser.run("e.selectedIndex = \(place); e.dispatchEvent(new Event('change', { bubbles: true }))", on: e)
+            // The title's option stands first.
+            try WebBrowser.run("e.selectedIndex = \(place + 1); e.dispatchEvent(new Event('change', { bubbles: true }))", on: e)
         case (.choose(let place), is WebTabView):
             try click(e, part: ":scope > .stateui-tab-strip > [role=tab]:nth-child(\(place + 1))")
         case (.pickDate(let date), is WebDatePickerView):

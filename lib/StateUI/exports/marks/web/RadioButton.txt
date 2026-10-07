@@ -1,6 +1,6 @@
 # revision 1.1
 RadioButton: ✅
 RadioButton.frameChanged: ✅
-RadioButton.groupName: not realized
-RadioButton.isOn: ◐ waits on RadioButton.groupName
-RadioButton.toggled: ◐ waits on RadioButton.groupName
+RadioButton.groupName: ✅
+RadioButton.isOn: ✅
+RadioButton.toggled: ✅

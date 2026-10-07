@@ -55,6 +55,7 @@ enum WebRealization {
         .complete("Page", "navigatingFrom"),
         .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
+        .complete("RadioButton", "groupName"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
         .notPlanned("Slider", "background", reason: "The browser draws its slider over the whole box and paints no "

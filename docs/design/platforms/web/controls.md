@@ -110,11 +110,12 @@ with. The value standing on the page is where an animation of it starts.
 
 ## A picker
 
-A Picker is the browser's `<select>`, an `<option>` for each choice. The
-choices and the choice are written only where the tree changed them
-(`PickerChoices`), so the user's own choice is never argued with; no choice
-stands as no option selected. The choice the user makes is heard on
-`change`.
+A Picker is the browser's `<select>`: its title first, an `<option>` hidden
+and turned off - the field shows it while nothing is chosen, the open list
+leaves it out - then an `<option>` for each choice. The choices and the
+choice are written only where the tree changed them (`PickerChoices`), so the
+user's own choice is never argued with; no choice stands as the title
+selected. The choice the user makes is heard on `change`.
 
 ## A day and a time
 

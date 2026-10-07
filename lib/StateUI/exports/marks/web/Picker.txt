@@ -5,7 +5,7 @@ Picker.frameChanged: ✅
 Picker.isOpen: not realized
 Picker.opened: not realized
 Picker.options: ✅
-Picker.placeholder: not realized
+Picker.placeholder: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅
 Text.text: ✅

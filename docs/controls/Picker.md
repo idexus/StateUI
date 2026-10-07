@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 11 ✓ · 3 –</td><td><code>Spinner</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>69 ✅ · 12 ✓</td><td><code>ComboBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 22 ✓ · 7 –</td><td><code>GtkDropDown</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;select&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;select&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -56,8 +56,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract
 <tr><td colspan="9">AppKit: cannot read isOpen of Picker - AppKit's driver has no path for it yet<br>UIKit: waits on Picker.isOpen, not realized yet<br>Android Views: cannot open on Picker - Android's driver has no path for it yet<br>GTK 4: GTK's drop-down tells no one its list opened or closed.<br>Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>options</code></td><td>property</td><td><code>[String]</code></td><td>structure</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: only through the host's own: read options of Picker: the host's own choice, not the menu's<br>Android Views: only through the host's own: read options of Picker: the rows the relay keeps, not the spinner's</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center"></td></tr>
-<tr><td colspan="9">GTK 4: GTK's drop-down shows a choice or nothing: it has no words standing for none.<br>Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: GTK's drop-down shows a choice or nothing: it has no words standing for none.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>selectedIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onSelectedIndexChanged</code> (<code>selectedIndexChanged</code>)</td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>

@@ -55,9 +55,11 @@ extension WebDriver {
             let bar = view.named.node
             return .some(try WebBrowser.evaluate("e.hasAttribute('value') ? e.value : null", on: bar).flatMap(Double.init)?.propValue)
         case (.isAnimating, is WebActivityView): return try WebBrowser.truth("!!e.querySelector('[data-running]')", on: e).propValue
+        // The title's option stands first: it is no choice.
         case (.selectedIndex, is WebPickerView):
-            return .some(try WebBrowser.number("e.selectedIndex", on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })
-        case (.options, is WebPickerView): return try words("[...e.options].map((o) => o.text)", on: e).propValue
+            return .some(try WebBrowser.number("e.selectedIndex - 1", on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })
+        case (.options, is WebPickerView): return try words("[...e.options].slice(1).map((o) => o.text)", on: e).propValue
+        case (.placeholder, is WebPickerView): return .some(try WebBrowser.evaluate("e.options[0].text || null", on: e)?.propValue)
         case (.source, let image as WebImageView): return .some(try source(of: image))
         case (.contentMode, is WebImageView): return try contentMode(of: e)
         case (.showsSidebar, is WebSplitView): return try WebBrowser.truth("e.dataset.sidebar === 'shown'", on: e).propValue

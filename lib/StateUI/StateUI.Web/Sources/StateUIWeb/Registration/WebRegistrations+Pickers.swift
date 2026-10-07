@@ -14,10 +14,10 @@ extension WebRegistrations {
             }
             return picker
         }, members: { picker in
-            picker.applies([PickerContract.options, PickerContract.selectedIndex]) { view, values in
+            picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder]) { view, values in
                 view.setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
-                    writeChosen: values.changed(PickerContract.selectedIndex))
+                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
             }
             picker.applies([
                 FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
