@@ -51,6 +51,7 @@ extension WebElement {
         }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
             split.ground(beside: element.sidebarMaterial(over: false), over: element.sidebarMaterial(over: true))
+            host?.refreshChrome()
         }
     }
 

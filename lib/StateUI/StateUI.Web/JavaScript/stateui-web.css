@@ -157,6 +157,12 @@ body {
     grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr) auto minmax(0, 1fr) 0px;
   }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-brand { opacity: 1; visibility: visible; transition: opacity 0.3s ease 0.1s; }
+  /* Over a sidebar beside the page the bar stands on the sidebar's ground: one column, the bar and the sidebar. */
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-side {
+    background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
+    backdrop-filter: var(--stateui-sidebar-filter, none);
+    -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
+  }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-start { padding-inline-start: 10px; }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-title[data-repeats] { visibility: hidden; }
 }

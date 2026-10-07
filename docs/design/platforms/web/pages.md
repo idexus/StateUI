@@ -127,7 +127,11 @@ sheet reads in that place, so a page turning narrow moves the sidebar to the
 other with no word from the host. A blur is a backdrop filter under its
 colour. None is the page's own: beside the detail the window shows through,
 a breath darker - lighter in the light theme - as a desktop sidebar lets it
-through; over the detail the page's raised surface, never the window.
+through; over the detail the page's raised surface, never the window. The
+window's bar, over a sidebar shown beside the page, stands its part over the
+sidebar on the same ground - the window hands the bar the split view's
+variables as it writes its chrome - so the sidebar and the bar over it read
+as one column, the bar's title part over the detail on the window's.
 
 Beside the detail the sidebar moves in and out: its column opens or closes
 while the sidebar slides with the column's edge, both on one timing, and the
