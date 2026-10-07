@@ -16,6 +16,8 @@
   --stateui-muted: light-dark(#5d6270, #9aa0ad);
   --stateui-line: light-dark(rgb(15 23 42 / 0.09), rgb(255 255 255 / 0.08));
   --stateui-line-strong: light-dark(rgb(15 23 42 / 0.18), rgb(255 255 255 / 0.16));
+  /* The hairline under the bar and beside the sidebar: a separator, plain against any page. */
+  --stateui-separator: light-dark(rgb(60 60 67 / 0.29), rgb(84 84 88 / 0.6));
   --stateui-shade: light-dark(rgb(15 23 42 / 0.36), rgb(0 0 0 / 0.55));
   --stateui-radius: 10px;
   --stateui-bar-height: 56px;
@@ -102,9 +104,9 @@ body {
   padding: 0 12px;
   background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
   color: var(--stateui-bar-foreground, var(--stateui-text));
-  border-bottom: 1px solid var(--stateui-line);
-  backdrop-filter: saturate(180%) blur(18px);
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-bottom: 1px solid var(--stateui-separator);
+  backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
+  -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
 }
 .stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
@@ -339,7 +341,7 @@ body {
   background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
   backdrop-filter: var(--stateui-sidebar-filter, none);
   -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
-  border-inline-end: 1px solid var(--stateui-line);
+  border-inline-end: 1px solid var(--stateui-separator);
 }
 .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(-100%); visibility: hidden; }
 [dir="rtl"] .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(100%); }
@@ -363,7 +365,7 @@ body {
     background: var(--stateui-flyout-ground, var(--stateui-raised));
     backdrop-filter: var(--stateui-flyout-filter, none);
     -webkit-backdrop-filter: var(--stateui-flyout-filter, none);
-    border-inline-end: 1px solid var(--stateui-line);
+    border-inline-end: 1px solid var(--stateui-separator);
     box-shadow: var(--stateui-raised-shadow);
     transform: translateX(-104%);
     transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);

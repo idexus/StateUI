@@ -20,8 +20,9 @@ on a glass of its own, apart from the next. Each action is a button with
 its picture, its words beside it where it shows them, its name for assistive
 technology and its tooltip. The bar's colours are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the
-page's surface, translucent over what scrolls beneath. The same title names
-the browser's tab.
+page's surface, translucent over what scrolls beneath, blurred and deepened.
+A clear bar drops the blur: it shows what lies behind it as it is, the same
+colour as the page under it. The same title names the browser's tab.
 
 Beside a sidebar shown, the bar stands in two parts as wide as the split
 view's columns: over the sidebar the application's name and the line under
