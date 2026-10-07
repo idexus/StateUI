@@ -6,7 +6,8 @@
 
 extension WebRegistrations {
     /// A Text and a Button: their words in their case, their font and colour and the room around them; a text's
-    /// lines, alignment, spacing and decorations; a button's box, whether it takes a click, and the click.
+    /// lines, alignment, spacing and decorations; a button's spacing, its box, whether it takes a click, and the
+    /// click.
     static func words(_ registry: Registry<WebDOMView>) {
         registry.add(TextContract.self, create: { _ in WebTextView() }) { text in
             text.applies(TextMembers.members) { view, values in applyWords(view, values) }
@@ -37,6 +38,9 @@ extension WebRegistrations {
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyWords(view, values) }
+            button.property(TextStyleElementContract.tracking) { view, spacing in
+                view.style("letter-spacing", WebCSS.letterSpacing(spacing ?? 0))
+            }
             button.applies([
                 VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,

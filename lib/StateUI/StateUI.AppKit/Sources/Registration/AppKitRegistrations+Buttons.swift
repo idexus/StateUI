@@ -31,7 +31,7 @@ extension AppKitRegistrations {
                 BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes,
+                FontElementContract.fontAttributes, TextStyleElementContract.tracking,
             ]) { view, values in
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
@@ -62,6 +62,7 @@ extension AppKitRegistrations {
                     imageScaling: scaling,
                     font: Self.font(values),
                     textColor: textColor,
+                    tracking: values[TextStyleElementContract.tracking] ?? 0,
                     backgroundColor: background,
                     strokeColor: strokeColor,
                     lineWidth: lineWidth,

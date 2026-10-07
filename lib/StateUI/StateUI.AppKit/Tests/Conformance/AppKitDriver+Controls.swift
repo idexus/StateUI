@@ -123,12 +123,16 @@ extension AppKitDriver {
         }
     }
 
-    /// A button's icon and how its caption breaks, as the button holds them.
+    /// A button's icon, how its caption breaks and the room between its letters, as the button holds them.
     private static func buttonHolds(_ property: Prop, _ button: AppKitButtonView) -> HostValue? {
         switch property {
         case .lineBreak:
             let all: [LineBreak] = [.noWrap, .wordWrap, .characterWrap, .headTruncation, .tailTruncation, .middleTruncation]
             return all.first { NSLineBreakMode($0) == button.cell?.lineBreakMode }?.propValue
+        case .tracking:
+            let title = button.attributedTitle
+            let kern = title.length > 0 ? title.attribute(.kern, at: 0, effectiveRange: nil) as? NSNumber : nil
+            return (kern?.doubleValue ?? 0).propValue
         case .iconPosition:
             let positions: [NSControl.ImagePosition: IconPosition] = [
                 .imageAbove: .top, .imageTrailing: .trailing, .imageBelow: .bottom, .imageLeading: .leading,

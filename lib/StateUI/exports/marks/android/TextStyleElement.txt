@@ -1,6 +1,6 @@
 # revision 1.1
 Button.textColor: ✅
-Button.tracking: not realized
+Button.tracking: ✅
 DatePicker.textColor: ✅
 DatePicker.tracking: not realized
 Picker.textColor: ✅

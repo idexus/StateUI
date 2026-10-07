@@ -49,7 +49,8 @@ class AndroidTextualView: AndroidView {
         setTextColor(look.color)
     }
 
-    /// The size of the words, in points the user's font scale applies to; nil puts back the platform's.
+    /// The size of the words, in points the user's font scale applies to; nil puts back the platform's. The space
+    /// between the letters is worked out again for it.
     func setFontSize(_ size: Double?) {
         let made = madeWith
         if let size {
@@ -57,6 +58,19 @@ class AndroidTextualView: AndroidView {
         } else {
             Java.call(reference, JavaAPI.setTextSize, .int(ViewConstants.pixels), .float(made.size))
         }
+        setLetterSpacing(letterSpacing)
+    }
+
+    /// The space between the letters, in points.
+    private(set) var letterSpacing = 0.0
+
+    /// The space between the letters in points, which Android counts in ems of the text's own size.
+    func setLetterSpacing(_ points: Double) {
+        letterSpacing = points
+        var look = TextLook()
+        look.letterSpacing = points
+        let size = Double(Java.callFloat(reference, JavaAPI.getTextSize)) / density
+        Java.call(reference, JavaAPI.setLetterSpacing, .float(Float(look.letterSpacing(inEmsOf: size))))
     }
 
     /// Bold and italic, in the bits `FontAttributes` and `Typeface` share.

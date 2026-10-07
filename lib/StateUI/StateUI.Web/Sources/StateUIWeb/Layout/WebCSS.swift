@@ -84,11 +84,16 @@ enum WebCSS {
          ("color", color(look.color))]
     }
 
+    /// The room between letters, in points, as CSS's `letter-spacing`; nil for none.
+    static func letterSpacing(_ points: Double) -> String? {
+        points == 0 ? nil : signedPixels(points)
+    }
+
     /// The rest of a look: the space between the letters, the lines' height and the lines under or through.
     static func spacing(_ look: TextLook) -> [(String, String?)] {
         let lines = [(TextDecorations.underline, "underline"), (.strikethrough, "line-through")]
             .filter { look.decorations.contains($0.0) }.map(\.1)
-        return [("letter-spacing", look.letterSpacing == 0 ? nil : signedPixels(look.letterSpacing)),
+        return [("letter-spacing", letterSpacing(look.letterSpacing)),
                 ("line-height", look.lineHeight.map(number)),
                 ("text-decoration-line", lines.isEmpty ? nil : lines.joined(separator: " "))]
     }
