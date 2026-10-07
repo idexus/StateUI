@@ -58,6 +58,7 @@ Ellipse
   miterLimit
   stroke
 Grid
+  backdrop
   clipsContent
   columnSpacing
   columns
@@ -68,6 +69,7 @@ Grid
   shape
   stroke
 HStack
+  backdrop
   clipsContent
   lineWidth
   padding
@@ -287,6 +289,7 @@ TimePicker
   time
   timeChanged()
 VStack
+  backdrop
   clipsContent
   lineWidth
   padding
@@ -302,6 +305,7 @@ WebView
   navigating()
   processTerminated()
 ZStack
+  backdrop
   clipsContent
   lineWidth
   padding

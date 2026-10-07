@@ -134,6 +134,10 @@ enum WinUIRealization {
         .notPlanned("WebView", "tapCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "tapped", reason: webViewTakesTheHand),
         .complete("Window", "activated"),
+        .partial("Grid", "backdrop", missing: "The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill."),
+        .partial("HStack", "backdrop", missing: "The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill."),
+        .partial("VStack", "backdrop", missing: "The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill."),
+        .partial("ZStack", "backdrop", missing: "The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill."),
         .partial("Window", "backdrop", missing: "A window shows the one desktop acrylic WinUI's backdrop draws, "
             + "whatever the thickness."),
         .complete("Window", "background"),

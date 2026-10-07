@@ -4,12 +4,12 @@ Button.background: ✅
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.backdrop: not realized
+Grid.backdrop: ☑️ The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill.
 Grid.background: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.backdrop: not realized
+HStack.backdrop: ☑️ The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill.
 HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
@@ -23,12 +23,12 @@ ScrollView.background: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
-VStack.backdrop: not realized
+VStack.backdrop: ☑️ The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill.
 VStack.background: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.backdrop: not realized
+ZStack.backdrop: ☑️ The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill.
 ZStack.background: ✅
 ZStack.lineWidth: ✅
 ZStack.shape: ✅

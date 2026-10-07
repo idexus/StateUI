@@ -73,13 +73,16 @@ extension WinUIRegistrations {
 
     /// What every layout takes of its own box: what fills it, its outline, its shape and its cut.
     private static let boxMembers: [any ContractMember] = [
-        VisualElementContract.background,
+        BorderElementContract.backdrop, VisualElementContract.background,
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
         LayoutContract.clipsContent,
     ]
 
     private static func applyBox<Realized: ElementContract>(_ view: WinUILayoutView, _ values: ElementValues<Realized>) {
-        view.setBackground(values[VisualElementContract.background]?.propValue)
+        // The material's colour stands in for the box's acrylic, under the fill.
+        let fill = values[VisualElementContract.background]?.propValue
+        let backdrop = HostBackdrop(values[BorderElementContract.backdrop]?.propValue)
+        view.setBackground(backdrop.map { $0.painted(under: fill) } ?? fill)
         view.setOutline(
             stroke: values[BorderElementContract.stroke]?.propValue,
             width: values[BorderElementContract.lineWidth],

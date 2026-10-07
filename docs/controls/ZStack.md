@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>34 ✅ · 1 ☑️ · 36 ✓ · 3 –</td><td>custom <code>UIView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">◐</td><td>57 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr>
 <tr><td colspan="3">cannot read what reaches ColorBox - Android's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>57 ✅ · 13 ✓ · 3 –</td><td><code>Canvas</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>57 ✅ · 1 ☑️ · 13 ✓ · 3 –</td><td><code>Canvas</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td><code>GtkFixed</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>50 ✅ · 2 ☑️ · 20 ✓ · 3 –</td><td><code>position: absolute</code></td></tr></tbody>
 </table>
@@ -214,8 +214,8 @@ What an element draws of its own box: what lets what lies behind it show through
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>backdrop</code></td><td>property</td><td><code>Backdrop</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✓</td><td align="center">☑️</td><td align="center"></td><td align="center">✓</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">UIKit: only through the host's own: read backdrop of ZStack: the effect the host gave the view, which UIKit reads no style of<br>Android Views: Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill.<br>WinUI 3: not realized<br>GTK 4: only through the host's own: read backdrop of ZStack: the brush the host draws the box with: GTK reads back no drawing<br>Web: A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>backdrop</code></td><td>property</td><td><code>Backdrop</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✓</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: read backdrop of ZStack: the effect the host gave the view, which UIKit reads no style of<br>Android Views: Android blurs nothing behind a view: the material's colour of the theme stands in, under the fill.<br>WinUI 3: The box's acrylic is not drawn yet: the material's colour of the theme stands in, under the fill.<br>GTK 4: only through the host's own: read backdrop of ZStack: the brush the host draws the box with: GTK reads back no drawing<br>Web: A page has no glass: glass is drawn as the material as clear as it is, a blur under its colour.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

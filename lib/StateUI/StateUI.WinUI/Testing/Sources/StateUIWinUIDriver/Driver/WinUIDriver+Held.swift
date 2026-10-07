@@ -233,6 +233,11 @@ extension WinUIDriver {
         if view is WinUILayoutView {
             switch name {
             case "background": return try Self.color(read(view, "box.fill")).map { Background.color($0).propValue }
+            case "backdrop":
+                // A colour stands in for the material: the material whose colour the box paints.
+                guard let painted = try Self.color(read(view, "box.fill"))?.propValue else { return nil }
+                return Material.allCases.first { HostBackdrop(Backdrop.material($0).propValue)?.standIn == painted }
+                    .map { Backdrop.material($0).propValue }
             case "stroke": return try Self.color(read(view, "box.stroke")).map { Brush.solidColor($0).propValue }
             case "lineWidth": return Double(try read(view, "box.strokeThickness"))?.propValue
             case "shape":
