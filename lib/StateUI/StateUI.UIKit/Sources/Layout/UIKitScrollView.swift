@@ -100,6 +100,17 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
         if let target = writtenOffset.laidOutNow() { move(to: target) }
     }
 
+    /// Keeps `right` and `bottom` points clear at the content's end - the strip of the bars a page's scroller reaches
+    /// under there - so the last content scrolls out from under it; the start, and the offsets, stay as they are.
+    /// Design: docs/design/host/layout.md#the-safe-area
+    func keepEndClear(right: Double, bottom: Double) {
+        let inset = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: right)
+        guard scroller.contentInset != inset else { return }
+        scroller.contentInset = inset
+        scroller.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: 0)
+        scroller.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: right)
+    }
+
     // MARK: - The user's movement
 
     func scrollViewDidScroll(_ scroller: UIScrollView) {
@@ -147,9 +158,10 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
 
     /// Moves the scroller to `target`, kept within what it reaches, as the program's move.
     private func move(to target: Point) {
+        let inset = scroller.contentInset
         let reach = Point(
-            x: max(0, scroller.contentSize.width - scroller.bounds.width),
-            y: max(0, scroller.contentSize.height - scroller.bounds.height))
+            x: max(0, scroller.contentSize.width + inset.right - scroller.bounds.width),
+            y: max(0, scroller.contentSize.height + inset.bottom - scroller.bounds.height))
         let kept = ScrollArithmetic.kept(target, reach: reach)
         offset = kept
         let standing = Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y)

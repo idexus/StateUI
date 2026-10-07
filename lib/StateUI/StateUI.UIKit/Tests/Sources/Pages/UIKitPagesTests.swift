@@ -211,6 +211,30 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
     }
 
+    /// A page's scroller let under the strip at its bottom scrolls under the home indicator and keeps the strip
+    /// clear at its end, so its last row scrolls out from under it; one standing clear of the strip keeps nothing.
+    @MainActor
+    func testAPagesScrollerUnderTheHomeIndicatorKeepsItClearAtItsEnd() throws {
+        let under = State(wrappedValue: true)
+        let host = UIKitRenderer.running {
+            Grid { ScrollView { Text("rows") } }
+                .avoidsSafeArea(.container, .container, .container, under.wrappedValue ? .none : .container)
+        }
+        defer { host.finish() }
+        let scroller = { host.views(UIKitScrollView.self).first?.scroller }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        host.settle { controller.view.safeAreaInsets.bottom > 0 && (scroller()?.contentInset.bottom ?? 0) > 0 }
+        let strip = controller.view.safeAreaInsets.bottom
+        XCTAssertGreaterThan(strip, 0, "the phone has a home indicator")
+        XCTAssertEqual(try XCTUnwrap(scroller()).contentInset.bottom, strip, "the strip kept clear at its end")
+        XCTAssertEqual(try XCTUnwrap(scroller()).contentInset.top, 0, "its start as it is")
+
+        under.wrappedValue = false
+        host.settle { scroller()?.contentInset.bottom == 0 }
+        XCTAssertEqual(try XCTUnwrap(scroller()).contentInset.bottom, 0, "clear of the strip, nothing to keep")
+    }
+
     /// A page's background stands behind the whole screen, the strip under the home indicator and the bars
     /// included - never the system's white there.
     @MainActor

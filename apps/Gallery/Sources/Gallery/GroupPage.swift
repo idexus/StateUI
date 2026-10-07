@@ -21,6 +21,15 @@ struct GroupPage: View {
     @Environment(\.device) var device
 
     var body: some View {
+        // The list runs under a phone's home indicator, as its own lists do,
+        // the last row scrolling out clear of it.
+        Grid { list }
+            .avoidsSafeArea(.container, .container, .container, .none)
+            .galleryPage(group.title)
+    }
+
+    /// The group's samples, one row each, under what the group is about.
+    private var list: some View {
         ScrollView {
             VStack {
                 // The page's title is its bar's; the line under it says what
@@ -47,6 +56,5 @@ struct GroupPage: View {
             .spacing(16)
             .padding(24)
         }
-        .galleryPage(group.title)
     }
 }

@@ -91,6 +91,10 @@ final class UIKitPageController: UIViewController {
             whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),
             edges: page?.element.contentSafeArea)
         page?.placedFrame = room
+        let clearance = SafeAreaArithmetic.endClearance(
+            room: room, safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height))
+        (page?.element.pageScroller?.uiKit.view as? UIKitScrollView)?.keepEndClear(
+            right: clearance.right, bottom: clearance.bottom)
         page?.view?.layoutIfNeeded()
     }
 }
