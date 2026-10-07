@@ -346,10 +346,9 @@ enum JavaAPI {
     static let getResources = Java.method(contextClass, "getResources", "()Landroid/content/res/Resources;")
     static let getClassLoader = Java.method(contextClass, "getClassLoader", "()Ljava/lang/ClassLoader;")
     static let resources = Java.findClass("android/content/res/Resources")
-    static let getConfiguration = Java.method(
-        resources, "getConfiguration", "()Landroid/content/res/Configuration;")
-    static let configuration = Java.findClass("android/content/res/Configuration")
-    static let fontScale = Java.field(configuration, "fontScale", "F")
+    static let getDisplayMetrics = Java.method(resources, "getDisplayMetrics", "()Landroid/util/DisplayMetrics;")
+    static let typedValue = Java.findClass("android/util/TypedValue")
+    static let applyDimension = Java.staticMethod(typedValue, "applyDimension", "(IFLandroid/util/DisplayMetrics;)F")
     static let getAssets = Java.method(contextClass, "getAssets", "()Landroid/content/res/AssetManager;")
     static let assetManager = Java.findClass("android/content/res/AssetManager")
     static let openAsset = Java.method(assetManager, "open", "(Ljava/lang/String;)Ljava/io/InputStream;")

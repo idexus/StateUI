@@ -7,9 +7,9 @@ DatePicker.fontAttributes: ✅
 DatePicker.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 DatePicker.fontSize: ✅
 DatePicker.isFontAutoScalingEnabled: not realized
-Picker.fontAttributes: cannot read fontAttributes of Picker - Android's driver has no path for it yet
-Picker.fontFamily: cannot read fontFamily of Picker - Android's driver has no path for it yet
-Picker.fontSize: cannot read fontSize of Picker - Android's driver has no path for it yet
+Picker.fontAttributes: ✅
+Picker.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
+Picker.fontSize: ✅
 Picker.isFontAutoScalingEnabled: not realized
 RadioButton.fontAttributes: ✅
 RadioButton.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
@@ -31,9 +31,9 @@ TextField.fontAttributes: ✅
 TextField.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 TextField.fontSize: ✅
 TextField.isFontAutoScalingEnabled: not realized
-TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - Android's driver has no path for it yet
+TextSpan.fontAttributes: ✅
 TextSpan.fontFamily: not realized
-TextSpan.fontSize: cannot read fontSize of TextSpan - Android's driver has no path for it yet
+TextSpan.fontSize: ✅
 TextSpan.isFontAutoScalingEnabled: not realized
 TimePicker.fontAttributes: ✅
 TimePicker.fontFamily: does not apply - read a family - Android's typeface keeps no family's name

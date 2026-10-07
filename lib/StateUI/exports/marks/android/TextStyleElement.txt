@@ -3,7 +3,7 @@ Button.textColor: ✅
 Button.tracking: not realized
 DatePicker.textColor: ✅
 DatePicker.tracking: not realized
-Picker.textColor: cannot read textColor of Picker - Android's driver has no path for it yet
+Picker.textColor: ✅
 Picker.tracking: not realized
 RadioButton.textColor: ✅
 RadioButton.tracking: not realized
@@ -15,7 +15,7 @@ TextEditor.textColor: ✅
 TextEditor.tracking: not realized
 TextField.textColor: ✅
 TextField.tracking: not realized
-TextSpan.textColor: cannot read textColor of TextSpan - Android's driver has no path for it yet
+TextSpan.textColor: ✅
 TextSpan.tracking: not realized
 TimePicker.textColor: ✅
 TimePicker.tracking: not realized

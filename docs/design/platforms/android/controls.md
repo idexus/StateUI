@@ -203,6 +203,8 @@ over, so the picker itself knows the row the program's choice stands on, and
 a report of that row, or of the title's, is no change. The picker is given
 its options where they changed and the choice only where the tree changed it
 or them (`PickerChoices`): a new title leaves the user's choice standing.
+Its rows' words are sized in points the user's font scale applies to, as a
+label's are.
 
 The list opens on the user's tap or on `isOpen`; the spinner tells every
 opening and closing, and the host layer's rule (`PickerOpening`) hears only

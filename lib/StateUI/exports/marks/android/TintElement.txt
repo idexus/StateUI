@@ -1,7 +1,7 @@
 # revision 1.1
 ActivityIndicator.tint: ✅
 CheckBox.tint: ✅
-Picker.tint: cannot read tint of Picker - Android's driver has no path for it yet
+Picker.tint: ✅
 ProgressBar.tint: ✅
 SearchField.tint: not realized
 Slider.tint: ✅

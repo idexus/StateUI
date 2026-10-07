@@ -62,7 +62,10 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
         if (getSelectedItemPosition() != chosenRow) setSelection(chosenRow);
     }
 
-    /** The words' size in pixels, their colour - 0 for the theme's - their face, and where they stand. */
+    /**
+     * The words' size in the points the user's font scale applies to - 0 for the theme's - their colour - 0 for the
+     * theme's - their face, and where they stand.
+     */
     void setLook(float size, int color, Typeface face, int alignment) {
         textSize = size;
         textColor = color;
@@ -161,7 +164,7 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
                 }
             }
             row.setText((String) getItem(position));
-            if (textSize > 0) row.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            if (textSize > 0) row.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             row.setTextColor(textColor != 0 ? ColorStateList.valueOf(textColor) : madeColors);
             row.setTypeface(typeface);
             row.setGravity(gravity);

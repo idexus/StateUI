@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 /** What a view holds of a property, read back as the driver names it: in words, in the units Android keeps. */
@@ -64,14 +65,14 @@ public final class TestRead {
         return !enabled ? "never" : fades ? "default" : "always";
     }
 
-    /** The colour a control's own part is tinted: a check's box, a bar's progress, a spinner's ring. */
+    /** The colour a control's own part is tinted: a check's box, a bar's progress, a spinner's ring, a picker's arrow. */
     private static String tint(View view) {
         ColorStateList tint = null;
         if (view instanceof CompoundButton) tint = ((CompoundButton) view).getButtonTintList();
         else if (view instanceof ProgressBar) {
             ProgressBar bar = (ProgressBar) view;
             tint = bar.isIndeterminate() ? bar.getIndeterminateTintList() : bar.getProgressTintList();
-        }
+        } else if (view instanceof Spinner) tint = view.getBackgroundTintList();
         return tint == null ? null : String.valueOf(tint.getDefaultColor());
     }
 }

@@ -28,14 +28,14 @@ final class AndroidTextView: AndroidTextualView {
 
     /// The words as runs, each spanning its own part of them with how its look differs from the label's.
     func setRuns(_ runs: [TextRun]) {
-        let scale = Self.fontScale
+        let point = Self.pointPixels
         Java.frame {
             let words = Java.new(JavaAPI.spannableBuilder, JavaAPI.newSpannableBuilder)
             var start: Int32 = 0
             for run in runs {
                 let end = start + Int32(run.text.utf16.count)
                 Java.release(local: Java.callObject(words.reference, JavaAPI.append, .object(Java.string(run.text))))
-                for span in spans(of: run, scale: scale) {
+                for span in spans(of: run, point: point) {
                     Java.call(
                         words.reference, JavaAPI.setSpan,
                         .object(span.reference), .int(start), .int(end), .int(Self.exclusive))
@@ -48,14 +48,14 @@ final class AndroidTextView: AndroidTextualView {
     }
 
     /// The Java spans that make a run differ from the label.
-    private func spans(of run: TextRun, scale: Double) -> [JavaObject] {
+    private func spans(of run: TextRun, point: Double) -> [JavaObject] {
         let look = run.look
         var spans: [JavaObject] = []
         if let argb = look.color.flatMap(Self.argb) {
             spans.append(Java.new(JavaAPI.foregroundSpan, JavaAPI.newForegroundSpan, .int(argb)))
         }
         if let size = look.size {
-            let pixels = Int32((size * density * scale).rounded())
+            let pixels = Int32((size * point).rounded())
             spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(pixels), .bool(false)))
         }
         let style = look.attributes.rawValue & 3
@@ -113,12 +113,14 @@ final class AndroidTextView: AndroidTextualView {
     private static let underline: Int32 = 8
     private static let strikethrough: Int32 = 16
 
-    /// The user's scale for text, which a run's size in points is drawn at, as the label's is.
-    private static var fontScale: Double {
+    /// The pixels of one point of text the user's font scale applies to - Android's scaled pixel, the label's
+    /// own size's unit - which a run's size is drawn in.
+    private static var pointPixels: Double {
         Java.frame {
             let resources = Java.callObject(AndroidRenderer.context, JavaAPI.getResources)!
-            let configuration = Java.callObject(resources, JavaAPI.getConfiguration)!
-            return Double(Java.float(configuration, JavaAPI.fontScale))
+            let metrics = Java.callObject(resources, JavaAPI.getDisplayMetrics)!
+            return Double(Java.callStaticFloat(
+                JavaAPI.typedValue, JavaAPI.applyDimension, .int(ViewConstants.scaledPixels), .float(1), .object(metrics)))
         }
     }
 }

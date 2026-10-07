@@ -22,6 +22,7 @@ extension AndroidDriver {
             return try tabHolds(property, of: element, in: tabs)
         }
         if element.type == .window, property == .title { return Self.activityTitle() }
+        if element.type == .textSpan { return try spanHolds(property, on: element) }
         let view = (element.native as? AndroidElement)?.view
         if let field = view as? AndroidDateFieldView, let held = try Self.dateFieldHolds(property, field) { return held }
         if let web = view as? AndroidWebView, let held = try Self.webHolds(property, web) { return held }
@@ -76,6 +77,11 @@ extension AndroidDriver {
             let held = Java.callStaticLong(Self.testPixels, Self.background, .object(view.reference))
             guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
             return Background.color(Self.color(UInt32(truncatingIfNeeded: held))).propValue
+        case (.fontSize, let picker as AndroidPickerView), (.fontAttributes, let picker as AndroidPickerView),
+             (.textColor, let picker as AndroidPickerView), (.horizontalTextAlignment, let picker as AndroidPickerView):
+            return try Self.fieldHolds(property, of: picker)
+        case (.fontFamily, is AndroidPickerView):
+            throw DriverCannot("read a family", because: "Android's typeface keeps no family's name")
         case (.options, let picker as AndroidPickerView): return Array(Self.rows(of: picker).dropFirst()).propValue
         case (.placeholder, let picker as AndroidPickerView): return Self.rows(of: picker).first?.propValue
         case (.selectedIndex, let picker as AndroidPickerView):
@@ -88,6 +94,25 @@ extension AndroidDriver {
             throw DriverCannot(reading: property, of: element)
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// The look of the words a picker's closed field shows: the row the spinner shows as chosen.
+    private static func fieldHolds(_ property: Prop, of picker: AndroidPickerView) throws -> HostValue? {
+        let held: HostValue?? = Java.frame {
+            guard let row = Java.callObject(picker.reference, getSelectedView) else { return .none }
+            switch property {
+            case .fontSize: return Double(Java.callStaticFloat(testText, points, .object(row))).rounded().propValue
+            case .fontAttributes:
+                return FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(row)) & 3).propValue
+            case .textColor: return color(UInt32(bitPattern: Java.callInt(row, getCurrentTextColor))).propValue
+            default:
+                // Gravity's horizontal bits: centre 1, start or left 3, end or right 5.
+                guard let gravity = read(row, "gravity").flatMap(Int.init) else { return .some(nil) }
+                return (gravity & 7 == 1 ? TextAlignment.center : gravity & 7 == 5 ? .end : .start).propValue
+            }
+        }
+        guard let held else { throw DriverCannot("read the field of a Picker showing no row") }
+        return held
     }
 
     /// What every view holds: whether it shows, how opaque it is, whether it takes input, how it is moved, and what
@@ -143,6 +168,8 @@ extension AndroidDriver {
         }
     }
 
+    static let getSelectedView = Java.method(
+        Java.findClass("android/widget/AdapterView"), "getSelectedView", "()Landroid/view/View;")
     static let getTitle = Java.method(Java.findClass("android/app/Activity"), "getTitle", "()Ljava/lang/CharSequence;")
     static let isShown = Java.method(JavaAPI.view, "isShown", "()Z")
     static let getLayoutDirection = Java.method(JavaAPI.view, "getLayoutDirection", "()I")
