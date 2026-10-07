@@ -413,4 +413,5 @@ ZStack
   saveFile()
   scrollTo()
   unfocus()
+  useColorScheme()
   utcOffset()

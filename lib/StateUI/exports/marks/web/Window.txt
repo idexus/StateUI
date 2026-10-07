@@ -1,6 +1,7 @@
-# revision 3.1
+# revision 4.1
 Window: ✅
 Window.activated: ✅
+Window.background: ✅
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window
 Window.destroying: ✓ close on Window: the notice the browser gives as it leaves the page, told by the driver: a page closes no tab

@@ -80,6 +80,13 @@ final class WinUIWindow {
         stateui_winui_window_set_traits(
             handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.isTranslucent,
             traits.floatsOnTop)
+        let argb = traits.background.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)
+        stateui_winui_window_set_background(handle, argb != nil, argb ?? 0)
+    }
+
+    /// Shows the window in `theme`, the system's for `.system`.
+    func useTheme(_ theme: ColorScheme) {
+        stateui_winui_window_set_theme(handle, theme.rawValue)
     }
 
     /// Shows `view` as the window's content - the first one activates the window, unless its scene hides it.

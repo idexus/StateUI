@@ -271,6 +271,19 @@ void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limi
 void stateui_winui_window_set_traits(StateUIObjectRef window, bool maximizable, bool minimizable, bool translucent,
                                      bool floats);
 
+/// Paints the window behind its pages in `argb` - the backdrop through it where the colour lets it - or leaves it
+/// WinUI's own where `written` is false.
+void stateui_winui_window_set_background(StateUIObjectRef window, bool written, uint32_t argb);
+
+/// The colour the window shows behind its pages, as ARGB; false where it shows WinUI's own.
+bool stateui_winui_window_background(StateUIObjectRef window, uint32_t *argb);
+
+/// Shows the window in a theme: 1 light, 2 dark, 0 the system's.
+void stateui_winui_window_set_theme(StateUIObjectRef window, int32_t scheme);
+
+/// The theme the window shows in now: 1 light, 2 dark.
+int32_t stateui_winui_window_actual_theme(StateUIObjectRef window);
+
 /// What a test reads of a window, into 13 values: x, y, width, height, the four limits in the order they are set,
 /// maximizable, minimizable, translucent, floating and shown as 1 or 0.
 void stateui_winui_window_frame(StateUIObjectRef window, double *values);

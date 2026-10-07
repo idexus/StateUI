@@ -23,6 +23,7 @@ final class WinUIWindowController {
 
     init(_ element: MountedElement) {
         self.element = element
+        window.useTheme(HostThemes.held)
     }
 
     /// Shows what the element asks for now. The host layer tells the page the user sees and the window made before

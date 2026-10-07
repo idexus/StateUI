@@ -14,6 +14,9 @@ final class UIKitWindowController {
     /// The scene's window; nil for a StateUI window no scene stands for yet.
     private(set) var window: UIWindow?
 
+    /// What the window shows behind its pages, as its element last said; nil for UIKit's own.
+    private var background: UIColor?
+
     /// The session of the scene the window stands in, which the user closes the window by.
     private(set) var session: UISceneSession?
 
@@ -64,6 +67,8 @@ final class UIKitWindowController {
     func stand(in scene: UIWindowScene) {
         guard window == nil else { return }
         let window = UIWindow(windowScene: scene)
+        window.backgroundColor = background
+        window.overrideUserInterfaceStyle = UIKitActToolkit.style(HostThemes.held)
         window.rootViewController = root
         window.makeKeyAndVisible()
         self.window = window
@@ -86,6 +91,10 @@ final class UIKitWindowController {
     /// sees.
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         let changes = presentation.show(element, in: runtime.lifecycle)
+        if let traits = changes.traits {
+            background = traits.background.flatMap(UIColor.init(stateUI:))
+            window?.backgroundColor = background
+        }
         if let (_, arrangement) = changes.arrangement {
             root.show(arrangement?.uiKit.controller)
         }

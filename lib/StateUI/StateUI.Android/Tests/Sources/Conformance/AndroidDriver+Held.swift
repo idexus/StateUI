@@ -24,6 +24,7 @@ extension AndroidDriver {
             return try tabHolds(property, of: element, in: tabs)
         }
         if element.type == .window, property == .title { return Self.activityTitle() }
+        if element.type == .window, property == .background { return Self.windowBackground() }
         if element.type == .textSpan { return try spanHolds(property, on: element) }
         let view = (element.native as? AndroidElement)?.view
         if let field = view as? AndroidDateFieldView, let held = try Self.dateFieldHolds(property, field) { return held }
@@ -163,6 +164,19 @@ extension AndroidDriver {
 
 
     /// The activity's title, as the system's recent tasks show it.
+    /// The plain colour the activity's window shows behind its pages; nil where it shows none.
+    static func windowBackground() -> HostValue? {
+        let argb = Java.callStaticLong(JavaAPI.environment, readWindowBackground, .object(TestContext.window.reference))
+        guard argb != Int64.min else { return nil }
+        let packed = UInt32(truncatingIfNeeded: argb)
+        return Color(red: Int(packed >> 16 & 255), green: Int(packed >> 8 & 255), blue: Int(packed & 255),
+                     alpha: Int(packed >> 24 & 255)).propValue
+    }
+
+    static let readWindowBackground = Java.staticMethod(
+        JavaAPI.environment, "windowBackground", "(Landroid/app/Activity;)J")
+    static let night = Java.staticMethod(JavaAPI.environment, "night", "(Landroid/content/Context;)Z")
+
     static func activityTitle() -> HostValue? {
         Java.frame {
             Java.callObject(TestContext.window.reference, getTitle).flatMap { Java.callObject($0, JavaAPI.toString) }

@@ -296,6 +296,32 @@
                 s.expect(said.values, ["announced"])
                 s.expect(try s.announced(), ["Saved the draft"])
             },
+            ConformanceCase("theApplicationShowsInTheThemeItHolds", proves: [
+                Covered(ApplicationContract.useColorScheme),
+            ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+                s.start { ThemeChoices() }
+
+                @MainActor func inForce() throws -> String? {
+                    try s.held(TextualElementContract.text, on: s.element("inForce"))
+                }
+                try s.perform(.activate, on: s.element("dark"))
+                try s.settle { try s.theme() == .dark && inForce() == "dark" }
+                s.expect(try s.theme(), .dark, "the platform shows the application dark")
+                s.expect(try inForce(), "dark", "and pairs resolve dark")
+
+                try s.perform(.activate, on: s.element("light"))
+                try s.settle { try s.theme() == .light && inForce() == "light" }
+                s.expect(try s.theme(), .light, "light, whatever the system asks")
+                s.expect(try inForce(), "light")
+
+                // Following the system again, whichever theme it asks for: the platform and the pairs agree.
+                try s.perform(.activate, on: s.element("system"))
+                @MainActor func agree() throws -> Bool {
+                    try inForce() == "\(try s.theme())"
+                }
+                try s.settle { try agree() }
+                s.expect(try agree(), true, "the system's theme, shown and resolved alike")
+            },
             ConformanceCase("theHostTellsTheTimeOfDay", proves: [
                 Covered(ApplicationContract.currentTime),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
@@ -441,4 +467,19 @@ struct SectionPage: View {
 struct ConformanceFailure: Error, CustomStringConvertible {
     let message: String
     var description: String { message }
+}
+
+/// Buttons that hold the application's theme, over the theme in force as words.
+private struct ThemeChoices: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return VStack {
+            Text("\(application.info.colorScheme)").id("inForce")
+            Button("Dark").onClicked { application.colorScheme = .dark }.id("dark")
+            Button("Light").onClicked { application.colorScheme = .light }.id("light")
+            Button("System").onClicked { application.colorScheme = .system }.id("system")
+        }
+    }
 }

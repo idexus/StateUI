@@ -39,3 +39,4 @@ VisualElement 5
 Shape 3
 BorderElement 3
 TextInput 2
+Application 2

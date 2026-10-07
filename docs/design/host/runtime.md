@@ -344,6 +344,18 @@ follows on every host (`HostRuntime.environmentChanged`): the core is told
 what stands now, the tree follows the language's direction, and one turn
 renders what it all changed.
 
+## The theme in force
+
+An application may hold a theme of its own (`application.colorScheme`), and
+its act shows every window in it with the toolkit's own call. The theme the
+core resolves colour pairs against is then the theme in force, the same on
+every host (`HostThemes`): the application's while it holds one, the
+system's while it follows the system. A host reports the system's theme as
+its toolkit tells it, and the host layer passes on the theme in force - so a
+toolkit that tells the system's alone, a browser's media query, reports the
+application's all the same, and one that tells its own effective look agrees
+with it.
+
 ## The application's phase
 
 A toolkit tells what each window does - whether it stands off the screen,

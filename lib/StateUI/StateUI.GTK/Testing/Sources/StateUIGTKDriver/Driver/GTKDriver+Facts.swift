@@ -95,6 +95,11 @@ extension GTKDriver {
         GTKActToolkit.announced
     }
 
+    /// Whether libadwaita shows the application dark now.
+    func theme() throws -> ColorScheme {
+        adw_style_manager_get_dark(adw_style_manager_get_default()) != 0 ? .dark : .light
+    }
+
     func logged() throws -> [String] {
         written.lines
     }

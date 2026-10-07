@@ -100,7 +100,10 @@ enum AndroidRealization {
         .complete("ToolbarItemGroup", "order"),
         .notPlanned("ToolbarItemGroup", "side",
                     reason: "Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions."),
+        .partial("Application", "useColorScheme", missing: "Before Android 12 an application holds no night mode "
+            + "of its own: it shows the system's."),
         .complete("Window", "activated"),
+        .complete("Window", "background"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),

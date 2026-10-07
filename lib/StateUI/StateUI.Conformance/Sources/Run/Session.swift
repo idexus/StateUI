@@ -181,6 +181,12 @@
         return try driver.announced()
     }
 
+    /// The theme the platform shows the application in now.
+    public func theme() throws -> ColorScheme {
+        note("read the theme the application shows in")
+        return try driver.theme()
+    }
+
     /// The file dialog the window shows now; nil where it shows none.
     public func fileDialog() throws -> FileDialog? {
         guard let root = tree?.root else { return nil }

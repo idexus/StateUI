@@ -71,6 +71,12 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `Links.launch(_:)`.
     public static let launchLink = ElementAct<Self, String, Bool>("launchLink")
 
+    /// Shows the whole application in a theme - light, dark, or the system's,
+    /// which follows the user's setting again.
+    ///
+    /// See `ApplicationSession.colorScheme`.
+    public static let useColorScheme = ElementAct<Self, ColorScheme, Void>("useColorScheme")
+
     /// Asks the user for files to open in the dialog over the showing page -
     /// the kinds it shows, none for any, and whether it takes several -
     /// answering the files chosen, none where it was cancelled.
@@ -118,6 +124,6 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let members: [any ContractMember] = [
         alert, announce, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
         hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
-        readFile, saveFile, utcOffset,
+        readFile, saveFile, useColorScheme, utcOffset,
     ]
 }

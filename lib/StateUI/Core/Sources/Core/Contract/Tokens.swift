@@ -329,6 +329,7 @@ extension NodeType {
     static let chooseAction = ApplicationContract.chooseAction.token
     static let prompt = ApplicationContract.prompt.token
     static let announce = ApplicationContract.announce.token
+    static let useColorScheme = ApplicationContract.useColorScheme.token
     static let currentTime = ApplicationContract.currentTime.token
     static let currentTimeZone = ApplicationContract.currentTimeZone.token
     static let utcOffset = ApplicationContract.utcOffset.token

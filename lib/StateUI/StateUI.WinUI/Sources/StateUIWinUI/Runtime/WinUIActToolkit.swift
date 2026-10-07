@@ -83,6 +83,11 @@ final class WinUIActToolkit: ActToolkit {
         dialogs.removeValue(forKey: ticket)?(accepted, words)
     }
 
+    /// Shows every window in `theme`: each window's content in WinUI's own theme, the system's for `.system`.
+    func useColorScheme(_ theme: ColorScheme) {
+        for controller in renderer.windows { controller.window.useTheme(theme) }
+    }
+
     func announce(_ words: String) {
         if let content = renderer.userWindow?.content { stateui_winui_announce(content.handle, words) }
     }

@@ -11,13 +11,14 @@ import UIKit
 /// scene, a page's bar and tab item, a tab bar's choice, a split view's sidebar - and through their own paths.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
-    /// A window's title, as its scene holds it.
+    /// A window's title, as its scene holds it, and its background.
     func windowHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         guard let window = renderer?.roster.windows.first(where: { $0.0 === element })?.1.window else {
             throw DriverCannot(reading: property, of: element)
         }
         switch property {
         case .title: return (window.windowScene?.title ?? "").propValue
+        case .background: return window.backgroundColor.map { Self.color($0).propValue }
         default: throw DriverCannot(reading: property, of: element)
         }
     }

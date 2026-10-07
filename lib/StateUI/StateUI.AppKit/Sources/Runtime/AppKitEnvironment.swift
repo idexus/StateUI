@@ -71,6 +71,18 @@ final class AppKitEnvironment {
         network.start(queue: .main)
         self.network = network
 
+        watchTheme()
+    }
+
+    /// Reports the theme, then each change of it as it comes, through `reportingChanges` - alone, where a host
+    /// watches nothing else of its machine.
+    func startTheme(reportingChanges: @escaping (() -> Void) -> Void) {
+        reportTheme()
+        reportChange = reportingChanges
+        watchTheme()
+    }
+
+    private func watchTheme() {
         appearanceWatch = NSApplication.shared.observe(\.effectiveAppearance) { [weak self] _, _ in
             MainActor.assumeIsolated { self?.changed { $0.reportTheme() } }
         }

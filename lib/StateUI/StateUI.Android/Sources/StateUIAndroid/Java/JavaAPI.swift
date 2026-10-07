@@ -415,6 +415,9 @@ enum JavaAPI {
     static let zone = Java.staticMethod(environment, "zone", "()Ljava/lang/String;")
     static let utcOffset = Java.staticMethod(environment, "utcOffset", "(Ljava/lang/String;III)I")
     static let hideKeyboard = Java.staticMethod(environment, "hideKeyboard", "(Landroid/view/View;)Z")
+    static let useNightMode = Java.staticMethod(environment, "useNightMode", "(Landroid/content/Context;I)V")
+    static let setWindowBackground = Java.staticMethod(
+        environment, "windowBackground", "(Landroid/content/Context;IZ)V")
     static let setWindowTitle = Java.staticMethod(
         environment, "title", "(Landroid/content/Context;Ljava/lang/String;)V")
     static let deviceFacts = Java.staticMethod(environment, "device", "(Landroid/content/Context;)[Ljava/lang/String;")

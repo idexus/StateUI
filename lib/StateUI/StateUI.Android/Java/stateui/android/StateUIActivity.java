@@ -31,6 +31,7 @@ public class StateUIActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle state) {
+        StateUIEnvironment.followSystemOnce(this);
         setTheme(StateUIEnvironment.night(this)
                 ? android.R.style.Theme_DeviceDefault_NoActionBar
                 : android.R.style.Theme_DeviceDefault_Light_NoActionBar);

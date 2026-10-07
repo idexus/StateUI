@@ -27,6 +27,9 @@
     /// Tells the screen reader `words`, now.
     func announce(_ words: String)
 
+    /// Shows the whole application in `theme`: light, dark, or the system's again.
+    func useColorScheme(_ theme: ColorScheme)
+
     /// Takes the on-screen keyboard down; whether one was up.
     func hideOnScreenKeyboard() -> Bool
 

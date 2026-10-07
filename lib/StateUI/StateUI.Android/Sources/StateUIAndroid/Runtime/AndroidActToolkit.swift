@@ -128,6 +128,11 @@ final class AndroidActToolkit: ActToolkit {
         }
     }
 
+    /// Shows the application in `theme` as its own night mode, which the system keeps and every activity takes.
+    func useColorScheme(_ theme: ColorScheme) {
+        Java.callStatic(JavaAPI.environment, JavaAPI.useNightMode, .object(AndroidRenderer.context), .int(theme.rawValue))
+    }
+
     func hideOnScreenKeyboard() -> Bool {
         Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root.reference))
     }

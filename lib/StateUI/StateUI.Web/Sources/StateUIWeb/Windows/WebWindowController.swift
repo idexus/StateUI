@@ -68,6 +68,7 @@ final class WebWindowController {
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
         let changes = presentation.show(element, in: runtime.lifecycle)
+        if let traits = changes.traits { window.frame.setBackground(traits.background) }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
         if let pages = changes.sheets { showSheets(pages) }

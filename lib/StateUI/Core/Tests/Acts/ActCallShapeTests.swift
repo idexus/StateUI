@@ -233,6 +233,20 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// The theme the application holds, as its session sends it - a member of
+    /// a closed vocabulary, nobody waiting - and the system's again, once.
+    func testTheApplicationsThemeCrossesWithItsArgumentsInPlace() throws {
+        drain()
+        let application = ApplicationSession()
+        application.colorScheme = .dark
+        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.dark.rawValue)], awaited: false)
+
+        application.colorScheme = .dark
+        XCTAssertTrue(drain().isEmpty, "the theme it holds already is sent no more")
+        application.colorScheme = .system
+        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.system.rawValue)], awaited: false)
+    }
+
     func testAFailedHandlerCrossesWithItsArgumentsInPlace() throws {
         drain()
         Renderer.shared.report(StateUIError(message: "boom"))

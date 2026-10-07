@@ -128,6 +128,14 @@ extension WebDriver {
         try? WebBrowser.run("stateui.files = new Map(); stateui.fileDialog = null; stateui.launched = []")
     }
 
+    /// The colour scheme the page's root stands in: the one it holds, else the system's.
+    func theme() throws -> ColorScheme {
+        let held = try WebBrowser.evaluate("getComputedStyle(document.documentElement).colorScheme", on: 0) ?? ""
+        if held == "dark" { return .dark }
+        if held == "light" { return .light }
+        return try WebBrowser.truth("matchMedia('(prefers-color-scheme: dark)').matches", on: 0) ? .dark : .light
+    }
+
     /// What assistive technology was told, a few frames given for the page's live region to say it.
     func announced() throws -> [String] {
         for _ in 0..<10 where try words("stateui.announced", on: 0).isEmpty { WebBrowser.pause() }

@@ -65,6 +65,11 @@
         case .announce:
             toolkit.announce(call.arguments.first?.string ?? "")
             reply(call, [])
+        case .useColorScheme:
+            let theme = call.arguments.first.flatMap(ColorScheme.init(propValue:)) ?? .system
+            toolkit.useColorScheme(theme)
+            CoreLink().holdColorScheme(theme)
+            reply(call, [])
         case .hideOnScreenKeyboard:
             reply(call, [.bool(toolkit.hideOnScreenKeyboard())])
         case .focus, .unfocus:

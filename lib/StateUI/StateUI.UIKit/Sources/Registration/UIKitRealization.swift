@@ -97,6 +97,7 @@ enum UIKitRealization {
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
         .complete("Window", "activated"),
+        .complete("Window", "background"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),

@@ -38,13 +38,13 @@ Inherits nothing: every member below is its own.
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (17)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 10 ✓</td><td><code>NSApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>7 ✅ · 10 ✓</td><td><code>UIApplication</code> / <code>UIWindowScene</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 9 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>15 ✅ · 2 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>11 ✅ · 6 ✓</td><td><code>GtkApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>12 ✅ · 5 ✓</td><td><code>document</code> / structure</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (18)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>8 ✅ · 10 ✓</td><td><code>NSApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 10 ✓</td><td><code>UIApplication</code> / <code>UIWindowScene</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 9 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>16 ✅ · 2 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>12 ✅ · 6 ✓</td><td><code>GtkApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>13 ✅ · 5 ✓</td><td><code>document</code> / structure</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.
@@ -80,5 +80,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationCo
 <tr><td colspan="9">AppKit: only through the host's own: read a file dialog: the host's own panel, held unshown<br>UIKit: only through the host's own: read a file dialog: the host's own record of the picker it presented<br>Android Views: only through the host's own: read a file dialog: the picker the relay holds, which a test never hands the system<br>GTK 4: only through the host's own: read a file dialog: the dialog the host holds, which a test never shows<br>Web: only through the host's own: read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>saveFile</code></td><td>act</td><td><code>([UInt8], String, [FileType]) -&gt; ChosenFile?</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: read a file dialog: the host's own panel, held unshown<br>UIKit: only through the host's own: read a file dialog: the host's own record of the picker it presented<br>Android Views: only through the host's own: read a file dialog: the picker the relay holds, which a test never hands the system<br>GTK 4: only through the host's own: read a file dialog: the dialog the host holds, which a test never shows<br>Web: only through the host's own: read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>useColorScheme</code></td><td>act</td><td><code>(ColorScheme) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Before Android 12 an application holds no night mode of its own: it shows the system's.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>utcOffset</code></td><td>act</td><td><code>(String?, CalendarDate?) -&gt; Int</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

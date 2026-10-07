@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Application: ✅
 Application.alert: ✅
 Application.announce: ✅
@@ -16,4 +16,5 @@ Application.persistValue: ✅
 Application.prompt: ✅
 Application.readFile: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
 Application.saveFile: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
+Application.useColorScheme: ✅
 Application.utcOffset: ✅

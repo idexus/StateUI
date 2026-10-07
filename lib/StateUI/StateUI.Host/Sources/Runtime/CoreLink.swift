@@ -151,8 +151,15 @@
 
     // MARK: - The application, its scenes and its kept values
 
-    /// Reports the appearance themed values resolve against.
-    public func setColorScheme(_ theme: ColorScheme) { HostBoundary.setColorScheme(theme) }
+    /// Reports the theme the system asks for; themed values resolve against the theme in force (`HostThemes`).
+    @MainActor public func setColorScheme(_ theme: ColorScheme) {
+        HostBoundary.setColorScheme(HostThemes.report(system: theme))
+    }
+
+    /// Takes the theme the application holds; themed values resolve against the theme in force.
+    @MainActor public func holdColorScheme(_ theme: ColorScheme) {
+        HostBoundary.setColorScheme(HostThemes.hold(theme))
+    }
 
     /// Reports the device the application runs on.
     public func setDeviceInfo(_ info: HostDeviceInfo) { HostBoundary.setDeviceInfo(info) }

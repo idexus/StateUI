@@ -384,6 +384,12 @@ enum WebRelay {
 
     static var prefersDark: Bool { stateui_web_prefers_dark() != 0 }
 
+    /// Shows the page in `theme`: the root's colour scheme, which the browser's controls and the host's colours
+    /// follow; none for the system's.
+    static func useColorScheme(_ theme: ColorScheme) {
+        stateui_web_use_color_scheme(theme.rawValue)
+    }
+
     /// Draws a canvas's `numbers` and `words` (WebCanvasStroke) on the `<canvas>` element.
     static func drawCanvas(_ element: Int32, _ numbers: [Double], words: [String]) {
         utf8(words.joined(separator: "\u{0}")) { text, length in

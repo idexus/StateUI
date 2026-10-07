@@ -75,7 +75,7 @@ extension AppKitDriver {
         case .maximumHeight: return Double(window.contentMaxSize.height - chrome).rounded().propValue
         case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
-        case .isTranslucent: return (!window.isOpaque).propValue
+        case .isTranslucent: return ((window.contentView as? AppKitWindowContentView)?.materialForTesting != nil).propValue
         case .background:
             // Over the material of a translucent window, else the window's own.
             let content = window.contentView as? AppKitWindowContentView
@@ -123,11 +123,13 @@ extension AppKitDriver {
         return names.first { renderer?.image(named: $0) === shown }.map { .string($0) }
     }
 
-    /// The colour the bar of the window `element` stands in is painted: the window's own background, which the title
-    /// bar lets show only while a colour is painted; nil on the system's material.
+    /// The colour the bar of the window `element` stands in is painted: the band the title bar lets show only while
+    /// a colour is painted; nil on the system's material.
     func barHolds(_ element: MountedElement) throws -> HostValue? {
-        guard let window = try controller(of: element).window, window.titlebarAppearsTransparent else { return nil }
-        return Self.color(window.backgroundColor).propValue
+        guard let window = try controller(of: element).window, window.titlebarAppearsTransparent,
+              let band = (window.contentView as? AppKitWindowContentView)?.barColor
+        else { return nil }
+        return Self.color(band).propValue
     }
 
     /// What the host keeps under `key`, as the next launch reads it: a value every scene shares from the driver's
@@ -151,6 +153,11 @@ extension AppKitDriver {
     /// What the host told the screen reader, in order, as it posted it.
     func announced() throws -> [String] {
         renderer?.actToolkit.announcedForTesting ?? []
+    }
+
+    /// The application's effective appearance, which its windows show.
+    func theme() throws -> ColorScheme {
+        NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? .dark : .light
     }
 
     /// The file dialog AppKit's panel shows now: one that opens or one that saves.

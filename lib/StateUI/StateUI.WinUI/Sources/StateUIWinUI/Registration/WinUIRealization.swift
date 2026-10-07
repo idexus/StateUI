@@ -134,6 +134,7 @@ enum WinUIRealization {
         .notPlanned("WebView", "tapCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "tapped", reason: webViewTakesTheHand),
         .complete("Window", "activated"),
+        .complete("Window", "background"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),

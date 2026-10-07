@@ -185,6 +185,11 @@ final class AndroidDriver: HostDriver {
         }
     }
 
+    /// The night mode the activity's configuration stands in: the application's where it holds one.
+    func theme() throws -> ColorScheme {
+        Java.callStaticBool(JavaAPI.environment, Self.night, .object(TestContext.window.reference)) ? .dark : .light
+    }
+
     /// What the relay handed the system to launch, in order: an address as written, a document by its name.
     func launched() throws -> [String] {
         Java.frame { Java.texts(Java.callStaticObject(Self.files, Self.launchedForTesting)) }

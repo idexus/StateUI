@@ -92,6 +92,9 @@
     /// What the platform's screen reader was told to say, in order, since the host started.
     func announced() throws -> [String]
 
+    /// The theme the platform shows the application in now: light or dark.
+    func theme() throws -> ColorScheme
+
     /// The file dialog the window of `element` shows now; nil where it shows none.
     func fileDialog(over element: MountedElement) throws -> FileDialog?
 
@@ -172,6 +175,10 @@ extension HostDriver {
 
     public func announced() throws -> [String] {
         throw DriverCannot("read what the screen reader said")
+    }
+
+    public func theme() throws -> ColorScheme {
+        throw DriverCannot("read the theme the application shows in")
     }
 
     public func fileDialog(over element: MountedElement) throws -> FileDialog? {

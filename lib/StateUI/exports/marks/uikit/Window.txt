@@ -1,6 +1,7 @@
-# revision 3.1
+# revision 4.1
 Window: ✅
 Window.activated: ✅
+Window.background: ✅
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the host told the scene's phase, no scene moved
 Window.destroying: ✓ close on Window: the host told the scene's phase, no scene moved

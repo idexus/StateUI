@@ -5,6 +5,7 @@ package stateui.android;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.icu.util.LocaleData;
 import android.icu.util.ULocale;
 import android.net.ConnectivityManager;
@@ -26,6 +29,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -224,6 +228,54 @@ final class StateUIEnvironment {
         Calendar noon = Calendar.getInstance(timeZone);
         if (year != 0) noon.set(year, month - 1, day, 12, 0, 0);
         return timeZone.getOffset(noon.getTimeInMillis()) / 60000;
+    }
+
+    /** Whether the application's night mode was given back to the system as this process began. */
+    private static boolean followsSystem;
+
+    /**
+     * Gives the application's night mode back to the system once a process, as it begins: the system keeps the
+     * mode an application set, and an application holds a theme only while it says so.
+     */
+    static void followSystemOnce(Context context) {
+        if (followsSystem) return;
+        followsSystem = true;
+        useNightMode(context, 0);
+    }
+
+    /**
+     * Shows the application in a theme - 1 light, 2 dark, 0 the system's - as its own night mode, which every
+     * activity of it takes; from Android 12, before which an application shows the system's.
+     */
+    static void useNightMode(Context context, int scheme) {
+        if (Build.VERSION.SDK_INT < 31) return;
+        UiModeManager modes = context.getSystemService(UiModeManager.class);
+        if (modes == null) return;
+        modes.setApplicationNightMode(scheme == 2 ? UiModeManager.MODE_NIGHT_YES
+            : scheme == 1 ? UiModeManager.MODE_NIGHT_NO : UiModeManager.MODE_NIGHT_AUTO);
+    }
+
+    /**
+     * Paints the activity's window behind its pages in `argb`, or gives it the theme's own back where `written` is
+     * false. A context that is no activity takes none.
+     */
+    static void windowBackground(Context context, int argb, boolean written) {
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+        if (written) {
+            activity.getWindow().setBackgroundDrawable(new ColorDrawable(argb));
+            return;
+        }
+        TypedValue value = new TypedValue();
+        boolean found = activity.getTheme().resolveAttribute(android.R.attr.windowBackground, value, true);
+        if (found && value.resourceId != 0) activity.getWindow().setBackgroundDrawableResource(value.resourceId);
+        else activity.getWindow().setBackgroundDrawable(null);
+    }
+
+    /** The plain colour the activity's window shows behind its pages, as ARGB; Long.MIN_VALUE where it shows none. */
+    static long windowBackground(Activity activity) {
+        Drawable drawable = activity.getWindow().getDecorView().getBackground();
+        return drawable instanceof ColorDrawable ? ((ColorDrawable) drawable).getColor() & 0xFFFFFFFFL : Long.MIN_VALUE;
     }
 
     /**

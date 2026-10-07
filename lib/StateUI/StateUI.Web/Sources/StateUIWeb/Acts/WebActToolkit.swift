@@ -49,6 +49,10 @@ final class WebActToolkit: ActToolkit {
         WebRelay.announce(words)
     }
 
+    func useColorScheme(_ theme: ColorScheme) {
+        WebRelay.useColorScheme(theme)
+    }
+
     func hideOnScreenKeyboard() -> Bool {
         WebRelay.blurField()
     }

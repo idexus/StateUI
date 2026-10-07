@@ -307,6 +307,53 @@ extern "C" void stateui_winui_window_set_traits(
     }
 }
 
+extern "C" void stateui_winui_window_set_background(StateUIObjectRef handle, bool written, uint32_t argb) {
+    try {
+        auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::Controls::Panel>();
+        if (!root) return;
+        if (!written) return root.Background(nullptr);
+        root.Background(xaml::Media::SolidColorBrush(winrt::Windows::UI::Color{static_cast<uint8_t>(argb >> 24),
+            static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)}));
+    } catch (...) {
+        report("painting a window's background");
+    }
+}
+
+extern "C" bool stateui_winui_window_background(StateUIObjectRef handle, uint32_t *argb) {
+    try {
+        auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::Controls::Panel>();
+        auto brush = root ? root.Background().try_as<xaml::Media::SolidColorBrush>() : nullptr;
+        if (!brush) return false;
+        auto colour = brush.Color();
+        *argb = uint32_t(colour.A) << 24 | uint32_t(colour.R) << 16 | uint32_t(colour.G) << 8 | colour.B;
+        return true;
+    } catch (...) {
+        report("reading a window's background");
+        return false;
+    }
+}
+
+extern "C" void stateui_winui_window_set_theme(StateUIObjectRef handle, int32_t scheme) {
+    try {
+        auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::FrameworkElement>();
+        if (!root) return;
+        root.RequestedTheme(scheme == 1 ? xaml::ElementTheme::Light
+                            : scheme == 2 ? xaml::ElementTheme::Dark : xaml::ElementTheme::Default);
+    } catch (...) {
+        report("showing a window in a theme");
+    }
+}
+
+extern "C" int32_t stateui_winui_window_actual_theme(StateUIObjectRef handle) {
+    try {
+        auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::FrameworkElement>();
+        return root && root.ActualTheme() == xaml::ElementTheme::Dark ? 2 : 1;
+    } catch (...) {
+        report("reading a window's theme");
+        return 1;
+    }
+}
+
 extern "C" void stateui_winui_window_frame(StateUIObjectRef handle, double *values) {
     try {
         auto window = borrow<xaml::Window>(handle);

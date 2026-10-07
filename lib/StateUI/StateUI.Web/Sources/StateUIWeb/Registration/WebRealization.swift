@@ -83,6 +83,7 @@ enum WebRealization {
         .notPlanned("Window", "windowType", reason: "A page is one window: it opens none of a kind."),
         .notPlanned("Window", "windowValue", reason: "A page is one window: it opens none for a value."),
         .complete("Window", "activated"),
+        .complete("Window", "background"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),

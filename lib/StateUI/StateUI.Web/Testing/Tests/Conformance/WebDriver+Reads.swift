@@ -91,6 +91,9 @@ extension WebDriver {
     func structureHolds(_ property: Prop, on element: MountedElement) throws -> HostValue?? {
         switch (element.type, property) {
         case (.window, .title): return try WebBrowser.evaluate("document.title", on: 0)?.propValue
+        case (.window, .background):
+            guard let frame = renderer?.roster.controllers.first?.window.frame else { return nil }
+            return .some(try color("getComputedStyle(e).backgroundColor", on: frame.node, unlessClear: true)?.propValue)
         case (_, .barTitle): return .some(try barWords(".stateui-bar-name"))
         case (_, .barSubtitle): return .some(try barWords(".stateui-bar-subtitle"))
         case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background"))

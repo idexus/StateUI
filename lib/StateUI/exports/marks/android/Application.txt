@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Application: ✅
 Application.alert: ✓ read a question: what the relay keeps of the dialog it showed
 Application.announce: cannot read what the screen reader said - Android's driver has no path for it yet
@@ -16,4 +16,5 @@ Application.persistValue: ✅
 Application.prompt: ✓ read a question: what the relay keeps of the dialog it showed
 Application.readFile: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
 Application.saveFile: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
+Application.useColorScheme: ☑️ Before Android 12 an application holds no night mode of its own: it shows the system's.
 Application.utcOffset: ✅

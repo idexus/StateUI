@@ -107,6 +107,12 @@ extension UIKitDriver {
         renderer?.actToolkit.announcedForTesting ?? []
     }
 
+    /// The style the user's window stands in.
+    func theme() throws -> ColorScheme {
+        guard let window = renderer?.userWindow else { throw DriverCannot("read the theme: no window shows") }
+        return window.traitCollection.userInterfaceStyle == .dark ? .dark : .light
+    }
+
     /// What the host keeps under `key` for the next launch, as it reads it back.
     func kept(_ key: String, inScene: Bool) throws -> HostValue? {
         if inScene {

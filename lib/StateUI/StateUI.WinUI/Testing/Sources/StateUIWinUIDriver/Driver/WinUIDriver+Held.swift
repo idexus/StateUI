@@ -58,6 +58,12 @@ extension WinUIDriver {
             let kept = try keptWindow(element)
             return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
         }
+        if name == "background" {
+            var argb: UInt32 = 0
+            guard stateui_winui_window_background(window.handle, &argb) else { return nil }
+            return Color(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
+                         alpha: Int(argb >> 24 & 255)).propValue
+        }
         if name == "title" {
             let length = stateui_winui_window_system_title(window.handle, nil, 0)
             var bytes = [CChar](repeating: 0, count: Int(length) + 1)

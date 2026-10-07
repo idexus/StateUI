@@ -82,6 +82,12 @@ extension GTKDriver {
     }
 
     /// The classes GTK holds on `widget`.
+    /// The colour `widget`'s own fill class paints it; nil where it wears none.
+    static func fill(of widget: GTKWidget) -> Color? {
+        classes(of: widget).first { $0.hasPrefix("stateui-fill-") }
+            .flatMap { color(String($0.dropFirst("stateui-fill-".count))) }
+    }
+
     private static func classes(of widget: GTKWidget) -> [String] {
         guard let names = gtk_widget_get_css_classes(widget) else { return [] }
         defer { g_strfreev(names) }

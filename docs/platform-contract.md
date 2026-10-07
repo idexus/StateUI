@@ -140,7 +140,7 @@ of its members each meets, and why a cell is empty.
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [WebView](controls/WebView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Window](controls/Window.md) | structure | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
+| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 <!-- creation:end -->
 
@@ -156,12 +156,11 @@ around the split view. A tab selector keeps the toolkit's selected and unselecte
 appearance. An unwritten background retains the native material; StateUI does
 not ask a host to rasterize an arbitrary brush into page chrome.
 
-On AppKit a written bar colour paints the band the title bar and toolbar cover
-over the visible content - a split view's detail - and the window's
-background, which shows around a floating sidebar and through its glass. On a
-translucent window the colour paints the bars alone: the window's material,
-the system's, shows around the sidebar and under the page, and a colour with
-an alpha written under the page tints it. Text on a painted
+On AppKit a written bar colour paints the bars alone: the band the title bar
+and toolbar cover, the window's under a floating sidebar's glass and the
+visible content's - a split view's detail. The window's background is the one
+written for the window; on a translucent window it tints the window's
+material, which shows around the sidebar and under the page. Text on a painted
 band - the page's title, and the application's name and line at the trailing
 edge - is in the declared `barForegroundColor`, else white or black by the
 band's lightness.
@@ -329,6 +328,7 @@ the tier.
 | `prompt` | [Application](controls/Application.md) |
 | `readFile` | [Application](controls/Application.md) |
 | `saveFile` | [Application](controls/Application.md) |
+| `useColorScheme` | [Application](controls/Application.md) |
 | `utcOffset` | [Application](controls/Application.md) |
 | `scrollTo` | [ItemsView](controls/ItemsView.md) |
 | `moveToRegion` | [Map](controls/Map.md) |
@@ -476,7 +476,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 17 | 7 ✅ · 10 ✓ | 7 ✅ · 10 ✓ | 6 ✅ · 9 ✓ | 15 ✅ · 2 ✓ | 11 ✅ · 6 ✓ | 12 ✅ · 5 ✓ |
+| [Application](controls/Application.md) | 18 | 8 ✅ · 10 ✓ | 8 ✅ · 10 ✓ | 6 ✅ · 1 ☑️ · 9 ✓ | 16 ✅ · 2 ✓ | 12 ✅ · 6 ✓ | 13 ✅ · 5 ✓ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Divider](controls/Divider.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -495,11 +495,11 @@ Every control, and every part an application, its windows and its pages are made
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 4 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 – | 5 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – | 8 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
-| [Window](controls/Window.md) | 23 | 16 ✅ · 6 ✓ |  |  |  |  |  |
-| ✅ |  | 89 | 77 | 60 | 92 | 68 | 84 |
-| ✓ |  | 20 | 13 | 11 | 2 | 6 | 5 |
-| – |  | 1 | 9 | 14 | 1 | 20 | 5 |
-| **Met** | 127 | **110** | **99** | **85** | **95** | **94** | **94** |
+| [Window](controls/Window.md) | 23 | 16 ✅ · 6 ✓ | 4 ✅ · 4 ✓ · 9 – | 4 ✅ · 4 ✓ · 13 – | 23 ✅ | 8 ✅ · 7 ✓ · 8 – | 4 ✅ · 4 ✓ · 15 – |
+| ✅ |  | 90 | 82 | 64 | 116 | 77 | 89 |
+| ✓ |  | 20 | 17 | 15 | 2 | 13 | 9 |
+| – |  | 1 | 18 | 27 | 1 | 28 | 20 |
+| **Met** | 128 | **111** | **117** | **106** | **119** | **118** | **118** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -583,7 +583,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 | 1 ✅ · 1 – | 1 ✅ · 1 – | 1 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
-| [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 | 16 ✅ · 6 ✓ |  |  |  |  |  |
+| [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 | 16 ✅ · 6 ✓ | 4 ✅ · 4 ✓ · 9 – | 4 ✅ · 4 ✓ · 13 – | 23 ✅ | 8 ✅ · 7 ✓ · 8 – | 4 ✅ · 4 ✓ · 15 – |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
@@ -669,5 +669,6 @@ realizes the element and each of its members.
 `currentTimeZone`, `evaluateJavaScript`, `focus`, `goBack`, `goForward`,
 `handlerFailed`, `hideOnScreenKeyboard`, `launchFile`, `launchLink`,
 `moveToRegion`, `openFiles`, `persistSceneValue`, `persistValue`, `prompt`,
-`readFile`, `reload`, `saveFile`, `scrollTo`, `unfocus`, `utcOffset`.
+`readFile`, `reload`, `saveFile`, `scrollTo`, `unfocus`, `useColorScheme`,
+`utcOffset`.
 <!-- vocabulary:end -->

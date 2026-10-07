@@ -207,6 +207,17 @@ final class AndroidRenderer {
     }
 
     /// Names the activity after the first window: the title its chrome shows, the visible page's that names it first.
+    /// Paints the activity's window behind its pages as the window's element says; the theme's own where it says
+    /// none.
+    private func showBackground(_ background: HostValue?) {
+        let argb = background.flatMap { HostBrush($0).firstColor }.flatMap(AndroidView.argb)
+        Java.frame {
+            Java.callStatic(
+                JavaAPI.environment, JavaAPI.setWindowBackground, .object(context.reference), .int(argb ?? 0),
+                .bool(argb != nil))
+        }
+    }
+
     private func showTitle(of window: MountedElement) {
         let title = WindowChrome(window: window, arrangement: presentation.arrangement).title
         guard windowTitle != .some(title) else { return }
@@ -227,6 +238,7 @@ final class AndroidRenderer {
         guard let window = runtime.tree.root?.first(type: .window) else { return }
         let changes = presentation.show(window, in: runtime.lifecycle)
         showTitle(of: window)
+        if let traits = changes.traits { showBackground(traits.background) }
         if let (_, arrangement) = changes.arrangement {
             Java.call(root.reference, JavaAPI.removeAllViews)
             shownOverlays = []

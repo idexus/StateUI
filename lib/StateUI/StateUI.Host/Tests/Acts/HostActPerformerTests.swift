@@ -13,6 +13,7 @@ private final class Toolkit: ActToolkit {
     var windowToAsk = true
     var shown: [(question: HostQuestion, answered: (Bool, String?) -> Void)] = []
     var announced: [String] = []
+    var themes: [ColorScheme] = []
     var focusable: Set<ElementID> = []
     var kept: [Act] = []
     var own: Set<Act> = []
@@ -30,6 +31,7 @@ private final class Toolkit: ActToolkit {
     }
 
     func announce(_ words: String) { announced.append(words) }
+    func useColorScheme(_ theme: ColorScheme) { themes.append(theme) }
     func hideOnScreenKeyboard() -> Bool { true }
 
     func focus(_ element: MountedElement) -> Bool? {
@@ -151,6 +153,27 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.failures[4], "the Test host does not perform the act '\(Act.persistSceneValue.name)'")
         XCTAssertEqual(toolkit.announced, ["Saved"])
         XCTAssertEqual(answers.replies[5], [])
+    }
+
+    /// The application's theme is the toolkit's to show, and the theme in force the core resolves against: the
+    /// application's while it holds one, the system's again once it follows it.
+    func testTheApplicationsThemeIsShownAndInForce() {
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers)
+        defer { acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.system.propValue], completion: nil)) }
+        CoreLink().setColorScheme(.light)
+
+        acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.dark.propValue], completion: 1))
+        XCTAssertEqual(toolkit.themes, [.dark])
+        XCTAssertEqual(answers.replies[1], [])
+        XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .dark, "the application's, over the system's")
+
+        CoreLink().setColorScheme(.light)
+        XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .dark, "a system report leaves it held")
+
+        acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.system.propValue], completion: 2))
+        XCTAssertEqual(toolkit.themes, [.dark, .system])
+        XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .light, "the system's again")
     }
 
     // MARK: - Files

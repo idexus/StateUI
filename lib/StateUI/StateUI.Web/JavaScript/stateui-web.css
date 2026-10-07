@@ -7,14 +7,14 @@
 
 :root {
   color-scheme: light dark;
-  --stateui-accent: #4f46e5;
-  --stateui-surface: #ffffff;
-  --stateui-raised: #f6f7f9;
-  --stateui-text: #17181c;
-  --stateui-muted: #5d6270;
-  --stateui-line: rgb(15 23 42 / 0.09);
-  --stateui-line-strong: rgb(15 23 42 / 0.18);
-  --stateui-shade: rgb(15 23 42 / 0.36);
+  --stateui-accent: light-dark(#4f46e5, #8b85ff);
+  --stateui-surface: light-dark(#ffffff, #111216);
+  --stateui-raised: light-dark(#f6f7f9, #191b21);
+  --stateui-text: light-dark(#17181c, #eceef2);
+  --stateui-muted: light-dark(#5d6270, #9aa0ad);
+  --stateui-line: light-dark(rgb(15 23 42 / 0.09), rgb(255 255 255 / 0.08));
+  --stateui-line-strong: light-dark(rgb(15 23 42 / 0.18), rgb(255 255 255 / 0.16));
+  --stateui-shade: light-dark(rgb(15 23 42 / 0.36), rgb(0 0 0 / 0.55));
   --stateui-radius: 10px;
   --stateui-bar-height: 56px;
   --stateui-sidebar-width: 288px;
@@ -23,19 +23,6 @@
   --stateui-raised-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 12px 32px rgb(15 23 42 / 0.14);
   --stateui-focus: 0 0 0 3px color-mix(in srgb, var(--stateui-accent) 38%, transparent);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --stateui-accent: #8b85ff;
-    --stateui-surface: #111216;
-    --stateui-raised: #191b21;
-    --stateui-text: #eceef2;
-    --stateui-muted: #9aa0ad;
-    --stateui-line: rgb(255 255 255 / 0.08);
-    --stateui-line-strong: rgb(255 255 255 / 0.16);
-    --stateui-shade: rgb(0 0 0 / 0.55);
-  }
 }
 
 /* The words stand at the sizes the page gives them: a phone's browser enlarges none it finds in a wide block. */

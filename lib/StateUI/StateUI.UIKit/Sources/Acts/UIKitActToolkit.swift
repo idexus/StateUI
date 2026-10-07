@@ -61,6 +61,22 @@ final class UIKitActToolkit: ActToolkit {
         UIAccessibility.post(notification: .announcement, argument: words)
     }
 
+    /// Shows every window in `theme`: each window's own style, unspecified for the system's.
+    func useColorScheme(_ theme: ColorScheme) {
+        for (_, controller) in renderer.roster.windows {
+            controller.window?.overrideUserInterfaceStyle = Self.style(theme)
+        }
+    }
+
+    /// UIKit's style for `theme`.
+    static func style(_ theme: ColorScheme) -> UIUserInterfaceStyle {
+        switch theme {
+        case .light: .light
+        case .dark: .dark
+        case .system: .unspecified
+        }
+    }
+
     /// Takes the keyboard down: whatever holds the focus in the user's window gives it up; whether anything did.
     func hideOnScreenKeyboard() -> Bool {
         guard let window = renderer.userWindow, Self.holder(in: window) != nil else { return false }
