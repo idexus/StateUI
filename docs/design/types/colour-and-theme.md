@@ -100,7 +100,9 @@ and last what stands in for it, decided once in the core: glass carries the
 material as clear as the glass is, and a material the colour of the theme let
 through as the material is, which the differ resolves as any pair. The host
 layer reads it (`HostBackdrop`), and each host draws the first its toolkit
-has - the glass, the material, the colour. A box's backdrop is cut to its
+has - the glass, the material, the colour. A registration reading the member
+as its type encodes it again, its colour a pair once more; the host layer
+takes the half of the theme in force (`HostThemes.current`). A box's backdrop is cut to its
 shape; a window's lies under everything the window draws, the desktop showing
 through it, and a host whose windows cannot show what is behind them keeps
 them opaque.

@@ -14,6 +14,11 @@
     /// The theme the application holds - `.system` while it follows the system.
     public private(set) static var held = ColorScheme.system
 
+    /// The theme in force now.
+    public static var current: ColorScheme {
+        inForce(held: held, system: system)
+    }
+
     /// The theme in force where the application holds `held` and the system asks for `system`.
     public static func inForce(held: ColorScheme, system: ColorScheme) -> ColorScheme {
         held == .system ? system : held

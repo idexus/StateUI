@@ -50,6 +50,7 @@ Ellipse
   miterLimit
   stroke
 Grid
+  backdrop
   background
   clipsContent
   columnSpacing
@@ -62,6 +63,7 @@ Grid
   shape
   stroke
 HStack
+  backdrop
   background
   clipsContent
   letsInputThrough
@@ -301,6 +303,7 @@ TimePicker
   time
   timeChanged()
 VStack
+  backdrop
   background
   clipsContent
   letsInputThrough
@@ -318,6 +321,7 @@ WebView
   navigating()
   processTerminated()
 ZStack
+  backdrop
   background
   clipsContent
   letsInputThrough

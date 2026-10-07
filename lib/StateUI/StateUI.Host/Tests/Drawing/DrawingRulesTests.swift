@@ -24,6 +24,7 @@ final class DrawingRulesTests: XCTestCase {
 
     /// A backdrop is read with what stands in for it: glass, where the tree asks for glass, the material a host
     /// with no glass draws, and the colour a host with no materials draws; anything else is no backdrop.
+    @MainActor
     func testABackdropIsReadWithWhatStandsInForIt() throws {
         let thin = try XCTUnwrap(HostBackdrop(Backdrop.material(.thin).propValue.resolvingTheme()))
         XCTAssertNil(thin.glass)
@@ -39,6 +40,18 @@ final class DrawingRulesTests: XCTestCase {
 
         XCTAssertNil(HostBackdrop(red))
         XCTAssertNil(HostBackdrop(nil))
+    }
+
+    /// A backdrop read through its member comes encoded again, its colour a pair: the half of the theme in force
+    /// stands in.
+    @MainActor
+    func testABackdropsPairIsTheHalfOfTheThemeInForce() throws {
+        guard case .themed(let light, let dark) = Material.thin.standIn.propValue else {
+            return XCTFail("a material's stand-in is a pair")
+        }
+        let read = try XCTUnwrap(HostBackdrop(Backdrop.material(.thin).propValue))
+        XCTAssertEqual(read.standIn, HostThemes.current == .dark ? dark : light)
+        XCTAssertNotNil(HostBackdrop(Backdrop.glass(.clear.tint(Color(light: .white, dark: .black))).propValue)?.glass?.tint)
     }
 
     /// A gradient of one stop paints its one colour; of none, nothing - on every host, whatever its toolkit makes of

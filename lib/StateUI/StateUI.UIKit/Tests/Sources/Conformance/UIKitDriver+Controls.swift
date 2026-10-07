@@ -55,8 +55,17 @@ extension UIKitDriver {
             return fill?.backgroundColor.map { Background.color(color(UIColor(cgColor: $0))).propValue }
         case .stroke: return outline?.strokeColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
         case .lineWidth: return Double(outline?.lineWidth ?? 0).propValue
+        case .backdrop: return layout.box.backdropView?.shown.map(backdrop)?.propValue
         default: return nil
         }
+    }
+
+    /// The backdrop a layout's effect view was given: UIKit reads no material's style back.
+    private static func backdrop(_ shown: HostBackdrop) -> Backdrop {
+        guard let glass = shown.glass else { return .material(shown.material) }
+        var given: Glass = glass.isClear ? .clear : .regular
+        if let tint = glass.tint.flatMap(Color.init(propValue:)) { given = given.tint(tint) }
+        return .glass(given.isInteractive(glass.isInteractive))
     }
 
     /// A shape's paint: the colour over its fill and its outline, and how its outline's mask draws the line.

@@ -47,6 +47,7 @@ extension UIKitDriver {
         default: break
         }
         if taken.readsATransform { return "the host's own transform, checked against the layer it composed itself" }
+        if ability.hasPrefix("read backdrop of ") { return "the effect the host gave the view, which UIKit reads no style of" }
         return nil
     }
 }
