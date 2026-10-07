@@ -58,6 +58,13 @@ extension WinUIDriver {
             let kept = try keptWindow(element)
             return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
         }
+        if name == "backdrop" {
+            // The desktop acrylic WinUI shows, at the thickness the window was given.
+            var values = [Double](repeating: 0, count: 13)
+            stateui_winui_window_frame(window.handle, &values)
+            guard values[10] == 1, let material = window.backdrop else { return nil }
+            return Backdrop.material(material).propValue
+        }
         if name == "background" {
             var argb: UInt32 = 0
             guard stateui_winui_window_background(window.handle, &argb) else { return nil }

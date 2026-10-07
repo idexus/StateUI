@@ -23,10 +23,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     /// The window's own material, under the page, while the window lets the
     /// desktop show through it.
-    private var material: NSVisualEffectView?
-
-    /// What lies over the whole material, in `materialTint`.
-    private var materialTintView: NSView?
+    private var material: AppKitMaterialView?
 
     /// The band the title bar and toolbar cover, painted in `barColor` - over
     /// the material, where the window has one.
@@ -60,28 +57,22 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         drops?.dropped(sender.carried) ?? false
     }
 
-    /// Whether the desktop shows through the window: its material lies under
-    /// the page and the bars' band, wherever they leave it uncovered or paint a
-    /// colour it shows through.
-    var isTranslucent = false {
+    /// The material the desktop shows through the window in: it lies under the page and the bars' band,
+    /// wherever they leave it uncovered or paint a colour it shows through; nil for an opaque window.
+    var backdrop: Material? {
         didSet {
-            guard isTranslucent != oldValue else { return }
-
-            if isTranslucent {
-                let material = NSVisualEffectView()
-                material.material = .underWindowBackground
-                material.blendingMode = .behindWindow
-                material.state = .followsWindowActiveState
-                let tint = NSView()
-                tint.wantsLayer = true
-                material.addSubview(tint)
-                addSubview(material, positioned: .below, relativeTo: nil)
-                self.material = material
-                materialTintView = tint
+            guard backdrop != oldValue else { return }
+            if let backdrop {
+                let material = self.material ?? {
+                    let made = AppKitMaterialView(backdrop, behindWindow: true)
+                    addSubview(made, positioned: .below, relativeTo: nil)
+                    self.material = made
+                    return made
+                }()
+                material.material = AppKitMaterialView.role(backdrop)
             } else {
                 material?.removeFromSuperview()
                 material = nil
-                materialTintView = nil
             }
             needsLayout = true
         }
@@ -96,7 +87,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         didSet { if materialTint != oldValue { needsLayout = true } }
     }
 
-    var materialTintForTesting: NSView? { materialTintView }
+    var materialTintForTesting: NSView? { material?.wash }
 
     /// The colour the window's bars are written in, painted over `barBand`.
     /// Nil leaves the title bar and toolbar the system's material.
@@ -144,9 +135,8 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         super.layout()
         if let material {
             material.frame = bounds
-            materialTintView?.frame = material.bounds
-            materialTintView?.layer?.backgroundColor = materialTint?.cgColor
-            materialTintView?.isHidden = materialTint == nil
+            material.wash.layer?.backgroundColor = materialTint?.cgColor
+            material.wash.isHidden = materialTint == nil
         }
         band.frame = barBand
         band.layer?.backgroundColor = barColor?.cgColor

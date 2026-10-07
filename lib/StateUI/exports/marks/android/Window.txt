@@ -1,6 +1,7 @@
-# revision 4.1
+# revision 5.1
 Window: ✅
 Window.activated: ✅
+Window.backdrop: – An activity is translucent by the theme it starts in: a window cannot turn it so.
 Window.background: ✅
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the host told the activity's phase, no activity moved
@@ -10,7 +11,6 @@ Window.height: – Android sizes an activity's window itself - the user drags it
 Window.hidesWhenInactive: – Android shows an activity itself: it hides none while another application is in front.
 Window.isMaximizable: – Any Android window may fill the screen: an activity keeps none from it.
 Window.isMinimizable: – Any Android window may be put away: an activity keeps none from it.
-Window.isTranslucent: – An activity is translucent by the theme it starts in: a window cannot turn it so.
 Window.maximumHeight: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.maximumWidth: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.minimumHeight: – Android bounds an activity's window itself: an activity sets it no bound at run time.

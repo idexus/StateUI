@@ -1,6 +1,7 @@
-# revision 4.1
+# revision 5.1
 Window: ✅
 Window.activated: ✅
+Window.backdrop: ✅
 Window.background: ✅
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move
@@ -10,7 +11,6 @@ Window.height: ✅
 Window.hidesWhenInactive: cannot read isVisible of Window - AppKit's driver has no path for it yet
 Window.isMaximizable: ✅
 Window.isMinimizable: ✅
-Window.isTranslucent: ✅
 Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅

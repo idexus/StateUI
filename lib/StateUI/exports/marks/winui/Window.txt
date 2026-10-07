@@ -1,6 +1,7 @@
-# revision 4.1
+# revision 5.1
 Window: ✅
 Window.activated: ✅
+Window.backdrop: ☑️ A window shows the one desktop acrylic WinUI's backdrop draws, whatever the thickness.
 Window.background: ✅
 Window.created: ✅
 Window.deactivated: ✅
@@ -10,7 +11,6 @@ Window.height: ✅
 Window.hidesWhenInactive: ✅
 Window.isMaximizable: ✅
 Window.isMinimizable: ✅
-Window.isTranslucent: ✅
 Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅

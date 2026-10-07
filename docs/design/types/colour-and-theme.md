@@ -87,9 +87,36 @@ one colour, while a second file keeps artwork of any colours as it was drawn.
 
 ## A background is a colour or a brush
 
-`Background` is one colour or one brush, and the two stay apart in the
-patch: a colour crosses as a colour and a brush as its kind and parts,
-so a host paints a plain colour as the plain colour it is.
+`Background` is one colour or one brush, and they stay apart in the patch: a
+colour crosses as a colour and a brush as its kind and parts, so a host paints
+a plain colour as the plain colour it is.
+
+## A backdrop
+
+A backdrop lets what lies behind a box or a window show through: a material
+or glass. It is a property apart from the background, which lies over it, so
+a colour with an alpha tints it. It crosses as its kind, what the kind takes,
+and last what stands in for it, decided once in the core: glass carries the
+material as clear as the glass is, and a material the colour of the theme let
+through as the material is, which the differ resolves as any pair. The host
+layer reads it (`HostBackdrop`), and each host draws the first its toolkit
+has - the glass, the material, the colour. A box's backdrop is cut to its
+shape; a window's lies under everything the window draws, the desktop showing
+through it, and a host whose windows cannot show what is behind them keeps
+them opaque.
+
+## A material
+
+Four thicknesses, a platform's own four where it has them; a platform whose
+materials are by role draws the role whose translucency stands in that place,
+measured.
+
+## Glass
+
+Glass is regular or clear, tinted or not, answering the user's touch or not.
+A host with glass lays the platform's own under what the box holds, cut to its
+shape; interactive glass takes the press it answers, which the box hears as it
+rises.
 
 ## The accent in force
 

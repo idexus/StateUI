@@ -21,7 +21,7 @@ ToolbarItem 3
 ToolbarItemGroup 2
 TitleView 2
 MenuBar 2
-Window 4
+Window 5
 Scene 2
 ModalStack 2
 Overlay 2
@@ -37,6 +37,6 @@ PageElement 2
 View 4
 VisualElement 5
 Shape 3
-BorderElement 3
+BorderElement 4
 TextInput 2
 Application 2

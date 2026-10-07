@@ -121,6 +121,25 @@ final class ColorTests: XCTestCase {
         XCTAssertEqual(Color("#512BD4").opacity(2), Color("#512BD4"))
     }
 
+    /// A backdrop crosses as itself and comes back so - a material with the colour a host with no materials
+    /// draws, glass with the material a host with no glass draws, as clear as the glass, and that material's
+    /// colour.
+    func testABackdropCrossesWithWhatStandsInForIt() throws {
+        let material = Backdrop.material(.thin).propValue
+        XCTAssertEqual(Backdrop(propValue: material), .material(.thin))
+        let parts = try XCTUnwrap(material.values)
+        XCTAssertEqual(parts, [.enumeration(1), Material.thin.propValue, Material.thin.standIn.propValue])
+        XCTAssertTrue(parts[2].isThemed, "the stand-in follows the theme")
+
+        let glass = Glass.clear.tint(Color("#512BD4")).isInteractive(true)
+        XCTAssertEqual(Backdrop(propValue: Backdrop.glass(glass).propValue), .glass(glass))
+        XCTAssertEqual(Backdrop(propValue: Backdrop.glass(.regular).propValue), .glass(.regular))
+        let glassParts = try XCTUnwrap(Backdrop.glass(glass).propValue.values)
+        XCTAssertEqual(glassParts[4], Material.ultraThin.propValue, "clear glass stands in as the thinnest material")
+        XCTAssertEqual(try XCTUnwrap(Backdrop.glass(.regular).propValue.values)[4], Material.regular.propValue)
+        XCTAssertNil(Backdrop(propValue: Color("#512BD4").propValue))
+    }
+
     /// The accent crosses as the system's colour, let through as it was asked, and the differ resolves it to the
     /// accent in force - the host never meets it.
     func testTheAccentIsTheOneInForce() {

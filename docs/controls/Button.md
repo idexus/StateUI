@@ -32,7 +32,7 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (88)</th><th>Realization</th></tr></thead>
+<thead><tr><th>Host</th><th>Created</th><th>Members (89)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>NSButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 37 ✓ · 3 –</td><td><code>UIButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>65 ✅ · 2 ☑️ · 10 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
@@ -242,10 +242,12 @@ The space kept inside an element, around what it holds.
 
 ## From [BorderElement](tiers/BorderElement.md)
 
-What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
+What an element draws of its own box: what lets what lies behind it show through, the shape its backdrop, its background, its outline and its cut follow, and the outline.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>backdrop</code></td><td>property</td><td><code>Backdrop</code></td><td>adaptive</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: AppKit rounds an oval button into a capsule: a layer's corners draw no oval.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

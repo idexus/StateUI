@@ -140,7 +140,7 @@ enum GTKRealization {
         .notPlanned("Window", "isMaximizable",
                     reason: "The desktop fills the screen with any GTK 4 window it can resize: none forbids that alone."),
         .notPlanned("Window", "isMinimizable", reason: "GTK 4 asks the desktop to keep no window from being put away."),
-        .notPlanned("Window", "isTranslucent", reason: "GNOME draws its windows opaque: no material shows through one."),
+        .notPlanned("Window", "backdrop", reason: "GNOME draws its windows opaque: no material shows through one."),
         .notPlanned("Window", "maximumHeight", reason: "GTK 4 bounds no window from above."),
         .notPlanned("Window", "maximumWidth", reason: "GTK 4 bounds no window from above."),
         .complete("Window", "minimumHeight"),

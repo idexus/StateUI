@@ -108,7 +108,7 @@ enum UIKitRealization {
         .notPlanned("Window", "isMaximizable",
                     reason: "Any iPadOS window may fill the screen: UIKit keeps none from it."),
         .notPlanned("Window", "isMinimizable", reason: "Any iPadOS window may be put away: UIKit keeps none from it."),
-        .notPlanned("Window", "isTranslucent",
+        .notPlanned("Window", "backdrop",
                     reason: "iPadOS draws an application's window opaque: no material shows through one."),
         .complete("Window", "resumed"),
         .complete("Window", "stopped"),

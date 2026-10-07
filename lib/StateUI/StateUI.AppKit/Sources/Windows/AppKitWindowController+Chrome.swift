@@ -158,11 +158,11 @@ extension AppKitWindowController {
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
         let written = traits?.background.flatMap(nsColor)
-        let background = isTranslucent ? NSColor.clear : (written ?? .windowBackgroundColor)
+        let background = backdrop != nil ? NSColor.clear : (written ?? .windowBackgroundColor)
         // A background that lets the desktop through - clear, or a colour with an alpha - asks a window that is not opaque.
-        window.isOpaque = !isTranslucent && background.alphaComponent >= 1
+        window.isOpaque = backdrop == nil && background.alphaComponent >= 1
         if window.backgroundColor != background { window.backgroundColor = background }
-        content.materialTint = isTranslucent ? written : nil
+        content.materialTint = backdrop != nil ? written : nil
         content.barColor = color
         split?.setDetailBarColor(color)
     }

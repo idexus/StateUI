@@ -108,12 +108,14 @@ extension NSRect {
 
 @MainActor
 extension NSView {
+    /// Makes `wanted` the view's children, in order, over the material or glass its box draws, which stays.
     func replaceSubviews(with wanted: [NSView]) {
-        let alreadyArranged = subviews.count == wanted.count
-            && zip(subviews, wanted).allSatisfy { $0 === $1 }
+        let children = subviews.filter { !($0 is any AppKitBoxSurface) }
+        let alreadyArranged = children.count == wanted.count
+            && zip(children, wanted).allSatisfy { $0 === $1 }
         guard !alreadyArranged else { return }
 
-        for child in subviews {
+        for child in children {
             child.removeFromSuperview()
         }
 

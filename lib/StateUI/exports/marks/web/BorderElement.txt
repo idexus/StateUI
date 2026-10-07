@@ -1,27 +1,34 @@
-# revision 3.1
+# revision 4.1
+Button.backdrop: not realized
 Button.background: ☑️ A brush fills the view with its first colour alone.
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
+Grid.backdrop: not realized
 Grid.background: ☑️ A brush fills the view with its first colour alone.
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
+HStack.backdrop: not realized
 HStack.background: ☑️ A brush fills the view with its first colour alone.
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
+RadioButton.backdrop: not realized
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
+ScrollView.backdrop: not realized
 ScrollView.background: ☑️ A brush fills the view with its first colour alone.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
+VStack.backdrop: not realized
 VStack.background: ☑️ A brush fills the view with its first colour alone.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
+ZStack.backdrop: not realized
 ZStack.background: ☑️ A brush fills the view with its first colour alone.
 ZStack.lineWidth: ✅
 ZStack.shape: ✅

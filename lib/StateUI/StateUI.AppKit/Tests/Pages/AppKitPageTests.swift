@@ -262,7 +262,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNotNil(content.materialForTesting)
         content.layoutSubtreeIfNeeded()
         let order = content.subviews.map { String(describing: type(of: $0)) }
-        XCTAssertEqual(order.prefix(3), ["NSVisualEffectView", "NSView", "AppKitSplitView"],
+        XCTAssertEqual(order.prefix(3), ["AppKitMaterialView", "NSView", "AppKitSplitView"],
                        "the material, the band over it, the split view over both")
 
         renderer.applyForTesting(windowTree(flyout(
@@ -1215,11 +1215,8 @@ private extension AppKitPageTests {
     /// to let the desktop show through it.
     func windowTree(_ content: HostPatch, translucent: Bool?, background: HostValue? = nil) -> HostPatch {
         var window = HostPatch(id: .manual("window"), type: .window)
-        if let translucent {
-            window.properties[.isTranslucent] = .bool(translucent)
-        } else {
-            window.properties[.isTranslucent] = .nothing
-        }
+        // A translucent window shows the desktop through the thickest material.
+        window.properties[.backdrop] = translucent == true ? Backdrop.material(.thick).propValue.resolvingTheme() : .nothing
         window.properties[.background] = background ?? .nothing
         window.children = .arranged([content])
 

@@ -150,7 +150,7 @@ extension NodeType {
     static let isEnabled = VisualElementContract.isEnabled.token
     static let isMaximizable = WindowContract.isMaximizable.token
     static let isMinimizable = WindowContract.isMinimizable.token
-    static let isTranslucent = WindowContract.isTranslucent.token
+    static let backdrop = WindowContract.backdrop.token
     static let isOpen = DatePickerContract.isOpen.token
     static let isPassword = TextFieldContract.isPassword.token
     static let showsSidebar = SplitViewContract.showsSidebar.token

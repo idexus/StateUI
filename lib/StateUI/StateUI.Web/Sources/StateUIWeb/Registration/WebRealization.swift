@@ -95,7 +95,7 @@ enum WebRealization {
                     reason: "The browser shows a page whenever its tab shows, whichever application the user is in."),
         .notPlanned("Window", "isMaximizable", reason: "A page asks nothing of how the browser's window is resized."),
         .notPlanned("Window", "isMinimizable", reason: "A page asks nothing of how the browser's window is put away."),
-        .notPlanned("Window", "isTranslucent",
+        .notPlanned("Window", "backdrop",
                     reason: "A page draws its window opaque: no material of the system shows through it."),
         .notPlanned("Window", "maximumHeight", reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned("Window", "maximumWidth", reason: "A page bounds no browser window: the user sizes it."),

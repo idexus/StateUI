@@ -67,9 +67,9 @@ final class AppKitWindowController: NSWindowController {
     let nativeAllowsZoom: Bool
     private let nativeAllowsMinimizing: Bool
 
-    /// Whether the window lets the desktop show through it - see
-    /// `AppKitWindowContentView.isTranslucent`.
-    var isTranslucent = false
+    /// The material the window lets the desktop show through in; nil for an opaque window - see
+    /// `AppKitWindowContentView.backdrop`.
+    var backdrop: Material?
 
     var pageMenuItemsForTesting: [NSMenuItem] { AppKitMenus.items(pageMenus) }
     var modalCountForTesting: Int { modals.count }
@@ -262,8 +262,8 @@ final class AppKitWindowController: NSWindowController {
             window.styleMask.remove(.miniaturizable)
         }
         window.standardWindowButton(.miniaturizeButton)?.isEnabled = allowsMinimizing
-        isTranslucent = traits.isTranslucent
-        content.isTranslucent = isTranslucent
+        backdrop = traits.backdrop?.material
+        content.backdrop = backdrop
         window.level = traits.floatsOnTop ? .floating : .normal
     }
 

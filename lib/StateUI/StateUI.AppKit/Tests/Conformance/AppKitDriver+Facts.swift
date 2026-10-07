@@ -75,11 +75,13 @@ extension AppKitDriver {
         case .maximumHeight: return Double(window.contentMaxSize.height - chrome).rounded().propValue
         case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
-        case .isTranslucent: return ((window.contentView as? AppKitWindowContentView)?.materialForTesting != nil).propValue
+        case .backdrop:
+            let role = (window.contentView as? AppKitWindowContentView)?.materialForTesting?.material
+            return role.flatMap(AppKitMaterialView.thickness).map { Backdrop.material($0).propValue }
         case .background:
             // Over the material of a translucent window, else the window's own.
             let content = window.contentView as? AppKitWindowContentView
-            let fill = controller.isTranslucent ? content?.materialTint : window.backgroundColor
+            let fill = controller.backdrop != nil ? content?.materialTint : window.backgroundColor
             return fill.map { Self.color($0).propValue }
         case .floatsOnTop: return (window.level == .floating).propValue
         case .windowType: return controller.restorationRecordForTesting.kind.map { .name($0) }

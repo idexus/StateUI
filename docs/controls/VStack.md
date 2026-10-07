@@ -34,8 +34,8 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (76)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>35 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>NSView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>UIView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>58 ✅ · 2 ☑️ · 10 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>58 ✅ · 13 ✓ · 3 –</td><td><code>StackPanel</code></td></tr></tbody>
@@ -217,10 +217,12 @@ The space kept inside an element, around what it holds.
 
 ## From [BorderElement](tiers/BorderElement.md)
 
-What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
+What an element draws of its own box: what lets what lies behind it show through, the shape its backdrop, its background, its outline and its cut follow, and the outline.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>backdrop</code></td><td>property</td><td><code>Backdrop</code></td><td>adaptive</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
+<tr><td colspan="9">UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

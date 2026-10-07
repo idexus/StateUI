@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What an element draws of its own box - a layout's, a scroller's, a
-/// button's: the shape its background fills, and an outline on it.
+/// button's: what lets what lies behind it through, the shape its background
+/// fills, and an outline on it.
 ///
 ///     Button("Save")
 ///         .stroke(.cornflowerBlue)
@@ -11,7 +12,22 @@
 public protocol BorderElement: PropertyContainer {}
 
 extension BorderElement {
-    /// The shape the background and the outline follow, and - with `clipsContent` - what the element holds.
+    /// What lets what lies behind the element show through its box: a
+    /// material, or the platform's glass. Its background lies over it, so a
+    /// colour with an alpha tints it.
+    ///
+    ///     VStack { … }
+    ///         .backdrop(.glass(.regular))
+    ///         .shape(.roundedRectangle(16))
+    ///
+    /// A platform with no glass draws a material in its place, and one with no
+    /// materials a colour of the theme.
+    public func backdrop(_ value: Backdrop) -> Modified {
+        setValue(BorderElementContract.backdrop, value)
+    }
+
+    /// The shape the backdrop, the background and the outline follow, and - with `clipsContent` - what the element
+    /// holds.
     public func shape(_ value: ContainerShape) -> Modified {
         setValue(BorderElementContract.shape, value)
     }

@@ -147,7 +147,7 @@ extension AppKitElement {
 
         if let layout = view as? AppKitTravellingLayout {
             layout.decoration.apply(
-                background: value(.background), stroke: value(.stroke),
+                backdrop: value(.backdrop), background: value(.background), stroke: value(.stroke),
                 lineWidth: value(.lineWidth)?.number, shape: value(.shape),
                 clips: value(.clipsContent)?.bool ?? false, to: layout)
         }

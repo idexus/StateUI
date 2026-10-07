@@ -76,26 +76,26 @@ public final class WindowSession {
     /// ways of doing so, where the platform lets an application say.
     @State public var isMinimizable: Bool? = nil
 
-    /// Whether the desktop shows through the window, blurred - under whatever
-    /// its pages leave uncovered or paint in a colour that lets it through,
-    /// such as a background with an alpha or the margin around a floating
+    /// What the window shows behind everything it draws: the desktop, through
+    /// a material - under whatever its pages leave uncovered or paint in a
+    /// colour that lets it through, such as the margin around a floating
     /// sidebar.
     ///
-    ///     window.isTranslucent = true
+    ///     window.backdrop = .material(.regular)
     ///
     /// A desktop host lays its windows' own material under the pages; a host
     /// whose windows cannot show what is behind them keeps them opaque, and
     /// the application's colours read as they are written. `nil` keeps the
-    /// platform's opaque window.
-    @State public var isTranslucent: Bool? = nil
+    /// platform's own window.
+    @State public var backdrop: Backdrop? = nil
 
     /// What the window shows behind its pages - around a floating sidebar,
     /// under a page that paints no background of its own.
     ///
     ///     window.background = Color("#26512BD4")
     ///
-    /// On a window the desktop shows through, a colour with an alpha tints
-    /// the window's material and lets it show. `nil` keeps the platform's own.
+    /// Over a backdrop, a colour with an alpha tints the material and lets it
+    /// show. `nil` keeps the platform's own.
     @State public var background: Color? = nil
     /// The key the tree knows the window by in its scene.
     let key: String
@@ -143,7 +143,7 @@ public final class WindowSession {
         props.describe(WindowContract.height, height)
         props.describe(WindowContract.isMaximizable, isMaximizable)
         props.describe(WindowContract.isMinimizable, isMinimizable)
-        props.describe(WindowContract.isTranslucent, isTranslucent)
+        props.describe(WindowContract.backdrop, backdrop)
         props.describe(WindowContract.background, background)
         props.describe(WindowContract.minimumWidth, minimumWidth)
         props.describe(WindowContract.minimumHeight, minimumHeight)

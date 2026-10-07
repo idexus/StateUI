@@ -22,6 +22,11 @@ struct AppKitBrush {
         if case .solid(let color) = brush { nsColor(color) } else { nil }
     }
 
+    /// Whether it paints anything.
+    var paints: Bool {
+        brush != .none
+    }
+
     /// Whether it is a gradient, which a layer's colour cannot paint.
     var isGradient: Bool {
         switch brush {

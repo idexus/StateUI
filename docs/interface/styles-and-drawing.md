@@ -117,6 +117,30 @@ builds again exactly the views wearing it, in a style too:
 let marked = Color.accent.opacity(0.7)
 ```
 
+## Materials and glass
+
+A box - a layout's, a scroller's, a button's - may let what lies behind it
+show through: a material, which blurs it in the platform's own look, from
+`.ultraThin`, which lets the most through, to `.thick`; or the platform's
+glass, regular or clear, tinted, answering the user's touch where it is
+interactive. That is the box's backdrop, cut to its shape:
+
+```swift
+let panel = VStack { Text("Saved") }
+    .backdrop(.material(.thin))
+    .shape(.roundedRectangle(12))
+
+let glass = VStack { Text("Saved") }
+    .backdrop(.glass(.regular.tint(.indigo).isInteractive(true)))
+    .shape(.roundedRectangle(16))
+```
+
+The box's background lies over its backdrop, so a colour with an alpha tints
+it. A platform with no glass draws the material as clear as the glass, and
+one with no materials a colour of the theme in its place, let through as the
+material is. A window takes a backdrop of its own, under its pages
+(`window.backdrop`, in *Application and sessions*).
+
 ## Visual states
 
 A visual state is a set of values a control shows while it is in a state:

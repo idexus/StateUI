@@ -36,9 +36,22 @@ extension AppKitDriver {
             default: view.layer?.backgroundColor.flatMap { NSColor(cgColor: $0) }
             }
             return fill.map { Background.color(color($0)).propValue }
+        case .backdrop:
+            return (view as? AppKitTravellingLayout)?.decoration.surface.flatMap(backdrop)?.propValue
         default:
             return try controlHolds(property, view)
         }
+    }
+
+    /// The backdrop a layout's box shows: its glass - how clear, its tint, whether it answers the user - or its
+    /// material, by the role standing for its thickness.
+    private static func backdrop(_ surface: any AppKitBoxSurface) -> Backdrop? {
+        if let glass = surface as? AppKitGlassView {
+            var shown: Glass = glass.style == .clear ? .clear : .regular
+            if let tint = glass.tintColor { shown = shown.tint(color(tint)) }
+            return .glass(shown.isInteractive(glass.isInteractiveForTesting))
+        }
+        return (surface as? AppKitMaterialView).flatMap { AppKitMaterialView.thickness($0.material) }.map(Backdrop.material)
     }
 
     private static func transform(_ property: Prop, _ drawn: HostDrawingTransform) -> HostValue? {

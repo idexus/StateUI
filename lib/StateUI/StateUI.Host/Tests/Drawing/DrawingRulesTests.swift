@@ -22,6 +22,25 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(gradient.firstColor, red)
     }
 
+    /// A backdrop is read with what stands in for it: glass, where the tree asks for glass, the material a host
+    /// with no glass draws, and the colour a host with no materials draws; anything else is no backdrop.
+    func testABackdropIsReadWithWhatStandsInForIt() throws {
+        let thin = try XCTUnwrap(HostBackdrop(Backdrop.material(.thin).propValue.resolvingTheme()))
+        XCTAssertNil(thin.glass)
+        XCTAssertEqual(thin.material, .thin)
+        XCTAssertEqual(thin.standIn, Material.thin.standIn.propValue.resolvingTheme())
+
+        let glass = Backdrop.glass(Glass.clear.tint(Color(red: 255, green: 0, blue: 0)).isInteractive(true))
+        let clear = try XCTUnwrap(HostBackdrop(glass.propValue.resolvingTheme()))
+        XCTAssertEqual(clear.glass, HostBackdrop.Glass(isClear: true, tint: red, isInteractive: true))
+        XCTAssertEqual(clear.material, .ultraThin)
+        XCTAssertEqual(clear.standIn, Material.ultraThin.standIn.propValue.resolvingTheme())
+        XCTAssertEqual(HostBackdrop(Backdrop.glass(.regular).propValue.resolvingTheme())?.glass?.tint, nil)
+
+        XCTAssertNil(HostBackdrop(red))
+        XCTAssertNil(HostBackdrop(nil))
+    }
+
     /// A gradient of one stop paints its one colour; of none, nothing - on every host, whatever its toolkit makes of
     /// a gradient that short.
     func testAGradientOfOneStopIsItsColour() {

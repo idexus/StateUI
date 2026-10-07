@@ -134,6 +134,8 @@ enum WinUIRealization {
         .notPlanned("WebView", "tapCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "tapped", reason: webViewTakesTheHand),
         .complete("Window", "activated"),
+        .partial("Window", "backdrop", missing: "A window shows the one desktop acrylic WinUI's backdrop draws, "
+            + "whatever the thickness."),
         .complete("Window", "background"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
@@ -143,7 +145,6 @@ enum WinUIRealization {
         .complete("Window", "hidesWhenInactive"),
         .complete("Window", "isMaximizable"),
         .complete("Window", "isMinimizable"),
-        .complete("Window", "isTranslucent"),
         .complete("Window", "maximumHeight"),
         .complete("Window", "maximumWidth"),
         .complete("Window", "minimumHeight"),
