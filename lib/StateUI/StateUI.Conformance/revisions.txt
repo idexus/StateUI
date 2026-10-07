@@ -21,7 +21,7 @@ ToolbarItem 3
 ToolbarItemGroup 2
 TitleView 2
 MenuBar 2
-Window 3
+Window 4
 Scene 2
 ModalStack 2
 Overlay 2

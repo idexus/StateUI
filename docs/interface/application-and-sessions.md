@@ -349,6 +349,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
 | `isTranslucent` | whether the desktop shows through the window, where the platform can show it |
+| `background` | what the window shows behind its pages, over its material where the desktop shows through |
 | `close()` | closes this exact window; its scene ends with its last |
 
 Position and size are four independent optional requests:
@@ -404,6 +405,19 @@ straight over the desktop. `nil` keeps the platform's opaque window.
 ```swift quote
 .pageBackground(Color("#CC0D0B14"))
 .onCreated { window.isTranslucent = true }
+```
+
+`background` is what the window shows behind its pages - around a floating
+sidebar, under a page that paints no background of its own. On a translucent
+window a colour with an alpha tints the window's material and lets the desktop
+show through it, a light wash under everything; on an opaque one it is the
+window's own colour. `nil` keeps the platform's.
+
+```swift quote
+.onCreated {
+    window.isTranslucent = true
+    window.background = Color("#26512BD4")
+}
 ```
 
 The host reports `WindowPhase` through the same session:

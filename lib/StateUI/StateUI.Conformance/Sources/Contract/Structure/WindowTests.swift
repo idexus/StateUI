@@ -75,6 +75,7 @@
             holds(WindowContract.isMaximizable, false, then: true) { $0.isMaximizable = $1 },
             holds(WindowContract.isMinimizable, false, then: true) { $0.isMinimizable = $1 },
             holds(WindowContract.isTranslucent, true, then: false) { $0.isTranslucent = $1 },
+            holds(WindowContract.background, Color("#26512BD4"), then: Color("#0F766E")) { $0.background = $1 },
             ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
                 Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
             ]) { s in

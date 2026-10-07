@@ -76,6 +76,11 @@ extension AppKitDriver {
         case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
         case .isTranslucent: return (!window.isOpaque).propValue
+        case .background:
+            // Over the material of a translucent window, else the window's own.
+            let content = window.contentView as? AppKitWindowContentView
+            let fill = controller.isTranslucent ? content?.materialTint : window.backgroundColor
+            return fill.map { Self.color($0).propValue }
         case .floatsOnTop: return (window.level == .floating).propValue
         case .windowType: return controller.restorationRecordForTesting.kind.map { .name($0) }
         case .windowValue: return controller.restorationRecordForTesting.value.map { .string($0) }

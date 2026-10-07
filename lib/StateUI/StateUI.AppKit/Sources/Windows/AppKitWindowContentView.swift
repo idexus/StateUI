@@ -25,6 +25,9 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     /// desktop show through it.
     private var material: NSVisualEffectView?
 
+    /// What lies over the whole material, in `materialTint`.
+    private var materialTintView: NSView?
+
     /// The band the title bar and toolbar cover, painted in `barColor` - over
     /// the material, where the window has one.
     private lazy var band: NSView = {
@@ -69,17 +72,31 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
                 material.material = .underWindowBackground
                 material.blendingMode = .behindWindow
                 material.state = .followsWindowActiveState
+                let tint = NSView()
+                tint.wantsLayer = true
+                material.addSubview(tint)
                 addSubview(material, positioned: .below, relativeTo: nil)
                 self.material = material
+                materialTintView = tint
             } else {
                 material?.removeFromSuperview()
                 material = nil
+                materialTintView = nil
             }
             needsLayout = true
         }
     }
 
     var materialForTesting: NSVisualEffectView? { material }
+
+    /// The window's background over its material, where the desktop shows
+    /// through the window: a colour with an alpha tints the material and lets
+    /// it show. Nil leaves the material the system's.
+    var materialTint: NSColor? {
+        didSet { if materialTint != oldValue { needsLayout = true } }
+    }
+
+    var materialTintForTesting: NSView? { materialTintView }
 
     /// The colour the window's bars are written in, painted over `barBand`.
     /// Nil leaves the title bar and toolbar the system's material.
@@ -125,7 +142,12 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     override func layout() {
         super.layout()
-        material?.frame = bounds
+        if let material {
+            material.frame = bounds
+            materialTintView?.frame = material.bounds
+            materialTintView?.layer?.backgroundColor = materialTint?.cgColor
+            materialTintView?.isHidden = materialTint == nil
+        }
         band.frame = barBand
         band.layer?.backgroundColor = barColor?.cgColor
         band.isHidden = barColor == nil

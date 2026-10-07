@@ -146,23 +146,24 @@ extension AppKitWindowController {
     }
 
     /// A colour written for the bars paints the band the title bar and
-    /// toolbar cover over the visible content - a split view's detail, else
-    /// the whole window - and the title bar lets it show. With none written,
-    /// the band is the system's material.
+    /// toolbar cover - the window's, under a floating sidebar's glass, and the
+    /// visible content's, a split view's detail - and the title bar lets it
+    /// show. With none written, the band is the system's material.
     ///
-    /// The colour is the window's background too: on a Mac the title bar, the
-    /// toolbar and the window's background around a floating sidebar are one
-    /// surface, so the sidebar stands framed in the bars' colour, its glass
-    /// taking a tint of it. With none written the window keeps the system's.
-    /// On a translucent window the colour paints the bars alone: the window's
-    /// band, which the floating sidebar's glass shows, and the detail's. The
-    /// window keeps no background, so its material, the system's, shows around
-    /// the sidebar and under the page.
+    /// The window's background is the one written for it, else the bars'
+    /// colour: on a Mac the title bar, the toolbar and the window's background
+    /// around a floating sidebar are one surface, so the sidebar stands framed
+    /// in it, its glass taking a tint of it. With neither written the window
+    /// keeps the system's. On a translucent window the window keeps none: its
+    /// material, the system's, shows around the sidebar and under the page,
+    /// tinted by the background written for the window.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
-        let background = isTranslucent ? NSColor.clear : (color ?? .windowBackgroundColor)
+        let written = traits?.background.flatMap(nsColor)
+        let background = isTranslucent ? NSColor.clear : (written ?? color ?? .windowBackgroundColor)
         if window.backgroundColor != background { window.backgroundColor = background }
-        content.barColor = split == nil || isTranslucent ? color : nil
+        content.materialTint = isTranslucent ? written : nil
+        content.barColor = color
         split?.setDetailBarColor(color)
     }
 

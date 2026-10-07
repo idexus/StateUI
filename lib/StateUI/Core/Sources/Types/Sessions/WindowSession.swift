@@ -88,6 +88,15 @@ public final class WindowSession {
     /// the application's colours read as they are written. `nil` keeps the
     /// platform's opaque window.
     @State public var isTranslucent: Bool? = nil
+
+    /// What the window shows behind its pages - around a floating sidebar,
+    /// under a page that paints no background of its own.
+    ///
+    ///     window.background = Color("#26512BD4")
+    ///
+    /// On a window the desktop shows through, a colour with an alpha tints
+    /// the window's material and lets it show. `nil` keeps the platform's own.
+    @State public var background: Color? = nil
     /// The key the tree knows the window by in its scene.
     let key: String
 
@@ -135,6 +144,7 @@ public final class WindowSession {
         props.describe(WindowContract.isMaximizable, isMaximizable)
         props.describe(WindowContract.isMinimizable, isMinimizable)
         props.describe(WindowContract.isTranslucent, isTranslucent)
+        props.describe(WindowContract.background, background)
         props.describe(WindowContract.minimumWidth, minimumWidth)
         props.describe(WindowContract.minimumHeight, minimumHeight)
         props.describe(WindowContract.maximumWidth, maximumWidth)
