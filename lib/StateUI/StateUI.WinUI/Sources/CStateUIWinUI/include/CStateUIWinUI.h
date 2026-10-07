@@ -367,6 +367,9 @@ void stateui_winui_set_font(StateUIObjectRef element, double size, bool bold, bo
 void stateui_winui_set_foreground(StateUIObjectRef element, bool has, uint32_t argb);
 void stateui_winui_set_padding(StateUIObjectRef element, double left, double top, double right, double bottom);
 
+/// The room between the letters of a text block's or a control's words, in thousandths of an em.
+void stateui_winui_set_character_spacing(StateUIObjectRef element, int32_t thousandths);
+
 /// How words look, as WinUI holds it: the size, the weight, the most lines, the alignment and the colour as
 /// 0xAARRGGBB - five values; what a test reads back.
 void stateui_winui_text_style(StateUIObjectRef element, double *style);

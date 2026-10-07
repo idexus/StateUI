@@ -16,6 +16,14 @@ extension WinUIView {
             handle, size ?? 0, attributes.contains(.bold), attributes.contains(.italic), family ?? "")
     }
 
+    /// The room between the letters, in points, of words `size` points tall - the platform's size for nil.
+    func setLetterSpacing(_ points: Double, size: Double?) {
+        var look = TextLook()
+        look.letterSpacing = points
+        let ems = look.letterSpacing(inEmsOf: size ?? WinUITextualView.platformFontSize)
+        stateui_winui_set_character_spacing(handle, Int32((ems * 1000).rounded()))
+    }
+
     /// The words' colour; nil puts back the platform's.
     func setForeground(_ color: HostValue?) {
         let argb = color?.argb

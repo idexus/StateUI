@@ -34,7 +34,9 @@ at its end.
 ## A button
 
 A button's words are a `TextBlock` of its content, which takes the button's
-font and colour: wrapped or cut short at their end as the tree's break says,
+font and colour, and the room between its letters the button holds - a
+`TextBlock` spaces its own letters, whatever its control says: wrapped or cut
+short at their end as the tree's break says,
 and on one line where it says nothing, as WinUI's own buttons stand. With a
 picture the content is composed as WinUI Gallery composes it: a `StackPanel`
 holding the picture and the words, across them or down them as the icon's

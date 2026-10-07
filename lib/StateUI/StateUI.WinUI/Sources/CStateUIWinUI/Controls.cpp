@@ -179,6 +179,7 @@ extern "C" void stateui_winui_button_set_content(
         if (!caption.empty() || !picture) {
             block = controls::TextBlock();
             block.Text(caption);
+            block.CharacterSpacing(button.CharacterSpacing());
             block.TextWrapping(wraps ? xaml::TextWrapping::Wrap : xaml::TextWrapping::NoWrap);
             block.TextTrimming(trims ? xaml::TextTrimming::CharacterEllipsis : xaml::TextTrimming::None);
         }
