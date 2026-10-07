@@ -59,8 +59,7 @@
                 clock.now = time
                 s.frame()
             }
-            let corner = FrameReport.inWindow(before)
-            let moved = corner.count == 2 ? [corner[0], corner[1] - 200] : []
+            let moved = FrameReport.inWindow(before, movedUp: 200)
             s.settle { frames.values.last.map(FrameReport.inWindow) == moved }
 
             s.expect(frames.values.last.map(FrameReport.inWindow), moved, "200 higher in its window")
@@ -99,8 +98,7 @@
                 clock.now = time
                 s.frame()
             }
-            let corner = FrameReport.inWindow(before)
-            let moved = corner.count == 2 ? [corner[0], corner[1] - 100] : []
+            let moved = FrameReport.inWindow(before, movedUp: 100)
             s.settle { frames.values.last.map(FrameReport.inWindow) == moved }
 
             s.expect(frames.values.last.map(FrameReport.inWindow), moved, "100 higher in its window")
