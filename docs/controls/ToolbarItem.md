@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (8)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>3 ✅ · 1 ✓ · 1 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>4 ✅ · 1 ✓ · 1 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr>
 <tr><td colspan="3">only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>7 ✅ · 1 –</td><td><code>UIBarButtonItem</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 1 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
@@ -80,8 +80,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read icon of ToolbarItem - AppKit's driver has no path for it yet<br>Android Views: cannot read a picture's name - Android's item keeps its picture, not its name</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read a picture's name - Android's item keeps its picture, not its name</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isDestructive</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

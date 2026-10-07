@@ -107,6 +107,13 @@ extension AppKitDriver {
         let controller = try controller(of: element)
         guard controller.titleAccessoryForTesting != nil, let shown = controller.titleClusterForTesting.imageForTesting
         else { return nil }
+        return pictureName(shown)
+    }
+
+    /// The name of the picture `shown` is, among the pictures the suite shows: the host gives a control the
+    /// picture it keeps for a name.
+    func pictureName(_ shown: NSImage?) -> HostValue? {
+        guard let shown else { return nil }
         let names = ["test_dot.png", "test_wide.png", "photo.png"]
         return names.first { renderer?.image(named: $0) === shown }.map { .string($0) }
     }

@@ -2,7 +2,7 @@
 Button: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
-Button.icon: cannot read icon of Button - AppKit's driver has no path for it yet
+Button.icon: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: not realized
 Button.lineBreak: ✅

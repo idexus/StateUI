@@ -121,6 +121,7 @@ extension AppKitDriver {
             case .text: return item.title.propValue
             case .isEnabled: return item.isEnabled.propValue
             case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
+            case .icon: return pictureName(item.image)
             case .isDestructive:
                 let words = item.attributedTitle
                 let red = words.flatMap { $0.length > 0 ? $0.attribute(.foregroundColor, at: 0, effectiveRange: nil) : nil }
@@ -142,6 +143,7 @@ extension AppKitDriver {
             switch property {
             case .text: return item.label.propValue
             case .isEnabled: return item.isEnabled.propValue
+            case .icon: return pictureName(item.image)
             default: break
             }
         }
